@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {CandidateExamService} from '../../../services/candidate-exam.service';
 import {CandidateExam} from '../../../model/candidate';
 import {RegistrationService} from "../../../services/registration.service";
@@ -45,7 +45,7 @@ export class RegistrationCandidateExamComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   candidateExams: CandidateExam[];
   addingExam: boolean;
 
@@ -55,7 +55,7 @@ export class RegistrationCandidateExamComponent implements OnInit {
   years: number[];
 
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private candidateExamService: CandidateExamService,
               public registrationService: RegistrationService,

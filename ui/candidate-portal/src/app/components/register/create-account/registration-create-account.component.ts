@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../../services/auth.service";
 import {ActivatedRoute} from "@angular/router";
 import {BrandingService} from "../../../services/branding.service";
@@ -23,7 +39,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
-  registrationForm: FormGroup;
+  registrationForm: UntypedFormGroup;
   error: any;
 
   // Form states
@@ -37,7 +53,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
 
   readonly emailRegex: string = EMAIL_REGEX;
 
-  constructor(private builder: FormBuilder,
+  constructor(private builder: UntypedFormBuilder,
               private route: ActivatedRoute,
               private brandingService: BrandingService,
               private candidateService: CandidateService,
@@ -74,12 +90,12 @@ export class RegistrationCreateAccountComponent implements OnInit {
       this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
 
       // The user has not registered - add the password fields to the reactive form
-      this.registrationForm.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
-      this.registrationForm.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
+      this.registrationForm.addControl('password', new UntypedFormControl('', [Validators.required, Validators.minLength(8)]));
+      this.registrationForm.addControl('passwordConfirmation', new UntypedFormControl('', [Validators.required, Validators.minLength(8)]));
 
       // The user has not registered - add the email consent fields
-      this.registrationForm.addControl('contactConsentRegistration', new FormControl(false, [Validators.requiredTrue]));
-      this.registrationForm.addControl('contactConsentPartners', new FormControl(false));
+      this.registrationForm.addControl('contactConsentRegistration', new UntypedFormControl(false, [Validators.requiredTrue]));
+      this.registrationForm.addControl('contactConsentPartners', new UntypedFormControl(false));
 
       this.loading = false;
     }

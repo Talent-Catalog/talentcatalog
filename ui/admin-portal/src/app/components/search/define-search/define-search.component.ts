@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -35,7 +35,12 @@ import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {
+  AbstractControl,
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormGroup
+} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
@@ -118,7 +123,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   error: any;
   loading: boolean;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
   savedSearchId;
@@ -157,7 +162,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
    */
   searchIsElastic: boolean = false;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
               private languageService: LanguageService,
               private partnerService: PartnerService,
@@ -219,11 +224,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],
-      // todo Maybe this needs to be SavedList objects - or as well as, like countries
       listAnyIds: [[]],
-      listAnySearchType: ['or'],
+      listAnySearchType: [null],
       listAllIds: [[]],
-      listAllSearchType: ['and'],
+      listAllSearchType: [null],
       unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false],
       potentialDuplicate: [null]
@@ -337,7 +341,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   validateDuplicateSearches(id: string) {
-    return (group: FormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): { [key: string]: any } => {
       const savedSearchId = group.controls[id].value;
       if (this.selectedBaseJoin){
         const baseJoinId = this.selectedBaseJoin.savedSearchId;
@@ -448,8 +452,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
-    this.searchForm.controls['listAllSearchType'].patchValue('or');
-    this.searchForm.controls['listAnySearchType'].patchValue('and');
+    this.searchForm.controls['listAllSearchType'].patchValue(null);
+    this.searchForm.controls['listAnySearchType'].patchValue(null);
 
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
@@ -590,7 +594,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         }
         // After updating we want to reset the form so it's no longer dirty, this will allow users to bypass the
         // unsaved changes guard.
-        this.searchForm.reset(this.searchForm.value)
+        this.populateFormWithSavedSearch(this.searchForm.value);
+        this.searchForm.markAsPristine();
       })
       .catch(() => {
       });
@@ -791,7 +796,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   get searchJoinArray() {
-    return this.searchForm.get('searchJoinRequests') as FormArray;
+    return this.searchForm.get('searchJoinRequests') as UntypedFormArray;
   }
 
   addSavedSearchJoin() {
@@ -916,6 +921,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
+  }
+
+  public isEmployerPartner() {
+    return this.authorizationService.isEmployerPartner();
   }
 
   public readonly CandidateSourceType = CandidateSourceType;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -63,6 +63,7 @@ import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -71,6 +72,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
@@ -87,11 +89,16 @@ import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.qr.EncodedQrImage;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
@@ -119,6 +126,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
+        CandidateRepository candidateRepository,
         CountryRepository countryRepository,
         PasswordHelper passwordHelper,
         AuthenticationManager authenticationManager,
@@ -126,6 +134,7 @@ public class UserServiceImpl implements UserService {
         AuthService authService,
         EmailHelper emailHelper, PartnerService partnerService) {
         this.userRepository = userRepository;
+        this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
@@ -302,6 +311,14 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    private void checkAndResetEmailVerification(User user, String newEmail) {
+        if (user.getEmail() == null ? newEmail != null : !user.getEmail().equals(newEmail)) {
+            user.setEmailVerified(false);
+            user.setEmailVerificationToken(null);
+            user.setEmailVerificationTokenIssuedDate(null);
+        } 
+    }
+
     @Override
     @Transactional
     public User updateUser(long id, UpdateUserRequest request) throws UsernameTakenException, InvalidRequestException {
@@ -311,6 +328,7 @@ public class UserServiceImpl implements UserService {
 
         // Only update if logged in user role is admin OR source partner admin AND they created the user.
         if (authoriseAdminUser()) {
+            checkAndResetEmailVerification(user, request.getEmail());
             populateUserFields(user, request, loggedInUser);
             userRepository.save(user);
         } else {
@@ -522,6 +540,55 @@ public class UserServiceImpl implements UserService {
         return findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.systemadmin);
     }
 
+    @Override
+    @Transactional
+    public void sendVerifyEmailRequest(SendVerifyEmailRequest request) {
+        User user = userRepository.findByEmailIgnoreCase(request.getEmail());
+        if (user != null) {
+            user.setEmailVerificationToken(UUID.randomUUID().toString());
+            user.setEmailVerificationTokenIssuedDate(OffsetDateTime.now());
+            userRepository.save(user);
+
+            try {
+                emailHelper.sendVerificationEmail(user);
+            } catch (EmailSendFailedException e) {
+                LogBuilder.builder(log)
+                        .action("SendVerificationEmail")
+                        .message("Unable to send verification email for " + user.getEmail())
+                        .logError(e);
+            }
+        } else {
+            LogBuilder.builder(log)
+                    .action("GenerateVerificationToken")
+                    .message("Unable to send verification email for " + request.getEmail())
+                    .logError();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void verifyEmail(VerifyEmailRequest request) {
+        try {
+            User user = userRepository.findByEmailVerificationToken(request.getToken());
+
+            if (user == null) {
+                throw new InvalidEmailVerificationTokenException();
+            } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(24))) {
+                emailHelper.sendCompleteVerificationEmail(user, false);
+                throw new ExpiredEmailTokenException();
+            }
+
+            user.setEmailVerified(true);
+            user.setEmailVerificationTokenIssuedDate(user.getEmailVerificationTokenIssuedDate());
+            user.setEmailVerificationToken(user.getEmailVerificationToken());
+            userRepository.save(user);
+            emailHelper.sendCompleteVerificationEmail(user, true);
+        } catch (Exception e) {
+            log.error("An unexpected error occurred during email verification", e);
+            throw new ServiceException("email_verification_error", "An unexpected error occurred during email verification", e);
+        }
+    }
+
     /**
      * CANDIDATE PORTAL: Update a users password
      * @param request Request containing password
@@ -548,6 +615,15 @@ public class UserServiceImpl implements UserService {
         String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
         user.setPasswordEnc(passwordEnc);
         userRepository.save(user);
+
+        /* Update changePassword */
+        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
+            Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
+                .orElseThrow(
+                    () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
+            candidate.setChangePassword(false);
+            candidateRepository.save(candidate);
+        }
     }
 
     /**
@@ -673,7 +749,7 @@ public class UserServiceImpl implements UserService {
         QrData data = totpQrDataFactory.newBuilder()
             .label(user.getEmail())
             .secret(secret)
-            .issuer("TBB")
+            .issuer("TalentCatalog")
             .build();
 
         // Generate the QR code image data as a base64 string which
@@ -699,7 +775,7 @@ public class UserServiceImpl implements UserService {
                 throw new InvalidCredentialsException("You need to enter an authentication code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
-                throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a TBB administrator.");
+                throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a Talent Catalog administrator.");
             }
         }
     }

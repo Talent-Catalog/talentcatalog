@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,14 +26,12 @@ import {
   NgbDateParserFormatter,
   NgbDatepickerConfig,
   NgbDatepickerI18n,
-  NgbModule
+  NgbModule,
+  NgbCollapseModule
 } from '@ng-bootstrap/ng-bootstrap';
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
 
-import {
-  RegistrationLandingComponent
-} from './components/register/landing/registration-landing.component';
 import {
   RegistrationContactComponent
 } from './components/register/contact/registration-contact.component';
@@ -61,7 +59,6 @@ import {
 import {
   RegistrationAdditionalInfoComponent
 } from './components/register/additional-info/registration-additional-info.component';
-import {LocalStorageModule} from 'angular-2-local-storage';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {LanguageInterceptor} from './services/language.interceptor';
 import {LoginComponent} from './components/account/login/login.component';
@@ -128,6 +125,7 @@ import {
   faFileUpload,
   faFolderOpen,
   faGlobe,
+  faHandshake,
   faLink,
   faListCheck,
   faMessage,
@@ -136,7 +134,10 @@ import {
   faQuestionCircle,
   faTimes,
   faUser,
-  faXmark
+  faXmark,
+  faEnvelope,
+  faEnvelopeOpen,
+  faTriangleExclamation
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -222,6 +223,11 @@ import {
 import {
   DestinationComponent
 } from "./components/register/destinations/destination/destination.component";
+import {ServicesComponent} from './components/profile/view/tab/services/services.component';
+import { VerifyEmailComponent } from './components/account/verify-email/verify-email.component';
+import {DuolingoCouponComponent} from './components/profile/view/tab/services/duolingo/duolingo-coupon/duolingo-coupon.component';
+import { DuolingoComponent } from './components/profile/view/tab/services/duolingo/duolingo.component';
+import { CasiHeaderComponent } from './components/common/casi-header/casi-header.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -235,7 +241,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     HeaderComponent,
     LandingComponent,
-    RegistrationLandingComponent,
     RegistrationContactComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,
@@ -300,7 +305,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     RegistrationCandidateExamComponent,
     DeleteExamComponent,
     RegistrationDestinationsComponent,
-    DestinationComponent
+    DestinationComponent,
+    VerifyEmailComponent,
+    ServicesComponent,
+    DuolingoCouponComponent,
+    DuolingoComponent,
+    CasiHeaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -309,15 +319,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
-    LocalStorageModule.forRoot({
-      prefix: 'tbb-candidate-portal',
-      storageType: 'localStorage'
-    }),
+    NgbCollapseModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
-        useClass: LanguageLoader
+        useExisting: LanguageLoader
         // Below is the standard loader which finds json translation files in assets/i18n
         //See https://github.com/ngx-translate/core#configuration
         //See doc for LanguageLoader for the reasons why we do what we do.
@@ -346,8 +353,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n},
     {provide: RxStompService},
-    DatePipe
-
+    DatePipe,
+    LanguageLoader
   ],
   exports: [
     CandidateOppsComponent,
@@ -385,7 +392,11 @@ export class AppModule {
       faUser,
       faListCheck,
       faBriefcase,
-      faMessage
+      faMessage,
+      faHandshake,
+      faEnvelope,
+      faEnvelopeOpen,
+      faTriangleExclamation
     );
   }
 }

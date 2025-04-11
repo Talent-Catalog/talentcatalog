@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2022 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -39,18 +39,18 @@
         <input type="text" class="form-control" id="displayName" formControlName="displayName">
       </div>
       <div class="mb-3">
-        <label class="form-label" for="description">Description</label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                  id="description" [formControlName]="'description'"></textarea>
+        <label class="form-label">Description</label>
+        <ngx-wig placeholder="" [formControlName]="'description'"></ngx-wig>
       </div>
       <div class="mb-3">
         <label class="form-label" for="daysToComplete">Days to Complete</label>
         <input type="number" class="form-control" id="daysToComplete" formControlName="daysToComplete">
       </div>
       <div class="mb-3">
-        <label class="form-label" for="helpLink">Help Link</label>
-        <input type="text" class="form-control" id="helpLink" formControlName="helpLink">
-        <div *ngIf="taskForm.controls.helpLink.errors?.pattern">Please provide valid url</div>
+        <label class="form-label" for="docLink">Document Link</label>
+        <input type="text" class="form-control" id="docLink" formControlName="docLink">
+        <div class="form-text">Note: If this is a Simple task type, the candidate will be prompted to 'agree' to the document via checkbox.</div>
+        <div *ngIf="taskForm.controls.docLink.errors?.pattern">Please provide valid url</div>
       </div>
       <div class="form-check-inline mb-3">
         <label class="form-label" for="optional">Optional?</label>

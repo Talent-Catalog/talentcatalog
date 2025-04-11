@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -46,7 +46,9 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  publicId: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -87,6 +89,8 @@ export interface Candidate extends HasId {
   shareableDoc: CandidateAttachment;
   listShareableCv: CandidateAttachment;
   listShareableDoc: CandidateAttachment;
+  muted: boolean;
+  changePassword: boolean;
   shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
@@ -107,6 +111,11 @@ export interface Candidate extends HasId {
   candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
 
   //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];
@@ -455,6 +464,10 @@ export interface UpdateCandidateStatusRequest {
   info: UpdateCandidateStatusInfo;
 }
 
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
+}
+
 export enum FamilyRelations {
   NoRelation = "No relatives",
   Child = "Daughter/Son",
@@ -578,6 +591,7 @@ export enum Exam {
   IELTSGen = "IELTS General",
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
+  DETOfficial = "DETOfficial",
   Other = "Other"
 }
 
@@ -678,6 +692,19 @@ export function hasIeltsExam(candidate: Candidate): boolean {
   } else {
     return false;
   }
+}
+
+export function isMuted(candidate: Candidate): boolean {
+  //Default is to treat as muted if the candidate or muted attribute is not defined
+  let isMuted = true;
+  if (candidate) {
+    //Candidate is defined
+    if (candidate.muted != null) {
+      //Muted attribute is defined - so just use it
+      isMuted = candidate.muted;
+    }
+  }
+  return isMuted;
 }
 
 export function checkIeltsScoreType(candidate: Candidate): string {

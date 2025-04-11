@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,24 +16,24 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -179,6 +179,12 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private PartnerImpl jobCreator;
 
     /**
+     * True if no candidate search is required. The candidates to be considered have already
+     * been added to the submission list.
+     */
+    private boolean skipCandidateSearch;
+
+    /**
      * Stage of job opportunity
      */
     @Enumerated(EnumType.STRING)
@@ -279,5 +285,9 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     public void setStage(JobOpportunityStage stage) {
         this.stage = stage;
         setStageOrder(stage.ordinal());
+
+        //Set redundant closed and won fields.
+        setClosed(this.stage.isClosed());
+        setWon(this.stage.isWon());
     }
 }

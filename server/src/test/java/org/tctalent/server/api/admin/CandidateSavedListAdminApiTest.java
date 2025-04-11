@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -131,7 +131,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.[0].folderjdlink", is("http://folder.jd.link")))
         .andExpect(jsonPath("$.[0].publishedDocLink", is("http://published.doc.link")))
         .andExpect(jsonPath("$.[0].registeredJob", is(true)))
-        .andExpect(jsonPath("$.[0].tbbShortName", is("Saved list Tbb short name")))
+        .andExpect(jsonPath("$.[0].tcShortName", is("Saved list Tc short name")))
         .andExpect(jsonPath("$.[0].createdBy.firstName", is("test")))
         .andExpect(jsonPath("$.[0].createdBy.lastName", is("user")))
         .andExpect(jsonPath("$.[0].createdDate", is("2023-10-30T12:30:00+02:00")))
@@ -141,7 +141,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.[0].users[0].firstName", is("test")))
         .andExpect(jsonPath("$.[0].users[0].lastName", is("user")))
         .andExpect(jsonPath("$.[0].tasks[0].id", is(148)))
-        .andExpect(jsonPath("$.[0].tasks[0].helpLink", is("http://help.link")))
+        .andExpect(jsonPath("$.[0].tasks[0].docLink", is("http://help.link")))
         .andExpect(jsonPath("$.[0].tasks[0].taskType", is("Simple")))
         .andExpect(jsonPath("$.[0].tasks[0].displayName", is("task display name")))
         .andExpect(jsonPath("$.[0].tasks[0].name", is("a test task")))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {Role, roleGreaterThan, User} from "../../../model/user";
 import {UserService} from "../../../services/user.service";
@@ -42,7 +42,7 @@ export class SearchUsersComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -50,7 +50,7 @@ export class SearchUsersComponent implements OnInit {
   results: SearchResults<User>;
   roleOptions: EnumOption[] = enumOptions(Role);
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private userService: UserService,
               private modalService: NgbModal,
               private authService: AuthorizationService,

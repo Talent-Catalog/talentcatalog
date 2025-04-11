@@ -1,18 +1,25 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
 import {AuthorizationService} from "../../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../../services/salesforce.service";
 import {JobService} from "../../../../services/job.service";
 import {SlackService} from "../../../../services/slack.service";
@@ -28,9 +35,7 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {
-  CandidateSourceCandidateService
-} from "../../../../services/candidate-source-candidate.service";
+import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
 import {forkJoin, Observable} from "rxjs";
@@ -39,6 +44,7 @@ import {ChatService} from "../../../../services/chat.service";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {JobOppIntake} from "../../../../model/job-opp-intake";
+import {LocalStorageService} from "../../../../services/local-storage.service";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -56,6 +62,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
    * detail display of a selected job
    */
   @Input() showBreadcrumb: boolean = true;
+
+  /**
+   * True if the view job comes from the viewJobFromUrl component, false if the job comes from the jobsWithDetail component.
+   * Depending where it comes from will depending how the chat view appears (as chat is much smaller on side panel).
+   */
+  @Input() fromUrl: boolean;
+
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;

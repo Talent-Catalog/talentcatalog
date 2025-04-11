@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {TaskAssignmentService} from "../../../services/task-assignment.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
@@ -52,7 +52,7 @@ describe('AssignTasksListComponent', () => {
       declarations: [AssignTasksListComponent, ConfirmationComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: TaskService, useValue: taskServiceSpyObj },

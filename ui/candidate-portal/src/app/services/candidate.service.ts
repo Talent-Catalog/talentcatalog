@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,9 +18,9 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
-import {Candidate} from '../model/candidate';
+import {Candidate, UpdateCandidateNotificationPreferenceRequest} from '../model/candidate';
 import {map} from 'rxjs/operators';
-import {LocalStorageService} from "angular-2-local-storage";
+import {LocalStorageService} from "./local-storage.service";
 
 export interface UpdateCandidateAdditionalInfo extends UpdateCandidateSurvey {
   additionalInfo?: string,
@@ -75,8 +75,8 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/additional-info`);
   }
 
-  updateCandidateAdditionalInfo(request): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/additional-info`, request);
+  updateCandidateOtherInfo(request): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/other-info`, request);
   }
 
   /* Candidate Survey */
@@ -148,4 +148,10 @@ export class CandidateService {
   getCandidateDestinations(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/destinations`);
   }
+
+  updateNotificationPreference(request: UpdateCandidateNotificationPreferenceRequest):
+    Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/notification`, request);
+  }
+
 }

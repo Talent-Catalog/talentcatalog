@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,26 +16,27 @@
 import {EditTaskComponent} from "./edit-task.component";
 import {TaskService, UpdateTaskRequest} from "../../../../services/task.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {of, throwError} from "rxjs";
 import {Task} from "../../../../model/task";
+import {NgxWigModule} from "ngx-wig";
 
 describe('EditTaskComponent', () => {
   let component: EditTaskComponent;
   let fixture: ComponentFixture<EditTaskComponent>;
   let taskServiceSpy: jasmine.SpyObj<TaskService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   // @ts-expect-error
   const taskData:Task = {
     displayName: 'Task 1',
     description: 'Description of Task 1',
     daysToComplete: 3,
     optional: false,
-    helpLink: 'https://example.com'
+    docLink: 'https://example.com'
   };
   //@ts-expect-error
   const updatedTask: Task = {
@@ -44,7 +45,7 @@ describe('EditTaskComponent', () => {
     description: 'Updated description',
     daysToComplete: 5,
     optional: true,
-    helpLink: 'https://updated-link.com'
+    docLink: 'https://updated-link.com'
   };
 
   beforeEach(async () => {
@@ -53,7 +54,7 @@ describe('EditTaskComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditTaskComponent],
-      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule, NgxWigModule],
       providers: [
         { provide: TaskService, useValue: taskServiceSpyObj },
         { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }
@@ -62,7 +63,7 @@ describe('EditTaskComponent', () => {
 
     taskServiceSpy = TestBed.inject(TaskService) as jasmine.SpyObj<TaskService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {
@@ -87,7 +88,7 @@ describe('EditTaskComponent', () => {
       description: 'Description of Task 1',
       daysToComplete: 3,
       optional: false,
-      helpLink: 'https://example.com'
+      docLink: 'https://example.com'
     });
     expect(component.loading).toBeFalse();
   }));
@@ -98,7 +99,7 @@ describe('EditTaskComponent', () => {
       description: 'Updated description',
       daysToComplete: 5,
       optional: true,
-      helpLink: 'https://updated-link.com'
+      docLink: 'https://updated-link.com'
     });
 
     component.onSave();
@@ -109,7 +110,7 @@ describe('EditTaskComponent', () => {
       description: 'Updated description',
       daysToComplete: 5,
       optional: true,
-      helpLink: 'https://updated-link.com'
+      docLink: 'https://updated-link.com'
     };
     expect(taskServiceSpy.update).toHaveBeenCalledWith(1, expectedRequest);
     expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(updatedTask);

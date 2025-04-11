@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="job">
 
   <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
@@ -46,8 +62,10 @@
     <div *ngIf="!job.publishedDate">
       <button type="button" class="btn btn-success me-2"
               (click)="publishJob()"
-              title="Publish job so that others can see it">
-      Publish Job</button>
+              ngbTooltip=
+                "Publish the job so other TC users can see it and begin the recruitment process.">
+        Publish Job
+      </button>
       <i *ngIf="publishing" class="fas fa-spinner fa-spin"></i>
     </div>
 
@@ -90,7 +108,10 @@
 
         <!-- SEARCHES -->
         <ng-container ngbNavItem="Searches">
-          <a ngbNavLink>Suggested search(es)</a>
+          <a ngbNavLink
+             ngbTooltip="Create a search to help partners find suitable candidates">
+            Suggested search(es)
+          </a>
           <ng-template ngbNavContent>
             <app-job-suggested-searches-tab
               [job]="job"
@@ -117,7 +138,10 @@
 
         <!-- JOB INTAKE -->
         <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Intake">
-          <a ngbNavLink>Job Intake (JOI)</a>
+          <a ngbNavLink
+             ngbTooltip="Provides key info for source partners to liaise with candidates">
+            Job Intake (JOI)
+          </a>
           <ng-template ngbNavContent>
             <app-job-intake-tab
               [job]="job"
@@ -137,6 +161,7 @@
           <ng-template ngbNavContent>
             <app-job-source-contacts-tab
               [job]="job"
+              [fromUrl]="fromUrl"
             >
             </app-job-source-contacts-tab>
           </ng-template>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
@@ -34,13 +34,14 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   _loading = {
     surveyTypes: true,
     additionalInfo: true,
     candidateSurvey: true,
-    linkedInLink: true
+    linkedInLink: true,
+    allNotifications: true
   };
   // Component states
   saving: boolean;
@@ -48,7 +49,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   usAfghan: boolean;
   surveyTypes: SurveyType[];
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               public registrationService: RegistrationService,
@@ -63,6 +64,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       surveyTypeId: [null, Validators.required],
       surveyComment: [''],
       linkedInLink: ['', Validators.pattern(linkedInRegex)],
+      allNotifications: [false],
     });
 
     this.candidateService.getCandidateSurvey().subscribe(
@@ -89,21 +91,28 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     );
 
     this.candidateService.getCandidateAdditionalInfo().subscribe(
-      (response) => {
+      (candidate) => {
         this.form.patchValue({
-          additionalInfo: response.additionalInfo,
-          linkedInLink: response.linkedInLink
+          additionalInfo: candidate.additionalInfo,
+          linkedInLink: candidate.linkedInLink,
+          allNotifications: candidate.allNotifications
         });
         this._loading.additionalInfo = false;
         this._loading.linkedInLink = false;
+        this._loading.allNotifications = false;
       },
       (error) => {
         this.error = error;
         this._loading.additionalInfo = false;
         this._loading.linkedInLink = false;
+        this._loading.allNotifications = false;
       }
     );
 
+  }
+
+  get allNotifications(): boolean {
+    return this.form.controls.allNotifications.value;
   }
 
   loadDropDownData() {
@@ -131,7 +140,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.saving = true;
 
     if (this.usAfghan) {
-      this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+      this.candidateService.updateCandidateOtherInfo(this.form.value).subscribe(
         (candidate) => {
 
           this.saving = false;
@@ -151,7 +160,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
         (response) => {
 
-          this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+          this.candidateService.updateCandidateOtherInfo(this.form.value).subscribe(
             (candidate) => {
 
               this.saving = false;

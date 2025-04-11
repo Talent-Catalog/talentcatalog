@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="container">
 
   <app-error [error]="error"></app-error>
@@ -14,12 +30,14 @@
 
   <ng-container *ngIf="!loading && !selectedOpp">
     <div>
+      <app-casi-header>
       <div class="d-flex justify-content-between align-items-baseline mb-4">
         <div>
           <h3>{{ 'CANDIDATE-OPPS.HEADER' | translate }}</h3>
           <p class="text-muted">{{ 'CANDIDATE-OPPS.NOTE' | translate }}</p>
         </div>
       </div>
+        </app-casi-header>
       <div class="table-responsive-sm">
         <table class="table table-hover bg-white">
           <thead class="table-light">
@@ -29,7 +47,7 @@
           </thead>
 
           <tbody>
-          <tr *ngFor="let opp of opps" (click)="selectOpp(opp)">
+          <tr *ngFor="let opp of filteredOpps" (click)="selectOpp(opp)">
             <td [title]="opp.jobOpp.name">
                 <div class="link underline">
                   <app-chat-read-status
@@ -47,7 +65,7 @@
           </tr>
 
           <!-- no results -->
-          <tr *ngIf="!loading && !opps?.length">
+          <tr *ngIf="!loading && !filteredOpps?.length">
             <td colspan="42" class="text-center">
               <span class="text-muted">({{ 'CANDIDATE-OPPS.TABLE.NONE' | translate }})</span>
             </td>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {CandidateLanguageService} from "../../../../../services/candidate-langua
 import {CandidateLanguage} from "../../../../../model/candidate-language";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {LanguageLevel} from "../../../../../model/language-level";
@@ -64,7 +64,7 @@ describe('EditCandidateLanguageComponent', () => {
         { provide: LanguageService, useValue: mockLanguageService },
         { provide: LanguageLevelService, useValue: mockLanguageLevelService },
         { provide: CandidateLanguageService, useValue: mockCandidateLanguageService },
-        FormBuilder
+        UntypedFormBuilder
       ]
     })
     .compileComponents();

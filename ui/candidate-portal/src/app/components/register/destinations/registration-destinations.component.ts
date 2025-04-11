@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Candidate, CandidateDestination} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
@@ -28,7 +44,7 @@ export class RegistrationDestinationsComponent implements OnInit {
 
   candidate: Candidate;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   loading: boolean;
   saving: boolean;
@@ -36,7 +52,7 @@ export class RegistrationDestinationsComponent implements OnInit {
   destinations: Country[];
   destinationForms: any[];
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private countryService: CountryService,
               private candidateDestinationService: CandidateDestinationService,

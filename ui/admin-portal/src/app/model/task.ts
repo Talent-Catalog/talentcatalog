@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,7 +28,7 @@ export interface Task extends Auditable {
   description: string;
   displayName: string;
   optional: boolean;
-  helpLink: string;
+  docLink: string;
   taskType: TaskType;
   uploadType: UploadType;
   uploadSubfolderName: string;

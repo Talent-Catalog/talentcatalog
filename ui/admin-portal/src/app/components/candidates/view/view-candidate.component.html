@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -55,7 +55,10 @@
           <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank" class="link-info">
             <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
           </a>
-          <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank" class="link-info">
+          <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
+             [href]="candidate.folderlink"
+             target="_blank"
+             class="link-info">
             <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
           </a>
           <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank" class="link-info">
@@ -130,11 +133,9 @@
       </p>
     </div>
 
-    <div *ngIf="isEditable()" class="ps-2 flex-shrink-0">
-      <button class="btn btn-sm btn-primary" type="button"
-              (click)="onNewList()">+ New List
-      </button>
-    </div>
+    <button class="btn btn-sm btn-primary" type="button"
+            (click)="onNewList()">+ New List
+    </button>
   </div>
 
   <div class="row">
@@ -252,6 +253,68 @@
             </a>
             <!-- Tab content — either the chats or a button to create one with help text -->
             <ng-template ngbNavContent>
+
+              <!-- Candidate's notification preferences for non read only users-->
+<!--              todo Comment this back in when Opt in/out is being supported-->
+<!--              <div *ngIf="!isReadOnlyUser()">-->
+<!--                <ng-template #notificationPreferencesTip>-->
+<!--                  <div>-->
+<!--                    <p>-->
+<!--                      You should not normally change this!-->
+<!--                    </p>-->
+<!--                    <p>-->
+<!--                      The candidate decides what chat notifications they would like to see.-->
+<!--                      Normally we should respect their decision.-->
+<!--                    </p>-->
+<!--                  </div>-->
+<!--                </ng-template>-->
+
+<!--                <div class="mt-5 mb-4">-->
+<!--                  <button class="btn btn-secondary mb-1" (click)="toggleNotificationPreferences()"-->
+<!--                          title="">-->
+<!--                    {{computeNotificationButtonLabel()}}-->
+<!--                  </button>-->
+<!--                  <button class="tool-tip-button" [ngbTooltip]="notificationPreferencesTip" triggers="click">-->
+<!--                    <i class="fa-regular fa-circle-question fa-xs"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+
+
+              <!-- Mute/Unmute candidate button for non read only users-->
+              <div *ngIf="!isReadOnlyUser()" class="container">
+                <ng-template #mutingTip>
+                  <div>
+                    <p>
+                      Muting a candidate prevents them from posting on any chat - but they can see
+                      posts that are sent to them.
+                    </p>
+                    <p>
+                      You should only mute a candidate when their posts do not adhere to TC rules.
+                    </p>
+                    <p>
+                      You can unmute them at any time.
+                    </p>
+                    <p>
+                      Whenever a candidate is muted or unmuted a candidate note is automatically
+                      generated recording the fact.
+                    </p>
+                  </div>
+                </ng-template>
+
+                <div class="mute-btn-align">
+                  <button class="btn btn-sm btn-accent-2" (click)="toggleMuted()"
+                  title="">
+                    {{computeMuteButtonLabel()}}
+                    <i *ngIf="this.candidate.muted; else notMute" class="fas fa-comment"></i>
+                    <ng-template #notMute><i class="fas fa-comment-slash"></i></ng-template>
+                  </button>
+                  <button class="tool-tip-button" [ngbTooltip]="mutingTip" triggers="click" tooltipClass="mute-tip">
+                    <i class="fa-regular fa-circle-question fa-xs"></i>
+                  </button>
+                </div>
+              </div>
+
               <app-view-chat-posts *ngIf="candidateChat; else createChatButton"
                                    [readOnly] = "isReadOnlyUser()"
                                    [chat]="candidateChat">

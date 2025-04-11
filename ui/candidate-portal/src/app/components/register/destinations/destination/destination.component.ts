@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateDestination, YesNoUnsureLearn} from '../../../../model/candidate';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Country} from '../../../../model/country';
 import {RegistrationService} from "../../../../services/registration.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
@@ -32,11 +32,11 @@ export class DestinationComponent implements OnInit {
   @Input() saving: boolean;
 
   error: string;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   public destInterestOptions: EnumOption[] = enumOptions(YesNoUnsureLearn);
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               public registrationService: RegistrationService) {
   }
 

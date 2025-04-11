@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -47,16 +47,19 @@ public class SavedListBuilderSelector {
     private DtoBuilder minimalSavedListDto() {
         return new DtoBuilder()
             .add("id")
+            .add("publicId")
             .add("name")
             .add("sfJobOpp", jobOppIdsDto())
             .add("displayedFieldsLong")
             .add("displayedFieldsShort")
+            .add("createdBy", userDto())
             ;
     }
 
     private DtoBuilder savedListDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("publicId")
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
@@ -81,7 +84,7 @@ public class SavedListBuilderSelector {
                 .add("registeredJob")
                 .add("sfJobCountry")
                 .add("sfJobStage")
-                .add("tbbShortName")
+                .add("tcShortName")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URL;
 import java.time.OffsetDateTime;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -82,11 +82,11 @@ public class NotificationServiceImpl implements NotificationService {
     @SchedulerLock(name = "NotificationService_scheduledNotifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     @Transactional
     public void scheduledNotifyOfChatsWithNewPosts() {
-        notifyUsersOfChatsWithNewPosts();
+        notifyUsersOfChatsWithNewUnreadPosts();
     }
 
     @Override
-    public void notifyUsersOfChatsWithNewPosts() {
+    public void notifyUsersOfChatsWithNewUnreadPosts() {
         Map<Long, Set<JobChat>> userNotifications = computeUserNotifications();
 
         sendEmailsFromNotifications(userNotifications);
@@ -155,7 +155,7 @@ public class NotificationServiceImpl implements NotificationService {
                     notifyDestinationPartner(chat, userNotifications);
 
                     //Notify all source partners
-                    final List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    final List<PartnerImpl> sourcePartners = partnerService.listActiveSourcePartners();
                     for (PartnerImpl sourcePartner : sourcePartners) {
                         notifySourcePartner(sourcePartner, chat, userNotifications);
                     }
@@ -276,20 +276,22 @@ public class NotificationServiceImpl implements NotificationService {
                     .filter(chat -> !jobChatUserService.isChatReadByUser(chat, user))
                     .collect(Collectors.toSet());
 
-                String s = unreadChats.stream()
-                    .map(c -> c.getId().toString())
-                    .collect(Collectors.joining(","));
+                if (!unreadChats.isEmpty()) {
+                    String s = unreadChats.stream()
+                            .map(c -> c.getId().toString())
+                            .collect(Collectors.joining(","));
 
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("notifyOfChatsWithNewPosts")
-                    .message("Notifying user " + userId + " about posts to chats " + s)
-                    .logInfo();
+                    LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("notifyOfChatsWithNewPosts")
+                            .message("Notifying user " + userId + " about posts to chats " + s)
+                            .logInfo();
 
-                List<EmailNotificationLink> links = computeEmailNotificationLinks(
-                    isCandidate, unreadChats, baseUrl);
+                    List<EmailNotificationLink> links = computeEmailNotificationLinks(
+                            isCandidate, unreadChats, baseUrl);
 
-                emailHelper.sendNewChatPostsForUserEmail(user, isCandidate, links);
+                    emailHelper.sendNewChatPostsForUserEmail(user, isCandidate, links);
+                }
             }
         }
     }

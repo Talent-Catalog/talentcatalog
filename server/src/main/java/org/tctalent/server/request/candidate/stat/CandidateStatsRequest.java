@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,19 +17,16 @@
 package org.tctalent.server.request.candidate.stat;
 
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tctalent.server.model.db.Stat;
 
 @Getter
 @Setter
 @ToString
 public class CandidateStatsRequest {
-
-    /**
-     * If not null and true, stats are computed using the old method.
-     */
-    private Boolean runOldStats;
 
     /**
      * If not null, stats are computed on candidates in the corresponding list.
@@ -54,5 +51,10 @@ public class CandidateStatsRequest {
      * If null, then we report up to most recent data
      */
     private LocalDate dateTo;
+
+    /**
+     * The selected stats to be run (limited to avoid large processing)
+     */
+    private List<Stat> selectedStats;
 
 }

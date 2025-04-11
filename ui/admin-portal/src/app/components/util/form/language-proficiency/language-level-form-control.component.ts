@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,7 +26,7 @@ import {
 import {Language} from "../../../../model/language";
 import {LanguageService} from "../../../../services/language.service";
 import {LanguageLevel} from "../../../../model/language-level";
-import {FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {LanguageLevelService} from "../../../../services/language-level.service";
 import {LanguageLevelFormControlModel} from "./language-level-form-control-model";
 
@@ -49,11 +49,11 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
 
   disabledClasses;
   showMenu: boolean;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(private languageService: LanguageService,
               private languageLevelService: LanguageLevelService,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
 
   }
 
@@ -96,7 +96,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   private languageLevelsRequired(): ValidatorFn {
-    return (group: FormGroup): ValidationErrors | null => {
+    return (group: UntypedFormGroup): ValidationErrors | null => {
       //If a language is selected, and there is no written level or spoken level
       //selected then a 'language level required' error needs to be displayed.
       return this.language != null && this.written == null && this.spoken == null ?
@@ -105,7 +105,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   };
 
   private languageRequired(): ValidatorFn {
-    return (group: FormGroup): ValidationErrors | null => {
+    return (group: UntypedFormGroup): ValidationErrors | null => {
       //If language isn't disabled (not english) and no language is selected,
       // we want to disable the radio buttons of the language levels.
       return !this.languageDisabled && this.language == null ? { 'disableLevels': true } : null;

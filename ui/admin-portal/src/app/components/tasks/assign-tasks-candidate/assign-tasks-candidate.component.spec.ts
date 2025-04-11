@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {TaskService} from "../../../services/task.service";
 import {TaskAssignmentService} from "../../../services/task-assignment.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
@@ -31,7 +31,7 @@ describe('AssignTasksCandidateComponent', () => {
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let taskServiceSpy: jasmine.SpyObj<TaskService>;
   let taskAssignmentServiceSpy: jasmine.SpyObj<TaskAssignmentService>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   const mockCandidate = new MockCandidate();
   const mockTasks = mockCandidate.taskAssignments.slice(0, 3).map(assignment => assignment.task);
 
@@ -44,7 +44,7 @@ describe('AssignTasksCandidateComponent', () => {
       declarations: [AssignTasksCandidateComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: TaskService, useValue: taskServiceSpyObj },
         { provide: TaskAssignmentService, useValue: taskAssignmentServiceSpyObj }
@@ -54,7 +54,7 @@ describe('AssignTasksCandidateComponent', () => {
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     taskServiceSpy = TestBed.inject(TaskService) as jasmine.SpyObj<TaskService>;
     taskAssignmentServiceSpy = TestBed.inject(TaskAssignmentService) as jasmine.SpyObj<TaskAssignmentService>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

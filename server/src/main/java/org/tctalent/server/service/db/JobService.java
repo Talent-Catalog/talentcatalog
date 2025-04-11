@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -252,7 +252,7 @@ public interface JobService {
     /**
      * Updates all open Jobs from their corresponding records on Salesforce
      */
-    void updateOpenJobs();
+    void initiateOpenJobSyncFromSf();
 
     /**
      * Uploads the given file to the JobDescription subfolder of the folder associated with the

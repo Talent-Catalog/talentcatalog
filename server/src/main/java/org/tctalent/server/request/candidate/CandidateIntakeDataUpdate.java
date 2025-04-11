@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -146,6 +146,7 @@ public class CandidateIntakeDataUpdate {
 
     private String englishAssessment;
     private String englishAssessmentScoreIelts;
+    private Long englishAssessmentScoreDet;
     private String frenchAssessment;
     private Long frenchAssessmentScoreNclc;
     private List<LeftHomeReason> leftHomeReasons;

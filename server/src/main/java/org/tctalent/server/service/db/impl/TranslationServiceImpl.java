@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -52,6 +52,8 @@ public class TranslationServiceImpl implements TranslationService {
     private final S3ResourceHelper s3ResourceHelper;
     private final AuthService authService;
 
+    private Map<String, Object> englishS3Translations;
+
     @Autowired
     public TranslationServiceImpl(TranslationRepository translationRepository,
                                   S3ResourceHelper s3ResourceHelper,
@@ -59,6 +61,7 @@ public class TranslationServiceImpl implements TranslationService {
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
         this.translationRepository = translationRepository;
+        englishS3Translations = getTranslationFile("en");
     }
 
     public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> entities,
@@ -148,12 +151,20 @@ public class TranslationServiceImpl implements TranslationService {
             this.s3ResourceHelper.uploadFile(this.s3ResourceHelper.getS3Bucket(), json,
                     "translations/" + language + ".json", "text/json");
 
+            if ("en".equals(language)) {
+                englishS3Translations = translations;
+            }
         } catch (JsonProcessingException e) {
             throw new ServiceException("invalid_json", "The translation data could not be converted to JSON", e);
         } catch (FileUploadException e) {
             throw new ServiceException("file_upload", "The JSON file could not be uploaded to s3", e);
         }
 
+    }
+
+    @Override
+    public String translateToEnglish(String... keys) {
+        return englishS3Translations == null ? null : translate(englishS3Translations, keys);
     }
 
     @Override

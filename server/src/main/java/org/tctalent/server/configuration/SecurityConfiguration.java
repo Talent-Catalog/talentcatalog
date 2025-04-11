@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,10 +17,12 @@
 package org.tctalent.server.configuration;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +44,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.security.JwtAuthenticationEntryPoint;
 import org.tctalent.server.security.JwtAuthenticationFilter;
 import org.tctalent.server.security.JwtTokenProvider;
@@ -92,12 +95,13 @@ import org.tctalent.server.security.TcUserDetailsService;
  *     </li>
  * </ul>
  */
+@Slf4j
 @Configuration
-@EnableWebSecurity()
+@EnableWebSecurity
 @EnableMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
-        prePostEnabled = false)
+        prePostEnabled = true)
 public class SecurityConfiguration {
 
     @Autowired
@@ -139,6 +143,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/admin/user/reset-password-email").permitAll()
                 .requestMatchers("/api/admin/user/check-token").permitAll()
                 .requestMatchers("/api/admin/user/reset-password").permitAll()
+                .requestMatchers("/api/admin/user/verify-email/**").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/published/**").permitAll()
 
@@ -189,7 +194,7 @@ public class SecurityConfiguration {
 
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
-                .requestMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasAnyRole("SYSTEMADMIN", "ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/admin/**/*")).hasAnyRole("SYSTEMADMIN", "ADMIN")
                     // Migrate database
                 .requestMatchers("/api/admin/system/migrate").hasAnyRole("SYSTEMADMIN", "ADMIN")
 
@@ -434,10 +439,17 @@ public class SecurityConfiguration {
         if (StringUtils.isNotBlank(urls)) {
             Collections.addAll(corsUrls, urls.split(","));
         }
-        configuration.setAllowedOrigins(corsUrls);
+        if (corsUrls.isEmpty()) {
+            LogBuilder.builder(log)
+                .message("No CORS URLs specified. Defaulting to empty list, which may block cross-origin requests.")
+                .logWarn();
+        }
+        configuration.setAllowedOriginPatterns(corsUrls);
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setMaxAge(3600L); // Cache preflight responses for 1 hour
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

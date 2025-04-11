@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,19 +16,19 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Convert;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.Convert;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.tctalent.server.service.db.ExportColumnsService;
@@ -50,12 +50,15 @@ import org.tctalent.server.service.db.ExportColumnsService;
  * @author John Cameron
  */
 @MappedSuperclass
-public abstract class AbstractCandidateSource extends AbstractAuditableDomainObject<Long> {
+public abstract class AbstractCandidateSource extends AbstractAuditableDomainObject<Long>
+    implements HasPublicId {
 
     /**
      * The name given to the candidate source
      */
     private String name;
+
+    private String publicId;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -134,7 +137,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * SavedList or SavedSearch implementations have slightly different ways of storing
      * export columns on the database - so the actual database mapping has to be done in those
      * subclasses.
-     * @return Set of columns. Note that the ordering is defined by the
+     * @return List of columns. Note that the ordering is defined by the
      * {@link ExportColumn#getIndex()} attribute in each ExportColumn.
      */
     @Nullable
@@ -213,6 +216,16 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         }
     }
 
+    @Override
+    public String getPublicId() {
+        return publicId;
+    }
+
+    @Override
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
+    }
+
     @Nullable
     public SalesforceJobOpp getSfJobOpp() {
         return sfJobOpp;
@@ -243,7 +256,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     /**
      * Extracts List of watching user ids from watcherIds String/
-     * @return List of user ids. Empty List if no watchers.
+     * @return Set of user ids. Empty List if no watchers.
      */
     @NotNull
     public Set<Long> getWatcherUserIds() {

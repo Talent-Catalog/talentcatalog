@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ package org.tctalent.server.service.db;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;
@@ -27,6 +27,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.request.IdsRequest;
@@ -147,6 +148,8 @@ public interface SavedSearchService {
     SavedSearch createFromDefaultSavedSearch(
             CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException;
+
+    void setPublicIds(List<SavedSearch> savedSearches);
 
     SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException;
 
@@ -270,4 +273,13 @@ public interface SavedSearchService {
     void updateDisplayedFieldPaths(
             long id, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
+
+    /**
+     * Updates the names of suggested searches for the given Job, to reflect its new name.
+     * Job renaming happens first - if for any reason that failed, this method has the virtue of
+     * reproducing the old name.
+     * @param job Job whose suggested searches are to be renamed
+     * @param oldJobName the previous name of the Job, used for character replacement
+     */
+    void updateSuggestedSearchesNames(SalesforceJobOpp job, String oldJobName);
 }

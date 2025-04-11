@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidCredentialsException;
@@ -31,8 +32,6 @@ import org.tctalent.server.request.candidate.certification.UpdateCandidateCertif
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateCertificationService;
 import org.tctalent.server.service.db.CandidateService;
-
-import java.util.List;
 import org.tctalent.server.util.audit.AuditHelper;
 
 @Service
@@ -74,7 +73,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertification.setDateCompleted(request.getDateCompleted());
 
 
-        // Save the candidateOccupation
+        // Save the entity
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
         AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);

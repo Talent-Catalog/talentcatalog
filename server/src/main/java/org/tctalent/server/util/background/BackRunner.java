@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,15 @@
 
 package org.tctalent.server.util.background;
 
+import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
+import org.tctalent.server.logging.LogBuilder;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
@@ -43,6 +45,7 @@ import org.springframework.scheduling.support.PeriodicTrigger;
  *
  * @author John Cameron
  */
+@Slf4j
 @Getter
 @Setter
 public class BackRunner<CONTEXT> implements Runnable {
@@ -63,9 +66,19 @@ public class BackRunner<CONTEXT> implements Runnable {
 
     @Override
     public void run() {
-        boolean complete = backProcessor.process(batchContext);
-        if (complete) {
-            //todo The runner could be configured to notify by email once processing is complete.
+        try {
+            boolean complete = backProcessor.process(batchContext);
+            if (complete) {
+                scheduledFuture.cancel(true);
+            }
+
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("Background batch processing")
+                .message("Operation cancelled. Batch failed due to unchecked exception: "
+                    + e.getMessage())
+                .logError(e);
+
             scheduledFuture.cancel(true);
         }
     }
@@ -79,13 +92,12 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @param backProcessor Processor called to do the processing
      * @param batchContext Context object used to keep track of processing - initialized to its
      *                     beginning value - ie indicating where processing should start.
-     * @param period Delay between each processing call
-     * @param timeUnit Seconds etc
+     * @param delay Delay between each processing call
      * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, long period, TimeUnit timeUnit) {
-        this.trigger = new PeriodicTrigger(period, timeUnit);
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Duration delay) {
+        this.trigger = new PeriodicTrigger(delay);
         return start(taskScheduler, backProcessor, batchContext, trigger);
     }
 

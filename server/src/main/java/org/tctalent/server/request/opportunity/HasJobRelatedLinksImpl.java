@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 package org.tctalent.server.request.opportunity;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -75,4 +75,9 @@ public class HasJobRelatedLinksImpl {
    * TC id of Job entity
    */
   private Long jobId;
+
+  /**
+   * Name of job - normally taken from name of job's related Salesforce Employer job opportunity.
+   */
+  private String jobName;
 }

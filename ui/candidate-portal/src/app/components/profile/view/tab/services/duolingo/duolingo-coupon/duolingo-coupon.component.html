@@ -1,0 +1,85 @@
+<!--
+  ~ Copyright (c) 2025 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<app-error [error]="error"></app-error>
+<app-loading [loading]="loading"></app-loading>
+<ng-container>
+  <div
+    class="coupon">{{ 'SERVICES.DUOLINGO.EXAM.DEAR' | translate }} {{ this.candidate.user.firstName }} {{ this.candidate.user.lastName }}
+    ,
+    <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.INTRO' | translate">
+    </div>
+
+    <button
+      type="button"
+      class="btn collapse-button"
+      (click)="isCollapsedIntro = !isCollapsedIntro"
+      [attr.aria-expanded]="!isCollapsedIntro"
+      aria-controls="collapseExample"
+    >
+      <a href="https://www.youtube.com/watch?v=Zm29HOKVcYY" target="_blank"
+         rel="noopener noreferrer"> {{ 'SERVICES.DUOLINGO.EXAM.ABOUT' | translate }} </a>
+      <fa-icon [icon]="isCollapsedIntro ? 'chevron-down' : 'chevron-up'"></fa-icon>
+    </button>
+
+
+    <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedIntro">
+      <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.ABOUT_TEXT' | translate">
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="btn collapse-button"
+      (click)="isCollapsedTechnicalSteps = !isCollapsedTechnicalSteps"
+      [attr.aria-expanded]="!isCollapsedTechnicalSteps"
+      aria-controls="collapseExample"
+    >
+      {{ 'SERVICES.DUOLINGO.EXAM.TECHNICAL_STEPS' | translate }}
+      <fa-icon [icon]="isCollapsedTechnicalSteps ? 'chevron-down' : 'chevron-up'"></fa-icon>
+    </button>
+    <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedTechnicalSteps">
+      <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.TECHNICAL_STEPS_TEXT' | translate">
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="btn collapse-button"
+      (click)="isCollapsedSteps = !isCollapsedSteps"
+      [attr.aria-expanded]="!isCollapsedSteps"
+      aria-controls="collapseExample"
+    >
+      {{ 'SERVICES.DUOLINGO.EXAM.STEPS' | translate }}
+      <fa-icon [icon]="isCollapsedSteps ? 'chevron-down' : 'chevron-up'"></fa-icon>
+    </button>
+    <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedSteps">
+      <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.STEPS_TEXT' | translate">
+      </div>
+    </div>
+
+
+    <h4>{{ 'SERVICES.DUOLINGO.EXAM.GOOD_LUCK' | translate }}
+    </h4>
+
+    <div class="text-center">
+      <b><a type="button" class="btn test-button"
+            (click)="updateSimpleTask()"
+            href="https://englishtest.duolingo.com/pay/{{selectedCoupon}}}?login_view=register&cta=Accept%20Coupon&show_bundle=false"
+            target="_blank">{{ 'SERVICES.DUOLINGO.EXAM.CTA_BUTTON' | translate }}</a></b>
+    </div>
+  </div>
+</ng-container>

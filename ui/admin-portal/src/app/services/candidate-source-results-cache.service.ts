@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,11 +15,11 @@
  */
 
 import {Injectable} from '@angular/core';
-import {LocalStorageService} from "angular-2-local-storage";
 import {SearchResults} from "../model/search-results";
 import {Candidate} from "../model/candidate";
 import {CandidateSource} from "../model/base";
 import {getCandidateSourceType} from "../model/saved-search";
+import {LocalStorageService} from "./local-storage.service";
 
 export interface CachedSourceResults {
   id: number;
@@ -44,8 +44,7 @@ export interface CachedSourceResults {
 export class CandidateSourceResultsCacheService {
 
   constructor(
-    private localStorageService: LocalStorageService,
-
+    private localStorageService: LocalStorageService
   ) { }
 
   private static cacheKey(source: CandidateSource): string {
@@ -57,7 +56,7 @@ export class CandidateSourceResultsCacheService {
    * @param source Candidate source associated with results.
    * @param cachedSearchResults Results to be stored in cache.
    */
-  cache(source: CandidateSource, cachedSearchResults: CachedSourceResults) {
+  cache(source: CandidateSource, cachedSearchResults: CachedSourceResults): void {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
     this.localStorageService.set(cacheKey, cachedSearchResults);
   }
@@ -75,7 +74,7 @@ export class CandidateSourceResultsCacheService {
    * @param source Candidate source whose cache is requested
    * @return Cached results or null if none found.
    */
-  getFromCache(source: CandidateSource): CachedSourceResults {
+  getFromCache(source: CandidateSource): CachedSourceResults | null {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
     return this.localStorageService.get<CachedSourceResults>(cacheKey);
   }
@@ -87,8 +86,8 @@ export class CandidateSourceResultsCacheService {
    * not come from the cache.
    * @param source Candidate source whose cache is to be cleared.
    */
-  removeFromCache(source: CandidateSource): boolean {
+  removeFromCache(source: CandidateSource): void {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
-    return this.localStorageService.remove(cacheKey);
+    this.localStorageService.remove(cacheKey);
   }
 }

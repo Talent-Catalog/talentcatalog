@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -166,7 +166,7 @@ describe('SavedListService', () => {
   });
 
   it('should update the short name of a saved list', () => {
-    const request: UpdateShortNameRequest = { tbbShortName: 'Short Name' } as UpdateShortNameRequest;
+    const request: UpdateShortNameRequest = { tcShortName: 'Short Name' } as UpdateShortNameRequest;
     const mockResponse: SavedList =MockSavedList;
 
     service.updateShortName(request).subscribe(response => {

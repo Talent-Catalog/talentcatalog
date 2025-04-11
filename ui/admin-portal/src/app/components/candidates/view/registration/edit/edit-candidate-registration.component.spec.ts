@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@ import {EditCandidateRegistrationComponent} from "./edit-candidate-registration.
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -41,7 +41,7 @@ describe('EditCandidateRegistrationComponent', () => {
       declarations: [EditCandidateRegistrationComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: modalServiceSpy },
         { provide: CandidateService, useValue: mockCandidateService },
         { provide: CountryService, useValue: {} }

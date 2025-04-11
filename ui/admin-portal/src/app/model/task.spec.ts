@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,7 +24,7 @@ describe('Task Interface', () => {
     description: 'This is a sample task.',
     displayName: 'Sample Task Display Name',
     optional: true,
-    helpLink: 'https://example.com/help',
+    docLink: 'https://example.com/help',
     taskType: TaskType.Question,
     uploadType: UploadType.cv,
     uploadSubfolderName: 'subfolder',
@@ -57,8 +57,8 @@ describe('Task Interface', () => {
     expect(mockTask.optional).toBe(true);
   });
 
-  it('should have the correct helpLink property', () => {
-    expect(mockTask.helpLink).toBe('https://example.com/help');
+  it('should have the correct docLink property', () => {
+    expect(mockTask.docLink).toBe('https://example.com/help');
   });
 
   it('should have the correct taskType property', () => {

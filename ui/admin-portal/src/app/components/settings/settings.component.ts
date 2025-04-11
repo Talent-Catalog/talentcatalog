@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,8 +18,8 @@ import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {User} from "../../model/user";
 import {AuthorizationService} from "../../services/authorization.service";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthenticationService} from "../../services/authentication.service";
+import {LocalStorageService} from "../../services/local-storage.service";
 
 
 @Component({

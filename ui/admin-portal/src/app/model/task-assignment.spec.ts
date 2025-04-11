@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -33,7 +33,7 @@ describe('Task Assignment Sort Function', () => {
     description: 'Description for Task 1',
     displayName: 'Task 1',
     optional: false,
-    helpLink: '',
+    docLink: '',
     taskType: TaskType.Question,
     uploadType: UploadType.cv,
     uploadSubfolderName: '',
@@ -48,7 +48,7 @@ describe('Task Assignment Sort Function', () => {
     description: 'Description for Task 2',
     displayName: 'Task 2',
     optional: true,
-    helpLink: '',
+    docLink: '',
     taskType: TaskType.Simple,
     uploadType: UploadType.offer,
     uploadSubfolderName: '',
@@ -294,7 +294,7 @@ describe('Check For Ongoing Function', () => {
       abandonedDate: null,
       candidateNotes: '',
       completedDate: null,
-      dueDate: new Date('2025-01-01'),
+      dueDate: new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
       status: Status.active,
       task: {} as Task,
       answer: '',

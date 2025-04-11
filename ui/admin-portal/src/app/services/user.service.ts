@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,6 +22,7 @@ import {SearchResults} from '../model/search-results';
 import {UpdateUserRequest, User} from '../model/user';
 import {SearchUserRequest} from "../model/base";
 import {SendResetPasswordEmailRequest} from "../model/candidate";
+import {SendVerifyEmailRequest} from "../model/user";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -112,5 +113,9 @@ export class UserService {
 
   resetMfa(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/mfa-reset/${id}`, null);
+  }
+
+  sendVerifyEmail(request:SendVerifyEmailRequest) {
+    return this.http.post(`${this.apiUrl}/verify-email`, request);
   }
 }

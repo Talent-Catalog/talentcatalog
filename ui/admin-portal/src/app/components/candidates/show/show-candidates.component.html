@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -354,7 +354,7 @@
 
     <!-- Third Group of Inputs (Right-aligned) -->
     <div *ngIf="isSavedList()" class="row row-cols-auto justify-content-end mb-2">
-      <div *ngIf="isContentModifiable()" class="col">
+      <div *ngIf="isContentModifiable() && !isEmployerPartner()" class="col">
         <input id="quickNumberOrNameSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doNumberOrNameSearch"
@@ -399,7 +399,7 @@
             <th *ngIf="isReviewable()">
               <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
             </th>
-            <th class="candidate-number-row" (click)="toggleSort('id')">
+            <th class="candidate-number-row sortable-column-header" (click)="toggleSort('id')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
@@ -411,7 +411,7 @@
             </th>
             <th *ngFor="let field of selectedFields">
               <ng-container *ngIf="field.sortable; else nonSortableFields" (click)="toggleSort(field.fieldPath)">
-                <div (click)="toggleSort(field.fieldPath)">
+                <div (click)="toggleSort(field.fieldPath)" class="sortable-column-header">
                   <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
                                  [sortDirection]="sortDirection"></app-sorted-by>
                   {{field.displayName}}
@@ -509,7 +509,9 @@
                 <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
                   <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
                 </a>
-                <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
+                <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
+                   [href]="candidate.folderlink"
+                   target="_blank">
                   <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
                 </a>
                 <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
@@ -547,16 +549,16 @@
               </td>
               <td *ngFor="let field of selectedFields">
 
-                <span [ngbTooltip]="field.getTooltip(candidate)"  [ngClass]="{
-                'text-danger': field.getValue(candidate) === 'Overdue',
-                'text-success' : field.getValue(candidate) == 'Completed',
-                'text-warning' : field.getValue(candidate) == 'Abandoned'}">
+                <span [ngbTooltip]="field.getTooltip(candidate, candidateSource)"  [ngClass]="{
+                'text-danger': field.getValue(candidate, candidateSource) === 'Overdue',
+                'text-success' : field.getValue(candidate, candidateSource) == 'Completed',
+                'text-warning' : field.getValue(candidate, candidateSource) == 'Abandoned'}">
 <!--                  todo Have switch on display of arrays vs non arrays.
 Non arrays or single value arrays, just display value
 
 arrays with more than one value display in drop down
 -->
-                  {{field.getValue(candidate)}}
+                  {{field.getValue(candidate, candidateSource)}}
                 </span>
               </td>
             </tr>
@@ -575,7 +577,8 @@ arrays with more than one value display in drop down
                                  [loggedInUser]="loggedInUser"
                                  [savedSearchSelectionChange]="savedSearchSelectionChange"
                                  (onSearchCardRendered)="setSearchCardScrollTop()"
-                                 (closeEvent)="setCurrentCandidate(null)">
+                                 (closeEvent)="setCurrentCandidate(null)"
+                                 (candidateUpdated)="updatedCandidate($event)">
       </app-candidate-search-card>
 
     </div>

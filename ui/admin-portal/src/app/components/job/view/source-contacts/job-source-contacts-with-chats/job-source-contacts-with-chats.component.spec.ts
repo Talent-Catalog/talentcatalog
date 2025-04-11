@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {JobSourceContactsWithChatsComponent} from './job-source-contacts-with-chats.component';
 import {AuthenticationService} from '../../../../../services/authentication.service';
@@ -17,7 +33,7 @@ import {ViewChatPostsComponent} from "../../../../chat/view-chat-posts/view-chat
 import {
   CreateUpdatePostComponent
 } from "../../../../chat/create-update-post/create-update-post.component";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {QuillModule} from "ngx-quill";
 import {MockPartner} from "../../../../../MockData/MockPartner";
 import {MockJobChat} from "../../../../../MockData/MockJobChat";
@@ -56,7 +72,7 @@ describe('JobSourceContactsWithChatsComponent', () => {
         { provide: AuthorizationService, useValue: authzSpy },
         { provide: ChatService, useValue: chatService },
         { provide: PartnerService, useValue: partnerService },
-        { provide: FormBuilder },
+        { provide: UntypedFormBuilder },
 
       ]
     })

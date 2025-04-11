@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -34,6 +34,9 @@ export interface PartnerSimpleAttributes {
   logo: string;
   name: string;
   notificationEmail: string;
+  publicApiAccess: boolean;
+  publicApiAuthorities: string[];
+  publicApiKey?: string;
   registrationLandingPage: string;
   sflink: string;
   sourcePartner: boolean;
@@ -44,6 +47,15 @@ export interface PartnerSimpleAttributes {
   //value in a type safe way. See other MODEL's for details.
   status: string;
   websiteUrl: string;
+  redirectPartner?: ShortPartner;
+}
+
+export enum PublicApiAuthority {
+  READ_CANDIDATE_DATA = "READ_CANDIDATE_DATA",
+  SUBMIT_JOB_MATCHES = "SUBMIT_JOB_MATCHES",
+  OFFER_CANDIDATE_SERVICES = "OFFER_CANDIDATE_SERVICES",
+  REGISTER_CANDIDATES = "REGISTER_CANDIDATES",
+  ADMIN = "ADMIN"
 }
 
 export interface Employer {
@@ -88,6 +100,7 @@ export function sourceCountriesAsString(partner: Partner): string {
 export interface UpdatePartnerRequest extends PartnerSimpleAttributes {
   defaultContactId?: number,
   sourceCountryIds: number[];
+  redirectPartnerId?: number;
 }
 
 export interface UpdatePartnerJobContactRequest {

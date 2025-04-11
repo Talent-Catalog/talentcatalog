@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -35,6 +35,8 @@ import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.util.qr.EncodedQrImage;
@@ -75,6 +77,17 @@ public interface UserService {
     void generateResetPasswordToken(SendResetPasswordEmailRequest request);
     void updatePassword(UpdateUserPasswordRequest request);
     void updateUserPassword(long id, UpdateUserPasswordRequest request);
+
+    /**
+     * Generates an email verification token and sends a verification email.
+     * Throws an error if the email verification token generation or sending fails.
+     */
+    void sendVerifyEmailRequest(SendVerifyEmailRequest request);
+    /**
+     * Checks the validity of the email verification token and verifies the user's email.
+     * Throws an error if the email verification token is invalid or expired, or if sending the completion verification email fails.
+     */
+    void verifyEmail(VerifyEmailRequest request);
 
     User findByUsernameAndRole(String username, Role role);
 

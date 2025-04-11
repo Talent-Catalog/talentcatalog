@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,7 @@ import {InfographicComponent} from "./infographic.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {CandidateStatService} from "../../services/candidate-stat.service";
 import {of, throwError} from "rxjs";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {ActivatedRoute} from "@angular/router";
@@ -57,7 +57,7 @@ describe('InfographicComponent', () => {
       declarations: [InfographicComponent,DatePickerComponent,RouterLinkStubDirective],
       imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,NgSelectModule,NgbDatepickerModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: CandidateStatService, useValue: mockCandidateStatService },
         { provide: SavedListService, useValue: mockSavedListService },
@@ -89,7 +89,8 @@ describe('InfographicComponent', () => {
       savedList: null,
       savedSearch: null,
       dateFrom: '',
-      dateTo: ''
+      dateTo: '',
+      selectedStats: []
     });
 
     const dateFromControl = component.statsFilter.get('dateFrom');
@@ -142,7 +143,7 @@ describe('InfographicComponent', () => {
     mockCandidateStatService.getAllStats.and.returnValue(of(mockStatReports));
 
     // Call the method
-    component.submitStatsRequest(false);
+    component.submitStatsRequest();
 
     // Simulate asynchronous observables
     tick();
@@ -165,7 +166,7 @@ describe('InfographicComponent', () => {
     mockCandidateStatService.getAllStats.and.returnValue(throwError(mockError));
 
     // Call the method
-    component.submitStatsRequest(false);
+    component.submitStatsRequest();
 
     // Simulate asynchronous observables
     tick();

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {ActivatedRoute, Router} from '@angular/router';
 import {of, throwError} from 'rxjs';
@@ -6,7 +22,6 @@ import {JobService} from '../../../../services/job.service';
 import {MockJob} from "../../../../MockData/MockJob";
 import {ViewJobComponent} from "../view-job/view-job.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {NgbNavModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
@@ -31,7 +46,7 @@ describe('ViewJobFromUrlComponent', () => {
     mockJobService = jasmine.createSpyObj('JobService', ['get']);
     mockJobService.get.and.returnValue(of(MockJob));
     TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
+      imports:[HttpClientTestingModule,NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
       declarations: [ViewJobFromUrlComponent,AutosaveStatusComponent,ViewJobComponent,JobGeneralTabComponent,ViewJobInfoComponent,ChatReadStatusComponent,ViewJobSummaryComponent,RouterLinkStubDirective],
       providers: [
         { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router

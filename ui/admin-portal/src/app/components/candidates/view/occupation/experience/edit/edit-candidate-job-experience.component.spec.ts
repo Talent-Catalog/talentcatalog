@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {
   CandidateJobExperienceService
 } from "../../../../../../services/candidate-job-experience.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
@@ -47,7 +47,7 @@ describe('EditCandidateJobExperienceComponent', () => {
       declarations: [EditCandidateJobExperienceComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
         { provide: CountryService, useValue: countryServiceSpy },
         { provide: NgbActiveModal, useValue: activeModalSpy }

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -34,11 +34,11 @@
     <!-- BODY -->
     <div class="card-body">
       <!-- EMPTY STATE -->
-      <p *ngIf="!candidateLanguages?.length" class="m-1">
+      <p *ngIf="!candidate.candidateLanguages?.length" class="m-1">
         No language data has been entered by this candidate.
       </p>
       <!-- LANGUAGE CARDS -->
-      <ng-container *ngFor="let language of candidateLanguages; let i = index;">
+      <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
         <div class="row">
           <div class="col-10 mb-2"
                [innerHtml]="language.language.name"
@@ -74,7 +74,7 @@
             </span>
           </div>
         </div>
-        <hr *ngIf="i < candidateLanguages?.length - 1">
+        <hr *ngIf="i < candidate.candidateLanguages?.length - 1">
       </ng-container>
       <ng-container *ngIf="candidate?.ieltsScore || candidate?.englishAssessmentScoreIelts">
         <hr>
@@ -95,10 +95,10 @@
 </div>
 
 <div *ngIf="accordion">
-  <p *ngIf="!candidateLanguages?.length" class="m-1">
+  <p *ngIf="!candidate.candidateLanguages?.length" class="m-1">
     No language data has been entered by this candidate.
   </p>
-  <ng-container *ngFor="let language of candidateLanguages; let i = index;">
+  <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
     <div class="row">
       <div class="col-sm-11"
            [innerHtml]="language.language.name"
@@ -119,6 +119,6 @@
         </span>
       </div>
     </div>
-    <hr *ngIf="i < candidateLanguages?.length - 1">
+    <hr *ngIf="i < candidate.candidateLanguages?.length - 1">
   </ng-container>
 </div>

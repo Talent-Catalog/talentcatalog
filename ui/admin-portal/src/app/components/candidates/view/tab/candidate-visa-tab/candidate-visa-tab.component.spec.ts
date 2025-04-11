@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,8 +24,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {
   HasNameSelectorComponent
 } from "../../../../util/has-name-selector/has-name-selector.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
@@ -51,15 +50,15 @@ describe('CandidateVisaTabComponent', () => {
     authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly']);
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [CandidateVisaTabComponent,ExportPdfComponent, HasNameSelectorComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateServiceMock },
         { provide: CountryService, useValue: countryServiceMock },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceMock },
         { provide: NgbModal, useValue: modalServiceMock },
-        { provide: LocalStorageService, useValue: {} },
+        // { provide: LocalStorageService, useValue: {} },
         { provide: AuthorizationService, useValue: authServiceMock },
       ]
     }).compileComponents();

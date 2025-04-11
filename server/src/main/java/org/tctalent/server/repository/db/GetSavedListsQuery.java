@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,18 +16,22 @@
 
 package org.tctalent.server.repository.db;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 
 /**
@@ -42,58 +46,68 @@ public class GetSavedListsQuery implements Specification<SavedList> {
 
     @Override
     public Predicate toPredicate(
-            Root<SavedList> savedList, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        Predicate conjunction = cb.conjunction();
+            @NotNull Root<SavedList> savedList, CriteriaQuery<?> query, @NotNull CriteriaBuilder cb) {
+        if (query == null) {
+            throw new IllegalArgumentException("GetSavedListsQuery.CriteriaQuery should not be null");
+        }
+
         query.distinct(true);
+
+        // Default join is INNER so specify LEFT as we want to show lists without sfJobOpps also
+        Join<Object, Object> jobOpp = savedList.join("sfJobOpp", JoinType.LEFT);
+
+        //Start with empty conjunction Predicate (which defaults to true)
+        //We are going to build on this using cb.and and cb.or
+        Predicate conjunction = cb.conjunction();
 
         //Only return lists which are not Selection lists -
         //ie lists with no associated saved search.
-        conjunction.getExpressions().add(
+        conjunction = cb.and(conjunction,
                 cb.isNull(savedList.get("savedSearch")));
 
         // KEYWORD SEARCH
         if (!StringUtils.isBlank(request.getKeyword())){
             String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
             String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-            conjunction.getExpressions().add(
+            conjunction = cb.and(conjunction,
                      cb.like(cb.lower(savedList.get("name")), likeMatchTerm));
         }
 
         //If fixed is specified, only supply matching saved lists
         if (request.getFixed() != null && request.getFixed()) {
-            conjunction.getExpressions().add(cb.equal(savedList.get("fixed"), true)
+            conjunction = cb.and(conjunction, cb.equal(savedList.get("fixed"), true)
             );
         }
 
         //If registeredJob is specified and true, only supply matching saved lists
         if (request.getRegisteredJob() != null && request.getRegisteredJob()) {
-            conjunction.getExpressions().add(cb.equal(savedList.get("registeredJob"), true));
+            conjunction = cb.and(conjunction, cb.equal(savedList.get("registeredJob"), true));
         }
 
-        //If sfOppIsClosed is specified, and sfJobOpp is not null, only supply saved list with
-        // matching job closed.
+        // If sfOppIsClosed is specified, only supply saved lists with job closed status matching the request
+        // and also want to show saved lists without job opps
         if (request.getSfOppClosed() != null) {
-            //Closed condition is only meaningful if sfJobOpp is present
-            conjunction.getExpressions().add(cb.isNotNull(savedList.get("sfJobOpp")));
-            conjunction.getExpressions().add(cb.equal(savedList.get("sfOppIsClosed"), request.getSfOppClosed()));
+            // Return lists without job opps as well as lists with job opps that match the closed status of the request
+            conjunction = cb.and(conjunction, cb.or(cb.isNull(savedList.get("sfJobOpp")), cb.equal(jobOpp.get("closed"), request.getSfOppClosed())));
         }
 
         //If short name is specified, only supply matching saved lists. If false, remove
-        if (request.getShortName() != null && request.getShortName()) {
-            conjunction.getExpressions().add(
-                    cb.isNotNull(savedList.get("tbbShortName"))
-            );
-        } else if (request.getShortName() != null && !request.getShortName()){
-            conjunction.getExpressions().add(
-                    cb.isNull(savedList.get("tbbShortName"))
-            );
+        if (request.getShortName() != null) {
+            if (request.getShortName()) {
+                conjunction = cb.and(conjunction,
+                    cb.isNotNull(savedList.get("tcShortName"))
+                );
+            } else {
+                conjunction = cb.and(conjunction,
+                    cb.isNull(savedList.get("tcShortName"))
+                );
+            }
         }
 
-        // (shared OR owned OR global)
-        Predicate ors = cb.disjunction();
-
+        // (shared OR owned OR global OR owned by partner)
+        Predicate disjunction = cb.disjunction();
         if (request.getGlobal() != null && request.getGlobal()) {
-            ors.getExpressions().add(
+            disjunction = cb.or(disjunction,
                 cb.equal(savedList.get("global"), request.getGlobal())
             );
         }
@@ -106,8 +120,18 @@ public class GetSavedListsQuery implements Specification<SavedList> {
                 for (SavedList sharedList : sharedLists) {
                     sharedIDs.add(sharedList.getId());
                 }
-                ors.getExpressions().add(
-                        savedList.get("id").in( sharedIDs )
+                disjunction = cb.or(disjunction,
+                        savedList.get("id").in(sharedIDs)
+                );
+            }
+        }
+        //If saved list's job is owned by this user's partner
+        if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+            if (loggedInUser != null) {
+                Partner loggedInUserPartner = loggedInUser.getPartner();
+                // For reference: the default join type for a join is INNER
+                disjunction = cb.or(disjunction,
+                        cb.equal(jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
                 );
             }
         }
@@ -115,14 +139,14 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         //If owned by this user (ie by logged in user)
         if (request.getOwned() != null && request.getOwned()) {
             if (loggedInUser != null) {
-                ors.getExpressions().add(
-                        cb.equal(savedList.get("createdBy"), loggedInUser)
+                disjunction = cb.or(disjunction,
+                        cb.equal(savedList.get("createdBy").get("id"), loggedInUser.getId())
                 );
             }
         }
 
-        if (ors.getExpressions().size() != 0) {
-            conjunction.getExpressions().add(ors);
+        if(!disjunction.getExpressions().isEmpty()) {
+            conjunction = cb.and(conjunction, disjunction);
         }
 
         return conjunction;

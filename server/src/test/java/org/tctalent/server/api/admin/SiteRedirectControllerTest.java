@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -36,6 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(SiteRedirectController.class)
 @AutoConfigureMockMvc
 class SiteRedirectControllerTest extends ApiTestBase {
+
     private static final String BASE_PATH = "/backend/jobseeker";
     private static final String VIEW_RESUME_PATH = "/view-resume";
 
@@ -53,11 +55,17 @@ class SiteRedirectControllerTest extends ApiTestBase {
     }
 
     @Test
+    public void testWebOnlyContextLoads() {
+        assertThat(siteRedirectController).isNotNull();
+    }
+
+    @Test
     void redirectOldResumeUrl() throws Exception {
         String testCandidateNumber = "12345";
 
-        mockMvc.perform(get(BASE_PATH + VIEW_RESUME_PATH + "/?id=" + testCandidateNumber)
-            .header("Authorization", "Bearer " + "jwt-token")
+        mockMvc.perform(get(BASE_PATH + VIEW_RESUME_PATH)
+                .param("id", testCandidateNumber)
+                .header("Authorization", "Bearer " + "jwt-token")
                 .accept(MediaType.APPLICATION_OCTET_STREAM))
 
             .andDo(print())

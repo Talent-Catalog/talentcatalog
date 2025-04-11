@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,6 @@ import {Task} from '../model/task';
 import {SearchResults} from '../model/search-results';
 import {SearchTaskRequest} from '../model/base';
 import {MockJob} from "../MockData/MockJob";
-import {MockUser} from "../MockData/MockUser";
 
 describe('TaskService', () => {
   let service: TaskService;
@@ -32,7 +31,7 @@ describe('TaskService', () => {
   // Sample data
   const mockTasks: Task[] = MockJob.submissionList.tasks;
 
-  const mockTask: Task = { id: 1, displayName: 'Task 1', description: 'Description 1', daysToComplete: 5, helpLink: 'http://example.com', optional: false } as Task;
+  const mockTask: Task = { id: 1, displayName: 'Task 1', description: 'Description 1', daysToComplete: 5, docLink: 'http://example.com', optional: false } as Task;
 
   const mockSearchResults: SearchResults<Task> = {
     content: mockTasks,
@@ -43,7 +42,7 @@ describe('TaskService', () => {
     displayName: 'Updated Task',
     description: 'Updated Description',
     daysToComplete: 10,
-    helpLink: 'http://example.com/help',
+    docLink: 'http://example.com/help',
     optional: true,
   };
 

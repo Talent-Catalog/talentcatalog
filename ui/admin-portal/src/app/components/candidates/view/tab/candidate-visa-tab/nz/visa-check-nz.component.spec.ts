@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {VisaCheckNzComponent} from "./visa-check-nz.component";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
@@ -23,6 +22,7 @@ import {
   mockCandidateIntakeData
 } from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {By} from '@angular/platform-browser';
+
 describe('VisaCheckNzComponent', () => {
   let component: VisaCheckNzComponent;
   let fixture: ComponentFixture<VisaCheckNzComponent>;
@@ -30,7 +30,7 @@ describe('VisaCheckNzComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [VisaCheckNzComponent],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

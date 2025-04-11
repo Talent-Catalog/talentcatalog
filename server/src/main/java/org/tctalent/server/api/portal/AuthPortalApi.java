@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,10 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.Map;
 import javax.security.auth.login.AccountLockedException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
 import org.tctalent.server.request.LoginRequest;
-import org.tctalent.server.request.candidate.RegisterCandidateRequest;
+import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.UserService;
@@ -78,7 +78,7 @@ public class AuthPortalApi {
 
     @PostMapping("register")
     public Map<String, Object> register(
-        HttpServletRequest httpRequest, @Valid @RequestBody RegisterCandidateRequest request)
+        HttpServletRequest httpRequest, @Valid @RequestBody SelfRegistrationRequest request)
             throws AccountLockedException, ReCaptchaInvalidException {
 
         LoginRequest loginRequest = candidateService.register(request, httpRequest);

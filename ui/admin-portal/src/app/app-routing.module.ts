@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -45,6 +45,7 @@ import {
   UserChangePasswordComponent
 } from "./components/account/user-change-password/user-change-password.component";
 import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
+import {IntelligenceComponent} from "./components/intelligence/intelligence.component";
 
 const routes: Routes = [
   {
@@ -55,20 +56,22 @@ const routes: Routes = [
       {
         path: 'candidates/:id',
         redirectTo: 'candidate/:id',
+        data: { title: 'Redirecting to Candidate' }
       },
       {
         path: 'candidates',
         redirectTo: '',
+        data: { title: 'Redirecting to Home' }
       },
       {
         //Default to Jobs
         path: '',
         redirectTo: 'jobs',
-        pathMatch: 'full'
+        pathMatch: 'full' as const
       },
       {
         path: 'searches',
-        pathMatch: 'full',
+        pathMatch: 'full' as const,
         component: SearchHomeComponent,
         data: {title: 'TC Searches'}
       },
@@ -77,7 +80,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: CandidatesSearchComponent,
             data: {title: 'TC Search'}
           },
@@ -91,7 +94,7 @@ const routes: Routes = [
       },
       {
         path: 'jobs',
-        pathMatch: 'full',
+        pathMatch: 'full' as const,
         component: JobHomeComponent,
         data: {title: 'TC Jobs'}
       },
@@ -100,7 +103,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: JobHomeComponent,
             data: {title: 'TC Jobs'}
           },
@@ -113,7 +116,7 @@ const routes: Routes = [
       },
       {
         path: 'lists',
-        pathMatch: 'full',
+        pathMatch: 'full' as const,
         component: ListHomeComponent,
         data: {title: 'TC Candidate Lists'}
       },
@@ -132,7 +135,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: CandidatesListComponent,
             data: {title: 'TC List'}
           },
@@ -162,7 +165,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: SettingsComponent,
             data: {title: 'TC Settings'}
           },
@@ -173,7 +176,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: InfographicComponent,
             data: {title: 'TC Stats'}
           },
@@ -185,11 +188,22 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'intelligence',
+        children: [
+          {
+            path: '',
+            pathMatch: 'full' as const,
+            component: IntelligenceComponent,
+            data: {title: 'TC Intelligence'}
+          }
+        ]
+      },
+      {
         path: 'chat',
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: ManageChatsComponent,
             data: {title: 'Chat'}
           },
@@ -226,7 +240,8 @@ const routes: Routes = [
     path: '**',
     component: NotFoundComponent,
     data: {
-      hideHeader: true
+      hideHeader: true,
+      title: 'Page Not Found'
     }
   }
 

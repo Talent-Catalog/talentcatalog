@@ -63,6 +63,29 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "staging": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
             }
           },
           "defaultConfiguration": ""
@@ -75,6 +98,9 @@
           "configurations": {
             "production": {
               "browserTarget": "candidate-portal:build:production"
+            },
+            "staging": {
+              "browserTarget": "candidate-portal:build:staging"
             }
           }
         },
@@ -117,13 +143,15 @@
           "configurations": {
             "production": {
               "devServerTarget": "candidate-portal:serve:production"
+            },
+            "staging": {
+              "devServerTarget": "candidate-portal:serve:staging"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "candidate-portal",
   "cli": {
     "analytics": "59b99e65-9190-47a1-adb7-4d515f8c01fc"
   }

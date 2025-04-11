@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
 import {
   CandidateVisaCheckService,
@@ -29,8 +29,8 @@ import {
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../model/candidate';
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../../../services/authorization.service";
+import {LocalStorageService} from "../../../../../services/local-storage.service";
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -42,7 +42,7 @@ export class CandidateVisaTabComponent implements OnInit {
   candidateIntakeData: CandidateIntakeData;
   visaChecks: CandidateVisa[];
   tcDestinations: Country[];
-  form: FormGroup;
+  form: UntypedFormGroup;
   selectedIndex: number;
   selectedCountry: string;
   selectedVisaCheck: CandidateVisa;
@@ -55,7 +55,7 @@ export class CandidateVisaTabComponent implements OnInit {
               private countryService: CountryService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private authService: AuthorizationService) {
   }

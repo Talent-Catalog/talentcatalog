@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 import {MonthPickerComponent} from "./month-picker.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {DebugElement} from "@angular/core";
-import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {By} from "@angular/platform-browser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -39,7 +39,7 @@ describe('MonthPickerComponent', () => {
     fixture = TestBed.createComponent(MonthPickerComponent);
     component = fixture.componentInstance;
     debugElement = fixture.debugElement;
-    component.control = new FormControl();
+    component.control = new UntypedFormControl();
     fixture.detectChanges();
   });
 

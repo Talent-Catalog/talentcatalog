@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 import {SelectListComponent, TargetListSelection} from "./select-list.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SavedListService} from "../../../services/saved-list.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockSavedList} from "../../../MockData/MockSavedList";
@@ -32,7 +32,7 @@ describe('SelectListComponent', () => {
   let fixture: ComponentFixture<SelectListComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
   beforeEach(async () => {
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
@@ -42,7 +42,7 @@ describe('SelectListComponent', () => {
       declarations: [SelectListComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: SavedListService, useValue: savedListServiceSpyObj }
       ]
@@ -50,7 +50,7 @@ describe('SelectListComponent', () => {
 
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     savedListServiceSpy = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,10 +17,12 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {HomeComponent} from './home.component';
 import {NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
-import {LocalStorageModule, LocalStorageService} from 'angular-2-local-storage';
 import {SavedSearchService} from '../../services/saved-search.service';
 import {AuthenticationService} from '../../services/authentication.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {LocalStorageService} from "../../services/local-storage.service";
+import {ActivatedRoute} from "@angular/router";
+import {of} from "rxjs";
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -38,13 +40,13 @@ describe('HomeComponent', () => {
       declarations: [HomeComponent],
       imports: [
         NgbNavModule,
-        HttpClientTestingModule,
-        LocalStorageModule.forRoot({})
+        HttpClientTestingModule
       ],
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },
         SavedSearchService,
-        AuthenticationService
+        AuthenticationService,
+        { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
       ]
     }).compileComponents();
   }));
@@ -85,10 +87,8 @@ describe('HomeComponent', () => {
 
     // Check if the default saved search subtype is selected
     expect(component.selectedSavedSearchSubtype).toEqual(parseInt(defaultCategoryValue));
-
-    // Check if the last tab key is set in the local storage
-    expect(localStorageService.set).toHaveBeenCalledWith(lastTabKey, defaultTabId);
   });
+
   it('should update selectedSavedSearchSubtype when saved search subtype changes', () => {
     // Define the new saved search subtype
     const newSubtype: number = 1;

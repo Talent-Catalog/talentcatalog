@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -29,6 +29,30 @@
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="englishAssessment" [formControlName]="'englishAssessment'"
               placeholder="" ></textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="englishAssessmentScoreDet">
+      DET Score
+    </label>
+    <button id="detTipButton"
+            [ngbTooltip]="detToolTip"
+            class="tip-button"
+            placement="right"
+            triggers="click">
+      <i class="fa-regular fa-circle-question fa-xs"></i>
+    </button>
+    <ng-template #detToolTip>
+      All scores in the Duolingo english test are on a scale of 10 to 160
+      <a href="https://englishtest.duolingo.com/scores"
+         target="_blank">
+        this guide
+      </a>
+      can help in understanding the scoring system.
+    </ng-template>
+    <app-det-score-validation
+      id="englishAssessmentScoreDet"
+      [control]="form.controls.englishAssessmentScoreDet">
+    </app-det-score-validation>
   </div>
   <div class="mb-3">
     <label class="form-label" for="englishAssessmentScoreIelts">
@@ -63,6 +87,7 @@
       Estimated French ability in Niveaux de compétence linguistique canadiens (NCLC)
     </label>
     <button id="nclcTipButton"
+            class="tip-button"
             [ngbTooltip]="nclcToolTip"
             placement="right"
             triggers="click">

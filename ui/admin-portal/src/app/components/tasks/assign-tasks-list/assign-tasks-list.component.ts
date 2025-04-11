@@ -1,12 +1,29 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
 import {TaskAssignmentService, TaskListRequest} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
 import {SavedListService} from "../../../services/saved-list.service";
+import {DuolingoCouponService} from "../../../services/duolingo-coupon.service";
 
 @Component({
   selector: 'app-assign-tasks-list',
@@ -14,7 +31,7 @@ import {SavedListService} from "../../../services/saved-list.service";
   styleUrls: ['./assign-tasks-list.component.scss']
 })
 export class AssignTasksListComponent implements OnInit {
-  assignForm: FormGroup;
+  assignForm: UntypedFormGroup;
   filteredTaskAssociations: Task[];
   allTasks: Task[];
   savedList: SavedList;
@@ -23,10 +40,11 @@ export class AssignTasksListComponent implements OnInit {
   estDate: Date;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private modalService: NgbModal,
               private savedListService: SavedListService,
               private taskService: TaskService,
+              private duolingoCouponService: DuolingoCouponService,
               private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
@@ -96,16 +114,29 @@ export class AssignTasksListComponent implements OnInit {
       savedListId: this.savedList.id,
       taskId: task.id,
     }
-    this.taskAssignmentService.assignTaskToList(request).subscribe(
-      () => {
-        this.refreshTaskAssociations();
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      }
-    );
+    if(task.name === 'claimCouponButton') {
+      this.duolingoCouponService.assignCouponToList(this.savedList.id).subscribe(
+        () => {
+          this.refreshTaskAssociations();
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      )
+    } else {
+      this.taskAssignmentService.assignTaskToList(request).subscribe(
+        () => {
+          this.refreshTaskAssociations();
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      );
+    }
   }
 
   close() {

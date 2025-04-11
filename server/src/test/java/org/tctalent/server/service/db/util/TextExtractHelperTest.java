@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -20,15 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import jakarta.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -36,6 +38,7 @@ import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.util.textExtract.TextExtractHelper;
 
+@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 @Slf4j
 public class TextExtractHelperTest {
@@ -53,7 +56,7 @@ public class TextExtractHelperTest {
      * @throws IOException from PDFBox extraction methods
      */
     @Transactional
-//    @Test
+    @Test
     void testDifferentFilesTextExtractHelper() throws IOException {
         assertNotNull(textExtractHelper);
 
@@ -108,7 +111,7 @@ public class TextExtractHelperTest {
      * Test findByFileTypeAndMigrated query to get the file types that were left when the migration was done (newly added files that weren't in the migration S3 Bucket)
      */
     @Transactional
-//    @Test
+    @Test
     void testRepoFindByTextExtractAndMigrated() {
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
         List<CandidateAttachment> migratedFiles = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
@@ -122,7 +125,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-//    @Test
+    @Test
     void testTextExtractMigratedFiles() {
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
@@ -157,7 +160,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-    //@Test
+    @Test
     void testTextExtractMigrateNewFiles() throws IOException {
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
@@ -192,7 +195,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-//    @Test
+    @Test
     void extractTextFromMigratedPdf() throws IOException {
         // Get all Pdf files
         List<CandidateAttachment> candidatePdfs = candidateAttachmentRepository.findByFileType("pdf");
@@ -226,7 +229,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-//    @Test
+    @Test
     void extractTextFromMigratedDocx() throws IOException {
         // Get all docx files
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("docx");
@@ -259,7 +262,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-//    @Test
+    @Test
     void extractTextFromMigratedDoc() {
         // Get all doc files
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("doc");

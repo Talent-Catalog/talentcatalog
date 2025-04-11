@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -31,6 +31,9 @@ import {Language} from "../../../../../model/language";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {LanguageLevel} from "../../../../../model/language-level";
 import {SurveyTypeService} from "../../../../../services/survey-type.service";
+import {isOppStageGreaterThanOrEqualTo} from "../../../../../model/candidate-opportunity";
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ChangePasswordComponent} from '../../../../account/change-password/change-password.component';
 
 @Component({
   selector: 'app-candidate-profile',
@@ -69,7 +72,8 @@ export class CandidateProfileComponent implements OnInit {
               private languageService: LanguageService,
               private languageLevelService: LanguageLevelService,
               private surveyTypeService: SurveyTypeService,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              private modalService: NgbModal) { }
 
   ngOnInit() {
     const lang = this.route.snapshot.queryParams['lang'];
@@ -180,4 +184,25 @@ export class CandidateProfileComponent implements OnInit {
     return this.countries?.find(c => c.id === country?.id)?.name;
   }
 
+  showRelocatedAddress(): boolean {
+    let showRelocated = false;
+    // If candidate has any relocated address fields
+    // Or if candidate has candidate opportunities of which some are past the job offer stage
+    // THEN show relocated address
+    if (this.candidate?.relocatedAddress || this.candidate?.relocatedCity
+      || this.candidate?.relocatedState || this.candidate?.relocatedCountry) {
+      showRelocated = true;
+    } else if (this.candidate?.candidateOpportunities.length > 0) {
+      showRelocated = this.candidate.candidateOpportunities.some(co => {
+        return isOppStageGreaterThanOrEqualTo(co?.lastActiveStage, "acceptance");
+      })
+    }
+    return showRelocated;
+  }
+
+  openChangePasswordModal() {
+    const  changePasswordModal = this.modalService.open(ChangePasswordComponent, {
+      centered: true
+    });
+  }
 }

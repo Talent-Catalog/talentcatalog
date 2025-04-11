@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -34,6 +34,7 @@ import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.JobChatRepository;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -45,11 +46,12 @@ public class JobChatServiceImpl implements JobChatService {
 
     private final UserService userService;
     private final JobChatRepository jobChatRepository;
+    private final AuthService authService;
 
     private @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
         @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate) {
         JobChat chat = new JobChat();
-        chat.setCreatedBy(userService.getLoggedInUser());
+        chat.setCreatedBy(authService.getLoggedInUser().orElse(userService.getSystemAdminUser()));
         chat.setCreatedDate(OffsetDateTime.now());
         if (type != null) {
             chat.setType(type);

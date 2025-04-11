@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@ import {CreateIndustryComponent} from "./create-industry.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {IndustryService} from "../../../../services/industry.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {Industry} from "../../../../model/industry";
@@ -28,7 +28,7 @@ describe('CreateIndustryComponent', () => {
   let fixture: ComponentFixture<CreateIndustryComponent>;
   let industryServiceSpy: jasmine.SpyObj<IndustryService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   const industry: Industry = { id: 1, name: 'Test Industry', status: 'active' };
 
   beforeEach(async () => {
@@ -46,7 +46,7 @@ describe('CreateIndustryComponent', () => {
 
     industryServiceSpy = TestBed.inject(IndustryService) as jasmine.SpyObj<IndustryService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

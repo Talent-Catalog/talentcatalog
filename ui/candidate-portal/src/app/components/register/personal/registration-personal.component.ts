@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Candidate} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {CountryService} from "../../../services/country.service";
@@ -44,7 +44,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   static ukraineId = 6406;
   static usaId = 6178;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   // Component states
   _loading = {
@@ -61,7 +61,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   subscription;
   lang: string;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private countryService: CountryService,
               public translateService: TranslateService,

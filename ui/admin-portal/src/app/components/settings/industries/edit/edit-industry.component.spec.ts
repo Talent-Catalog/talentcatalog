@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 import {IndustryService} from "../../../../services/industry.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {EditIndustryComponent} from "./edit-industry.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -28,7 +28,7 @@ describe('EditIndustryComponent', () => {
   let fixture: ComponentFixture<EditIndustryComponent>;
   let industryServiceSpy: jasmine.SpyObj<IndustryService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   // @ts-expect-error
   const industry: Industry = {name: 'Test Industry', status: 'active' };
 
@@ -47,7 +47,7 @@ describe('EditIndustryComponent', () => {
 
     industryServiceSpy = TestBed.inject(IndustryService) as jasmine.SpyObj<IndustryService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

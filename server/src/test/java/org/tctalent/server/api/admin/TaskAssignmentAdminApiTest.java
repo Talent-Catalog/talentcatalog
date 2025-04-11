@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,26 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +45,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.*;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.TaskAssignmentImpl;
+import org.tctalent.server.model.db.TaskImpl;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.task.CreateTaskAssignmentRequest;
 import org.tctalent.server.request.task.TaskListRequest;
 import org.tctalent.server.request.task.UpdateTaskAssignmentRequestAdmin;
@@ -35,20 +58,6 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.TaskService;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Unit tests for Task Assignment Admin Api endpoints.
@@ -116,7 +125,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", hasSize(1)))
         .andExpect(jsonPath("$[0].id", is(99)))
         .andExpect(jsonPath("$.[0].task.id", is(148)))
-        .andExpect(jsonPath("$.[0].task.helpLink", is("http://help.link")))
+        .andExpect(jsonPath("$.[0].task.docLink", is("http://help.link")))
         .andExpect(jsonPath("$.[0].task.taskType", is("Simple")))
         .andExpect(jsonPath("$.[0].task.displayName", is("task display name")))
         .andExpect(jsonPath("$.[0].task.name", is("a test task")))
@@ -156,7 +165,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.id", is(99)))
         .andExpect(jsonPath("$.task.id", is(148)))
-        .andExpect(jsonPath("$.task.helpLink", is("http://help.link")))
+        .andExpect(jsonPath("$.task.docLink", is("http://help.link")))
         .andExpect(jsonPath("$.task.taskType", is("Simple")))
         .andExpect(jsonPath("$.task.displayName", is("task display name")))
         .andExpect(jsonPath("$.task.name", is("a test task")))
@@ -196,7 +205,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.id", is(99)))
         .andExpect(jsonPath("$.task.id", is(148)))
-        .andExpect(jsonPath("$.task.helpLink", is("http://help.link")))
+        .andExpect(jsonPath("$.task.docLink", is("http://help.link")))
         .andExpect(jsonPath("$.task.taskType", is("Simple")))
         .andExpect(jsonPath("$.task.displayName", is("task display name")))
         .andExpect(jsonPath("$.task.name", is("a test task")))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,15 +16,18 @@
 import {ViewCandidateOccupationComponent} from "./view-candidate-occupation.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
-import {of} from "rxjs";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {
+  ViewCandidateJobExperienceComponent
+} from "./experience/view-candidate-job-experience.component";
 
 describe('ViewCandidateOccupationComponent', () => {
   let component: ViewCandidateOccupationComponent;
@@ -41,10 +44,11 @@ describe('ViewCandidateOccupationComponent', () => {
     mockCandidateJobExperienceService = jasmine.createSpyObj('CandidateJobExperienceService', ['search']);
 
     TestBed.configureTestingModule({
-      declarations: [ ViewCandidateOccupationComponent ],
+      declarations: [ ViewCandidateOccupationComponent, ViewCandidateJobExperienceComponent ],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      // schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbModal, useValue: mockModalService },
         { provide: CandidateService, useValue: mockCandidateService },
         { provide: CandidateOccupationService, useValue: mockCandidateOccupationService },
@@ -65,15 +69,7 @@ describe('ViewCandidateOccupationComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize correctly and load candidate occupations and job experiences', () => {
-    const candidateOccupations = mockCandidate.candidateOccupations;
-    const jobExperiences = mockCandidate.candidateJobExperiences;
-
-    // Set up mock responses
-    mockCandidateService.get.and.returnValue(of(mockCandidate));
-    mockCandidateOccupationService.get.and.returnValue(of(candidateOccupations));
-    mockCandidateJobExperienceService.search.and.returnValue(of({ content: jobExperiences }));
-
+  it('should initialize correctly and set up experiences', () => {
     // Trigger ngOnChanges manually
     component.ngOnChanges({  candidate: {
         currentValue: component.candidate,
@@ -82,12 +78,7 @@ describe('ViewCandidateOccupationComponent', () => {
         isFirstChange: () => true
       }} );
 
-    // Expect loading to be false
-    expect(component.loading).toBe(false);
-
-    // Expect candidate, candidateOccupations, and experiences to be initialized correctly
-    expect(component.candidate).toEqual(mockCandidate);
-    expect(component.candidateOccupations).toEqual(candidateOccupations);
-    expect(component.experiences).toEqual(jobExperiences);
+    expect(component.orderOccupation).toBe(true);
+    expect(component.experiences).toEqual(component.candidate.candidateJobExperiences);
   });
 });

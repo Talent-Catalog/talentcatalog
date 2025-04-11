@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -79,7 +79,7 @@ export class JobPrepDueDate extends JobPrepItem {
 
 export class JobPrepJD extends JobPrepItem {
   constructor() {
-    super("Provide job description (JD)", "Uploads");
+    super("Provide job description (Job Uploads Tab)", "Uploads");
   }
 
   isCompleted(): boolean {

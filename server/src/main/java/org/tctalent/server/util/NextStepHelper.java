@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,6 +19,7 @@ package org.tctalent.server.util;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.Nullable;
+import org.springframework.lang.NonNull;
 
 /**
  * Some utilities for managing opportunity next steps
@@ -48,7 +49,7 @@ public class NextStepHelper {
      *     <li> the audit name to the end of the stripped nextStep.</li>
      *     <li> the audit date to the start of the stripped nextStep. </li>
      * </ul>
-     * This indicates who has made this change to the next step, and when. 
+     * This indicates who has made this change to the next step, and when.
      * This is useful for auditing purposes.
      * <p/>
      * This method performs this logic, returning the processed next step which is what should be
@@ -111,6 +112,24 @@ public class NextStepHelper {
     public static String constructNextStepAuditStamp(String name, LocalDate date, String strippedNextStep) {
         String dateStamp = nextStepDateFormatter.format(date);
         return dateStamp + nextStepAuditDateDelimiter + strippedNextStep + nextStepAuditNameDelimiter + name;
+    }
+
+    /**
+     * Checks if the user-entered value for Next Step (i.e. absent the audit stamp) is different
+     * between the current and requested Next Step.
+     * @param currentNextStep current value
+     * @param requestedNextStep requested value
+     * @return boolean - true if different
+     */
+    public static boolean isNextStepDifferent(String currentNextStep,
+        @NonNull String requestedNextStep) {
+        if (currentNextStep == null) {
+            // requestedNextStep is never null, so they must be different in this case.
+            return true;
+        }
+        String currentNextStepStripped = removeExistingStamp(currentNextStep);
+        String requestedNextStepStripped = removeExistingStamp(requestedNextStep);
+        return !currentNextStepStripped.equals(requestedNextStepStripped);
     }
 
 }

@@ -1,6 +1,22 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {Country} from "../../../../model/country";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {enumOptions} from "../../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
@@ -18,7 +34,7 @@ export class CreateUpdateHelpLinkComponent extends FormComponentBase implements 
 
   destinationCountries: Country[];
   error = null;
-  form: FormGroup;
+  form: UntypedFormGroup;
   helpLink: HelpLink;
   caseStages = enumOptions(CandidateOpportunityStage);
   jobStages = enumOptions(JobOpportunityStage);
@@ -26,7 +42,7 @@ export class CreateUpdateHelpLinkComponent extends FormComponentBase implements 
   working: boolean;
 
 
-  constructor(fb: FormBuilder,
+  constructor(fb: UntypedFormBuilder,
               private activeModal: NgbActiveModal,
               private helpLinkService: HelpLinkService,
   ) {

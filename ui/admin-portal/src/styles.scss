@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-@import "~src/scss/variables";
+@import "./scss/variables";
 
 @import 'bootstrap/scss/bootstrap-reboot';
 @import 'bootstrap/scss/bootstrap';
@@ -24,13 +24,13 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import '@fortawesome/fontawesome-free/scss/solid.scss';
 @import '@fortawesome/fontawesome-free/scss/regular.scss';
 
-@import "~src/scss/common";
-@import "~src/scss/page";
-@import "~src/scss/chat";
-@import "~src/scss/tag";
+@import "./scss/common";
+@import "./scss/page";
+@import "./scss/chat";
+@import "./scss/tag";
 
-@import "~src/scss/btn";
-@import "~src/scss/dragula";
+@import "./scss/btn";
+@import "./scss/dragula";
 @import "@ng-select/ng-select/themes/default.theme.css";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
@@ -228,5 +228,13 @@ ngx-wig {
 }
 
 .link-info, .link-warning {
+  cursor: pointer;
+}
+
+.sortable-column-header:hover {
+  cursor: pointer;
+}
+
+tr.clickable:hover {
   cursor: pointer;
 }

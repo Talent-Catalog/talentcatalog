@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {Candidate} from "../../../../../model/candidate";
@@ -31,7 +31,7 @@ export class EditCandidateSurveyComponent implements OnInit {
 
   candidateId: number;
 
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
 
   error;
   loading: boolean;
@@ -40,7 +40,7 @@ export class EditCandidateSurveyComponent implements OnInit {
   surveyTypes: SurveyType[];
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private surveyTypeService: SurveyTypeService) {}
 

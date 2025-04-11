@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -32,7 +32,7 @@
 </div>
 
 
-<div *ngIf="!notes || notes.length == 0">
+<div *ngIf="!candidate.candidateNotes || candidate.candidateNotes.length == 0">
   <div class="row">
     <div class="col-sm-12">
       No notes entered
@@ -41,7 +41,7 @@
 </div>
 
 
-<div *ngFor="let candidateNote of notes; let i = index">
+<div *ngFor="let candidateNote of candidate.candidateNotes; let i = index">
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-start">
       <div>
@@ -67,10 +67,6 @@
     </div>
   </div>
   <hr/>
-</div>
-
-<div class="text-center" *ngIf="hasMore">
-  <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
 </div>
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -165,6 +165,7 @@ export interface Auditable extends HasId {
 }
 
 export interface CandidateSource extends Auditable {
+  publicId?: string;
   name: string;
   description?: string;
   displayedFieldsLong?: string[];
@@ -224,6 +225,10 @@ export class PagedSearchRequest {
 export class PagedFilteredSearchRequest extends PagedSearchRequest {
   keyword?: string;
   status?: string;
+}
+
+export class KeywordPagedSearchRequest extends PagedSearchRequest {
+  keyword?: string;
 }
 
 export class SearchPartnerRequest extends PagedFilteredSearchRequest {

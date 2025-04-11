@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -77,6 +77,12 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
             translationService.translate(languageLevels.getContent(), "language_level", request.getLanguage());
         }
         return languageLevels;
+    }
+
+    @Override
+    public LanguageLevel findByLevel(int level) {
+        return languageLevelRepository.findByLevel(level)
+            .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, level));
     }
 
     @Override

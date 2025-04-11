@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,8 @@
 
 package org.tctalent.server.service.db;
 
-import java.util.Collection;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -98,21 +97,4 @@ public interface SalesforceJobOppService {
      */
     SalesforceJobOpp updateJob(SalesforceJobOpp sfJobOpp);
 
-    /**
-     * Updates existing Salesforce cache records (SalesforceJobOpp's) corresponding to the given
-     * Salesforce ids.
-     * <p/>
-     * It will also update records for job opportunities which are open on SF
-     * and which are locally cached, even if their ids are not in the given list of ids.
-     * This is useful for job opportunities which have been closed and then are reopened on SF.
-     * Typically, we only pass in ids of local job opps that are open in order to limit the total
-     * number of ids. Otherwise, the total number of ids being passed in will grow infinitely
-     * over time (and might eventually crash the SF link by making the SF query too long).
-     * This way the id's can be limited to open job opps only - ignoring closed opps. This
-     * approach ensures that closed opps can be reopened as a result of this update.
-     *
-     * @param sfIds Salesforce ids of cache records to be updated from Salesforce
-     * @throws SalesforceException if there are issues contacting Salesforce
-     */
-    void updateJobs(Collection<String> sfIds) throws SalesforceException;
 }

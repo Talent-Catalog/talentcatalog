@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {HelpLinkService} from "../../../services/help-link.service";
 import {CountryService} from "../../../services/country.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {SearchResults} from "../../../model/search-results";
@@ -58,7 +58,7 @@ describe('SearchHelpLinksComponent', () => {
       declarations: [SearchHelpLinksComponent, HelpComponent],
       imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         {provide: HelpLinkService, useValue: helpLinkServiceMock},
         {provide: CountryService, useValue: countryServiceMock},
         {provide: NgbModal, useValue: modalServiceMock},

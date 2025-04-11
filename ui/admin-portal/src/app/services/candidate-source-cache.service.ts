@@ -1,8 +1,23 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Injectable} from '@angular/core';
-import {LocalStorageService} from "angular-2-local-storage";
 import {CandidateSource} from "../model/base";
 import {getCandidateSourceType} from "../model/saved-search";
-import {CachedSourceResults} from "./candidate-source-results-cache.service";
+import {LocalStorageService} from "./local-storage.service";
 
 @Injectable({
   providedIn: 'any' // Will provide a new instance for each component
@@ -11,7 +26,7 @@ export class CandidateSourceCacheService {
   private cacheKeys: Set<string> = new Set();
 
   constructor(
-    private localStorageService: LocalStorageService,
+    private localStorageService: LocalStorageService
   ) { }
 
   /**
@@ -56,7 +71,11 @@ export class CandidateSourceCacheService {
    */
   clearAll(): void {
     this.cacheKeys.forEach(cacheKey => {
-      this.localStorageService.remove(cacheKey);
+      try {
+        this.localStorageService.remove(cacheKey);
+      } catch (error) {
+        console.error('Failed to clear item from localStorage', error);
+      }
     });
     this.cacheKeys.clear();
   }

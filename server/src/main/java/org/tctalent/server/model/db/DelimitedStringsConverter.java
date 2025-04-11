@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,10 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.AttributeConverter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.persistence.AttributeConverter;
 
 /**
  * Converts between List of Strings and single comma separated String which is

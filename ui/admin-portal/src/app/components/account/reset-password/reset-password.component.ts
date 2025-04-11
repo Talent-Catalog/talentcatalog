@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
 import {environment} from "../../../../environments/environment";
@@ -14,14 +30,14 @@ export class ResetPasswordComponent implements OnInit {
 
   loading: boolean;
   error: any;
-  resetPasswordForm: FormGroup;
+  resetPasswordForm: UntypedFormGroup;
   updated: boolean;
 
   backgroundImage: string;
 
   readonly emailRegex: string = EMAIL_REGEX;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private userService: UserService) {
   }
 

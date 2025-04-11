@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,6 +20,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.Employer;
+import org.tctalent.server.model.db.PublicApiAuthority;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 
@@ -60,6 +61,10 @@ public class UpdatePartnerRequest {
 
     private String notificationEmail;
 
+    private boolean publicApiAccess;
+
+    private Set<PublicApiAuthority> publicApiAuthorities;
+
     private boolean sourcePartner;
 
     private Status status;
@@ -71,5 +76,7 @@ public class UpdatePartnerRequest {
     private String sflink;
 
     private Set<Long> sourceCountryIds;
+
+    private Long redirectPartnerId;
 
 }

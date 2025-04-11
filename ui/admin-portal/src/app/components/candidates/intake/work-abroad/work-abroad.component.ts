@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo} from '../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 
 @Component({
@@ -31,7 +31,7 @@ export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
   public workAbroadOptions: EnumOption[] = enumOptions(YesNo);
   public existingIds: number[];
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

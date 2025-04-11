@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {NgbModal, NgbModalRef, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {CountryService} from "../../../services/country.service";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CreateCountryComponent} from "./create/create-country.component";
 import {of} from "rxjs";
 import {Country} from "../../../model/country";
@@ -46,7 +46,7 @@ describe('SearchCountriesComponent', () => {
       imports: [FormsModule, ReactiveFormsModule, NgbModule,NgSelectModule],
       declarations: [SearchCountriesComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CountryService, useValue: countryServiceSpy },
         { provide: AuthorizationService, useValue: authServiceSpy },
         NgbModal,

@@ -1,10 +1,26 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormComponentBase} from "../form/FormComponentBase";
 import {
   AbstractControl,
   AsyncValidatorFn,
-  FormBuilder,
-  FormGroup, ValidationErrors,
+  UntypedFormBuilder,
+  UntypedFormGroup, ValidationErrors,
   Validators
 } from "@angular/forms";
 import {salesforceSandboxUrlPattern, salesforceUrlPattern} from "../../../model/base";
@@ -18,11 +34,11 @@ import {SalesforceService} from "../../../services/salesforce.service";
   styleUrls: ['./sf-joblink.component.scss']
 })
 export class SfJoblinkComponent extends FormComponentBase implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   @Output() updateError =  new EventEmitter();
   @Output() sfJoblinkValidation =  new EventEmitter();
 
-  constructor(fb: FormBuilder,
+  constructor(fb: UntypedFormBuilder,
               private salesforceService: SalesforceService) {
     super(fb);
   }

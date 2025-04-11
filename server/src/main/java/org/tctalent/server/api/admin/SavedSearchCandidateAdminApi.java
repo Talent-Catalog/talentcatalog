@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,11 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +37,9 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -54,14 +57,21 @@ public class SavedSearchCandidateAdminApi implements
     IManyToManyApi<SavedSearchGetRequest, UpdateSavedListContentsRequest> {
 
     private final SavedSearchService savedSearchService;
+    private final CandidateService candidateService;
     private final CandidateBuilderSelector builderSelector;
 
     @Autowired
     public SavedSearchCandidateAdminApi(
-        CandidateOpportunityService candidateOpportunityService, SavedSearchService savedSearchService,
-            UserService userService) {
+            CandidateOpportunityService candidateOpportunityService,
+            CountryService countryService,
+            OccupationService occupationService,
+            SavedSearchService savedSearchService,
+            UserService userService,
+            CandidateService candidateService) {
         this.savedSearchService = savedSearchService;
-        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
+        this.candidateService = candidateService;
+        builderSelector = new CandidateBuilderSelector(
+            candidateOpportunityService, countryService, occupationService, userService);
     }
 
     @Override
@@ -73,6 +83,9 @@ public class SavedSearchCandidateAdminApi implements
                 savedSearchService.searchCandidates(savedSearchId, request);
 
         savedSearchService.setCandidateContext(savedSearchId, candidates);
+
+        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
+        candidateService.populateCandidatesTransientTaskAssignments(candidates);
 
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);

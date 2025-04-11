@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -33,7 +33,6 @@ import {
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
-import {SearchResults} from '../../../model/search-results';
 import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
@@ -62,7 +61,7 @@ import {
   Status
 } from '../../../model/base';
 import {CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
@@ -80,7 +79,6 @@ import {
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {
   EditCandidateReviewStatusItemComponent
 } from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
@@ -107,6 +105,7 @@ import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunit
 import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 interface CachedTargetList {
   sourceID: number;
@@ -126,8 +125,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
-  @Input() pageNumber: number;
-  @Input() pageSize: number;
+  @Input() declare pageNumber: number;
+  @Input() declare pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
@@ -135,7 +134,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Output() selectedCandidatesChange = new EventEmitter<Candidate[]>();
 
   loading: boolean;
-  searching: boolean;
   closing: boolean;
   adding: boolean;
   exporting: boolean;
@@ -148,11 +146,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   updatingTasks: boolean;
   savingSelection: boolean;
   showDescription: boolean = false;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   monitoredTask: Task;
   tasksAssignedToList: Task[];
 
-  results: SearchResults<Candidate>;
   subscription: Subscription;
   sortField = 'id';
   sortDirection = 'DESC';
@@ -171,7 +168,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   targetListId: number;
   targetListReplace: boolean;
   savedSelection: boolean;
-  timestamp: number;
   savedSearchSelectionChange: boolean;
 
   /**
@@ -195,7 +191,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   sideProfile: NgbOffcanvasRef;
 
   constructor(private http: HttpClient,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private candidateSourceService: CandidateSourceService,
               private savedSearchService: SavedSearchService,
@@ -473,11 +469,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         //Run the saved list or saved search as stored on the server.
         this.performSearch(
           this.pageSize,
-          DtoType.FULL,
+          DtoType.EXTENDED,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
-            // Restore the selection prior to the search
-            this.setCurrentCandidate(saveCurrentCandidate);
+          // Restore the selection prior to the search using the updated results (otherwise updated fields won't appear)
+          const updatedCurrentCandidate = this.results.content.find(c => c.id == saveCurrentCandidate?.id);
+          this.setCurrentCandidate(updatedCurrentCandidate);
           }, error => {
             // Error is already displayed in the UI
           }
@@ -676,15 +673,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   modifyExportColumns() {
-    const limit = 100;
-    if (this.results.totalElements > limit) {
-      const publishError: string =
-        "Published lists are currently capped at " + limit + " candidates — please " +
-        "contact a TC admin if if this limit will negatively impact your work."
-      this.error = publishError
-      throw new Error(publishError)
-    }
-
     const modal = this.modalService.open(PublishedDocColumnSelectorComponent, {size: "lg", scrollable: true});
 
     modal.componentInstance.availableColumns = this.publishedDocColumnService.getColumnConfigFromAllColumns();
@@ -991,7 +979,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
     let readOnly = this.authorizationService.isReadOnly();
-    modal.componentInstance.myListsOnly = readOnly;
+    let employerPartner = this.authorizationService.isEmployerPartner();
+    modal.componentInstance.readOnly = readOnly;
+    modal.componentInstance.employerPartner = employerPartner;
     modal.componentInstance.canChangeStatuses = !readOnly;
     if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
@@ -1557,7 +1547,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     modal.componentInstance.action = "Copy";
     modal.componentInstance.title = "Copy to another List";
     let readOnly = this.authorizationService.isReadOnly();
-    modal.componentInstance.myListsOnly = readOnly;
+    let employerPartner = this.authorizationService.isEmployerPartner();
+    modal.componentInstance.readOnly = readOnly;
+    modal.componentInstance.employerPartner = employerPartner;
     modal.componentInstance.canChangeStatuses = !readOnly;
 
     modal.componentInstance.excludeList = this.candidateSource;
@@ -1784,8 +1776,17 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     );
   }
 
+  updatedCandidate(candidate: Candidate) {
+    let index = this.results.content.findIndex(c => c.id == candidate.id)
+    this.results.content[index] = candidate;
+  }
+
   public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
+  }
+
+  public isEmployerPartner() {
+    return this.authorizationService.isEmployerPartner();
   }
 
 }

@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {Candidate, UpdateCandidateShareableNotesRequest} from "../../../model/candidate";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {Observable} from "rxjs";
 import {CandidateService} from "../../../services/candidate.service";
 
@@ -16,7 +32,7 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
-  constructor(private fb: FormBuilder, private candidateService: CandidateService) {
+  constructor(private fb: UntypedFormBuilder, private candidateService: CandidateService) {
     super(candidateService);
   }
 
@@ -46,7 +62,7 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
     //changing from one candidate to the next or when selection has changed.
     if (this.form) {
       if (this.editable) {
-        this.form.controls['shareableNotes'].patchValue(this.candidate.shareableNotes);
+        this.form.controls['shareableNotes'].patchValue(this.candidate.shareableNotes, {emitEvent: false});
       }
     }
   }

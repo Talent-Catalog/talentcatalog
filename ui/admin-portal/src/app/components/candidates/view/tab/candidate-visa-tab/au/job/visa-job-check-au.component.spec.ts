@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -30,7 +30,6 @@ import {of} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {CandidateService} from "../../../../../../../services/candidate.service";
 import {UpdatedByComponent} from "../../../../../../util/user/updated-by/updated-by.component";
 import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
@@ -51,7 +50,7 @@ describe('VisaJobCheckAuComponent', () => {
     const candidateOccupationServiceSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     const occupationServiceSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule,NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule,NgSelectModule],
       declarations: [ VisaJobCheckAuComponent,UpdatedByComponent],
       providers: [
         { provide: CandidateEducationService, useValue: candidateEducationServiceSpy },

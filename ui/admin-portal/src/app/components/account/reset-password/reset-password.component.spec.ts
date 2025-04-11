@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ResetPasswordComponent} from './reset-password.component';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {UserService} from "../../../services/user.service";
 import {of} from 'rxjs';
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
@@ -32,7 +32,7 @@ describe('ResetPasswordComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [ResetPasswordComponent],
-      providers: [FormBuilder, { provide: UserService, useValue: userServiceSpy }]
+      providers: [UntypedFormBuilder, { provide: UserService, useValue: userServiceSpy }]
     }).compileComponents();
     userService = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
   });

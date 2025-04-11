@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,15 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthenticationService} from '../../../services/authentication.service';
 import {SearchHomeComponent} from './search-home.component';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import MockSavedSearchTypeInfo from "../../../MockData/MockSavedSearchTypeInfo";
 import {MockUser} from "../../../MockData/MockUser";
+import {LocalStorageService} from "../../../services/local-storage.service";
+import {of} from "rxjs";
+import {ActivatedRoute} from "@angular/router";
 
 describe('SearchHomeComponent', () => {
   let component: SearchHomeComponent;
@@ -42,7 +44,8 @@ describe('SearchHomeComponent', () => {
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },
         { provide: SavedSearchService, useValue: searchServiceSpy },
-        { provide: AuthenticationService, useValue: authenticationSpy }
+        { provide: AuthenticationService, useValue: authenticationSpy },
+        { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

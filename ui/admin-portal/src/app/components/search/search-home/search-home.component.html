@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <nav ngbNav #navSearch="ngbNav" class="nav-tabs mt-2" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
   <ng-container ngbNavItem="NewSearch">
@@ -38,11 +54,10 @@
   </ng-container>
 
   <!--  Standard searches for occupations-->
-  <ng-container ngbNavItem="type:{{SavedSearchType[SavedSearchType.profession]}}">
-    <a ngbNavLink title="Searches of {{savedSearchTypeInfos[SavedSearchType.profession].title}}">Searches by {{savedSearchTypeInfos[SavedSearchType.profession].title}}</a>
+  <ng-container ngbNavItem="Occupations">
+    <a ngbNavLink title="Searches by occupations">Searches by Occupations</a>
 
     <ng-template ngbNavContent>
-      <div *ngIf="savedSearchTypeSubInfos" class="no-gutters">
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedSearch"
           [searchBy]="SearchBy.type"
@@ -52,7 +67,6 @@
           (subtypeChange)="onSavedSearchSubtypeChange($event)"
         >
         </app-browse-candidate-sources>
-      </div>
     </ng-template>
   </ng-container>
 

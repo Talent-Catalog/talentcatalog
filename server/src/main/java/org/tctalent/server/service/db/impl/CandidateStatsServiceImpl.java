@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,15 +16,15 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -735,7 +735,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         for (Object obj: objects) {
             Object[] row = (Object[]) obj;
             String label = row[0] == null ? "undefined" : row[0].toString();
-            DataRow dataRow = new DataRow(label, (BigInteger)row[1]);
+            DataRow dataRow = new DataRow(label, BigInteger.valueOf((Long)row[1]));
             dataRows.add(dataRow);
         }
         return dataRows;

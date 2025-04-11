@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -83,6 +83,7 @@ export class SavedSearchService {
       {savedSearchSubtype: SavedSearchSubtype.ca, title: 'Canada'},
       {savedSearchSubtype: SavedSearchSubtype.uk, title: 'UK'},
     ];
+    // todo I dont think we search by roles and other anymore - think this is zombie code that can be simplied.
     this.savedSearchTypeInfos[SavedSearchType.profession] =
       {savedSearchType: SavedSearchType.profession,
         title: 'Occupations',

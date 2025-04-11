@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
   getCandidateSourceNavigation,
@@ -34,19 +26,11 @@ import {
   SavedSearchType,
   SearchSavedSearchRequest
 } from '../../../../model/saved-search';
-import {
-  SavedSearchService,
-  SavedSearchTypeSubInfo
-} from '../../../../services/saved-search.service';
+import {SavedSearchService, SavedSearchTypeSubInfo} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
-import {
-  CandidateSource,
-  CandidateSourceType, DtoType,
-  SearchBy
-} from '../../../../model/base';
+import {CandidateSource, CandidateSourceType, DtoType, SearchBy} from '../../../../model/base';
 import {
   ContentUpdateType,
   CopySourceContentsRequest,
@@ -58,17 +42,14 @@ import {CandidateSourceService} from '../../../../services/candidate-source.serv
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CreateUpdateListComponent} from '../../../list/create-update/create-update-list.component';
 import {SelectListComponent, TargetListSelection} from '../../../list/select/select-list.component';
-import {
-  CandidateSourceResultsCacheService
-} from '../../../../services/candidate-source-results-cache.service';
-import {
-  CreateUpdateSearchComponent
-} from '../../../search/create-update/create-update-search.component';
+import {CandidateSourceResultsCacheService} from '../../../../services/candidate-source-results-cache.service';
+import {CreateUpdateSearchComponent} from '../../../search/create-update/create-update-search.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {JobOpportunityStage} from "../../../../model/job";
 import {enumOptions} from "../../../../util/enum";
 import {SalesforceService} from "../../../../services/salesforce.service";
 import {AuthenticationService} from "../../../../services/authentication.service";
+import {LocalStorageService} from "../../../../services/local-storage.service";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -87,7 +68,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   @Input() savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   @Output() subtypeChange = new EventEmitter<SavedSearchTypeSubInfo>();
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   public loading: boolean;
   error: any;
   pageNumber: number;
@@ -100,7 +81,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   readonly CandidateSourceType = CandidateSourceType;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
               private authorizationService: AuthorizationService,
@@ -335,7 +316,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       modal.componentInstance.action = "Copy";
       modal.componentInstance.title = "Copy to another List";
       let readOnly = this.authorizationService.isReadOnly();
-      modal.componentInstance.myListsOnly = readOnly;
+      let employerPartner = this.authorizationService.isEmployerPartner();
+      modal.componentInstance.readOnly = readOnly;
+      modal.componentInstance.employerPartner = employerPartner;
       modal.componentInstance.canChangeStatuses = !readOnly;
 
       modal.componentInstance.excludeList = source;

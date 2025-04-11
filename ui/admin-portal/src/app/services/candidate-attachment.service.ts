@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,12 +15,16 @@
  */
 
 import {Injectable} from '@angular/core';
-import {forkJoin, Observable, Subject, throwError} from 'rxjs';
+import {forkJoin, Observable, of, Subject, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {catchError, map} from "rxjs/operators";
-import {AttachmentType, CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
+import {
+  AttachmentType,
+  CandidateAttachment,
+  CandidateAttachmentRequest
+} from '../model/candidate-attachment';
 import {saveBlob} from "../util/file";
 import {Candidate} from "../model/candidate";
 
@@ -88,8 +92,12 @@ export class CandidateAttachmentService {
         downloads.push(this.downloadAttachment(cv.id, cv.name))
       } else {
         const newTab = window.open();
-        const url = cv.url;
-        newTab.location.href = url;
+        if (newTab) {
+          const url = cv.url;
+          newTab.location.href = url;  // Open URL in new tab
+        } else {
+          console.error(`Failed to open new tab for ${cv.url}`)
+        }
       }
     })
 
@@ -100,8 +108,7 @@ export class CandidateAttachmentService {
     //This will automatically unsubscribe any subscribers, avoiding memory leaks.
     //See https://stackoverflow.com/questions/55893962/do-i-need-to-unsubscribe-from-observable-of
     if (downloads.length === 0) {
-      downloadComplete.next();
-      downloadComplete.complete();
+      return of('Complete'); // Nothing left to manage in this case
     } else {
       forkJoin(...downloads).subscribe(
         (results: CandidateAttachment[]) => {

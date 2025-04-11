@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,14 @@
 
 package org.tctalent.server.request.candidate;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Collection;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.NonNull;
 
 /**
  * Request to update the status of one or more candidates.
@@ -42,14 +43,13 @@ public class UpdateCandidateStatusRequest {
     /**
      * New status and associated other information
      */
-    @NotNull
     private UpdateCandidateStatusInfo info;
 
     public UpdateCandidateStatusRequest(Long... candidateIds) {
         this.candidateIds = Arrays.asList(candidateIds);
     }
 
-    public UpdateCandidateStatusRequest(Collection<Long> candidateIds) {
+    public UpdateCandidateStatusRequest(@NonNull Collection<Long> candidateIds) {
         this.candidateIds = candidateIds;
     }
 

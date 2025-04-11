@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,14 +16,14 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
-
-import java.util.List;
 
 public interface SurveyTypeRepository extends JpaRepository<SurveyType, Long>, JpaSpecificationExecutor<SurveyType> {
 
@@ -35,4 +35,5 @@ public interface SurveyTypeRepository extends JpaRepository<SurveyType, Long>, J
             + " where s.id in (:ids) order by s.name asc" )
     List<String> getNamesForIds(@Param("ids") List<Long> ids);
 
+    Optional<SurveyType> findByName(String name);
 }

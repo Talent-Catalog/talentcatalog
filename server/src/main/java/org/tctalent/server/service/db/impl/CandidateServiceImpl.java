@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,6 +17,9 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.servlet.http.HttpServletRequest;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -43,9 +46,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -62,10 +63,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.CountryRestrictionException;
@@ -110,6 +112,8 @@ import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.model.db.mapper.CandidateMapper;
+import org.tctalent.server.model.db.mapper.UserMapper;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
@@ -130,6 +134,7 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.PagedSearchRequest;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -138,14 +143,17 @@ import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CreateCandidateRequest;
-import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -168,6 +176,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.RootRequestService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -175,7 +184,6 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
-import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.PersistenceContextHelper;
@@ -232,6 +240,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final UserMapper userMapper;
+    private final CandidateMapper candidateMapper;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
     private final FileSystemService fileSystemService;
@@ -253,14 +263,13 @@ public class CandidateServiceImpl implements CandidateService {
     private final PartnerService partnerService;
     private final LanguageLevelRepository languageLevelRepository;
     private final CandidateExamRepository candidateExamRepository;
-
+    private final PublicIDService publicIDService;
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
-    private final ElasticsearchService elasticsearchService;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
 
@@ -435,11 +444,12 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request) {
         String s = request.getCandidateEmailOrPhone();
         User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        // Get candidate ids from Elasticsearch then fetch and return from the database
-        Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmailWithLimit(s);
-        Page<Candidate> candidates = fetchCandidates(request, candidateIds);
+        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+        Page<Candidate> candidates = candidateRepository.searchCandidateEmailOrPhone(
+            '%' + s + '%', sourceCountries,
+            request.getPageRequestWithoutSort());
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
@@ -461,16 +471,15 @@ public class CandidateServiceImpl implements CandidateService {
 
         Page<Candidate> candidates;
 
-        // Get candidate ids from Elasticsearch
-        Set<Long> candidateIds;
         if (searchForNumber) {
             candidates = candidateRepository.searchCandidateNumber(
                 s +'%', sourceCountries,
                 request.getPageRequestWithoutSort());
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                candidateIds = elasticsearchService.findByNameWithLimit(s);
-                candidates = fetchCandidates(request, candidateIds);
+                candidates = candidateRepository.searchCandidateName(
+                    '%' + s + '%', sourceCountries,
+                    request.getPageRequestWithoutSort());
             } else {
                 return null;
             }
@@ -492,9 +501,11 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-            // Get candidate ids from Elasticsearch then fetch and return from the database
-            Set<Long> candidateIds = elasticsearchService.findByExternalIdWithLimit(s);
-            Page<Candidate> candidates = fetchCandidates(request, candidateIds);
+            Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
+
+            candidates = candidateRepository.searchCandidateExternalId(
+                s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
@@ -509,6 +520,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @NotNull
     public Set<Long> searchCandidatesUsingSql(String sql) {
         Query query = entityManager.createNativeQuery(sql);
         final List resultList = query.getResultList();
@@ -572,6 +584,13 @@ public class CandidateServiceImpl implements CandidateService {
         populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
 
         return candidate;
+    }
+
+    @Override
+    public void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        }
     }
 
     /**
@@ -706,6 +725,12 @@ public class CandidateServiceImpl implements CandidateService {
         user = userRepository.save(user);
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
+
+        candidate.setPublicId(publicIDService.generatePublicID());
+
+        //We are eventually going to create the candidate number from its id on the database, but
+        //we will only have that id after it has been added to the database.
+        //For now generate a random candidate number so that it is not null.
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
         /* Set the email consent fields */
@@ -730,6 +755,12 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setNationality(countryRepository.getReferenceById(0L));
         candidate.setMaxEducationLevel(educationLevelRepository.getReferenceById(0L));
 
+        candidate = saveNewCandidate(partner, candidate);
+
+        return candidate;
+    }
+
+    private Candidate saveNewCandidate(Partner partner, Candidate candidate) {
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
 
@@ -742,10 +773,8 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setPartnerRef(candidateNumber);
         }
 
-        //Now save again with candidateNumber, updating Elasticsearch
-        candidate = save(candidate, true);
-
-        return candidate;
+        //Save candidate to get id (but don't update Elasticsearch yet)
+        return save(candidate, false);
     }
 
     @Override
@@ -798,7 +827,7 @@ public class CandidateServiceImpl implements CandidateService {
                     info.getComment()));
             if (originalStatus.equals(CandidateStatus.draft) && !info.getStatus()
                     .equals(CandidateStatus.deleted)) {
-                emailHelper.sendRegistrationEmail(candidate.getUser());
+                emailHelper.sendRegistrationEmail(candidate);
 
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
@@ -847,6 +876,23 @@ public class CandidateServiceImpl implements CandidateService {
         ucsr.setInfo(info);
 
         updateCandidateStatus(ucsr);
+    }
+
+    @Override
+    public void updateMutedStatus(long id, UpdateCandidateMutedRequest request) {
+        final Candidate candidate = candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        if (request.isMuted() != candidate.isMuted()) {
+            candidate.setMuted(request.isMuted());
+            candidateRepository.save(candidate);
+
+            //Generate candidate note
+            String message = "Candidate's chats were " +
+                (candidate.isMuted() ? "muted" : "unmuted");
+            candidateNoteService.createCandidateNote(
+                new CreateCandidateNoteRequest(candidate.getId(), message, null));
+        }
     }
 
     @Override
@@ -905,6 +951,21 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
+
+        // RELOCATED DETAILS
+        Country relocatedCountry = null;
+        if (request.getRelocatedCountryId() != null) {
+            relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
+        }
+        auditNoteIfRelocatedAddressChange(candidate, request.getRelocatedAddress(), request.getRelocatedCity(),
+                request.getRelocatedState(), relocatedCountry != null ? relocatedCountry.getName() : null);
+
+        candidate.setRelocatedAddress(request.getRelocatedAddress());
+        candidate.setRelocatedCity(request.getRelocatedCity());
+        candidate.setRelocatedState(request.getRelocatedState());
+        candidate.setRelocatedCountry(relocatedCountry);
+
         return save(candidate, true);
     }
 
@@ -1005,7 +1066,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest) {
+    public LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
@@ -1051,13 +1112,6 @@ public class CandidateServiceImpl implements CandidateService {
                 partnerAbbreviation = rootRequest.getPartnerAbbreviation();
             }
         }
-        if (partnerAbbreviation != null) {
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("Register Candidate")
-                .message("Registration with partner abbreviation: " + partnerAbbreviation)
-                .logInfo();
-        }
 
         //Pick up query parameters from request if they are passed in
         HasTcQueryParameters queryParameters;
@@ -1069,6 +1123,26 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Assign partner based on the partner abbreviation, if any
         Partner sourcePartner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+
+        // Check for and replace partner if it has a redirectPartner assigned — typically when it is
+        // no longer active and another org has assumed responsibility for candidates in its
+        // jurisdiction.
+        if (sourcePartner != null) {
+            while (sourcePartner.getRedirectPartner() != null) {
+                LogBuilder.builder(log) // Log the reassignment
+                    .user(authService.getLoggedInUser())
+                    .action("Register Candidate")
+                    .message(sourcePartner.getName() + " has a redirectPartner assigned - registration "
+                        + "redirected to " + sourcePartner.getRedirectPartner().getName() + ".")
+                    .logInfo();
+
+                sourcePartner = sourcePartner.getRedirectPartner();
+            }
+
+            // This is a failsafe: we never want to assign candidates to an inactive partner.
+            sourcePartner = sourcePartner.getStatus() == Status.active ? sourcePartner : null;
+        }
+
         if (sourcePartner == null || !sourcePartner.isSourcePartner()) {
             //No source partner found based on partner query param.
 
@@ -1091,6 +1165,12 @@ public class CandidateServiceImpl implements CandidateService {
                 sourcePartner = partnerService.getDefaultSourcePartner();
             }
         }
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Register Candidate")
+            .message("Registration with partner: " + sourcePartner.getName())
+            .logInfo();
 
         /* Validate that the candidate has marked email consent partners as true in order to continue registration */
         if (!request.getContactConsentRegistration()) {
@@ -1116,6 +1196,92 @@ public class CandidateServiceImpl implements CandidateService {
         return loginRequest;
     }
 
+    @Override
+    public Candidate registerByPartner(RegisterCandidateByPartnerRequest request) {
+
+        //All candidates have User role of user.
+        Role candidateUserRole = Role.user;
+
+        final CandidateRegistration registrationData = request.getRegistrationData();
+
+        String email = registrationData.getIdentity().getEmail();
+        String username = null;
+        if (!ObjectUtils.isEmpty(email)) {
+            username = email;
+        }
+        if (username == null) {
+            throw new InvalidRequestException("Must have email");
+        }
+
+        //Check for duplicate usernames (email, phone number)
+        User existing = userRepository.findByUsernameAndRole(username, candidateUserRole);
+        if (existing != null) {
+            throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
+        }
+
+        //Map registration data to a Candidate entity
+        Candidate candidate = candidateMapper.candidateMapAllFields(registrationData);
+
+        //Initial password is same as username.
+        String passwordEncrypted = passwordHelper.encodePassword(username);
+
+        //Assign source partner based on country if there is a country assigned partner.
+        Partner sourcePartner =
+            partnerService.getAutoAssignablePartnerByCountry(candidate.getCountry());
+        if (sourcePartner == null) {
+            //Use default source partner if no country assigned one.
+            sourcePartner = partnerService.getDefaultSourcePartner();
+        }
+
+        //UserMapper creates user from Identity
+        User user = userMapper.userIdentityToUser(registrationData.getIdentity());
+        user.setRole(candidateUserRole);
+        user.setUsername(username);
+        user.setStatus(Status.active);
+        user.setPartner((PartnerImpl) sourcePartner);
+        user.setAuditFields(userService.getSystemAdminUser());
+
+        /* Set the password */
+        user.setPasswordEnc(passwordEncrypted);
+
+        //Request password change so that candidates proper password on first login.
+        candidate.setChangePassword(true);
+
+        //Add the user to the candidate
+        candidate.setUser(user);
+
+        candidate.setPublicId(publicIDService.generatePublicID());
+
+        //Partner who is submitting registration
+        final Long partnerId = request.getPartnerId();
+        candidate.setRegisteredBy((PartnerImpl) partnerService.getPartner(partnerId));
+
+        //Check whether candidate registration can be considered complete.
+        CandidateStatus candidateStatus = isCandidateInfoComplete(candidate) ?
+            CandidateStatus.pending : CandidateStatus.incomplete;
+        candidate.setStatus(candidateStatus);
+
+        candidate.setAuditFields(userService.getSystemAdminUser());
+
+        //Save the candidate to the DB
+        candidate = saveNewCandidate(sourcePartner, candidate);
+
+        //Send email with login details to candidate
+        emailHelper.sendRegistrationEmail(candidate);
+
+        return candidate;
+    }
+
+    private boolean isCandidateInfoComplete(Candidate candidate) {
+        //We accept it as complete as long as we have an occupation
+        boolean complete = false;
+        final List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
+        if (candidateOccupations != null && !candidateOccupations.isEmpty()) {
+            complete = true;
+        }
+        return complete;
+    }
+
     /**
      * Return true if any of the TC query parameters are set (not null)
      * @param queryParameters Query parameters
@@ -1131,6 +1297,14 @@ public class CandidateServiceImpl implements CandidateService {
             queryParameters.getUtmTerm() != null;
     }
 
+    private void checkAndResetEmailVerification(User user, String newEmail) {
+        if (!Objects.equals(user.getEmail(), newEmail)) {
+            user.setEmailVerified(false);
+            user.setEmailVerificationToken(null);
+            user.setEmailVerificationTokenIssuedDate(null);
+        }
+    }
+
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
         User user = authService.getLoggedInUser()
@@ -1139,11 +1313,27 @@ public class CandidateServiceImpl implements CandidateService {
         // Check update request for a duplicate email or phone number
         validateContactRequest(user, request);
 
+        checkAndResetEmailVerification(user, request.getEmail());
         user.setEmail(request.getEmail());
         user = userRepository.save(user);
         Candidate candidate = user.getCandidate();
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
+
+        // Relocated address fields if candidate has employed status
+        Country relocatedCountry = null;
+        if (request.getRelocatedCountryId() != null) {
+            relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
+        }
+        auditNoteIfRelocatedAddressChange(candidate, request.getRelocatedAddress(), request.getRelocatedCity(),
+                request.getRelocatedState(), relocatedCountry != null ? relocatedCountry.getName() : null);
+
+        candidate.setRelocatedAddress(request.getRelocatedAddress());
+        candidate.setRelocatedCity(request.getRelocatedCity());
+        candidate.setRelocatedState(request.getRelocatedState());
+        candidate.setRelocatedCountry(relocatedCountry);
+
         candidate.setAuditFields(user);
         candidate.setUser(user);
         candidate = save(candidate, true);
@@ -1324,10 +1514,11 @@ public class CandidateServiceImpl implements CandidateService {
      * This method only manages changes to the candidate portal's Additional Info section - not the admin portal equivalent
      */
     @Override
-    public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
+    public Candidate updateOtherInfo(UpdateCandidateOtherInfoRequest request) {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
+        candidate.setAllNotifications(request.isAllNotifications());
         if (request.getLinkedInLink() != null && !request.getLinkedInLink().isEmpty()) {
             String linkedInRegex = "^http[s]?:/\\/(www\\.)?linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
             Pattern p = Pattern.compile(linkedInRegex);
@@ -1587,9 +1778,17 @@ public class CandidateServiceImpl implements CandidateService {
         return Optional.of(candidate);
     }
 
+    @Nullable
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
         return candidateRepository.findByCandidateNumber(candidateNumber);
+    }
+
+    @NonNull
+    @Override
+    public Candidate findByPublicId(String publicId) {
+        return candidateRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, publicId));
     }
 
     @Override
@@ -1603,8 +1802,10 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-        return candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
+        Candidate candidate = candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
                 .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
+        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        return candidate;
     }
 
     @Override
@@ -1644,7 +1845,7 @@ public class CandidateServiceImpl implements CandidateService {
         List<DataRow> dataRows = new ArrayList<>(objects.size());
         for (Object[] row: objects) {
             String label = row[0] == null ? "undefined" : row[0].toString();
-            DataRow dataRow = new DataRow(label, (BigInteger)row[1]);
+            DataRow dataRow = new DataRow(label, BigInteger.valueOf((Long)row[1]));
             dataRows.add(dataRow);
         }
         return dataRows;
@@ -2001,7 +2202,7 @@ public class CandidateServiceImpl implements CandidateService {
                     NOT_AUTHORIZED, //First name
                     NOT_AUTHORIZED, //Last name
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
-                    candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                    candidate.getCountry() != null ? candidate.getCountry().getName() : null,
                     candidate.getNationality() != null ? candidate.getNationality().getName() : null,
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
                     NOT_AUTHORIZED, //Email
@@ -2035,7 +2236,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate.getUser().getFirstName(),
                     candidate.getUser().getLastName(),
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
-                    candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                    candidate.getCountry() != null ? candidate.getCountry().getName() : null,
                     candidate.getNationality() != null ? candidate.getNationality().getName() : null,
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
                     candidate.getUser().getEmail(),
@@ -2227,6 +2428,19 @@ public class CandidateServiceImpl implements CandidateService {
       }
     }
 
+    @Transactional
+    @Override
+    public void setPublicIds(List<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            if (candidate.getPublicId() == null) {
+                candidate.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!candidates.isEmpty()) {
+            candidateRepository.saveAll(candidates);
+        }
+    }
+
     @Override
     public Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException {
@@ -2392,6 +2606,24 @@ public class CandidateServiceImpl implements CandidateService {
 
         save(candidate, true);
 
+    }
+
+    @Override
+    public void updateNotificationPreference(long id,
+        UpdateCandidateNotificationPreferenceRequest request) throws NoSuchObjectException {
+        final Candidate candidate = candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        if (request.isAllNotifications() != candidate.isAllNotifications()) {
+            candidate.setAllNotifications(request.isAllNotifications());
+            save(candidate, false);
+
+            //Generate candidate note
+            String message = "Candidate's chat notification preference was changed to " +
+                (candidate.isAllNotifications() ? "opt in to all notifications" : "opt out of all notifications");
+            candidateNoteService.createCandidateNote(
+                new CreateCandidateNoteRequest(candidate.getId(), message, null));
+        }
     }
 
     @Override
@@ -2613,6 +2845,15 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.setEnglishAssessmentScoreIelts(data.getEnglishAssessmentScoreIelts());
             }
             computeIeltsScore(candidate);
+        }
+        if (data.getEnglishAssessmentScoreDet() != null) {
+            // If the EnglishAssessmentScoreDet is 0 (used here as a numerical equivalent to
+            // 'NoResponse', enabling previous answers to be deleted), set to null in database.
+            if (data.getEnglishAssessmentScoreDet() == 0) {
+                candidate.setEnglishAssessmentScoreDet(null);
+            } else {
+                candidate.setEnglishAssessmentScoreDet(data.getEnglishAssessmentScoreDet());
+            }
         }
         if (data.getFrenchAssessment() != null) {
             candidate.setFrenchAssessment(data.getFrenchAssessment());
@@ -3004,36 +3245,11 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Override
-    public void reassignSavedListCandidates(SavedList savedList, int partnerId) {
-        Partner newPartner = partnerService.getPartner(partnerId);
+    public void reassignCandidatesOnPage(
+        Page<Candidate> candidatePage, Partner newPartner
+    ) throws IllegalArgumentException {
+        List<Candidate> candidateList = candidatePage.getContent();
 
-        SavedListGetRequest request = new SavedListGetRequest();
-
-        Page<Candidate> candidatePage = getSavedListCandidates(savedList, request);
-
-        int totalPagesToProcess = candidatePage.getTotalPages();
-        int pagesProcessed = 0;
-
-        while (pagesProcessed < totalPagesToProcess) {
-            request.setPageNumber(pagesProcessed);
-            candidatePage = getSavedListCandidates(savedList, request);
-            List<Candidate> candidates = candidatePage.getContent();
-            processCandidateReassignment(candidates, newPartner);
-            persistenceContextHelper.flushAndClearEntityManager();
-            pagesProcessed++;
-        }
-    }
-
-    /**
-     * For each candidate on given list, sets partnerId on associated user object, saves to DB and
-     * updates the corresponding elasticsearch index entry.
-     * @param candidateList list of candidates
-     * @param newPartner the new partner to which they will be assigned
-     */
-    private void processCandidateReassignment(
-        List<Candidate> candidateList, Partner newPartner
-    ) {
         if (newPartner instanceof PartnerImpl) {
             for (Candidate candidate : candidateList) {
                 User candidateUser = candidate.getUser();
@@ -3041,11 +3257,10 @@ public class CandidateServiceImpl implements CandidateService {
                 save(candidate, true);
             }
         } else {
-            LogBuilder.builder(log)
-                .action("Process candidate reassignment")
-                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation of Partner.")
-                .logError();
+            throw new IllegalArgumentException("newPartner must be valid implementation of Partner.");
         }
+
+        persistenceContextHelper.flushAndClearEntityManager();
     }
 
     @Transactional
@@ -3139,4 +3354,51 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
+    /**
+     * Forms an address string that can be used for display purposes and to compare changes in multiple location fields
+     * (address, city, state and country).
+     * @param relocatedAddress the relocated address field from the candidate or the request
+     * @param relocatedCity the relocated city field from the candidate or the request
+     * @param relocatedState the relocated state field from the candidate or the request
+     * @param relocatedCountryName the relocated country name from the country object from the candidate or the request
+     * @return a comma separated string that ignores nulls or empty strings in the format (Address, City, State, Country)
+     */
+    private String formRelocatedAddressString(@Nullable String relocatedAddress, @Nullable String relocatedCity,
+                                       @Nullable String relocatedState, @Nullable String relocatedCountryName) {
+        return Stream.of(relocatedAddress, relocatedCity, relocatedState, relocatedCountryName) // Create a stream from the fields
+                .filter(str -> str != null && !str.isEmpty()) // Filter out empty string values// Filter out null values
+                .reduce((field1Str, field2Str) -> field1Str + ", " + field2Str) // Concatenate fields
+                .orElse("");
+    }
+
+
+    @Override
+    public void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
+                                             @Nullable String requestRelocatedCity, @Nullable String requestRelocatedState,
+                                             @Nullable String requestRelocatedCountryName) {
+
+        String currentRelocatedAddressFull = formRelocatedAddressString(candidate.getRelocatedAddress(),
+                candidate.getRelocatedCity(), candidate.getRelocatedState(),
+                candidate.getRelocatedCountry() != null ? candidate.getRelocatedCountry().getName() : null);
+
+        String requestRelocatedAddressFull = formRelocatedAddressString(requestRelocatedAddress,
+                requestRelocatedCity, requestRelocatedState, requestRelocatedCountryName);
+
+        if (!currentRelocatedAddressFull.equalsIgnoreCase(requestRelocatedAddressFull)) {
+            // If there is no previous relocated address then create note as location added
+            if (currentRelocatedAddressFull.isEmpty()) {
+                candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+                        "Relocated location added", requestRelocatedAddressFull));
+            } else if (requestRelocatedAddressFull.isEmpty()) {
+                // If there is no requested relocated address then create note as location removed
+                candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+                        "Relocated location removed", requestRelocatedAddressFull));
+            } else {
+                // Otherwise if there is a change in relocation address then create note as location changed
+                candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+                        "Relocated location changed",
+                        currentRelocatedAddressFull + " to " + requestRelocatedAddressFull));
+            }
+        }
+    }
 }

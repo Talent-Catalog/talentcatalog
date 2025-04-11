@@ -1,15 +1,31 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   AbstractControl,
-  FormBuilder,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormGroup,
   ValidationErrors,
   ValidatorFn,
   Validators
 } from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
-import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
+import {Partner, PublicApiAuthority, UpdatePartnerRequest} from "../../../../model/partner";
 import {
   salesforceSandboxUrlPattern,
   salesforceUrlPattern,
@@ -18,11 +34,10 @@ import {
 } from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
-import {enumOptions} from "../../../../util/enum";
+import {EnumOption, enumOptions} from "../../../../util/enum";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
 import {User} from "../../../../model/user";
 import {UserService} from "../../../../services/user.service";
-import {AuthorizationService} from "../../../../services/authorization.service";
 
 /* MODEL - Cross field validation in a form.
    See crossFieldValidator function.
@@ -101,17 +116,19 @@ export const crossFieldValidator: ValidatorFn = (
 export class CreateUpdatePartnerComponent extends FormComponentBase implements OnInit {
 
   countries: Country[];
+  partners: Partner[];
   error = null;
-  form: FormGroup;
+  form: UntypedFormGroup;
   partner: Partner;
   partnerUsers: User[];
   statuses = enumOptions(Status);
+  publicApiAuthorityOptions: EnumOption[] = enumOptions(PublicApiAuthority);
+
   working: boolean;
 
 
-  constructor(fb: FormBuilder,
+  constructor(fb: UntypedFormBuilder,
               private activeModal: NgbActiveModal,
-              private authorizationService: AuthorizationService,
               private countryService: CountryService,
               private partnerService: PartnerService,
               private userService: UserService,
@@ -139,6 +156,9 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
       notificationEmail: [this.partner?.notificationEmail],
+      publicApiAccess: [this.partner?.publicApiAccess],
+      publicApiAuthorities: [this.partner?.publicApiAuthorities],
+
       registrationLandingPage: [this.partner?.registrationLandingPage],
       sflink: [this.partner?.sflink, [Validators.pattern(`${salesforceUrlPattern}|${salesforceSandboxUrlPattern}`)]],
       sourceCountries: [this.partner?.sourceCountries],
@@ -151,11 +171,23 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       //the user).
       status: [this.partner?.status, Validators.required],
       websiteUrl: [this.partner?.websiteUrl],
+      redirectPartnerId: [this.partner?.redirectPartner?.id],
     },{validators: crossFieldValidator});
 
     this.countryService.listCountriesRestricted().subscribe(
       (response) => {
         this.countries = response;
+        this.working = false
+      },
+      (error) => {
+        this.error = error;
+        this.working = false
+      }
+    );
+
+    this.partnerService.listPartners().subscribe(
+      (response) => {
+        this.partners = response;
         this.working = false
       },
       (error) => {
@@ -191,6 +223,10 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
     return !this.partner;
   }
 
+  get publicApiAccess(): boolean {
+    return this.form.value.publicApiAccess;
+  }
+
   get title(): string {
     return this.create ? "Add New Partner"
       : "Update Partner";
@@ -209,6 +245,8 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       logo: this.form.value.logo,
       name: this.form.value.name,
       notificationEmail: this.form.value.notificationEmail,
+      publicApiAccess: this.form.value.publicApiAccess,
+      publicApiAuthorities: this.form.value.publicApiAuthorities,
       jobCreator: this.form.value.jobCreator,
       registrationLandingPage: this.form.value.registrationLandingPage,
       sflink: this.form.value.sflink,
@@ -224,7 +262,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       status: this.form.value.status,
 
       websiteUrl: this.form.value.websiteUrl,
-
+      redirectPartnerId: this.form.value.redirectPartnerId
     };
 
     if (this.create) {

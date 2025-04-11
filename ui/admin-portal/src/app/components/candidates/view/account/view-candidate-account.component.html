@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -36,13 +36,13 @@
       <div class="mb-3 col-sm-12 col-md-6">
         <label class="col-form-label">Account Created:</label>
         <div >
-          <span class="form-control-plaintext">{{user.createdDate | date: 'customDateTime' }}</span>
+          <span class="form-control-plaintext">{{candidate.user.createdDate | date: 'customDateTime' }}</span>
         </div>
       </div>
       <div class="mb-3 col-sm-12 col-md-6">
         <label class="col-form-label">Last Logged In:</label>
         <div >
-          <span class="form-control-plaintext">{{user.lastLogin | date: 'customDateTime' }}</span>
+          <span class="form-control-plaintext">{{candidate.user.lastLogin | date: 'customDateTime' }}</span>
         </div>
       </div>
     </div>
@@ -51,7 +51,7 @@
         <label class="col-form-label">Password:</label>
         <div>
           <span class="form-control-plaintext">*********</span>
-          <span><a class="small" [routerLink]="[]" (click)="updatePassword(user)">reset</a></span>
+          <span><a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">reset</a></span>
         </div>
       </div>
 

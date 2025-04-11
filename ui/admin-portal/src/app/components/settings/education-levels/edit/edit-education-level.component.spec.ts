@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@ import {EditEducationLevelComponent} from "./edit-education-level.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {EducationLevelService} from "../../../../services/education-level.service";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {EducationLevel} from "../../../../model/education-level";
@@ -28,7 +28,7 @@ describe('EditEducationLevelComponent', () => {
   let fixture: ComponentFixture<EditEducationLevelComponent>;
   let educationLevelServiceSpy: jasmine.SpyObj<EducationLevelService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   // @ts-expect-error
   const educationLevel: EducationLevel = { level: 1, name: 'Test', status: 'active' };
 
@@ -47,7 +47,7 @@ describe('EditEducationLevelComponent', () => {
 
     educationLevelServiceSpy = TestBed.inject(EducationLevelService) as jasmine.SpyObj<EducationLevelService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

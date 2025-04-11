@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {CandidateJobExperience} from "../../../model/candidate-job-experience";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 import {CandidateOccupation} from "../../../model/candidate-occupation";
@@ -44,9 +44,9 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
   saving: boolean;
   error: any;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
               private candidateOccupationService: CandidateOccupationService,
               private jobExperienceService: CandidateJobExperienceService) { }
@@ -111,7 +111,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
   }
 
   startDateBeforeEndDate(from: string, to: string) {
-    return (group: FormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): { [key: string]: any } => {
       let f = group.controls[from];
       let t = group.controls[to];
       if (f.value && t.value && f.value > t.value) {

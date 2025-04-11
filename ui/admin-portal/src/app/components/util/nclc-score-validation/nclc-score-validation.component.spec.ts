@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 import {By} from '@angular/platform-browser';
 import {NclcScoreValidationComponent} from "./nclc-score-validation.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 describe('NclcScoreValidationComponent', () => {
   let component: NclcScoreValidationComponent;
@@ -31,7 +31,7 @@ describe('NclcScoreValidationComponent', () => {
 
     fixture = TestBed.createComponent(NclcScoreValidationComponent);
     component = fixture.componentInstance;
-    component.control = new FormControl();
+    component.control = new UntypedFormControl();
     fixture.detectChanges();
   });
 

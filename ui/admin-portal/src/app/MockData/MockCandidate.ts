@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -43,6 +43,8 @@ export class MockCandidate implements Candidate {
   id: number = 1;
   candidateNumber: string = "123456";
   status: string = "active";
+  allNotifications = false;
+  muted: boolean = false;
   gender: string = Gender.male;
   dob: Date = new Date('1990-01-01');
   address1: string = "123 Main St";
@@ -94,6 +96,10 @@ export class MockCandidate implements Candidate {
   unhcrStatus: UnhcrStatus = UnhcrStatus.RegisteredAsylum;
   ieltsScore: string = "7.5";
   numberDependants: number = 2;
+  relocatedAddress: string = "123 Sesame Street"
+  relocatedCity: string = "Melbourne"
+  relocatedState: string = "Victoria"
+  relocatedCountry: any = { id: 1, name: "Australia", status: "active", translatedName: "Australia" }
   candidateExams: any[] = [
     { id: 1, exam: Exam.IELTSGen, score: "7.5", year: 2020 }
   ];
@@ -144,7 +150,7 @@ export class MockCandidate implements Candidate {
         description: 'Submit your latest CV.',
         displayName: 'CV Submission',
         optional: false,
-        helpLink: 'http://example.com/cv-help',
+        docLink: 'http://example.com/cv-help',
         taskType: TaskType.Upload,
         uploadType: UploadType.cv,
         uploadSubfolderName: 'cvs',
@@ -167,7 +173,7 @@ export class MockCandidate implements Candidate {
         description: 'Answer the provided questions.',
         displayName: 'Questionnaire',
         optional: false,
-        helpLink: 'http://example.com/questionnaire-help',
+        docLink: 'http://example.com/questionnaire-help',
         taskType: TaskType.Question,
         uploadType: UploadType.other,
         uploadSubfolderName: '',
@@ -190,7 +196,7 @@ export class MockCandidate implements Candidate {
         description: 'Upload a scan of your passport.',
         displayName: 'Passport Upload',
         optional: true,
-        helpLink: 'http://example.com/passport-help',
+        docLink: 'http://example.com/passport-help',
         taskType: TaskType.Upload,
         uploadType: UploadType.passport,
         uploadSubfolderName: 'passports',

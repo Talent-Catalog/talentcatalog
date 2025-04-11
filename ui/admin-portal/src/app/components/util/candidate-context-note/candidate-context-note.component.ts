@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
 import {Observable} from 'rxjs';
 import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
@@ -35,7 +35,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
   @Input() candidateSource: CandidateSource;
   @Input() editable: boolean;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateSourceService: CandidateSourceService) {
     super(null);
   }
@@ -71,7 +71,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
     //Replace the form value with the new candidates context notes when
     //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
+      this.form.controls['contextNote'].patchValue(this.candidate.contextNote, {emitEvent: false});
     }
   }
 

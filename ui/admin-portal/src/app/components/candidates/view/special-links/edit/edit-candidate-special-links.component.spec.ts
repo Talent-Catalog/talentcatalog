@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {EnvService} from "../../../../../services/env.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {Candidate} from "../../../../../model/candidate";
@@ -42,7 +42,7 @@ describe('EditCandidateSpecialLinksComponent', () => {
       declarations: [EditCandidateSpecialLinksComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: EnvService, useValue: envServiceSpy },
         { provide: NgbActiveModal, useValue: activeModalSpy }

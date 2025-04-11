@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -30,6 +30,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
@@ -165,6 +166,20 @@ public interface SavedListService {
             throws EntityExistsException, RegisteredListException;
 
     /**
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
+     * @param user User to be recorded as creator of saved list
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * @return Created saved list
+     * @throws EntityExistsException if a list with this name already exists.
+     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
+     */
+    SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
+        throws EntityExistsException, RegisteredListException;
+
+    /**
      * Creates/updates Salesforce records corresponding to candidates in a given list
      * <p/>
      * This could involve creating or updating contact records and/or
@@ -181,20 +196,6 @@ public interface SavedListService {
      */
     void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
         throws NoSuchObjectException, SalesforceException, WebClientException;
-
-    /**
-     * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
-     * nothing new is created, and the existing list is returned.
-     * @param user User to be recorded as creator of saved list
-     * @param request Request defining new list (including whether it is a registered list
-     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
-     * @return Created saved list
-     * @throws EntityExistsException if a list with this name already exists.
-     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
-     */
-    SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
-            throws EntityExistsException, RegisteredListException;
 
     /**
      * Fetches the candidates specified in the given request.
@@ -333,6 +334,8 @@ public interface SavedListService {
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 
+    void setPublicIds(List<SavedList> savedLists);
+
     /**
      * Update the info associated with the SavedList with the given id
      * - for example changing its name.
@@ -387,7 +390,7 @@ public interface SavedListService {
      * @param request Request containing the updated short name and the saved list id which it belongs to.
      * @throws NoSuchObjectException  if there is no saved list with this id
      */
-    SavedList updateTbbShortName(UpdateShortNameRequest request)
+    SavedList updateTcShortName(UpdateShortNameRequest request)
         throws  NoSuchObjectException;
 
     /**
@@ -458,4 +461,12 @@ public interface SavedListService {
      */
     @Nullable
     SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
+
+    /**
+     * Updates the names of formally associated lists for the given Job, to reflect its new name.
+     * Job renaming happens first - if for any reason that failed, this method has the virtue of
+     * reproducing the old name.
+     * @param job Job whose lists are to be renamed
+     */
+    void updateAssociatedListsNames(SalesforceJobOpp job);
 }

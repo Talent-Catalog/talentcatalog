@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -59,6 +59,12 @@ public class UpdateJobRequest extends OpportunityParams {
     @Nullable
     private String sfJoblink;
 
+    /**
+     * If present indicates whether candidate search can be skipped
+     */
+    @Nullable
+    private Boolean skipCandidateSearch;
+
     @Nullable
     private JobOpportunityStage stage;
 
@@ -70,4 +76,10 @@ public class UpdateJobRequest extends OpportunityParams {
      */
     @Nullable
     private Long jobToCopyId;
+
+    /**
+     * If present, the name has been edited by the user who created the Job, or a System Admin.
+     */
+    @Nullable
+    private String jobName;
 }

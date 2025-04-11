@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,6 +15,7 @@
  */
 
 import {Country} from "./country";
+import {CandidateOccupation} from "./candidate-occupation";
 
 export interface CandidateJobExperience {
   id: number;
@@ -26,6 +27,7 @@ export interface CandidateJobExperience {
   fullTime: string;
   paid: string;
   description: string;
+  candidateOccupation?: CandidateOccupation;
 
   // RENDERING HELPERS
   expanded?: boolean;

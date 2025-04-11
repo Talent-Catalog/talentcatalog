@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,8 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -47,13 +47,23 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class PdfHelper {
 
     private static final String UTF_8 = "UTF-8";
     private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
 
     private final TemplateEngine pdfTemplateEngine;
+
+    /**
+     * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
+     * the @Qualifier annotation to the constructor.
+     * <p/>
+     * See <a href="https://www.jetbrains.com.cn/en-us/help/inspectopedia/SpringQualifierCopyableLombok.html">
+     *     Intellij doc</a>
+     */
+    public PdfHelper(@Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine) {
+        this.pdfTemplateEngine = pdfTemplateEngine;
+    }
 
     /**
      * Generates a PDF for a candidate.

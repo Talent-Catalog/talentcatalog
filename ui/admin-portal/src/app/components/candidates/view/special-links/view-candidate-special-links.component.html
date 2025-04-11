@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -29,7 +29,8 @@
               (click)="createUpdateSalesforce()">
         <i class="fab fa-salesforce"></i> Create/update Salesforce
       </button>
-      <button *ngIf="!candidate.folderlink" class="btn btn-primary me-2"
+      <button *ngIf="!candidate.folderlink && canAccessGoogleDrive()"
+              class="btn btn-primary me-2"
               (click)="createCandidateFolder()">
         <i class="fab fa-google-drive"></i> Create Google Docs Folder
       </button>

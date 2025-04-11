@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,9 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.persistence.PersistenceException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -23,9 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.persistence.PersistenceException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,23 +46,28 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.LoginRequest;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -149,6 +154,14 @@ public interface CandidateService {
 
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
+    /**
+     * Sets the transient answer field on Question Task Assignments, these come from various places either the candidate
+     * property table (stored as task name and answer values) or it's stored in a field on the candidate object.
+     * This method allows us to pass in the page of candidates from a search/list of candidates and then populate the fields.
+     * @param candidates: page of candidates from a search paged method (saved search or saved list)
+     */
+    void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates);
+
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
 
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
@@ -166,6 +179,8 @@ public interface CandidateService {
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
 
     void updateCandidateStatus(SavedList savedList, UpdateCandidateStatusInfo info);
+
+    void updateMutedStatus(long id, UpdateCandidateMutedRequest request);
 
     Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request);
 
@@ -193,19 +208,19 @@ public interface CandidateService {
      * Initially (step 0) they provide email and accept our conditions - then click Register
      *     </li>
      *     <li>
-     * They then proceed to step 1 (contact )where the email can be changed and they also can 
+     * They then proceed to step 1 (contact )where the email can be changed and they also can
      * supply phone and whatsapp.
-     * When they click Next, the user is actually created using p= branding, or defaulting to TBB 
+     * When they click Next, the user is actually created using p= branding, or defaulting to TBB
      * - in this method.
      *     </li>
      *     <li>
-     * Arriving at step 2 (tell us about yourself - registration personal) they say where they are 
+     * Arriving at step 2 (tell us about yourself - registration personal) they say where they are
      * located.
-     * When they click Next, the user is updated with the supplied info 
-     * (in private method CandidateServiceImpl.checkForChangedPartner). 
+     * When they click Next, the user is updated with the supplied info
+     * (in private method CandidateServiceImpl.checkForChangedPartner).
      * The partner can be changed here if the currently defined partner is the DefaultSourcePartner
-     * and there is a partner set up as auto-assignable from the country where the candidate is 
-     * located. 
+     * and there is a partner set up as auto-assignable from the country where the candidate is
+     * located.
      *     </li>
      * </ul>
      *
@@ -213,7 +228,15 @@ public interface CandidateService {
      * @param httpRequest HTTP request for registration
      * @return A login request generated for the newly created candidate.
      */
-    LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest);
+    LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest);
+
+    /**
+     * Create (ie register) a candidate from registration information supplied by a partner
+     * (eg UNHCR).
+     * @param request Request containing the candidate data needed to register a candidate.
+     * @return The registered candidate
+     */
+    Candidate registerByPartner(RegisterCandidateByPartnerRequest request);
 
     Candidate updateContact(UpdateCandidateContactRequest request);
 
@@ -221,7 +244,7 @@ public interface CandidateService {
 
     Candidate updateEducation(UpdateCandidateEducationRequest request);
 
-    Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
+    Candidate updateOtherInfo(UpdateCandidateOtherInfoRequest request);
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
 
@@ -319,6 +342,16 @@ public interface CandidateService {
     Candidate findByCandidateNumber(String candidateNumber);
 
     /**
+     * Finds candidate with the given public ID.
+     *
+     * @param publicId ID of desired candidate
+     * @return Candidate
+     * @throws NoSuchObjectException if not found
+     */
+    @NonNull
+    Candidate findByPublicId(String publicId);
+
+    /**
      * Return candidates by their ids
      * @param ids The ids to be looked up. If an id does not correspond to any candidate,
      *            it is ignored and no candidate is returned.
@@ -374,6 +407,8 @@ public interface CandidateService {
      */
     void setCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type,
         @Nullable String link);
+
+    void setPublicIds(List<Candidate> candidates);
 
     void exportToCsv(SavedList savedList, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException;
@@ -503,6 +538,15 @@ public interface CandidateService {
         throws NoSuchObjectException;
 
     /**
+     * Updates a candidate's notification preferences
+     * @param id ID of candidate
+     * @param request Request containing notification preferences
+     * @throws NoSuchObjectException if no candidate is found with that id
+     */
+    void updateNotificationPreference(long id, UpdateCandidateNotificationPreferenceRequest request)
+        throws NoSuchObjectException;
+
+    /**
      * Updates the intake data associated with the given candidate.
      * @param id ID of candidate
      * @param request Request object containing the audit data, only provided if the intake is an externally input intake.
@@ -620,14 +664,49 @@ public interface CandidateService {
     Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
 
     /**
-     * Reassigns all candidates on given saved list to partner organisation with given ID.
-     * Previously done by direct DB edit which necessitated additional manual steps of flushing the
-     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
-     * ES index update proceed as usual with this in-code implementation.
-     * @param savedList saved list containing all the candidates to be reassigned
-     * @param partnerId id of the partner org to which the candidates will be reassigned
+     * Extracts to a list the candidates on given page, iterates over list, setting partnerId on
+     * associated user object, saves to DB and updates the corresponding elasticsearch index entry.
+     * @param candidatePage page of candidates
+     * @param newPartner the new partner to which they will be assigned
      */
-    void reassignSavedListCandidates(SavedList savedList, int partnerId);
+    void reassignCandidatesOnPage(Page<Candidate> candidatePage, Partner newPartner)
+        throws IllegalArgumentException;
+
+    List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
+
+    /**
+     * Takes a page of potentially duplicated candidates and if not already true, sets their
+     * potentialDuplicate property to true and saves them to DB. annotated @Transactional to
+     * rollback incomplete confusing results.
+     * <p>
+     *   NB: currently not saving to ES - would need to be amended if we decide to index this property.
+     * </p>
+     * @param candidatePage page of potential duplicate candidates to be processed
+     */
+    void processPotentialDuplicatePage(Page<Candidate> candidatePage);
+
+    /**
+     * If admins have not deliberately refreshed results for a candidate whose duplicated versions
+     * have been marked deleted, their potentialDuplicates value would remain true - this component
+     * of the duplicate processing fixes that by comparing with previously flagged candidates.
+     * Again, annotated @Transactional to rollback incomplete confusing results.
+     */
+    void cleanUpResolvedDuplicates();
+
+    /**
+     * Compares the current and requested values of the relocated location fields (address, city, state, country) and
+     * if they differ creates a candidate note for audit purposes. This helps to know how recent and relevant this
+     * relocated data is. We can't pass in the full request object, as depending on which portal the update comes from
+     * it will have a different request object. So each request field is passed in individually.
+     * @param candidate the candidate whose relocated data we are check if it's changed
+     * @param requestRelocatedAddress the relocated address field that comes from the request
+     * @param requestRelocatedCity the relocated city field that comes from the request
+     * @param requestRelocatedState the relocated state field that comes from the request
+     * @param requestRelocatedCountryName the relocated country name field that comes from the request
+     */
+    void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
+                                                  @Nullable String requestRelocatedCity, @Nullable String requestRelocatedState,
+                                                  @Nullable String requestRelocatedCountryName);
 
     List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
 

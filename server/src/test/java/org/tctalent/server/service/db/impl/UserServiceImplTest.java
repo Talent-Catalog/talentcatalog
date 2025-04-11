@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -26,8 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
@@ -37,7 +40,8 @@ import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
 
-//@SpringBootTest
+@Tag("skip-test-in-gradle-build")
+@SpringBootTest
 class UserServiceImplTest {
 
     @Mock
@@ -62,7 +66,7 @@ class UserServiceImplTest {
         when(authService.getLoggedInUser()).thenReturn(Optional.of(loggedInUser));
     }
 
-    //@Test
+    @Test
     void createUserAndCountries(){
         assertNotNull(userService);
         assertNotNull(userRepository);
@@ -75,7 +79,7 @@ class UserServiceImplTest {
         assertNotNull(user);
     }
 
-    //@Test
+    @Test
     void testCreateUserSourceCountries(){
         UpdateUserRequest request = new UpdateUserRequest();
         request.setFirstName("first");
@@ -106,7 +110,7 @@ class UserServiceImplTest {
 
     }
 
-    //@Test
+    @Test
     void updateUser() {
         User user = new User("username2", "first", "last", "email2@test.com", Role.admin);
         user.setId(1L);

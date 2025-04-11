@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ChatsWithPostsComponent} from "./chats-with-posts.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {ChatService} from "../../../services/chat.service";
@@ -6,13 +22,12 @@ import {By} from "@angular/platform-browser";
 import {ChatsComponent} from "../chats/chats.component";
 import {ViewChatPostsComponent} from "../view-chat-posts/view-chat-posts.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {of} from "rxjs";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 import {ViewPostComponent} from "../view-post/view-post.component";
 import {CreateUpdatePostComponent} from "../create-update-post/create-update-post.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {QuillModule} from "ngx-quill";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
@@ -32,11 +47,11 @@ describe('ChatsWithPostsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsWithPostsComponent, ChatsComponent, ViewChatPostsComponent, ViewPostComponent, CreateUpdatePostComponent ],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbTooltipModule,FormsModule,ReactiveFormsModule,QuillModule,
+      imports: [HttpClientTestingModule,NgbTooltipModule,FormsModule,ReactiveFormsModule,QuillModule,
         TranslateModule.forRoot({})],
 
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: ChatService, useValue: chatServiceSpy },
         { provide: AuthenticationService, useValue: authSpy }
       ]

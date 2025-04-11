@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,10 @@
 
 package org.tctalent.server.request.task;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
-
-import java.time.LocalDate;
 
 /**
  * Request to create a TaskAssignment by assigning a task to a candidate

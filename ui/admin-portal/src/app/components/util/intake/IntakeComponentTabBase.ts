@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Directive, Input, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
-import {Candidate, CandidateIntakeData} from '../../../model/candidate';
+import {Candidate, CandidateExam, CandidateIntakeData} from '../../../model/candidate';
 import {CandidateService, IntakeAuditRequest} from '../../../services/candidate.service';
 import {CountryService} from '../../../services/country.service';
 import {Country} from '../../../model/country';
@@ -29,10 +29,7 @@ import {LanguageLevel} from '../../../model/language-level';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import {
-  CandidateNoteService,
-  CreateCandidateNoteRequest
-} from '../../../services/candidate-note.service';
+import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -122,6 +119,12 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   noteRequest: CreateCandidateNoteRequest;
 
+  /**
+   * Stores labels for candidate exams, where the key is the exam ID and the value is a descriptive label
+   * such as 'Best & Newest Score', 'Newest Score', 'Best Score', or 'DET Official'.
+   */
+  examLabels: { [key: string]: string } = {};
+
   public constructor(
     protected candidateService: CandidateService,
     protected countryService: CountryService,
@@ -176,6 +179,116 @@ export abstract class IntakeComponentTabBase implements OnInit {
     });
   }
 
+  /**
+   * Finds the most recent DETOfficial exam from the list of exams.
+   *
+   * @param exams The list of exams to search through.
+   * @returns The most recent DETOfficial exam, or null if not found.
+   */
+  public getMostRecentDetOfficialExam(exams: CandidateExam[]): CandidateExam | null {
+    return exams
+    .filter((exam) => exam.exam === 'DETOfficial' && this.extractVerificationDate(exam.notes))
+    .reduce((mostRecent, current) => {
+      const currentDate = this.extractVerificationDate(current.notes);
+      const mostRecentDate = mostRecent ? this.extractVerificationDate(mostRecent.notes) : null;
+      return !mostRecentDate || currentDate > mostRecentDate ? current : mostRecent;
+    }, null);
+  }
+  /**
+   * Finds the highest scoring DETOfficial exam from the list of exams.
+   *
+   * @param exams The list of exams to search through.
+   * @returns The highest scoring DETOfficial exam, or null if not found.
+   */
+
+  public getHighestScoreDetOfficialExam(exams: CandidateExam[]): CandidateExam | null {
+    return exams
+    .filter(
+      (exam) =>
+        exam.exam === 'DETOfficial' &&
+        exam.score !== null &&
+        !isNaN(Number(exam.score))
+    )
+    .reduce((highest, current) => {
+      const highestScore = Number(highest?.score || 0);
+      const currentScore = Number(current.score);
+      return currentScore > highestScore ? current : highest;
+    }, null as CandidateExam | null);
+  }
+
+  /**
+   * Extracts the verification date from a string of notes.
+   * The date should be in the format 'YYYY-MM-DD'.
+   *
+   * @param {string} notes - The string containing the notes with the verification date.
+   * @returns {Date | null} - Returns the extracted date if found, or null if no valid date is found.
+   */
+  private extractVerificationDate(notes: string): Date | null {
+    const dateMatch = notes?.match(/Verification Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/);
+    return dateMatch ? new Date(dateMatch[1]) : null;
+  }
+
+  /**
+   * Determines the class and tooltip message for an exam score based on its value.
+   * The method categorizes the score into three ranges: below 60, between 60 and 89, and 90 or higher.
+   *
+   * @param {string} score - The score to be evaluated (string representation).
+   * @returns {Object} - An object containing the class name and tooltip message.
+   *    - 'text-mute' and 'Pending' for invalid or missing scores.
+   *    - 'text-danger' and 'Below requirement' for scores less than 60.
+   *    - 'text-warning' and 'Needs verification' for scores between 60 and 89.
+   *    - 'text-success' and 'Meets language requirements' for scores 90 or higher.
+   */
+  getExamInfo(score: string) {
+    let className = 'text-mute';
+    let tooltip = 'Pending. Score is not provided or invalid.';
+
+    if (score === null || score === undefined || isNaN(parseFloat(score))) {
+      // Handle null, undefined, or non-numeric scores
+      return { className, tooltip };
+    }
+
+    const numericScore = parseFloat(score);
+
+    if (numericScore < 60) {
+      className = 'text-danger';
+      tooltip = 'Below requirement. Score is < 60.';
+    } else if (numericScore >= 60 && numericScore < 90) {
+      className = 'text-warning';
+      tooltip = 'Needs verification against the language requirement. Score is between 60 and 89.';
+    } else {
+      className = 'text-success';
+      tooltip = 'Meets language requirements. Score is 90 or higher.';
+    }
+
+    return { className, tooltip };
+  }
+  /**
+   * Determines the label for an exam based on whether it is the most recent or has the highest score.
+   * The label identifies the exam as 'Best & Newest Score', 'Newest Score', 'Best Score', or 'DET Official'.
+   *
+   * @param {CandidateExam} exam - The exam object to evaluate.
+   * @returns {string} - The label for the exam.
+   *    - 'DET Official' for the exam with the highest score and the most recent date.
+   *    - 'DET Official Newest' for the most recent exam only.
+   *    - 'DET Official Best ' for the exam with the highest score only.
+   *    - 'DET' for any other exam.
+   */
+  getExamLabel(exam: CandidateExam): string {
+    const mostRecent = this.getMostRecentDetOfficialExam(this.candidateIntakeData?.candidateExams);
+    const highestScore = this.getHighestScoreDetOfficialExam(this.candidateIntakeData?.candidateExams);
+
+    if (exam === mostRecent && exam === highestScore) {
+      this.examLabels[exam.id] = 'DET Official';
+    } else if (exam === mostRecent) {
+      this.examLabels[exam.id] = 'DET Official Newest';
+    } else if (exam === highestScore) {
+      this.examLabels[exam.id] = 'DET Official Best';
+    } else {
+      this.examLabels[exam.id] = 'DET';
+    }
+    return this.examLabels[exam.id];
+  }
   /**
    * Called when all intake data has been loaded (by refreshIntakeData).
    * <p/>

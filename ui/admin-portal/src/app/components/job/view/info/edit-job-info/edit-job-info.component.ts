@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
 import {Job, UpdateJobRequest} from "../../../../../model/job";
 import {SearchUserRequest} from "../../../../../model/base";
@@ -33,7 +33,7 @@ export class EditJobInfoComponent implements OnInit {
 
   job: Job;
 
-  jobForm: FormGroup;
+  jobForm: UntypedFormGroup;
 
   users: User[];
 
@@ -42,9 +42,14 @@ export class EditJobInfoComponent implements OnInit {
   saving: boolean;
 
   evergreenTip = "An evergreen job is always looking for candidates";
+  skipCandidateSearchTip = "If checked, partners will not search for candidates";
+  nameTip = "Only the user who created a job can change its name. Contact a TC admin if " +
+    "this presents an issue.";
+  submissionDueDateTip = "All prospective candidates should be submitted so that " +
+    "recruitment can proceed by given date."
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private authService: AuthorizationService,
               private jobService: JobService,
               private userService: UserService
@@ -71,9 +76,11 @@ export class EditJobInfoComponent implements OnInit {
 
   private createForm() {
     this.jobForm = this.fb.group({
+      name: [this.job.name],
       submissionDueDate: [this.job.submissionDueDate],
       contactUser: [this.job.contactUser?.id],
-      evergreen: [this.job.evergreen]
+      evergreen: [this.job.evergreen],
+      skipCandidateSearch: [this.job.skipCandidateSearch]
     });
   }
 
@@ -85,8 +92,19 @@ export class EditJobInfoComponent implements OnInit {
     return this.jobForm?.value.evergreen;
   }
 
+  get skipCandidateSearch(): boolean {
+    return this.jobForm?.value.skipCandidateSearch;
+  }
+
   get submissionDueDate(): Date {
     return this.jobForm?.value.submissionDueDate;
+  }
+
+  /**
+   * Returns null unless changed in form.
+   */
+  get jobName(): string {
+    return this.jobForm?.value.name === this.job.name ? null : this.jobForm.value.name;
   }
 
   onSave() {
@@ -96,7 +114,9 @@ export class EditJobInfoComponent implements OnInit {
       sfId: this.job.sfId,
       contactUserId: this.contactUser,
       evergreen: this.evergreen,
-      submissionDueDate: this.submissionDueDate
+      skipCandidateSearch: this.skipCandidateSearch,
+      submissionDueDate: this.submissionDueDate,
+      jobName: this.jobName,
     }
 
     this.jobService.update(this.job.id, request).subscribe(
@@ -120,5 +140,9 @@ export class EditJobInfoComponent implements OnInit {
 
   canChangeJobStage() {
     return this.authService.canChangeJobStage(this.job);
+  }
+
+  canChangeJobName() {
+    return this.authService.canChangeJobName(this.job);
   }
 }

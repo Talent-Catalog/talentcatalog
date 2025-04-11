@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -92,6 +92,7 @@ import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DocPublisherService;
 import org.tctalent.server.service.db.ExportColumnsService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -112,6 +113,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
     private final static String REGISTERED_NAME_SUFFIX = "*";
+    private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
     private final CandidateRepository candidateRepository;
     private final CandidateSavedListRepository candidateSavedListRepository;
     private final CandidateOpportunityService candidateOpportunityService;
@@ -120,6 +122,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final DocPublisherService docPublisherService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
+    private final PublicIDService publicIDService;
     private final SalesforceService salesforceService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final TaskAssignmentService taskAssignmentService;
@@ -136,7 +139,7 @@ public class SavedListServiceImpl implements SavedListService {
         SavedListRepository savedListRepository,
         DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
-        GoogleDriveConfig googleDriveConfig,
+        GoogleDriveConfig googleDriveConfig, PublicIDService publicIDService,
         SalesforceService salesforceService,
         SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
         UserRepository userRepository,
@@ -149,6 +152,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.docPublisherService = docPublisherService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
+        this.publicIDService = publicIDService;
         this.salesforceService = salesforceService;
         this.salesforceJobOppService = salesforceJobOppService;
         this.taskAssignmentService = taskAssignmentService;
@@ -491,6 +495,9 @@ public class SavedListServiceImpl implements SavedListService {
         request.populateFromRequest(savedList);
         savedList.setSfJobOpp(sfJobOpp);
 
+        //Populate publicID
+        savedList.setPublicId(publicIDService.generatePublicID());
+
         //Save created list so that we get its id from the database
         savedList.setAuditFields(user);
         return savedListRepository.save(savedList);
@@ -649,6 +656,19 @@ public class SavedListServiceImpl implements SavedListService {
         }
     }
 
+    @Transactional
+    @Override
+    public void setPublicIds(List<SavedList> savedLists) {
+        for (SavedList savedList : savedLists) {
+            if (savedList.getPublicId() == null) {
+                savedList.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!savedLists.isEmpty()) {
+            savedListRepository.saveAll(savedLists);
+        }
+    }
+
     @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request)
             throws NoSuchObjectException, EntityExistsException {
@@ -679,17 +699,17 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public SavedList updateTbbShortName(UpdateShortNameRequest request) throws  NoSuchObjectException {
+    public SavedList updateTcShortName(UpdateShortNameRequest request) throws  NoSuchObjectException {
         SavedList savedList = get(request.getSavedListId());
         // Check for duplicate short names if not null, can't have same short name.
         SavedList existingShortName = null;
-        if (request.getTbbShortName() != null) {
-            existingShortName = this.savedListRepository.findByShortNameIgnoreCase(request.getTbbShortName()).orElse(null);
+        if (request.getTcShortName() != null) {
+            existingShortName = this.savedListRepository.findByShortNameIgnoreCase(request.getTcShortName()).orElse(null);
         }
         if (existingShortName != null && !existingShortName.getId().equals(request.getSavedListId())) {
             throw new EntityExistsException("external link");
         }
-        savedList.setTbbShortName(request.getTbbShortName());
+        savedList.setTcShortName(request.getTcShortName());
         return saveIt(savedList);
     }
 
@@ -1090,4 +1110,20 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.setAuditFields(userService.getLoggedInUser());
         return savedListRepository.save(savedList);
     }
+
+    public void updateAssociatedListsNames(SalesforceJobOpp job) {
+        SavedList subList = job.getSubmissionList();
+        SavedList excList = job.getExclusionList();
+
+        if (subList != null) {
+            subList.setName(job.getName() + REGISTERED_NAME_SUFFIX);
+            saveIt(subList);
+        }
+
+        if (excList != null) {
+            excList.setName(job.getName() + REGISTERED_NAME_SUFFIX + EXCLUSION_LIST_SUFFIX);
+            saveIt(excList);
+        }
+    }
+
 }

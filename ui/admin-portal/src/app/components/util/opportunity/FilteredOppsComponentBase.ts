@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,10 +28,9 @@ import {
 } from '@angular/core';
 import {CandidateOpportunity, SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 import {SearchResults} from "../../../model/search-results";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {EnumOption} from "../../../util/enum";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {getOpportunityStageName, Opportunity, OpportunityOwnershipType} from "../../../model/opportunity";
@@ -45,6 +44,7 @@ import {BehaviorSubject, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
 import {Partner} from "../../../model/partner";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Directive()
 export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
@@ -112,7 +112,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
   protected searchFilter: ElementRef;
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
 
   //Default sort opps in descending order of nextDueDate
   sortField = 'nextStepDueDate';
@@ -136,7 +136,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected constructor(
     protected chatService: ChatService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     protected authorizationService: AuthorizationService,
     private localStorageService: LocalStorageService,
     protected oppService: OpportunityService<T>,

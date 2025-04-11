@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 import {CreateExternalLinkComponent} from "./create-external-link.component";
 import {SavedListService} from "../../../../services/saved-list.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -29,7 +29,7 @@ describe('CreateExternalLinkComponent', () => {
   let fixture: ComponentFixture<CreateExternalLinkComponent>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   const savedLists: SavedList[] =  [MockSavedList];
   const link: SavedList = {
     fixed: false,
@@ -50,7 +50,7 @@ describe('CreateExternalLinkComponent', () => {
 
     savedListServiceSpy = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {
@@ -70,7 +70,7 @@ describe('CreateExternalLinkComponent', () => {
   it('should initialize form with required fields', () => {
     expect(component.form).toBeDefined();
     expect(component.form.get('savedListId')).toBeTruthy();
-    expect(component.form.get('tbbShortName')).toBeTruthy();
+    expect(component.form.get('tcShortName')).toBeTruthy();
   });
 
   it('should load saved lists on initialization', fakeAsync(() => {
@@ -92,12 +92,12 @@ describe('CreateExternalLinkComponent', () => {
     const savedListId = 1;
     const shortName = 'test-link';
 
-    component.form.patchValue({ savedListId, tbbShortName: shortName });
+    component.form.patchValue({ savedListId, tcShortName: shortName });
 
     component.onSave();
     tick(); // Waiting for async operation to complete
 
-    expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId, tbbShortName: shortName });
+    expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId, tcShortName: shortName });
     expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(link);
     expect(component.saving).toBeFalse();
   }));

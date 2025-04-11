@@ -1,9 +1,24 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NewJobComponent} from './new-job.component';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {JobService} from '../../../services/job.service';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -29,7 +44,7 @@ describe('NewJobComponent', () => {
   let mockSalesforceService: any;
   let mockSlackService: any;
   let location: Location;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
   let fbSpy : any;
   let router: Router; // Add Router dependency here
   let ngbModal: NgbModal; // Add Router dependency here
@@ -60,7 +75,6 @@ describe('NewJobComponent', () => {
         HttpClientTestingModule,
         FormsModule,
         NgbPaginationModule,
-        LocalStorageModule.forRoot({}),
         NgSelectModule
       ],
       providers: [
@@ -68,7 +82,7 @@ describe('NewJobComponent', () => {
         { provide: SavedListService, useValue: mockSavedListService },
         { provide: SalesforceService, useValue: mockSalesforceService },
         { provide: SlackService, useValue: mockSlackService },
-        { provide: FormBuilder },
+        { provide: UntypedFormBuilder },
         {
           provide: Router,
           useClass: class {
@@ -86,7 +100,7 @@ describe('NewJobComponent', () => {
     mockSavedListService = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
     mockSalesforceService = TestBed.inject(SalesforceService) as jasmine.SpyObj<SalesforceService>;
     mockSlackService = TestBed.inject(SlackService) as jasmine.SpyObj<SlackService>;
-   fb = TestBed.inject(FormBuilder);
+   fb = TestBed.inject(UntypedFormBuilder);
    }));
 
   beforeEach(() => {

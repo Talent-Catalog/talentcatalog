@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,19 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {
+  mockCandidateIntakeData
+} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {By} from '@angular/platform-browser';
 import {VisaCheckUkComponent} from "./visa-check-uk.component";
 import {MockCandidateVisa} from "../../../../../../MockData/MockCandidateVisa";
 import {MockCandidateVisaJobCheck} from "../../../../../../MockData/MockCandidateVisaCheck";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {VisaJobCheckUkComponent} from "./job/visa-job-check-uk.component";
-import {AutosaveStatusComponent} from "../../../../../util/autosave-status/autosave-status.component";
+import {
+  AutosaveStatusComponent
+} from "../../../../../util/autosave-status/autosave-status.component";
 import {CandidateVisaJobComponent} from "../job/candidate-visa-job.component";
 import {
   RelocatingDependantsComponent
@@ -42,8 +45,8 @@ describe('VisaCheckUkComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [VisaCheckUkComponent,AutosaveStatusComponent,VisaJobCheckUkComponent,CandidateVisaJobComponent,RelocatingDependantsComponent,RouterLinkStubDirective,DependantsComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule,LocalStorageModule.forRoot({})],
-      providers: [FormBuilder],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule],
+      providers: [UntypedFormBuilder],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });

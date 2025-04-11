@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -87,6 +87,8 @@ import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
@@ -142,6 +144,10 @@ class CandidateAdminApiTest extends ApiTestBase {
     CandidateOpportunityService candidateOpportunityService;
     @MockBean
     CandidateSavedListService candidateSavedListService;
+    @MockBean
+    CountryService countryService;
+    @MockBean
+    OccupationService occupationService;
     @MockBean
     SavedListService savedListService;
     @MockBean

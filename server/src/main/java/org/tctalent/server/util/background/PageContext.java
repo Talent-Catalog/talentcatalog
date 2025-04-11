@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -32,10 +32,5 @@ public class PageContext {
     /**
      * The last processed page — set to null if none processed yet
      */
-    private Long lastProcessedPage;
-
-    /**
-     * The number of pages to process during each processing call
-     */
-    private long numToProcess;
+    private Integer lastProcessedPage;
 }

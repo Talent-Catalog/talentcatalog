@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,6 +27,8 @@ import {
   checkForOverdue,
   TaskAssignment
 } from "../model/task-assignment";
+import {CandidateOpportunity} from "../model/candidate-opportunity";
+import {SavedList} from "../model/saved-list";
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +56,9 @@ export class CandidateFieldService {
   private ieltsScoreFormatter = (value) => {
     return this.getIeltsScore(value);
   }
+  private englishAssessmentScoreDetFormatter = (value) => {
+    return this.getEnglishAssessmentScoreDet(value);
+  }
 
   private nclcScoreFormatter = (value) => {
     return this.getNclcScore(value);
@@ -67,6 +72,18 @@ export class CandidateFieldService {
 
   private intakeDatesTooltip = (value) => {
     return this.getIntakeDates(value);
+  }
+
+  private nextStepFormatter = (value: any, value2: any) => {
+    return this.getNextStep(value, value2);
+  }
+
+  private addedByFormatter = (value: any, value2: any) => {
+    return this.getAddedBy(value, value2);
+  }
+
+  private addedByTooltip = (value: any, value2: any) => {
+    return this.getAddedByPartner(value, value2);
   }
 
   private allDisplayableFields = [];
@@ -144,14 +161,18 @@ export class CandidateFieldService {
         this.levelGetNameFormatter, null, true),
       new CandidateFieldInfo("IELTS Score", "ieltsScore", null,
         this.ieltsScoreFormatter, null, true),
+    new CandidateFieldInfo("DET Score", "englishAssessmentScoreDet", null,
+      this.englishAssessmentScoreDetFormatter, null, true),
       new CandidateFieldInfo("NCLC Score", "frenchAssessmentScoreNclc", null,
         this.nclcScoreFormatter, null, true),
-    new CandidateFieldInfo("Legal status", "residenceStatus", null,
+      new CandidateFieldInfo("Legal status", "residenceStatus", null,
         this.residenceStatusFormatter, null, true),
       new CandidateFieldInfo("Dependants", "numberDependants", null,
         null, null, true),
-      new CandidateFieldInfo("NextStep", "candidateOpportunities.nextStep", null,
-      null, null, true),
+      new CandidateFieldInfo("Next Step", "nextStep", null,
+      this.nextStepFormatter, this.isSourceSubmissionList, false),
+      new CandidateFieldInfo("Added By", "addedBy", this.addedByTooltip,
+      this.addedByFormatter, this.isSourceSubmissionList, false),
       new CandidateFieldInfo("Latest Intake", "latestIntake", this.intakeDatesTooltip,
       this.intakeTypeFormatter, null, false),
       new CandidateFieldInfo("Latest Intake Date", "latestIntakeDate", null,
@@ -170,19 +191,19 @@ export class CandidateFieldService {
     }
   }
 
-  get defaultDisplayableFieldsLong(): CandidateFieldInfo[] {
-    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsLong);
+  getDefaultDisplayableFieldsLong(source: CandidateSource): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsLong, source);
   }
 
-  get defaultDisplayableFieldsShort(): CandidateFieldInfo[] {
-    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsShort);
+  getDefaultDisplayableFieldsShort(source: CandidateSource): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsShort, source);
   }
 
-  get displayableFieldsMap(): Map<string, CandidateFieldInfo> {
+  getDisplayableFieldsMap(source: CandidateSource): Map<string, CandidateFieldInfo> {
     const fields = new Map<string, CandidateFieldInfo>();
     //Filter based on field selectors
     for (const field of this.allDisplayableFields) {
-      if (field.fieldSelector == null || field.fieldSelector()) {
+      if (field.fieldSelector == null || field.fieldSelector(source)) {
         fields.set(field.fieldPath, field);
       }
     }
@@ -207,13 +228,13 @@ export class CandidateFieldService {
           fieldPaths = this.defaultDisplayedFieldPathsShort;
         }
       }
-      fields = this.getFieldsFromPaths(fieldPaths);
+      fields = this.getFieldsFromPaths(fieldPaths, source);
     }
     return fields;
   }
 
 
-  getFieldsFromPaths(fieldPaths: string []): CandidateFieldInfo[] {
+  getFieldsFromPaths(fieldPaths: string [], source:CandidateSource): CandidateFieldInfo[] {
     const fields: CandidateFieldInfo[] = [];
 
     for (const fieldPath of fieldPaths) {
@@ -222,7 +243,7 @@ export class CandidateFieldService {
         console.error("CandidateFieldService: Could not find field for " + fieldPath)
       } else {
         //Ignore fields with a selector which returns false
-        if (field.fieldSelector == null || field.fieldSelector()) {
+        if (field.fieldSelector == null || field.fieldSelector(source)) {
           fields.push(field);
         }
       }
@@ -264,6 +285,11 @@ export class CandidateFieldService {
     return this.authService.isAnAdmin();
   }
 
+  isSourceSubmissionList = (source: CandidateSource): boolean => {
+    return (source as SavedList).registeredJob === true;
+  };
+
+
   isDefault(fieldPaths: string[], longFormat: boolean) {
     if (fieldPaths == null) {
       return false;
@@ -301,7 +327,13 @@ export class CandidateFieldService {
     }
     return score;
   }
-
+  getEnglishAssessmentScoreDet(candidate: Candidate): string {
+    let score: string = null;
+    if (candidate?.englishAssessmentScoreDet != null) {
+      score = candidate.englishAssessmentScoreDet + ' (Det)';
+    }
+    return score;
+  }
   getNclcScore(candidate: Candidate): string {
     let score: string = null;
     if (candidate?.frenchAssessmentScoreNclc != null) {
@@ -364,6 +396,48 @@ export class CandidateFieldService {
       status = null;
     }
     return status;
+  }
+
+  public getNextStep(candidate: Candidate, source: CandidateSource): string {
+    let candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.nextStep;
+  }
+
+  public getAddedBy(candidate: Candidate, source: CandidateSource): string {
+    const candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.createdBy.firstName + " " +
+      candidateOppForThisList.createdBy.lastName;
+  }
+
+  /**
+   * Populates the tooltip for values in the Added By column — saves table space by providing the
+   * partner name in this form.
+   * @param candidate the given candidate for this table row
+   * @param source the source that the displayed candidates belong to, e.g., submission list, saved
+   * search.
+   */
+  public getAddedByPartner(candidate: Candidate, source: CandidateSource): string {
+    const candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.createdBy.partner.name;
+  }
+
+  // When displaying a submission list, will find the relevant candidate opp for given candidate.
+  private findRelevantCandidateOpp(candidate: Candidate, source: CandidateSource): CandidateOpportunity {
+    const opp = candidate.candidateOpportunities.find(
+      opp => opp.jobOpp.submissionList.id == source.id
+    );
+    if (opp == null) {
+      console.warn('No matching opp found for this candidate and source');
+      return null;
+    } else {
+      return opp;
+    }
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,15 +18,19 @@ package org.tctalent.server.api.admin;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.tctalent.anonymization.model.CandidateAssistanceType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
+import org.tctalent.server.model.db.CandidateCouponCode;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
@@ -46,6 +50,8 @@ import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.DuolingoCoupon;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
@@ -65,6 +71,7 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.OfferToAssist;
 import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Registration;
@@ -432,7 +439,7 @@ public class AdminApiTestUtil {
         task.setDescription("a test task description");
         task.setDisplayName("task display name");
         task.setOptional(false);
-        task.setHelpLink("http://help.link");
+        task.setDocLink("http://help.link");
         return task;
     }
 
@@ -469,7 +476,7 @@ public class AdminApiTestUtil {
         savedList.setFolderjdlink("http://folder.jd.link");
         savedList.setPublishedDocLink("http://published.doc.link");
         savedList.setRegisteredJob(true);
-        savedList.setTbbShortName("Saved list Tbb short name");
+        savedList.setTcShortName("Saved list Tc short name");
         savedList.setCreatedBy(caller);
         savedList.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         savedList.setUpdatedBy(caller);
@@ -712,6 +719,25 @@ public class AdminApiTestUtil {
         return info;
     }
 
+    static OfferToAssist getOfferToAssist() {
+        OfferToAssist offerToAssist = new OfferToAssist();
+        offerToAssist.setAdditionalNotes("Notes");
+        offerToAssist.setPartner(getPartner());
+
+        List<CandidateCouponCode> candidateCouponCodes  = new ArrayList<>();
+        CandidateCouponCode ccc = new CandidateCouponCode();
+        ccc.setCandidate(getCandidate());
+        ccc.setOfferToAssist(offerToAssist);
+        ccc.setId(12345678L);
+        candidateCouponCodes.add(ccc);
+
+        offerToAssist.setCandidateCouponCodes(candidateCouponCodes);
+        offerToAssist.setId(99L);
+        offerToAssist.setPublicId("123456");
+        offerToAssist.setReason(CandidateAssistanceType.OTHER);
+        return offerToAssist;
+    }
+
     public static PartnerImpl getPartner() {
         PartnerImpl partner = new PartnerImpl();
         partner.setName("TC Partner");
@@ -831,4 +857,14 @@ public class AdminApiTestUtil {
         Set<CandidateSavedList> scsl = Set.of(getCandidateSavedList());
         return scsl;
   }
+  static DuolingoCoupon getDuolingoCoupon() {
+        DuolingoCoupon coupon = new DuolingoCoupon();
+        coupon.setId(1L);
+        coupon.setCouponCode("COUPON123");
+        coupon.setExpirationDate(LocalDateTime.now().plusDays(30));
+        coupon.setDateSent(LocalDateTime.now().minusDays(1));
+        coupon.setCouponStatus(DuolingoCouponStatus.AVAILABLE);
+
+        return coupon;
+    }
 }

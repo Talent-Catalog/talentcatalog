@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 import {DestinationComponent} from "./destination.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -30,7 +30,7 @@ fdescribe('DestinationComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ DestinationComponent, AutosaveStatusComponent],
       imports: [NgSelectModule,FormsModule, ReactiveFormsModule, HttpClientTestingModule],
-      providers: [FormBuilder, CandidateService]
+      providers: [UntypedFormBuilder, CandidateService]
     })
     .compileComponents();
   });

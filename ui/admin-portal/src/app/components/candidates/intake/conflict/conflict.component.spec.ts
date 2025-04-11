@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {YesNo} from "../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 describe('ConflictComponent', () => {
@@ -38,7 +38,7 @@ describe('ConflictComponent', () => {
       declarations: [ConflictComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: mockCandidateService }
       ]
     }).compileComponents();

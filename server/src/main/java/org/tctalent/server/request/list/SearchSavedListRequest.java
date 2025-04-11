@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,6 +36,12 @@ public class SearchSavedListRequest extends SearchCandidateSourceRequestPaged {
      * that are the registered list for a Salesforce job opportunity.
      */
     private Boolean registeredJob;
+
+    /**
+     * If true search will include lists where the partner that is associated with the job (jobCreator) is the same
+     * as the loggedInUser partner
+     */
+    private Boolean ownedByMyPartner;
 
     /**
      * Only affects search for SavedLists where sfJoblink is not null - ie SavedList's which have

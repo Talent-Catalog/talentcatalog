@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@ import {EditTaskAssignmentComponent} from "./edit-task-assignment.component";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {TaskAssignmentService} from "../../../../../services/task-assignment.service";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {LOCALE_ID, NO_ERRORS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {By} from "@angular/platform-browser";
@@ -39,7 +39,7 @@ describe('EditTaskAssignmentComponent', () => {
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: TaskAssignmentService, useValue: mockTaskAssignmentService },
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: LOCALE_ID, useValue: 'en-US' }
       ],
       schemas: [NO_ERRORS_SCHEMA]

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,27 +14,21 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div class="card" *ngIf="!loading">
+<div class="card">
 
   <div class="card-header">
     Skills (migrated)
   </div>
 
   <div class="card-body">
-    <div *ngIf="!candidateSkills || candidateSkills.length == 0">
+    <div *ngIf="!candidate.candidateSkills || candidate.candidateSkills.length == 0">
       <div class="row">
         <div class="col-sm-12">
           No skills migrated
         </div>
       </div>
     </div>
-    <div class="row" *ngFor="let skill of candidateSkills">
+    <div class="row" *ngFor="let skill of candidate.candidateSkills">
       <div class="col-6"
            [innerHtml]="skill.skill"
            appHighlightSearch>

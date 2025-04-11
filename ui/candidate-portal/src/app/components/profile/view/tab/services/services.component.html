@@ -1,0 +1,43 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="container">
+    <app-error [error]="error"></app-error>
+    <app-loading [loading]="loading"></app-loading>
+
+    <app-duolingo *ngIf="selectedService"
+                  [candidate]="candidate"
+                  (refresh)="refresh.emit()"
+                  [activeDuolingoTask]="activeDuolingoTask"
+    >
+    </app-duolingo>
+
+    <ng-container *ngIf="!loading && !selectedService">
+         <app-casi-header>
+          <h2>{{ 'SERVICES.TITLE' | translate }}</h2>
+          <p>{{ 'SERVICES.DESCRIPTION' | translate }}</p>
+          </app-casi-header>
+        <div class="service-card" (click)="selectService('duolingo')">
+
+            <div>
+              <span class="service-tag">{{ 'SERVICES.DUOLINGO.TAG' | translate }}</span>
+              <h3>{{ 'SERVICES.DUOLINGO.TITLE' | translate }}</h3>
+              <p>{{ 'SERVICES.DUOLINGO.DESCRIPTION' | translate }}</p>
+            </div>
+            <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
+        </div>
+    </ng-container>
+</div>

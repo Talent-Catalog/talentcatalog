@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,6 @@
 import {ListHomeComponent} from "./list-home.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {SavedSearchService, SavedSearchTypeInfo} from "../../../services/saved-search.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {NgbActiveModal, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
@@ -28,10 +27,11 @@ import {SavedSearchSubtype, SavedSearchType} from "../../../model/saved-search";
 import {
   BrowseCandidateSourcesComponent
 } from "../../candidates/show/browse/browse-candidate-sources.component";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {RouterTestingModule} from "@angular/router/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('ListHomeComponent', () => {
   let component: ListHomeComponent;
@@ -57,7 +57,7 @@ describe('ListHomeComponent', () => {
       declarations: [ListHomeComponent,BrowseCandidateSourcesComponent,RouterLinkStubDirective],
       imports: [HttpClientTestingModule,NgbNavModule,RouterTestingModule,NgbPaginationModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         DatePipe,
         TitleCasePipe,
         { provide: SavedSearchService, useValue: savedSearchServiceSpyObj },

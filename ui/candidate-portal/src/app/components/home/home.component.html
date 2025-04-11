@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -110,6 +110,10 @@
           <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
         </div>
       </ng-container>
+
+      <div *ngIf="emailVerified === false" class="text-start verify-email-button" style="margin-top: 1rem;">
+        <button class="btn btn-primary" (click)="openModal()">{{ 'HOME.EMAIL_VERIFICATION.BUTTON' | translate }}</button>
+      </div>
 
     </ng-container>
 

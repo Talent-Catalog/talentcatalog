@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <app-error [error]="error"></app-error>
 <div class="d-sm-flex justify-content-between">
   <div>
@@ -6,7 +22,7 @@
         <span class="fw-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span>
         <span class="fw-bolder font-italic" *ngIf="selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.OPTIONAL' | translate }}</span>
       </h4>
-      <div *ngIf="selectedTask.task.taskType !== 'Question'">{{selectedTask?.task?.description}}</div>
+      <div *ngIf="selectedTask.task.taskType !== 'Question'" [innerHtml]="selectedTask?.task?.description"></div>
     </div>
 
     <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">
@@ -24,9 +40,6 @@
   </div>
 
   <div class="mt-4 mx-3 text-center flex-shrink-0">
-    <div class="mb-2" *ngIf="selectedTask?.task?.helpLink">
-      <a class="btn btn-sm btn-primary" target="_blank" [href]="selectedTask?.task?.helpLink">{{ 'TASKS.TASK.VIEWHELP' | translate }} <fa-icon class="ms-1" icon="question-circle"></fa-icon></a>
-    </div>
     <button class="btn btn-sm btn-secondary" (click)="goBack()">
       <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
     </button>
@@ -34,7 +47,7 @@
 </div>
 
 <!-- DISPLAY DOC IF PRESENT -->
-<ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
+<ng-container *ngIf="selectedTask.task.docLink != null">
   <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
 </ng-container>
 

@@ -52,6 +52,7 @@ export interface Job extends Opportunity {
   publishedBy: User;
   publishedDate: Date;
   jobCreator: ShortPartner;
+  skipCandidateSearch: boolean;
   stage: JobOpportunityStage;
   starringUsers: User[];
   submissionDueDate: Date;
@@ -117,7 +118,9 @@ export interface UpdateJobRequest extends OpportunityProgressParams {
   evergreen?: boolean;
   roleName?: string;
   sfId?: string;
+  jobName?: string;
   sfJoblink?: string;
+  skipCandidateSearch?: boolean;
   submissionDueDate?: Date;
   jobToCopyId?: number;
 }

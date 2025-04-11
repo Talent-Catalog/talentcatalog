@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2022 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -34,18 +34,50 @@
     </div>
 
     <form [formGroup]="jobForm">
+      <div class="mb-3">
+        <label class="form-label"
+               for="name"
+               [ngbTooltip]="!canChangeJobName() ? nameTip : null">
+          Name
+        </label>
+        <input type="text"
+               class="form-control"
+               formControlName="name"
+               id="name"
+               [ngbTooltip]= "!canChangeJobName() ? nameTip : null"
+               [readOnly]="!canChangeJobName()">
+      </div>
 
-      <div class="form-check">
-        <input [title]="evergreenTip" type="checkbox"
-               formControlName="evergreen" id="evergreen" class="form-check-input">
-        <label class="form-check-label" [title]="evergreenTip"
-               for="evergreen">Evergreen job?</label>
+      <div class="form-check mb-3">
+        <span [ngbTooltip]="evergreenTip">
+          <input type="checkbox" formControlName="evergreen" id="evergreen" class="form-check-input">
+          <label class="form-check-label" for="evergreen">
+            Evergreen job?
+          </label>
+        </span>
+      </div>
+
+      <div class="form-check mb-3">
+        <span [ngbTooltip]="skipCandidateSearchTip">
+          <input type="checkbox"
+                 formControlName="skipCandidateSearch"
+                 id="skipCandidateSearch"
+                 class="form-check-input">
+          <label class="form-check-label" for="skipCandidateSearch">
+            Skip candidate search?
+          </label>
+        </span>
       </div>
 
       <!-- SUBMISSION DUE DATE -->
       <div class="mb-3">
-        <label class="form-label" for="submissionDueDate">Submission Due Date</label>
-        <app-date-picker id="submissionDueDate" [control]="jobForm.controls.submissionDueDate"></app-date-picker>
+        <label class="form-label" for="submissionDueDate" [ngbTooltip]="submissionDueDateTip">
+          Submission Due Date
+        </label>
+        <app-date-picker id="submissionDueDate"
+                         [control]="jobForm.controls.submissionDueDate"
+                         [ngbTooltip]="submissionDueDateTip">
+        </app-date-picker>
       </div>
 
       <!-- Contact user -->

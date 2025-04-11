@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -118,7 +118,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
             + " left join fetch c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
-    
+
     @Query(" select c from Candidate c "
             + " left join fetch c.candidateDestinations dest "
             + " where c.id = :id ")
@@ -200,6 +200,16 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
 
                                          Pageable pageable);
+
+    @Query(" select distinct c from Candidate c left join c.user u "
+        + " where lower(u.firstName) like lower(:candidateName)"
+        + " or lower(u.lastName) like lower(:candidateName)"
+        + excludeDeleted
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
     /**
      * Note that we need to pass in a CandidateStatus.deleted constant in the
      * "exclude" parameter because I haven't been able to just put
@@ -216,6 +226,22 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         + excludeDeleted
         + sourceCountryRestriction)
     Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
+    @Query(" select distinct c from Candidate c left join c.user u "
+        + " where (lower(c.phone) like lower(:emailOrPhone) "
+        + " or lower(u.email) like lower(:emailOrPhone)) "
+        + excludeDeleted
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+        + " where lower(c.externalId) like lower(:externalId) "
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
         Pageable pageable);
 
@@ -241,6 +267,8 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
 
     Candidate findByCandidateNumber(String candidateNumber);
+
+    Optional<Candidate> findByPublicId(String publicId);
 
     /**
      * ADMIN PORTAL INFOGRAPHICS METHODS: includes source country restrictions.
@@ -823,32 +851,17 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(
         value =
             """
-            SELECT c
-            FROM Candidate c
-            WHERE c.id IN (
-                SELECT c1.id
-                FROM Candidate c1
-                JOIN c1.user u
-                WHERE u.partner.id = :partnerId
-                AND (
-                    :keyword IS NULL OR (
-                        LOWER(u.firstName) LIKE :keyword
-                        OR LOWER(u.lastName) LIKE :keyword
-                        OR c.candidateNumber LIKE :keyword
-                    )
-                )
-            )
-            AND c.id IN (
-                SELECT c2.id
-                FROM Candidate c2
-                JOIN JobChat jc ON c2.id = jc.candidate.id
-                WHERE jc.type = 'CandidateProspect'
-                AND jc.id IN (
-                    SELECT jc2.id
-                    FROM JobChat jc2
-                    JOIN ChatPost cp ON jc2.id = cp.jobChat.id
-                )
-            )
+            SELECT c FROM Candidate c
+             JOIN c.user u
+             JOIN JobChat jc ON c.id = jc.candidate.id
+             JOIN ChatPost cp ON jc.id = cp.jobChat.id
+             WHERE u.partner.id = :partnerId
+             AND jc.type = 'CandidateProspect'
+             AND (:keyword IS NULL
+                 OR LOWER(u.firstName) LIKE :keyword
+                 OR LOWER(u.lastName) LIKE :keyword
+                 OR c.candidateNumber LIKE :keyword)
+             GROUP BY c.id
             """
     )
     Page<Candidate> findCandidatesWithActiveChat(
@@ -872,43 +885,26 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(
         value =
             """
-            SELECT candidate.id
+            SELECT DISTINCT candidate.id
             FROM candidate
-                     JOIN users ON candidate.user_id = users.id
-            WHERE candidate.id IN (
-                SELECT job_chat.candidate_id
-                FROM (
-                         SELECT job_chat.id
-                         FROM candidate
-                                  JOIN job_chat ON candidate.id = job_chat.candidate_id
-                         WHERE type = 'CandidateProspect'
-                     ) AS chats
-                         JOIN job_chat ON job_chat.id = chats.id
-                WHERE
-                    (SELECT last_read_post_id
-                     FROM job_chat_user
-                     WHERE job_chat_id = chats.id AND user_id = :userId) <
-                    (SELECT max(id)
-                     FROM chat_post
-                     WHERE job_chat_id = chats.id)
-                   OR (
-                    (SELECT last_read_post_id
-                     FROM job_chat_user
-                     WHERE job_chat_id = chats.id AND user_id = :userId) IS NULL
-                        AND
-                    (SELECT count(*)
-                     FROM chat_post
-                     WHERE job_chat_id = chats.id) > 0
-                    )
+            JOIN users ON candidate.user_id = users.id
+            JOIN job_chat jc ON jc.candidate_id = candidate.id AND jc.type = 'CandidateProspect'
+            LEFT JOIN job_chat_user jcu ON jcu.job_chat_id = jc.id AND jcu.user_id = :userId
+            JOIN chat_post cp ON cp.job_chat_id = jc.id
+            WHERE users.partner_id = :partnerId
+            AND (
+                :keyword IS NULL
+                OR LOWER(users.first_name) LIKE :keyword
+                OR LOWER(users.last_name) LIKE :keyword
+                OR candidate.candidate_number LIKE :keyword
             )
-              AND users.partner_id = :partnerId
-              AND (
-                    :keyword IS NULL OR (
-                        LOWER(users.first_name) LIKE :keyword
-                        OR LOWER(users.last_name) LIKE :keyword
-                        OR candidate.candidate_number LIKE :keyword
-                    )
-                )
+            AND (
+                -- Case 1: If last_read_post_id is less than the latest chat_post id
+                (jcu.last_read_post_id < (SELECT max(cp2.id) FROM chat_post cp2 WHERE cp2.job_chat_id = jc.id))
+                OR
+                -- Case 2: If last_read_post_id is NULL and there are chat_posts in the chat
+                (jcu.last_read_post_id IS NULL AND (SELECT count(*) FROM chat_post cp2 WHERE cp2.job_chat_id = jc.id) > 0)
+            )
             """, nativeQuery = true
     )
     List<Long> findIdsOfCandidatesWithActiveAndUnreadChat(

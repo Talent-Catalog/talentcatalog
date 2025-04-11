@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,9 +15,9 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {CandidateSourceResultsCacheService, CachedSourceResults} from './candidate-source-results-cache.service';
 import {CandidateSource} from '../model/base';
+import {LocalStorageService} from "./local-storage.service";
 
 describe('CandidateSourceResultsCacheService', () => {
   let service: CandidateSourceResultsCacheService;
@@ -111,11 +111,10 @@ describe('CandidateSourceResultsCacheService', () => {
 
       const originalCacheKey = CandidateSourceResultsCacheService['cacheKey'];
       (CandidateSourceResultsCacheService as any)['cacheKey'] = () => 'type1';
-      localStorageService.remove.and.returnValue(true);
+      spyOn(localStorage, 'removeItem');
 
-      const result = service.removeFromCache(source);
+      service.removeFromCache(source);
 
-      expect(result).toBeTrue();
       expect(localStorageService.remove).toHaveBeenCalledWith('type1');
 
       // Restore the original static method

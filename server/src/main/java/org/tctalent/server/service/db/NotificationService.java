@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,7 +24,7 @@ package org.tctalent.server.service.db;
 public interface NotificationService {
 
     /**
-     * Sends emails to notify users of new posts to chats that they are subscribed to.
+     * Sends emails to notify users of new unread posts to chats that they are subscribed to.
      */
-    void notifyUsersOfChatsWithNewPosts();
+    void notifyUsersOfChatsWithNewUnreadPosts();
 }

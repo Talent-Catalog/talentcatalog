@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -70,4 +70,13 @@ public interface CandidateOpportunityRepository extends JpaRepository<CandidateO
 
     @Query(" select op from CandidateOpportunity op where op.jobOpp.createdBy.partner.id = :partnerId")
     List<CandidateOpportunity> findPartnerOpps(@Param("partnerId") Long partnerId);
+
+    @Query(
+        "SELECT co.sfId " +
+        "FROM CandidateOpportunity co " +
+        "WHERE co.closed = false " +
+        "AND co.sfId IS NOT NULL"
+    )
+    List<String> findAllNonNullSfIdsByClosedFalse();
+
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ViewCandidateOppComponent} from "./view-candidate-opp.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbModal, NgbNavChangeEvent, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
@@ -7,7 +23,6 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {ChatService} from "../../../services/chat.service";
 import {of} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {MockPartner} from "../../../MockData/MockPartner";
@@ -17,6 +32,7 @@ import {
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {ChatReadStatusComponent} from "../../chat/chat-read-status/chat-read-status.component";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+
 describe('ViewCandidateOppComponent', () => {
   let component: ViewCandidateOppComponent;
   let fixture: ComponentFixture<ViewCandidateOppComponent>;
@@ -35,7 +51,7 @@ describe('ViewCandidateOppComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateOppComponent,ChatReadStatusComponent,RouterLinkStubDirective,OpportunityStageNextStepComponent],
-      imports: [HttpClientTestingModule,NgbNavModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,NgbNavModule],
       providers: [
         { provide: NgbModal, useValue: mockModalService },
         { provide: CandidateOpportunityService, useValue: mockCandidateOpportunityService },

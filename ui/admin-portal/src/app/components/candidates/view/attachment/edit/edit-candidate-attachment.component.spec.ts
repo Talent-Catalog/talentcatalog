@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,10 +22,10 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {
-  FormBuilder,
-  FormControl,
   FormsModule,
   ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
   Validators
 } from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -37,7 +37,7 @@ describe('EditCandidateAttachmentComponent', () => {
   let component: EditCandidateAttachmentComponent;
   let fixture: ComponentFixture<EditCandidateAttachmentComponent>;
   let candidateAttachmentServiceSpy: jasmine.SpyObj<CandidateAttachmentService>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
   const mockAttachment = new MockCandidate().candidateAttachments[0];
   beforeEach(async () => {
 
@@ -47,7 +47,7 @@ describe('EditCandidateAttachmentComponent', () => {
       declarations: [EditCandidateAttachmentComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         NgbActiveModal,
         { provide: CandidateAttachmentService, useValue: candidateAttachmentServiceMock }
       ]
@@ -55,7 +55,7 @@ describe('EditCandidateAttachmentComponent', () => {
 
     fixture = TestBed.createComponent(EditCandidateAttachmentComponent);
     component = fixture.componentInstance;
-    fb = TestBed.inject(FormBuilder) as jasmine.SpyObj<FormBuilder>;
+    fb = TestBed.inject(UntypedFormBuilder) as jasmine.SpyObj<UntypedFormBuilder>;
     candidateAttachmentServiceSpy = TestBed.inject(CandidateAttachmentService) as jasmine.SpyObj<CandidateAttachmentService>;
     // Initialize the form with mock data
     mockAttachment.type = AttachmentType.link;
@@ -67,7 +67,7 @@ describe('EditCandidateAttachmentComponent', () => {
     });
 
     if (mockAttachment.type === 'link') {
-      component.form.addControl('location', new FormControl(mockAttachment.location, Validators.required));
+      component.form.addControl('location', new UntypedFormControl(mockAttachment.location, Validators.required));
     }
     fixture.detectChanges();
   });

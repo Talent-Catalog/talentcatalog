@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 import {EditCandidateAdditionalInfoComponent} from "./edit-candidate-additional-info.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../../../services/candidate.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {Candidate} from "../../../../../model/candidate";
@@ -28,7 +28,7 @@ describe('EditCandidateAdditionalInfoComponent', () => {
   let component: EditCandidateAdditionalInfoComponent;
   let fixture: ComponentFixture<EditCandidateAdditionalInfoComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   const mockCandidate: Candidate = new MockCandidate();
 
@@ -39,12 +39,12 @@ describe('EditCandidateAdditionalInfoComponent', () => {
       declarations: [EditCandidateAdditionalInfoComponent, CreatedByComponent],
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         NgbActiveModal,
         { provide: CandidateService, useValue: candidateServiceSpyObj }
       ]
     }).compileComponents();
-    fb = TestBed.inject(FormBuilder); // Inject FormBuilder
+    fb = TestBed.inject(UntypedFormBuilder); // Inject FormBuilder
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
     candidateServiceSpy.get.and.returnValue(of());
   });

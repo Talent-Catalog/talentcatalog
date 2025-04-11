@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -46,7 +46,7 @@
   <!-- OCCUPATION VIEW -->
   <ng-container *ngIf="orderOccupation">
 
-    <app-view-candidate-job-experience *ngFor="let occupation of candidateOccupations"
+    <app-view-candidate-job-experience *ngFor="let occupation of candidate?.candidateOccupations"
                                        [candidate]="candidate"
                                        [candidateOccupation]="occupation"
                                        [editable]="editable"
@@ -59,7 +59,7 @@
   <!-- EXPERIENCE VIEW -->
   <ng-container *ngIf="!orderOccupation">
 
-    <div class="card mb-4" *ngFor="let experience of experiences">
+    <div class="card mb-4" *ngFor="let experience of candidate?.candidateJobExperiences">
 
       <!-- HEADER -->
       <div class="card-header">
@@ -93,10 +93,6 @@
 
       </div>
 
-    </div>
-
-    <div class="text-center" *ngIf="hasMore">
-      <button class="btn btn-primary" (click)="loadJobExperiences(true)">Load more</button>
     </div>
 
   </ng-container>

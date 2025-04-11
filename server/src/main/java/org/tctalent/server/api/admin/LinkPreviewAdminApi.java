@@ -1,5 +1,5 @@
  /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,7 @@ package org.tctalent.server.api.admin;
 
  import java.io.IOException;
  import java.util.Map;
- import javax.validation.Valid;
+ import jakarta.validation.Valid;
  import lombok.RequiredArgsConstructor;
  import org.springframework.lang.Nullable;
  import org.springframework.web.bind.annotation.PostMapping;

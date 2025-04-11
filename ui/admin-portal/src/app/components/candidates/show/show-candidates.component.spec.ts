@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,10 @@
 
 import {ShowCandidatesComponent} from "./show-candidates.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
-import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {NgbModal, NgbOffcanvas, NgbPaginationModule, NgbTypeaheadModule} from "@ng-bootstrap/ng-bootstrap";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateService} from "../../../services/candidate.service";
@@ -37,11 +36,12 @@ import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {MockUser} from "../../../MockData/MockUser";
 import {SavedSearchType} from "../../../model/saved-search";
 import {of, throwError} from "rxjs";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('ShowCandidatesComponent', () => {
   let component: ShowCandidatesComponent;
   let fixture: ComponentFixture<ShowCandidatesComponent>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
 
   // Create mock service instances using jasmine.createSpyObj
@@ -66,13 +66,12 @@ describe('ShowCandidatesComponent', () => {
       imports: [
         HttpClientTestingModule,
         RouterTestingModule,
-        LocalStorageModule.forRoot({}),
         NgbTypeaheadModule,
         NgbPaginationModule,
         ReactiveFormsModule
       ],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         DatePipe,
         TitleCasePipe,
         {provide: CandidateService, useValue: mockCandidateService},
@@ -96,7 +95,7 @@ describe('ShowCandidatesComponent', () => {
     component = fixture.componentInstance;
 
     // Inject the FormBuilder and create the form group
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
     component.candidateSource = new MockCandidateSource();
     component.searchForm = formBuilder.group({
       keyword: [''],

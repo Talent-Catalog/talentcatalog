@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -53,7 +53,7 @@ public class Auditor {
 
     @AfterReturning(
             pointcut="@annotation(audit) && args(inputValue,..)",
-            returning="returnValue")
+            returning="returnValue", argNames = "audit,inputValue,returnValue")
     public void handleAuditLog(Audit audit, Object inputValue, Object returnValue)
     {
         try {

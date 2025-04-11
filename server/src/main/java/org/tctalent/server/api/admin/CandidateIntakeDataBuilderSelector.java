@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -26,8 +28,12 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * @author John Cameron
  */
 public class CandidateIntakeDataBuilderSelector {
+    private final CountryService countryService;
+    private final OccupationService occupationService;
 
-    public CandidateIntakeDataBuilderSelector() {
+    public CandidateIntakeDataBuilderSelector(CountryService countryService, OccupationService occupationService) {
+        this.countryService = countryService;
+        this.occupationService = occupationService;
     }
 
     public @NotNull DtoBuilder selectBuilder() {
@@ -45,7 +51,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("availImmediateJobOps")
                 .add("availImmediateReason")
                 .add("availImmediateNotes")
-                .add("birthCountry", countryDto())
+                .add("birthCountry", countryService.selectBuilder())
 
                 .add("candidateCitizenships", candidateCitizenshipDto())
 
@@ -75,7 +81,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("drivingLicense")
                 .add("drivingLicenseExp")
-                .add("drivingLicenseCountry", countryDto())
+                .add("drivingLicenseCountry", countryService.selectBuilder())
 
                 .add("familyMove")
                 .add("familyMoveNotes")
@@ -95,6 +101,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("englishAssessment")
                 .add("englishAssessmentScoreIelts")
+                .add("englishAssessmentScoreDet")
                 .add("frenchAssessment")
                 .add("frenchAssessmentScoreNclc")
                 .add("leftHomeReasons")
@@ -112,7 +119,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", educationLevelDto())
                 .add("partnerEduLevelNotes")
-                .add("partnerOccupation", occupationDto())
+                .add("partnerOccupation", occupationService.selectBuilder())
                 .add("partnerOccupationNotes")
                 .add("partnerEnglish")
                 .add("partnerEnglishLevel", languageLevelDto())
@@ -168,7 +175,7 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("nationality", countryDto())
+                .add("nationality", countryService.selectBuilder())
                 .add("hasPassport")
                 .add("passportExp")
                 .add("notes")
@@ -204,7 +211,7 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder candidateDestinationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("interest")
                 .add("notes")
                 ;
@@ -214,7 +221,7 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("candidateVisaJobChecks", visaJobCheckDto())
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("protection")
                 .add("protectionGrounds")
                 .add("englishThreshold")
@@ -258,7 +265,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("putForward")
                 .add("tbbEligibility")
                 .add("notes")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("occupationNotes")
                 .add("qualificationNotes")
                 .add("relevantWorkExp")
@@ -283,12 +290,6 @@ public class CandidateIntakeDataBuilderSelector {
                 ;
     }
 
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
-                ;
-    }
-
     private DtoBuilder englishLevelDto() {
         return new DtoBuilder()
                 .add("id")
@@ -302,17 +303,11 @@ public class CandidateIntakeDataBuilderSelector {
                 ;
     }
 
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
     private DtoBuilder partnerCandidateDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("candidateNumber")
+                .add("publicId")
                 .add("user", userDto())
                 ;
     }

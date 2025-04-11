@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ViewJobComponent} from './view-job.component';
 import {NgbModal, NgbNavModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
@@ -6,17 +22,16 @@ import {JobService} from '../../../../services/job.service';
 import {SlackService} from '../../../../services/slack.service';
 import {Router} from '@angular/router';
 import {CommonModule, Location} from '@angular/common';
-import {of, throwError} from 'rxjs';
+import {of} from 'rxjs';
 import {Job} from '../../../../model/job';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockUser} from "../../../../MockData/MockUser";
 import {MockJob} from "../../../../MockData/MockJob";
 import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.component";
 import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.component";
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 // Mock isStarredByMe function
@@ -43,10 +58,10 @@ describe('ViewJobComponent', () => {
     mockLocation = jasmine.createSpyObj('Location', ['back']);
 
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
+      imports:[HttpClientTestingModule,NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
       declarations: [ViewJobComponent,AutosaveStatusComponent,RouterLinkStubDirective,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbModal, useValue: {} },
         { provide: AuthenticationService, useValue: mockAuthService },
         { provide: JobService, useValue: mockJobService },

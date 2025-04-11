@@ -1,3 +1,4 @@
+
 insert into task (name, display_name, task_type, description, days_to_complete, upload_subfolder_name,
                   upload_type, uploadable_file_types, help_link,
                   created_by, created_date)

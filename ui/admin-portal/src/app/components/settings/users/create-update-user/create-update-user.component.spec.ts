@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -30,7 +30,6 @@ import {MockUser} from "../../../../MockData/MockUser";
 import {SearchUserRequest} from "../../../../model/base";
 import {Role} from "../../../../model/user";
 import {config_test} from "../../../../../config-test";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../../services/authentication.service";
 
 describe('CreateUpdateUserComponent', () => {
@@ -56,9 +55,7 @@ describe('CreateUpdateUserComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateUpdateUserComponent],
-      imports: [FormsModule,ReactiveFormsModule,NgSelectModule,HttpClientTestingModule,
-        LocalStorageModule.forRoot({}),
-      ],
+      imports: [FormsModule,ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
       providers: [
         NgbActiveModal,
         { provide: UserService, useValue: userServiceSpyObj },

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+import static org.tctalent.server.util.NextStepHelper.isNextStepDifferent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -47,6 +49,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -61,9 +64,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
-import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Employer;
-import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -73,9 +74,9 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.repository.db.JobSpecification;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -91,12 +92,12 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
+import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -137,6 +138,7 @@ public class JobServiceImpl implements JobService {
 
     private final JobChatService jobChatService;
     private final JobServiceHelper jobServiceHelper;
+    private final OppNotificationService oppNotificationService;
     private final PartnerService partnerService;
     private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceConfig salesforceConfig;
@@ -146,7 +148,6 @@ public class JobServiceImpl implements JobService {
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final JobOppIntakeService jobOppIntakeService;
-    private final ChatPostService chatPostService;
 
     /**
      * Updates the closing logic to say tha when a job is closed in the given stage, then any
@@ -318,8 +319,10 @@ public class JobServiceImpl implements JobService {
         SavedList exclusionList;
         try {
            //Create exclusion list for the employer (account) associated with this job
-           exclusionList =
-               salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
+           exclusionList = salesforceBridgeService.findSeenCandidates(
+               exclusionListName,
+               job.getAccountId() != null ? job.getAccountId() : job.getEmployerEntity().getSfId()
+           );
         } catch (Exception ex) {
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
@@ -351,7 +354,7 @@ public class JobServiceImpl implements JobService {
         jobChatService.createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, job);
 
         //Add chats with each source partner
-        List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+        List<PartnerImpl> sourcePartners = partnerService.listActiveSourcePartners();
         for (PartnerImpl sourcePartner : sourcePartners) {
             jobChatService.createJobCreatorSourcePartnerChat(job, sourcePartner);
         }
@@ -608,8 +611,13 @@ public class JobServiceImpl implements JobService {
 
         final JobOpportunityStage stage = job.getStage();
         if (stage.compareTo(JobOpportunityStage.candidateSearch) < 0 )  {
-            //Current stage is before CandidateSearch so update it to CandidateSearch here
-            job.setStage(JobOpportunityStage.candidateSearch);
+            //Current stage is before CandidateSearch so update it
+
+            //New stage will depend on skipCandidateSearch
+            JobOpportunityStage nextStage =
+                job.isSkipCandidateSearch() ? JobOpportunityStage.visaEligibility :
+                    JobOpportunityStage.candidateSearch;
+            job.setStage(nextStage);
 
             //Update Salesforce stage to match - setting Next Step and Due date
             final LocalDate submissionDueDate = job.getSubmissionDueDate();
@@ -619,7 +627,8 @@ public class JobServiceImpl implements JobService {
             final String nextStep = nowDate + ": Waiting to receive candidate CVs for review";
 
             salesforceService.updateEmployerOpportunityStage(
-                job.getSfId(), JobOpportunityStage.candidateSearch, nextStep, submissionDueDate);
+                job, JobOpportunityStage.candidateSearch, nextStep, submissionDueDate
+            );
         }
 
         job.setPublishedBy(loggedInUser);
@@ -637,33 +646,11 @@ public class JobServiceImpl implements JobService {
             SavedList suggestedList = candidateSavedListService.copy(submissionList, request);
             job.setSuggestedList(suggestedList);
         }
-        // Send a message to the job chat
-        sendMessageToJobChat(JobChatType.JobCreatorAllSourcePartners, job, "💼 <b>A new job has been published!</b>");
+
+        // Send out notifications
+        oppNotificationService.notifyNewJobOpp(job);
 
         return salesforceJobOppRepository.save(job);
-    }
-
-    //TODO JC This should be reused - see code in changeJobStage
-    private void sendMessageToJobChat(JobChatType chatType, SalesforceJobOpp job, String messageContent) {
-        // Get or create the job chat based on the provided chat type
-        JobChat jobChat = jobChatService.getOrCreateJobChat(chatType, job, null, null);
-
-        // Create the message post
-        String jobInfo = "<b>Job Name:</b> </br>" + job.getName() + "</br>"
-            + "<b> Job Creator: </b> </br>" + job.getJobCreator() + "</br>"
-            + "<b> Job Country: </b> </br>" + job.getCountry().getName() + "</br>"
-            // Add more job information fields as needed
-            + "</br>"; // Add a newline for readability
-        String fullMessageContent = messageContent + "</br>" + jobInfo; // Combine message content and job info
-
-        Post messagePost = new Post();
-        messagePost.setContent(fullMessageContent);
-
-        // Create the chat post
-        ChatPost chatPost = chatPostService.createPost(messagePost, jobChat, userService.getSystemAdminUser());
-
-        // Publish the chat post
-        chatPostService.publishChatPost(chatPost);
     }
 
 
@@ -805,75 +792,19 @@ public class JobServiceImpl implements JobService {
     }
 
     private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
+
+        //Perform any notifications before actually applying the change so that we have the
+        //old and current state
+        oppNotificationService.notifyJobOppChanges(job, request);
+
         final Boolean evergreen = request.getEvergreen();
         if (evergreen != null) {
             job.setEvergreen(evergreen);
         }
 
-        final String nextStep = request.getNextStep();
-        if (nextStep != null) {
-            //Process next Step
-            User loggedInUser = userService.getLoggedInUser();
-            if (loggedInUser == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
-
-            String processedNextStep = auditStampNextStep(
-                loggedInUser.getUsername(), LocalDate.now(), job.getNextStep(), nextStep);
-
-            // If next step details changing, send automated post to JobCreatorAllSourcePartners chat.
-            if (request.getNextStep() != null) {
-                // To compare previous next step to new one, need to ensure neither is null.
-                // Job opps are auto-populated with a value for next step when created, but this has
-                // not always been the case.
-                String currentNextStep = job.getNextStep() == null ? "" : job.getNextStep();
-
-                // If only the due date has changed, we still want to send a message.
-                // As above, there are some old cases with null values that need to be dealt with.
-                LocalDate currentDueDate =
-                    job.getNextStepDueDate() == null ?
-                        LocalDate.of(1970, 1, 1) : job.getNextStepDueDate();
-
-                // If the request due date is null (user deletes the existing value in the form but
-                // doesn't set a new one, then submits) it will not be used (see below) — so, for
-                // purpose of comparison we give it the same value as the current due date (no
-                // message will be sent because they're the same).
-                // TODO: next step due date should be a required value in the form
-                LocalDate requestDueDate =
-                    request.getNextStepDueDate() == null ?
-                        currentDueDate : request.getNextStepDueDate();
-
-                if (!processedNextStep.equals(currentNextStep) || !requestDueDate.equals(
-                    currentDueDate)) {
-                    // Find the relevant job chat
-                    JobChat jcspChat = jobChatService.getOrCreateJobChat(
-                        JobChatType.JobCreatorAllSourcePartners,
-                        job,
-                        null,
-                        null
-                    );
-
-                    // Set the chat post content
-                    Post autoPostNextStepChange = new Post();
-                    autoPostNextStepChange.setContent(
-                        "💼 <b>" + job.getName()
-                            + "</b> 🪜<br> The next step details for this job opportunity have changed:"
-                            + "<br><b>Next step:</b> " + processedNextStep
-                            + "<br><b>Due date:</b> "
-                            + (request.getNextStepDueDate() == null ?
-                            job.getNextStepDueDate() : request.getNextStepDueDate())
-                    );
-
-                    // Create the chat post
-                    ChatPost nextStepChangeChatPost = chatPostService.createPost(
-                        autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
-
-                    // Publish the chat post
-                    chatPostService.publishChatPost(nextStepChangeChatPost);
-                }
-            }
-
-            job.setNextStep(processedNextStep);
+        final Boolean skipCandidateSearch = request.getSkipCandidateSearch();
+        if (skipCandidateSearch != null) {
+            job.setSkipCandidateSearch(skipCandidateSearch);
         }
 
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
@@ -898,6 +829,14 @@ public class JobServiceImpl implements JobService {
         if (stage != null) {
             changeJobStage(job, stage);
         }
+
+        final String newJobName = request.getJobName();
+        if (newJobName != null) {
+            String oldJobName = job.getName();
+            job.setName(newJobName);
+            savedSearchService.updateSuggestedSearchesNames(job, oldJobName);
+            savedListService.updateAssociatedListsNames(job);
+        }
     }
 
     /**
@@ -908,34 +847,6 @@ public class JobServiceImpl implements JobService {
      * @param stage New stage
      */
     private void changeJobStage(SalesforceJobOpp job, JobOpportunityStage stage) {
-        //Do automation logic
-        // If stage changing, send automate post to JobCreatorAllSourcePartners chat
-        if (!stage.equals(job.getStage())) {
-
-            // Find the relevant job chat
-            JobChat jcaspChat = jobChatService.getOrCreateJobChat(
-                JobChatType.JobCreatorAllSourcePartners,
-                job,
-                null,
-                null
-            );
-
-            // Set the chat post content
-            Post autoPostJobOppStageChange = new Post();
-            autoPostJobOppStageChange.setContent(
-                "💼 <b>" + job.getName()
-                    + "</b> 🪜<br> This job opportunity has changed stage from '" + job.getStage()
-                    + "' to '" + stage + "'."
-            );
-
-            // Create the chat post
-            ChatPost jobOppStageChangeChatPost = chatPostService.createPost(
-                autoPostJobOppStageChange, jcaspChat, userService.getSystemAdminUser());
-
-            // Publish the chat post
-            chatPostService.publishChatPost(jobOppStageChangeChatPost);
-        }
-
         job.setStage(stage);
 
         //Do automation logic
@@ -952,10 +863,6 @@ public class JobServiceImpl implements JobService {
                     job.setEvergreenChild(evergreenChild);
                 }
             }
-        }
-
-        if (stage.isClosed()) {
-            closeUnclosedCandidateOppsForJob(job, stage);
         }
     }
 
@@ -1048,8 +955,12 @@ public class JobServiceImpl implements JobService {
         final JobOpportunityStage stage = request.getStage();
         final String nextStep = request.getNextStep();
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
-        salesforceService.updateEmployerOpportunityStage(
-            job.getSfId(), stage, nextStep, nextStepDueDate);
+        salesforceService.updateEmployerOpportunityStage(job, stage, nextStep, nextStepDueDate);
+
+        final String jobName = request.getJobName();
+        if (jobName != null) {
+            salesforceService.updateEmployerOpportunityName(job.getSfId(), jobName);
+        }
 
         updateJobFromRequest(job, request);
         job.setAuditFields(loggedInUser);
@@ -1141,33 +1052,203 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.save(job);
     }
 
-    //TODO JC Do we need to stop doing this?
+    /**
+     * Fetches all open SF Jobs on the TC DB and supplies them to {@link #syncOpenJobsFromSf(List)}
+     * where they are combined with open jobs from SF whose stage has recently changed. The
+     * resulting collection is used to update the TC opps with values from their SF equivalents, if
+     * changes have been made there.
+     *
+     * <p>While that would seem to favour changes made on SF, that is not the outcome: because the
+     * TC updates SF opps in real-time, most SF records contain TC data - in which cases no update
+     * will be performed. It is not the preferred user behaviour for updates to be made on SF, but
+     * until safeguards are put in place, this scheduled update (daily at 1am GMT) keeps TC data as
+     * accurate as possible.
+     */
+    @Transactional
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
-    @SchedulerLock(name = "JobService_updateOpenJobs", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
-    @Async
+    @SchedulerLock(name = "JobOppSyncFromSalesforce", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
     @Override
-    public void updateOpenJobs() {
+    public void initiateOpenJobSyncFromSf() {
         try {
-            //Find all open Salesforce jobs
+            // Find all open Jobs on TC
             SearchJobRequest request = new SearchJobRequest();
             request.setSfOppClosed(false);
 
             List<SalesforceJobOpp> jobs = searchJobsUnpaged(request);
 
-            //Populate sfIds of jobs
+            // Populate List with their SF IDs
             List<String> sfIds = jobs.stream()
                 .map(SalesforceJobOpp::getSfId)
                 .collect(Collectors.toList());
 
-            //Now update them from Salesforce
-            salesforceJobOppService.updateJobs(sfIds);
+            // Now update them from their Salesforce equivalent, if changes made there
+            syncOpenJobsFromSf(sfIds);
         } catch (Exception e) {
             LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("JobService.updateOpenJobs")
-                .message("Failed to update open jobs")
+                .action("JobOppSyncFromSalesforce")
+                .message("Failed to update open Jobs from Salesforce equivalents")
                 .logError(e);
         }
+    }
+
+    /**
+     * Updates TC Jobs corresponding to the given SF IDs, if the SF equivalent has new changes.
+     * <p/>
+     * Will also update TC Jobs open on SF even if not provided, which is useful for Jobs which have
+     * been closed on the TC and then are reopened on SF. Typically, we only pass in IDs of local
+     * Jobs that are open in order to limit the total number of IDs. Otherwise, the total number of
+     * IDs being passed in will grow infinitely over time (and might eventually crash the SF link by
+     * making the SF query too long). This way the id's can be limited to open job opps only -
+     * ignoring closed opps. This approach ensures that closed opps can be reopened as a result of
+     * this update.
+     *
+     * @param sfIds Salesforce IDs of cache records to be updated from Salesforce
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    private void syncOpenJobsFromSf(List<String> sfIds) throws SalesforceException {
+        if (sfIds != null && !sfIds.isEmpty()) {
+            LogBuilder.builder(log)
+                .action("JobServiceImpl_syncOpenJobsFromSf")
+                .message("Updating open Job Opportunities from Salesforce")
+                .logInfo();
+
+            // Fetch Salesforce equivalents in batches - because there's a 4,000-character limit on
+            // single strings in a SOQL WHERE clause, which the concatenated sfIds might exceed.
+            int totalItems = sfIds.size();
+            int batchSize = 100;
+
+            // Fetch from Salesforce any potentially reopened Opps and use to initialise list of
+            // sfOpps to be used for potential updates.
+            List<Opportunity> potentialReopenedOpps =
+                salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.JOB);
+            List<Opportunity> sfOpps = new ArrayList<>(potentialReopenedOpps);
+
+            // To avoid duplicates in the next step, create Set of SF IDs for comparison
+            Set<String> sfOppIds = sfOpps.stream()
+                .map(Opportunity::getId)
+                .collect(Collectors.toSet());
+
+            for (int i = 0; i < totalItems; i += batchSize) {
+                List<String> batch =
+                    new ArrayList<>(sfIds.subList(i, Math.min(i + batchSize, totalItems)));
+
+                // Remove any ID that exists in the reopenedOppIds Set
+                batch.removeIf(sfOppIds::contains);
+
+                sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.JOB));
+            }
+
+            LogBuilder.builder(log)
+                .action("UpdateJobs")
+                .message("Loaded " + sfOpps.size() + " job opportunities from Salesforce")
+                .logInfo();
+
+            processOpenJobSyncBatch(sfOpps);
+        }
+    }
+
+    /**
+     * Takes a List containing objects of type {@link Opportunity}, populated by Salesforce Job Opps,
+     * and updates their TC equivalent if changes have been made on Salesforce.
+     * @param sfOpps List of {@link Opportunity} to update from
+     */
+    private void processOpenJobSyncBatch(List<Opportunity> sfOpps) {
+        int count = 0;
+        int updates = 0;
+
+        for (Opportunity sfOpp : sfOpps) {
+            try {
+                String id = sfOpp.getId();
+                //Fetch DB with id
+                SalesforceJobOpp tcOpp = salesforceJobOppRepository.findBySfId(id)
+                    .orElse(null);
+                if (tcOpp != null) {
+                    UpdateJobRequest updateRequest =
+                        extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
+                    if (updateRequest != null) {
+                        updateJobFromRequest(tcOpp, updateRequest);
+                        salesforceJobOppRepository.save(tcOpp);
+                        updates++;
+                    }
+                }
+                count++;
+
+                if ((count % 100 == 0) || count == sfOpps.size()) {
+                    LogBuilder.builder(log)
+                        .action("Sync Open Jobs From Salesforce")
+                        .message("Processed " + count + " Job Opps from Salesforce, of which "
+                            + updates + " led to update of TC equivalent.")
+                        .logInfo();
+                }
+
+            } catch (Exception e) {
+                LogBuilder.builder(log)
+                    .action("Process open job sync batch")
+                    .message("Failed to process job with SF ID " + sfOpp.getId() + ". Error: " +
+                        e.getMessage())
+                    .logError(e);
+            }
+        }
+    }
+
+    /**
+     * Creates {@link UpdateJobRequest} from a Salesforce Job Opportunity. Only adds a value if the
+     * SF version is non-null and different to the TC version. Returns null if no values added.
+     * @param sfOpp SF Opp from which oppParams will be extracted
+     * @param tcOpp TC equivalent to which it will be compared
+     * @return {@link UpdateJobRequest} if any values added, otherwise null
+     */
+    private @Nullable UpdateJobRequest extractUpdateJobRequestFromSalesforceOpp(
+        @NonNull Opportunity sfOpp,
+        @NonNull SalesforceJobOpp tcOpp
+    ) {
+        UpdateJobRequest request = new UpdateJobRequest();
+        int changes = 0;
+
+        // NEXT STEP
+        // Change only if SF value is non-null and user-entered value different to TC version
+        if (sfOpp.getNextStep() != null) {
+            if (isNextStepDifferent(tcOpp.getNextStep(), sfOpp.getNextStep())) {
+                request.setNextStep(sfOpp.getNextStep());
+                changes++;
+            }
+        }
+
+        // NEXT STEP DUE DATE
+        final String nextStepDueDate = sfOpp.getNextStepDueDate();
+        if (nextStepDueDate != null) {
+            try {
+                LocalDate parsedDate = LocalDate.parse(nextStepDueDate);
+                if (!Objects.equals(tcOpp.getNextStepDueDate(), parsedDate)) {
+                    request.setNextStepDueDate(parsedDate);
+                    changes++;
+                }
+            } catch (DateTimeParseException ex) {
+                LogBuilder.builder(log)
+                    .action("extractUpdateJobRequestFromSalesforceOpp")
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate +
+                        " in Job Opp from Salesforce: " + sfOpp.getName())
+                    .logError();
+            }
+        }
+
+        // STAGE
+        try {
+            JobOpportunityStage stage = JobOpportunityStage.textToEnum(sfOpp.getStageName());
+            if (tcOpp.getStage() != stage) {
+                request.setStage(stage);
+                changes++;
+            }
+        } catch (IllegalArgumentException e) {
+            LogBuilder.builder(log)
+                .action("extractUpdateJobRequestFromSalesforceOpp")
+                .message("Error decoding stage: " + sfOpp.getStageName() +
+                    " in Job Opp from Salesforce: " + sfOpp.getName())
+                .logError();
+        }
+
+        return changes > 0 ? request : null;
     }
 
     @Override

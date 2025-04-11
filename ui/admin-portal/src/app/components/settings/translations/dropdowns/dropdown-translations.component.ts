@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
-import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
@@ -35,7 +35,7 @@ export class DropdownTranslationsComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -44,11 +44,11 @@ export class DropdownTranslationsComponent implements OnInit {
   systemLanguages: SystemLanguage[];
   types: SearchResults<any>;
 
-  topLevelForm: FormGroup;
-  translations: FormArray;
+  topLevelForm: UntypedFormGroup;
+  translations: UntypedFormArray;
 
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private modalService: NgbModal,
               private languageService: LanguageService,
               private countryService: CountryService,
@@ -139,7 +139,7 @@ export class DropdownTranslationsComponent implements OnInit {
   }
 
   updateTranslation(index) {
-    const translationForm = this.topLevelForm.get(`translations.${index}`) as FormGroup;
+    const translationForm = this.topLevelForm.get(`translations.${index}`) as UntypedFormGroup;
     const request = translationForm.value;
     if (request.translatedId) {
       //update

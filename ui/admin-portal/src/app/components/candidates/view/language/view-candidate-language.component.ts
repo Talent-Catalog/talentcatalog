@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate, hasIeltsExam} from '../../../../model/candidate';
 import {CandidateLanguage} from '../../../../model/candidate-language';
@@ -22,13 +22,14 @@ import {CandidateLanguageService} from '../../../../services/candidate-language.
 import {EditCandidateLanguageComponent} from './edit/edit-candidate-language.component';
 import {CreateCandidateLanguageComponent} from "./create/create-candidate-language.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-language',
   templateUrl: './view-candidate-language.component.html',
   styleUrls: ['./view-candidate-language.component.scss']
 })
-export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
+export class ViewCandidateLanguageComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -40,34 +41,11 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
   error;
 
   constructor(private candidateLanguageService: CandidateLanguageService,
+              private candidateService: CandidateService,
               private modalService: NgbModal ) {
   }
 
   ngOnInit() {
-    /*
-      If an accordion in intake set subscribe to the toggle all buttons in intake candidate component
-      called when the toggleAll method is called in the parent component
-     */
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.search();
-    }
-  }
-
-  search() {
-    this.loading = true;
-    this.candidateLanguageService.list(this.candidate.id).subscribe(
-      candidateLanguages => {
-        this.candidateLanguages = candidateLanguages;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
   }
 
   editCandidateLanguage(candidateLanguage: CandidateLanguage) {
@@ -79,7 +57,7 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
     editCandidateLanguageModal.componentInstance.candidateLanguage = candidateLanguage;
 
     editCandidateLanguageModal.result
-      .then((candidateLanguage) => this.search())
+      .then((candidateLanguage) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -93,7 +71,7 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
     createCandidateLanguageModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateLanguageModal.result
-      .then((candidateLanguage) => this.search())
+      .then((candidateLanguage) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -112,13 +90,12 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
           this.candidateLanguageService.delete(candidateLanguage.id).subscribe(
             (user) => {
               this.loading = false;
-              this.search();
+              this.candidateService.updateCandidate()
             },
             (error) => {
               this.error = error;
               this.loading = false;
             });
-          this.search();
         }
       })
       .catch(() => { /* Isn't possible */ });

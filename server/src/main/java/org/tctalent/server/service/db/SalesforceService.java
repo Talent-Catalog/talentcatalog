@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
@@ -49,14 +50,22 @@ import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 public interface SalesforceService {
 
     /**
-     * Fetches opportunities from Salesforce with Job opportunity fields populated.
-     * <p/>
-     * The opportunities fetched are those with the specified ids plus recently changed open
-     * job opportunities.
-     * @param sfIds Ids of requested Salesforce records
-     * @return Opportunities
+     * Fetches opportunities matching the specified IDs with fields populated from Salesforce.
+     * @param type the OpportunityType being processed - selects appropriate SQL query
+     * @return Opportunities matching criteria from Salesforce
      */
-    List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds);
+    List<Opportunity> fetchOpportunitiesByOpenOnSF(OpportunityType type)
+        throws SalesforceException;
+
+    /**
+     * Fetches open opportunities whose stage was recently changed, with fields populated from
+     * Salesforce.
+     * @param sfIds IDs of requested Salesforce records
+     * @param type the OpportunityType being processed - selects appropriate SQL query
+     * @return Opportunities matching criteria from Salesforce
+     */
+    List<Opportunity> fetchOpportunitiesById(Collection<String> sfIds, OpportunityType type)
+        throws SalesforceException;
 
     /**
      * Fetches opportunity with the given id from Salesforce.
@@ -328,7 +337,7 @@ public interface SalesforceService {
      * Updates the Salesforce Employer opportunity record corresponding to the given Salesforce id
      * to the given stage, next step and due date.
      *
-     * @param sfId Salesforce id of opportunity.
+     * @param job The given {@link SalesforceJobOpp}
      * @param stage New stage
      * @param nextStep New next step
      * @param dueDate Next step due date
@@ -336,7 +345,17 @@ public interface SalesforceService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void updateEmployerOpportunityStage(
-        String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
+        SalesforceJobOpp job, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
+        throws SalesforceException, WebClientException;
+
+    /**
+     * Updates the name on the SF Employer Opportunity record corresponding to given SF ID.
+     * @param sfId SF ID of opportunity
+     * @param jobName the new name for the Job
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    void updateEmployerOpportunityName(String sfId, String jobName)
         throws SalesforceException, WebClientException;
 
     /**

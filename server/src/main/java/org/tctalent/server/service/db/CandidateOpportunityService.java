@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -181,4 +181,19 @@ public interface CandidateOpportunityService {
      */
     CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request)
         throws NoSuchObjectException;
+
+    /**
+     * Processes a batch update of TC Opps from their Salesforce equivalents. Iterates through the
+     * provided Salesforce Opps, fetching the TC equivalent and updating accordingly.
+     * @param oppBatch List of Opportunities fetched from Salesforce
+     * @return updates - int count of TC Opps actually updated
+     */
+    int processCaseUpdateBatch(List<Opportunity> oppBatch);
+
+    /**
+     * Finds all open TC Candidate Opps with a linked SF Opp
+     * @return List of sfIds for all Candidate Opps matching the query criteria
+     */
+    List<String> findAllNonNullSfIdsByClosedFalse();
+
 }

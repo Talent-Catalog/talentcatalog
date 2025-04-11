@@ -1,11 +1,26 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {ViewJobSubmissionListComponent } from './view-job-submission-list.component';
+import {ViewJobSubmissionListComponent} from './view-job-submission-list.component';
 import {Job} from '../../../../../model/job';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ShowCandidatesComponent} from "../../../../candidates/show/show-candidates.component";
-import {FormBuilder,FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule} from "angular-2-local-storage";
-import {DatePipe,TitleCasePipe} from "@angular/common";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
+import {DatePipe, TitleCasePipe} from "@angular/common";
 import {ActivatedRoute} from "@angular/router";
 import {of} from "rxjs";
 import {SortedByComponent} from "../../../../util/sort/sorted-by.component";
@@ -17,6 +32,7 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {RouterTestingModule} from "@angular/router/testing";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockJob} from "../../../../../MockData/MockJob";
+
 describe('ViewJobSubmissionListComponent', () => {
   let component: ViewJobSubmissionListComponent;
   let fixture: ComponentFixture<ViewJobSubmissionListComponent>;
@@ -28,7 +44,6 @@ describe('ViewJobSubmissionListComponent', () => {
         HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
-        LocalStorageModule.forRoot({}),
         NgbModule,
         NgSelectModule,
         RouterTestingModule
@@ -38,7 +53,7 @@ describe('ViewJobSubmissionListComponent', () => {
          DatePipe,
          TitleCasePipe,
          { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
-          FormBuilder,
+          UntypedFormBuilder,
       ]
     })
     .compileComponents();

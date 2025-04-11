@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -17,6 +17,13 @@
 <div class="row">
   <div class="col-12 col-md-4">
       <label class="form-label" for="savedSearch">Base Search</label>
+      <button class="tool-tip-button"
+              [ngbTooltip]="baseSearchTooltip"
+              placement="bottom top"
+              triggers="click"
+              tooltipClass="search-tips"
+      ><i class="fa-regular fa-circle-question fa-xs"></i>
+      </button>
       <div class="input-group">
         <input id="savedSearch"
                type="text" class="form-control"
@@ -37,7 +44,16 @@
       </ng-template>
     </div>
 
-
+  <ng-template #baseSearchTooltip>
+    <p>
+      Use this field to select another saved search whose criteria will be applied <i>in addition</i>
+      to whatever you specify in this search.
+    </p>
+    <p>
+      E.g., you could build a few saved searches that each apply the criteria of a given immigration
+      pathway, and use them interchangeably underneath your current skills/education search.
+    </p>
+  </ng-template>
 
   <div *ngIf="this.selectedBaseSearch" class="col-auto">
       <app-candidate-source

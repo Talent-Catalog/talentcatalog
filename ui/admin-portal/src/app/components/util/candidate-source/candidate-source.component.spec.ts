@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,9 +29,9 @@ import {of, throwError} from "rxjs";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {MockSavedList} from "../../../MockData/MockSavedList";
-import {LocalStorageService} from "angular-2-local-storage";
 import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";
 import {SavedSearch} from "../../../model/saved-search";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('CandidateSourceComponent', () => {
   let component: CandidateSourceComponent;

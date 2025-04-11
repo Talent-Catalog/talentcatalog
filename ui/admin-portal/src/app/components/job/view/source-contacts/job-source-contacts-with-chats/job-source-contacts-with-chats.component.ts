@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {MainSidePanelBase} from "../../../../util/split/MainSidePanelBase";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../model/chat";
@@ -17,6 +33,7 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
 
   @Input() job: Job;
   @Input() editable: boolean;
+  @Input() fromUrl: boolean;
 
   chatHeader: string;
   error: any;
@@ -43,6 +60,14 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
 
       //Selection can't change
       this.selectable = false;
+    }
+
+    /** If this component is viewed from the side panel (not from a URL view) then we want to stack the panels so that
+     * the chat and table have full width for better UI experience.
+     */
+    if (!this.fromUrl) {
+      this.mainPanelColWidth = 12;
+      this.sidePanelColWidth = 12;
     }
   }
 

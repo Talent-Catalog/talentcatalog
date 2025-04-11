@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -33,6 +34,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.PartnerJobRelation;
 import org.tctalent.server.model.db.PartnerJobRelationKey;
+import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
@@ -42,16 +44,20 @@ import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.PartnerSpecification;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
+import org.tctalent.server.security.PublicApiKeyGenerator;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.PublicIDService;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class PartnerServiceImpl implements PartnerService {
+    private final CountryService countryService;
     private final PartnerRepository partnerRepository;
     private final PartnerJobRelationRepository partnerJobRelationRepository;
-    private final CountryService countryService;
+    private final PasswordEncoder passwordEncoder;
+    private final PublicIDService publicIDService;
 
     @Override
     public @NonNull PartnerImpl create(UpdatePartnerRequest request)
@@ -63,6 +69,10 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         PartnerImpl partner = new PartnerImpl();
+        partner.setPublicId(publicIDService.generatePublicID());
+
+        // Public API access fields
+        populatePublicApiAccessFields(request, partner);
 
         //Populate common attributes
         populateCommonAttributes(request, partner);
@@ -72,16 +82,7 @@ public class PartnerServiceImpl implements PartnerService {
         partner.setAutoAssignable(request.isAutoAssignable());
 
         //Source countries
-        Set<Country> sourceCountries = new HashSet<>();
-        Set<Long> sourceCountryIds = request.getSourceCountryIds();
-        if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
-            //Check that all countries are known - populate set
-            for (Long sourceCountryId : sourceCountryIds) {
-                Country country = countryService.getCountry(sourceCountryId);
-                sourceCountries.add(country);
-            }
-        }
-        partner.setSourceCountries(sourceCountries);
+        populateSourceCountries(request.getSourceCountryIds(), partner);
 
         return partnerRepository.save(partner);
     }
@@ -101,6 +102,73 @@ public class PartnerServiceImpl implements PartnerService {
 
         partner.setSflink(request.getSflink());
         partner.setWebsiteUrl(request.getWebsiteUrl());
+    }
+
+    private void populatePublicApiAccessFields(UpdatePartnerRequest request, Partner partner) {
+        boolean currentPublicApiAccess = partner.isPublicApiAccess();
+        if (currentPublicApiAccess != request.isPublicApiAccess()) {
+            //Partner api access has changed:
+            if (request.isPublicApiAccess()) {
+                //New request for public api access
+
+                // Generate the plain API key
+                String plainApiKey = PublicApiKeyGenerator.generateApiKey();
+                // Hash the API key for secure storage
+                String hashedKey = passwordEncoder.encode(plainApiKey);
+                partner.setPublicApiKey(plainApiKey);
+                partner.setPublicApiKeyHash(hashedKey);
+            } else {
+                //Giving up public api access
+                //Clear hashed key
+                partner.setPublicApiKeyHash(null);
+                //Note that disabling a key requires clearing the cache (through restart or otherwise)
+            }
+        }
+        //Update public api authorities (even if not currently using public api)
+        partner.setPublicApiAuthorities(request.getPublicApiAuthorities());
+    }
+
+    private void populateSourceCountries(Set<Long> sourceCountryIds, Partner partner) {
+        Set<Country> sourceCountries = new HashSet<>();
+        if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
+            //Check that all countries are known - populate set
+            for (Long sourceCountryId : sourceCountryIds) {
+                Country country = countryService.getCountry(sourceCountryId);
+                sourceCountries.add(country);
+            }
+        }
+        partner.setSourceCountries(sourceCountries);
+    }
+
+    @Nullable
+    @Override
+    public PublicApiPartnerDto findPublicApiPartnerDtoByKey(String apiKey) {
+        //Iterate though all users with public api key hashes - finding one that matches the apiKey.
+        //Note that you can't just compute the apiKey hash and look up for a matching hash because
+        //each hash call on the same apiKey will produce a different hash value - this is because
+        //a random "salt" is added to each hash call.
+        //See, for example, https://auth0.com/blog/hashing-in-action-understanding-bcrypt/
+        //
+        //Note also that the public API server stores successfully validated apiKeys and their
+        //associated partners in an in memory hash table (cache) so this method is only called for
+        //the first time each ApiKey is encountered - or when the hashtable is cleared (eg server
+        //restarts).
+
+        PublicApiPartnerDto partner = partnerRepository.findPublicApiPartnerDtos().stream()
+            .filter(p -> passwordEncoder.matches(apiKey, p.getPublicApiKeyHash()))
+            .findFirst()
+            .orElse(null);
+
+        return partner;
+    }
+
+    @NonNull
+    @Override
+    public Partner findByPublicId(String publicId) {
+        final PartnerImpl partner = partnerRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new NoSuchObjectException(Partner.class, publicId));
+
+        return partner;
     }
 
     @NonNull
@@ -159,12 +227,20 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public List<PartnerImpl> listSourcePartners() {
+    public List<PartnerImpl> listActiveSourcePartners() {
         SearchPartnerRequest request = new SearchPartnerRequest();
         request.setSourcePartner(true);
         request.setStatus(Status.active);
         return search(request);
     }
+
+    @Override
+    public List<PartnerImpl> listAllSourcePartners() {
+        SearchPartnerRequest request = new SearchPartnerRequest();
+        request.setSourcePartner(true);
+        return search(request);
+    }
+
 
     @Override
     public List<PartnerImpl> search(SearchPartnerRequest request) {
@@ -181,6 +257,18 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
+    public void setPublicIds(List<PartnerImpl> partners) {
+        for (Partner partner : partners) {
+            if (partner.getPublicId() == null) {
+                partner.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!partners.isEmpty()) {
+            partnerRepository.saveAll(partners);
+        }
+    }
+
+    @Override
     public @NonNull PartnerImpl update(long id, UpdatePartnerRequest request)
         throws InvalidRequestException, NoSuchObjectException {
 
@@ -192,15 +280,11 @@ public class PartnerServiceImpl implements PartnerService {
 
         Partner partner = getPartner(id);
 
-        Set<Country> sourceCountries = new HashSet<>();
-        Set<Long> sourceCountryIds = request.getSourceCountryIds();
-        if (sourceCountryIds != null) {
-            //Check that all countries are known - populate set
-            for (Long sourceCountryId : sourceCountryIds) {
-                Country country = countryService.getCountry(sourceCountryId);
-                sourceCountries.add(country);
-            }
-        }
+        // Public API access fields
+        populatePublicApiAccessFields(request, partner);
+
+        //Source countries
+        populateSourceCountries(request.getSourceCountryIds(), partner);
 
         //Populate common attributes
         populateCommonAttributes(request, partner);
@@ -210,7 +294,19 @@ public class PartnerServiceImpl implements PartnerService {
         partner.setDefaultPartnerRef(request.isDefaultPartnerRef());
         partner.setRegistrationLandingPage(request.getRegistrationLandingPage());
         partner.setAutoAssignable(request.isAutoAssignable());
-        partner.setSourceCountries(sourceCountries);
+
+        if (request.getRedirectPartnerId() != null) {
+            PartnerImpl newPartner = manageRedirectPartnerAssignment(request.getRedirectPartnerId());
+            partner.setRedirectPartner(newPartner);
+
+            LogBuilder.builder(log)
+                .action("redirectInactivePartnerUrl")
+                .message("URLs identifying inactive partner " + partner.getName() +
+                    " will now redirect to " + newPartner.getName() + ".")
+                .logInfo();
+        } else {
+          partner.setRedirectPartner(null);
+        }
 
         return partnerRepository.save((PartnerImpl) partner);
     }
@@ -227,5 +323,20 @@ public class PartnerServiceImpl implements PartnerService {
         }
         pjr.setContact(contactUser);
         partnerJobRelationRepository.save(pjr);
+    }
+
+    private PartnerImpl manageRedirectPartnerAssignment(long redirectPartnerId) {
+        // Get the new partner that URLs will redirect to
+        PartnerImpl newPartner = (PartnerImpl) getPartner(redirectPartnerId);
+
+        // The partner we're redirecting to could itself have been deactivated in the past and
+        // therefore have had a redirectPartner assigned to it that we now wish to ignore -
+        // not only for operational reasons but also to avoid getting stuck in a recursive loop!
+        if (newPartner.getRedirectPartner() != null) {
+            newPartner.setRedirectPartner(null);
+            newPartner = partnerRepository.save(newPartner);
+        }
+
+        return newPartner;
     }
 }

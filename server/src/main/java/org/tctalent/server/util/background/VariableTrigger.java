@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,8 @@
 
 package org.tctalent.server.util.background;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.scheduling.Trigger;
@@ -32,7 +33,7 @@ import org.springframework.util.Assert;
 @Setter
 public class VariableTrigger implements Trigger {
     private final int percentageOfCpu;
-    private volatile long initialDelay;
+    private volatile Duration initialDelay;
 
     public VariableTrigger(int percentageOfCpu) {
         Assert.isTrue(percentageOfCpu > 0 && percentageOfCpu < 100,
@@ -41,21 +42,28 @@ public class VariableTrigger implements Trigger {
     }
 
     @Override
-    public Date nextExecutionTime(TriggerContext triggerContext) {
-        Date lastExecution = triggerContext.lastScheduledExecutionTime();
-        Date lastCompletion = triggerContext.lastCompletionTime();
+    public Instant nextExecution(TriggerContext triggerContext) {
+        Instant lastExecution = triggerContext.lastScheduledExecution();
+        Instant lastCompletion = triggerContext.lastCompletion();
         if (lastExecution == null || lastCompletion == null) {
-            return new Date(triggerContext.getClock().millis() + this.initialDelay);
+            Instant instant = triggerContext.getClock().instant();
+            Duration initialDelay = this.initialDelay;
+            if (initialDelay == null) {
+                return instant;
+            }
+            else {
+                return instant.plus(initialDelay);
+            }
         }
-        long processingTime = lastCompletion.getTime() - lastExecution.getTime();
+        Duration processingTime = Duration.between(lastExecution, lastCompletion);
 
         //Delay is some function of processing time
-        long delay = computeDelay(processingTime);
+        Duration delay = computeDelay(processingTime);
 
-        return new Date(lastCompletion.getTime() + delay);
+        return lastCompletion.plus(delay);
     }
 
-    private long computeDelay(long processingTime) {
+    private Duration computeDelay(Duration processingTime) {
         /*
           As an example, if desired percentageOfCPU is 50% then the delay will match the processing
           time. (100-50)/50 = 1.
@@ -67,6 +75,9 @@ public class VariableTrigger implements Trigger {
 
           So the delay ranges from 0 to 99 times the last processing time.
          */
-        return processingTime * (100 - percentageOfCpu)/percentageOfCpu;
+
+        return processingTime
+            .multipliedBy(100 - percentageOfCpu)
+            .dividedBy(percentageOfCpu);
     }
 }

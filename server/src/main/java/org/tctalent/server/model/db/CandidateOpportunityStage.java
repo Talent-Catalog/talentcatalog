@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ package org.tctalent.server.model.db;
  * Note that the string values of this enum MUST match the actual stage names for candidate
  * opportunities on Salesforce.
  * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
- * 
+ *
  */
 public enum CandidateOpportunityStage {
         prospect ("Prospect"),
@@ -62,6 +62,7 @@ public enum CandidateOpportunityStage {
         jobWithdrawn("Job withdrawn", true, false, false),
         relocatedNoJobOfferPathway("Relocated no job offer pathway", true, false, false),
         trainingNotCompleted("Training not completed", true, false, false),
+        programSuspended("Program suspended", true, false, false),
         ;
 
         private final String salesforceStageName;

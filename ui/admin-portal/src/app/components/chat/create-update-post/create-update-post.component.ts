@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, HostListener, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -21,7 +37,7 @@ export class CreateUpdatePostComponent implements OnInit {
 
   error: any;
   saving: any;
-  postForm: FormGroup;
+  postForm: UntypedFormGroup;
   quillEditorRef: Quill;
   public emojiPickerVisible: boolean = false;
   regexpLink: RegExp;
@@ -43,7 +59,7 @@ export class CreateUpdatePostComponent implements OnInit {
   public editorSelection: EditorSelection;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private rxStompService: RxStompService,
     private modalService: NgbModal,
     private chatPostService: ChatPostService,

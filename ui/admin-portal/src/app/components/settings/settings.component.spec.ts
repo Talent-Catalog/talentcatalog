@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,13 +17,13 @@ import {SettingsComponent} from "./settings.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AuthorizationService} from "../../services/authorization.service";
 import {AuthenticationService} from "../../services/authentication.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {NgbModule, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MockUser} from "../../MockData/MockUser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {SearchUsersComponent} from "./users/search-users.component";
+import {LocalStorageService} from "../../services/local-storage.service";
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;

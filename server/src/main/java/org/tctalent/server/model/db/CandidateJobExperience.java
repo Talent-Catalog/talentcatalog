@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,18 +16,20 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 @Getter
 @Setter
@@ -40,6 +42,22 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
+
+    /**
+     * Synchronizes the candidate field with the candidate obtained from the associated
+     * CandidateOccupation.
+     * <p>
+     * This method is automatically invoked before the entity is persisted or updated so that the
+     * candidate_id column in the candidate_job_experience table is correctly populated.
+     * </p>
+     */
+    @PrePersist
+    @PreUpdate
+    private void syncCandidate() {
+        if (this.candidateOccupation != null) {
+            this.candidate = this.candidateOccupation.getCandidate();
+        }
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")

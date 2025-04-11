@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -158,6 +158,10 @@ export class GeneralTranslationsComponent implements OnInit {
     return (!value || /^\s*$/.test(value));
   }
 
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
   }
@@ -170,6 +174,7 @@ export class GeneralTranslationsComponent implements OnInit {
     }
   }
 }
+
 
 const ALL_FIELDS = {
     "HEADER": {
@@ -321,6 +326,29 @@ const ALL_FIELDS = {
       "INELIGIBLE": {
         "EXPLANATION": null,
         "BUTTON": null
+      },
+      "EMAIL_VERIFICATION" : {
+        "BUTTON": null,
+        "IDLE": {
+          "TITLE": null,
+          "DESCRIPTION": null,
+          "UPDATE_EMAIL": null,
+          "SEND_BUTTON": null,
+          "LINK": null
+        },
+        "LOADING": {
+          "TITLE": null,
+          "DESCRIPTION": null
+        },
+        "EMAIL_SENT" : {
+          "TITLE": null,
+          "DESCRIPTION": null,
+          "SPAM": null,
+          "BUTTON": null,
+        },
+        "ERROR":{
+          "BUTTON":null,
+        }
       }
     },
     "REGISTRATION": {
@@ -358,17 +386,16 @@ const ALL_FIELDS = {
         "SUBMIT": null,
         "UPDATE": null
       },
-      "LANDING": {
-        "TITLE": null,
-        "PARA1": null,
-        "PARA2": null,
-        "BUTTON1": null
-      },
       "CONTACT": {
         "LABEL": {
           "EMAIL": null,
           "PHONE": null,
           "WHATSAPP": null,
+          "RELOCATEDFIELDS": null,
+          "RELOCATEDADDRESS": null,
+          "RELOCATEDCITY": null,
+          "RELOCATEDSTATE": null,
+          "RELOCATEDCOUNTRY": null,
           "USERNAME": null,
           "PASSWORD": null,
           "PASSWORDCONFIRMATION": null,
@@ -520,13 +547,15 @@ const ALL_FIELDS = {
       "TAB": {
         "PROFILE": null,
         "TASKS": null,
-        "OPPS": null
+        "OPPS": null,
+        "SERVICES": null,
       },
       "CONTACT": {
         "TITLE": null,
         "EMAIL": null,
         "PHONE": null,
-        "WHATSAPP": null
+        "WHATSAPP": null,
+        "RELOCATEDADDRESS": null
       },
       "PERSONAL": {
         "TITLE": null,
@@ -566,7 +595,9 @@ const ALL_FIELDS = {
         "ADDITIONALINFO": null,
         "SURVEY": null,
         "SURVEYCOMMENT": null,
-        "LINKEDIN": null
+        "LINKEDIN": null,
+        "NOTIFICATION_PREFERENCE": null,
+        "NOTIFICATION_PREFERENCE_HELP": null
       },
       "UPLOAD": {
         "TITLE": null
@@ -714,6 +745,34 @@ const ALL_FIELDS = {
     "NO": null,
     "UNSURE": null,
   },
+  'SERVICES': {
+    'TITLE': null,
+    'DESCRIPTION': null,
+    'DUOLINGO': {
+      'TAG': null,
+      'TITLE': null,
+      'DESCRIPTION': null,
+      'COUPONS_TITLE': null,
+      'COUPONS_DESC': null,
+      'COUPON_TITLE': null,
+      'COUPON_CTA': null,
+      'PAST_EXAMS': null,
+      'SCORE': null,
+      'YEAR': null,
+      'EXAM': {
+        'DEAR': null,
+        'INTRO': null,
+        'ABOUT': null,
+        'ABOUT_TEXT': null,
+        'TECHNICAL_STEPS': null,
+        'TECHNICAL_STEPS_TEXT': null,
+        'STEPS': null,
+        'STEPS_TEXT': null,
+        'GOOD_LUCK': null,
+        'CTA_BUTTON': null,
+      }
+    }
+  },
   "TASKS": {
     "TAB": null,
     "VIEWHELP": null,
@@ -817,12 +876,19 @@ const ALL_FIELDS = {
       "LINK-EDIT-BTN": null,
       "LINK-REMOVE-BTN": null,
       "LINK-SAVE-BTN": null,
-      "LINK-CANCEL-BTN": null
+      "LINK-CANCEL-BTN": null,
   },
   "CHAT_INFO": {
       "LABEL": {
         "PARTICIPANTS": null,
         "PURPOSE": null,
+      },
+      "HEADING": {
+        "CANDIDATE_PROSPECT": null,
+        "ALL_JOB_CANDIDATES": null,
+        "JOB_CREATOR_SOURCE_PARTNER": null,
+        "CANDIDATE_RECRUITING": null,
+        "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
       },
       "PARTICIPANTS": {
         "CANDIDATE_PROSPECT": null,

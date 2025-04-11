@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Directive, Input, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {CandidateService} from "../../../services/candidate.service";
@@ -64,7 +64,7 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
    * @param fb FormBuilder
    * @param candidateService CandidateService which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder, candidateService: CandidateService) {
+  protected constructor(protected fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(candidateService);
   }
 

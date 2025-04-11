@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
@@ -30,33 +30,37 @@ import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 public class HelpLinkFetchSpecification {
 
     public static Specification<HelpLink> buildSearchQuery(final SearchHelpLinkRequest request) {
-        return (helpLink, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (helpLink, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("HelpLinkFetchSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
 
+            Predicate conjunction = cb.conjunction();
+
             if (request.getCountryId() != null){
-                conjunction.getExpressions().add(
-                    builder.equal(helpLink.get("country").get("id"), request.getCountryId()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(helpLink.get("country").get("id"), request.getCountryId()));
             }
 
             if (request.getCaseStage() != null){
-                conjunction.getExpressions().add(
-                    builder.equal(helpLink.get("caseStage"), request.getCaseStage()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(helpLink.get("caseStage"), request.getCaseStage()));
             }
 
             if (request.getFocus() != null){
-                conjunction.getExpressions().add(
-                    builder.equal(helpLink.get("focus"), request.getFocus()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(helpLink.get("focus"), request.getFocus()));
             }
 
             if (request.getJobStage() != null){
-                conjunction.getExpressions().add(
-                    builder.equal(helpLink.get("jobStage"), request.getJobStage()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(helpLink.get("jobStage"), request.getJobStage()));
             }
 
             if (request.getNextStepName() != null){
-                conjunction.getExpressions().add(
-                    builder.equal(helpLink.get("nextStepInfo").get("nextStepName"),
+                conjunction = cb.and(conjunction,
+                    cb.equal(helpLink.get("nextStepInfo").get("nextStepName"),
                         request.getNextStepName()));
             }
 

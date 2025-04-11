@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -58,4 +58,23 @@ public interface BackgroundProcessingService {
    */
   void initiateDuplicateProcessing();
 
+  /**
+   * Adds publicID to any candidate that doesn't have one
+   */
+  void setCandidatePublicIds();
+
+  /**
+   * Adds publicID to any partner that doesn't have one
+   */
+  void setPartnerPublicIds();
+
+  /**
+   * Adds publicID to any saved list that doesn't have one
+   */
+  void setSavedListPublicIds();
+
+  /**
+   * Adds publicID to any saved search that doesn't have one
+   */
+  void setSavedSearchPublicIds();
 }

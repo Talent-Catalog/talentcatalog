@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,16 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +36,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -110,7 +114,15 @@ public class PartnerAdminApi implements
         request.setEmployer(employer);
 
         Partner partner = partnerService.update(id, request);
+
         return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_SYSTEMADMIN')")
+    @GetMapping("public-api-key/{api-key}")
+    public ResponseEntity<PublicApiPartnerDto> findPartnerByPublicApiKey(@PathVariable("api-key") String apiKey) {
+        PublicApiPartnerDto partner = partnerService.findPublicApiPartnerDtoByKey(apiKey);
+        return ResponseEntity.ok(partner);
     }
 
     @PutMapping("{id}/update-job-contact")

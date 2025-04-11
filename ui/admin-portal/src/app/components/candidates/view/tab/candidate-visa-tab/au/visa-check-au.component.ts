@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,7 +23,7 @@ import {
 } from '../../../../../../model/candidate';
 import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
+import {LocalStorageService} from "../../../../../../services/local-storage.service";
 
 @Component({
   selector: 'app-visa-check-au',

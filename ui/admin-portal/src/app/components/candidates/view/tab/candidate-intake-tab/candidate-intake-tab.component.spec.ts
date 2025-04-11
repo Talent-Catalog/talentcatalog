@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -101,6 +101,9 @@ import {
 import {
   IeltsScoreValidationComponent
 } from "../../../../util/ielts-score-validation/ielts-score-validation.component";
+import {
+  DetScoreValidationComponent
+} from "../../../../util/det-score-validation/det-score-validation.component";
 
 const mockCitizenship: CandidateCitizenship = {
   id: 1,
@@ -157,7 +160,9 @@ describe('CandidateIntakeTabComponent', () => {
     const occupationSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
     const languageSpy = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
     const noteSpy = jasmine.createSpyObj('CandidateNoteService', ['getIntakeData']);
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['']);
+    const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+
+    authSpy.getLoggedInUser.and.returnValue(of({ id: 1, name: 'Test User' }));
 
     const citizenshipSpy = jasmine.createSpyObj('CandidateCitizenshipService', ['create']);
     citizenshipSpy.create.and.returnValue(of(null));
@@ -178,7 +183,7 @@ describe('CandidateIntakeTabComponent', () => {
         DrivingLicenseComponent,VisaIssuesComponent,VisaRejectComponent,
         MilitaryServiceComponent,FamilyComponent,MaritalStatusComponent,RegistrationUnhcrComponent,HostChallengesComponent,
         HomeLocationComponent,ResettlementThirdComponent,HostEntryComponent,
-        DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,
+        DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,DetScoreValidationComponent,
         AutosaveStatusComponent,FixedInputComponent,ExportPdfComponent],
       imports: [HttpClientTestingModule,NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule],
       providers: [
@@ -192,6 +197,7 @@ describe('CandidateIntakeTabComponent', () => {
         { provide: CandidateCitizenshipService, useValue: citizenshipSpy },
         { provide: CandidateExamService, useValue: examSpy },
         { provide: CandidateDependantService, useValue: dependantSpy },
+        { provide: AuthenticationService, useValue: authSpy },
         NgbAccordion
       ]
     }).compileComponents();

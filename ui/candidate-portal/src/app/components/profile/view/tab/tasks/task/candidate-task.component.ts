@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {
   TaskAssignmentService,
   UpdateQuestionTaskAssignmentRequest,
@@ -37,13 +37,13 @@ export class CandidateTaskComponent implements OnInit {
   @Input() selectedTask: TaskAssignment;
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
-  form: FormGroup;
+  form: UntypedFormGroup;
   url: SafeResourceUrl;
   loading: boolean;
   saving: boolean;
   error;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private taskAssignmentService: TaskAssignmentService,
               public sanitizer: DomSanitizer) { }
 
@@ -55,8 +55,8 @@ export class CandidateTaskComponent implements OnInit {
 
     this.addRequiredFormControls();
 
-    if (this.selectedTask.task.helpLink && this.selectedTask.task.taskType == "Simple") {
-      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.helpLink);
+    if (this.selectedTask.task.docLink) {
+      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.docLink);
     }
 
     // todo this validation seems very messy! May be a better way to handle this. Perhaps use seperate forms?
@@ -87,9 +87,9 @@ export class CandidateTaskComponent implements OnInit {
   addRequiredFormControls() {
     if (!this.formAbandoned) {
       if (this.selectedTask.task.taskType === 'Question' || this.selectedTask.task.taskType === 'YesNoQuestion') {
-        this.form.addControl('response', new FormControl(this.selectedTask?.answer ? this.answer : null, Validators.required));
+        this.form.addControl('response', new UntypedFormControl(this.selectedTask?.answer ? this.answer : null, Validators.required));
       } else if (this.selectedTask.task.taskType === 'Simple') {
-        this.form.addControl('completed', new FormControl({value: this.completedTask,
+        this.form.addControl('completed', new UntypedFormControl({value: this.completedTask,
           disabled: this.completedTask}, Validators.requiredTrue));
       }
     }

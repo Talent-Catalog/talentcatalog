@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateReviewStatusService} from "../../../../services/candidate-review-status.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SavedSearch} from "../../../../model/saved-search";
 import {CandidateReviewStatusItem} from "../../../../model/candidate-review-status-item";
 import {of, throwError} from "rxjs";
@@ -50,7 +50,7 @@ describe('EditCandidateReviewStatusItemComponent', () => {
       providers: [
         { provide: CandidateReviewStatusService, useValue: candidateReviewStatusServiceSpy },
         { provide: NgbActiveModal, useValue: activeModalSpy },
-        FormBuilder
+        UntypedFormBuilder
       ]
     }).compileComponents();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 import {of, throwError} from 'rxjs';
 import {JoinSavedSearchComponent} from './join-saved-search.component';
@@ -26,7 +26,6 @@ import {SearchResults} from "../../../model/search-results";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {CandidateSourceComponent} from "../../util/candidate-source/candidate-source.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
 
 describe('JoinSavedSearchComponent', () => {
@@ -47,8 +46,8 @@ describe('JoinSavedSearchComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [JoinSavedSearchComponent,UpdatedByComponent,CandidateSourceComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgbTypeaheadModule,LocalStorageModule.forRoot({}),RouterTestingModule],
-      providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, FormBuilder],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,NgbTypeaheadModule,RouterTestingModule],
+      providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, UntypedFormBuilder],
     }).compileComponents();
 
     savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;

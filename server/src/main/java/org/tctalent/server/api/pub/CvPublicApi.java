@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,6 +18,10 @@ package org.tctalent.server.api.pub;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import lombok.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,12 +34,10 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.dto.DtoCollectionItemFilter;
-
-import lombok.NonNull;
-
-import java.util.*;
 
 /**
  * Public API - accessible without a login
@@ -45,11 +47,15 @@ import java.util.*;
 public class CvPublicApi {
     private final CandidateService candidateService;
     private final CandidateTokenProvider candidateTokenProvider;
+    private final CountryService countryService;
+    private final OccupationService occupationService;
 
     public CvPublicApi(CandidateService candidateService,
-        CandidateTokenProvider candidateTokenProvider) {
+        CandidateTokenProvider candidateTokenProvider, CountryService countryService, OccupationService occupationService) {
         this.candidateService = candidateService;
         this.candidateTokenProvider = candidateTokenProvider;
+        this.countryService = countryService;
+        this.occupationService = occupationService;
     }
 
     @GetMapping("{token}")
@@ -95,19 +101,14 @@ public class CvPublicApi {
             return new DtoBuilder()
                     .add("id")
                     .add("candidateNumber")
-                    .add("country", countryDto())
+                    .add("publicId")
+                    .add("country", countryService.selectBuilder())
                     .add("candidateOccupations", candidateOccupationDto())
                     .add("candidateJobExperiences", candidateJobExperienceDto())
                     .add("candidateEducations", candidateEducationDto())
                     .add("candidateLanguages", candidateLanguageDto())
                     .add("candidateCertifications", candidateCertificationDto())
                     ;
-        }
-
-        private DtoBuilder countryDto() {
-            return new DtoBuilder()
-                    .add("id")
-                    .add("name");
         }
 
         private DtoBuilder candidateJobExperienceDto() {
@@ -120,7 +121,7 @@ public class CvPublicApi {
                     .add("fullTime")
                     .add("paid")
                     .add("description")
-                    .add("country", countryDto())
+                    .add("country", countryService.selectBuilder())
                     .add("candidateOccupation", candidateOccupationDto())
                     ;
         }
@@ -128,15 +129,8 @@ public class CvPublicApi {
         private DtoBuilder candidateOccupationDto() {
             return new DtoBuilder(this.candidateOccupationFilter)
                     .add("id")
-                    .add("occupation", occupationDto())
+                    .add("occupation", occupationService.selectBuilder())
                     .add("yearsExperience")
-                    ;
-        }
-
-        private DtoBuilder occupationDto() {
-            return new DtoBuilder()
-                    .add("id")
-                    .add("name")
                     ;
         }
 
@@ -144,7 +138,7 @@ public class CvPublicApi {
             return new DtoBuilder()
                     .add("id")
                     .add("educationType")
-                    .add("country", countryDto())
+                    .add("country", countryService.selectBuilder())
                     .add("educationMajor", majorDto())
                     .add("lengthOfCourseYears")
                     .add("institution")
@@ -165,7 +159,6 @@ public class CvPublicApi {
         private DtoBuilder candidateLanguageDto() {
             return new DtoBuilder()
                     .add("id")
-                    .add("migrationLanguage")
                     .add("language", languageDto())
                     .add("writtenLevel", languageLevelDto())
                     .add("spokenLevel", languageLevelDto())

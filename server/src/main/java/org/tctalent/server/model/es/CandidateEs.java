@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,13 @@
 
 package org.tctalent.server.model.es;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +85,7 @@ public class CandidateEs {
             "dob",
             "maxEducationLevel",
             "ieltsScore",
+            "englishAssessmentScoreDet",
             "residenceStatus",
             "numberDependants",
     };
@@ -198,7 +199,7 @@ public class CandidateEs {
 
     @Getter
     @Setter
-    static class Occupation {
+    public static class Occupation {
         private String name;
 
         @Field(type = FieldType.Long)
@@ -221,6 +222,9 @@ public class CandidateEs {
 
     @Field(type = FieldType.Double)
     private BigDecimal ieltsScore;
+
+    @Field(type = FieldType.Long)
+    private Long englishAssessmentScoreDet;
 
     @Field(type = FieldType.Long)
     private Long numberDependants;
@@ -289,6 +293,7 @@ public class CandidateEs {
         this.dob = candidate.getDob();
         this.residenceStatus = candidate.getResidenceStatus();
         this.ieltsScore = candidate.getIeltsScore();
+        this.englishAssessmentScoreDet = candidate.getEnglishAssessmentScoreDet();
         this.numberDependants = candidate.getNumberDependants();
 
 
@@ -371,8 +376,6 @@ public class CandidateEs {
             }
         }
 
-        //Education major can also come from the candidate's special migrationEducationMajor field
-        addEducationMajor(candidate.getMigrationEducationMajor());
 
         this.jobExperiences = new ArrayList<>();
         List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
@@ -490,7 +493,7 @@ public class CandidateEs {
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields
                 //that are not keyword fields (eg numeric fields).
-                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore",
+                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel","englishAssessmentScoreDet", "ieltsScore",
                     "numberDependants", "dob"};
 
                 boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);
