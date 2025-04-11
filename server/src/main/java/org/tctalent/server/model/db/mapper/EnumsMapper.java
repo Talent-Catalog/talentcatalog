@@ -50,6 +50,7 @@ public interface EnumsMapper {
     @ValueMapping(target="IELTSAca", source = "IELTS_ACA")
     @ValueMapping(target="TOEFL", source = "TOEFL")
     @ValueMapping(target="Other", source = "OTHER")
+    @ValueMapping(target="DETOfficial", source = "DET_OFFICIAL")
     Exam publicToInternalExam(org.tctalent.anonymization.model.Exam publicEnum);
 
     @ValueMapping(target="male", source = "MALE")
