@@ -125,7 +125,7 @@
                 <span>Language Exams</span>
               </div>
               <div class="col">
-                <div class="tag-light fw-600">
+                <div class="tag-light fw-600 d-flex">
                   <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i = index">
                     <ng-container *ngIf="exam.exam === 'DETOfficial'; else otherExam">
                       <!-- DETOfficial Exam Section -->
