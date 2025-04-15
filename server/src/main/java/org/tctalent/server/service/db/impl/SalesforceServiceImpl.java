@@ -1640,18 +1640,21 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
         }
 
-        private String getSpecificLanguageSpeakingLevel(List<CandidateLanguage> candidateLanguagesList, String languageToFind) {
+        private String getSpecificLanguageSpeakingLevel(
+            List<CandidateLanguage> candidateLanguagesList, String languageToFind
+        ) {
             CandidateLanguage languageToCheck = candidateLanguagesList.stream()
-                .filter(candidateLanguage -> languageToFind.equals(candidateLanguage.getLanguage().getName()))
+                .filter(cl -> cl.getLanguage() != null)
+                .filter(cl -> languageToFind.equals(cl.getLanguage().getName()))
                 .findAny()
                 .orElse(null);
+
             if (languageToCheck != null) {
                 return languageToCheck.getSpokenLevel() == null ? null :
                     String.valueOf(languageToCheck.getSpokenLevel().getName());
             } else {
                 return null;
             }
-
         }
 
         /**
