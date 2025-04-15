@@ -97,6 +97,7 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
+import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
@@ -148,6 +149,7 @@ public class JobServiceImpl implements JobService {
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final JobOppIntakeService jobOppIntakeService;
+    private final NextStepProcessingService nextStepProcessingService;
 
     /**
      * Updates the closing logic to say tha when a job is closed in the given stage, then any
@@ -796,6 +798,14 @@ public class JobServiceImpl implements JobService {
         //Perform any notifications before actually applying the change so that we have the
         //old and current state
         oppNotificationService.notifyJobOppChanges(job, request);
+
+        final String nextStep = request.getNextStep();
+        if (nextStep != null) {
+            final String processedNextStep =
+                nextStepProcessingService.processNextStep(job, nextStep);
+
+            job.setNextStep(processedNextStep);
+        }
 
         final Boolean evergreen = request.getEvergreen();
         if (evergreen != null) {
