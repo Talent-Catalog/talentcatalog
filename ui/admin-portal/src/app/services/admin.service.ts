@@ -27,8 +27,8 @@ export class AdminService {
 
   constructor(private http: HttpClient) { }
 
-  call(apicall: string): Observable<void> {
-    return this.http.get<void>(`${this.apiUrl}/${apicall}`);
+  call(apicall: string): Observable<string> {
+    return this.http.get(`${this.apiUrl}/${apicall}`, {responseType: 'text'});
   }
 
 }
