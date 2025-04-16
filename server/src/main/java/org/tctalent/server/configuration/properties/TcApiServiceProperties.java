@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  * Example configuration in {@code application.yml}:
  * <pre>
  *  tc-api:
- *    apiUrl: http://localhost:8082/api/admin
+ *    apiUrl: http://localhost:8082
  *    apiKey: xxxx
  * </pre>
  *
