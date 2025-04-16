@@ -1065,7 +1065,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         //Exclude given candidates
-        if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
+        if (!ObjectUtils.isEmpty(excludedCandidates)) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
             nq = esService.makeTermsQuery("masterId", candidateIds);
@@ -1158,7 +1158,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Nationalities
         final List<Long> nationalityIds = request.getNationalityIds();
-        if (nationalityIds != null) {
+        if (!ObjectUtils.isEmpty(nationalityIds)) {
             //Look up names from ids.
             List<Object> reqNationalities = new ArrayList<>();
             for (Long id : nationalityIds) {
@@ -1177,7 +1177,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Partners
         final List<Long> partnerIds = request.getPartnerIds();
-        if (partnerIds != null) {
+        if (!ObjectUtils.isEmpty(partnerIds)) {
             //Look up names from ids.
             List<Object> reqPartners = new ArrayList<>();
             for (Long id : partnerIds) {
@@ -1190,7 +1190,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Statuses
         List<CandidateStatus> statuses = request.getStatuses();
-        if (statuses != null) {
+        if (!ObjectUtils.isEmpty(statuses)) {
             //Extract names from enums
             List<Object> reqStatuses = new ArrayList<>();
             for (CandidateStatus status : statuses) {
@@ -1202,7 +1202,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //UNHCR Statuses
         List<UnhcrStatus> unhcrStatuses = request.getUnhcrStatuses();
-        if (unhcrStatuses != null) {
+        //Empty or null means nothing to check
+        if (!ObjectUtils.isEmpty(unhcrStatuses)) {
             //Extract names from enums
             List<Object> reqUnhcrStatuses = new ArrayList<>();
             for (UnhcrStatus unhcrStatus : unhcrStatuses) {
@@ -1238,7 +1239,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Educations
         final List<Long> educationMajorIds = request.getEducationMajorIds();
-        if (educationMajorIds != null) {
+        if (!ObjectUtils.isEmpty(educationMajorIds)) {
             //Look up names from ids.
             List<Object> reqEducations = new ArrayList<>();
             for (Long id : educationMajorIds) {
@@ -1307,7 +1308,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         // Survey types
         final List<Long> surveyTypeIds = request.getSurveyTypeIds();
-        if (surveyTypeIds != null) {
+        if (!ObjectUtils.isEmpty(surveyTypeIds)) {
             List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
             nq = esService.makeTermsQuery("surveyType", surveyTypeObjList);
             esService.addAnd(boolQueryBuilder, nq);
