@@ -17,7 +17,7 @@
 <div class="background-image-wrapper" [ngStyle]="{'background-image': backgroundImage}"></div>
 
 <form class="login wrapper" [formGroup]="loginForm" (submit)="login()">
-  <h1>Login</h1>
+  <img [src]="loginImage" width="500" alt="Login" class="login-logo">
 
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
@@ -27,7 +27,7 @@
   <input class="form-control" type="password" formControlName="password" placeholder="Password">
   <input class="form-control" type="text" formControlName="totpToken" placeholder="Code shown on your phone's authenticator app">
 
-  <button class="btn btn-primary" type="submit" [disabled]="loading || !loginForm.valid">
+  <button class="btn btn-secondary" type="submit" [disabled]="loading || !loginForm.valid">
     <span *ngIf="!loading">Login</span>
 
     <div class="d-flex justify-content-center" *ngIf="loading">

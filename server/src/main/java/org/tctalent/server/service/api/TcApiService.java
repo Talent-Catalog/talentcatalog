@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,21 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Injectable} from '@angular/core';
-import {environment} from "../../environments/environment";
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
+package org.tctalent.server.service.api;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AdminService {
-  private apiUrl: string = environment.apiUrl + '/system';
+/**
+ * Access the Talent Catalog API Service
+ *
+ * @author sadatmalik
+ */
+public interface TcApiService {
 
-  constructor(private http: HttpClient) { }
-
-  call(apicall: string): Observable<string> {
-    return this.http.get(`${this.apiUrl}/${apicall}`, {responseType: 'text'});
-  }
+  String runApiAnonymisation();
 
 }

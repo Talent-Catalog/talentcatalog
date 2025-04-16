@@ -28,6 +28,7 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 })
 export class JobGroupChatsTabComponent implements OnInit, OnChanges {
   @Input() job: Job;
+  @Input() fromUrl: boolean;
   chats: JobChat[];
 
   error: any;

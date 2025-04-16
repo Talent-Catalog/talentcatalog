@@ -109,6 +109,7 @@ import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.response.DuolingoDashboardResponse;
 import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.api.TcApiService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -179,6 +180,7 @@ public class SystemAdminApi {
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
+    private final TcApiService tcApiService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -230,7 +232,8 @@ public class SystemAdminApi {
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
         SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService,
+        TcApiService tcApiService
         ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
@@ -265,6 +268,7 @@ public class SystemAdminApi {
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
+      this.tcApiService = tcApiService;
     }
 
     @GetMapping("set_public_ids")
@@ -273,6 +277,12 @@ public class SystemAdminApi {
         backgroundProcessingService.setPartnerPublicIds();
         backgroundProcessingService.setSavedListPublicIds();
         backgroundProcessingService.setSavedSearchPublicIds();
+    }
+
+    @GetMapping("run_api_anonymization")
+    public ResponseEntity<String> runApiAnonymisation() {
+        String response = tcApiService.runApiAnonymisation();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("fix_null_case_sfids")

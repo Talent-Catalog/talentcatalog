@@ -56,6 +56,6 @@ describe('AdminService', () => {
       expect(response).toBeUndefined();
     });
 
-    expect(getSpy).toHaveBeenCalledWith(apiUrl);
+    expect(getSpy).toHaveBeenCalledWith(apiUrl, { responseType: 'text' as any });
   });
 });

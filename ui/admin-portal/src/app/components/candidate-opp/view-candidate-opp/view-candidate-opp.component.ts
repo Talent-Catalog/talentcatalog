@@ -14,15 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   CandidateOpportunity,
   isCandidateOpportunity,
@@ -51,6 +43,7 @@ import {LocalStorageService} from "../../../services/local-storage.service";
 export class ViewCandidateOppComponent implements OnInit, OnChanges {
   @Input() opp: CandidateOpportunity;
   @Input() showBreadcrumb: boolean = true;
+  @Input() fromUrl: boolean;
   @Output() candidateOppUpdated = new EventEmitter<CandidateOpportunity>();
 
   activeTabId: string;
