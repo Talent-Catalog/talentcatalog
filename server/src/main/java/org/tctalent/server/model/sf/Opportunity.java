@@ -110,7 +110,7 @@ public class Opportunity extends SalesforceObjectBase {
     private Long hiringCommitment;
 
     private String replaceNulls(String s) {
-        if (s.indexOf('\u0000') >= 0) {
+        if (s != null && s.indexOf('\u0000') >= 0) {
             //Replace nulls with '?'.
             s = s.replaceAll("\u0000", "?");
             LogBuilder.builder(log)
