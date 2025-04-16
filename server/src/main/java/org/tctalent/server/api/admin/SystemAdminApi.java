@@ -282,7 +282,6 @@ public class SystemAdminApi {
     @GetMapping("run_api_anonymization")
     public ResponseEntity<String> runApiAnonymisation() {
         String response = tcApiService.runApiAnonymisation();
-        System.out.println(response);
         return ResponseEntity.ok(response);
     }
 
