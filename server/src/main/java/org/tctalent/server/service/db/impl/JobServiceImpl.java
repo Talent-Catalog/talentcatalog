@@ -626,7 +626,7 @@ public class JobServiceImpl implements JobService {
             //Next step
             final String processedNextStep =
                 nextStepProcessingService.processNextStep(
-                    job,"Waiting to receive candidate CVs for review"
+                    job, "Waiting to receive candidate CVs for review"
                 );
             job.setNextStep(processedNextStep);
 
