@@ -22,6 +22,7 @@
 </div>
 <app-view-candidate-opp *ngIf="opp"
   [opp]="opp"
+  [fromUrl]="true"
   (candidateOppUpdated)="onCandidateOppUpdated($event)"
 >
 </app-view-candidate-opp>

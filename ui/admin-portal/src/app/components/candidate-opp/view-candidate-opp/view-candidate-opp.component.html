@@ -219,7 +219,8 @@
         </a>
         <ng-template ngbNavContent>
           <app-chats-with-posts
-            [chats]="candidateChats">
+            [chats]="candidateChats"
+            [fromUrl]="fromUrl">
           </app-chats-with-posts>
         </ng-template>
       </ng-container>
@@ -234,7 +235,8 @@
         </a>
         <ng-template ngbNavContent>
           <app-chats-with-posts
-            [chats]="nonCandidateChats">
+            [chats]="nonCandidateChats"
+            [fromUrl]="fromUrl">
           </app-chats-with-posts>
         </ng-template>
       </ng-container>

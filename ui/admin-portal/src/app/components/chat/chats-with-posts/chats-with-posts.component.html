@@ -15,7 +15,7 @@
   -->
 
 <div class="row">
-  <div class="col-sm-{{mainPanelColWidth}}">
+  <div class="col-sm-{{mainPanelColWidth}} mb-3">
     <app-chats
       [chats]="chats"
       (chatSelection)="onChatSelected($event)"
@@ -23,8 +23,8 @@
     </app-chats>
   </div>
 
-  <div class="col-sm-{{sidePanelColWidth}} admin-panel detail-panel side-panel-color">
-    <div class="w-100">
+  <div class="col-sm-{{sidePanelColWidth}}">
+    <div class="w-100 admin-panel detail-panel side-panel-color">
       <div *ngIf="canToggleSizes()" class="float-end">
         <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
           class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
