@@ -38,6 +38,7 @@ export class LoginComponent implements OnInit {
   error;
 
   backgroundImage: string;
+  loginImage: string;
 
   constructor(private builder: UntypedFormBuilder,
               private authenticationService: AuthenticationService,
@@ -48,6 +49,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
+    this.loginImage = `${environment.assetBaseUrl}/assets/images/tc-logo-2.png`;
 
     this.route.queryParams.subscribe(params => {
       this.returnUrl = params['returnUrl'] || '';
