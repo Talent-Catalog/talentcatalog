@@ -1146,7 +1146,11 @@ public class JobServiceImpl implements JobService {
                 // Remove any ID that exists in the reopenedOppIds Set
                 batch.removeIf(sfOppIds::contains);
 
-                sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.JOB));
+                if (!batch.isEmpty()) {
+                    sfOpps.addAll(
+                        salesforceService.fetchOpportunitiesById(batch, OpportunityType.JOB)
+                    );
+                }
             }
 
             LogBuilder.builder(log)
