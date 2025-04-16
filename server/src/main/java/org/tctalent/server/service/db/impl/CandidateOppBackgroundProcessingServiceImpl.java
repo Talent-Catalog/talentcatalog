@@ -85,7 +85,9 @@ public class CandidateOppBackgroundProcessingServiceImpl
         // Remove any ID that exists in the reopenedOppIds Set
         batch.removeIf(sfOppIds::contains);
 
-        sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.CANDIDATE));
+        if (!batch.isEmpty()) {
+          sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.CANDIDATE));
+        }
       }
 
       if (!sfOpps.isEmpty()) {
