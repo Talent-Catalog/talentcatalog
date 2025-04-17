@@ -269,7 +269,7 @@ public class SecurityConfiguration {
                 // PUT: CLEAR SELECTION SAVED SEARCHES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/clear-selection/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
-                // PUT: CLEAR SELECTION SAVED SEARCHES
+                // PUT: SELECT COLUMNS SAVED SEARCHES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: EXPORT SAVE SELECTION SAVED SEARCHES
@@ -335,6 +335,9 @@ public class SecurityConfiguration {
 
                 // PUT: UPDATE SAVED LIST
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: SELECT COLUMNS SAVED LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT: UPDATE SAVED LIST DESCRIPTION
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
