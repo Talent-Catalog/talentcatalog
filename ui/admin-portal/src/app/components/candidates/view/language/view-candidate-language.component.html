@@ -41,7 +41,7 @@
       <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
         <div class="row">
           <div class="col-10 mb-2"
-               [innerHtml]="language.language.name"
+               [innerHtml]="language.language?.name"
                appHighlightSearch>
           </div>
           <div class="col-2" *ngIf="editable">

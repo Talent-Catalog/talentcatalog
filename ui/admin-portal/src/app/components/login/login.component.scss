@@ -37,14 +37,14 @@
 
 .background-image-wrapper {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
-  opacity: 0.15; // Set the opacity of the wrapper
+  opacity: 0.08; // Set the opacity of the wrapper
   z-index: -1; // Ensure it stays behind the content
 }
 

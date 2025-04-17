@@ -65,7 +65,19 @@ public class ChatPostServiceImpl implements ChatPostService {
     public ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat, User user) {
         ChatPost chatPost = new ChatPost();
         chatPost.setJobChat(jobChat);
-        chatPost.setContent(post.getContent());
+
+        //Check for nulls in content
+        String content = post.getContent();
+        if (content.indexOf('\u0000') >= 0) {
+            //Replace nulls with '?'.
+            content = content.replaceAll("\u0000", "?");
+            LogBuilder.builder(log)
+                .action("createPost")
+                .message("Post for chat " + jobChat.getId() + " had nulls: '" + content + "'")
+                .logError();
+        }
+        chatPost.setContent(content);
+
         chatPost.setCreatedDate(OffsetDateTime.now());
         chatPost.setCreatedBy(user);
         if (post.getLinkPreviews() != null) {

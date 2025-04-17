@@ -45,7 +45,11 @@ export class AdminApiComponent implements OnInit {
       this.ack = null;
       this.error = null;
       this.adminService.call(this.form.value.apicall).subscribe(
-        () => {this.ack = "Done"},
+        (response: string) => {
+          // If the response string is present and not empty, set ack to response;
+          // otherwise, default to "Done"
+          this.ack = response && response.trim().length > 0 ? response : "Done";
+        },
         (error) => {this.error = error}
       )
     }

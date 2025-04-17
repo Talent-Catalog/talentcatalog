@@ -123,7 +123,7 @@ public class CandidateAdminApi {
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = savedSearchService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);
     }
 

@@ -139,7 +139,7 @@ export class SearchPartnersComponent implements OnInit {
       confirmationModal.componentInstance.title = "Copy partner's public API key";
       confirmationModal.componentInstance.showCancel = false;
       confirmationModal.componentInstance.message =
-        "This public API key, " + partner.publicApiKey + ", should be provided to the partner." +
+        "This public API key, " + partner.publicApiKey + " should be provided to the partner." +
         " It should not be saved anywhere." +
         " It will not be displayed again.";
       confirmationModal.result

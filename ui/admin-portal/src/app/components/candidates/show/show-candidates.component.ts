@@ -60,7 +60,9 @@ import {
   ReviewStatus,
   Status
 } from '../../../model/base';
-import {CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
+import {
+  CandidateSourceResultsCacheService
+} from '../../../services/candidate-source-results-cache.service';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -78,7 +80,9 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService
+} from '../../../services/candidate-source-candidate.service';
 import {
   EditCandidateReviewStatusItemComponent
 } from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
@@ -92,7 +96,9 @@ import {SavedListService} from '../../../services/saved-list.service';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {EditCandidateOppComponent} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
+import {
+  EditCandidateOppComponent
+} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -153,6 +159,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   subscription: Subscription;
   sortField = 'id';
   sortDirection = 'DESC';
+
+  //Request full details on candidates
+  searchDetail = DtoType.EXTENDED;
 
   /* Add candidates support */
   doNumberOrNameSearch;
@@ -395,6 +404,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
   }
 
+  /**
+   * This is called when an existing search is being modified - ie a search field has changed.
+   * @private
+   */
   private updatedSearch() {
     this.results = null;
     this.error = null;
@@ -411,6 +424,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
+    request.dtoType = this.searchDetail;
 
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
@@ -469,7 +483,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         //Run the saved list or saved search as stored on the server.
         this.performSearch(
           this.pageSize,
-          DtoType.EXTENDED,
+          this.searchDetail,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
           // Restore the selection prior to the search using the updated results (otherwise updated fields won't appear)
