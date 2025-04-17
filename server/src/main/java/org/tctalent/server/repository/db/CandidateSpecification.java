@@ -109,7 +109,8 @@ public class CandidateSpecification {
                 Fetch<Object, Object> countryFetch = candidate.fetch("country");
                 country = (Join<Object, Object>) countryFetch;
 
-                Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel");
+                Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel",
+                    JoinType.LEFT);
                 maxEducationLevel = (Join<Object, Object>) educationLevelFetch;
 
                 List<Order> orders = CandidateSpecificationUtil.getOrderByOrders(request, candidate, cb,
@@ -123,7 +124,7 @@ public class CandidateSpecification {
                 partner = user.join("partner");
                 nationality = candidate.join("nationality");
                 country = candidate.join("country");
-                maxEducationLevel = candidate.join("maxEducationLevel");
+                maxEducationLevel = candidate.join("maxEducationLevel", JoinType.LEFT);
             }
 
             // KEYWORD SEARCH
