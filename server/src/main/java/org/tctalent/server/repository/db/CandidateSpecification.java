@@ -238,7 +238,7 @@ public class CandidateSpecification {
             // SURVEY TYPE SEARCH
             if (!Collections.isEmpty(request.getSurveyTypeIds())) {
                 conjunction = cb.and(conjunction,
-                        cb.isTrue(candidate.get("surveyType").in(request.getSurveyTypeIds()))
+                        cb.isTrue(candidate.get("surveyType").get("id").in(request.getSurveyTypeIds()))
                 );
             }
 
