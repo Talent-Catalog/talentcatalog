@@ -407,11 +407,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             //Now set any requested stage name and next step
             String stageName = null;
-            String nextStep = null;
-            LocalDate nextStepDueDate = null;
             String closingComments = null;
             String closingCommentsForCandidate = null;
             String employerFeedback = null;
+
+            // If creating new opp, set default Next Step info.
+            // Mirrors CandidateOpportunityService.createOrUpdateCandidateOpportunity
+            String nextStep = create ? "Contact candidate and do intake" : null;
+            LocalDate nextStepDueDate = create ? LocalDate.now().plusWeeks(2) : null;
+
             Map<String, Integer> relocationInfo = null;
             if (candidateOppParams != null) {
                 final CandidateOpportunityStage stage = candidateOppParams.getStage();
