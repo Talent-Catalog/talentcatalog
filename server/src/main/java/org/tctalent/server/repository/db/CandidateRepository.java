@@ -231,6 +231,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     @Query(" select distinct c from Candidate c left join c.user u "
         + " where (lower(c.phone) like lower(:emailOrPhone) "
+        + " or lower(c.whatsapp) like lower(:emailOrPhone) "
         + " or lower(u.email) like lower(:emailOrPhone)) "
         + excludeDeleted
         + sourceCountryRestriction)
