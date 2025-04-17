@@ -21,6 +21,7 @@ import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateService} from "../../../../services/candidate.service";
 import {isSavedList} from "../../../../model/saved-list";
 import {CandidateSource} from "../../../../model/base";
+import {AuthorizationService} from "../../../../services/authorization.service";
 
 @Component({
   selector: 'app-shareable-docs',
@@ -48,7 +49,8 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   form: UntypedFormGroup;
 
   constructor(private fb: UntypedFormBuilder,
-              private candidateService: CandidateService) {}
+              private candidateService: CandidateService,
+              private authorizationService: AuthorizationService) {}
 
   ngOnInit() {
 
@@ -135,4 +137,9 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   filterByCv(isCV: boolean) {
     return this.candidate.candidateAttachments?.filter(a => a.cv === isCV);
   }
+
+  isReadOnly() {
+    return this.authorizationService.isReadOnly();
+  }
+
 }
