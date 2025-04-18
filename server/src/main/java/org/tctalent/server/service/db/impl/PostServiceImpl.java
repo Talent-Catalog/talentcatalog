@@ -42,11 +42,19 @@ public class PostServiceImpl implements PostService {
 
     @NonNull
     @Override
-    public Post createPost(String content) {
+    public Post createPost(String content, boolean suppressLinkPreviews) {
         Post post = new Post();
         post.setContent(content);
-        extractLinkPreviews(post, content);
+        if (!suppressLinkPreviews) {
+            extractLinkPreviews(post, content);
+        }
         return post;
+    }
+
+    @NonNull
+    @Override
+    public Post createPost(String content) {
+        return createPost(content, false);
     }
 
     private void extractLinkPreviews(@NonNull Post post, @Nullable String content) {
