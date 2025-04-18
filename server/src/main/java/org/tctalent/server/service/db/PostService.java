@@ -30,7 +30,20 @@ import org.tctalent.server.model.db.chat.Post;
 public interface PostService {
 
     /**
+     * Creates post with given content and optionally generated LinkPreviews
+     * @param content Content of post
+     * @param suppressLinkPreviews If true, LinkPreviews are not automatically generated
+     * @return Post
+     */
+    @NonNull
+    Post createPost(String content, boolean suppressLinkPreviews);
+
+    /**
      * Creates post with given content
+     * <p/>
+     * Automatically generates LinkPreviews from content if any urls are found in the content.
+     * <p/>
+     * Equivalent to calling createPost(content, false).
      * @param content Content of post
      * @return Post
      */
