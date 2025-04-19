@@ -339,14 +339,15 @@ public interface SalesforceService {
      *
      * @param job The given {@link SalesforceJobOpp}
      * @param stage New stage
-     * @param nextStep New next step
+     * @param processedNextStep Requested Next Step - NB: should already be processed by
+     * {@link NextStepProcessingService#processNextStep}
      * @param dueDate Next step due date
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void updateEmployerOpportunityStage(
-        SalesforceJobOpp job, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
-        throws SalesforceException, WebClientException;
+        SalesforceJobOpp job, JobOpportunityStage stage, String processedNextStep, LocalDate dueDate
+    ) throws SalesforceException, WebClientException;
 
     /**
      * Updates the name on the SF Employer Opportunity record corresponding to given SF ID.

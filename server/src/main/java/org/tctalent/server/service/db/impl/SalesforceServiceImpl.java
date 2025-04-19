@@ -1007,9 +1007,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void updateEmployerOpportunityStage(
-        SalesforceJobOpp job, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
-        throws SalesforceException, WebClientException {
-        final String processedNextStep = nextStepProcessingService.processNextStep(job, nextStep);
+        SalesforceJobOpp job, JobOpportunityStage stage, String processedNextStep, LocalDate dueDate
+    ) throws SalesforceException, WebClientException {
 
         EmployerOppStageUpdateRequest sfRequest =
             new EmployerOppStageUpdateRequest(stage, processedNextStep, dueDate);
