@@ -192,7 +192,7 @@ jacoco {
 }
 test {
     useJUnitPlatform()
-    if (System.getProperty("env") == "dev"){
+    if (isDev){
         finalizedBy jacocoTestReport
     }
 }
