@@ -192,7 +192,9 @@ jacoco {
 }
 test {
     useJUnitPlatform()
-    finalizedBy jacocoTestReport
+    if (System.getProperty("env") == "dev"){
+        finalizedBy jacocoTestReport
+    }
 }
 jacocoTestReport {
     dependsOn test
