@@ -17,6 +17,10 @@
 package org.tctalent.server.util.html;
 
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.logging.LogBuilder;
+
 /**
  * Utility class for sanitizing strings by handling special characters.
  * <p>
@@ -24,6 +28,7 @@ package org.tctalent.server.util.html;
  * In the future, it may be extended to handle other special characters as well.
  * </p>
  */
+@Slf4j
 public class StringSanitizer {
 
   private static final String LSEP = "\u2028";
@@ -54,6 +59,31 @@ public class StringSanitizer {
     }
     // Unicode code point for LSEP is \u2028
     return input.replace(LSEP, "<br>");
+  }
+
+  @Nullable
+  static String replaceControlCharacters(@Nullable String input) {
+    if (input == null) {
+      return null;
+    }
+
+    // Regex range excludes newline (\n = 0x0A), carriage return (\r = 0x0D), and tab (\t = 0x09)
+    String pattern = "[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]";
+
+    // Only perform replacement if needed
+    String result = input.replaceAll(pattern, "");
+
+    if (!result.equals(input)) {
+      // Input could be really long: truncate anything >= 500 characters
+      String truncated = input.length() < 500 ? input : input.substring(0, 500) + "...";
+
+      LogBuilder.builder(log)
+          .action("StringSanitizer#replaceControlCharacters")
+          .message("Sanitizer removed control characters from input: " + truncated)
+          .logDebug();
+    }
+
+    return result;
   }
 
 }
