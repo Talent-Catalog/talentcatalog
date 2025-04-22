@@ -294,7 +294,7 @@ public class CandidateSpecification {
 
             // EDUCATION LEVEL SEARCH
             if (request.getMinEducationLevel() != null) {
-                Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel", JoinType.LEFT);
+                Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel");
                 conjunction = cb.and(conjunction,
                         cb.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
                 );
