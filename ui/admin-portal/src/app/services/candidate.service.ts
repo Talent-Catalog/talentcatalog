@@ -20,8 +20,8 @@ import {
   CandidateIntakeData,
   CandidateOpportunityParams,
   UpdateCandidateListOppsRequest,
-  UpdateCandidateNotificationPreferenceRequest,
   UpdateCandidateMutedRequest,
+  UpdateCandidateNotificationPreferenceRequest,
   UpdateCandidateOppsRequest,
   UpdateCandidateShareableDocsRequest,
   UpdateCandidateShareableNotesRequest,
@@ -65,8 +65,8 @@ export class CandidateService implements IntakeService {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemail`, request);
   }
 
-  findByCandidateEmailOrPhone(request): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailorphone`, request);
+  findByCandidateEmailPhoneOrWhatsapp(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailphoneorwhatsapp`, request);
   }
 
   findByCandidateNumberOrName(request): Observable<SearchResults<Candidate>> {

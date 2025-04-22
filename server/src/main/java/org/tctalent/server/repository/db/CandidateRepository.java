@@ -230,14 +230,14 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         Pageable pageable);
 
     @Query(" select distinct c from Candidate c left join c.user u "
-        + " where (lower(c.phone) like lower(:emailOrPhone) "
-        + " or lower(c.whatsapp) like lower(:emailOrPhone) "
-        + " or lower(u.email) like lower(:emailOrPhone)) "
+        + " where (lower(c.phone) like lower(:emailPhoneOrWhatsapp) "
+        + " or lower(c.whatsapp) like lower(:emailPhoneOrWhatsapp) "
+        + " or lower(u.email) like lower(:emailPhoneOrWhatsapp)) "
         + excludeDeleted
         + sourceCountryRestriction)
-    Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
-        @Param("userSourceCountries") Set<Country> userSourceCountries,
-        Pageable pageable);
+    Page<Candidate> searchCandidateEmailPhoneOrWhatsapp(@Param("emailPhoneOrWhatsapp") String emailPhoneOrWhatsapp,
+                                                        @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                                        Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
         + " where lower(c.externalId) like lower(:externalId) "
