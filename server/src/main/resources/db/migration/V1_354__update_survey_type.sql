@@ -1,7 +1,7 @@
 -- Mark old "Friend or colleague referral" as inactive
 update survey_type
 set status = 'inactive'
-where name = 'Friend or colleague referral';
+where name = 'From a friend';
 
 insert into survey_type (name, status)
 select 'Friend or colleague referral', 'active'
@@ -14,7 +14,7 @@ set survey_type_id = (
     select id from survey_type where name = 'Friend or colleague referral' and status = 'active'
 )
 where survey_type_id = (
-    select id from survey_type where name = 'Friend or colleague referral' and status = 'inactive'
+    select id from survey_type where name = 'From a friend' and status = 'inactive'
 );
 
 -- Mark "Facebook - through an organisation" as inactive (instead of merging name)
