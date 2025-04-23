@@ -75,7 +75,7 @@ public class StringSanitizer {
    * @return the sanitized string with control characters removed, or null if the input was null
    */
   @Nullable
-  static String replaceControlCharacters(@Nullable String input) {
+  static String removeControlCharacters(@Nullable String input) {
     if (input == null) {
       return null;
     }

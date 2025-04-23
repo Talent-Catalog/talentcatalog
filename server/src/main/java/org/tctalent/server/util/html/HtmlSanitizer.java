@@ -39,7 +39,7 @@ public class HtmlSanitizer {
     @Nullable
     public static String sanitize(@Nullable String html) {
         return html == null ? null :
-            StringSanitizer.replaceControlCharacters(Jsoup.clean(html, Safelist.relaxed()));
+            StringSanitizer.removeControlCharacters(Jsoup.clean(html, Safelist.relaxed()));
     }
 
     /**
@@ -54,7 +54,7 @@ public class HtmlSanitizer {
     @Nullable
     public static String sanitizeWithLinksNewTab(@Nullable String html) {
         return html == null ? null :
-            StringSanitizer.replaceControlCharacters(
+            StringSanitizer.removeControlCharacters(
                 Jsoup.clean(html, Safelist.relaxed().addAttributes("a", "target", "rel"))
             );
     }

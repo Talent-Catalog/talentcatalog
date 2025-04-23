@@ -34,7 +34,7 @@ public class StringSanitizerTest {
     System.out.println("Original (hex): " + stringToHex(testString));
 
     // Run sanitizer
-    String sanitized = StringSanitizer.replaceControlCharacters(testString);
+    String sanitized = StringSanitizer.removeControlCharacters(testString);
 
     // After sanitizing
     assert sanitized != null;
@@ -46,7 +46,7 @@ public class StringSanitizerTest {
     assertEquals(testString.length() - 3, sanitized.length());
 
     // Ensure null handled properly
-    assertNull(StringSanitizer.replaceControlCharacters(null));
+    assertNull(StringSanitizer.removeControlCharacters(null));
   }
 
   // Makes control characters visible to human reader
