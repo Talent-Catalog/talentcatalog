@@ -114,7 +114,7 @@ public class JobSpecification {
             List<Long> destinationIds = request.getDestinationIds();
             if (!Collections.isEmpty(destinationIds)) {
                 conjunction = cb.and(conjunction,
-                    cb.isTrue(job.get("country").in(destinationIds)));
+                    cb.isTrue(job.get("country").get("id").in(destinationIds)));
             }
 
             //ACTIVE STAGES (ignored if doing stage filtering)
