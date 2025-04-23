@@ -86,6 +86,12 @@ public class ChatPostServiceImpl implements ChatPostService {
             }
         }
 
+        //Log chatPost - for debugging purposes
+        LogBuilder.builder(log)
+            .action("createPost")
+            .message("Chat " + jobChat.getId() + ": " + chatPost.getContent())
+            .logInfo();
+
         chatPost = chatPostRepository.save(chatPost);
 
         return chatPost;

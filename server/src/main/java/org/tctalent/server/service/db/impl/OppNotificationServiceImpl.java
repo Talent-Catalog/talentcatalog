@@ -114,7 +114,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
         Post autoPostNewOpp = postService.createPost("The candidate " + candidateNameAndNumber +
-            " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
+            " is a prospect for the job '" + opp.getJobOpp().getName() +"'.", true);
 
         // Note that we don't post to candidates until they get past the prospect stage
         if (opp.getStage() != CandidateOpportunityStage.prospect) {
@@ -200,7 +200,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
 
         Post autoPostClosedOpp = postService.createPost("The candidate " + candidateNameAndNumber +
             " has been removed for the job '" + opp.getJobOpp().getName() +
-            "' with the reason " + newStage.getSalesforceStageName() + ".");
+            "' with the reason " + newStage.getSalesforceStageName() + ".", true);
 
         // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
         JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
@@ -262,7 +262,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             String[] keys = TranslationHelper.getCaseStageTranslationKeys(newStage);
             String message = translationService.translateToEnglish(keys);
 
-            Post autoPostStageChange = postService.createPost(message);
+            Post autoPostStageChange = postService.createPost(message, true);
             publishPost(prospectChat, autoPostStageChange);
 
         }
@@ -284,7 +284,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             "💼 <b>" + opp.getName() + "</b> 🪜<br> This case for candidate "
                 + candidateNameAndNumber
                 + " has changed stage from '" + opp.getStage() + "' to '"
-                + newStage + "'."
+                + newStage + "'.", true
         );
 
         publishPost(jcspChat, autoPostCandidateOppStageChange);
@@ -303,7 +303,10 @@ public class OppNotificationServiceImpl implements OppNotificationService {
 
         Post autoPostAcceptedJobOffer = postService.createPost(
             "The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
-                + opp.getJobOpp().getName() + " and is now a member of the <a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>."
+                + opp.getJobOpp().getName() +
+                " and is now a member of the "
+                + "<a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>."
+            , true
         );
 
         // AUTO CHAT TO PROSPECT CHAT
@@ -325,7 +328,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     private void publishMessage(JobChat chat, String mess) {
 
         // Set the chat post content
-        Post post = postService.createPost(mess);
+        Post post = postService.createPost(mess, true);
 
         publishPost(chat, post);
     }
