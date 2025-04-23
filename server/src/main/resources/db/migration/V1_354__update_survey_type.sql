@@ -1,12 +1,40 @@
+-- Mark old "Friend or colleague referral" as inactive
 update survey_type
-set name = 'Friend or colleague referral'
-where name = 'From a friend';
+set status = 'inactive'
+where name = 'Friend or colleague referral';
 
--- Merge 'Facebook - through an organisation' into 'Facebook'
+insert into survey_type (name, status)
+select 'Friend or colleague referral', 'active'
+where not exists (
+    select 1 from survey_type where name = 'Friend or colleague referral' and status = 'active'
+);
+
+update candidate
+set survey_type_id = (
+    select id from survey_type where name = 'Friend or colleague referral' and status = 'active'
+)
+where survey_type_id = (
+    select id from survey_type where name = 'Friend or colleague referral' and status = 'inactive'
+);
+
+-- Mark "Facebook - through an organisation" as inactive (instead of merging name)
 update survey_type
-set name = 'Facebook'
+set status = 'inactive'
 where name = 'Facebook - through an organisation';
 
+insert into survey_type (name, status)
+select 'Facebook', 'active'
+where not exists (
+    select 1 from survey_type where name = 'Facebook'
+);
+
+update candidate
+set survey_type_id = (
+    select id from survey_type where name = 'Facebook' AND status = 'active'
+)
+where survey_type_id = (
+    select id from survey_type where name = 'Facebook - through an organisation'
+);
 -- Insert new values from HowHeardAboutUs enum that are not in the table
 insert into survey_type (name, status) values ('Online Google search', 'active');
 insert into survey_type (name, status) values ('Instagram', 'active');
