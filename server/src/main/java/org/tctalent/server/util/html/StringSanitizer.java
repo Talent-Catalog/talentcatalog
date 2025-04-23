@@ -61,16 +61,27 @@ public class StringSanitizer {
     return input.replace(LSEP, "<br>");
   }
 
+  /**
+   * Removes control characters from the input string.
+   * <p>
+   * This method removes ASCII control characters (characters with code points from 0x00-0x1F),
+   * except for common whitespace characters: newline (0x0A), carriage return (0x0D) and tab (0x09),
+   * which are preserved.
+   * <p>
+   * If control characters are found and removed, a debug log message is generated with the input
+   * string (truncated to 500 characters if it's longer).
+   *
+   * @param input the string to sanitize, can be null
+   * @return the sanitized string with control characters removed, or null if the input was null
+   */
   @Nullable
   static String replaceControlCharacters(@Nullable String input) {
     if (input == null) {
       return null;
     }
 
-    // Regex range excludes newline (\n = 0x0A), carriage return (\r = 0x0D), and tab (\t = 0x09)
+    // Regex range - excludes newline (\n = 0x0A), carriage return (\r = 0x0D) and tab (\t = 0x09)
     String pattern = "[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]";
-
-    // Only perform replacement if needed
     String result = input.replaceAll(pattern, "");
 
     if (!result.equals(input)) {
