@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
-import org.tctalent.server.logging.LogBuilder;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
@@ -52,6 +51,7 @@ public class BackRunner<CONTEXT> implements Runnable {
     private TaskScheduler taskScheduler;
     private BackProcessor<CONTEXT> backProcessor;
     private Trigger trigger;
+    private BackLogger backLogger;
 
     /**
      * This defines the "context" for keeping track of where a {@link BackProcessor}
@@ -73,12 +73,7 @@ public class BackRunner<CONTEXT> implements Runnable {
             }
 
         } catch (Exception e) {
-            LogBuilder.builder(log)
-                .action("Background batch processing")
-                .message("Operation cancelled. Batch failed due to unchecked exception: "
-                    + e.getMessage())
-                .logError(e);
-
+            backLogger.logFailure(e);
             scheduledFuture.cancel(true);
         }
     }
