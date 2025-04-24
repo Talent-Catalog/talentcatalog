@@ -18,10 +18,10 @@ package org.tctalent.server.request.candidate;
 
 import org.tctalent.server.request.PagedSearchRequest;
 
-public class CandidateEmailOrPhoneSearchRequest extends PagedSearchRequest {
-    private String candidateEmailOrPhone;
+public class CandidateEmailPhoneOrWhatsappSearchRequest extends PagedSearchRequest {
+    private String candidateEmailPhoneOrWhatsapp;
 
-    public String getCandidateEmailOrPhone() {return candidateEmailOrPhone;}
+    public String getCandidateEmailPhoneOrWhatsapp() {return candidateEmailPhoneOrWhatsapp;}
 
-    public void setCandidateEmailOrPhone(String candidateEmailOrPhone) {this.candidateEmailOrPhone = candidateEmailOrPhone;}
+    public void setCandidateEmailPhoneOrWhatsapp(String candidateEmailPhoneOrWhatsapp) {this.candidateEmailPhoneOrWhatsapp = candidateEmailPhoneOrWhatsapp;}
 }

@@ -36,6 +36,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.LinkPreview;
 import org.tctalent.server.repository.db.LinkPreviewRepository;
 import org.tctalent.server.service.db.LinkPreviewService;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,13 +83,13 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       // A valid domain name is the minimal threshold content for displaying a preview.
       String domain = getDomain(doc, url);
       if (domain != null) {
-        linkPreview.setDomain(domain);
+        linkPreview.setDomain(HtmlSanitizer.sanitize(domain));
       } else return null;
 
-      linkPreview.setTitle(getTitle(doc));
-      linkPreview.setDescription(getDescription(doc));
-      linkPreview.setImageUrl(getImageUrl(doc));
-      linkPreview.setFaviconUrl(getFaviconUrl(doc));
+      linkPreview.setTitle(HtmlSanitizer.sanitize(getTitle(doc)));
+      linkPreview.setDescription(HtmlSanitizer.sanitize(getDescription(doc)));
+      linkPreview.setImageUrl(HtmlSanitizer.sanitize(getImageUrl(doc)));
+      linkPreview.setFaviconUrl(HtmlSanitizer.sanitize(getFaviconUrl(doc)));
 
       return linkPreview;
 

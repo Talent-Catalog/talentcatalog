@@ -77,14 +77,14 @@
       </div>
 
       <div class="me-3" *ngIf="canViewCandidateName() && !isEmployerPartner()">
-        <input id="quickEmailOrPhoneSearch"
+        <input id="quickEmailPhoneOrWhatsappSearch"
                type="text" class="form-control" #input
-               [ngbTypeahead]="doEmailOrPhoneSearch"
+               [ngbTypeahead]="doEmailPhoneOrWhatsappSearch"
                [resultTemplate]="rt"
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
                (selectItem)="selectSearchResult($event, input)"
-               placeholder="Email or phone..."/>
+               placeholder="Email/phone/whatsapp..."/>
         <ng-template #rt let-r="result">
           <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
         </ng-template>
