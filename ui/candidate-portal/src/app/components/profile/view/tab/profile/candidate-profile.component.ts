@@ -81,7 +81,8 @@ export class CandidateProfileComponent implements OnInit {
     setTimeout(
       () => this.languageService.changeLanguage(lang), 1000
     )
-    // this.loadDropDownData();
+    // It is important to have this line because otherwise data is missing from the DOM on tab change (Only appears with refresh). Issue #2129
+    this.loadDropDownData();
     // listen for change of language and save
     this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadDropDownData();
