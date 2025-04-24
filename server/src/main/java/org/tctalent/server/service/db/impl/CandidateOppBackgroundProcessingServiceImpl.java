@@ -33,7 +33,7 @@ import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.util.background.BackLogger.BackLogger;
-import org.tctalent.server.util.background.BackLogger.DefaultBackLoggerFactory;
+import org.tctalent.server.util.background.BackLogger.BackLoggerFactory;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.IdContext;
@@ -49,7 +49,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
   private final TaskScheduler taskScheduler;
   private final CandidateOpportunityService candidateOpportunityService;
   private final SalesforceService salesforceService;
-  private final DefaultBackLoggerFactory backLoggerFactory;
+  private final BackLoggerFactory backLoggerFactory;
 
   /**
    * Scheduled daily at 2300 GMT to keep TC data accurate in cases where Candidate Opps have been
@@ -100,7 +100,8 @@ public class CandidateOppBackgroundProcessingServiceImpl
         BackRunner<IdContext> backRunner = new BackRunner<>();
 
         // Implement optional logging
-        BackLogger backLogger = backLoggerFactory.create();
+        BackLogger backLogger =
+            backLoggerFactory.create("SF -> TC Candidate Opp sync", true);
 
         backRunner.start(
             taskScheduler,

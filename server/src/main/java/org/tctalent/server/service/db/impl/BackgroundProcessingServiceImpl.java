@@ -51,7 +51,7 @@ import org.tctalent.server.service.db.util.PagedPartnerBackProcessor;
 import org.tctalent.server.service.db.util.PagedSavedListBackProcessor;
 import org.tctalent.server.service.db.util.PagedSavedSearchBackProcessor;
 import org.tctalent.server.util.background.BackLogger.BackLogger;
-import org.tctalent.server.util.background.BackLogger.DefaultBackLoggerFactory;
+import org.tctalent.server.util.background.BackLogger.BackLoggerFactory;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
@@ -70,7 +70,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   private final SavedListService savedListService;
   private final SavedSearchService savedSearchService;
   private final TaskScheduler taskScheduler;
-  private final DefaultBackLoggerFactory backLoggerFactory;
+  private final BackLoggerFactory backLoggerFactory;
 
   public BackProcessor<PageContext> createSfSyncBackProcessor(
       List<CandidateStatus> statuses, long totalNoOfPages
@@ -161,7 +161,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     BackRunner<PageContext> backRunner = new BackRunner<>();
 
     // Implement optional logging
-    BackLogger backLogger = backLoggerFactory.create();
+    BackLogger backLogger = backLoggerFactory.create("Potential duplicate candidates", true);
 
     backRunner.start(
         taskScheduler,

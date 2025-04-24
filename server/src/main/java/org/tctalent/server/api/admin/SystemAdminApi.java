@@ -128,7 +128,7 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
 import org.tctalent.server.util.background.BackLogger.BackLogger;
-import org.tctalent.server.util.background.BackLogger.DefaultBackLoggerFactory;
+import org.tctalent.server.util.background.BackLogger.BackLoggerFactory;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
@@ -182,7 +182,7 @@ public class SystemAdminApi {
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
     private final TcApiService tcApiService;
-    private final DefaultBackLoggerFactory backLoggerFactory;
+    private final BackLoggerFactory backLoggerFactory;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -235,7 +235,7 @@ public class SystemAdminApi {
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
         SavedSearchService savedSearchService, PartnerService partnerService,
         CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService,
-        TcApiService tcApiService, DefaultBackLoggerFactory backLoggerFactory
+        TcApiService tcApiService, BackLoggerFactory backLoggerFactory
     ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
@@ -2949,7 +2949,7 @@ public class SystemAdminApi {
             backgroundProcessingService.createSfSyncBackProcessor(statuses, totalNoOfPages);
 
         // Implement optional logging
-        BackLogger backLogger = backLoggerFactory.create();
+        BackLogger backLogger = backLoggerFactory.create("TC -> SF candidate sync", true);
 
         // Schedule background processing
         BackRunner<PageContext> backRunner = new BackRunner<>();

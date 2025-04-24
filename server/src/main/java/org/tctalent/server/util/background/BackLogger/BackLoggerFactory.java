@@ -24,12 +24,16 @@ import org.tctalent.server.service.db.email.EmailHelper;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DefaultBackLoggerFactory {
+public class BackLoggerFactory {
 
   private final EmailHelper emailHelper;
 
-  public BackLogger create() {
-    return new DefaultBackLogger(emailHelper);
+  public BackLogger create(String jobName, boolean emailAlerts) {
+    if (emailAlerts) {
+      return new BackLoggerWithEmailFailureAlert(emailHelper, jobName);
+    } else {
+      return new DefaultBackLogger(jobName);
+    }
   }
 
 }

@@ -19,10 +19,12 @@ package org.tctalent.server.util.background.BackLogger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.service.db.email.EmailHelper;
 
 @RequiredArgsConstructor
 @Slf4j
-public class DefaultBackLogger implements BackLogger {
+public class BackLoggerWithEmailFailureAlert implements BackLogger {
+  private final EmailHelper emailHelper;
   private final String jobName;
 
   @Override
@@ -31,6 +33,8 @@ public class DefaultBackLogger implements BackLogger {
         .action("Background processing | " + jobName)
         .message("Operation cancelled. Failed due to unchecked exception: " + e.getMessage())
         .logError(e);
+
+      emailHelper.sendBackgroundProcessingFailureEmail(jobName, e);
   }
 
 }

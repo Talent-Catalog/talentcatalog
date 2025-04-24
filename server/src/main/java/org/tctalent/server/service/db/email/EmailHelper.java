@@ -453,7 +453,7 @@ public class EmailHelper {
         }
     }
 
-    public void sendBackgroundProcessingFailureEmail(Exception ex) throws EmailSendFailedException {
+    public void sendBackgroundProcessingFailureEmail(String jobName, Exception ex) {
         String emailTo = "tech@talentbeyondboundaries.org";
         String subject = "Background Processing Failure";
         String bodyText;
@@ -461,6 +461,7 @@ public class EmailHelper {
 
         try {
             final Context ctx = new Context();
+            ctx.setVariable("jobName", jobName);
             ctx.setVariable("exMessage",ex.getMessage());
             ctx.setVariable("exStackTrace", ExceptionHelper.getStackTraceAsString(ex));
 
@@ -470,13 +471,13 @@ public class EmailHelper {
             emailSender.sendAsync(emailTo, subject, bodyText, bodyHtml);
 
             LogBuilder.builder(log)
-                .action("sendBackgroundProcessingFailureEmail")
+                .action("sendBackgroundProcessingFailureEmail | " + jobName)
                 .message("Email sent successfully")
                 .logInfo();
 
         } catch (Exception e){
             LogBuilder.builder(log)
-                .action("sendBackgroundProcessingFailureEmail")
+                .action("sendBackgroundProcessingFailureEmail | " + jobName)
                 .message("Error sending email: " + e.getMessage())
                 .logError(e);
         }

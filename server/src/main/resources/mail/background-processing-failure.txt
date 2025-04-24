@@ -1,3 +1,5 @@
+Background processing job failure: [[${jobName}]]
+
 This operation was cancelled due to an unchecked exception: [[${exMessage}]]
 
 Stack Trace:
