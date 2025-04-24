@@ -77,15 +77,15 @@ describe('CandidateService', () => {
     req.flush(dummyResponse);
   });
 
-  it('should find candidate by email or phone', () => {
+  it('should find candidate by email phone or whatsapp', () => {
     const dummyRequest = {};
     const dummyResponse: SearchResults<Candidate> = { content: [], totalElements: 0 } as SearchResults<Candidate>;
 
-    service.findByCandidateEmailOrPhone(dummyRequest).subscribe(response => {
+    service.findByCandidateEmailPhoneOrWhatsapp(dummyRequest).subscribe(response => {
       expect(response).toEqual(dummyResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/candidate/findbyemailorphone`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/candidate/findbyemailphoneorwhatsapp`);
     expect(req.request.method).toBe('POST');
     req.flush(dummyResponse);
   });

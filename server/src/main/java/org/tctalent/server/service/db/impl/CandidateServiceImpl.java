@@ -136,7 +136,7 @@ import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.BaseCandidateContactRequest;
-import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
@@ -441,13 +441,13 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request) {
-        String s = request.getCandidateEmailOrPhone();
+    public Page<Candidate> searchCandidates(CandidateEmailPhoneOrWhatsappSearchRequest request) {
+        String s = request.getCandidateEmailPhoneOrWhatsapp();
         User loggedInUser = authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates = candidateRepository.searchCandidateEmailOrPhone(
+        Page<Candidate> candidates = candidateRepository.searchCandidateEmailPhoneOrWhatsapp(
             '%' + s + '%', sourceCountries,
             request.getPageRequestWithoutSort());
 
