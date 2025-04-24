@@ -6,7 +6,9 @@ package org.tctalent.server.util.background;
 
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
+import org.tctalent.server.util.background.BackLogger.BackLogger;
 
 /**
  * Simplified BackRunner for PageContext's
@@ -15,13 +17,33 @@ import org.springframework.scheduling.TaskScheduler;
  */
 public class PageContextBackRunner extends BackRunner<PageContext> {
 
-    public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<PageContext> backProcessor, int percentageCPU) {
-        return super.start(taskScheduler, backProcessor, new PageContext(null), percentageCPU);
+    public ScheduledFuture<?> start(
+        TaskScheduler taskScheduler,
+        BackProcessor<PageContext> backProcessor,
+        @Nullable BackLogger backLogger,
+        int percentageCPU
+    ) {
+        return super.start(
+            taskScheduler,
+            backProcessor,
+            backLogger,
+            new PageContext(null),
+            percentageCPU
+        );
     }
 
-    public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<PageContext> backProcessor, Duration delay) {
-        return super.start(taskScheduler, backProcessor, new PageContext(null), delay);
+    public ScheduledFuture<?> start(
+        TaskScheduler taskScheduler,
+        BackProcessor<PageContext> backProcessor,
+        @Nullable BackLogger backLogger,
+        Duration delay
+    ) {
+        return super.start(
+            taskScheduler,
+            backProcessor,
+            backLogger,
+            new PageContext(null),
+            delay
+        );
     }
 }

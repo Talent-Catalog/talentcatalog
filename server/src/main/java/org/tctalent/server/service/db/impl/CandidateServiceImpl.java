@@ -3174,17 +3174,19 @@ public class CandidateServiceImpl implements CandidateService {
         // Update Salesforce contacts
         List<Contact> contacts =
             salesforceService.createOrUpdateContacts(orderedCandidates);
+        //todo remove
+        throw new RuntimeException("fake exception for testing");
 
-        // Update the sfLink in all implicated TC candidate records
-        int nCandidates = orderedCandidates.size();
-        for (int i = 0; i < nCandidates; i++) {
-            Contact contact = contacts.get(i);
-            if (contact.getId() != null) {
-                Candidate candidate = orderedCandidates.get(i);
-                updateCandidateSalesforceLink(candidate,
-                    contact.getUrl(salesforceConfig.getBaseLightningUrl()));
-            }
-        }
+//        // Update the sfLink in all implicated TC candidate records
+//        int nCandidates = orderedCandidates.size();
+//        for (int i = 0; i < nCandidates; i++) {
+//            Contact contact = contacts.get(i);
+//            if (contact.getId() != null) {
+//                Candidate candidate = orderedCandidates.get(i);
+//                updateCandidateSalesforceLink(candidate,
+//                    contact.getUrl(salesforceConfig.getBaseLightningUrl()));
+//            }
+//        }
     }
 
     @Transactional

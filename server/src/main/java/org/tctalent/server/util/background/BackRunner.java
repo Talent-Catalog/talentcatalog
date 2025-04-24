@@ -21,9 +21,11 @@ import java.util.concurrent.ScheduledFuture;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
+import org.tctalent.server.util.background.BackLogger.BackLogger;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
@@ -50,8 +52,8 @@ import org.springframework.scheduling.support.PeriodicTrigger;
 public class BackRunner<CONTEXT> implements Runnable {
     private TaskScheduler taskScheduler;
     private BackProcessor<CONTEXT> backProcessor;
-    private Trigger trigger;
     private BackLogger backLogger;
+    private Trigger trigger;
 
     /**
      * This defines the "context" for keeping track of where a {@link BackProcessor}
@@ -73,7 +75,9 @@ public class BackRunner<CONTEXT> implements Runnable {
             }
 
         } catch (Exception e) {
-            backLogger.logFailure(e);
+            if (backLogger != null) {
+                backLogger.logFailure(e);
+            }
             scheduledFuture.cancel(true);
         }
     }
@@ -90,10 +94,15 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @param delay Delay between each processing call
      * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
-    public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Duration delay) {
+    public ScheduledFuture<?> start(
+        TaskScheduler taskScheduler,
+        BackProcessor<CONTEXT> backProcessor,
+        @Nullable BackLogger backLogger,
+        CONTEXT batchContext,
+        Duration delay
+    ) {
         this.trigger = new PeriodicTrigger(delay);
-        return start(taskScheduler, backProcessor, batchContext, trigger);
+        return start(taskScheduler, backProcessor, backLogger, batchContext, trigger);
     }
 
     /**
@@ -107,16 +116,27 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @param percentageCPU Desired maximum CPU load
      * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
-    public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, int percentageCPU) {
+    public ScheduledFuture<?> start(
+        TaskScheduler taskScheduler,
+        BackProcessor<CONTEXT> backProcessor,
+        @Nullable BackLogger backLogger,
+        CONTEXT batchContext,
+        int percentageCPU
+    ) {
         this.trigger = new VariableTrigger(percentageCPU);
-        return start(taskScheduler, backProcessor, batchContext, trigger);
+        return start(taskScheduler, backProcessor, backLogger, batchContext, trigger);
     }
 
-    private ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Trigger trigger) {
+    private ScheduledFuture<?> start(
+        TaskScheduler taskScheduler,
+        BackProcessor<CONTEXT> backProcessor,
+        @Nullable BackLogger backLogger,
+        CONTEXT batchContext,
+        Trigger trigger
+    ) {
         this.batchContext = batchContext;
         this.backProcessor = backProcessor;
+        this.backLogger = backLogger;
         scheduledFuture = taskScheduler.schedule(this, trigger);
         return scheduledFuture;
     }

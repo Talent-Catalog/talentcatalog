@@ -19,7 +19,6 @@ package org.tctalent.server.service.db.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,8 @@ import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.SalesforceService;
+import org.tctalent.server.util.background.BackLogger.BackLogger;
+import org.tctalent.server.util.background.BackLogger.DefaultBackLoggerFactory;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.IdContext;
@@ -48,6 +49,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
   private final TaskScheduler taskScheduler;
   private final CandidateOpportunityService candidateOpportunityService;
   private final SalesforceService salesforceService;
+  private final DefaultBackLoggerFactory backLoggerFactory;
 
   /**
    * Scheduled daily at 2300 GMT to keep TC data accurate in cases where Candidate Opps have been
@@ -97,8 +99,16 @@ public class CandidateOppBackgroundProcessingServiceImpl
         // Schedule background processing
         BackRunner<IdContext> backRunner = new BackRunner<>();
 
-        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-            new IdContext(null, 200, 0L), 20);
+        // Implement optional logging
+        BackLogger backLogger = backLoggerFactory.create();
+
+        backRunner.start(
+            taskScheduler,
+            backProcessor,
+            backLogger,
+            new IdContext(null, 200, 0L),
+            20
+        );
       }
 
     } catch (Exception e) {

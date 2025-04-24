@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.service.db.util.ExceptionHelper;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -449,6 +450,35 @@ public class EmailHelper {
                 .logError(e);
 
             throw new EmailSendFailedException(e);
+        }
+    }
+
+    public void sendBackgroundProcessingFailureEmail(Exception ex) throws EmailSendFailedException {
+        String emailTo = "tech@talentbeyondboundaries.org";
+        String subject = "Background Processing Failure";
+        String bodyText;
+        String bodyHtml;
+
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("exMessage",ex.getMessage());
+            ctx.setVariable("exStackTrace", ExceptionHelper.getStackTraceAsString(ex));
+
+            bodyText = textTemplateEngine.process("background-processing-failure", ctx);
+            bodyHtml = htmlTemplateEngine.process("background-processing-failure", ctx);
+
+            emailSender.sendAsync(emailTo, subject, bodyText, bodyHtml);
+
+            LogBuilder.builder(log)
+                .action("sendBackgroundProcessingFailureEmail")
+                .message("Email sent successfully")
+                .logInfo();
+
+        } catch (Exception e){
+            LogBuilder.builder(log)
+                .action("sendBackgroundProcessingFailureEmail")
+                .message("Error sending email: " + e.getMessage())
+                .logError(e);
         }
     }
 

@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -128,6 +127,8 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.util.background.BackLogger.BackLogger;
+import org.tctalent.server.util.background.BackLogger.DefaultBackLoggerFactory;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
@@ -181,6 +182,7 @@ public class SystemAdminApi {
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
     private final TcApiService tcApiService;
+    private final DefaultBackLoggerFactory backLoggerFactory;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -233,8 +235,8 @@ public class SystemAdminApi {
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
         SavedSearchService savedSearchService, PartnerService partnerService,
         CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService,
-        TcApiService tcApiService
-        ) {
+        TcApiService tcApiService, DefaultBackLoggerFactory backLoggerFactory
+    ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -266,6 +268,7 @@ public class SystemAdminApi {
       this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
+      this.backLoggerFactory = backLoggerFactory;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
       this.tcApiService = tcApiService;
@@ -2945,11 +2948,19 @@ public class SystemAdminApi {
         BackProcessor<PageContext> backProcessor =
             backgroundProcessingService.createSfSyncBackProcessor(statuses, totalNoOfPages);
 
+        // Implement optional logging
+        BackLogger backLogger = backLoggerFactory.create();
+
         // Schedule background processing
         BackRunner<PageContext> backRunner = new BackRunner<>();
 
-        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-            new PageContext(null), 20);
+        backRunner.start(
+            taskScheduler,
+            backProcessor,
+            backLogger,
+            new PageContext(null),
+            20
+        );
     }
 
     /**

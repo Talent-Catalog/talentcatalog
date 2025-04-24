@@ -14,22 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.background;
+package org.tctalent.server.util.background.BackLogger;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.tctalent.server.logging.LogBuilder;
+import org.springframework.stereotype.Component;
+import org.tctalent.server.service.db.email.EmailHelper;
 
-@Service
+@Component
+@RequiredArgsConstructor
 @Slf4j
-public class BackLoggerImpl implements BackLogger {
+public class DefaultBackLoggerFactory {
 
-  @Override
-  public void logFailure(Exception e) {
-    LogBuilder.builder(log)
-        .action("Background batch processing")
-        .message("Operation cancelled. Batch failed due to unchecked exception: " + e.getMessage())
-        .logError(e);
+  private final EmailHelper emailHelper;
+
+  public BackLogger create() {
+    return new DefaultBackLogger(emailHelper);
   }
 
 }
