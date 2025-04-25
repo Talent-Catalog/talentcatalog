@@ -70,14 +70,15 @@ export class AppComponent implements OnInit {
     //Only show standard header if logged on (ie loggedInUser is not null)
     this.showHeader = user != null
 
-    // Catching the user's information
-    Clarity.identify(
-      String(user.id),             // custom-id
-      user.username || 'NoName'   // friendly-name
-    );
-
-    //If logged out...
-    if (user == null) {
+    if (user != null) {
+      // If user is logged in, identify them in Clarity
+      // Catching the user's information
+      Clarity.identify(
+        String(user.id),             // custom-id
+        user.username || 'NoName'   // friendly-name
+      );
+    } else {
+      // If logged out...
       this.onLogout();
     }
   }
