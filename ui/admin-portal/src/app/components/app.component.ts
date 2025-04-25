@@ -24,6 +24,7 @@ import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
 import { UserService} from "../services/user.service";
 import {environment} from "../../environments/environment";
+import Clarity from '@microsoft/clarity';
 
 @Component({
   selector: 'app-root',
@@ -50,6 +51,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.trackPageViews();
+    this.trackClarityViews();
 
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
@@ -67,6 +69,12 @@ export class AppComponent implements OnInit {
   private onChangedLogin(user: User) {
     //Only show standard header if logged on (ie loggedInUser is not null)
     this.showHeader = user != null
+
+    // Catching the user's information
+    Clarity.identify(
+      String(user.id),             // custom-id
+      user.username || 'NoName'   // friendly-name
+    );
 
     //If logged out...
     if (user == null) {
@@ -123,6 +131,19 @@ export class AppComponent implements OnInit {
       }
     );
   }
+
+  private trackClarityViews() {
+    // Initialize Clarity with your Project ID
+    Clarity.init(environment.clarityProjectId);
+
+    // Track page views on router changes
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // Track page views manually
+        Clarity.event('PageView');
+      }
+    });
+}
 
 
   /**
