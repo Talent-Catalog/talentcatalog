@@ -78,11 +78,15 @@ export class CandidateProfileComponent implements OnInit {
   ngOnInit() {
     const lang = this.route.snapshot.queryParams['lang'];
     //Need to delay changing language otherwise you get ExpressionChangedAfterItHasBeenCheckedError
-    setTimeout(
-      () => this.languageService.changeLanguage(lang), 1000
-    )
-    // It is important to have this line because otherwise data is missing from the DOM on tab change (Only appears with refresh). Issue #2129
-    this.loadDropDownData();
+    if (lang) {
+      setTimeout(() => {
+        this.languageService.changeLanguage(lang);
+      }, 1000);
+    } else {
+      this.loadDropDownData(); // Only load immediately if no lang change
+    }
+
+    // this.loadDropDownData();
     // listen for change of language and save
     this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadDropDownData();
