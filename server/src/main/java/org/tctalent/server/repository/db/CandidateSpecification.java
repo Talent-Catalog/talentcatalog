@@ -238,7 +238,7 @@ public class CandidateSpecification {
             // SURVEY TYPE SEARCH
             if (!Collections.isEmpty(request.getSurveyTypeIds())) {
                 conjunction = cb.and(conjunction,
-                        cb.isTrue(candidate.get("surveyType").in(request.getSurveyTypeIds()))
+                        cb.isTrue(candidate.get("surveyType").get("id").in(request.getSurveyTypeIds()))
                 );
             }
 
@@ -294,7 +294,7 @@ public class CandidateSpecification {
 
             // EDUCATION LEVEL SEARCH
             if (request.getMinEducationLevel() != null) {
-                Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel", JoinType.LEFT);
+                Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel");
                 conjunction = cb.and(conjunction,
                         cb.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
                 );

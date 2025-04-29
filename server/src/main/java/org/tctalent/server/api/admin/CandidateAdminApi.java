@@ -51,7 +51,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
-import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
@@ -137,8 +137,8 @@ public class CandidateAdminApi {
         return builder.buildPage(candidates);
     }
 
-    @PostMapping("findbyemailorphone")
-    public Map<String, Object> findByCandidateEmailOrPhone(@RequestBody CandidateEmailOrPhoneSearchRequest request) {
+    @PostMapping("findbyemailphoneorwhatsapp")
+    public Map<String, Object> findByCandidateEmailPhoneOrWhatsapp(@RequestBody CandidateEmailPhoneOrWhatsappSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
