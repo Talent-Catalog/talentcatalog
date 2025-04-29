@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
@@ -32,7 +33,6 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.service.db.util.ExceptionHelper;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -463,7 +463,7 @@ public class EmailHelper {
             final Context ctx = new Context();
             ctx.setVariable("jobName", jobName);
             ctx.setVariable("exMessage",ex.getMessage());
-            ctx.setVariable("exStackTrace", ExceptionHelper.getStackTraceAsString(ex));
+            ctx.setVariable("exStackTrace", ExceptionUtils.getStackTrace(ex));
 
             bodyText = textTemplateEngine.process("background-processing-failure", ctx);
             bodyHtml = htmlTemplateEngine.process("background-processing-failure", ctx);

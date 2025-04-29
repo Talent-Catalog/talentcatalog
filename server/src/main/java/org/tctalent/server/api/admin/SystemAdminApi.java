@@ -2949,7 +2949,8 @@ public class SystemAdminApi {
             backgroundProcessingService.createSfSyncBackProcessor(statuses, totalNoOfPages);
 
         // Implement optional logging
-        BackLogger backLogger = backLoggerFactory.create("TC -> SF candidate sync", true);
+        BackLogger backLogger =
+            backLoggerFactory.create("TC -> SF candidate sync", true);
 
         // Schedule background processing
         BackRunner<PageContext> backRunner = new BackRunner<>();

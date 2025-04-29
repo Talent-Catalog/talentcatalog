@@ -198,7 +198,11 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, null, 20);
+
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Set candidate public IDs", true);
+
+    runner.start(taskScheduler, backProcessor, backLogger, 20);
   }
 
   @Override
@@ -224,7 +228,11 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, null, 20);
+
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Set partner public IDs", true);
+
+    runner.start(taskScheduler, backProcessor, backLogger, 20);
   }
 
   @Override
@@ -250,7 +258,11 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, null, 20);
+
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Set saved list public IDs", true);
+
+    runner.start(taskScheduler, backProcessor, backLogger, 20);
   }
 
   @Override
@@ -275,6 +287,10 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, null, 20);
+
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Set saved search public IDs", true);
+
+    runner.start(taskScheduler, backProcessor, backLogger, 20);
   }
 }
