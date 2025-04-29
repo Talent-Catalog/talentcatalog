@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
@@ -450,36 +449,6 @@ public class EmailHelper {
                 .logError(e);
 
             throw new EmailSendFailedException(e);
-        }
-    }
-
-    public void sendBackgroundProcessingFailureEmail(String jobName, Exception ex) {
-        String emailTo = "tech@talentbeyondboundaries.org";
-        String subject = "Background Processing Failure";
-        String bodyText;
-        String bodyHtml;
-
-        try {
-            final Context ctx = new Context();
-            ctx.setVariable("jobName", jobName);
-            ctx.setVariable("exMessage",ex.getMessage());
-            ctx.setVariable("exStackTrace", ExceptionUtils.getStackTrace(ex));
-
-            bodyText = textTemplateEngine.process("background-processing-failure", ctx);
-            bodyHtml = htmlTemplateEngine.process("background-processing-failure", ctx);
-
-            emailSender.sendAsync(emailTo, subject, bodyText, bodyHtml);
-
-            LogBuilder.builder(log)
-                .action("sendBackgroundProcessingFailureEmail | " + jobName)
-                .message("Email sent successfully")
-                .logInfo();
-
-        } catch (Exception e){
-            LogBuilder.builder(log)
-                .action("sendBackgroundProcessingFailureEmail | " + jobName)
-                .message("Error sending email: " + e.getMessage())
-                .logError(e);
         }
     }
 

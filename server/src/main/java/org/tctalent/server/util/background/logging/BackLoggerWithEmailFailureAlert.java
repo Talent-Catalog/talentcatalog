@@ -30,12 +30,14 @@ public class BackLoggerWithEmailFailureAlert implements BackLogger {
 
   @Override
   public void logFailure(Exception e) {
+    String message =
+        "Background batch processing op '" + jobName + "' cancelled due to unchecked exception";
+
     LogBuilder.builder(log)
-        .action("Background processing | " + jobName)
-        .message("Operation cancelled. Failed due to unchecked exception: " + e.getMessage())
+        .message(message + ": " + e.getMessage())
         .logError(e);
 
-      emailHelper.sendBackgroundProcessingFailureEmail(jobName, e);
+      emailHelper.sendAlert(message, e);
   }
 
 }
