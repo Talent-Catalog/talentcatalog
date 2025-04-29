@@ -14,16 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.background.BackLogger;
+package org.tctalent.server.util.background.logging;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.service.db.email.EmailHelper;
 
 @RequiredArgsConstructor
 @Slf4j
-public class DefaultBackLogger implements BackLogger {
-  private final String jobName;
+public class BackLoggerWithEmailFailureAlert implements BackLogger {
+  private final EmailHelper emailHelper;
+  @NotNull private final String jobName;
 
   @Override
   public void logFailure(Exception e) {
@@ -31,6 +34,8 @@ public class DefaultBackLogger implements BackLogger {
         .action("Background processing | " + jobName)
         .message("Operation cancelled. Failed due to unchecked exception: " + e.getMessage())
         .logError(e);
+
+      emailHelper.sendBackgroundProcessingFailureEmail(jobName, e);
   }
 
 }

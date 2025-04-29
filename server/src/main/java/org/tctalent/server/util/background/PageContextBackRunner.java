@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
-import org.tctalent.server.util.background.BackLogger.BackLogger;
+import org.tctalent.server.util.background.logging.BackLogger;
 
 /**
  * Simplified BackRunner for PageContext's

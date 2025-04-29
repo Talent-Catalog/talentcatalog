@@ -14,26 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.background.BackLogger;
+package org.tctalent.server.util.background.logging;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.tctalent.server.service.db.email.EmailHelper;
+public interface BackLogger {
 
-@Component
-@RequiredArgsConstructor
-@Slf4j
-public class BackLoggerFactory {
-
-  private final EmailHelper emailHelper;
-
-  public BackLogger create(String jobName, boolean emailAlerts) {
-    if (emailAlerts) {
-      return new BackLoggerWithEmailFailureAlert(emailHelper, jobName);
-    } else {
-      return new DefaultBackLogger(jobName);
-    }
-  }
+  void logFailure(Exception e);
 
 }

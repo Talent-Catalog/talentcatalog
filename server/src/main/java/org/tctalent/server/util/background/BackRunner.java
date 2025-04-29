@@ -25,7 +25,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
-import org.tctalent.server.util.background.BackLogger.BackLogger;
+import org.tctalent.server.util.background.logging.BackLogger;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
