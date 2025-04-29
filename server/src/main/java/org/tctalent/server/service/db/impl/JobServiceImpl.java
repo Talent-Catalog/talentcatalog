@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -625,11 +624,14 @@ public class JobServiceImpl implements JobService {
             final LocalDate submissionDueDate = job.getSubmissionDueDate();
 
             //Next step
-            final String nowDate = nextStepDateFormat.format(LocalDateTime.now());
-            final String nextStep = nowDate + ": Waiting to receive candidate CVs for review";
+            final String processedNextStep =
+                nextStepProcessingService.processNextStep(
+                    job, "Waiting to receive candidate CVs for review"
+                );
+            job.setNextStep(processedNextStep);
 
             salesforceService.updateEmployerOpportunityStage(
-                job, JobOpportunityStage.candidateSearch, nextStep, submissionDueDate
+                job, JobOpportunityStage.candidateSearch, processedNextStep, submissionDueDate
             );
         }
 
@@ -963,9 +965,10 @@ public class JobServiceImpl implements JobService {
         SalesforceJobOpp job = getJob(id);
 
         final JobOpportunityStage stage = request.getStage();
-        final String nextStep = request.getNextStep();
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
-        salesforceService.updateEmployerOpportunityStage(job, stage, nextStep, nextStepDueDate);
+        final String processedNextStep =
+            nextStepProcessingService.processNextStep(job, request.getNextStep());
+        salesforceService.updateEmployerOpportunityStage(job, stage, processedNextStep, nextStepDueDate);
 
         final String jobName = request.getJobName();
         if (jobName != null) {
