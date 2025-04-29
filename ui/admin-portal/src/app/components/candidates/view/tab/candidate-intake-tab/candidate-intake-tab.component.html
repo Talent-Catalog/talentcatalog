@@ -64,7 +64,7 @@
   </div>
 
   <div>
-    <ngb-accordion #fullIntake="ngbAccordion" [destroyOnHide]="false">
+    <ngb-accordion #fullIntake="ngbAccordion" [destroyOnHide]="false" [appReadOnlyInputs]="isReadOnly()">
 
       <!-- GENERAL INFORMATION -->
       <ngb-panel id="intake-confirm" title="Confirm General Information">

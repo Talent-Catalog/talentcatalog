@@ -27,10 +27,7 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
-import {
-  CandidateExamService,
-  CreateCandidateExamRequest
-} from "../../../../../services/candidate-exam.service";
+import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
@@ -145,6 +142,10 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       }
     }
     return health;
+  }
+
+  isReadOnly() {
+    return this.authenticationService.getLoggedInUser().readOnly;
   }
 
 }

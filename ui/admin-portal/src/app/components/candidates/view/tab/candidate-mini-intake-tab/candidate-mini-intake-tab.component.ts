@@ -108,6 +108,10 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
+  isReadOnly(): boolean {
+    return this.authorizationService.isReadOnly();
+  }
+
   editContactDetails(event: MouseEvent) {
     event.stopPropagation(); // Stop the click event from opening/closing the accordion
     const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
