@@ -16,7 +16,6 @@
 
 package org.tctalent.server.util.background.logging;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.tctalent.server.logging.LogBuilder;
@@ -24,7 +23,7 @@ import org.tctalent.server.logging.LogBuilder;
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultBackLogger implements BackLogger {
-  @NotNull private final String jobName;
+  private final String jobName;
 
   @Override
   public void logFailure(Exception e) {

@@ -24,11 +24,17 @@ import java.util.concurrent.ScheduledFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.email.EmailSender;
+import org.tctalent.server.util.background.logging.BackLogger;
+import org.tctalent.server.util.background.logging.BackLoggerFactory;
+import org.thymeleaf.TemplateEngine;
 
 class BackRunnerTest {
 
     private BackRunner<IdContext> backRunner;
     private BackProcessor<IdContext> backProcessor;
+    private BackLoggerFactory backLoggerFactory;
     ThreadPoolTaskScheduler taskScheduler;
 
     @BeforeEach
@@ -36,6 +42,11 @@ class BackRunnerTest {
         taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.initialize();
         backRunner = new BackRunner<>();
+        backLoggerFactory =
+            new BackLoggerFactory(
+                new EmailHelper(new EmailSender(), new TemplateEngine(), new TemplateEngine())
+            );
+
         backProcessor = new BackProcessor<>() {
             @Override
             public boolean process(IdContext ctx) {
@@ -52,8 +63,30 @@ class BackRunnerTest {
     @Test
     void testFixedScheduling() throws InterruptedException {
         ScheduledFuture<?> scheduledFuture =
-            backRunner.start(taskScheduler, backProcessor, new IdContext(null, 10, null),
-                Duration.ofSeconds(1));
+            backRunner.start(
+                taskScheduler,
+                backProcessor,
+                null,
+                new IdContext(null, 10, null),
+                Duration.ofSeconds(1)
+            );
+        assertFalse(scheduledFuture.isDone());
+        Thread.sleep(5000);
+        assertTrue(scheduledFuture.isDone());
+    }
+
+    @Test
+    void testFixedSchedulingWithBackLoggerImpl() throws InterruptedException {
+        BackLogger backLogger = backLoggerFactory.create("test", false);
+
+        ScheduledFuture<?> scheduledFuture =
+            backRunner.start(
+                taskScheduler,
+                backProcessor,
+                backLogger,
+                new IdContext(null, 10, null),
+                Duration.ofSeconds(1)
+            );
         assertFalse(scheduledFuture.isDone());
         Thread.sleep(5000);
         assertTrue(scheduledFuture.isDone());
@@ -62,8 +95,30 @@ class BackRunnerTest {
     @Test
     void testVariableScheduling() throws InterruptedException {
         ScheduledFuture<?> scheduledFuture =
-            backRunner.start(taskScheduler, backProcessor, new IdContext(null, 10, null),
-                50);
+            backRunner.start(
+                taskScheduler,
+                backProcessor,
+                null,
+                new IdContext(null, 10, null),
+                50
+            );
+        assertFalse(scheduledFuture.isDone());
+        Thread.sleep(5000);
+        assertTrue(scheduledFuture.isDone());
+    }
+
+    @Test
+    void testVariableSchedulingWithBackLoggerImpl() throws InterruptedException {
+        BackLogger backLogger = backLoggerFactory.create("test", false);
+
+        ScheduledFuture<?> scheduledFuture =
+            backRunner.start(
+                taskScheduler,
+                backProcessor,
+                backLogger,
+                new IdContext(null, 10, null),
+                50
+            );
         assertFalse(scheduledFuture.isDone());
         Thread.sleep(5000);
         assertTrue(scheduledFuture.isDone());
