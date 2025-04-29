@@ -571,7 +571,6 @@ import {LoadingIndicatorComponent} from './components/util/loading-indicator/loa
 import {ErrorDisplayComponent} from './components/util/error-display/error-display.component';
 import {IntelligenceComponent} from './components/intelligence/intelligence.component';
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
-import {ReadOnlyInputsDirective} from './components/util/read-only-inputs.directive';
 
 @NgModule({
   declarations: [
@@ -905,8 +904,7 @@ import {ReadOnlyInputsDirective} from './components/util/read-only-inputs.direct
     LoadingIndicatorComponent,
     ErrorDisplayComponent,
     IntelligenceComponent,
-    OfferToAssistComponent,
-    ReadOnlyInputsDirective
+    OfferToAssistComponent
   ],
   imports: [
     BrowserModule,
