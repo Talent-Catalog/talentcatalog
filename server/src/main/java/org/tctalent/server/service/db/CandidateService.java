@@ -51,7 +51,7 @@ import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
-import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
@@ -132,7 +132,7 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
-    Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request);
+    Page<Candidate> searchCandidates(CandidateEmailPhoneOrWhatsappSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 

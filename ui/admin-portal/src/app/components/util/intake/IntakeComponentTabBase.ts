@@ -358,6 +358,8 @@ export abstract class IntakeComponentTabBase implements OnInit {
     }
     this.noteService.create(this.noteRequest).subscribe(
       (candidateNote) => {
+        // update the candidate to refresh the notes
+        this.candidateService.updateCandidate(this.candidate);
         this.saving = false;
       }, (error) => {
         this.error = error;
@@ -432,6 +434,8 @@ export abstract class IntakeComponentTabBase implements OnInit {
     oldIntakeInputModal.result
       .then((candidate) => {
         this.candidate = candidate;
+        // Update candidate to refresh the notes
+        this.candidateService.updateCandidate(this.candidate);
         this.refreshIntakeData();
         this.saving = false;
       }, (error) => {

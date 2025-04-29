@@ -34,7 +34,7 @@ import {UserService} from "../../services/user.service";
 export class HeaderComponent implements OnInit {
 
   isNavbarCollapsed = true;
-  doEmailOrPhoneSearch;
+  doEmailPhoneOrWhatsappSearch;
   doNumberOrNameSearch;
   doExternalIdSearch;
   searchFailed: boolean;
@@ -105,7 +105,7 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
 
-    this.doEmailOrPhoneSearch = (text$: Observable<string>) =>
+    this.doEmailPhoneOrWhatsappSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
@@ -113,8 +113,8 @@ export class HeaderComponent implements OnInit {
           this.searching = true;
           this.error = null
         }),
-        switchMap(candidateEmailOrPhone =>
-          this.candidateService.findByCandidateEmailOrPhone({candidateEmailOrPhone: candidateEmailOrPhone, pageSize: 10}).pipe(
+        switchMap(candidateEmailPhoneOrWhatsapp =>
+          this.candidateService.findByCandidateEmailPhoneOrWhatsapp({candidateEmailPhoneOrWhatsapp: candidateEmailPhoneOrWhatsapp, pageSize: 10}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {

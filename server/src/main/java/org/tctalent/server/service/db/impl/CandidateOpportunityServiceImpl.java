@@ -130,7 +130,10 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             //todo These defaults will be overwritten by whatever is in oppParams (if it is non null).
             //Instead should set these defaults only if oppParams corresponding are empty.
             opp.setStage(CandidateOpportunityStage.prospect);
-            opp.setNextStep("Contact candidate and do intake");
+            String processedNextStep = nextStepProcessingService.processNextStep(
+                opp, "Contact candidate and do intake"
+            );
+            opp.setNextStep(processedNextStep);
             opp.setNextStepDueDate(LocalDate.now().plusWeeks(2));
 
             String sfId = fetchSalesforceId(candidate, jobOpp);
