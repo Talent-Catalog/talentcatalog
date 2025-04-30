@@ -18,7 +18,7 @@ package org.tctalent.server.api.admin;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
-import jakarta.persistence.EntityManager;
+//import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.io.File;
 import java.io.IOException;
@@ -203,8 +203,8 @@ public class SystemAdminApi {
     @Value("${google.drive.listFoldersRootId}")
     private String listFoldersRootId;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+//    @PersistenceContext
+//    private EntityManager entityManager;
 
     @Value("${environment}")
     private String environment;
@@ -3030,9 +3030,9 @@ public class SystemAdminApi {
     // Helper method to delete records from job_suggested_saved_search table
     private void deleteJobSuggestedSavedSearchEntries(Long jobId) {
         String sql = "DELETE FROM job_suggested_saved_search WHERE tc_job_id = :jobId";
-        entityManager.createNativeQuery(sql)
-            .setParameter("jobId", jobId)
-            .executeUpdate();
+//        entityManager.createNativeQuery(sql)
+//            .setParameter("jobId", jobId)
+//            .executeUpdate();
     }
 
     // Helper method to delete related entries in SavedList and SavedSearch
