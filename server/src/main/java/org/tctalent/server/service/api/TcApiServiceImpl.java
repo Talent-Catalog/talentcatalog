@@ -41,7 +41,7 @@ public class TcApiServiceImpl implements TcApiService {
   }
 
   @Override
-  public String runApiAnonymisation() throws RestClientException {
+  public String runApiMigration() throws RestClientException {
     try {
       return restClient.post()
           .uri("/batch/jobs/run")
@@ -54,4 +54,19 @@ public class TcApiServiceImpl implements TcApiService {
       return e.getResponseBodyAsString();
     }
   }
+
+  @Override
+  public String listApiMigrations() {
+    try {
+      return restClient.get()
+          .uri("/batch/jobs")
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
 }
