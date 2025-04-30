@@ -279,9 +279,15 @@ public class SystemAdminApi {
         backgroundProcessingService.setSavedSearchPublicIds();
     }
 
-    @GetMapping("run_api_anonymization")
+    @GetMapping("run_api_migration")
     public ResponseEntity<String> runApiAnonymisation() {
-        String response = tcApiService.runApiAnonymisation();
+        String response = tcApiService.runApiMigration();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("list_api_migrations")
+    public ResponseEntity<String> listApiAnonymisations() {
+        String response = tcApiService.listApiMigrations();
         return ResponseEntity.ok(response);
     }
 
