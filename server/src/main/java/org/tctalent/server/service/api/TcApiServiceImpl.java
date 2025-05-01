@@ -26,6 +26,8 @@ import org.springframework.web.client.RestClientException;
 import org.tctalent.server.configuration.properties.TcApiServiceProperties;
 
 /**
+ * Implementation of the TcApiService interface for managing and running API migrations.
+ *
  * @author sadatmalik
  */
 @Service
