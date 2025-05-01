@@ -280,14 +280,20 @@ public class SystemAdminApi {
     }
 
     @GetMapping("run_api_migration")
-    public ResponseEntity<String> runApiAnonymisation() {
+    public ResponseEntity<String> runApiMigration() {
         String response = tcApiService.runApiMigration();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("list_api_migrations")
-    public ResponseEntity<String> listApiAnonymisations() {
+    public ResponseEntity<String> listApiMigrations() {
         String response = tcApiService.listApiMigrations();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("stop_api_migration/{id}")
+    public ResponseEntity<String> stopApiMigration(@PathVariable("id") long id) {
+        String response = tcApiService.stopApiMigration(id);
         return ResponseEntity.ok(response);
     }
 
