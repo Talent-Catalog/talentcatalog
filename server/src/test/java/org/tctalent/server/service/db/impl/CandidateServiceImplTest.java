@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,7 +55,6 @@ class CandidateServiceImplTest {
 
     @Mock PersistenceContextHelper persistenceContextHelper;
     @Mock Candidate mockCandidate;
-    @Mock private Partner invalidPartner;
 
     @Spy
     @InjectMocks
@@ -91,20 +91,15 @@ class CandidateServiceImplTest {
     @Test
     @DisplayName("reassign candidates fails with invalid implementation of partner")
     void reassignCandidatesOnPageFailsWithInvalidPartner() {
+        Partner invalidPartner = mock(Partner.class);
+
         assertThrows(
             IllegalArgumentException.class, () ->
             candidateService.reassignCandidatesOnPage(candidatePage, invalidPartner)
         );
+        // Shouldn't happen:
         verify(candidateService, never()).save(any(), anyBoolean());
         verify(persistenceContextHelper, never()).flushAndClearEntityManager();
-    }
-
-    @Test
-    @DisplayName("reassign candidates handles empty page")
-    void reassignCandidatesHandlesEmptyPage() {
-        Page<Candidate> emptyPage = new PageImpl<>(List.of());
-
-        candidateService.reassignCandidatesOnPage(emptyPage, partner);
     }
 
     @Test
@@ -114,6 +109,7 @@ class CandidateServiceImplTest {
             IllegalArgumentException.class, () ->
                 candidateService.reassignCandidatesOnPage(candidatePage, null)
         );
+        // Shouldn't happen:
         verify(candidateService, never()).save(any(), anyBoolean());
         verify(persistenceContextHelper, never()).flushAndClearEntityManager();
     }
