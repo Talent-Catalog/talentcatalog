@@ -269,4 +269,4 @@ preset:
 
 tc-api:
   apiUrl: ${TC_API_URL:http://localhost:8082}
-  apiKey: ${TC_API_KEY:}
+  apiKey: ${TC_API_KEY:ntwRTJitBZLx35o0q61QHNw3HOYhqWfBoJxgJDnH18I}
