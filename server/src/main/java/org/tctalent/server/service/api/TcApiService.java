@@ -28,4 +28,6 @@ public interface TcApiService {
   String listApiMigrations();
 
   String stopApiMigration(long id);
+
+  String restartApiMigration(long id);
 }

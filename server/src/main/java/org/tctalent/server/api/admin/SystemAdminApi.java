@@ -297,6 +297,12 @@ public class SystemAdminApi {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("restart_api_migration/{id}")
+    public ResponseEntity<String> restartApiMigration(@PathVariable("id") long id) {
+        String response = tcApiService.restartApiMigration(id);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("fix_null_case_sfids")
     public void fixNullCaseSfids() {
         List<CandidateOpportunity> opps = candidateOpportunityRepository.findAllBySfIdIsNull();

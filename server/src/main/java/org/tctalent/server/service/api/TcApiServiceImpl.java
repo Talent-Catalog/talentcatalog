@@ -84,4 +84,19 @@ public class TcApiServiceImpl implements TcApiService {
     }
   }
 
+  @Override
+  public String restartApiMigration(long id) {
+    try {
+      return restClient.post()
+          .uri("/batch/jobs/" + id + "/restart")
+          .contentType(APPLICATION_JSON)
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
 }
