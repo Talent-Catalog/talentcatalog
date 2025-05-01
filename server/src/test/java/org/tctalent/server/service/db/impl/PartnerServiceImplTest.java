@@ -67,10 +67,10 @@ class PartnerServiceImplTest {
     partner2.setRedirectPartner(null);
     updateRequest.setRedirectPartnerId(1L);
 
-    doReturn(partner).when(partnerService).getPartner(99); // Partner being updated
-    doReturn(partner2).when(partnerService).getPartner(1); // Target redirectPartner
+    doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
+    doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
 
-    partnerService.update(99, updateRequest); // Act
+    partnerService.update(99L, updateRequest); // Act
 
     verify(partnerRepository).save(partnerCaptor.capture());
     PartnerImpl updatedPartner = partnerCaptor.getValue();
@@ -84,11 +84,11 @@ class PartnerServiceImplTest {
   void updateSetsRedirectPartnerWithItsRedirectPartnerSetToNull() {
     updateRequest.setRedirectPartnerId(1L);
 
-    doReturn(partner).when(partnerService).getPartner(99); // Partner being updated
-    doReturn(partner2).when(partnerService).getPartner(1); // Target redirectPartner
+    doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
+    doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
     doReturn(partner2).when(partnerRepository).save(partner2);
 
-    partnerService.update(99, updateRequest); // Act
+    partnerService.update(99L, updateRequest); // Act
 
     verify(partner2).setRedirectPartner(null); // Target partner redirectPartner set to null
 
