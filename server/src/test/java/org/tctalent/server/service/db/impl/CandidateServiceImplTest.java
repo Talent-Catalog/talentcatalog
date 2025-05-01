@@ -20,7 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,6 +44,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.util.PersistenceContextHelper;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +58,7 @@ class CandidateServiceImplTest {
 
     @Mock PersistenceContextHelper persistenceContextHelper;
     @Mock Candidate mockCandidate;
+    @Mock CandidateRepository candidateRepository;
 
     @Spy
     @InjectMocks
@@ -112,6 +116,50 @@ class CandidateServiceImplTest {
         // Shouldn't happen:
         verify(candidateService, never()).save(any(), anyBoolean());
         verify(persistenceContextHelper, never()).flushAndClearEntityManager();
+    }
+
+    @Test
+    @DisplayName("clears potentialDuplicate on resolved candidates")
+    void cleansUpResolvedDuplicatesWhenIdsDiffer() {
+        long resolvedCandidateId = 42L;
+
+        // Given: candidate ID was previously marked but is not in the new list
+        given(candidateRepository.findIdsOfPotentialDuplicateCandidates(null))
+            .willReturn(List.of()); // newCandidateIds (empty)
+        given(candidateRepository.findIdsOfCandidatesMarkedPotentialDuplicates())
+            .willReturn(List.of(resolvedCandidateId)); // previousCandidateIds (1)
+
+        // doReturn() works better for spies than given() - avoids method call altogether.
+        doReturn(mockCandidate).when(candidateService).getCandidate(resolvedCandidateId);
+
+        candidateService.cleanUpResolvedDuplicates(); // Act
+
+        // Check that candidate has flag cleared and is saved:
+        verify(mockCandidate).setPotentialDuplicate(false);
+        verify(candidateService).save(mockCandidate, false);
+    }
+
+    @Test
+    @DisplayName("no action if all marked duplicates are still valid")
+    void cleanUpResolvedDuplicatesNoActionIfNoneResolved() {
+        long candidateId1 = 101L;
+        long candidateId2 = 102L;
+
+        List<Long> currentDuplicates = List.of(candidateId1, candidateId2);
+        List<Long> previouslyMarkedDuplicates = List.of(candidateId1, candidateId2);
+
+        doReturn(currentDuplicates)
+            .when(candidateRepository)
+            .findIdsOfPotentialDuplicateCandidates(null);
+
+        doReturn(previouslyMarkedDuplicates)
+            .when(candidateRepository)
+            .findIdsOfCandidatesMarkedPotentialDuplicates();
+
+        candidateService.cleanUpResolvedDuplicates(); // Act
+
+        verify(candidateService, never()).getCandidate(anyLong());
+        verify(candidateService, never()).save(any(), anyBoolean());
     }
 
 }
