@@ -99,7 +99,7 @@
                 <p class="mb-0">Citizenships</p>
                 <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
               </div>
-              <div class="col-1">
+              <div *ngIf="!isReadOnly()" class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addCitizenshipRecord($event)">
                   <i class="fas fa-plus"></i>
                 </button>
@@ -157,7 +157,7 @@
                   </ng-container>
                 </div>
               </div>
-              <div class="col-1">
+              <div *ngIf="!isReadOnly()" class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
                   <i class="fas fa-plus"></i>
                 </button>
@@ -234,7 +234,7 @@
                 </div>
 
               </div>
-              <div class="col-1">
+              <div *ngIf="!isReadOnly()" class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addDependantRecord($event)">
                   <i class="fas fa-plus"></i>
                 </button>
