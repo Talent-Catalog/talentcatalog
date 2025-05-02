@@ -23,6 +23,7 @@ import {DirectiveModule} from './directive.module';
 import {By} from '@angular/platform-browser';
 import {NgControl} from "@angular/forms";
 import {Subject} from "rxjs";
+import {ReadOnlyInputsDirective} from "./read-only-inputs.directive";
 
 @Component({
   template: `
@@ -62,8 +63,8 @@ describe('DirectiveModule', () => {
   });
 
   it('should declare ReadOnlyInputsDirective', () => {
-    const highlightSearchDirective = debugElement.query(By.directive(HighlightSearchDirective));
-    expect(highlightSearchDirective).toBeTruthy();
+    const readOnlyInputsDirective = debugElement.query(By.directive(ReadOnlyInputsDirective));
+    expect(readOnlyInputsDirective).toBeTruthy();
   });
 
 
