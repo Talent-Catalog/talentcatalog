@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div class="d-flex justify-content-between">
+    <div *ngIf="!isReadOnly()" class="d-flex justify-content-between">
 
       <div *ngIf="fullIntakeComplete; else notComplete">
         <button class="btn btn-warning" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
@@ -385,7 +385,7 @@
     </ngb-accordion>
   </div>
 
-  <div class="float-end mt-3">
+  <div *ngIf="!isReadOnly()" class="float-end mt-3">
     <div *ngIf="fullIntakeComplete; else notComplete">
       <button class="btn btn-warning" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
         Update
