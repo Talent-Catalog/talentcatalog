@@ -28,6 +28,7 @@ import {Subject} from "rxjs";
   template: `
     <div appLowercase></div>
     <div appHighlightSearch class="highlight">Angular</div>
+    <input type="text" [appReadOnlyInputs]="true" value="Text input">
   `
 })
 class TestComponent {}
@@ -56,6 +57,11 @@ describe('DirectiveModule', () => {
 
 
   it('should declare HighlightSearchDirective', () => {
+    const highlightSearchDirective = debugElement.query(By.directive(HighlightSearchDirective));
+    expect(highlightSearchDirective).toBeTruthy();
+  });
+
+  it('should declare ReadOnlyInputsDirective', () => {
     const highlightSearchDirective = debugElement.query(By.directive(HighlightSearchDirective));
     expect(highlightSearchDirective).toBeTruthy();
   });

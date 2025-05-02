@@ -15,15 +15,14 @@
  */
 
 import {ReadOnlyInputsDirective} from './read-only-inputs.directive';
-import {Component, DebugElement} from "@angular/core";
-import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {FormsModule, NgControl} from "@angular/forms";
-import {By} from "@angular/platform-browser";
+import {Component, DebugElement, Renderer2} from "@angular/core";
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular/core/testing";
+import {FormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 @Component({
   template: `
-    <div [appReadOnlyInputs]="readOnly">
+    <div [appReadOnlyInputs]="isReadOnly">
       <input type="text" />
       <ng-select [items]="['a', 'b', 'c']"></ng-select>
       <textarea></textarea>
@@ -32,16 +31,15 @@ import {NgSelectModule} from "@ng-select/ng-select";
   `
 })
 class TestComponent {
-  readOnly = true;
+  isReadOnly: boolean;
 }
 
-fdescribe('ReadOnlyInputsDirective', () => {
+describe('ReadOnlyInputsDirective', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
   let inputEl: DebugElement;
   let ngSelectEl: DebugElement;
   let textareaEl: DebugElement;
-  let directiveEl: DebugElement;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -49,15 +47,16 @@ fdescribe('ReadOnlyInputsDirective', () => {
       declarations: [TestComponent, ReadOnlyInputsDirective],
       providers: [
         {
-          provide: NgControl,
+          provide: Renderer2,
         }
       ]
     })
     fixture = TestBed.createComponent(TestComponent);
     component = fixture.componentInstance;
-    inputEl = fixture.debugElement.query(By.css('input'));
-    ngSelectEl = fixture.debugElement.query(By.css('ng-select'));
-    fixture.detectChanges();
+    component.isReadOnly = false;
+    inputEl = fixture.debugElement.query(e => e.name === 'input');
+    textareaEl = fixture.debugElement.query(e => e.name === 'textarea');
+    ngSelectEl = fixture.debugElement.query(e => e.name === 'ng-select');
   }));
 
   it('should create an instance', () => {
@@ -65,15 +64,49 @@ fdescribe('ReadOnlyInputsDirective', () => {
     expect(directive).toBeTruthy();
   });
 
-  it('should disable a text input if read only', () => {
-    fixture.componentInstance.readOnly = true;
+  it('should disable a text input if read only', fakeAsync(() => {
+    component.isReadOnly = true;
     fixture.detectChanges();
+    tick(); // Simulate 1 second
     expect(inputEl.nativeElement.hasAttribute('disabled')).toBeTrue();
-  });
+  }));
 
-  // it('should not disable a text input if not read only', () => {
-  //   fixture.componentInstance.readOnly = false;
-  //   fixture.detectChanges();
-  //   expect(inputEl.nativeElement.hasAttribute('disabled')).toBeFalse();
-  // });
+  it('should enable a text input if not read only', fakeAsync(() => {
+    component.isReadOnly = false;
+    fixture.detectChanges();
+    tick(); // Simulate 1 second
+    expect(inputEl.nativeElement.hasAttribute('disabled')).toBeFalse();
+  }));
+
+  it('should disable a textarea input if read only', fakeAsync(() => {
+    component.isReadOnly = true;
+    fixture.detectChanges();
+    tick(); // Simulate 1 second
+    expect(textareaEl.nativeElement.hasAttribute('disabled')).toBeTrue();
+  }));
+
+  it('should enable a textarea input if not read only', fakeAsync(() => {
+    component.isReadOnly = false;
+    fixture.detectChanges();
+    tick(); // Simulate 1 second
+    expect(textareaEl.nativeElement.hasAttribute('disabled')).toBeFalse();
+  }));
+
+  it('should disable a ng-select input if read only', fakeAsync(() => {
+    component.isReadOnly = true;
+    fixture.detectChanges();
+    tick(); // Simulate 1 second
+    expect(ngSelectEl.nativeElement.hasAttribute('disabled')).toBeTrue();
+    expect(ngSelectEl.nativeElement.classList.contains('read-only')).toBeTrue();
+  }));
+
+  it('should enable a ng-select input if not read only', fakeAsync(() => {
+    component.isReadOnly = false;
+    fixture.detectChanges();
+    tick(); // Simulate 1 second
+    expect(ngSelectEl.nativeElement.hasAttribute('disabled')).toBeFalse();
+    expect(ngSelectEl.nativeElement.classList.contains('read-only')).toBeFalse();
+  }));
+
+
 });
