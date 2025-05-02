@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -55,9 +57,11 @@ class CandidateServiceImplTest {
     Candidate candidate2;
     Page<Candidate> candidatePage;
     PartnerImpl partner;
+    PartnerImpl partner2;
 
     @Mock PersistenceContextHelper persistenceContextHelper;
     @Mock Candidate mockCandidate;
+    @Mock Page<Candidate> mockCandidatePage;
     @Mock CandidateRepository candidateRepository;
 
     @Spy
@@ -66,18 +70,23 @@ class CandidateServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        partner = new PartnerImpl();
+        partner.setId(1L);
+        partner.setName("Test Partner");
+        partner2 = new PartnerImpl();
+        partner.setId(2L);
+        partner.setName("Test Partner 2");
         user = new User();
+        user.setPartner(partner);
         candidate = new Candidate();
         candidate.setId(1L);
         candidate.setUser(user);
         user2 = new User();
+        user2.setPartner(partner);
         candidate2 = new Candidate();
         candidate2.setId(2L);
         candidate2.setUser(user2);
         candidatePage = new PageImpl<>(List.of(candidate, candidate2));
-        partner = new PartnerImpl();
-        partner.setId(1L);
-        partner.setName("Test Partner");
     }
 
     @Test
@@ -85,10 +94,11 @@ class CandidateServiceImplTest {
     void reassignCandidatesOnPageSucceeds() {
         doReturn(mockCandidate).when(candidateService).save(any(Candidate.class), eq(true));
 
-        candidateService.reassignCandidatesOnPage(candidatePage, partner);
+        candidateService.reassignCandidatesOnPage(candidatePage, partner2);
 
-        assertEquals(partner, user.getPartner()); // Verify partner assignment
-        verify(candidateService, times(2)).save(any(Candidate.class), eq(true)); // Verify save called
+        assertEquals(partner2, user.getPartner()); // Verify partner assignment
+        verify(candidateService, times(2))
+            .save(any(Candidate.class), eq(true)); // Verify save called
         verify(persistenceContextHelper).flushAndClearEntityManager(); // Ensure flush and clear
     }
 
@@ -119,8 +129,8 @@ class CandidateServiceImplTest {
     }
 
     @Test
-    @DisplayName("clears potentialDuplicate on resolved candidates")
-    void cleansUpResolvedDuplicatesWhenIdsDiffer() {
+    @DisplayName("cleanUpResolvedDuplicates clears potentialDuplicate on resolved candidates")
+    void cleanUpResolvedDuplicatesWhenIdsDiffer() {
         long resolvedCandidateId = 42L;
 
         // Given: candidate ID was previously marked but is not in the new list
@@ -140,7 +150,7 @@ class CandidateServiceImplTest {
     }
 
     @Test
-    @DisplayName("no action if all marked duplicates are still valid")
+    @DisplayName("cleanUpResolvedDuplicates - no action if no duplicates resolved")
     void cleanUpResolvedDuplicatesNoActionIfNoneResolved() {
         long candidateId1 = 101L;
         long candidateId2 = 102L;
@@ -148,18 +158,54 @@ class CandidateServiceImplTest {
         List<Long> currentDuplicates = List.of(candidateId1, candidateId2);
         List<Long> previouslyMarkedDuplicates = List.of(candidateId1, candidateId2);
 
-        doReturn(currentDuplicates)
-            .when(candidateRepository)
-            .findIdsOfPotentialDuplicateCandidates(null);
-
-        doReturn(previouslyMarkedDuplicates)
-            .when(candidateRepository)
-            .findIdsOfCandidatesMarkedPotentialDuplicates();
+        given(candidateRepository.findIdsOfPotentialDuplicateCandidates(null))
+            .willReturn(currentDuplicates);
+        given(candidateRepository.findIdsOfCandidatesMarkedPotentialDuplicates())
+            .willReturn(previouslyMarkedDuplicates);
 
         candidateService.cleanUpResolvedDuplicates(); // Act
 
         verify(candidateService, never()).getCandidate(anyLong());
         verify(candidateService, never()).save(any(), anyBoolean());
+    }
+
+    @Test
+    @DisplayName("cleanUpResolvedDuplicates handles empty lists")
+    void cleanUpResolvedDuplicatesHandlesEmptyLists() {
+        List<Long> emptyList = List.of();
+        given(candidateRepository.findIdsOfPotentialDuplicateCandidates(null))
+            .willReturn(emptyList);
+        given(candidateRepository.findIdsOfCandidatesMarkedPotentialDuplicates())
+            .willReturn(emptyList);
+
+        assertDoesNotThrow(() -> candidateService.cleanUpResolvedDuplicates()); // Act & Assert
+    }
+
+    @Test
+    @DisplayName("processPotentialDuplicatePage marks as duplicates all candidates on page")
+    void processPotentialDuplicatePageMarksAsDuplicatesAllCandidatesOnPage() {
+        Candidate mockCandidate = mock(Candidate.class);
+
+        List<Candidate> mockCandidateList = List.of(mockCandidate, mockCandidate, mockCandidate);
+
+        given(mockCandidatePage.getContent()).willReturn(mockCandidateList);
+
+        candidateService.processPotentialDuplicatePage(mockCandidatePage); // Act
+
+        verify(mockCandidate, times(3)).setPotentialDuplicate(true);
+        verify(candidateService, times(3))
+            .save(mockCandidate, false);
+    }
+
+    @Test
+    @DisplayName("processPotentialDuplicatePage skips empty page w no exceptions")
+    void processPotentialDuplicatePageSkipsEmptyPage() {
+        Page<Candidate> spyCandidatePage = Mockito.spy(new PageImpl<>(List.of()));
+
+        // Act & Assert
+        assertDoesNotThrow(() -> candidateService.processPotentialDuplicatePage(spyCandidatePage));
+
+        verify(spyCandidatePage, never()).getContent();
     }
 
 }
