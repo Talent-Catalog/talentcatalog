@@ -118,7 +118,8 @@
         <app-citizenships
           [candidate]="candidate"
           [candidateIntakeData]="candidateIntakeData"
-          [nationalities]="nationalities">
+          [nationalities]="nationalities"
+          [editable]="isEditable()">
         </app-citizenships>
         </ng-template>
       </ngb-panel>
@@ -235,7 +236,8 @@
         <ng-template ngbPanelContent>
           <app-exams
             [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="isEditable()">
           </app-exams>
         </ng-template>
       </ngb-panel>

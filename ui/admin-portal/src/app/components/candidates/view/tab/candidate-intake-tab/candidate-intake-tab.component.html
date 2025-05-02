@@ -245,7 +245,8 @@
         <ng-template ngbPanelContent>
           <app-dependants
             [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="isEditable()">
           </app-dependants>
         </ng-template>
       </ngb-panel>
