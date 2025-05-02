@@ -34,6 +34,7 @@ import {
 } from "../../../../../services/candidate-dependant.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
 import {calculateAge} from "../../../../../model/candidate";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -49,6 +50,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
               noteService: CandidateNoteService,
               authenticationService: AuthenticationService,
               modalService: NgbModal,
+              private authorizationService: AuthorizationService,
               private candidateCitizenshipService: CandidateCitizenshipService,
               private candidateExamService: CandidateExamService,
               private candidateDependantService: CandidateDependantService) {
@@ -144,8 +146,8 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
     return health;
   }
 
-  isReadOnly() {
-    return this.authenticationService.getLoggedInUser().readOnly;
+  isEditable(): boolean {
+    return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
 }
