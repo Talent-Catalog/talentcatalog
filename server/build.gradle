@@ -188,7 +188,7 @@ jib {
 }
 
 jacoco {
-    toolVersion = "0.8.12" // Updated to latest version
+    toolVersion = "0.8.12"
 }
 test {
     useJUnitPlatform()
