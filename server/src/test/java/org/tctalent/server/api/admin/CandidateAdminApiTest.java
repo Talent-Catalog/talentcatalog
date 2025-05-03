@@ -62,7 +62,7 @@ import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
-import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
@@ -104,7 +104,7 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate";
     private static final String SEARCH_PATH = "/search";
     private static final String FIND_BY_EMAIL_PATH = "/findbyemail";
-    private static final String FIND_BY_EMAIL_OR_PHONE_PATH = "/findbyemailorphone";
+    private static final String FIND_BY_EMAIL_PHONE_OR_WHATSAPP_PATH = "/findbyemailphoneorwhatsapp";
     private static final String FIND_BY_NUMBER_OR_NAME_PATH = "/findbynumberorname";
     private static final String FIND_BY_EXTERNAL_ID_PATH = "/findbyexternalid";
     private static final String GET_BY_NUMBER_PATH = "/number/{number}";
@@ -198,16 +198,16 @@ class CandidateAdminApiTest extends ApiTestBase {
     }
 
     @Test
-    @DisplayName("find by email or phone succeeds")
-    void findByEmailOrPhoneSucceeds() throws Exception {
-        CandidateEmailOrPhoneSearchRequest request = new CandidateEmailOrPhoneSearchRequest();
+    @DisplayName("find by email phone or whatsapp succeeds")
+    void findByEmailPhoneOrWhatsappSucceeds() throws Exception {
+        CandidateEmailPhoneOrWhatsappSearchRequest request = new CandidateEmailPhoneOrWhatsappSearchRequest();
 
         given(candidateService
-                .searchCandidates(any(CandidateEmailOrPhoneSearchRequest.class)))
+                .searchCandidates(any(CandidateEmailPhoneOrWhatsappSearchRequest.class)))
                 .willReturn(candidates);
 
-        postSearchRequestAndVerifyResponse(FIND_BY_EMAIL_OR_PHONE_PATH, objectMapper.writeValueAsString(request));
-        verify(candidateService).searchCandidates(any(CandidateEmailOrPhoneSearchRequest.class));
+        postSearchRequestAndVerifyResponse(FIND_BY_EMAIL_PHONE_OR_WHATSAPP_PATH, objectMapper.writeValueAsString(request));
+        verify(candidateService).searchCandidates(any(CandidateEmailPhoneOrWhatsappSearchRequest.class));
     }
 
     @Test
