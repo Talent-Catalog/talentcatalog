@@ -28,13 +28,7 @@ where not exists (
     select 1 from survey_type where name = 'Facebook'
 );
 
-update candidate
-set survey_type_id = (
-    select id from survey_type where name = 'Facebook' AND status = 'active'
-)
-where survey_type_id = (
-    select id from survey_type where name = 'Facebook - through an organisation'
-);
+
 -- Insert new values from HowHeardAboutUs enum that are not in the table
 insert into survey_type (name, status) values ('Online Google search', 'active');
 insert into survey_type (name, status) values ('Instagram', 'active');
@@ -46,11 +40,3 @@ insert into survey_type (name, status) values ('University or school referral', 
 insert into survey_type (name, status) values ('Employer referral', 'active');
 insert into survey_type (name, status) values ('Event or webinar', 'active');
 
--- Update candidate Facebook - through an organisation to Facebook
-update candidate
-set survey_type_id = 4
-where survey_type_id = 5;
-
--- Remove through an organisation record
-delete from survey_type
-where id = 5;
