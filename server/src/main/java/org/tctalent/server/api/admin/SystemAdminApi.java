@@ -285,6 +285,19 @@ public class SystemAdminApi {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("run_api_migration/{name}")
+    public ResponseEntity<String> runApiMigration(@PathVariable("name") String name) {
+        if (name == null || name.isBlank()) {
+            return ResponseEntity.badRequest().body("Migration name cannot be null or empty");
+        }
+
+        return switch (name.toLowerCase()) {
+            case "mongo" -> ResponseEntity.ok(tcApiService.runMongoMigration());
+            case "aurora" -> ResponseEntity.ok(tcApiService.runAuroraMigration());
+            default -> ResponseEntity.badRequest().body("Invalid migration name: " + name);
+        };
+    }
+
     @GetMapping("list_api_migrations")
     public ResponseEntity<String> listApiMigrations() {
         String response = tcApiService.listApiMigrations();
