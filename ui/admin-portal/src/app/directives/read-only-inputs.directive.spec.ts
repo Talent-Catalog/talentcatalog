@@ -21,6 +21,7 @@ import {AbstractControl, FormControl, FormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {DatePickerComponent} from "../components/util/date-picker/date-picker.component";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgxWigModule} from "ngx-wig";
 
 @Component({
   template: `
@@ -29,6 +30,7 @@ import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
       <textarea></textarea>
       <ng-select [items]="['a', 'b', 'c']"></ng-select>
       <app-date-picker [control]="control"></app-date-picker>
+      <ngx-wig [control]="control"></ngx-wig>
     </div>
 
   `
@@ -45,10 +47,11 @@ describe('ReadOnlyInputsDirective', () => {
   let ngSelectEl: DebugElement;
   let textareaEl: DebugElement;
   let datePickerEl: DebugElement;
+  let ngxWigEl: DebugElement;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule, NgSelectModule, NgbDatepickerModule],
+      imports: [FormsModule, NgSelectModule, NgbDatepickerModule, NgxWigModule],
       declarations: [TestComponent, ReadOnlyInputsDirective, DatePickerComponent],
       providers: [
         {
@@ -63,6 +66,7 @@ describe('ReadOnlyInputsDirective', () => {
     textareaEl = fixture.debugElement.query(e => e.name === 'textarea');
     ngSelectEl = fixture.debugElement.query(e => e.name === 'ng-select');
     datePickerEl = fixture.debugElement.query(e => e.name === 'app-date-picker');
+    ngxWigEl = fixture.debugElement.query(e => e.name === 'ngx-wig');
   }));
 
   it('should create an instance', () => {
@@ -138,6 +142,24 @@ describe('ReadOnlyInputsDirective', () => {
     const dateInput = datePickerEl.query(e => e.name === 'input');
 
     expect(dateInput.nativeElement.hasAttribute('disabled')).toBeFalse();
+  }));
+
+  it('should disable ngx-wig input if read only', fakeAsync(() => {
+    component.isReadOnly = true;
+    fixture.detectChanges();
+    tick(); // Simulate timeout
+
+    expect(ngxWigEl.nativeElement.hasAttribute('disabled')).toBeTrue();
+    expect(ngxWigEl.nativeElement.classList.contains('read-only')).toBeTrue();
+  }));
+
+  it('should enable ngx-wig input if not read only', fakeAsync(() => {
+    component.isReadOnly = false;
+    fixture.detectChanges();
+    tick(); // Simulate timeout
+
+    expect(ngxWigEl.nativeElement.hasAttribute('disabled')).toBeFalse();
+    expect(ngxWigEl.nativeElement.classList.contains('read-only')).toBeFalse();
   }));
 
 
