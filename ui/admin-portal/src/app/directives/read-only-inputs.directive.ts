@@ -30,13 +30,13 @@ export class ReadOnlyInputsDirective implements AfterViewInit {
   }
 
   private setReadonlyState(root: HTMLElement, isReadonly: boolean): void {
-    const inputTags = ['NG-SELECT, TEXTAREA', 'INPUT', 'APP-DATE-PICKER'];
+    const inputTags = ['NG-SELECT, TEXTAREA', 'INPUT', 'APP-DATE-PICKER', 'NGX-WIG'];
 
     const elements = root.querySelectorAll(inputTags.join(','));
     elements.forEach((element: HTMLElement) => {
       if (isReadonly) {
         this.renderer.setAttribute(element, 'disabled', 'true');
-        if (element.tagName === 'NG-SELECT') {
+        if (element.tagName === 'NG-SELECT' || element.tagName === "NGX-WIG") {
           this.renderer.addClass(element, 'read-only')
         }
       } else {

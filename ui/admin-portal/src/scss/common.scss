@@ -173,3 +173,13 @@ ng-select.read-only {
     background-color: #e9ecef;
   }
 }
+
+// Custom css to make ngx-wig appear disabled, applied in the read only directive
+ngx-wig.read-only {
+  .ng-wig {
+    pointer-events: none;
+  }
+  .nw-editor {
+    background-color: #e9ecef;
+  }
+}
