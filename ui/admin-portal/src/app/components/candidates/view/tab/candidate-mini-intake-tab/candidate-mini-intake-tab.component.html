@@ -61,7 +61,7 @@
   </div>
 
   <div>
-    <ngb-accordion #miniIntake="ngbAccordion" [destroyOnHide]="false"  [appReadOnlyInputs]="isReadOnly()">
+    <ngb-accordion #miniIntake="ngbAccordion" [destroyOnHide]="false"  [appReadOnlyInputs]="!isEditable()">
 
       <ngb-panel id="intake-confirm">
         <ng-template ngbPanelTitle let-opened="opened">
