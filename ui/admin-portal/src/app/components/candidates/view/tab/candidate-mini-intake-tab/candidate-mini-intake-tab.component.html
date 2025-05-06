@@ -37,7 +37,7 @@
         </div>
       </div>
     </div>
-    <div *ngIf="!isReadOnly()" class="d-flex justify-content-between">
+    <div *ngIf="isEditable()" class="d-flex justify-content-between">
       <div *ngIf="miniIntakeComplete; else notComplete">
         <button class="btn btn-warning" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
           Update
@@ -106,7 +106,7 @@
                 <p class="mb-0">Citizenships</p>
                 <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
               </div>
-              <div *ngIf="!isReadOnly()" class="col-1">
+              <div *ngIf="isEditable()" class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addCitizenshipRecord($event)">
                   <i class="fas fa-plus"></i>
                 </button>
@@ -225,7 +225,7 @@
                   </ng-container>
                 </div>
               </div>
-              <div *ngIf="!isReadOnly()" class="col-1">
+              <div *ngIf="isEditable()" class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
                   <i class="fas fa-plus"></i>
                 </button>
@@ -299,7 +299,7 @@
 
     </ngb-accordion>
   </div>
-  <div *ngIf="!isReadOnly()" class="float-end mt-3">
+  <div *ngIf="isEditable()" class="float-end mt-3">
     <div *ngIf="miniIntakeComplete; else notComplete">
       <button class="btn btn-warning" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
         Update
