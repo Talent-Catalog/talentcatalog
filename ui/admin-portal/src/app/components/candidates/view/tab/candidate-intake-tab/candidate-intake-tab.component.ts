@@ -150,8 +150,4 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
     return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
-  isEditable(): boolean {
-    return this.authorizationService.isEditableCandidate(this.candidate);
-  }
-
 }
