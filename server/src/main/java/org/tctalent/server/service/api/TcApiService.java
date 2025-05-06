@@ -18,6 +18,8 @@ package org.tctalent.server.service.api;
 
 /**
  * Management interface for the Talent Catalog API Service
+ * <p>
+ * Provides methods to run, list, stop, and restart API migrations.
  *
  * @author sadatmalik
  */
