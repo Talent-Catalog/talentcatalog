@@ -346,7 +346,7 @@
       </div>
       <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} admin-panel">
         <div class="w-100">
-          <div *ngIf="canToggleSizes()" class="float-end">
+          <div *ngIf="canToggleSizes()" class="text-end">
             <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
               class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i></button>
           </div>
