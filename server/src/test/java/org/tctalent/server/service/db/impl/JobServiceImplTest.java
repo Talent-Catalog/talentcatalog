@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +36,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -50,6 +52,8 @@ class JobServiceImplTest {
     private static final String JOB_SF_ID = "LKJH66446GGFDFSA";
     private static final String JOB_NAME = "test job";
     private static final String JOB_NEXT_STEP = "do something";
+    private static final LocalDate JOB_NEXT_STEP_DUE_DATE =
+        LocalDate.of(1901, 1, 1);
     private static final JobOpportunityStage JOB_STAGE = JobOpportunityStage.candidateSearch;
 
     @Mock User user;
@@ -60,6 +64,7 @@ class JobServiceImplTest {
     @Mock SavedSearchService savedSearchService;
     @Mock SavedListService savedListService;
     @Mock OppNotificationService oppNotificationService;
+    @Mock NextStepProcessingService nextStepProcessingService;
 
     @InjectMocks
     JobServiceImpl jobService;
@@ -71,6 +76,7 @@ class JobServiceImplTest {
         job.setName(JOB_NAME);
         job.setSfId(JOB_SF_ID);
         job.setNextStep(JOB_NEXT_STEP);
+        job.setNextStepDueDate(JOB_NEXT_STEP_DUE_DATE);
         job.setEmployerEntity(employerEntity);
         job.setStage(JOB_STAGE);
         updateJobRequest = new UpdateJobRequest();
@@ -109,17 +115,55 @@ class JobServiceImplTest {
         Assertions.assertEquals(job.getStage(), newStage);
     }
 
-    // TODO:
     @Test
     @DisplayName("updateJob sets Next Step on SF AND TC when provided in request")
-    void updateJobSetsNextStepOnSfAndTcWhenProvided() {}
+    void updateJobSetsNextStepOnSfAndTcWhenProvided() {
+        final String newNextStep = "do something";
+        updateJobRequest.setNextStep(newNextStep);
+
+        given(userService.getLoggedInUser()).willReturn(user);
+        given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
+        given(nextStepProcessingService.processNextStep(job, newNextStep)).willReturn(newNextStep);
+
+        jobService.updateJob(99L, updateJobRequest);
+
+        then(sfService).should()
+            .updateEmployerOpportunityStage(job, null, newNextStep, null);
+        Assertions.assertEquals(job.getNextStep(), newNextStep);
+    }
 
     @Test
     @DisplayName("updateJob sets Next Step Due Date on SF AND TC when provided in request")
-    void updateJobSetsNextStepDueDateOnSfAndTcWhenProvided() {}
+    void updateJobSetsNextStepDueDateOnSfAndTcWhenProvided() {
+        final LocalDate newNextStepDueDate = LocalDate.of(1970, 1,1);
+        updateJobRequest.setNextStepDueDate(newNextStepDueDate);
+
+        given(userService.getLoggedInUser()).willReturn(user);
+        given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
+
+        jobService.updateJob(99L, updateJobRequest);
+
+        then(sfService).should()
+            .updateEmployerOpportunityStage(job, null, null, newNextStepDueDate);
+        Assertions.assertEquals(job.getNextStepDueDate(), newNextStepDueDate);
+    }
 
     @Test
-    @DisplayName("updateJob no SF update when Stage, Next Step info or name not in request")
-    void updateJobNoUnnecessarySfUpdate() {}
+    @DisplayName("updateJob - when SF-pertinent request values all null, no SF update "
+        + "and corresponding TC Job values unchanged")
+    void updateJobNoUnnecessaryUpdate() {
+        updateJobRequest.setEvergreen(true); // Set something to evade potential process skip
+
+        given(userService.getLoggedInUser()).willReturn(user);
+        given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
+
+        jobService.updateJob(99L, updateJobRequest);
+
+        then(sfService).shouldHaveNoInteractions();
+        Assertions.assertEquals(job.getNextStep(), JOB_NEXT_STEP);
+        Assertions.assertEquals(job.getNextStepDueDate(), JOB_NEXT_STEP_DUE_DATE);
+        Assertions.assertEquals(job.getName(), JOB_NAME);
+        Assertions.assertEquals(job.getStage(), JOB_STAGE);
+    }
 
 }
