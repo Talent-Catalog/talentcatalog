@@ -46,8 +46,8 @@ import org.tctalent.server.service.db.UserService;
 @ExtendWith(MockitoExtension.class)
 class JobServiceImplTest {
 
-    SalesforceJobOpp job;
-    UpdateJobRequest updateJobRequest;
+    private SalesforceJobOpp job;
+    private UpdateJobRequest updateJobRequest;
 
     private static final String JOB_SF_ID = "LKJH66446GGFDFSA";
     private static final String JOB_NAME = "test job";
@@ -56,18 +56,18 @@ class JobServiceImplTest {
         LocalDate.of(1901, 1, 1);
     private static final JobOpportunityStage JOB_STAGE = JobOpportunityStage.candidateSearch;
 
-    @Mock User user;
-    @Mock UserService userService;
-    @Mock SalesforceJobOppRepository salesforceJobOppRepository;
-    @Mock Employer employerEntity;
-    @Mock SalesforceService sfService;
-    @Mock SavedSearchService savedSearchService;
-    @Mock SavedListService savedListService;
-    @Mock OppNotificationService oppNotificationService;
-    @Mock NextStepProcessingService nextStepProcessingService;
+    @Mock private User user;
+    @Mock private UserService userService;
+    @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
+    @Mock private Employer employerEntity;
+    @Mock private SalesforceService sfService;
+    @Mock private SavedSearchService savedSearchService;
+    @Mock private SavedListService savedListService;
+    @Mock private OppNotificationService oppNotificationService;
+    @Mock private NextStepProcessingService nextStepProcessingService;
 
     @InjectMocks
-    JobServiceImpl jobService;
+    private JobServiceImpl jobService;
 
     @BeforeEach
     void setUp() {
