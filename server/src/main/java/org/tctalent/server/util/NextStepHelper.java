@@ -136,7 +136,7 @@ public class NextStepHelper {
     /**
      * Checks requested {@link NextStepWithDueDate} and returns true if:
      * <ul>
-     *  <li>Processed Next Step is non-null and different to current value.</li>
+     *  <li><em>Processed</em> Next Step is non-null and different to current value.</li>
      *  <li>Next Step Due Date is non-null and different to current value.</li>
      * <ul>
      */
