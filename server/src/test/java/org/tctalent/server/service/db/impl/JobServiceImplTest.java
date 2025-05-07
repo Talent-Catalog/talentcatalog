@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -31,10 +30,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.model.db.Employer;
+import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -49,6 +50,7 @@ class JobServiceImplTest {
     private static final String JOB_SF_ID = "LKJH66446GGFDFSA";
     private static final String JOB_NAME = "test job";
     private static final String JOB_NEXT_STEP = "do something";
+    private static final JobOpportunityStage JOB_STAGE = JobOpportunityStage.candidateSearch;
 
     @Mock User user;
     @Mock UserService userService;
@@ -57,6 +59,7 @@ class JobServiceImplTest {
     @Mock SalesforceService sfService;
     @Mock SavedSearchService savedSearchService;
     @Mock SavedListService savedListService;
+    @Mock OppNotificationService oppNotificationService;
 
     @InjectMocks
     JobServiceImpl jobService;
@@ -69,11 +72,12 @@ class JobServiceImplTest {
         job.setSfId(JOB_SF_ID);
         job.setNextStep(JOB_NEXT_STEP);
         job.setEmployerEntity(employerEntity);
+        job.setStage(JOB_STAGE);
         updateJobRequest = new UpdateJobRequest();
     }
 
     @Test
-    @DisplayName("updateJob sets new name on SF and TC when changed")
+    @DisplayName("updateJob sets new name on SF AND TC when provided in request")
     void updateJobSetsNewNameWhenChanged() {
         final String newName = "new name";
         updateJobRequest.setJobName(newName);
@@ -83,9 +87,39 @@ class JobServiceImplTest {
 
         jobService.updateJob(99L, updateJobRequest);
 
-        then(sfService).should().updateEmployerOpportunityName(eq(JOB_SF_ID), eq(newName));
+        then(sfService).should().updateEmployerOpportunityName(JOB_SF_ID, newName);
         Assertions.assertEquals(job.getName(), newName);
-        then(savedSearchService).should().updateSuggestedSearchesNames(eq(job), eq(JOB_NAME));
-        then(savedListService).should().updateAssociatedListsNames(eq(job));
+        then(savedSearchService).should().updateSuggestedSearchesNames(job, JOB_NAME);
+        then(savedListService).should().updateAssociatedListsNames(job);
     }
+
+    @Test
+    @DisplayName("updateJob sets Stage on SF AND TC when provided in request")
+    void updateJobSetsStageOnSfAndTcWhenProvided() {
+        final JobOpportunityStage newStage = JobOpportunityStage.jobOffer;
+        updateJobRequest.setStage(newStage);
+
+        given(userService.getLoggedInUser()).willReturn(user);
+        given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
+
+        jobService.updateJob(99L, updateJobRequest);
+
+        then(sfService).should()
+            .updateEmployerOpportunityStage(job, newStage, null, null);
+        Assertions.assertEquals(job.getStage(), newStage);
+    }
+
+    // TODO:
+    @Test
+    @DisplayName("updateJob sets Next Step on SF AND TC when provided in request")
+    void updateJobSetsNextStepOnSfAndTcWhenProvided() {}
+
+    @Test
+    @DisplayName("updateJob sets Next Step Due Date on SF AND TC when provided in request")
+    void updateJobSetsNextStepDueDateOnSfAndTcWhenProvided() {}
+
+    @Test
+    @DisplayName("updateJob no SF update when Stage, Next Step info or name not in request")
+    void updateJobNoUnnecessarySfUpdate() {}
+
 }

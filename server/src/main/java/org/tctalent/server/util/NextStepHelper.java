@@ -44,11 +44,11 @@ public class NextStepHelper {
 
     /**
      * This method strips the current and existing Next Step of their audit stamps (if any) and
-     * checks if they're different. If they're the same, it simply returns the current Next Step;
-     * if changed, it audit stamps the new Next Step and returns it for subsequent Job create/update
-     * steps.
+     * checks if they're different. If they're the same, it simply returns the current Next Step,
+     * which will be stamped already; if changed, it audit stamps the new Next Step and returns it
+     * for subsequent Job create/update steps.
      *
-     * <p>Audit stamping does the following:
+     * <p>Audit stamping:
      * <ul>
      *     <li> appends the updating user's username.</li>
      *     <li> prepends the current date. </li>
