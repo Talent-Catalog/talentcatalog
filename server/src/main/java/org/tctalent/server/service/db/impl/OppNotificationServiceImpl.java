@@ -90,7 +90,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             NextStepWithDueDate current =
                 new NextStepWithDueDate(opp.getNextStep(), opp.getNextStepDueDate());
 
-            if (!requested.equals(current)) {
+            if (isNextStepInfoChanged(requested, current)) {
                 // Find the relevant job chat
                 JobChat jcspChat = jobChatService.getOrCreateJobChat(
                     JobChatType.JobCreatorSourcePartner,
@@ -131,7 +131,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     }
 
     @Override
-    public void notifyJobOppChanges(SalesforceJobOpp opp, UpdateJobRequest changes) {
+    public void notifyJobOppNextStepInfoChangesIfAny(SalesforceJobOpp opp, UpdateJobRequest changes) {
         // NEXT STEP PROCESSING
         String processedNextStep =
             nextStepProcessingService.processNextStep(opp, changes.getNextStep());
@@ -142,7 +142,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         NextStepWithDueDate current =
             new NextStepWithDueDate(opp.getNextStep(), opp.getNextStepDueDate());
 
-        if (!requested.equals(current)) {
+        if (isNextStepInfoChanged(requested, current)) {
             // Find the relevant job chat
             JobChat jcspChat = jobChatService.getOrCreateJobChat(
                 JobChatType.JobCreatorAllSourcePartners,
@@ -155,6 +155,32 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             String mess = constructNextStepMessage(opp, requested, s);
             publishMessage(jcspChat, mess);
         }
+    }
+
+    /**
+     * Returns true if either requested Next Step or Next Step Due Date is non-null and different
+     * to current value, false otherwise.
+     */
+    private boolean isNextStepInfoChanged(
+        NextStepWithDueDate requested,
+        NextStepWithDueDate current
+    ) {
+        return isNextStepDueDateChanged(requested, current)
+            || isNextStepChanged(requested, current);
+    }
+
+    private boolean isNextStepDueDateChanged(
+        NextStepWithDueDate requested,
+        NextStepWithDueDate current
+    ) {
+        return requested.dueDate() != null && !requested.dueDate().equals(current.dueDate());
+    }
+
+    private boolean isNextStepChanged(
+        NextStepWithDueDate requested,
+        NextStepWithDueDate current
+    ) {
+        return requested.nextStep() != null && !requested.nextStep().equals(current.nextStep());
     }
 
     @Override
