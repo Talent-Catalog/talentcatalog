@@ -144,18 +144,18 @@ public class NextStepHelper {
         NextStepWithDueDate requested,
         NextStepWithDueDate current
     ) {
-        return isNextStepDueDateChanged(requested, current)
-            || isProcessedNextStepChanged(requested, current);
+        return isNextStepDueDateNonNullAndChanged(requested, current)
+            || isProcessedNextStepNonNullAndChanged(requested, current);
     }
 
-    private static boolean isNextStepDueDateChanged(
+    private static boolean isNextStepDueDateNonNullAndChanged(
         NextStepWithDueDate requested,
         NextStepWithDueDate current
     ) {
         return requested.dueDate() != null && !requested.dueDate().equals(current.dueDate());
     }
 
-    private static boolean isProcessedNextStepChanged(
+    private static boolean isProcessedNextStepNonNullAndChanged(
         NextStepWithDueDate requested,
         NextStepWithDueDate current
     ) {
