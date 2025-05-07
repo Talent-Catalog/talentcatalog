@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.Nullable;
 import org.springframework.lang.NonNull;
+import org.tctalent.server.model.db.NextStepWithDueDate;
 
 /**
  * Some utilities for managing opportunity next steps
@@ -130,6 +131,35 @@ public class NextStepHelper {
         String currentNextStepStripped = removeExistingStamp(currentNextStep);
         String requestedNextStepStripped = removeExistingStamp(requestedNextStep);
         return !currentNextStepStripped.equals(requestedNextStepStripped);
+    }
+
+    /**
+     * Checks requested {@link NextStepWithDueDate} and returns true if:
+     * <ul>
+     *  <li>Processed Next Step is non-null and different to current value.</li>
+     *  <li>Next Step Due Date is non-null and different to current value.</li>
+     * <ul>
+     */
+    public static boolean isNextStepInfoChanged(
+        NextStepWithDueDate requested,
+        NextStepWithDueDate current
+    ) {
+        return isNextStepDueDateChanged(requested, current)
+            || isProcessedNextStepChanged(requested, current);
+    }
+
+    private static boolean isNextStepDueDateChanged(
+        NextStepWithDueDate requested,
+        NextStepWithDueDate current
+    ) {
+        return requested.dueDate() != null && !requested.dueDate().equals(current.dueDate());
+    }
+
+    private static boolean isProcessedNextStepChanged(
+        NextStepWithDueDate requested,
+        NextStepWithDueDate current
+    ) {
+        return requested.nextStep() != null && !requested.nextStep().equals(current.nextStep());
     }
 
 }
