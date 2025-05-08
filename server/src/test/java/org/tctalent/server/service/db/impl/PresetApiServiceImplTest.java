@@ -95,7 +95,6 @@ class PresetApiServiceImplTest {
 
     given(properties.getApiToken()).willReturn(API_TOKEN);
     given(properties.getApiSecret()).willReturn(API_SECRET);
-//    given(properties.getWorkspaceId()).willReturn(WORKSPACE_ID);
 
     given(webClient.post()).willReturn(requestBodyUriSpec);
     given(requestBodyUriSpec.uri(anyString())).willReturn(requestBodySpec);
@@ -129,11 +128,13 @@ class PresetApiServiceImplTest {
 
     // First call throws Unauthorized
     WebClientResponseException unauthorized =
-        WebClientResponseException.create(401, "Unauthorized", null, null, null);
+        WebClientResponseException.create(401, "Unauthorized", null,
+            null, null);
 
     given(responseSpec.bodyToMono(PresetJwtTokenResponse.class))
         .willReturn(Mono.just(jwtTokenResponse));
-    given(requestBodySpec.header(eq(HttpHeaders.AUTHORIZATION), anyString())).willReturn(requestBodySpec);
+    given(requestBodySpec.header(eq(HttpHeaders.AUTHORIZATION), anyString()))
+        .willReturn(requestBodySpec);
 
     // First unauthorized, then success for guest token
     given(responseSpec.bodyToMono(PresetGuestTokenResponse.class))
@@ -170,16 +171,11 @@ class PresetApiServiceImplTest {
   void fetchGuestToken_ShouldCreateCorrectRequest() {
     // Given
     given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-
-    // Explicit class type for each bodyToMono call
     given(responseSpec.bodyToMono(PresetJwtTokenResponse.class))
         .willReturn(Mono.just(jwtTokenResponse));
-
     given(responseSpec.bodyToMono(PresetGuestTokenResponse.class))
         .willReturn(Mono.just(guestTokenResponse));
-
     given(presetApiService.getAuthClient()).willReturn(webClient);
-
     given(requestBodySpec.header(eq(HttpHeaders.AUTHORIZATION), anyString())).willReturn(requestBodySpec);
 
     // When
