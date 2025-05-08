@@ -177,22 +177,32 @@ describe('CreateUpdatePartnerComponent', () => {
 
   it('should update existing partner', fakeAsync(() => {
     const partner: Partner = new MockPartner();
-    // @ts-ignore
-    const request: UpdatePartnerRequest = { id: 1, name: 'Test Partner', abbreviation: 'TP', status: 'active' };
+    const redirectPartnerId = 42;
+
     partnerServiceSpy.update.and.returnValue(of(partner));
     component.partner = partner;
 
     component.form = fb.group({
       name: ['Test Partner', Validators.required],
       abbreviation: ['TP', Validators.required],
-      status: ['active', Validators.required]
+      status: ['active', Validators.required],
+      redirectPartnerId: redirectPartnerId,
     });
 
     component.save();
-
     tick(); // Simulate async operation
 
-    expect(partnerServiceSpy.update).toHaveBeenCalled();
+    // Use jasmine.objectContaining to check just the properties we care about
+    expect(partnerServiceSpy.update).toHaveBeenCalledWith(
+      1, // First parameter is the partner ID
+      jasmine.objectContaining({
+        name: 'Test Partner',
+        abbreviation: 'TP',
+        status: 'active',
+        redirectPartnerId: redirectPartnerId
+      })
+    );
+
     expect(activeModalSpy.close).toHaveBeenCalledWith(partner);
     expect(component.working).toBeFalse();
   }));

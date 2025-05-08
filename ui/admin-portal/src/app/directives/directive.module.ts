@@ -18,10 +18,11 @@ import {NgModule} from "@angular/core";
 import {LowercaseDirective} from "./lowercase.directive";
 import {CommonModule} from "@angular/common";
 import {HighlightSearchDirective} from './highlight-search.directive';
+import {ReadOnlyInputsDirective} from "./read-only-inputs.directive";
 
 @NgModule({
-  declarations: [LowercaseDirective, HighlightSearchDirective],
-  exports: [LowercaseDirective, HighlightSearchDirective],
+  declarations: [LowercaseDirective, HighlightSearchDirective, ReadOnlyInputsDirective],
+  exports: [LowercaseDirective, HighlightSearchDirective, ReadOnlyInputsDirective],
   imports: [CommonModule],
 })
 export class DirectiveModule {}
