@@ -15,10 +15,12 @@
  */
 
 import {InputFilterDirective} from './input-filter.directive';
+import {ElementRef} from '@angular/core';
 
 describe('InputFilterDirective', () => {
   it('should create an instance', () => {
-    const directive = new InputFilterDirective();
+    const mockElementRef = new ElementRef(document.createElement('input'));
+    const directive = new InputFilterDirective(mockElementRef);
     expect(directive).toBeTruthy();
   });
 });
