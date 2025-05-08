@@ -13,7 +13,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
 import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {CommonModule} from '@angular/common';
@@ -28,7 +27,7 @@ import {SearchQueryService} from "../services/search-query.service";
 @Component({
   template: `
     <div appLowercase></div>
-    <div class="highlight" appHighlightSearch>Angular</div>
+    <div class="highlight" appHighlightSearch>Angular is amazing. Learn Angular today!</div>
   `
 })
 class TestComponent {}
@@ -37,13 +36,20 @@ describe('DirectiveModule', () => {
   let fixture: ComponentFixture<TestComponent>;
   let debugElement: DebugElement;
   let searchTerms$: Subject<string[]>;
+  let searchServiceMock: any;
+
   beforeEach(() => {
     searchTerms$ = new Subject<string[]>();
+    searchServiceMock = {
+      currentSearchTerms: searchTerms$.asObservable()
+    };
+
     TestBed.configureTestingModule({
       declarations: [TestComponent],
       imports: [CommonModule, DirectiveModule],
-      providers: [ NgControl,
-        { provide: SearchQueryService, useValue: { currentSearchTerms: searchTerms$.asObservable() } }
+      providers: [
+        NgControl,
+        { provide: SearchQueryService, useValue: searchServiceMock }
       ]
     });
 
@@ -57,19 +63,68 @@ describe('DirectiveModule', () => {
     expect(lowercaseDirective).toBeTruthy();
   });
 
-
   it('should declare HighlightSearchDirective', () => {
     const highlightSearchDirective = debugElement.query(By.directive(HighlightSearchDirective));
     expect(highlightSearchDirective).toBeTruthy();
   });
 
-  it('should highlight search terms in the element text content', () => {
-    fixture.detectChanges();
+  it('should highlight matching search terms in the text', () => {
     searchTerms$.next(['Angular']);
     fixture.detectChanges();
 
-    const highlightedElements = fixture.nativeElement.querySelectorAll('.highlight');
-    expect(highlightedElements.length).toBe(1);
-    expect(highlightedElements[0].textContent).toBe('Angular');
+    const spans = fixture.nativeElement.querySelectorAll('span.highlight');
+    expect(spans.length).toBe(2);
+    spans.forEach(span => {
+      expect(span.textContent).toBe('Angular');
+    });
+  });
+
+  it('should not highlight anything if no match is found', () => {
+    searchTerms$.next(['React']);
+    fixture.detectChanges();
+
+    const spans = fixture.nativeElement.querySelectorAll('span.highlight');
+    expect(spans.length).toBe(0);
+  });
+
+  it('should remove old highlights when new terms arrive', () => {
+    searchTerms$.next(['Angular']);
+    fixture.detectChanges();
+    let spans = fixture.nativeElement.querySelectorAll('span.highlight');
+    expect(spans.length).toBe(0);
+
+    searchTerms$.next(['Learn']);
+    fixture.detectChanges();
+    spans = fixture.nativeElement.querySelectorAll('span.highlight');
+    expect(spans.length).toBe(0);
+  });
+
+  it('should not duplicate highlights on repeated change detection', () => {
+    searchTerms$.next(['Angular']);
+    fixture.detectChanges();
+    fixture.detectChanges(); // trigger again
+    const spans = fixture.nativeElement.querySelectorAll('span.highlight');
+    expect(spans.length).toBe(0);
+  });
+
+  it('should handle empty or undefined search terms safely', () => {
+    searchTerms$.next([]);
+    fixture.detectChanges();
+    let spans = fixture.nativeElement.querySelectorAll('span.highlight');
+    expect(spans.length).toBe(0);
+
+    searchTerms$.next(null);
+    fixture.detectChanges();
+    spans = fixture.nativeElement.querySelectorAll('span.highlight');
+    expect(spans.length).toBe(0);
+  });
+
+  it('should clean up subscriptions on destroy', () => {
+    const directiveInstance = debugElement.query(By.directive(HighlightSearchDirective)).injector.get(HighlightSearchDirective);
+    const destroySpy = spyOn<any>(directiveInstance['destroy$'], 'next').and.callThrough();
+
+    fixture.destroy();
+
+    expect(destroySpy).toHaveBeenCalled();
   });
 });
