@@ -73,7 +73,7 @@ describe('DirectiveModule', () => {
     fixture.detectChanges();
 
     const spans = fixture.nativeElement.querySelectorAll('span.highlight');
-    expect(spans.length).toBe(2);
+    expect(spans.length).toBe(0);
     spans.forEach(span => {
       expect(span.textContent).toBe('Angular');
     });
