@@ -60,7 +60,7 @@ export class AuthorizationService {
     //For now only TBB can do this.
     //Todo Need to make this more broadly available. It gets complicated when assigning tasks
     //to a list - if that list has candidates from multiple partners.
-    return this.isDefaultSourcePartner();
+    return this.isDefaultSourcePartner() && !this.isReadOnly();
   }
 
   canViewCandidateCountry(): boolean {
