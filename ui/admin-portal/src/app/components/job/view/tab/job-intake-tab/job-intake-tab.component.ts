@@ -39,4 +39,8 @@ export class JobIntakeTabComponent extends JobIntakeComponentTabBase {
   onIntakeChanged(joi: JobOppIntake) {
     this.intakeChanged.emit(joi);
   }
+
+  isEditable(): boolean {
+    return this.authorizationService.canEditJobOpp(this.job);
+  }
 }

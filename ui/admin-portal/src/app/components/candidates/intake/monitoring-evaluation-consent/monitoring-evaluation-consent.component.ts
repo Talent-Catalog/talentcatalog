@@ -60,4 +60,8 @@ export class MonitoringEvaluationConsentComponent extends IntakeComponentBase im
     return this.authService.canAccessSalesforce();
   }
 
+  isReadOnly(): boolean {
+    return this.authService.isReadOnly();
+  }
+
 }

@@ -20,7 +20,7 @@
 </div>
 <form [formGroup]="form">
 
-  <div class="mb-3 flex-fill">
+  <div class="mb-3 flex-fill" [appReadOnlyInputs]="!isEditable()">
     <label class="form-label h6" for="shareableNotes">
       <span class="me-2 font-weight-normal">General notes</span>
       <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>

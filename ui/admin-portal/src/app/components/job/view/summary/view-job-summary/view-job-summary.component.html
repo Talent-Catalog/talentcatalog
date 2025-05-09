@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
 
-  <div class="mb-3 flex-fill">
+  <div class="mb-3 flex-fill" [appReadOnlyInputs]="!editable">
     <label class="form-label" for="jobSummary">
     <span class="me-2 font-weight-normal" [ngClass]="{'alert alert-danger': highlight}">
       Job Summary
@@ -31,7 +31,6 @@
     </label>
 
     <textarea id="jobSummary" class="md-textarea-auto form-control" rows="{{nRows}}"
-              [readOnly]="!editable"
               placeholder="Enter short summary of job..."
               [formControlName]="'jobSummary'">{{job.jobSummary}}</textarea>
   </div>

@@ -14,16 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   getCandidateSourceExternalHref,
   getCandidateSourceStatsNavigation,
@@ -392,5 +383,9 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.candidateSourceCacheService.clearAll();
+  }
+
+  isReadOnly(): boolean {
+    return this.authorizationService.isReadOnly();
   }
 }
