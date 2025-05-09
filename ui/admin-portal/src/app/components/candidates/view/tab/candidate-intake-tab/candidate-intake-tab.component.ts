@@ -146,6 +146,11 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
     return health;
   }
 
+
+  isReadOnly() {
+    return this.authenticationService.getLoggedInUser().readOnly;
+  }
+
   isEditable(): boolean {
     return this.authorizationService.isEditableCandidate(this.candidate);
   }
