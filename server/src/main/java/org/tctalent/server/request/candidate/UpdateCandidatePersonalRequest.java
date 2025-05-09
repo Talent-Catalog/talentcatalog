@@ -51,4 +51,6 @@ public class UpdateCandidatePersonalRequest {
     private String unhcrNumber;
     @Enumerated(EnumType.STRING)
     private YesNo unhcrConsent;
+    /* NEW REGISTRATION? */
+    private Boolean isNewRegistration;
 }

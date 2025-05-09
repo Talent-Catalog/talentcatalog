@@ -91,7 +91,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       externalIdSource: ['US Afghan Parolee Id'],
       unhcrRegistered: [null, Validators.required],
       unhcrNumber: [null],
-      unhcrConsent: [null]
+      unhcrConsent: [null],
+      /* NEW REGISTRATION? */
+      isNewRegistration: [!this.edit]
     });
     this.loadDropDownData();
 
