@@ -19,7 +19,6 @@ package org.tctalent.server.service.db.impl;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -51,6 +50,8 @@ import org.tctalent.server.service.db.util.PagedCandidateBackProcessor;
 import org.tctalent.server.service.db.util.PagedPartnerBackProcessor;
 import org.tctalent.server.service.db.util.PagedSavedListBackProcessor;
 import org.tctalent.server.service.db.util.PagedSavedSearchBackProcessor;
+import org.tctalent.server.util.background.logging.BackLogger;
+import org.tctalent.server.util.background.logging.BackLoggerFactory;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
@@ -69,6 +70,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   private final SavedListService savedListService;
   private final SavedSearchService savedSearchService;
   private final TaskScheduler taskScheduler;
+  private final BackLoggerFactory backLoggerFactory;
 
   public BackProcessor<PageContext> createSfSyncBackProcessor(
       List<CandidateStatus> statuses, long totalNoOfPages
@@ -158,8 +160,16 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     // Schedule background processing
     BackRunner<PageContext> backRunner = new BackRunner<>();
 
-    ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-        new PageContext(null), 20);
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Potential duplicate candidates", true);
+
+    backRunner.start(
+        taskScheduler,
+        backProcessor,
+        backLogger,
+        new PageContext(null),
+        20
+    );
   }
 
   @Override
@@ -188,7 +198,11 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 20);
+
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Set candidate public IDs", true);
+
+    runner.start(taskScheduler, backProcessor, backLogger, 20);
   }
 
   @Override
@@ -214,7 +228,11 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 20);
+
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Set partner public IDs", true);
+
+    runner.start(taskScheduler, backProcessor, backLogger, 20);
   }
 
   @Override
@@ -240,7 +258,11 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 20);
+
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Set saved list public IDs", true);
+
+    runner.start(taskScheduler, backProcessor, backLogger, 20);
   }
 
   @Override
@@ -265,6 +287,10 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 20);
+
+    // Implement optional logging
+    BackLogger backLogger = backLoggerFactory.create("Set saved search public IDs", true);
+
+    runner.start(taskScheduler, backProcessor, backLogger, 20);
   }
 }
