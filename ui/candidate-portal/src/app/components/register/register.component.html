@@ -52,7 +52,7 @@
 
   <app-registration-personal *ngSwitchCase="'personal'"
                              (onPartnerAssignment)="setPartnerName()"
-                             [edit]="false">
+                             [isRegistration]="true">
   </app-registration-personal>
 
   <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
