@@ -284,6 +284,12 @@ public class SecurityConfiguration {
                 // POST: ALL SEARCHES
                 .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // POST: ADD TO WATCHER
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-search/watcher-add/*",HttpMethod.PUT.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: REMOVE FROM WATCHER
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-search/watcher-remove/*",HttpMethod.PUT.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // POST: ALL PAGED SEARCHES
                 .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search-paged", HttpMethod.POST.name())).hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -353,6 +359,9 @@ public class SecurityConfiguration {
 
                 // POST: EXPORT LIST
                 .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: SEARCH LISTS BY IDS
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-list/search-ids",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: VIEW TRANSLATIONS
                 .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
