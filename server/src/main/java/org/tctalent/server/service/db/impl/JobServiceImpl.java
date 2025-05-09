@@ -799,7 +799,7 @@ public class JobServiceImpl implements JobService {
 
         //Perform any notifications before actually applying the change so that we have the
         //old and current state
-        oppNotificationService.notifyJobOppChanges(job, request);
+        oppNotificationService.notifyJobOppNextStepInfoChangesIfAny(job, request);
 
         final String nextStep = request.getNextStep();
         if (nextStep != null) {

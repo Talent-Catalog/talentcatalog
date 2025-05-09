@@ -44,12 +44,12 @@ public interface OppNotificationService {
     void notifyNewCase(CandidateOpportunity opp);
 
     /**
-     * Sends out posts on relevant chats notifying subscribers about the given changes to the given
-     * job opportunity.
+     * Checks for changes to the Next Step info of the given job - if there are any, sends out posts
+     * on relevant chats notifying subscribers.
      * @param job Job opportunity
      * @param changes Changes to opportunity
      */
-    void notifyJobOppChanges(SalesforceJobOpp job, UpdateJobRequest changes);
+    void notifyJobOppNextStepInfoChangesIfAny(SalesforceJobOpp job, UpdateJobRequest changes);
 
     /**
      * Sends out posts on relevant chats notifying subscribers about the given new
