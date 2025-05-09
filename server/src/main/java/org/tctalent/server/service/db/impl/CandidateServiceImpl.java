@@ -1447,16 +1447,27 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    private void checkForChangedPartner(Candidate candidate, Country country) {
+    private void checkForChangedPartner(Candidate candidate, Country country,
+        boolean isRegistration) {
+
+        //Get current user partner.
+        User user = candidate.getUser();
+        final PartnerImpl currentUserPartner = user.getPartner();
+
+        if (isRegistration) {
+            if (!PartnerService.canPartnerManageCandidatesInCountry(currentUserPartner, country)) {
+                // Candidate has been wrongly assigned to partner, so we assign the default partner
+                // and path can proceed as usual
+                // TODO: should this be its own method? If staying here, remember that currentUserPartner
+                //  is assigned above.
+            }
+        }
+
         //Do we have an auto assignable partner in this country
         Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
 
         //Is there a country assigned partner?
         if (autoAssignedCountryPartner != null) {
-
-            //Get current user partner.
-            User user = candidate.getUser();
-            final PartnerImpl currentUserPartner = user.getPartner();
 
             //The country assigned partner only overrides the default source partner.
             if (currentUserPartner.isDefaultSourcePartner()) {

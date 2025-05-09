@@ -160,4 +160,23 @@ public interface PartnerService {
      * Update the given user contact for the given partner and job
      */
     void updateJobContact(Partner partner, SalesforceJobOpp job, User contactUser);
+
+  static boolean canPartnerManageCandidatesInCountry(Partner partner, Country country) {
+      // TODO: case
+      if (!partner.isSourcePartner()) {
+          return false;
+      }
+
+      if (partner.isDefaultSourcePartner()) {
+          return true;
+      }
+
+      // default
+      if (partner.getSourceCountries().contains(country)) {
+          return true;
+      } else {
+          return false;
+      }
+  }
+
 }
