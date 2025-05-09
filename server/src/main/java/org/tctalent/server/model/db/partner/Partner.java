@@ -19,6 +19,7 @@ package org.tctalent.server.model.db.partner;
 import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.PublicApiAuthority;
 import org.tctalent.server.model.db.User;
@@ -124,5 +125,11 @@ public interface Partner extends SourcePartner, RecruiterPartner, EmployerPartne
     @Nullable
     PartnerImpl getRedirectPartner();
     void setRedirectPartner(@Nullable PartnerImpl redirectPartner);
+
+    /**
+     * Must be the default source partner (able to manage candidates in any country) or a regular
+     * source partner with the given country specified. Not necessarily an auto-assign partner.
+     */
+    boolean canManageCandidatesInCountry(Country country);
 
 }

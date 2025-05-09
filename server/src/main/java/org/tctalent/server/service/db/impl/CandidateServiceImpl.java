@@ -947,7 +947,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setState(request.getState());
 
         candidate.setCountry(country);
-        checkForChangedPartner(candidate, country);
+        checkForChangedPartner(candidate, country, false);
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1376,7 +1376,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setDob(request.getDob());
 
             candidate.setCountry(country);
-            checkForChangedPartner(candidate, country);
+            checkForChangedPartner(candidate, country, request.getIsRegistration());
 
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
@@ -1447,36 +1447,40 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    private void checkForChangedPartner(Candidate candidate, Country country,
-        boolean isRegistration) {
-
-        //Get current user partner.
+    private void checkForChangedPartner(
+        Candidate candidate,
+        Country country,
+        boolean isRegistration
+    ) {
+        boolean partnerChanged = false;
         User user = candidate.getUser();
-        final PartnerImpl currentUserPartner = user.getPartner();
+        PartnerImpl currentUserPartner = user.getPartner();
 
-        if (isRegistration) {
-            if (!PartnerService.canPartnerManageCandidatesInCountry(currentUserPartner, country)) {
-                // Candidate has been wrongly assigned to partner, so we assign the default partner
-                // and path can proceed as usual
-                // TODO: should this be its own method? If staying here, remember that currentUserPartner
-                //  is assigned above.
-            }
+        if (isRegistration && !currentUserPartner.canManageCandidatesInCountry(country)) {
+            // Registering candidate used a link containing a param causing assignment to a partner
+            // that isn't operational in their location, so we reassign them to the default source
+            // partner. They may be reassigned again in subsequent steps - this is a fallback.
+            user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
+            currentUserPartner = user.getPartner();
+            partnerChanged = true;
         }
 
         //Do we have an auto assignable partner in this country
         Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
 
-        //Is there a country assigned partner?
         if (autoAssignedCountryPartner != null) {
-
             //The country assigned partner only overrides the default source partner.
             if (currentUserPartner.isDefaultSourcePartner()) {
                 if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
                     //Partner of candidate needs to change
                     user.setPartner((PartnerImpl) autoAssignedCountryPartner);
-                    userRepository.save(user);
+                    partnerChanged = true;
                 }
             }
+        }
+
+        if (partnerChanged) {
+            userRepository.save(user);
         }
     }
 
