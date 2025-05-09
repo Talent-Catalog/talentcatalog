@@ -23,9 +23,11 @@
 <button type="button" class="btn btn-primary" (click)="send()">
   Send
 </button>
-<div *ngIf="ack">
-  {{ack}}
+<div class="mt-4" *ngIf="ack">
+  <hr>
+  <pre >{{ack}}</pre>
 </div>
-<div *ngIf="error">
-  {{error}}
+<div class="mt-4" *ngIf="error">
+  <hr>
+  <pre>{{error}}</pre>
 </div>
