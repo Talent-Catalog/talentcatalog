@@ -279,9 +279,27 @@ public class SystemAdminApi {
         backgroundProcessingService.setSavedSearchPublicIds();
     }
 
-    @GetMapping("run_api_anonymization")
-    public ResponseEntity<String> runApiAnonymisation() {
-        String response = tcApiService.runApiAnonymisation();
+    @GetMapping("run_api_migration")
+    public ResponseEntity<String> runApiMigration() {
+        String response = tcApiService.runApiMigration();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("list_api_migrations")
+    public ResponseEntity<String> listApiMigrations() {
+        String response = tcApiService.listApiMigrations();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("stop_api_migration/{id}")
+    public ResponseEntity<String> stopApiMigration(@PathVariable("id") long id) {
+        String response = tcApiService.stopApiMigration(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("restart_api_migration/{id}")
+    public ResponseEntity<String> restartApiMigration(@PathVariable("id") long id) {
+        String response = tcApiService.restartApiMigration(id);
         return ResponseEntity.ok(response);
     }
 
