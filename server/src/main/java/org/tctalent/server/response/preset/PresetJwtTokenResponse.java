@@ -18,6 +18,7 @@ package org.tctalent.server.response.preset;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents the response from the Preset API JWT token request.
@@ -37,6 +38,7 @@ import lombok.Getter;
  * @see <a href="https://api-docs.preset.io/">Preset API Documentation</a>
  */
 @Getter
+@Setter
 public class PresetJwtTokenResponse {
 
   /**
@@ -49,6 +51,7 @@ public class PresetJwtTokenResponse {
    * Represents the payload that contains the JWT token.
    */
   @Getter
+  @Setter
   public static class Payload {
     @JsonProperty("access_token")
     private String jwtToken;

@@ -59,18 +59,22 @@ public class PresetApiServiceImpl implements PresetApiService {
 
     try {
       return attemptFetchGuestToken(request);
+
     } catch (WebClientResponseException.Unauthorized e) {
       LogBuilder.builder(log)
           .action("Fetch Preset Guest Token")
           .message("JWT token expired. Reinitializing and retrying...")
           .logWarn();
+
       initialiseJwtToken();
       return attemptFetchGuestToken(request); // Retry once with a new token
+
     } catch (Exception e) {
       LogBuilder.builder(log)
           .action("Fetch Preset Guest Token")
           .message("Failed to fetch Preset Guest Token")
           .logError(e);
+
       throw e;
     }
   }
@@ -134,7 +138,7 @@ public class PresetApiServiceImpl implements PresetApiService {
     return request;
   }
 
-  private WebClient getAuthClient() {
+  WebClient getAuthClient() {
     return WebClient.builder().baseUrl(AUTH_BASE_URL).build();
   }
 
