@@ -99,7 +99,7 @@ export class ViewChatPostsComponent extends PostsComponentBase
             (post) => post.reactionPickerVisible)
 
     // Check if any picker is open
-    if(this.editor.emojiPickerVisible || postWithOpenPicker != null) {
+    if(this.editor?.emojiPickerVisible || postWithOpenPicker != null) {
 
       // Generate value to check if click was within any emoji picker
       const sectionClass: string =

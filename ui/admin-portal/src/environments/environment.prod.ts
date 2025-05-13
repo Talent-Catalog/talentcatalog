@@ -30,5 +30,6 @@ export const environment = {
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',
   assetBaseUrl: '/admin-portal',
   environmentName: 'prod',
-  googleAnalyticsId: 'G-BPDYWB77Y3'
+  googleAnalyticsId: 'G-BPDYWB77Y3',
+  clarityProjectId: 'r9ph8gyjjz',
 };

@@ -33,7 +33,7 @@
             <i class="far fa-star fa-sm"></i>CV
           </span>
       <ng-select id="shareableCvId" class="me-2" [formControlName]="'shareableCvAttachmentId'"
-                 [items]="cvs" placeholder="Select" bindValue="id" bindLabel="name">
+                 [items]="cvs" placeholder="Select" bindValue="id" bindLabel="name" [readonly]="isReadOnly()">
         <ng-template ng-option-tmp let-item="item">
           <span [ngbTooltip]="item?.name" container="body">{{item?.name}}</span>
         </ng-template>
@@ -49,7 +49,7 @@
             <i class="far fa-star fa-sm"></i>Other
           </span>
       <ng-select id="shareableDocId" class="me-2" [formControlName]="'shareableDocAttachmentId'"
-                 [items]="other" placeholder="Select" bindValue="id" bindLabel="name">
+                 [items]="other" placeholder="Select" bindValue="id" bindLabel="name" [readonly]="isReadOnly()">
         <ng-template ng-option-tmp let-item="item">
           <span [ngbTooltip]="item.name" container="body">{{item.name}}</span>
         </ng-template>

@@ -28,12 +28,7 @@ import {CandidateDependantService} from "../../../../../services/candidate-depen
 import {CountryService} from "../../../../../services/country.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of} from "rxjs";
-import {
-  NgbAccordion,
-  NgbAccordionModule,
-  NgbDatepickerModule,
-  NgbTooltipModule
-} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAccordion, NgbAccordionModule, NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -74,36 +69,24 @@ import {CandidateExamCardComponent} from "../../../intake/exams/card/candidate-e
 import {LangAssessmentComponent} from "../../../intake/lang-assessment/lang-assessment.component";
 import {ViewCandidateLanguageComponent} from "../../language/view-candidate-language.component";
 import {DependantsComponent} from "../../../intake/dependants/dependants.component";
-import {
-  ResidenceStatusComponent
-} from "../../../intake/residence-status/residence-status.component";
+import {ResidenceStatusComponent} from "../../../intake/residence-status/residence-status.component";
 import {WorkPermitComponent} from "../../../intake/work-permit/work-permit.component";
 import {WorkStatusComponent} from "../../../intake/work-status/work-status.component";
-import {
-  MilitaryServiceComponent
-} from "../../../intake/military-service/military-service.component";
+import {MilitaryServiceComponent} from "../../../intake/military-service/military-service.component";
 import {FamilyComponent} from "../../../intake/family/family.component";
 import {MaritalStatusComponent} from "../../../intake/marital-status/marital-status.component";
-import {
-  RegistrationUnhcrComponent
-} from "../../../intake/registration-unhcr/registration-unhcr.component";
+import {RegistrationUnhcrComponent} from "../../../intake/registration-unhcr/registration-unhcr.component";
 import {HostChallengesComponent} from "../../../intake/host-challenges/host-challenges.component";
 import {HomeLocationComponent} from "../../../intake/home-location/home-location.component";
-import {
-  ResettlementThirdComponent
-} from "../../../intake/resettlement-third/resettlement-third.component";
+import {ResettlementThirdComponent} from "../../../intake/resettlement-third/resettlement-third.component";
 import {HostEntryComponent} from "../../../intake/host-entry/host-entry.component";
 import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
 import {WorkAbroadComponent} from "../../../intake/work-abroad/work-abroad.component";
-import {
-  NclcScoreValidationComponent
-} from "../../../../util/nclc-score-validation/nclc-score-validation.component";
-import {
-  IeltsScoreValidationComponent
-} from "../../../../util/ielts-score-validation/ielts-score-validation.component";
-import {
-  DetScoreValidationComponent
-} from "../../../../util/det-score-validation/det-score-validation.component";
+import {NclcScoreValidationComponent} from "../../../../util/nclc-score-validation/nclc-score-validation.component";
+import {IeltsScoreValidationComponent} from "../../../../util/ielts-score-validation/ielts-score-validation.component";
+import {DetScoreValidationComponent} from "../../../../util/det-score-validation/det-score-validation.component";
+import {AuthorizationService} from "../../../../../services/authorization.service";
+import {DirectiveModule} from "../../../../../directives/directive.module";
 
 const mockCitizenship: CandidateCitizenship = {
   id: 1,
@@ -151,6 +134,8 @@ describe('CandidateIntakeTabComponent', () => {
   let candidateCitizenshipServiceSpy: jasmine.SpyObj<CandidateCitizenshipService>;
   let candidateExamServiceSpy: jasmine.SpyObj<CandidateExamService>;
   let candidateDependantServiceSpy: jasmine.SpyObj<CandidateDependantService>;
+  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
+
   const mockCandidate = new MockCandidate();
 
   beforeEach(async () => {
@@ -161,6 +146,7 @@ describe('CandidateIntakeTabComponent', () => {
     const languageSpy = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
     const noteSpy = jasmine.createSpyObj('CandidateNoteService', ['getIntakeData']);
     const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    const authorizationSpy = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate', 'canAccessSalesforce']);
 
     authSpy.getLoggedInUser.and.returnValue(of({ id: 1, name: 'Test User' }));
 
@@ -185,7 +171,7 @@ describe('CandidateIntakeTabComponent', () => {
         HomeLocationComponent,ResettlementThirdComponent,HostEntryComponent,
         DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,DetScoreValidationComponent,
         AutosaveStatusComponent,FixedInputComponent,ExportPdfComponent],
-      imports: [HttpClientTestingModule,NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule],
+      imports: [HttpClientTestingModule,NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule, DirectiveModule],
       providers: [
         { provide: CandidateService, useValue: candidateSpy },
         { provide: CountryService, useValue: countrySpy },
@@ -197,7 +183,7 @@ describe('CandidateIntakeTabComponent', () => {
         { provide: CandidateCitizenshipService, useValue: citizenshipSpy },
         { provide: CandidateExamService, useValue: examSpy },
         { provide: CandidateDependantService, useValue: dependantSpy },
-        { provide: AuthenticationService, useValue: authSpy },
+        { provide: AuthorizationService, useValue: authorizationSpy },
         NgbAccordion
       ]
     }).compileComponents();
@@ -218,6 +204,7 @@ describe('CandidateIntakeTabComponent', () => {
     candidateCitizenshipServiceSpy = TestBed.inject(CandidateCitizenshipService) as jasmine.SpyObj<CandidateCitizenshipService>;
     candidateExamServiceSpy = TestBed.inject(CandidateExamService) as jasmine.SpyObj<CandidateExamService>;
     candidateDependantServiceSpy = TestBed.inject(CandidateDependantService) as jasmine.SpyObj<CandidateDependantService>;
+    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
 
     // Mock candidate data
     component.candidate = mockCandidate;
