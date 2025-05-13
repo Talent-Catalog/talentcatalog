@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {InputFilterDirective} from './input-filter.directive';
-import {ElementRef} from '@angular/core';
-
-describe('InputFilterDirective', () => {
-  it('should create an instance', () => {
-    const mockElementRef = new ElementRef(document.createElement('input'));
-    const directive = new InputFilterDirective(mockElementRef);
-    expect(directive).toBeTruthy();
-  });
-});
+create index if not exists idx_candidate_whatsapp_lower
+    on candidate (LOWER(whatsapp))
+    where status <> 'deleted';

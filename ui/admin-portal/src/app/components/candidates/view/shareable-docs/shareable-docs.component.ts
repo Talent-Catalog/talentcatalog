@@ -50,7 +50,7 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
 
   constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
-              private authService: AuthorizationService) {}
+              private authorizationService: AuthorizationService) {}
 
   ngOnInit() {
 
@@ -145,9 +145,14 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
    */
   isEditable(): boolean {
     if (this.isList) {
-      return this.authService.canEditCandidateSource(this.candidateSource);
+      return this.authorizationService.canEditCandidateSource(this.candidateSource);
     } else {
-      return this.authService.isEditableCandidate(this.candidate);
+      return this.authorizationService.isEditableCandidate(this.candidate);
     }
   }
+
+  isReadOnly() {
+    return this.authorizationService.isReadOnly();
+  }
+
 }
