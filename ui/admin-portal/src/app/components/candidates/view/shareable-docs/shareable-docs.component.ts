@@ -141,7 +141,7 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   /**
    * If a loggedInUser can edit the list, they should be able to edit the docs.
    * If a loggedInUser can edit the candidate, they should be able to edit the docs.
-   * Otherwise if a user is read only, or fails those checks then the ng-select will be disabled using the readOnlyInputs directive
+   * Otherwise, if a user is read only, or fails those checks then the ng-select will be disabled using the readOnlyInputs directive
    */
   isEditable(): boolean {
     if (this.isList) {
@@ -149,10 +149,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     } else {
       return this.authorizationService.isEditableCandidate(this.candidate);
     }
-  }
-
-  isReadOnly() {
-    return this.authorizationService.isReadOnly();
   }
 
 }
