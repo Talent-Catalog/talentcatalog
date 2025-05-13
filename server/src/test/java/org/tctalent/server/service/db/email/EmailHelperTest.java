@@ -82,4 +82,60 @@ class EmailHelperTest {
 
         emailHelper.sendWatcherEmail(testUser, links);
     }
+
+    @Test
+    void testSendNewChatPostsWithEmptyLinks() {
+        emailHelper.sendNewChatPostsForUserEmail(testUser, false, new ArrayList<>());
+    }
+
+    @Test
+    void testSendNewChatPostsWithNullLinks() {
+        emailHelper.sendNewChatPostsForUserEmail(testUser, false, null);
+    }
+
+    @Test
+    void testSendNewChatPostsForCandidateWithLinks() throws Exception {
+        List<EmailNotificationLink> links = List.of(
+            new EmailNotificationLink(
+                1, new URI("https://link.com/object1").toURL(), "Candidate Object 1"));
+        emailHelper.sendNewChatPostsForUserEmail(testUser, true, links);
+    }
+
+    @Test
+    void testSendWatcherEmailWithEmptyLinks() {
+        emailHelper.sendWatcherEmail(testUser, new ArrayList<>());
+    }
+
+    @Test
+    void testSendWatcherEmailWithNullLinks() {
+        emailHelper.sendWatcherEmail(testUser, null);
+    }
+
+    @Test
+    void testSendWatcherEmailWithLongNames() throws Exception {
+        String longName = "Very Long Name ".repeat(20);
+        List<EmailNotificationLink> links = List.of(
+            new EmailNotificationLink(
+                999, new URI("https://tctalent.org/very-long-name").toURL(), longName));
+        emailHelper.sendWatcherEmail(testUser, links);
+    }
+
+    @Test
+    void testSendNewChatPostsWithNullUser() {
+        emailHelper.sendNewChatPostsForUserEmail(null, false, new ArrayList<>());
+    }
+
+    @Test
+    void testSendWatcherEmailWithNullUser() {
+        emailHelper.sendWatcherEmail(null, new ArrayList<>());
+    }
+
+    @Test
+    void testSendNewChatPostsWithInvalidUrl() {
+        List<EmailNotificationLink> links = List.of(
+            new EmailNotificationLink(100, null, "Broken Link")
+        );
+        emailHelper.sendNewChatPostsForUserEmail(testUser, false, links);
+    }
+
 }
