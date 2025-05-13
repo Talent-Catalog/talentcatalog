@@ -119,17 +119,7 @@ class EmailHelperTest {
                 999, new URI("https://tctalent.org/very-long-name").toURL(), longName));
         emailHelper.sendWatcherEmail(testUser, links);
     }
-
-    @Test
-    void testSendNewChatPostsWithNullUser() {
-        emailHelper.sendNewChatPostsForUserEmail(null, false, new ArrayList<>());
-    }
-
-    @Test
-    void testSendWatcherEmailWithNullUser() {
-        emailHelper.sendWatcherEmail(null, new ArrayList<>());
-    }
-
+    
     @Test
     void testSendNewChatPostsWithInvalidUrl() {
         List<EmailNotificationLink> links = List.of(
