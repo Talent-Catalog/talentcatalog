@@ -64,6 +64,7 @@ class CandidateServiceImplTest {
     @Mock private CandidateRepository candidateRepository;
     @Mock private User mockUser;
     @Mock private CandidateCitizenshipService candidateCitizenshipService;
+    @Mock private PartnerImpl defaultSourcePartnerImpl;
 
     @InjectMocks
     @Spy
@@ -78,46 +79,67 @@ class CandidateServiceImplTest {
         testUser = new User();
         testUser = AdminApiTestUtil.getFullUser();
         testCandidate.setUser(testUser);
+        updateCandidatePersonalRequest = new UpdateCandidatePersonalRequest();
     }
 
     @Test
     @DisplayName("should reassign when current partner not operational in given country")
     void checkForChangedPartnerShouldReassignWhenCurrentPartnerNotOperationalInGivenCountry() {
-        updateCandidatePersonalRequest = new UpdateCandidatePersonalRequest();
+
+        stubUpdatePersonalToReachCheckForChangedPartner();
+
+        // Set candidate location to country in which current partner isn't operational, and return.
+        Country candidateCountryLocation = new Country();
+        candidateCountryLocation.setId(1L);
+        given(countryRepository.findById(1L)).willReturn(Optional.of(candidateCountryLocation));
+
+        candidateService.updatePersonal(updateCandidatePersonalRequest);
+
+        verify(userRepository).save(testUser);
+        Assertions.assertEquals(testUser.getPartner(), defaultSourcePartnerImpl);
+    }
+
+    /**
+     * Factors out stubbing needed to reach + test checkForChangedPartner() within updatePersonal().
+     * In order of execution at time of writing.
+     */
+    private void stubUpdatePersonalToReachCheckForChangedPartner() {
         updateCandidatePersonalRequest.setIsRegistration(true);
         updateCandidatePersonalRequest.setCountryId(1L);
         updateCandidatePersonalRequest.setNationalityId(2L);
         updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
 
+        // Set current partner source country
+        Country partnerSourceCountry = new Country();
+        partnerSourceCountry.setId(2L);
+        testPartner.setSourceCountries(Set.of(partnerSourceCountry));
+        testUser.setPartner((PartnerImpl) testPartner); // Reassign to modified version
+
         Country stubbedNationality = new Country();
         stubbedNationality.setId(2L);
-        Country candidateLocation = new Country();
-        candidateLocation.setId(1L);
-        Country partnerSourceCountry = new Country();
-        candidateLocation.setId(2L);
-
-        testCandidate.setCandidateCitizenships(Collections.emptyList());
-        testPartner.setSourceCountries(Set.of(partnerSourceCountry));
-        testUser.setPartner((PartnerImpl) testPartner); // Reassign partner to modified invalid version
-
-        PartnerImpl defaultSourcePartner = new PartnerImpl();
-        defaultSourcePartner.setId(999L);
-
-        given(countryRepository.findById(1L)).willReturn(Optional.of(candidateLocation));
         given(countryRepository.findById(2L)).willReturn(Optional.of(stubbedNationality));
-        given(authService.getLoggedInUser()).willReturn(
-            Optional.of(mockUser));
+
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+
+        // Gives us our modified testCandidate for the setter block's checkForChangedPartner() call:
         given(userRepository.save(mockUser)).willReturn(testCandidate.getUser());
         given(candidateRepository.findByUserId(null)).willReturn(testCandidate);
+
+        given(partnerService.getDefaultSourcePartner()).willReturn(defaultSourcePartnerImpl);
+
+        // Handles updateCitizenships() call
+        testCandidate.setCandidateCitizenships(Collections.emptyList());
         given(candidateCitizenshipService.createCitizenship(anyLong(), any(
             CreateCandidateCitizenshipRequest.class))).willReturn(null);
+
+        // Handles save() after setter block
         doReturn(testCandidate).when(candidateService).save(any(Candidate.class), eq(true));
-        given(partnerService.getDefaultSourcePartner()).willReturn(defaultSourcePartner);
-
-        candidateService.updatePersonal(updateCandidatePersonalRequest);
-
-        verify(userRepository).save(testUser);
-        Assertions.assertEquals(testUser.getPartner(), defaultSourcePartner);
     }
+
+    // TODO
+    //  - not new registration
+    //  - current partner does handle candidate country location
+    //  - the other update method passes false for isNewRegistration
+    //  - verify other desired behaviour of checkForChangedPartner()
 
 }
