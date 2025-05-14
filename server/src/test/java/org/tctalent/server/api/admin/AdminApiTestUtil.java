@@ -140,7 +140,7 @@ public class AdminApiTestUtil {
         );
     }
 
-    public static Candidate getCandidate() {
+    static Candidate getCandidate() {
         Candidate candidate = new Candidate(candidate1, "+123-456-789", "+123-456-789", caller);
         candidate.setId(99L);
         candidate.setNationality(new Country("Pakistan", Status.active));

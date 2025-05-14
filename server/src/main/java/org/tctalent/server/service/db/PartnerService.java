@@ -160,5 +160,4 @@ public interface PartnerService {
      * Update the given user contact for the given partner and job
      */
     void updateJobContact(Partner partner, SalesforceJobOpp job, User contactUser);
-
 }

@@ -46,7 +46,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -64,39 +63,30 @@ import org.tctalent.server.service.db.PartnerService;
 
 @ExtendWith(MockitoExtension.class)
 class CandidateServiceImplTest {
-    User user;
-    User user2;
-    Candidate candidate;
-    Candidate candidate2;
-    Page<Candidate> candidatePage;
-    PartnerImpl partner;
-    PartnerImpl partner2;
-
-    // ss:
-    private Partner testPartner;
-    private Candidate testCandidate;
-    private User testUser;
+    private User user;
+    private Candidate candidate;
+    private Page<Candidate> candidatePage;
+    private PartnerImpl partner;
+    private PartnerImpl partner2;
     private Country testCountry;
     private UpdateCandidatePersonalRequest updateCandidatePersonalRequest;
     private PartnerImpl autoAssignPartner;
 
-    @Mock PersistenceContextHelper persistenceContextHelper;
-    @Mock Candidate mockCandidate;
-    @Mock Page<Candidate> mockCandidatePage;
-    @Mock CandidateRepository candidateRepository;
-
-    // ss:
+    @Mock private PersistenceContextHelper persistenceContextHelper;
+    @Mock private Candidate mockCandidate;
+    @Mock private Page<Candidate> mockCandidatePage;
+    @Mock private CandidateRepository candidateRepository;
     @Mock private PartnerService partnerService;
-  @Mock private CountryRepository countryRepository;
-  @Mock private AuthService authService;
-  @Mock private UserRepository userRepository;
-  @Mock private User mockUser;
-  @Mock private CandidateCitizenshipService candidateCitizenshipService;
-  @Mock private PartnerImpl mockDefaultSourcePartnerImpl;
+    @Mock private CountryRepository countryRepository;
+    @Mock private AuthService authService;
+    @Mock private UserRepository userRepository;
+    @Mock private User mockUser;
+    @Mock private CandidateCitizenshipService candidateCitizenshipService;
+    @Mock private PartnerImpl mockDefaultSourcePartnerImpl;
 
     @Spy
     @InjectMocks
-    CandidateServiceImpl candidateService;
+    private CandidateServiceImpl candidateService;
 
     @BeforeEach
     void setUp() {
@@ -104,35 +94,26 @@ class CandidateServiceImplTest {
         partner.setId(1L);
         partner.setName("Test Partner");
         partner2 = new PartnerImpl();
-        partner.setId(2L);
-        partner.setName("Test Partner 2");
+        partner2.setId(2L);
+        partner2.setName("Test Partner 2");
         user = new User();
         user.setPartner(partner);
         candidate = new Candidate();
         candidate.setId(1L);
         candidate.setUser(user);
-        user2 = new User();
+        User user2 = new User();
         user2.setPartner(partner);
-        candidate2 = new Candidate();
+        Candidate candidate2 = new Candidate();
         candidate2.setId(2L);
         candidate2.setUser(user2);
         candidatePage = new PageImpl<>(List.of(candidate, candidate2));
-
-        // ss
-      testPartner = new PartnerImpl();
-      testPartner = AdminApiTestUtil.getPartner();
-      testCandidate = new Candidate();
-      testCandidate = AdminApiTestUtil.getCandidate();
-      testUser = new User();
-      testUser = AdminApiTestUtil.getFullUser();
-      testCandidate.setUser(testUser);
-      updateCandidatePersonalRequest = new UpdateCandidatePersonalRequest();
-      testCountry = new Country();
-      testCountry.setId(1L);
-      autoAssignPartner = new PartnerImpl();
-      autoAssignPartner.setId(123L);
-      autoAssignPartner.setAutoAssignable(true);
-      autoAssignPartner.setSourceCountries(Set.of(testCountry)
+        updateCandidatePersonalRequest = new UpdateCandidatePersonalRequest();
+        testCountry = new Country();
+        testCountry.setId(1L);
+        autoAssignPartner = new PartnerImpl();
+        autoAssignPartner.setId(123L);
+        autoAssignPartner.setAutoAssignable(true);
+        autoAssignPartner.setSourceCountries(Set.of(testCountry));
     }
 
     @Test
@@ -254,138 +235,139 @@ class CandidateServiceImplTest {
         verify(spyCandidatePage, never()).getContent();
     }
 
-  @Test
-  @DisplayName("should reassign new registrant when partner not operational in given country")
-  void checkForChangedPartnerShouldReassignWhenCurrentPartnerNotOperationalInGivenCountry() {
+    @Test
+    @DisplayName("should reassign new registrant when partner not operational in given country")
+    void checkForChangedPartnerShouldReassignWhenCurrentPartnerNotOperationalInGivenCountry() {
 
-    stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner();
 
-    // Return candidate location country in which current partner isn't operational.
-    Country invalidCountry = new Country();
-    invalidCountry.setId(99L);
-    given(countryRepository.findById(1L)).willReturn(Optional.of(invalidCountry));
+      // Return candidate location country in which current partner isn't operational.
+      Country invalidCountry = new Country();
+      invalidCountry.setId(99L);
+      given(countryRepository.findById(1L)).willReturn(Optional.of(invalidCountry));
 
-    given(partnerService.getDefaultSourcePartner()).willReturn(mockDefaultSourcePartnerImpl);
+      given(partnerService.getDefaultSourcePartner()).willReturn(mockDefaultSourcePartnerImpl);
 
-    candidateService.updatePersonal(updateCandidatePersonalRequest);
+      candidateService.updatePersonal(updateCandidatePersonalRequest);
 
-    verify(userRepository).save(testUser);
-    Assertions.assertEquals(testUser.getPartner(), mockDefaultSourcePartnerImpl);
-  }
+      verify(userRepository).save(user);
+      Assertions.assertEquals(user.getPartner(), mockDefaultSourcePartnerImpl);
+    }
 
-  @Test
-  @DisplayName("should not reassign new registrant when partner operational in given country")
-  void checkForChangedPartnerShouldNotReassignWhenCurrentPartnerOperationalInGivenCountry() {
+    @Test
+    @DisplayName("should not reassign new registrant when partner operational in given country")
+    void checkForChangedPartnerShouldNotReassignWhenCurrentPartnerOperationalInGivenCountry() {
 
-    stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner();
 
-    // Return candidate location country in which current partner is operational.
-    given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
+      // Return candidate location country in which current partner is operational.
+      given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
-    candidateService.updatePersonal(updateCandidatePersonalRequest);
+      candidateService.updatePersonal(updateCandidatePersonalRequest);
 
-    verify(userRepository, never()).save(testUser);
-    Assertions.assertEquals(testUser.getPartner(), testPartner);
-  }
+      verify(userRepository, never()).save(user);
+      Assertions.assertEquals(user.getPartner(), partner);
+    }
 
-  @Test
-  @DisplayName("should not reassign existing candidate (not a new registration) because current "
-      + "partner is not operational in given country")
-  void checkForChangedPartnerShouldNotReassignExistingCandidate() {
+    @Test
+    @DisplayName("should not reassign existing candidate (not a new registration) because current "
+        + "partner is not operational in given country")
+    void checkForChangedPartnerShouldNotReassignExistingCandidate() {
 
-    stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner();
 
-    // Return candidate location country in which current partner isn't operational.
-    Country invalidCountry = new Country();
-    invalidCountry.setId(99L);
-    given(countryRepository.findById(1L)).willReturn(Optional.of(invalidCountry));
+      // Return candidate location country in which current partner isn't operational.
+      Country invalidCountry = new Country();
+      invalidCountry.setId(99L);
+      given(countryRepository.findById(1L)).willReturn(Optional.of(invalidCountry));
 
-    updateCandidatePersonalRequest.setIsRegistration(false);
-    candidateService.updatePersonal(updateCandidatePersonalRequest);
+      updateCandidatePersonalRequest.setIsRegistration(false);
+      candidateService.updatePersonal(updateCandidatePersonalRequest);
 
-    verify(userRepository, never()).save(testUser);
-    Assertions.assertEquals(testUser.getPartner(), testPartner);
-  }
+      verify(userRepository, never()).save(user);
+      Assertions.assertEquals(user.getPartner(), partner);
+    }
 
-  @Test
-  @DisplayName("should reassign existing candidate if there is an auto-assign partner in their "
-      + "new country location and they are currently assigned to the default source partner")
-  void checkForChangedPartnerShouldReassignFromAutoAssignPartnerToDefaultForExistingCandidate() {
+    @Test
+    @DisplayName("should reassign existing candidate if there is an auto-assign partner in their "
+        + "new country location and they are currently assigned to the default source partner")
+    void checkForChangedPartnerShouldReassignFromAutoAssignPartnerToDefaultForExistingCandidate() {
 
-    stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner();
 
-    given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
+      given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
-    // Assign test candidate to default source partner
-    testUser.setPartner(mockDefaultSourcePartnerImpl);
-    given(mockDefaultSourcePartnerImpl.isDefaultSourcePartner()).willReturn(true);
+      // Assign test candidate to default source partner
+      user.setPartner(mockDefaultSourcePartnerImpl);
+      given(mockDefaultSourcePartnerImpl.isDefaultSourcePartner()).willReturn(true);
 
-    given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
-        .willReturn(autoAssignPartner);
+      given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
+          .willReturn(autoAssignPartner);
 
-    updateCandidatePersonalRequest.setIsRegistration(false);
-    candidateService.updatePersonal(updateCandidatePersonalRequest);
+      updateCandidatePersonalRequest.setIsRegistration(false);
+      candidateService.updatePersonal(updateCandidatePersonalRequest);
 
-    verify(userRepository).save(testUser);
-    Assertions.assertEquals(testUser.getPartner(), autoAssignPartner);
-  }
+      verify(userRepository).save(user);
+      Assertions.assertEquals(user.getPartner(), autoAssignPartner);
+    }
 
-  @Test
-  @DisplayName("should reassign new registrant if there is an auto-assign partner in their "
-      + "country location and they are currently assigned to the default source partner")
-  void checkForChangedPartnerShouldReassignFromAutoAssignPartnerToDefaultForNewRegistrant() {
+    @Test
+    @DisplayName("should reassign new registrant if there is an auto-assign partner in their "
+        + "country location and they are currently assigned to the default source partner")
+    void checkForChangedPartnerShouldReassignFromAutoAssignPartnerToDefaultForNewRegistrant() {
 
-    stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner();
 
-    given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
+      given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
-    // Assign test candidate to default source partner
-    testUser.setPartner(mockDefaultSourcePartnerImpl);
-    given(mockDefaultSourcePartnerImpl.canManageCandidatesInCountry(testCountry))
-        .willReturn(true);
-    given(mockDefaultSourcePartnerImpl.isDefaultSourcePartner()).willReturn(true);
+      // Assign test candidate to default source partner
+      user.setPartner(mockDefaultSourcePartnerImpl);
+      given(mockDefaultSourcePartnerImpl.canManageCandidatesInCountry(testCountry))
+          .willReturn(true);
+      given(mockDefaultSourcePartnerImpl.isDefaultSourcePartner()).willReturn(true);
 
-    given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
-        .willReturn(autoAssignPartner);
+      given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
+          .willReturn(autoAssignPartner);
 
-    updateCandidatePersonalRequest.setIsRegistration(true);
-    candidateService.updatePersonal(updateCandidatePersonalRequest);
+      updateCandidatePersonalRequest.setIsRegistration(true);
+      candidateService.updatePersonal(updateCandidatePersonalRequest);
 
-    verify(userRepository).save(testUser);
-    Assertions.assertEquals(testUser.getPartner(), autoAssignPartner);
-  }
+      verify(userRepository).save(user);
+      Assertions.assertEquals(user.getPartner(), autoAssignPartner);
+    }
 
-  /**
-   * Factors out stubbing needed to reach + test checkForChangedPartner() within updatePersonal().
-   * In order of execution at time of writing.
-   */
-  private void stubUpdatePersonalToReachCheckForChangedPartner() {
-    updateCandidatePersonalRequest.setIsRegistration(true);
-    updateCandidatePersonalRequest.setCountryId(1L);
-    updateCandidatePersonalRequest.setNationalityId(2L);
-    updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
+    /**
+     * Factors out stubbing needed to reach + test checkForChangedPartner() within updatePersonal().
+     * In order of execution at time of writing.
+     */
+    private void stubUpdatePersonalToReachCheckForChangedPartner() {
+      updateCandidatePersonalRequest.setIsRegistration(true);
+      updateCandidatePersonalRequest.setCountryId(1L);
+      updateCandidatePersonalRequest.setNationalityId(2L);
+      updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
 
-    // Set current partner source country
-    testPartner.setSourceCountries(Set.of(testCountry));
-    testUser.setPartner((PartnerImpl) testPartner);
+      // Set current partner source country
+      partner.setSourcePartner(true);
+      partner.setSourceCountries(Set.of(testCountry));
+      user.setPartner(partner);
 
-    Country stubbedNationality = new Country();
-    stubbedNationality.setId(2L);
-    given(countryRepository.findById(2L)).willReturn(Optional.of(stubbedNationality));
+      Country stubbedNationality = new Country();
+      stubbedNationality.setId(2L);
+      given(countryRepository.findById(2L)).willReturn(Optional.of(stubbedNationality));
 
-    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+      given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
 
-    // Gives us our modified testCandidate for the setter block's checkForChangedPartner() call:
-    given(userRepository.save(mockUser)).willReturn(testCandidate.getUser());
-    given(candidateRepository.findByUserId(null)).willReturn(testCandidate);
+      // Gives us our modified testCandidate for the setter block's checkForChangedPartner() call:
+      given(userRepository.save(mockUser)).willReturn(candidate.getUser());
+      given(candidateRepository.findByUserId(null)).willReturn(candidate);
 
-    // Handles updateCitizenships() call
-    testCandidate.setCandidateCitizenships(Collections.emptyList());
-    given(candidateCitizenshipService.createCitizenship(anyLong(), any(
-        CreateCandidateCitizenshipRequest.class))).willReturn(null);
+      // Handles updateCitizenships() call
+      candidate.setCandidateCitizenships(Collections.emptyList());
+      given(candidateCitizenshipService.createCitizenship(anyLong(), any(
+          CreateCandidateCitizenshipRequest.class))).willReturn(null);
 
-    // Handles save() after setter block
-    doReturn(testCandidate).when(candidateService).save(any(Candidate.class), eq(true));
-  }
+      // Handles save() after setter block
+      doReturn(candidate).when(candidateService).save(any(Candidate.class), eq(true));
+    }
 
 }
