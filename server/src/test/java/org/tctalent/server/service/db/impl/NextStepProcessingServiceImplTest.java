@@ -72,7 +72,7 @@ class NextStepProcessingServiceImplTest {
         try (var mockedHelper = mockStatic(NextStepHelper.class)) {
             nextStepProcessingService.processNextStep(jobOpp, REQUESTED_NEXT_STEP);
 
-            mockedHelper.verify(() -> NextStepHelper.auditStampNextStep(
+            mockedHelper.verify(() -> NextStepHelper.auditStampNextStepIfChanged(
                 eq("SystemAdmin"),
                 eq(LocalDate.now()),
                 eq(CURRENT_NEXT_STEP),
@@ -89,7 +89,7 @@ class NextStepProcessingServiceImplTest {
         try (var mockedHelper = mockStatic(NextStepHelper.class)) {
             nextStepProcessingService.processNextStep(jobOpp, REQUESTED_NEXT_STEP);
 
-            mockedHelper.verify(() -> NextStepHelper.auditStampNextStep(
+            mockedHelper.verify(() -> NextStepHelper.auditStampNextStepIfChanged(
                 eq("LoggedInUser"),
                 eq(LocalDate.now()),
                 eq(CURRENT_NEXT_STEP),
@@ -106,7 +106,7 @@ class NextStepProcessingServiceImplTest {
         try (var mockedHelper = mockStatic(NextStepHelper.class)) {
             nextStepProcessingService.processNextStep(candidateOpp, REQUESTED_NEXT_STEP);
 
-            mockedHelper.verify(() -> NextStepHelper.auditStampNextStep(
+            mockedHelper.verify(() -> NextStepHelper.auditStampNextStepIfChanged(
                 eq("LoggedInUser"),
                 eq(LocalDate.now()),
                 eq(CURRENT_NEXT_STEP),
@@ -125,7 +125,7 @@ class NextStepProcessingServiceImplTest {
         try (var mockedHelper = mockStatic(NextStepHelper.class)) {
             nextStepProcessingService.processNextStep(candidateOpp, REQUESTED_NEXT_STEP);
 
-            mockedHelper.verify(() -> NextStepHelper.auditStampNextStep(
+            mockedHelper.verify(() -> NextStepHelper.auditStampNextStepIfChanged(
                 eq("LoggedInUser"),
                 eq(LocalDate.now()),
                 eq(null),
