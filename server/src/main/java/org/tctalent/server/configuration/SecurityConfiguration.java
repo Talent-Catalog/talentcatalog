@@ -229,6 +229,9 @@ public class SecurityConfiguration {
                 // POST: REQUEST INFOGRAPHICS
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/stat/all").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // POST: REQUEST PRESET
+                .requestMatchers(HttpMethod.POST, "/api/admin/preset/*/guest-token").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 /*
                  * CHECKING CHATS
                  */
@@ -269,7 +272,7 @@ public class SecurityConfiguration {
                 // PUT: CLEAR SELECTION SAVED SEARCHES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/clear-selection/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
-                // PUT: CLEAR SELECTION SAVED SEARCHES
+                // PUT: SELECT COLUMNS SAVED SEARCHES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: EXPORT SAVE SELECTION SAVED SEARCHES
@@ -280,6 +283,12 @@ public class SecurityConfiguration {
                  */
                 // POST: ALL SEARCHES
                 .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: ADD TO WATCHER
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-search/watcher-add/*",HttpMethod.PUT.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: REMOVE FROM WATCHER
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-search/watcher-remove/*",HttpMethod.PUT.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: ALL PAGED SEARCHES
                 .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search-paged", HttpMethod.POST.name())).hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -292,6 +301,9 @@ public class SecurityConfiguration {
 
                 // POST: SEARCH BY PHONE
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: FETCH CANDIDATES WITH CHATS
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/fetch-candidates-with-chat").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // CHAT - include USER but exclude READONLY
                 .requestMatchers(HttpMethod.GET, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "READONLY")
@@ -333,6 +345,9 @@ public class SecurityConfiguration {
                 // PUT: UPDATE SAVED LIST
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: SELECT COLUMNS SAVED LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // PUT: UPDATE SAVED LIST DESCRIPTION
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -344,6 +359,9 @@ public class SecurityConfiguration {
 
                 // POST: EXPORT LIST
                 .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: SEARCH LISTS BY IDS
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-list/search-ids",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: VIEW TRANSLATIONS
                 .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -357,6 +375,12 @@ public class SecurityConfiguration {
 
                 // PUT (EXC. READ ONLY)
                 .requestMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                /*
+                 * CANDIDATE ENDPOINTS
+                 */
+                // DOWNLOAD CV (admins and read only)
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/*/cv.pdf").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "READONLY")
 
                 /*
                  * READONLY can star and share things

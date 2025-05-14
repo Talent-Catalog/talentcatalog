@@ -39,6 +39,7 @@ import org.tctalent.server.service.db.PostService;
 import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.util.NextStepHelper;
 import org.tctalent.server.util.TranslationHelper;
 
 @Service
@@ -90,7 +91,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             NextStepWithDueDate current =
                 new NextStepWithDueDate(opp.getNextStep(), opp.getNextStepDueDate());
 
-            if (!requested.equals(current)) {
+            if (NextStepHelper.isNextStepInfoChanged(requested, current)) {
                 // Find the relevant job chat
                 JobChat jcspChat = jobChatService.getOrCreateJobChat(
                     JobChatType.JobCreatorSourcePartner,
@@ -131,7 +132,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     }
 
     @Override
-    public void notifyJobOppChanges(SalesforceJobOpp opp, UpdateJobRequest changes) {
+    public void notifyJobOppNextStepInfoChangesIfAny(SalesforceJobOpp opp, UpdateJobRequest changes) {
         // NEXT STEP PROCESSING
         String processedNextStep =
             nextStepProcessingService.processNextStep(opp, changes.getNextStep());
@@ -142,7 +143,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         NextStepWithDueDate current =
             new NextStepWithDueDate(opp.getNextStep(), opp.getNextStepDueDate());
 
-        if (!requested.equals(current)) {
+        if (NextStepHelper.isNextStepInfoChanged(requested, current)) {
             // Find the relevant job chat
             JobChat jcspChat = jobChatService.getOrCreateJobChat(
                 JobChatType.JobCreatorAllSourcePartners,

@@ -18,6 +18,7 @@ package org.tctalent.server.response.preset;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents the response from a Preset API guest token request.
@@ -39,6 +40,7 @@ import lombok.Getter;
  * @see <a href="https://api-docs.preset.io/">Preset API Documentation</a>
  */
 @Getter
+@Setter
 public class PresetGuestTokenResponse {
 
   /**
@@ -51,6 +53,7 @@ public class PresetGuestTokenResponse {
    * Represents the payload that contains the guest token.
    */
   @Getter
+  @Setter
   public static class Payload {
     /**
      * Represents the guest token.

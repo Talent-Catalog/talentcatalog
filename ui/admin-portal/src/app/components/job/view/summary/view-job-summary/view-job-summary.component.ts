@@ -46,8 +46,8 @@ export class ViewJobSummaryComponent extends AutoSaveComponentBase implements On
     if (change && change.previousValue !== change.currentValue) {
       //The very first change is fired before ngOnInt has been called.
       //So don't update form if it is not there yet.
-      if (this.form) {
-        this.jobSummaryControl.patchValue(this.job.jobSummary)
+      if (this.form && this.editable) {
+        this.jobSummaryControl.patchValue(this.job.jobSummary, {emitEvent: false})
       }
     }
   }
