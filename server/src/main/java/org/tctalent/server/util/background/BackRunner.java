@@ -78,7 +78,9 @@ public class BackRunner<CONTEXT> implements Runnable {
 
         } catch (Exception e) {
             notifyOnStepFailure(jobName, e);
-            scheduledFuture.cancel(true);
+            if (scheduledFuture != null) {
+                scheduledFuture.cancel(true);
+            }
         }
     }
 
