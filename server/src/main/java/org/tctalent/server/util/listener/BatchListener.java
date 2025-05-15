@@ -17,16 +17,13 @@
 package org.tctalent.server.util.listener;
 
 /**
- * A listener interface for monitoring the lifecycle of a batch processing step.
+ * A listener interface for monitoring a batch processing lifecycle.
  *
- * <p>Implementations can override any of the default methods (which do nothing) to hook into specific
- * points of the step execution: before the step starts, after it completes or when it fails.
- *
- * <p>This interface is designed to allow decoupled monitoring and handling logic, such as logging
- * or alerting, without tying it to the core batch processing logic.</p>
+ * <p>Implementations can override any of the default methods (which do nothing by default) to hook
+ * into specific points of the execution: before it starts and when it completes or fails.
  */
-public interface StepListener {
-    default void beforeStep(String jobName) {}
-    default void afterStep(String jobName) {}
-    default void onStepFailure(String jobName, Exception exception) {}
+public interface BatchListener {
+    default void beforeBatch(String jobName) {}
+    default void afterBatch(String jobName) {}
+    default void onBatchFailure(String jobName, Exception exception) {}
 }

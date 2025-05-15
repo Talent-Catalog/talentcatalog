@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
-import org.tctalent.server.util.listener.StepListener;
+import org.tctalent.server.util.listener.BatchListener;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
@@ -54,7 +54,7 @@ public class BackRunner<CONTEXT> implements Runnable {
     private TaskScheduler taskScheduler;
     private BackProcessor<CONTEXT> backProcessor;
     private Trigger trigger;
-    private final List<StepListener> listeners = new ArrayList<>();
+    private final List<BatchListener> listeners = new ArrayList<>();
     private String jobName;
 
     /**
@@ -131,13 +131,13 @@ public class BackRunner<CONTEXT> implements Runnable {
         return scheduledFuture;
     }
 
-    public void addListener(StepListener listener) {
+    public void addListener(BatchListener listener) {
         listeners.add(listener);
     }
 
     private void notifyOnStepFailure(String jobName, Exception exception) {
-        for (StepListener listener : listeners) {
-            listener.onStepFailure(jobName, exception);
+        for (BatchListener listener : listeners) {
+            listener.onBatchFailure(jobName, exception);
         }
     }
 

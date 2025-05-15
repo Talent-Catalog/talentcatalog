@@ -23,32 +23,28 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 /**
- * A {@link StepListener} implementation that handles failures in background batch processing jobs.
- * <p>
- * When a job step fails due to an unchecked exception, this listener logs the failure
+ * A {@link BatchListener} implementation that handles failures in batch processing jobs.
+ *
+ * <p>When a job step fails due to an unchecked exception, this listener logs the failure
  * and sends an email alert using {@link EmailHelper}.
- * </p>
- * <p>
- * This listener is designed to be used with the background batch processing infrastructure.
- * </p>
  */
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class BackgroundBatchProcessingListener implements StepListener {
+public class BatchListeningLogger implements BatchListener {
     private final EmailHelper emailHelper;
 
     /**
-     * Logs and sends an email alert re the cancellation of a background batch processing job due to
-     * an unchecked exception.
+     * Logs and sends an email alert re the cancellation of a batch processing job due to an
+     * unchecked exception.
      *
      * @param jobName Identifies the job that failed.
      * @param e The exception that caused the failure.
      */
     @Override
-    public void onStepFailure(String jobName, Exception e) {
+    public void onBatchFailure(String jobName, Exception e) {
         String message =
-            "Background batch processing op '" + jobName + "' cancelled due to unchecked exception";
+            "Batch processing op '" + jobName + "' cancelled due to unchecked exception";
 
         LogBuilder.builder(log)
             .message(message + ": " + e.getMessage())

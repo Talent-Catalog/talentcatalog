@@ -54,7 +54,7 @@ import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.background.PageContextBackRunner;
-import org.tctalent.server.util.listener.BackgroundBatchProcessingListener;
+import org.tctalent.server.util.listener.BatchListeningLogger;
 
 /**
  * Service for background processing methods
@@ -69,7 +69,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   private final SavedListService savedListService;
   private final SavedSearchService savedSearchService;
   private final TaskScheduler taskScheduler;
-  private final BackgroundBatchProcessingListener backgroundBatchProcessingListener;
+  private final BatchListeningLogger batchListeningLogger;
 
   public BackProcessor<PageContext> createSfSyncBackProcessor(
       List<CandidateStatus> statuses, long totalNoOfPages
@@ -158,7 +158,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     // Schedule background processing
     BackRunner<PageContext> backRunner = new BackRunner<>();
-    backRunner.addListener(backgroundBatchProcessingListener);
+    backRunner.addListener(batchListeningLogger);
 
     backRunner.start(
         taskScheduler,
