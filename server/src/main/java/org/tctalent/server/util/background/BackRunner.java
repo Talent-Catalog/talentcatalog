@@ -133,9 +133,9 @@ public class BackRunner<CONTEXT> implements Runnable {
         listeners.add(listener);
     }
 
-    private void notifyOnStepFailure(String stepName, Exception exception) {
+    private void notifyOnStepFailure(String jobName, Exception exception) {
         for (StepListener listener : listeners) {
-            listener.onStepFailure(stepName, exception);
+            listener.onStepFailure(jobName, exception);
         }
     }
 
