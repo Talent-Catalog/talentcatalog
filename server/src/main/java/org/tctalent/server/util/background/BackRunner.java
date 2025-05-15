@@ -126,8 +126,8 @@ public class BackRunner<CONTEXT> implements Runnable {
         String jobName) {
         this.batchContext = batchContext;
         this.backProcessor = backProcessor;
-        scheduledFuture = taskScheduler.schedule(this, trigger);
         this.jobName = jobName;
+        scheduledFuture = taskScheduler.schedule(this, trigger);
         return scheduledFuture;
     }
 
