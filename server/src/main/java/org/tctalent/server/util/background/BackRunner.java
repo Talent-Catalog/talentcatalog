@@ -17,6 +17,8 @@
 package org.tctalent.server.util.background;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
-import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.util.listener.BatchListener;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
@@ -52,6 +54,8 @@ public class BackRunner<CONTEXT> implements Runnable {
     private TaskScheduler taskScheduler;
     private BackProcessor<CONTEXT> backProcessor;
     private Trigger trigger;
+    private final List<BatchListener> listeners = new ArrayList<>();
+    private String jobName;
 
     /**
      * This defines the "context" for keeping track of where a {@link BackProcessor}
@@ -73,13 +77,10 @@ public class BackRunner<CONTEXT> implements Runnable {
             }
 
         } catch (Exception e) {
-            LogBuilder.builder(log)
-                .action("Background batch processing")
-                .message("Operation cancelled. Batch failed due to unchecked exception: "
-                    + e.getMessage())
-                .logError(e);
-
-            scheduledFuture.cancel(true);
+            notifyOnStepFailure(jobName, e);
+            if (scheduledFuture != null) {
+                scheduledFuture.cancel(true);
+            }
         }
     }
 
@@ -96,9 +97,10 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Duration delay) {
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Duration delay,
+        String jobName) {
         this.trigger = new PeriodicTrigger(delay);
-        return start(taskScheduler, backProcessor, batchContext, trigger);
+        return start(taskScheduler, backProcessor, batchContext, trigger, jobName);
     }
 
     /**
@@ -113,16 +115,30 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, int percentageCPU) {
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, int percentageCPU,
+        String jobName) {
         this.trigger = new VariableTrigger(percentageCPU);
-        return start(taskScheduler, backProcessor, batchContext, trigger);
+        return start(taskScheduler, backProcessor, batchContext, trigger, jobName);
     }
 
     private ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Trigger trigger) {
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Trigger trigger,
+        String jobName) {
         this.batchContext = batchContext;
         this.backProcessor = backProcessor;
+        this.jobName = jobName;
         scheduledFuture = taskScheduler.schedule(this, trigger);
         return scheduledFuture;
     }
+
+    public void addListener(BatchListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyOnStepFailure(String jobName, Exception exception) {
+        for (BatchListener listener : listeners) {
+            listener.onBatchFailure(jobName, exception);
+        }
+    }
+
 }
