@@ -59,7 +59,7 @@
     </div>
 
 
-    <div *ngIf="!job.publishedDate">
+    <div *ngIf="!job.publishedDate && isEditable()">
       <button type="button" class="btn btn-success me-2"
               (click)="publishJob()"
               ngbTooltip=
