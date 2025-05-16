@@ -36,6 +36,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
 
+  /* A flag to indicate that the component is being used to register a candidate */
+  @Input() isRegistration: boolean = false;
+
   @Output() onSave = new EventEmitter();
 
   @Output() onPartnerAssignment = new EventEmitter();
@@ -91,7 +94,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       externalIdSource: ['US Afghan Parolee Id'],
       unhcrRegistered: [null, Validators.required],
       unhcrNumber: [null],
-      unhcrConsent: [null]
+      unhcrConsent: [null],
+      /* NEW REGISTRATION? */
+      isRegistration: [this.isRegistration]
     });
     this.loadDropDownData();
 
