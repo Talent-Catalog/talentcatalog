@@ -15,13 +15,12 @@
  */
 import {VisaCheckCaComponent} from "./visa-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
-import {
-  mockCandidateIntakeData
-} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('VisaCheckCaComponent', () => {
   let component: VisaCheckCaComponent;
@@ -29,7 +28,7 @@ describe('VisaCheckCaComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NgbAccordionModule],
+      imports: [NgbAccordionModule, HttpClientTestingModule],
       declarations: [VisaCheckCaComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

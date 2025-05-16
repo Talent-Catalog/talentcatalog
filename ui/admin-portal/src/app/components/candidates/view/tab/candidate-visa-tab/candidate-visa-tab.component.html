@@ -26,7 +26,7 @@
     <div class="col">
       <h5 class="mb-2">Visa Eligibility Checks</h5>
     </div>
-    <div class="col">
+    <div class="col" *ngIf="isEditable()">
       <button type="button" class="btn btn-primary btn-sm float-end" (click)="addRecord()">
         <i class="fas fa-plus"></i> Add Country
       </button>
@@ -44,7 +44,7 @@
             <input class="form-check-input" type="radio" [value]="i" name="visaCountry" [id]="'radio'+i"
                    [formControlName]="'visaCountry'" (change)="reloadAndSelectVisaCheck(i)">
             <label class="form-check-label fw-light" [for]="'radio'+i">{{visaCheck?.country?.name}}</label>
-            <a *ngIf="canDeleteVisa()" class="link-danger float-end" (click)="deleteRecord(i)"><i class="fas fa-trash"></i></a>
+            <a *ngIf="canDeleteVisa() && isEditable()" class="link-danger float-end" (click)="deleteRecord(i)"><i class="fas fa-trash"></i></a>
           </div>
         </div>
       </form>

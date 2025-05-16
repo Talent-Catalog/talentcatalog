@@ -23,23 +23,25 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockJob} from "../../../../../../MockData/MockJob";
-import {
-  mockCandidateIntakeData
-} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {LocalStorageService} from "../../../../../../services/local-storage.service";
+import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 describe('VisaCheckAuComponent', () => {
   let component: VisaCheckAuComponent;
   let fixture: ComponentFixture<VisaCheckAuComponent>;
   const mockCandidate = new MockCandidate();
+  let authServiceMock: jasmine.SpyObj<AuthorizationService>;
 
   beforeEach(async () => {
+    authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
     await TestBed.configureTestingModule({
       declarations: [ VisaCheckAuComponent ],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule ,NgSelectModule],
       providers: [
         { provide: NgbModal, useValue: {} },
-        { provide: LocalStorageService, useValue: {} }
+        { provide: LocalStorageService, useValue: {} },
+        { provide: AuthorizationService, useValue: authServiceMock },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

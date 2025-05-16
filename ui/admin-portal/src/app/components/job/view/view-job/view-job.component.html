@@ -44,7 +44,7 @@
           <a *ngIf="job.sfId && canAccessSalesforce()" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
             <i class="fab fa-salesforce link-info" title="Show job in Salesforce"></i>
           </a>
-          <a *ngIf="job.submissionList?.folderjdlink" [href]="job.submissionList.folderjdlink" target="_blank">
+          <a *ngIf="job.submissionList?.folderjdlink && canSeeJobDetails()" [href]="job.submissionList.folderjdlink" target="_blank">
             <i class="fab fa-google-drive link-info" title="Show job's Google Doc folder"></i>
           </a>
           <div class="btn btn-lg pt-0" (click)="doToggleStarred()">
@@ -59,7 +59,7 @@
     </div>
 
 
-    <div *ngIf="!job.publishedDate">
+    <div *ngIf="!job.publishedDate && isEditable()">
       <button type="button" class="btn btn-success me-2"
               (click)="publishJob()"
               ngbTooltip=

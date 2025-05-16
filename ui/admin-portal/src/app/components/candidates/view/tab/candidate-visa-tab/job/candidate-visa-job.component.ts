@@ -188,4 +188,8 @@ export class CandidateVisaJobComponent implements OnInit {
         co => co.jobOpp.id === jobId).id;
     }
   }
+
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
+  }
 }
