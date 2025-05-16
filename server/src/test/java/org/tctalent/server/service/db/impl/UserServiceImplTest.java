@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,120 +16,217 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Role;
-import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
-import org.tctalent.server.request.user.UpdateUserRequest;
-import org.tctalent.server.security.AuthService;
-import org.tctalent.server.security.PasswordHelper;
+import org.tctalent.server.repository.db.UserSpecification;
+import org.tctalent.server.request.user.SearchUserRequest;
 
-@Tag("skip-test-in-gradle-build")
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    @Mock
-    private User user;
+    private Sort sort;
+    private PageRequest pageRequest;
+    private Page<User> userPage;
+    private long userId;
 
-    @Mock
-    private PasswordHelper passwordHelper;
+    @Mock private UserRepository userRepository;
+    @Mock private User mockUser;
+    @Mock private User mockUser2;
+    @Mock private SearchUserRequest searchUserRequest;
+    @Mock private Specification<User> mockedUserSpec;
+    @Mock private CountryRepository countryRepository;
+    @Mock private Country mockCountry;
+    @Mock private Country mockCountry2;
 
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private AuthService authService;
-
-    @InjectMocks
-    private UserServiceImpl userService;
+    @InjectMocks private UserServiceImpl userService;
 
     @BeforeEach
-    void authenticate() {
-        User loggedInUser = new User("username", "first", "last",
-                "email@test.com", Role.admin);
-        when(authService.getLoggedInUser()).thenReturn(Optional.of(loggedInUser));
+    void setUp() {
+        sort = Sort.unsorted();
+        pageRequest = PageRequest.of(0, 10, sort);
+        userPage = new PageImpl<>(List.of(mockUser, mockUser2));
+        userId = 1L;
     }
 
     @Test
-    void createUserAndCountries(){
-        assertNotNull(userService);
-        assertNotNull(userRepository);
-        User user = new User(
-                "username", "first", "last",
-                "email@test.com", Role.admin);
+    @DisplayName("should return user")
+    void findByUsernameAndRole_shouldReturnUser() {
+        given(userRepository.findByUsernameAndRole("alice", Role.user))
+            .willReturn(mockUser);
 
-        when(userRepository.save(user)).thenReturn(user);
-        userRepository.save(user);
-        assertNotNull(user);
+        User result = userService.findByUsernameAndRole("alice", Role.user);
+
+        assertEquals(mockUser, result);
+        verify(userRepository).findByUsernameAndRole("alice", Role.user);
     }
 
     @Test
-    void testCreateUserSourceCountries(){
-        UpdateUserRequest request = new UpdateUserRequest();
-        request.setFirstName("first");
-        request.setLastName("last");
-        request.setUsername("username2");
-        request.setEmail("email2@test.com");
-        request.setRole(Role.admin);
-        request.setPassword("xxxxxxxxxx");
-        request.setReadOnly(false);
-        request.setUsingMfa(false);
+    @DisplayName("should return null when not found")
+    void findByUsernameAndRole_shouldReturnNullWhenNotFound() {
+        given(userRepository.findByUsernameAndRole("bob", Role.user))
+            .willReturn(null);
 
-        when(userRepository.save(any(User.class))).then(returnsFirstArg());
+        User result = userService.findByUsernameAndRole("bob", Role.user);
 
-        User testUser = userService.createUser(request);
-        assertNotNull(testUser);
-        assertThat(testUser.getSourceCountries()).isEmpty();
+        assertNull(result);
+    }
 
-        Country country1 = new Country("Iraq", Status.active);
-        Country country2 = new Country("Jordan", Status.active);
-        List<Country> countries = new ArrayList<>();
-        countries.add(country1);
-        countries.add(country2);
-        request.setSourceCountries(countries);
+    @Test
+    @DisplayName("should return user list")
+    void search_shouldReturnUserList() {
+        // MODEL: mocking static methods - must be inside try block along with any code that depends
+        // on the mock return. Otherwise, Mockito won't match the stub due to instance mismatch.
+        try (MockedStatic<UserSpecification> mocked = Mockito.mockStatic(UserSpecification.class)) {
 
-        User testUser2 = userService.createUser(request);
-        assertNotNull(testUser2);
-        assertThat(testUser2.getSourceCountries()).isNotEmpty();
+            mocked.when(() -> UserSpecification.buildSearchQuery(searchUserRequest))
+                .thenReturn(mockedUserSpec);
+            given(searchUserRequest.getSort()).willReturn(sort);
+            given(userRepository.findAll(mockedUserSpec, sort))
+                .willReturn(List.of(mockUser, mockUser2));
+
+            List<User> results = userService.search(searchUserRequest);
+
+            assertEquals(List.of(mockUser, mockUser2), results);
+            verify(userRepository).findAll(mockedUserSpec, sort);
+        }
+    }
+
+    @Test
+    @DisplayName("should return empty user list when nothing found")
+    void search_shouldReturnEmptyUserListWhenNothingFound() {
+        try (MockedStatic<UserSpecification> mocked = Mockito.mockStatic(UserSpecification.class)) {
+
+            mocked.when(() -> UserSpecification.buildSearchQuery(searchUserRequest))
+                .thenReturn(mockedUserSpec);
+            given(searchUserRequest.getSort()).willReturn(sort);
+            given(userRepository.findAll(mockedUserSpec, sort))
+                .willReturn(Collections.emptyList());
+
+            List<User> results = userService.search(searchUserRequest);
+
+            assertTrue(results.isEmpty());
+            verify(userRepository).findAll(mockedUserSpec, sort);
+        }
+    }
+
+    @Test
+    @DisplayName("should return user page")
+    void searchPaged_shouldReturnUserPage() {
+        try (MockedStatic<UserSpecification> mocked = Mockito.mockStatic(UserSpecification.class)) {
+
+            mocked.when(() -> UserSpecification.buildSearchQuery(searchUserRequest))
+                .thenReturn(mockedUserSpec);
+            given(searchUserRequest.getPageRequest()).willReturn(pageRequest);
+            given(userRepository.findAll(mockedUserSpec, pageRequest))
+                .willReturn(userPage);
+
+            Page<User> results = userService.searchPaged(searchUserRequest);
+
+            assertEquals(userPage, results);
+            verify(userRepository).findAll(mockedUserSpec, pageRequest);
+        }
 
     }
 
     @Test
-    void updateUser() {
-        User user = new User("username2", "first", "last", "email2@test.com", Role.admin);
-        user.setId(1L);
+    @DisplayName("should return empty user page when nothing found")
+    void searchPaged_shouldReturnEmptyUserPageWhenNothingFound() {
+        Page<User> emptyUserPage = new PageImpl<>(Collections.emptyList());
 
-        UpdateUserRequest update = new UpdateUserRequest();
-        update.setFirstName("new name");
-        update.setLastName("last");
-        update.setEmail("email2@test.com");
-        update.setRole(Role.admin);
-        update.setStatus(Status.active);
-        update.setReadOnly(false);
-        update.setUsingMfa(false);
+        try (MockedStatic<UserSpecification> mocked = Mockito.mockStatic(UserSpecification.class)) {
 
-        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).then(returnsFirstArg());
-        User testUserNew = userService.updateUser(user.getId(), update);
+            mocked.when(() -> UserSpecification.buildSearchQuery(searchUserRequest))
+                .thenReturn(mockedUserSpec);
+            given(searchUserRequest.getPageRequest()).willReturn(pageRequest);
+            given(userRepository.findAll(mockedUserSpec, pageRequest))
+                .willReturn(emptyUserPage);
 
-        assertNotNull(testUserNew);
-        assertThat(testUserNew.getFirstName()).isEqualTo("new name");
+            Page<User> results = userService.searchPaged(searchUserRequest);
+
+            assertEquals(emptyUserPage, results);
+            verify(userRepository).findAll(mockedUserSpec, pageRequest);
+        }
+
+    }
+
+    @Test
+    @DisplayName("should return user when found")
+    void findById_shouldReturnUser() {
+        given(userRepository.findById(1L)).willReturn(Optional.of(mockUser));
+
+        User result = userService.getUser(userId);
+
+        assertEquals(mockUser, result);
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    @DisplayName("should throw NoSuchObjectException when user not found")
+    void getUser_shouldThrowWhenUserNotFound() {
+        given(userRepository.findById(userId)).willReturn(Optional.empty());
+
+        NoSuchObjectException exception = assertThrows(
+            NoSuchObjectException.class,
+            () -> userService.getUser(userId) // When
+        );
+
+        assertTrue(exception.getMessage().contains(String.valueOf(userId)));
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    @DisplayName("should return all countries when user has no source countries")
+    public void getDefaultSourceCountries_shouldReturnAllCountries_whenUserHasNoSourceCountries() {
+        List<Country> allCountriesList = Arrays.asList(mockCountry, mockCountry2);
+        given(mockUser.getSourceCountries()).willReturn(Collections.emptySet());
+        given(countryRepository.findAll()).willReturn(allCountriesList);
+
+        Set<Country> result = userService.getDefaultSourceCountries(mockUser); // When
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(mockCountry));
+        assertTrue(result.contains(mockCountry2));
+    }
+
+    @Test
+    @DisplayName("should return user source countries when they have some")
+    public void getDefaultSourceCountries_shouldReturnUserSourceCountries() {
+        Set<Country> userSourceCountries = Set.of(mockCountry, mockCountry2);
+        given(mockUser.getSourceCountries()).willReturn(userSourceCountries);
+
+        Set<Country> result = userService.getDefaultSourceCountries(mockUser); // When
+
+        assertEquals(userSourceCountries, result);
     }
 
 }

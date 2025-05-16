@@ -145,7 +145,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsernameAndRole(String username, Role role) {
+    public @Nullable User findByUsernameAndRole(String username, Role role) {
         return userRepository.findByUsernameAndRole(username, role);
     }
 
