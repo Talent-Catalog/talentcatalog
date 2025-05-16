@@ -16,11 +16,13 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
@@ -32,24 +34,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.tctalent.server.api.admin.AdminApiTestUtil;
+import org.tctalent.server.api.admin.AdminApiTestUtil.CreateUpdateUserTestData;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.user.SearchUserRequest;
+import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.security.PasswordHelper;
+import org.tctalent.server.service.db.PartnerService;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -67,8 +78,15 @@ class UserServiceImplTest {
     @Mock private CountryRepository countryRepository;
     @Mock private Country mockCountry;
     @Mock private Country mockCountry2;
+    @Mock private PartnerService partnerService;
+    @Mock private PartnerImpl mockPartnerImpl;
+    @Mock private PasswordHelper passwordHelper;
 
-    @InjectMocks private UserServiceImpl userService;
+    @Captor ArgumentCaptor<User> userCaptor;
+
+    @InjectMocks
+    @Spy
+    private UserServiceImpl userService;
 
     @BeforeEach
     void setUp() {
@@ -227,6 +245,36 @@ class UserServiceImplTest {
         Set<Country> result = userService.getDefaultSourceCountries(mockUser); // When
 
         assertEquals(userSourceCountries, result);
+    }
+
+    /**
+     * TODO describe path? Test thoroughly the approver refactoring
+     */
+    @Test
+    @DisplayName("should create and return new admin user matching valid request")
+    void createUser_WithValidRequest_ShouldCreateAndReturnUser() {
+        CreateUpdateUserTestData testData =
+            AdminApiTestUtil.createUpdateUserRequestAndExpectedUser(mockUser, mockUser2,
+                mockPartnerImpl);
+        User expectedUser = testData.expectedUser();
+        UpdateUserRequest request = testData.request();
+
+        given(userRepository.findByUsernameIgnoreCase(request.getUsername())).willReturn(null);
+        given(userRepository.findByEmailIgnoreCase(request.getEmail())).willReturn(null);
+        given(partnerService.getPartner(request.getPartnerId())).willReturn(mockPartnerImpl);
+
+        doReturn(mockUser2).when(userService).getUser(request.getApproverId());
+        given(mockUser.getRole()).willReturn(Role.systemadmin);
+        given(passwordHelper.validateAndEncodePassword(request.getPassword()))
+            .willReturn(request.getPassword());
+
+        userService.createUser(request, mockUser);
+
+        verify(userRepository).save(userCaptor.capture());
+        assertThat(userCaptor.getValue())
+            .usingRecursiveComparison()
+            .ignoringFields("createdDate", "updatedDate")
+            .isEqualTo(expectedUser);
     }
 
 }

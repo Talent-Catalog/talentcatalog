@@ -245,32 +245,7 @@ public class UserServiceImpl implements UserService {
             user.setPartner((PartnerImpl) newSourcePartner);
         }
 
-        //Possibly update the user's approver
-        User currentApprover = user.getApprover();
-        Long currentApproverId = currentApprover == null ? null : currentApprover.getId();
-        User newApprover = null;
-        Long approverId = request.getApproverId();
-        if (approverId != null) {
-            //Approver specified - is it a new one?
-            if (!approverId.equals(currentApproverId)) {
-                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
-                    //Only system admins can change approver
-                    throw new InvalidRequestException("You don't have permission to assign an approver.");
-                } else {
-                    //Changing approver
-                    newApprover = getUser(approverId);
-                }
-            }
-        } else {
-            //If user does not already have an approver, assign one
-            if (currentApprover == null && creatingUser != null) {
-                newApprover = creatingUser.getApprover();
-            }
-        }
-        //If we have a new approver, update it.
-        if (newApprover != null) {
-            user.setApprover(newApprover);
-        }
+        updateApproverIfNeeded(user, request, creatingUser);
 
         user.setReadOnly(request.getReadOnly());
         user.setFirstName(request.getFirstName());
@@ -309,6 +284,34 @@ public class UserServiceImpl implements UserService {
             throw new InvalidRequestException("You don't have permission to create a user.");
         }
 
+    }
+
+    private void updateApproverIfNeeded(User user, UpdateUserRequest request, User creatingUser) {
+        User currentApprover = user.getApprover();
+        Long currentApproverId = currentApprover == null ? null : currentApprover.getId();
+        User newApprover = null;
+        Long requestApproverId = request.getApproverId();
+        if (requestApproverId != null) {
+            //Approver specified - is it a new one?
+            if (!requestApproverId.equals(currentApproverId)) {
+                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
+                    //Only system admins can change approver
+                    throw new InvalidRequestException("You don't have permission to assign an approver.");
+                } else {
+                    //Changing approver
+                    newApprover = getUser(requestApproverId);
+                }
+            }
+        } else {
+            //If user does not already have an approver, assign the creating user's if they have one.
+            if (currentApprover == null && creatingUser != null) {
+                newApprover = creatingUser.getApprover();
+            }
+        }
+        //If we have a new approver, update the user.
+        if (newApprover != null) {
+            user.setApprover(newApprover);
+        }
     }
 
     private void checkAndResetEmailVerification(User user, String newEmail) {

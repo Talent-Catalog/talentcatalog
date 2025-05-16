@@ -95,6 +95,7 @@ import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
+import org.tctalent.server.request.user.UpdateUserRequest;
 
 /**
  * @author sadatmalik
@@ -866,5 +867,71 @@ public class AdminApiTestUtil {
         coupon.setCouponStatus(DuolingoCouponStatus.AVAILABLE);
 
         return coupon;
+    }
+
+    /**
+     * Holds an {@link UpdateUserRequest} along with the expected {@link User}
+     * that should result from applying the request.
+     */
+    public record CreateUpdateUserTestData(UpdateUserRequest request, User expectedUser) { }
+
+    /**
+     * Constructs a {@link CreateUpdateUserTestData} record containing an {@link UpdateUserRequest}
+     * and the expected {@link User} that should result from applying it.
+     *
+     * <p>Passing the given params enables effective mocking in the calling test method.
+     */
+    public static CreateUpdateUserTestData createUpdateUserRequestAndExpectedUser(
+        User creatingUser,
+        User approver,
+        PartnerImpl partner
+    ) {
+        final String email = "alice@email.com";
+        final String firstName = "Alice";
+        final String lastName = "Alison";
+        final Long partnerId = 1L;
+        final String password = "password";
+        final boolean readOnly = false;
+        final Role role = Role.admin;
+        final boolean jobCreator = false;
+        final Long approverId = 1L;
+        final String purpose = "Testing";
+        final Status status = Status.active;
+        final String username = "aalison";
+        final boolean usingMfa = true;
+
+        UpdateUserRequest request = new UpdateUserRequest();
+        request.setEmail(email);
+        request.setFirstName(firstName);
+        request.setLastName(lastName);
+        request.setPartnerId(partnerId);
+        request.setPassword(password);
+        request.setReadOnly(readOnly);
+        request.setRole(role);
+        request.setJobCreator(jobCreator);
+        request.setApproverId(approverId);
+        request.setPurpose(purpose);
+        request.setStatus(status);
+        request.setUsername(username);
+        request.setUsingMfa(usingMfa);
+
+        User expectedUser = new User();
+        expectedUser.setEmail(email);
+        expectedUser.setFirstName(firstName);
+        expectedUser.setLastName(lastName);
+        expectedUser.setReadOnly(readOnly);
+        expectedUser.setRole(role);
+        expectedUser.setJobCreator(jobCreator);
+        expectedUser.setPurpose(purpose);
+        expectedUser.setStatus(status);
+        expectedUser.setUsername(username);
+        expectedUser.setUsingMfa(usingMfa);
+        expectedUser.setCreatedBy(creatingUser);
+        expectedUser.setUpdatedBy(creatingUser);
+        expectedUser.setPartner(partner);
+        expectedUser.setApprover(approver);
+        expectedUser.setPasswordEnc(password); // Users of this data will need to mock encryption.
+
+        return new CreateUpdateUserTestData(request, expectedUser);
     }
 }
