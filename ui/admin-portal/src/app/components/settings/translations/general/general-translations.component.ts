@@ -182,6 +182,7 @@ const ALL_FIELDS = {
         "ACCOUNT": null,
         "LOGOUT": null,
         "LOGIN": null,
+        "PRIVACY": null,
         "PROFILE": null,
         "UPLOAD": {
           "FILE": null,

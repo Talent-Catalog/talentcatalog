@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./privacy-policy.component.scss']
 })
 export class PrivacyPolicyComponent {
-
+  partnerName: string = "TestPartner???";
 }
