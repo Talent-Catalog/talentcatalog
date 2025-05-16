@@ -302,6 +302,9 @@ public class SecurityConfiguration {
                 // POST: SEARCH BY PHONE
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // POST: SEARCH BY EMAIL/PHONE/WHATSAPP
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyemailphoneorwhatsapp").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // POST: FETCH CANDIDATES WITH CHATS
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/fetch-candidates-with-chat").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
