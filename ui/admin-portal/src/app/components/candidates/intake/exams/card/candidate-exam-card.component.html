@@ -25,7 +25,7 @@
       <div class="mb-3">
         <div class="exam d-flex align-items-baseline justify-content-between">
           <label class="form-label" [for]="'exam'+myRecordIndex">Exam</label>
-          <div class="float-end d-flex align-items-center">
+          <div *ngIf="editable" class="float-end d-flex align-items-center">
             <app-autosave-status
               [saving]="saving"
               [typing]="typing">

@@ -25,7 +25,7 @@
       <div class="mb-3">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
           <label class="form-label" [for]="'nationality'+myRecordIndex">Country of Citizenship</label>
-          <div class="float-end d-flex align-items-center">
+          <div *ngIf="editable" class="float-end d-flex align-items-center">
             <app-autosave-status
               [saving]="saving"
               [typing]="typing">

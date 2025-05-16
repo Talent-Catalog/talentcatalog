@@ -22,6 +22,7 @@ import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {By} from "@angular/platform-browser";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
 import {of} from "rxjs";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 describe('CandidateContextNoteComponent', () => {
   let component: CandidateContextNoteComponent;
@@ -33,12 +34,14 @@ describe('CandidateContextNoteComponent', () => {
 
   beforeEach(async () => {
     const candidateSourceSpy = jasmine.createSpyObj('CandidateSourceService', ['updateContextNote']);
+    const authorizationServiceSpy = jasmine.createSpyObj('AuthorizationService', ['canEditCandidateSource']);
 
     await TestBed.configureTestingModule({
       declarations: [CandidateContextNoteComponent, AutosaveStatusComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        { provide: CandidateSourceService, useValue: candidateSourceSpy }
+        { provide: CandidateSourceService, useValue: candidateSourceSpy },
+        { provide: AuthorizationService, useValue: authorizationServiceSpy }
       ]
     }).compileComponents();
 

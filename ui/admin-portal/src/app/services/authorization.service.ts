@@ -481,6 +481,14 @@ export class AuthorizationService {
   }
 
   /**
+   * True if the currently logged-in user can edit the given job opp.
+   * @param jobOpp Job Opp
+   */
+  canEditJobOpp(jobOpp: Job) {
+    return !this.isReadOnly() && this.isPartnerAdminOrGreater() && this.isJobOurs(jobOpp as ShortJob);
+  }
+
+  /**
    * True if the currently logged-in user can edit the given candidate source.
    * @param candidateSource Candidate source - ie SavedList or SavedSearch
    * @return true if can be edited, false if source is null
