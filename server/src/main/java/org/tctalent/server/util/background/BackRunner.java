@@ -71,13 +71,16 @@ public class BackRunner<CONTEXT> implements Runnable {
     @Override
     public void run() {
         try {
+            notifyBeforeBatch();
             boolean complete = backProcessor.process(batchContext);
+            notifyAfterBatch();
             if (complete) {
                 scheduledFuture.cancel(true);
+                notifyOnSuccess();
             }
 
         } catch (Exception e) {
-            notifyOnStepFailure(jobName, e);
+            notifyOnBatchFailure(e);
             if (scheduledFuture != null) {
                 scheduledFuture.cancel(true);
             }
@@ -135,7 +138,25 @@ public class BackRunner<CONTEXT> implements Runnable {
         listeners.add(listener);
     }
 
-    private void notifyOnStepFailure(String jobName, Exception exception) {
+    private void notifyBeforeBatch() {
+        for (BatchListener listener : listeners) {
+            listener.beforeBatch(jobName);
+        }
+    }
+
+    private void notifyAfterBatch() {
+        for (BatchListener listener : listeners) {
+            listener.afterBatch(jobName);
+        }
+    }
+
+    private void notifyOnSuccess() {
+        for (BatchListener listener : listeners) {
+            listener.onSuccess(jobName);
+        }
+    }
+
+    private void notifyOnBatchFailure(Exception exception) {
         for (BatchListener listener : listeners) {
             listener.onBatchFailure(jobName, exception);
         }

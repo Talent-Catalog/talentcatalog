@@ -25,5 +25,6 @@ package org.tctalent.server.util.listener;
 public interface BatchListener {
     default void beforeBatch(String jobName) {}
     default void afterBatch(String jobName) {}
+    default void onSuccess(String jobName) {}
     default void onBatchFailure(String jobName, Exception exception) {}
 }
