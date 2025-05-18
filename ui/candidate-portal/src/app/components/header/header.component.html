@@ -75,7 +75,7 @@
               {{ 'HEADER.NAV.UPLOAD.PHOTO' | translate }}
             </a>
 
-            <a  class="dropdown-item" [routerLink]="['/privacy']">
+            <a *ngIf="isRegistered()" class="dropdown-item" [routerLink]="['/privacy']">
               {{ 'HEADER.NAV.PRIVACY' | translate }}
             </a>
 

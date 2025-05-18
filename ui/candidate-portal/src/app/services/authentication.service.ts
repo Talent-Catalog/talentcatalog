@@ -24,6 +24,7 @@ import {User} from "../model/user";
 import {AuthenticateInContextTranslationRequest} from "./auth.service";
 import {LoginRequest} from "../model/base";
 import {LocalStorageService} from "./local-storage.service";
+import {CandidateStatus} from "../model/candidate";
 
 /**
  * Manages authentication - ie login/logout.
@@ -35,6 +36,8 @@ import {LocalStorageService} from "./local-storage.service";
 })
 export class AuthenticationService implements OnDestroy {
   apiUrl = environment.apiUrl + '/auth';
+
+  candidateStatus: CandidateStatus;
 
   /**
    * Stores current logged in state
@@ -90,6 +93,10 @@ export class AuthenticationService implements OnDestroy {
     return this.getLoggedInUser() != null;
   }
 
+  isRegistered(): boolean {
+    return this.candidateStatus != null && this.candidateStatus != CandidateStatus.draft;
+  }
+
   login(credentials: LoginRequest) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       map((response: JwtResponse) => {
@@ -111,10 +118,15 @@ export class AuthenticationService implements OnDestroy {
     this.localStorageService.remove('access-token');
     localStorage.clear();
 
-    this.setLoggedInUser(null)
+    this.setLoggedInUser(null);
+    this.setCandidateStatus(null);
   }
 
-  setLoggedInUser(loggedInUser: User) {
+  setCandidateStatus(candidateStatus: CandidateStatus) {
+    this.candidateStatus = candidateStatus;
+  }
+
+  private setLoggedInUser(loggedInUser: User) {
     this.loggedInUser = loggedInUser;
     this.localStorageService.set('user', this.loggedInUser);
     this.loggedInUser$.next(this.loggedInUser);
