@@ -27,15 +27,33 @@
 <!-- Admin Command List -->
 <div class="mt-4">
   <hr>
-  <h5>API Migration Commands:</h5>
-  <ul class="list-unstyled">
-    <li *ngFor="let cmd of commands">
-      <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
-        <code>{{ cmd.command }}</code>
-      </a>
-      – {{ cmd.description }}
-    </li>
-  </ul>
+  <div class="row">
+    <!-- Left column: General Admin Commands -->
+    <div class="col-md-6">
+      <h5>General Admin Commands</h5>
+      <ul class="list-unstyled">
+        <li *ngFor="let cmd of adminCommands">
+          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+            <code>{{ cmd.command }}</code>
+          </a>
+          – {{ cmd.description }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Right column: Migration Commands -->
+    <div class="col-md-6">
+      <h5>API Migration Commands</h5>
+      <ul class="list-unstyled">
+        <li *ngFor="let cmd of migrationCommands">
+          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+            <code>{{ cmd.command }}</code>
+          </a>
+          – {{ cmd.description }}
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <!-- Display command response -->

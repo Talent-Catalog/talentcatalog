@@ -30,7 +30,7 @@ export class AdminApiComponent implements OnInit {
   form: UntypedFormGroup;
 
   // 👇 List of available batch commands
-  readonly commands = [
+  readonly migrationCommands = [
     { command: 'run_api_migration', description: 'Run full anonymization job (Aurora + Mongo)' },
     { command: 'run_api_migration/aurora', description: 'Run Aurora-only anonymization job' },
     { command: 'run_api_migration/mongo', description: 'Run Mongo-only anonymization job' },
@@ -40,6 +40,10 @@ export class AdminApiComponent implements OnInit {
     { command: 'restart_api_migration/{executionId}', description: 'Restart a failed job by executionId' }
   ];
 
+  readonly adminCommands = [
+    { command: 'flush_user_cache', description: 'Flush Redis cache for cached users' }
+    // Add more general-purpose or maintenance commands here
+  ];
 
   constructor(
     private fb: UntypedFormBuilder,
