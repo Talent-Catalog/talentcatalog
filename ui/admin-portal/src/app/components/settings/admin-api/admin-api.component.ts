@@ -29,7 +29,7 @@ export class AdminApiComponent implements OnInit {
   error: any;
   form: UntypedFormGroup;
 
-  // 👇 List of available batch commands
+  // List of batch migration commands
   readonly migrationCommands = [
     { command: 'run_api_migration', description: 'Run full anonymization job (Aurora + Mongo)' },
     { command: 'run_api_migration/aurora', description: 'Run Aurora-only anonymization job' },
@@ -40,6 +40,7 @@ export class AdminApiComponent implements OnInit {
     { command: 'restart_api_migration/{executionId}', description: 'Restart a failed job by executionId' }
   ];
 
+  // List of general admin commands
   readonly adminCommands = [
     { command: 'reassign-candidates/list-{listId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified list to the specified partner' },
     { command: 'reassign-candidates/search-{searchId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified search to the specified partner' },
