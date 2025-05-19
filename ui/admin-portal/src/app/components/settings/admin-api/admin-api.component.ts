@@ -41,7 +41,9 @@ export class AdminApiComponent implements OnInit {
   ];
 
   readonly adminCommands = [
-    { command: 'flush_user_cache', description: 'Flush Redis cache for cached users' }
+    { command: 'flush_user_cache', description: 'Flush Redis cache for cached users' },
+    { command: 'move-candidate-drive/{number}', description: 'Move candidate to the current candidate data drive' },
+    { command: 'move-candidates-drive/{listId}', description: 'Move candidates from the given list to the current candidate data drive' }
     // Add more general-purpose or maintenance commands here
   ];
 
