@@ -23,6 +23,19 @@
 <button type="button" class="btn btn-primary" (click)="send()">
   Send
 </button>
+
+<!-- Admin Command List -->
+<div class="mt-4">
+  <hr>
+  <h5>Available Admin Commands:</h5>
+  <ul>
+    <li *ngFor="let cmd of commands">
+      <code>{{ cmd.command }}</code> – {{ cmd.description }}
+    </li>
+  </ul>
+</div>
+
+<!-- Display command response -->
 <div class="mt-4" *ngIf="ack">
   <hr>
   <pre >{{ack}}</pre>

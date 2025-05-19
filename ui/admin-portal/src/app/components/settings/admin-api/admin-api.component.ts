@@ -29,6 +29,18 @@ export class AdminApiComponent implements OnInit {
   error: any;
   form: UntypedFormGroup;
 
+  // 👇 List of available batch commands
+  readonly commands = [
+    { command: 'run_api_migration', description: 'Run full anonymization job (Aurora + Mongo)' },
+    { command: 'run_api_migration/aurora', description: 'Run Aurora-only anonymization job' },
+    { command: 'run_api_migration/mongo', description: 'Run Mongo-only anonymization job' },
+    { command: 'run_api_migration/list/{listId}', description: 'Run anonymization using a specific listId' },
+    { command: 'list_api_migrations', description: 'List recent job executions' },
+    { command: 'stop_api_migration/{executionId}', description: 'Stop a running job by executionId' },
+    { command: 'restart_api_migration/{executionId}', description: 'Restart a failed job by executionId' }
+  ];
+
+
   constructor(
     private fb: UntypedFormBuilder,
     private adminService: AdminService
