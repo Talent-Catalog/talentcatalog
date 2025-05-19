@@ -27,10 +27,13 @@
 <!-- Admin Command List -->
 <div class="mt-4">
   <hr>
-  <h5>Available Admin Commands:</h5>
-  <ul>
+  <h5>API Migration Commands:</h5>
+  <ul class="list-unstyled">
     <li *ngFor="let cmd of commands">
-      <code>{{ cmd.command }}</code> – {{ cmd.description }}
+      <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+        <code>{{ cmd.command }}</code>
+      </a>
+      – {{ cmd.description }}
     </li>
   </ul>
 </div>

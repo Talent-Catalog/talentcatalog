@@ -66,4 +66,9 @@ export class AdminApiComponent implements OnInit {
       )
     }
   }
+
+  fillCommand(command: string, event: MouseEvent): void {
+    event.preventDefault();  // prevent anchor navigation
+    this.form.patchValue({ apicall: command });
+  }
 }
