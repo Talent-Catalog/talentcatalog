@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+import static org.tctalent.server.util.NextStepHelper.auditStampNextStepIfChanged;
 import static org.tctalent.server.util.NextStepHelper.constructNextStepAuditStamp;
 import static org.tctalent.server.util.NextStepHelper.isNextStepDifferent;
 import static org.tctalent.server.util.NextStepHelper.isNextStepInfoChanged;
@@ -64,7 +64,7 @@ class NextStepHelperTest {
     @Test
     void doNothingIfRequestNextStepIsNull() {
        String currentNextStep = "anything";
-       String processed = auditStampNextStep(name, date, currentNextStep, null);
+       String processed = auditStampNextStepIfChanged(name, date, currentNextStep, null);
        assertEquals(processed, currentNextStep);
     }
 
@@ -72,7 +72,7 @@ class NextStepHelperTest {
     void doNothingIfNextStepUnchanged() {
         String currentNextStep = "anything";
         String requestedNextStep = currentNextStep;
-        String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
+        String processed = auditStampNextStepIfChanged(name, date, currentNextStep, requestedNextStep);
         assertEquals(processed, currentNextStep);
     }
 
@@ -80,7 +80,7 @@ class NextStepHelperTest {
     void doNothingIfBothNextStepsAreNull() {
         String currentNextStep = null;
         String requestedNextStep = null;
-        String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
+        String processed = auditStampNextStepIfChanged(name, date, currentNextStep, requestedNextStep);
         assertNull(processed);
     }
 
@@ -88,7 +88,7 @@ class NextStepHelperTest {
     void auditStampChangedNextStepWhenCurrentIsNotStamped() {
         String currentNextStep = "Complete intake";
         String requestedNextStep = "Prepare CV";
-        String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
+        String processed = auditStampNextStepIfChanged(name, date, currentNextStep, requestedNextStep);
         assertEquals(constructNextStepAuditStamp(name, date, requestedNextStep), processed);
     }
 
@@ -97,7 +97,7 @@ class NextStepHelperTest {
         String currentNextStep = "Complete intake";
         String requestedNextStepUnstamped = "Prepare CV";
         String requestedNextStep = "01Mar24| " + requestedNextStepUnstamped + " --john";
-        String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
+        String processed = auditStampNextStepIfChanged(name, date, currentNextStep, requestedNextStep);
         assertEquals(constructNextStepAuditStamp(name, date, requestedNextStepUnstamped), processed);
     }
 
@@ -105,7 +105,7 @@ class NextStepHelperTest {
     void auditStampChangedNextStepWhenCurrentIsAlreadyStamped() {
         String currentNextStep = "Complete intake --240301 john";
         String requestedNextStep = "Prepare CV";
-        String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
+        String processed = auditStampNextStepIfChanged(name, date, currentNextStep, requestedNextStep);
         assertEquals(constructNextStepAuditStamp(name, date, requestedNextStep), processed);
     }
 
@@ -115,20 +115,20 @@ class NextStepHelperTest {
     }
 
     @Test
-    void auditStampNextStep_noChange_returnsFalse() {
+    void auditStampNextStepIfChanged_noChange_returnsFalse() {
         String nextStep = "Complete intake";
         assertFalse(isNextStepDifferent(nextStep, nextStep));
     }
 
     @Test
-    void auditStampNextStep_sameValueDiffAuditStamp_returnsFalse() {
+    void auditStampNextStepIfChanged_sameValueDiffAuditStamp_returnsFalseIfChanged() {
         String currentNextStep = "01Mar24| Complete intake --john";
         String requestedNextStep = "03Mar24| Complete intake --sam";
         assertFalse(isNextStepDifferent(currentNextStep, requestedNextStep));
     }
 
     @Test
-    void auditStampNextStep_diffValueSameAuditStamp_returnsTrue() {
+    void auditStampNextStepIfChanged_diffValueSameAuditStamp_returnsTrueIfChanged() {
         String currentNextStep = "01Mar24| Complete intake --john";
         String requestedNextStep = "01Mar24| Do nothing --john";
         assertTrue(isNextStepDifferent(currentNextStep, requestedNextStep));
