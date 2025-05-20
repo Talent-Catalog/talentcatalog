@@ -51,7 +51,7 @@
         <label class="col-form-label">Password:</label>
         <div>
           <span class="form-control-plaintext">*********</span>
-          <span><a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">reset</a></span>
+          <span  *ngIf="editable"><a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">reset</a></span>
         </div>
       </div>
 
