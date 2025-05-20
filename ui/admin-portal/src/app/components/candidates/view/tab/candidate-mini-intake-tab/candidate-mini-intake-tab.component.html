@@ -37,7 +37,7 @@
         </div>
       </div>
     </div>
-    <div class="d-flex justify-content-between">
+    <div *ngIf="isEditable()" class="d-flex justify-content-between">
       <div *ngIf="miniIntakeComplete; else notComplete">
         <button class="btn btn-warning" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
           Update
@@ -61,7 +61,7 @@
   </div>
 
   <div>
-    <ngb-accordion #miniIntake="ngbAccordion" [destroyOnHide]="false">
+    <ngb-accordion #miniIntake="ngbAccordion" [destroyOnHide]="false"  [appReadOnlyInputs]="!isEditable()">
 
       <ngb-panel id="intake-confirm">
         <ng-template ngbPanelTitle let-opened="opened">
@@ -106,7 +106,7 @@
                 <p class="mb-0">Citizenships</p>
                 <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
               </div>
-              <div class="col-1">
+              <div *ngIf="isEditable()" class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addCitizenshipRecord($event)">
                   <i class="fas fa-plus"></i>
                 </button>
@@ -118,7 +118,8 @@
         <app-citizenships
           [candidate]="candidate"
           [candidateIntakeData]="candidateIntakeData"
-          [nationalities]="nationalities">
+          [nationalities]="nationalities"
+          [editable]="isEditable()">
         </app-citizenships>
         </ng-template>
       </ngb-panel>
@@ -224,7 +225,7 @@
                   </ng-container>
                 </div>
               </div>
-              <div class="col-1">
+              <div *ngIf="isEditable()" class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
                   <i class="fas fa-plus"></i>
                 </button>
@@ -235,7 +236,8 @@
         <ng-template ngbPanelContent>
           <app-exams
             [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="isEditable()">
           </app-exams>
         </ng-template>
       </ngb-panel>
@@ -297,7 +299,7 @@
 
     </ngb-accordion>
   </div>
-  <div class="float-end mt-3">
+  <div *ngIf="isEditable()" class="float-end mt-3">
     <div *ngIf="miniIntakeComplete; else notComplete">
       <button class="btn btn-warning" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
         Update

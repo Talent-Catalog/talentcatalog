@@ -27,7 +27,7 @@
 <div *ngIf="candidateSource" class="text-muted mb-3">If left blank, the candidate's default selected shareable documents will be used (if present).</div>
 
 <form [formGroup]="form" *ngIf="!saving && candidate">
-  <div  class="flex-wrap justify-content-around">
+  <div  class="flex-wrap justify-content-around" [appReadOnlyInputs]="!isEditable()">
     <div class="d-flex flex-grow-1 min-width-300 align-items-center justify-content-start mb-2">
           <span class="me-4">
             <i class="far fa-star fa-sm"></i>CV

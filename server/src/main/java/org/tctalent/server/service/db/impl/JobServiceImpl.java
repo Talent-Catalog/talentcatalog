@@ -288,7 +288,7 @@ public class JobServiceImpl implements JobService {
                     "No such Salesforce opportunity: " + sfJoblink);
             }
 
-            updateJobFromRequest(job, request);
+            updateTcJobFromRequest(job, request);
 
             job.setAuditFields(loggedInUser);
 
@@ -401,7 +401,7 @@ public class JobServiceImpl implements JobService {
         job.setAuditFields(loggedInUser);
 
         //Update from request
-        updateJobFromRequest(job, request);
+        updateTcJobFromRequest(job, request);
 
         //Save job to TC so that it has an id.
         job = salesforceJobOppRepository.save(job);
@@ -795,11 +795,11 @@ public class JobServiceImpl implements JobService {
         }
     }
 
-    private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
+    private void updateTcJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
 
         //Perform any notifications before actually applying the change so that we have the
         //old and current state
-        oppNotificationService.notifyJobOppChanges(job, request);
+        oppNotificationService.notifyJobOppNextStepInfoChangesIfAny(job, request);
 
         final String nextStep = request.getNextStep();
         if (nextStep != null) {
@@ -964,20 +964,30 @@ public class JobServiceImpl implements JobService {
         User loggedInUser = getLoggedInUser("update job");
         SalesforceJobOpp job = getJob(id);
 
+        updateSfJobFromRequest(job, request);
+        updateTcJobFromRequest(job, request);
+        job.setAuditFields(loggedInUser);
+
+        return salesforceJobOppRepository.save(job);
+    }
+
+    private void updateSfJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
         final JobOpportunityStage stage = request.getStage();
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
-        final String processedNextStep =
-            nextStepProcessingService.processNextStep(job, request.getNextStep());
-        salesforceService.updateEmployerOpportunityStage(job, stage, processedNextStep, nextStepDueDate);
+
+        String nextStep = request.getNextStep();
+        if (nextStep != null) {
+            nextStep = nextStepProcessingService.processNextStep(job, request.getNextStep());
+        }
+
+        if (stage != null | nextStep != null | nextStepDueDate != null) {
+            salesforceService.updateEmployerOpportunityStage(job, stage, nextStep, nextStepDueDate);
+        }
 
         final String jobName = request.getJobName();
         if (jobName != null) {
             salesforceService.updateEmployerOpportunityName(job.getSfId(), jobName);
         }
-
-        updateJobFromRequest(job, request);
-        job.setAuditFields(loggedInUser);
-        return salesforceJobOppRepository.save(job);
     }
 
     private void closeUnclosedCandidateOppsForJob(SalesforceJobOpp job, JobOpportunityStage jobCloseStage) {
@@ -1184,7 +1194,7 @@ public class JobServiceImpl implements JobService {
                     UpdateJobRequest updateRequest =
                         extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
                     if (updateRequest != null) {
-                        updateJobFromRequest(tcOpp, updateRequest);
+                        updateTcJobFromRequest(tcOpp, updateRequest);
                         salesforceJobOppRepository.save(tcOpp);
                         updates++;
                     }

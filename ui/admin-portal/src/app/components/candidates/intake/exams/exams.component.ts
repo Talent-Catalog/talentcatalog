@@ -27,6 +27,7 @@ export class ExamsComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
+  @Input() editable: boolean;
   error: boolean;
 
 

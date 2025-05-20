@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,15 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {NgModule} from "@angular/core";
-import {LowercaseDirective} from "./lowercase.directive";
-import {CommonModule} from "@angular/common";
-import {HighlightSearchDirective} from './highlight-search.directive';
-import {ReadOnlyInputsDirective} from "./read-only-inputs.directive";
-
-@NgModule({
-  declarations: [LowercaseDirective, HighlightSearchDirective, ReadOnlyInputsDirective],
-  exports: [LowercaseDirective, HighlightSearchDirective, ReadOnlyInputsDirective],
-  imports: [CommonModule],
-})
-export class DirectiveModule {}
+create index if not exists idx_candidate_whatsapp_lower
+    on candidate (LOWER(whatsapp))
+    where status <> 'deleted';

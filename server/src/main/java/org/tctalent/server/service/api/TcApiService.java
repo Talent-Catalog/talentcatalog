@@ -17,12 +17,23 @@
 package org.tctalent.server.service.api;
 
 /**
- * Access the Talent Catalog API Service
+ * Management interface for the Talent Catalog API Service
+ * <p>
+ * Provides methods to run, list, stop, and restart API migrations.
  *
  * @author sadatmalik
  */
 public interface TcApiService {
 
-  String runApiAnonymisation();
+  String runApiMigration();
 
+  String runAuroraMigration();
+
+  String runMongoMigration();
+
+  String listApiMigrations();
+
+  String stopApiMigration(long id);
+
+  String restartApiMigration(long id);
 }

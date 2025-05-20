@@ -79,7 +79,7 @@
         <a target="_blank" *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()" (click)="doShowSalesforceLink()" class="link-info">
           <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
         </a>
-        <a target="_blank" *ngIf="isSavedList()" (click)="doShowListFolder()" class="link-info">
+        <a target="_blank" *ngIf="isSavedList() && !isReadOnly()" (click)="doShowListFolder()" class="link-info">
           <i class="fab fa-google-drive" title="Create/show Google folder"></i>
         </a>
         <a target="_blank" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()" class="link-info">

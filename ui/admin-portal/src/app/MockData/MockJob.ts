@@ -160,7 +160,8 @@ export const MockJob: Job = {
   stage: JobOpportunityStage.prospect,
   starringUsers: [{ id: 4, username: 'alicejohnson', firstName: 'Alice', lastName: 'Johnson', email: 'alicejohnson@example.com', role: 'limited', jobCreator: false, approver: null, purpose: 'Some purpose', readOnly: false, sourceCountries: [], status: 'Active', createdDate: Date.now(), createdBy: null, updatedDate: Date.now(), lastLogin: Date.now(), usingMfa: true, mfaConfigured: false, partner: null, name: 'Alice Johnson',emailVerified: false,}],
   submissionDueDate: new Date(),
-   jobOppIntake: { employerCostCommitment: 'High', recruitmentProcess: 'Some process', minSalary: 50000, occupationCode: '123', salaryRange: '50k - 100k', locationDetails: 'Some location details', location: 'Some location', visaPathways: 'Some pathways', benefits: 'Some benefits', educationRequirements: 'Some education requirements', languageRequirements: 'Some language requirements', employmentExperience: 'Some employment experience', skillRequirements: 'Some skill requirements' }
+   jobOppIntake: { employerCostCommitment: 'High', recruitmentProcess: 'Some process', minSalary: 50000, occupationCode: '123', salaryRange: '50k - 100k', locationDetails: 'Some location details', location: 'Some location', visaPathways: 'Some pathways', benefits: 'Some benefits', educationRequirements: 'Some education requirements', languageRequirements: 'Some language requirements', employmentExperience: 'Some employment experience', skillRequirements: 'Some skill requirements' },
+  createdBy: new MockUser()
 };
 
 

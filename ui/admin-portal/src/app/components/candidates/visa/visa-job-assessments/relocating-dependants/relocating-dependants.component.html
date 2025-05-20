@@ -18,7 +18,7 @@
   {{error}}
 </div>
 <form [formGroup]="form" class="mb-3">
-  <div class="row align-items-end">
+  <div class="row align-items-end" [appReadOnlyInputs]="isReadOnly()">
     <div class="col">
       <label class="form-label" for="relocatingDependantIds">Which dependants hope to relocate with the candidate?</label>
       <div *ngIf="!isReadOnly()" class="float-end">
@@ -28,7 +28,6 @@
         </app-autosave-status>
       </div>
       <ng-select
-        [readonly]="isReadOnly()"
         id="relocatingDependantIds"
         [items]="dependants"
         [multiple]="true"
