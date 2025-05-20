@@ -35,6 +35,7 @@
     "bootstrap": "^5.0.2",
     "chart.js": "^3.9.1",
     "core-js": "^3.25.3",
+    "google-libphonenumber": "^3.2.40",
     "html2canvas": "^1.4.1",
     "jquery": "^3.6.1",
     "jspdf": "^2.5.1",

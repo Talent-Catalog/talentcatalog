@@ -1,0 +1,34 @@
+<form [formGroup]="phoneForm" (ngSubmit)="onSubmit()">
+  <div class="input-group">
+    <!-- Country selector -->
+    <div class="input-group-prepend">
+      <select class="form-select" formControlName="country">
+        <option *ngFor="let c of countries" [ngValue]="c">
+          {{ c.name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Phone number input -->
+    <input
+      type="tel"
+      class="form-control"
+      formControlName="phone"
+      placeholder="Enter phone number"
+      (blur)="validatePhone()"
+    />
+  </div>
+
+  <!-- Validation message -->
+  <div *ngIf="isValidNumber === false" class="text-danger mt-1">
+    Invalid phone number for selected country.
+  </div>
+
+  <div *ngIf="isValidNumber && formattedNumber" class="text-success mt-1">
+    Valid: {{ formattedNumber }}
+  </div>
+
+  <button class="btn btn-primary mt-3" type="submit" [disabled]="!isValidNumber">
+    Submit
+  </button>
+</form>
