@@ -49,7 +49,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.AdminApiTestUtil.CreateUpdateUserTestData;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -59,6 +61,7 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.PartnerService;
 
@@ -69,6 +72,9 @@ class UserServiceImplTest {
     private PageRequest pageRequest;
     private Page<User> userPage;
     private long userId;
+    private User expectedUser;
+    private UpdateUserRequest request;
+    private User testUser;
 
     @Mock private UserRepository userRepository;
     @Mock private User mockUser;
@@ -81,6 +87,7 @@ class UserServiceImplTest {
     @Mock private PartnerService partnerService;
     @Mock private PartnerImpl mockPartnerImpl;
     @Mock private PasswordHelper passwordHelper;
+    @Mock private AuthService authService;
 
     @Captor ArgumentCaptor<User> userCaptor;
 
@@ -94,6 +101,11 @@ class UserServiceImplTest {
         pageRequest = PageRequest.of(0, 10, sort);
         userPage = new PageImpl<>(List.of(mockUser, mockUser2));
         userId = 1L;
+        CreateUpdateUserTestData testData = AdminApiTestUtil.createUpdateUserRequestAndExpectedUser(
+            mockUser, mockUser2, mockPartnerImpl);
+        expectedUser = testData.expectedUser();
+        request = testData.request();
+        testUser = AdminApiTestUtil.getFullUser();
     }
 
     @Test
@@ -247,18 +259,9 @@ class UserServiceImplTest {
         assertEquals(userSourceCountries, result);
     }
 
-    /**
-     * TODO describe path? Test thoroughly the approver refactoring
-     */
     @Test
     @DisplayName("should create and return new admin user matching valid request")
-    void createUser_WithValidRequest_ShouldCreateAndReturnUser() {
-        CreateUpdateUserTestData testData =
-            AdminApiTestUtil.createUpdateUserRequestAndExpectedUser(mockUser, mockUser2,
-                mockPartnerImpl);
-        User expectedUser = testData.expectedUser();
-        UpdateUserRequest request = testData.request();
-
+    void createUser_withValidRequest_shouldCreateAndReturnUser() {
         given(userRepository.findByUsernameIgnoreCase(request.getUsername())).willReturn(null);
         given(userRepository.findByEmailIgnoreCase(request.getEmail())).willReturn(null);
         given(partnerService.getPartner(request.getPartnerId())).willReturn(mockPartnerImpl);
@@ -277,4 +280,56 @@ class UserServiceImplTest {
             .isEqualTo(expectedUser);
     }
 
+    @Test
+    @DisplayName("should throw UsernameTakenException when username taken")
+    void populateUserFields_shouldThrowUsernameTakenException_whenUsernameTaken() {
+        given(userRepository.findByUsernameIgnoreCase(request.getUsername()))
+            .willReturn(mockUser);
+
+        assertThrows(UsernameTakenException.class, () -> userService.createUser(request, mockUser));
+    }
+
+    @Test
+    @DisplayName("should throw UsernameTakenException when email taken")
+    void populateUserFields_shouldThrowUsernameTakenException_whenEmailTaken() {
+        given(userRepository.findByUsernameIgnoreCase(request.getUsername())).willReturn(null);
+        given(userRepository.findByEmailIgnoreCase(request.getEmail())).willReturn(mockUser);
+
+        assertThrows(UsernameTakenException.class, () -> userService.createUser(request, mockUser));
+    }
+
+    @Test
+    @DisplayName("should reassign partner when requested and logged in user is System Admin")
+    void reassignPartnerIfNeeded_shouldReassignPartner_whenUserIsSystemAdmin() {
+        // Following update() path to reach reassignPartnerIfNeeded()
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        // Return test user who has a different partner than mockPartnerImpl:
+        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(mockUser.getRole()).willReturn(Role.systemadmin);
+        given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
+        // Mock update request has partner ID that will return mockPartnerImpl:
+        given(partnerService.getPartner(request.getPartnerId())).willReturn(mockPartnerImpl);
+        request.setApproverId(null); // We're not testing the approver path
+
+        userService.updateUser(userId, request); // When
+
+        verify(userRepository).save(userCaptor.capture());
+        assertEquals(userCaptor.getValue().getPartner(), mockPartnerImpl); // Request partner assigned
+    }
+
+    @Test
+    @DisplayName("should throw InvalidRequestException when logged in user is regular admin and "
+        + "tries to reassign partner")
+    void reassignPartnerIfNeeded_shouldThrowInvalidRequestException_whenUserIsAdmin() {
+        // Following update() path to reach reassignPartnerIfNeeded()
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        // Return test user who has a different partner than mockPartnerImpl:
+        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(mockUser.getRole()).willReturn(Role.admin);
+        given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
+
+        assertThrows(InvalidRequestException.class, () -> userService.updateUser(userId, request));
+    }
 }

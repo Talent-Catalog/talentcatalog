@@ -741,6 +741,7 @@ public class AdminApiTestUtil {
 
     public static PartnerImpl getPartner() {
         PartnerImpl partner = new PartnerImpl();
+        partner.setId(123L);
         partner.setName("TC Partner");
         partner.setAbbreviation("TCP");
         partner.setJobCreator(true);

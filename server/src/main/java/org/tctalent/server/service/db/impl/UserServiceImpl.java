@@ -218,35 +218,8 @@ public class UserServiceImpl implements UserService {
         }
         user.setEmail(requestedEmail);
 
-        //Possibly update the user's source partner
-        Partner currentPartner = user.getPartner();
-        Long currentPartnerId = currentPartner == null ? null : currentPartner.getId();
-        Partner newSourcePartner = null;
-        Long partnerId = request.getPartnerId();
-        if (partnerId != null) {
-            //Partner specified - is it changing the existing partner?
-            if (!partnerId.equals(currentPartnerId)) {
-                if (creatingUser != null && currentPartnerId != null
-                    && creatingUser.getRole() != Role.systemadmin) {
-                    //Only system admins can change partners
-                    throw new InvalidRequestException("You don't have permission to change a partner.");
-                } else {
-                    //Changing partner -
-                    //or setting partner for the first time (currentPartnerId = null)
-                    newSourcePartner = partnerService.getPartner(partnerId);
-                }
-            }
-        } else {
-            //Throw an exception if no partner is specified
-            throw new InvalidRequestException("A partner must be specified.");
-        }
-        //If we have a new source partner, update it.
-        if (newSourcePartner != null) {
-            user.setPartner((PartnerImpl) newSourcePartner);
-        }
-
+        reassignPartnerIfNeeded(user, request, creatingUser);
         updateApproverIfNeeded(user, request, creatingUser);
-
         user.setReadOnly(request.getReadOnly());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -284,6 +257,34 @@ public class UserServiceImpl implements UserService {
             throw new InvalidRequestException("You don't have permission to create a user.");
         }
 
+    }
+
+    private void reassignPartnerIfNeeded(User user, UpdateUserRequest request, User creatingUser) {
+        Partner currentPartner = user.getPartner();
+        Long currentPartnerId = currentPartner == null ? null : currentPartner.getId();
+        Partner newSourcePartner = null;
+        Long requestPartnerId = request.getPartnerId();
+        if (requestPartnerId != null) {
+            //Partner specified - is it changing the existing partner?
+            if (!requestPartnerId.equals(currentPartnerId)) {
+                if (creatingUser != null && currentPartnerId != null
+                    && creatingUser.getRole() != Role.systemadmin) {
+                    //Only system admins can change partners
+                    throw new InvalidRequestException("You don't have permission to change a partner.");
+                } else {
+                    //Changing partner -
+                    //or setting partner for the first time (currentPartnerId = null)
+                    newSourcePartner = partnerService.getPartner(requestPartnerId);
+                }
+            }
+        } else {
+            //Throw an exception if no partner is specified
+            throw new InvalidRequestException("A partner must be specified.");
+        }
+        //If we have a new source partner, update it.
+        if (newSourcePartner != null) {
+            user.setPartner((PartnerImpl) newSourcePartner);
+        }
     }
 
     private void updateApproverIfNeeded(User user, UpdateUserRequest request, User creatingUser) {
