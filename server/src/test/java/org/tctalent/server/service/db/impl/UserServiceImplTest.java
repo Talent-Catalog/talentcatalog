@@ -100,7 +100,7 @@ class UserServiceImplTest {
         sort = Sort.unsorted();
         pageRequest = PageRequest.of(0, 10, sort);
         userPage = new PageImpl<>(List.of(mockUser, mockUser2));
-        userId = 1L;
+        userId = 11L;
         CreateUpdateUserTestData testData = AdminApiTestUtil.createUpdateUserRequestAndExpectedUser(
             mockUser, mockUser2, mockPartnerImpl);
         expectedUser = testData.expectedUser();
@@ -212,7 +212,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return user when found")
     void findById_shouldReturnUser() {
-        given(userRepository.findById(1L)).willReturn(Optional.of(mockUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser));
 
         User result = userService.getUser(userId);
 
@@ -312,10 +312,10 @@ class UserServiceImplTest {
         given(partnerService.getPartner(request.getPartnerId())).willReturn(mockPartnerImpl);
         request.setApproverId(null); // We're not testing the approver path
 
-        userService.updateUser(userId, request); // When
+        User result = userService.updateUser(userId, request); // When
 
-        verify(userRepository).save(userCaptor.capture());
-        assertEquals(userCaptor.getValue().getPartner(), mockPartnerImpl); // Request partner assigned
+        verify(userRepository).save(testUser);
+        assertEquals(result.getPartner(), mockPartnerImpl); // Request partner assigned
     }
 
     @Test
@@ -332,4 +332,90 @@ class UserServiceImplTest {
 
         assertThrows(InvalidRequestException.class, () -> userService.updateUser(userId, request));
     }
+
+    @Test
+    @DisplayName("should throw InvalidRequestException when no partnerId in request")
+    void reassignPartnerIfNeeded_shouldThrowInvalidRequestException_whenNoPartnerId() {
+        request.setPartnerId(null);
+        // The below path would reassign successfully if not for the null partnerId
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(mockUser.getRole()).willReturn(Role.systemadmin);
+        given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
+
+        assertThrows(InvalidRequestException.class, () -> userService.updateUser(userId, request));
+    }
+
+    @Test
+    @DisplayName("should set new approver if different and logged in user is System Admin")
+    void updateApproverIfNeeded_shouldSetNewApproverIfDifferentAndLoggedInUserIsSystemAdmin() {
+        // Following update() path again
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        given(mockUser.getRole()).willReturn(Role.systemadmin);
+        given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
+        given(userRepository.findById(request.getApproverId())).willReturn(Optional.of(mockUser));
+
+        User result = userService.updateUser(userId, request);
+
+        verify(userRepository).save(testUser);
+        assertEquals(result.getApprover(), mockUser);
+    }
+
+    @Test
+    @DisplayName("should throw InvalidRequestException when approver update attempted and logged in "
+        + "user is regular admin")
+    void updateApproverIfNeeded_shouldThrowInvalidRequestException_whenUpdatingUserIsAdmin() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        given(mockUser.getRole()).willReturn(Role.admin);
+        given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
+
+        assertThrows(InvalidRequestException.class, () -> userService.updateUser(userId, request));
+    }
+
+    @Test
+    @DisplayName("should throw InvalidRequestException when Admin tries to create System Admin")
+    void addRoleIfValid_shouldThrowInvalidRequestException_whenAdminTriesToCreateSystemAdmin() {
+        request.setRole(Role.systemadmin);
+        given(mockUser.getRole()).willReturn(Role.admin);
+
+        assertThrows(InvalidRequestException.class, () -> userService.createUser(request, mockUser));
+    }
+
+    @Test
+    @DisplayName("should allow System Admin to create System Admin")
+    void addRoleIfValid_shouldAllowSystemAdminToCreateSystemAdmin() {
+        request.setRole(Role.systemadmin);
+        given(mockUser.getRole()).willReturn(Role.systemadmin);
+        given(userRepository.findById(request.getApproverId())).willReturn(Optional.of(mockUser));
+
+        userService.createUser(request, mockUser);
+
+        verify(userRepository).save(userCaptor.capture());
+        assertEquals(userCaptor.getValue().getRole(), Role.systemadmin);
+    }
+
+    @Test
+    @DisplayName("should allow creating user with no source country restrictions (empty) to add "
+        + "any source country to new user")
+    void addSourceCountriesIfValid_shouldAllowUnrestrictedAdminToCreateUserWithAnySourceCountry() {
+
+    }
+
+    @Test
+    @DisplayName("should not allow restricted creating user to assign any source country that they "
+        + "can't themselves access")
+    void addSourceCountriesIfValid_shouldNotAllowRestrictedAdminToCreateUserWithAnySourceCountry() {
+        // throws InvalidRequestException
+    }
+
+    @Test
+    @DisplayName("should set new user source countries the same as restricted partner admin if "
+        + "none specified in request")
+    void addSourceCountriesIfValid_shouldSetNewUserSourceCountriesSameAsCreatingUser_whenEmptyRequest() {
+
+    }
+
 }

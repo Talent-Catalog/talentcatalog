@@ -880,7 +880,7 @@ public class AdminApiTestUtil {
      * Constructs a {@link CreateUpdateUserTestData} record containing an {@link UpdateUserRequest}
      * and the expected {@link User} that should result from applying it.
      *
-     * <p>Passing the given params enables effective mocking in the calling test method.
+     * <p>Params enable passing mocks from the caller.
      */
     public static CreateUpdateUserTestData createUpdateUserRequestAndExpectedUser(
         User creatingUser,
