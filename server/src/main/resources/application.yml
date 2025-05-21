@@ -3,7 +3,7 @@ tc:
     urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
 
   destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
-  partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
+  partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
 
 logging:
   level:
