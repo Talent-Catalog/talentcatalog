@@ -37,7 +37,7 @@
        <span *ngIf="loading">
         <i class="fas fa-spinner fa-spin"></i>
       </span>
-      <button *ngIf="canAccessSalesforce()" class="btn btn-primary mt-3"
+      <button *ngIf="canAccessSalesforce() && !isReadOnly()" class="btn btn-primary mt-3"
               (click)="createUpdateSalesforce()">
         <i class="fab fa-salesforce"></i> Create/update Salesforce
       </button>

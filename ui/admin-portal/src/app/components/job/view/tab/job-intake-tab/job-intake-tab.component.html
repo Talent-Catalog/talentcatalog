@@ -26,7 +26,8 @@
     <h5 class="mb-4">Job Opportunity Intake (JOI)</h5>
   </div>
 
-  <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false" activeIds="employer-details, position-details, immigration-considerations">
+  <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false" [appReadOnlyInputs]="!isEditable()"
+                 activeIds="employer-details, position-details, immigration-considerations" >
 
     <!-- EMPLOYER DETAILS -->
     <ngb-panel id="employer-details" title="Employer Details: {{job.employerEntity?.name}}">
@@ -70,13 +71,11 @@
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.RECRUITMENT_PROCESS"
           formFieldName="recruitmentProcess"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
+          richText="true">
         </app-joi-component>
         <app-cost-commit-employer
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly"
           (intakeChanged)="onIntakeChanged($event)"
         >
         </app-cost-commit-employer>
@@ -103,63 +102,55 @@
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.SALARY_RANGE"
-          formFieldName="salaryRange"
-          [editable]="!loggedInUser.readOnly">
+          formFieldName="salaryRange">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.LOCATION"
-          formFieldName="location"
-          [editable]="!loggedInUser.readOnly">
+          formFieldName="location">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.LOCATION_DETAILS"
           formFieldName="locationDetails"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
+          richText="true">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.BENEFITS"
           formFieldName="benefits"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
+          richText="true">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.LANGUAGE_REQUIREMENTS"
           formFieldName="languageRequirements"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
+          richText="true">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.EMPLOYMENT_EXPERIENCE"
           formFieldName="employmentExperience"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
+          richText="true">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.EDUCATION_REQUIREMENTS"
           formFieldName="educationRequirements"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
+          richText="true">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.SKILL_REQUIREMENTS"
           formFieldName="skillRequirements"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
+          richText="true">
         </app-joi-component>
       </ng-template>
     </ngb-panel>
@@ -172,23 +163,20 @@
           componentKey="JOI.VISA_PATHWAYS"
           formFieldName="visaPathways"
           required="true"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
+          richText="true">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.OCCUPATION_CODE"
-          formFieldName="occupationCode"
-          [editable]="!loggedInUser.readOnly">
+          formFieldName="occupationCode">
         </app-joi-component>
         <app-joi-component
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
           componentKey="JOI.MIN_SALARY"
           formFieldName="minSalary"
-          inputType="number"
-          [editable]="!loggedInUser.readOnly">
+          inputType="number">
         </app-joi-component>
       </ng-template>
     </ngb-panel>

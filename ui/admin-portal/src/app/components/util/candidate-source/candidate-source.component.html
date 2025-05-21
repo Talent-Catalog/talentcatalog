@@ -114,7 +114,7 @@
              [href]="salesforceService.joblink(candidateSource)">
             <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
           </a>
-          <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">
+          <button class="btn" *ngIf="isSavedList() && !isReadOnly" (click)="doShowListFolder()">
             <i class="fab fa-google-drive" title="Create/show Google folder"></i>
           </button>
           <button class="btn" *ngIf="showRunStats" (click)="doRunStats()"><i class="fas fa-chart-bar" title="Run stats"></i></button>

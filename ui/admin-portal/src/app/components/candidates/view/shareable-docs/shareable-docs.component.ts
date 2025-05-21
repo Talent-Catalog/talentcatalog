@@ -138,8 +138,17 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     return this.candidate.candidateAttachments?.filter(a => a.cv === isCV);
   }
 
-  isReadOnly() {
-    return this.authorizationService.isReadOnly();
+  /**
+   * If a loggedInUser can edit the list, they should be able to edit the docs.
+   * If a loggedInUser can edit the candidate, they should be able to edit the docs.
+   * Otherwise, if a user is read only, or fails those checks then the ng-select will be disabled using the readOnlyInputs directive
+   */
+  isEditable(): boolean {
+    if (this.isList) {
+      return this.authorizationService.canEditCandidateSource(this.candidateSource);
+    } else {
+      return this.authorizationService.isEditableCandidate(this.candidate);
+    }
   }
 
 }
