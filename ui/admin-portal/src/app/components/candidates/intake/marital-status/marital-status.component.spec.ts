@@ -99,4 +99,42 @@ describe('MaritalStatusComponent', () => {
     expect(component.form.valid).toBeTruthy();
   });
 
+  it('should patch form values correctly', () => {
+    const patch = {
+      maritalStatus: 'Married',
+      partnerRegistered: 'Yes',
+      partnerCandId: 1,
+      partnerEduLevelId: 2,
+      partnerOccupationId: 1,
+      partnerEnglish: 'Yes',
+      partnerEnglishLevelId: 1,
+      partnerIelts: 'YesGeneral',
+      partnerIeltsScore: 7.5,
+      partnerIeltsYr: 2023,
+      partnerCitizenship: 1
+    };
+    component.form.patchValue(patch);
+    expect(component.form.value).toEqual(jasmine.objectContaining(patch));
+  });
+
+  it('should return true for hasPartner when maritalStatus is Married', () => {
+    component.form.get('maritalStatus')?.setValue('Married');
+    expect(component.hasPartner).toBeTrue();
+  });
+
+  it('should recognize partner as registered when value is Yes', () => {
+    component.form.get('partnerRegistered')?.setValue('Yes');
+    expect(component.partnerRegistered).toBe('Yes');
+  });
+
+  it('should show eduLevelNotes section when an education level is selected', () => {
+    component.form.get('partnerEduLevelId')?.setValue(2);
+    expect(component.eduLevelSelected).toBeTrue();
+  });
+
+  it('should accept valid citizenship ID', () => {
+    component.form.get('partnerCitizenship')?.setValue(2);
+    expect(component.form.get('partnerCitizenship')?.value).toBe(2);
+  });
+
 });

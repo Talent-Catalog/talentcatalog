@@ -2,7 +2,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ImportDuolingoCouponsComponent} from './import-duolingo-coupons.component';
 import {DuolingoCouponService} from '../../../services/duolingo-coupon.service';
 import {of, throwError} from 'rxjs';
-import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('ImportDuolingoCouponsComponent', () => {

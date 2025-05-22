@@ -82,4 +82,60 @@ describe('FindCandidateSourceComponent', () => {
 
     component.onChangedSelection(mockCandidateSource);
   });
+
+  it('should emit multiple selections correctly', (done) => {
+    component.single = false;
+
+    component.selectionsMade.subscribe({
+      next: selections => {
+        expect(selections).toEqual([mockCandidateSource]);
+        done();
+      }
+    });
+
+    component.onChangedSelection([mockCandidateSource]);
+  });
+
+  it('should set multiple current selections correctly on selectedIds change', () => {
+    component.single = false;
+    component.selectedIds = [1];
+    component.ngOnChanges({ selectedIds: { currentValue: [1], previousValue: null, firstChange: true, isFirstChange: () => true } });
+
+    expect(component.currentSelections.length).toBe(1);
+    expect(component.currentSelections[0]).toEqual(mockCandidateSource);
+  });
+
+  it('should clear selection if selectedIds is null', () => {
+    component.currentSelections = [mockCandidateSource];
+    component.currentSelection = mockCandidateSource;
+
+    component.selectedIds = null;
+    component.ngOnChanges({ selectedIds: { currentValue: null, previousValue: [1], firstChange: false, isFirstChange: () => false } });
+
+    expect(component.currentSelections.length).toBe(0);
+    expect(component.currentSelection).toBeNull();
+  });
+
+  it('should return empty array from doSearch if sourceType is null', (done) => {
+    component.sourceType = null;
+    component['doSearch']('test').subscribe(result => {
+      expect(result).toEqual([]);
+      done();
+    });
+  });
+
+  it('should handle empty changes in ngOnChanges gracefully', () => {
+    expect(() => component.ngOnChanges({})).not.toThrow();
+  });
+
+  it('should set first item as currentSelection in single mode', () => {
+    component['setCurrentSelection']([mockCandidateSource]);
+    expect(component.currentSelection).toEqual(mockCandidateSource);
+  });
+
+  it('should set currentSelection to null if empty list is passed', () => {
+    component['setCurrentSelection']([]);
+    expect(component.currentSelection).toBeNull();
+  });
+
 });
