@@ -17,6 +17,8 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -75,6 +78,7 @@ class UserServiceImplTest {
     private User expectedUser;
     private UpdateUserRequest request;
     private User testUser;
+    private List<Country> sourceCountryList;
 
     @Mock private UserRepository userRepository;
     @Mock private User mockUser;
@@ -101,8 +105,10 @@ class UserServiceImplTest {
         pageRequest = PageRequest.of(0, 10, sort);
         userPage = new PageImpl<>(List.of(mockUser, mockUser2));
         userId = 11L;
-        CreateUpdateUserTestData testData = AdminApiTestUtil.createUpdateUserRequestAndExpectedUser(
-            mockUser, mockUser2, mockPartnerImpl);
+        sourceCountryList = List.of(mockCountry, mockCountry2);
+        CreateUpdateUserTestData testData =
+            AdminApiTestUtil.createUpdateUserRequestAndExpectedUser(mockUser, mockUser2,
+                mockPartnerImpl, sourceCountryList);
         expectedUser = testData.expectedUser();
         request = testData.request();
         testUser = AdminApiTestUtil.getFullUser();
@@ -401,20 +407,83 @@ class UserServiceImplTest {
     @DisplayName("should allow creating user with no source country restrictions (empty) to add "
         + "any source country to new user")
     void addSourceCountriesIfValid_shouldAllowUnrestrictedAdminToCreateUserWithAnySourceCountry() {
+        stubCreateUserToReachAddSourceCountriesIfValid();
+        // No restrictions on creating user:
+        given(mockUser.getSourceCountries()).willReturn(Collections.emptySet());
 
+        userService.createUser(request, mockUser); // When
+
+        verify(userRepository).save(userCaptor.capture());
+        assertThat(userCaptor.getValue().getSourceCountries(),
+            containsInAnyOrder(sourceCountryList.toArray()));
     }
 
     @Test
     @DisplayName("should not allow restricted creating user to assign any source country that they "
         + "can't themselves access")
     void addSourceCountriesIfValid_shouldNotAllowRestrictedAdminToCreateUserWithAnySourceCountry() {
-        // throws InvalidRequestException
+        stubCreateUserToReachAddSourceCountriesIfValid();
+        // Creating user restricted to one source country:
+        given(mockUser.getSourceCountries()).willReturn(Set.of(mockCountry));
+
+        assertThrows(InvalidRequestException.class, () -> userService.createUser(request, mockUser));
     }
 
     @Test
     @DisplayName("should set new user source countries the same as restricted partner admin if "
         + "none specified in request")
     void addSourceCountriesIfValid_shouldSetNewUserSourceCountriesSameAsCreatingUser_whenEmptyRequest() {
+        stubCreateUserToReachAddSourceCountriesIfValid();
+        request.setSourceCountries(null);
+        given(mockUser.getSourceCountries()).willReturn(new HashSet<>(sourceCountryList));
+
+        userService.createUser(request, mockUser);
+
+        verify(userRepository).save(userCaptor.capture());
+        assertThat(userCaptor.getValue().getSourceCountries(),
+            containsInAnyOrder(sourceCountryList.toArray()));
+    }
+
+    private void stubCreateUserToReachAddSourceCountriesIfValid() {
+        request.setApproverId(null); // Bypass this path
+        request.setRole(Role.partneradmin); // Ditto
+        given(mockUser.getRole()).willReturn(Role.partneradmin);
+    }
+
+    @Test
+    @DisplayName("should throw InvalidRequestException when read-only user tries to create a user")
+    void createUser_shouldThrowInvalidRequestException_whenReadonlyUserTriesToCreateUser() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(mockUser.getReadOnly()).willReturn(true);
+
+        assertThrows(InvalidRequestException.class, () -> userService.createUser(request));
+    }
+
+    @Test
+    @DisplayName("should throw InvalidRequestException when creating user has no admin privileges")
+    void createUser_shouldThrowInvalidRequestException_whenCreatingUserHasNoPrivileges() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(false);
+
+        assertThrows(InvalidRequestException.class, () -> userService.createUser(request));
+    }
+
+    @Test
+    @DisplayName("should reset email verification fields when new email supplied")
+    void checkAndResetEmailVerification_shouldResetEmailVerification_whenNewEmailIsSupplied() {
+        // Update user path for these
+    }
+
+    @Test
+    @DisplayName("should do nothing fields when request email same as old")
+    void checkAndResetEmailVerification_shouldDoNothing_whenRequestEmailIsSameAsOld() {
+
+    }
+
+    @Test
+    @DisplayName("should do nothing when no email in request")
+    void checkAndResetEmailVerification_shouldDoNothing_whenNoEmailInRequest() {
 
     }
 

@@ -885,7 +885,8 @@ public class AdminApiTestUtil {
     public static CreateUpdateUserTestData createUpdateUserRequestAndExpectedUser(
         User creatingUser,
         User approver,
-        PartnerImpl partner
+        PartnerImpl partner,
+        List<Country> sourceCountries
     ) {
         final String email = "alice@email.com";
         final String firstName = "Alice";
@@ -915,6 +916,7 @@ public class AdminApiTestUtil {
         request.setStatus(status);
         request.setUsername(username);
         request.setUsingMfa(usingMfa);
+        request.setSourceCountries(sourceCountries);
 
         User expectedUser = new User();
         expectedUser.setEmail(email);
@@ -932,6 +934,7 @@ public class AdminApiTestUtil {
         expectedUser.setPartner(partner);
         expectedUser.setApprover(approver);
         expectedUser.setPasswordEnc(password); // Users of this data will need to mock encryption.
+        expectedUser.setSourceCountries(new HashSet<>(sourceCountries));
 
         return new CreateUpdateUserTestData(request, expectedUser);
     }
