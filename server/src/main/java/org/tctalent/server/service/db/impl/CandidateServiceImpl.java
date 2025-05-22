@@ -1448,24 +1448,36 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private void checkForChangedPartner(Candidate candidate, Country country) {
+        boolean partnerChanged = false;
+        User user = candidate.getUser();
+        PartnerImpl currentUserPartner = user.getPartner();
+
+        if (candidate.getStatus() == CandidateStatus.draft // New registrant
+            && !currentUserPartner.canManageCandidatesInCountry(country)) {
+            // Registering candidate used a link containing a param causing assignment to a partner
+            // that isn't operational in their location, so we reassign them to the default source
+            // partner. They may be reassigned again in subsequent steps - this is a fallback.
+            user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
+            currentUserPartner = user.getPartner();
+            partnerChanged = true;
+        }
+
         //Do we have an auto assignable partner in this country
         Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
 
-        //Is there a country assigned partner?
         if (autoAssignedCountryPartner != null) {
-
-            //Get current user partner.
-            User user = candidate.getUser();
-            final PartnerImpl currentUserPartner = user.getPartner();
-
             //The country assigned partner only overrides the default source partner.
             if (currentUserPartner.isDefaultSourcePartner()) {
                 if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
                     //Partner of candidate needs to change
                     user.setPartner((PartnerImpl) autoAssignedCountryPartner);
-                    userRepository.save(user);
+                    partnerChanged = true;
                 }
             }
+        }
+
+        if (partnerChanged) {
+            userRepository.save(user);
         }
     }
 
