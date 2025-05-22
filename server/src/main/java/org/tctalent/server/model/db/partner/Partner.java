@@ -128,7 +128,7 @@ public interface Partner extends SourcePartner, RecruiterPartner, EmployerPartne
 
     /**
      * Must be the default source partner (able to manage candidates in any country) or a regular
-     * source partner with the given country specified. Not necessarily an auto-assign partner.
+     * source partner operating in the given country. Not necessarily an auto-assign partner.
      */
     boolean canManageCandidatesInCountry(Country country);
 

@@ -47,6 +47,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.User;
@@ -239,7 +240,7 @@ class CandidateServiceImplTest {
     @DisplayName("should reassign new registrant when partner not operational in given country")
     void checkForChangedPartnerShouldReassignWhenCurrentPartnerNotOperationalInGivenCountry() {
 
-      stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.draft); // new registrant
 
       // Return candidate location country in which current partner isn't operational.
       Country invalidCountry = new Country();
@@ -258,7 +259,7 @@ class CandidateServiceImplTest {
     @DisplayName("should not reassign new registrant when partner operational in given country")
     void checkForChangedPartnerShouldNotReassignWhenCurrentPartnerOperationalInGivenCountry() {
 
-      stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.draft); // new registrant
 
       // Return candidate location country in which current partner is operational.
       given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
@@ -274,14 +275,13 @@ class CandidateServiceImplTest {
         + "partner is not operational in given country")
     void checkForChangedPartnerShouldNotReassignExistingCandidate() {
 
-      stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.pending); // existing profile
 
       // Return candidate location country in which current partner isn't operational.
       Country invalidCountry = new Country();
       invalidCountry.setId(99L);
       given(countryRepository.findById(1L)).willReturn(Optional.of(invalidCountry));
 
-      updateCandidatePersonalRequest.setIsRegistration(false);
       candidateService.updatePersonal(updateCandidatePersonalRequest);
 
       verify(userRepository, never()).save(user);
@@ -293,7 +293,7 @@ class CandidateServiceImplTest {
         + "new country location and they are currently assigned to the default source partner")
     void checkForChangedPartnerShouldReassignFromAutoAssignPartnerToDefaultForExistingCandidate() {
 
-      stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.pending); // existing profile
 
       given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
@@ -304,7 +304,6 @@ class CandidateServiceImplTest {
       given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
           .willReturn(autoAssignPartner);
 
-      updateCandidatePersonalRequest.setIsRegistration(false);
       candidateService.updatePersonal(updateCandidatePersonalRequest);
 
       verify(userRepository).save(user);
@@ -316,7 +315,7 @@ class CandidateServiceImplTest {
         + "country location and they are currently assigned to the default source partner")
     void checkForChangedPartnerShouldReassignFromAutoAssignPartnerToDefaultForNewRegistrant() {
 
-      stubUpdatePersonalToReachCheckForChangedPartner();
+      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.draft); // new registrant
 
       given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
@@ -329,7 +328,6 @@ class CandidateServiceImplTest {
       given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
           .willReturn(autoAssignPartner);
 
-      updateCandidatePersonalRequest.setIsRegistration(true);
       candidateService.updatePersonal(updateCandidatePersonalRequest);
 
       verify(userRepository).save(user);
@@ -339,9 +337,9 @@ class CandidateServiceImplTest {
     /**
      * Factors out stubbing needed to reach + test checkForChangedPartner() within updatePersonal().
      * In order of execution at time of writing.
+     * @param candidateStatus {@code CandidateStatus} can be passed to suit test scenario
      */
-    private void stubUpdatePersonalToReachCheckForChangedPartner() {
-      updateCandidatePersonalRequest.setIsRegistration(true);
+    private void stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus candidateStatus) {
       updateCandidatePersonalRequest.setCountryId(1L);
       updateCandidatePersonalRequest.setNationalityId(2L);
       updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
@@ -359,6 +357,7 @@ class CandidateServiceImplTest {
 
       // Gives us our modified testCandidate for the setter block's checkForChangedPartner() call:
       given(userRepository.save(mockUser)).willReturn(candidate.getUser());
+      candidate.setStatus(candidateStatus);
       given(candidateRepository.findByUserId(null)).willReturn(candidate);
 
       // Handles updateCitizenships() call

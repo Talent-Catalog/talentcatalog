@@ -947,7 +947,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setState(request.getState());
 
         candidate.setCountry(country);
-        checkForChangedPartner(candidate, country, false);
+        checkForChangedPartner(candidate, country);
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1376,7 +1376,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setDob(request.getDob());
 
             candidate.setCountry(country);
-            checkForChangedPartner(candidate, country, request.getIsRegistration());
+            checkForChangedPartner(candidate, country);
 
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
@@ -1447,16 +1447,13 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    private void checkForChangedPartner(
-        Candidate candidate,
-        Country country,
-        boolean isRegistration
-    ) {
+    private void checkForChangedPartner(Candidate candidate, Country country) {
         boolean partnerChanged = false;
         User user = candidate.getUser();
         PartnerImpl currentUserPartner = user.getPartner();
 
-        if (isRegistration && !currentUserPartner.canManageCandidatesInCountry(country)) {
+        if (candidate.getStatus() == CandidateStatus.draft // New registrant
+            && !currentUserPartner.canManageCandidatesInCountry(country)) {
             // Registering candidate used a link containing a param causing assignment to a partner
             // that isn't operational in their location, so we reassign them to the default source
             // partner. They may be reassigned again in subsequent steps - this is a fallback.
