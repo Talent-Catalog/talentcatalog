@@ -2176,7 +2176,7 @@ public class CandidateServiceImpl implements CandidateService {
     public String[] getExportTitles() {
         return new String[]{
             "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
-            "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Context Note", "Link"
+            "Dob", "Email", "WhatsApp Number" ,"Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Context Note", "Link"
         };
     }
 
@@ -2206,6 +2206,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate.getNationality() != null ? candidate.getNationality().getName() : null,
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
                     NOT_AUTHORIZED, //Email
+                    NOT_AUTHORIZED, // WhatsApp Number
                     candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
@@ -2223,6 +2224,7 @@ public class CandidateServiceImpl implements CandidateService {
                     NOT_AUTHORIZED, //Nationality
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
                     NOT_AUTHORIZED, //Email
+                    NOT_AUTHORIZED, // WhatsApp Number
                     candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
@@ -2240,6 +2242,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate.getNationality() != null ? candidate.getNationality().getName() : null,
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
                     candidate.getUser().getEmail(),
+                    candidate.getWhatsapp() != null ? candidate.getWhatsapp() : null,
                     candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
