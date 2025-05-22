@@ -31,7 +31,7 @@
   </div>
 
 <!-- ACCORDION VERSION OF FORM  -->
-  <ngb-accordion #visaAus="ngbAccordion" [destroyOnHide]="false">
+  <ngb-accordion #visaAus="ngbAccordion" [destroyOnHide]="false" [appReadOnlyInputs]="!isEditable()">
 
     <ngb-panel id="visa-aus-confirm" title="Confirmation Details">
       <ng-template ngbPanelContent>
@@ -213,7 +213,7 @@
   <hr *ngIf="visaCheckRecord.candidateVisaJobChecks.length > 0"/>
 
   <!--  Generate all job entries - but only one is enabled at a time-->
-  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
+  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;" [appReadOnlyInputs]="!isEditable()">
     <app-visa-job-check-au *ngIf="job.id == selectedJob.id"
                            [selectedJobCheck]="job"
                            [candidate]="candidate"

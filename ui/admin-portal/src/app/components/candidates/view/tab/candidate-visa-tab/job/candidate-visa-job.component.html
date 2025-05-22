@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<button [disabled]="!hasJobOpps" type="button" class="btn btn-primary btn-sm float-end" (click)="addJob()">
+<button *ngIf="isEditable()" [disabled]="!hasJobOpps" type="button" class="btn btn-primary btn-sm float-end" (click)="addJob()">
   <i class="fas fa-plus"></i> Add Job
 </button>
 
@@ -38,7 +38,7 @@
               <i  class="fa-solid fa-address-book" title="Open case in new tab"></i>
             </a>
           </label>
-          <a *ngIf="canDeleteVisaJob()" class="link-danger float-end" (click)="deleteJob(i)"><i class="fas fa-trash"></i></a>
+          <a *ngIf="canDeleteVisaJob() && isEditable()" class="link-danger float-end" (click)="deleteJob(i)"><i class="fas fa-trash"></i></a>
         </div>
       </div>
     </form>

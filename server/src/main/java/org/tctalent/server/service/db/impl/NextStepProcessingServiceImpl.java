@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+import static org.tctalent.server.util.NextStepHelper.auditStampNextStepIfChanged;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class NextStepProcessingServiceImpl implements NextStepProcessingService 
         String currentNextStep =
             opp == null ? null : opp.getNextStep();
 
-        final String processedNextStep = auditStampNextStep(
+        final String processedNextStep = auditStampNextStepIfChanged(
             userForAttribution.getUsername(),
             LocalDate.now(),
             currentNextStep,

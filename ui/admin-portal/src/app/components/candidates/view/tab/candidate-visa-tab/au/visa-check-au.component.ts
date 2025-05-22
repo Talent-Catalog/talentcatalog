@@ -15,15 +15,8 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {
-  Candidate,
-  CandidateIntakeData,
-  CandidateVisa,
-  CandidateVisaJobCheck
-} from '../../../../../../model/candidate';
-import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "../../../../../../services/local-storage.service";
+import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
+import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-visa-check-au',
@@ -40,9 +33,7 @@ export class VisaCheckAuComponent implements OnInit {
   currentYear: string;
   birthYear: string;
 
-  constructor(private candidateVisaJobService: CandidateVisaJobService,
-              private modalService: NgbModal,
-              private localStorageService: LocalStorageService) {}
+  constructor(private authService: AuthorizationService) {}
 
   ngOnInit() {
     this.currentYear = new Date().getFullYear().toString();
@@ -52,5 +43,9 @@ export class VisaCheckAuComponent implements OnInit {
      * two-way data binding of selectedJob on the CandidateVisaJobComponent.
      */
     this.selectedJob = this.visaCheckRecord.candidateVisaJobChecks[0]
+  }
+
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
   }
 }
