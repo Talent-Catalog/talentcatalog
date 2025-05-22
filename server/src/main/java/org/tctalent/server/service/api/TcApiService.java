@@ -27,6 +27,8 @@ public interface TcApiService {
 
   String runApiMigration();
 
+  String runApiMigrationByListId(long listId);
+
   String runAuroraMigration();
 
   String runMongoMigration();
