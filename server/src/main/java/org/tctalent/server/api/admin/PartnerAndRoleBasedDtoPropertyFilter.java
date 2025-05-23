@@ -137,6 +137,12 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         return ignore;
     }
 
+    /**
+     * Checks if an admin portal user partner matches a candidate's assigned partner
+     * @param partner admin portal user partner
+     * @param candidatePartner candidate's assigned partner
+     * @return boolean if match or not
+     */
     private boolean isNotPartnerMatch(Partner partner, Partner candidatePartner) {
         return !partner.getId().equals(candidatePartner.getId());
     }
