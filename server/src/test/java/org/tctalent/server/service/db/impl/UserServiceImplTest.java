@@ -19,22 +19,27 @@ package org.tctalent.server.service.db.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.security.auth.login.AccountLockedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,26 +52,38 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.AdminApiTestUtil.CreateUpdateUserTestData;
+import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
+import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
+import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.PartnerService;
 
@@ -83,11 +100,12 @@ class UserServiceImplTest {
     private Long approverId;
     private Long partnerId;
     private List<Country> sourceCountryList;
+    private String loginUsername;
+    private LoginRequest loginRequest;
 
     @Mock private UserRepository userRepository;
     @Mock private User mockUser;
     @Mock private User mockUser2;
-    @Mock private User mockUser3;
     @Mock private SearchUserRequest searchUserRequest;
     @Mock private Specification<User> mockedUserSpec;
     @Mock private CountryRepository countryRepository;
@@ -97,6 +115,9 @@ class UserServiceImplTest {
     @Mock private PartnerImpl mockPartnerImpl;
     @Mock private PasswordHelper passwordHelper;
     @Mock private AuthService authService;
+    @Mock private AuthenticationManager authManager;
+    @Mock private Authentication mockAuth;
+    @Mock private JwtTokenProvider tokenProvider;
 
     @Captor ArgumentCaptor<User> userCaptor;
 
@@ -117,6 +138,10 @@ class UserServiceImplTest {
         testUser = AdminApiTestUtil.getFullUser();
         approverId = 1L;
         partnerId = 1L;
+        loginUsername = "person@email.com";
+        loginRequest = new LoginRequest();
+        loginRequest.setUsername(loginUsername);
+        loginRequest.setPassword("password");
     }
 
     @Test
@@ -392,12 +417,12 @@ class UserServiceImplTest {
         setupPathToUpdateApproverIfNeeded();
         given(mockUser.getRole()).willReturn(Role.systemadmin);
         given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
-        given(userRepository.findById(request.getApproverId())).willReturn(Optional.of(mockUser));
+        given(userRepository.findById(request.getApproverId())).willReturn(Optional.of(mockUser2));
 
         User result = userService.updateUser(userId, request);
 
         verify(userRepository).save(testUser);
-        assertEquals(result.getApprover(), mockUser);
+        assertEquals(result.getApprover(), mockUser2);
     }
 
     @Test
@@ -405,7 +430,7 @@ class UserServiceImplTest {
         + "user is regular admin")
     void updateApproverIfNeeded_shouldThrowInvalidRequestException_whenUpdatingUserIsAdmin() {
         setupPathToUpdateApproverIfNeeded();
-        given(mockUser3.getPartner()).willReturn(null); // Handles partner assign path for admin
+        testUser.setPartner(null); // Handles partner assign path for regular admin (no update)
         given(mockUser.getRole()).willReturn(Role.admin);
         given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
 
@@ -420,8 +445,8 @@ class UserServiceImplTest {
     private void setupPathToUpdateApproverIfNeeded() {
         request.setApproverId(approverId);
         expectedUser.setApprover(mockUser2);
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser3));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // Updating user
+        given(userRepository.findById(userId)).willReturn(Optional.of(testUser)); // User being updated
     }
 
     @Test
@@ -576,6 +601,194 @@ class UserServiceImplTest {
         given(mockUser.getReadOnly()).willReturn(false);
         given(mockUser.getRole()).willReturn(Role.admin);
         given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(true);
+    }
+
+    @Test
+    @DisplayName("should return false and cause caller updateUser() to throw InvalidRequestException"
+        + " when logged in user is read-only")
+    void authoriseAdminUser_shouldReturnFalse_whenLoggedInUserIsReadonly() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
+        given(mockUser.getReadOnly()).willReturn(true);
+
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.updateUser(userId, request)
+        );
+
+        assertEquals("You don't have permission to edit this user.", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("should return false and cause caller updateUser() to throw InvalidRequestException"
+        + " when hasAdminPrivileges returns false")
+    void authoriseAdminUser_shouldReturnFalse_whenHasAdminPrivilegesFalse() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(false);
+
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.updateUser(userId, request)
+        );
+
+        assertEquals("You don't have permission to edit this user.", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("should return true when hasAdminPrivileges returns true")
+    void authoriseAdminUser_shouldReturnFalse_whenHasAdminPrivilegesTrue() {
+        given(mockUser.getRole()).willReturn(Role.systemadmin);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
+
+        // Path should conclude successfully
+        assertDoesNotThrow(() -> userService.updateUser(userId, request));
+    }
+
+    @Test
+    @DisplayName("should set user status to deleted, update audit fields and save user when logged-in"
+        + " user is authorised")
+    void deleteUser_shouldPerformDeleteActions_whenLoggedInUserAuthorised() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(testUser)); // user being deleted
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(true);
+
+        userService.deleteUser(userId);
+
+        assertEquals(testUser.getStatus(), Status.deleted);
+        assertEquals(testUser.getUpdatedBy(), mockUser);
+        verify(userRepository).save(testUser);
+    }
+
+    @Test
+    @DisplayName("should throw InvalidRequestException when logged-in user not authorised")
+    void deleteUser_shouldThrowException_whenLoggedInUserNotAuthorised() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being deleted
+        given(mockUser.getReadOnly()).willReturn(true); // authoriseAdminUser() returns false
+
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.deleteUser(userId)
+        );
+
+        assertEquals("You don't have permission to delete this user.", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("should return false when given user's role is not user")
+    void isCandidate_shouldReturnFalse_whenUserRoleIsNotUser() {
+        testUser.setRole(Role.admin);
+
+        assertFalse(userService.isCandidate(testUser));
+    }
+
+    @Test
+    @DisplayName("should return true when given user's role is user")
+    void isCandidate_shouldReturnTrue_whenUserRoleIsUser() {
+        testUser.setRole(Role.user);
+
+        assertTrue(userService.isCandidate(testUser));
+    }
+
+    @Test
+    @DisplayName("should throw InvalidCredentialsException when user attempting login with "
+        + "non-unique email")
+    void login_shouldThrowInvalidCredentialsException_whenLoginAttemptedWithNonUniqueEmail() {
+        given(userRepository.findByEmailIgnoreCase(loginUsername))
+            .willThrow(new IncorrectResultSizeDataAccessException(1));
+
+        InvalidCredentialsException ex = assertThrows(
+            InvalidCredentialsException.class,
+            () -> userService.login(loginRequest)
+        );
+
+        assertEquals(
+            "Sorry, that email is not unique. Log in with your username.",
+            ex.getMessage()
+        );
+    }
+
+    @Test
+    @DisplayName("should throw InvalidCredentialsException if user is no longer active")
+    void login_shouldThrowInvalidCredentialsException_ifUserIsNotActive() {
+        given(userRepository.findByEmailIgnoreCase(loginUsername)).willReturn(mockUser);
+        given(mockUser.getUsername()).willReturn(loginUsername);
+        given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+            .willReturn(mockAuth);
+        given(userRepository.findByUsernameIgnoreCase(loginUsername)).willReturn(mockUser);
+        given(mockUser.getStatus()).willReturn(Status.inactive);
+
+        InvalidCredentialsException ex = assertThrows(
+            InvalidCredentialsException.class,
+            () -> userService.login(loginRequest)
+        );
+
+        assertEquals(
+            "Sorry, it looks like that account is no longer active.",
+            ex.getMessage()
+        );
+    }
+
+    @Test
+    @DisplayName("should set last login, save user, set auth, generate and return a token when "
+        + "credentials valid")
+    void login_shouldPerformActions_whenLoginCredentialsValid() {
+        given(userRepository.findByEmailIgnoreCase(loginUsername)).willReturn(mockUser);
+        given(mockUser.getUsername()).willReturn(loginUsername);
+        given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+            .willReturn(mockAuth);
+        given(userRepository.findByUsernameIgnoreCase(loginUsername)).willReturn(mockUser);
+        given(mockUser.getStatus()).willReturn(Status.active);
+        given(tokenProvider.generateToken(any())).willReturn("mock-jwt");
+        given(userRepository.save(mockUser)).willReturn(mockUser);
+
+        JwtAuthenticationResponse response =
+            assertDoesNotThrow(() -> userService.login(loginRequest));
+
+        assertEquals(mockAuth, SecurityContextHolder.getContext().getAuthentication());
+        verify(mockUser).setLastLogin(any(OffsetDateTime.class));
+        verify(userRepository).save(mockUser);
+        verify(tokenProvider).generateToken(mockAuth);
+        assertEquals("mock-jwt", response.getAccessToken());
+        assertEquals(mockUser, response.getUser());
+    }
+
+    @Test
+    @DisplayName("should throw AccountLockedException with correct message when account is locked")
+    void login_shouldThrowAccountLockedException_whenAccountLocked() {
+        given(userRepository.findByEmailIgnoreCase(loginUsername)).willReturn(mockUser);
+        given(mockUser.getUsername()).willReturn(loginUsername);
+        given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+            .willThrow(new LockedException("Generic message"));
+
+        AccountLockedException ex = assertThrows(
+            AccountLockedException.class,
+            () -> userService.login(loginRequest)
+        );
+
+        assertEquals("Account locked", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("should throw InvalidCredentialsException with correct message when credentials bad")
+    void login_shouldThrowInvalidCredentialsException_whenBadCredentials() {
+        given(userRepository.findByEmailIgnoreCase(loginUsername)).willReturn(mockUser);
+        given(mockUser.getUsername()).willReturn(loginUsername);
+        given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+            .willThrow(new BadCredentialsException("Generic message"));
+
+        InvalidCredentialsException ex = assertThrows(
+            InvalidCredentialsException.class,
+            () -> userService.login(loginRequest)
+        );
+
+        assertEquals("Invalid credentials for user", ex.getMessage());
     }
 
 }
