@@ -24,7 +24,7 @@ import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {Candidate} from "../../../../model/candidate";
 import {User} from "../../../../model/user";
 
-describe('ViewCandidateAccountComponent', () => {
+fdescribe('ViewCandidateAccountComponent', () => {
   let component: ViewCandidateAccountComponent;
   let fixture: ComponentFixture<ViewCandidateAccountComponent>;
   let mockUserService;
@@ -68,5 +68,13 @@ describe('ViewCandidateAccountComponent', () => {
 
     expect(mockModalService.open).toHaveBeenCalledOnceWith(jasmine.any(Function), { centered: true, backdrop: 'static' });
     expect(modalRef.componentInstance.user).toEqual(user);
+  });
+
+  it('should hide password reset link if editable is false', () => {
+    component.editable = false;
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    const resetLink = compiled.querySelector('a.small');
+    expect(resetLink).toBeFalsy();
   });
 });
