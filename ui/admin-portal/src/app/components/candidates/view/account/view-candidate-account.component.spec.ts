@@ -24,7 +24,7 @@ import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {Candidate} from "../../../../model/candidate";
 import {User} from "../../../../model/user";
 
-fdescribe('ViewCandidateAccountComponent', () => {
+describe('ViewCandidateAccountComponent', () => {
   let component: ViewCandidateAccountComponent;
   let fixture: ComponentFixture<ViewCandidateAccountComponent>;
   let mockUserService;
