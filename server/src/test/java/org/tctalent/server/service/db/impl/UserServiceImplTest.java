@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
@@ -533,12 +534,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should reset email verification fields when new email supplied")
     void checkAndResetEmailVerification_shouldResetEmailVerification_whenNewEmailIsSupplied() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
-        // Logged-in user has required privileges:
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(mockUser.getRole()).willReturn(Role.admin);
-        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(true);
+        setupPathToCheckAndResetEmailVerification();
 
         userService.updateUser(userId, request);
 
@@ -548,15 +544,38 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("should do nothing fields when request email same as old")
+    @DisplayName("should do nothing when request email same as old")
     void checkAndResetEmailVerification_shouldDoNothing_whenRequestEmailIsSameAsOld() {
+        setupPathToCheckAndResetEmailVerification();
+        given(mockUser2.getEmail()).willReturn(request.getEmail()); // Same email
 
+        userService.updateUser(userId, request);
+
+        verify(mockUser2, never()).setEmailVerified(eq(false));
+        verify(mockUser2, never()).setEmailVerificationToken(null);
+        verify(mockUser2, never()).setEmailVerificationTokenIssuedDate(null);
     }
 
     @Test
     @DisplayName("should do nothing when no email in request")
     void checkAndResetEmailVerification_shouldDoNothing_whenNoEmailInRequest() {
+        setupPathToCheckAndResetEmailVerification();
+        request.setEmail(null);
 
+        userService.updateUser(userId, request);
+
+        verify(mockUser2, never()).setEmailVerified(eq(false));
+        verify(mockUser2, never()).setEmailVerificationToken(null);
+        verify(mockUser2, never()).setEmailVerificationTokenIssuedDate(null);
+    }
+
+    private void setupPathToCheckAndResetEmailVerification() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
+        // Logged-in user has required privileges:
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(mockUser.getRole()).willReturn(Role.admin);
+        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(true);
     }
 
 }
