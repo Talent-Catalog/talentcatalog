@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -78,11 +79,14 @@ class UserServiceImplTest {
     private User expectedUser;
     private UpdateUserRequest request;
     private User testUser;
+    private Long approverId;
+    private Long partnerId;
     private List<Country> sourceCountryList;
 
     @Mock private UserRepository userRepository;
     @Mock private User mockUser;
     @Mock private User mockUser2;
+    @Mock private User mockUser3;
     @Mock private SearchUserRequest searchUserRequest;
     @Mock private Specification<User> mockedUserSpec;
     @Mock private CountryRepository countryRepository;
@@ -106,12 +110,12 @@ class UserServiceImplTest {
         userPage = new PageImpl<>(List.of(mockUser, mockUser2));
         userId = 11L;
         sourceCountryList = List.of(mockCountry, mockCountry2);
-        CreateUpdateUserTestData testData =
-            AdminApiTestUtil.createUpdateUserRequestAndExpectedUser(mockUser, mockUser2,
-                mockPartnerImpl, sourceCountryList);
+        CreateUpdateUserTestData testData = AdminApiTestUtil.createUpdateUserRequestAndExpectedUser();
         expectedUser = testData.expectedUser();
         request = testData.request();
         testUser = AdminApiTestUtil.getFullUser();
+        approverId = 1L;
+        partnerId = 1L;
     }
 
     @Test
@@ -243,6 +247,8 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return all countries when user has no source countries")
     public void getDefaultSourceCountries_shouldReturnAllCountries_whenUserHasNoSourceCountries() {
+        request.setSourceCountries(sourceCountryList);
+
         List<Country> allCountriesList = Arrays.asList(mockCountry, mockCountry2);
         given(mockUser.getSourceCountries()).willReturn(Collections.emptySet());
         given(countryRepository.findAll()).willReturn(allCountriesList);
@@ -267,19 +273,35 @@ class UserServiceImplTest {
 
     @Test
     @DisplayName("should create and return new admin user matching valid request")
-    void createUser_withValidRequest_shouldCreateAndReturnUser() {
+    void createUser_withValidRequest_shouldCreateAndReturnExpectedUser() {
+        // Testing Approver path
+        request.setApproverId(approverId);
+        expectedUser.setApprover(mockUser2);
+
+        // Testing Partner path
+        request.setPartnerId(partnerId);
+        expectedUser.setPartner(mockPartnerImpl);
+
+        // Source Country path
+        request.setSourceCountries(sourceCountryList);
+        expectedUser.setSourceCountries(new HashSet<>(sourceCountryList));
+
+        // Audit fields
+        expectedUser.setCreatedBy(mockUser);
+        expectedUser.setUpdatedBy(mockUser);
+
         given(userRepository.findByUsernameIgnoreCase(request.getUsername())).willReturn(null);
         given(userRepository.findByEmailIgnoreCase(request.getEmail())).willReturn(null);
         given(partnerService.getPartner(request.getPartnerId())).willReturn(mockPartnerImpl);
-
         doReturn(mockUser2).when(userService).getUser(request.getApproverId());
         given(mockUser.getRole()).willReturn(Role.systemadmin);
         given(passwordHelper.validateAndEncodePassword(request.getPassword()))
             .willReturn(request.getPassword());
 
-        userService.createUser(request, mockUser);
+        userService.createUser(request, mockUser); // When
 
         verify(userRepository).save(userCaptor.capture());
+        // MODEL: compare field values rather than object instances:
         assertThat(userCaptor.getValue())
             .usingRecursiveComparison()
             .ignoringFields("createdDate", "updatedDate")
@@ -336,7 +358,12 @@ class UserServiceImplTest {
         given(mockUser.getRole()).willReturn(Role.admin);
         given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
 
-        assertThrows(InvalidRequestException.class, () -> userService.updateUser(userId, request));
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.updateUser(userId, request)
+        );
+
+        assertEquals("You don't have permission to change a partner.", ex.getMessage());
     }
 
     @Test
@@ -350,15 +377,18 @@ class UserServiceImplTest {
         given(mockUser.getRole()).willReturn(Role.systemadmin);
         given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
 
-        assertThrows(InvalidRequestException.class, () -> userService.updateUser(userId, request));
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.updateUser(userId, request)
+        );
+
+        assertEquals("A partner must be specified.", ex.getMessage());
     }
 
     @Test
     @DisplayName("should set new approver if different and logged in user is System Admin")
     void updateApproverIfNeeded_shouldSetNewApproverIfDifferentAndLoggedInUserIsSystemAdmin() {
-        // Following update() path again
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        setupPathToUpdateApproverIfNeeded();
         given(mockUser.getRole()).willReturn(Role.systemadmin);
         given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
         given(userRepository.findById(request.getApproverId())).willReturn(Optional.of(mockUser));
@@ -373,12 +403,24 @@ class UserServiceImplTest {
     @DisplayName("should throw InvalidRequestException when approver update attempted and logged in "
         + "user is regular admin")
     void updateApproverIfNeeded_shouldThrowInvalidRequestException_whenUpdatingUserIsAdmin() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        setupPathToUpdateApproverIfNeeded();
+        given(mockUser3.getPartner()).willReturn(null); // Handles partner assign path for admin
         given(mockUser.getRole()).willReturn(Role.admin);
         given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
 
-        assertThrows(InvalidRequestException.class, () -> userService.updateUser(userId, request));
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.updateUser(userId, request)
+        );
+
+        assertEquals("You don't have permission to assign an approver.", ex.getMessage());
+    }
+
+    private void setupPathToUpdateApproverIfNeeded() {
+        request.setApproverId(approverId);
+        expectedUser.setApprover(mockUser2);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser3));
     }
 
     @Test
@@ -387,7 +429,12 @@ class UserServiceImplTest {
         request.setRole(Role.systemadmin);
         given(mockUser.getRole()).willReturn(Role.admin);
 
-        assertThrows(InvalidRequestException.class, () -> userService.createUser(request, mockUser));
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.createUser(request, mockUser)
+        );
+
+        assertEquals("You don't have permission to save this role type.", ex.getMessage());
     }
 
     @Test
@@ -395,7 +442,6 @@ class UserServiceImplTest {
     void addRoleIfValid_shouldAllowSystemAdminToCreateSystemAdmin() {
         request.setRole(Role.systemadmin);
         given(mockUser.getRole()).willReturn(Role.systemadmin);
-        given(userRepository.findById(request.getApproverId())).willReturn(Optional.of(mockUser));
 
         userService.createUser(request, mockUser);
 
@@ -407,7 +453,7 @@ class UserServiceImplTest {
     @DisplayName("should allow creating user with no source country restrictions (empty) to add "
         + "any source country to new user")
     void addSourceCountriesIfValid_shouldAllowUnrestrictedAdminToCreateUserWithAnySourceCountry() {
-        stubCreateUserToReachAddSourceCountriesIfValid();
+        setupPathToAddSourceCountriesIfValid();
         // No restrictions on creating user:
         given(mockUser.getSourceCountries()).willReturn(Collections.emptySet());
 
@@ -422,18 +468,23 @@ class UserServiceImplTest {
     @DisplayName("should not allow restricted creating user to assign any source country that they "
         + "can't themselves access")
     void addSourceCountriesIfValid_shouldNotAllowRestrictedAdminToCreateUserWithAnySourceCountry() {
-        stubCreateUserToReachAddSourceCountriesIfValid();
+        setupPathToAddSourceCountriesIfValid();
         // Creating user restricted to one source country:
         given(mockUser.getSourceCountries()).willReturn(Set.of(mockCountry));
 
-        assertThrows(InvalidRequestException.class, () -> userService.createUser(request, mockUser));
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.createUser(request, mockUser)
+        );
+
+        assertEquals("You don't have permission to add this country.", ex.getMessage());
     }
 
     @Test
     @DisplayName("should set new user source countries the same as restricted partner admin if "
         + "none specified in request")
     void addSourceCountriesIfValid_shouldSetNewUserSourceCountriesSameAsCreatingUser_whenEmptyRequest() {
-        stubCreateUserToReachAddSourceCountriesIfValid();
+        setupPathToAddSourceCountriesIfValid();
         request.setSourceCountries(null);
         given(mockUser.getSourceCountries()).willReturn(new HashSet<>(sourceCountryList));
 
@@ -444,9 +495,9 @@ class UserServiceImplTest {
             containsInAnyOrder(sourceCountryList.toArray()));
     }
 
-    private void stubCreateUserToReachAddSourceCountriesIfValid() {
-        request.setApproverId(null); // Bypass this path
-        request.setRole(Role.partneradmin); // Ditto
+    private void setupPathToAddSourceCountriesIfValid() {
+        request.setSourceCountries(sourceCountryList);
+        request.setRole(Role.partneradmin);
         given(mockUser.getRole()).willReturn(Role.partneradmin);
     }
 
@@ -456,7 +507,12 @@ class UserServiceImplTest {
         given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
         given(mockUser.getReadOnly()).willReturn(true);
 
-        assertThrows(InvalidRequestException.class, () -> userService.createUser(request));
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.createUser(request)
+        );
+
+        assertEquals("You don't have permission to create a user.", ex.getMessage());
     }
 
     @Test
@@ -466,13 +522,29 @@ class UserServiceImplTest {
         given(mockUser.getReadOnly()).willReturn(false);
         given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(false);
 
-        assertThrows(InvalidRequestException.class, () -> userService.createUser(request));
+        InvalidRequestException ex = assertThrows(
+            InvalidRequestException.class,
+            () -> userService.createUser(request)
+        );
+
+        assertEquals("You don't have permission to create a user.", ex.getMessage());
     }
 
     @Test
     @DisplayName("should reset email verification fields when new email supplied")
     void checkAndResetEmailVerification_shouldResetEmailVerification_whenNewEmailIsSupplied() {
-        // Update user path for these
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
+        // Logged-in user has required privileges:
+        given(mockUser.getReadOnly()).willReturn(false);
+        given(mockUser.getRole()).willReturn(Role.admin);
+        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(true);
+
+        userService.updateUser(userId, request);
+
+        verify(mockUser2).setEmailVerified(eq(false));
+        verify(mockUser2).setEmailVerificationToken(null);
+        verify(mockUser2).setEmailVerificationTokenIssuedDate(null);
     }
 
     @Test

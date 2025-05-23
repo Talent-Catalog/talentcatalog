@@ -878,25 +878,16 @@ public class AdminApiTestUtil {
 
     /**
      * Constructs a {@link CreateUpdateUserTestData} record containing an {@link UpdateUserRequest}
-     * and the expected {@link User} that should result from applying it.
-     *
-     * <p>Params enable passing mocks from the caller.
+     * and the expected {@link User} that should result from using it.
      */
-    public static CreateUpdateUserTestData createUpdateUserRequestAndExpectedUser(
-        User creatingUser,
-        User approver,
-        PartnerImpl partner,
-        List<Country> sourceCountries
-    ) {
+    public static CreateUpdateUserTestData createUpdateUserRequestAndExpectedUser() {
         final String email = "alice@email.com";
         final String firstName = "Alice";
         final String lastName = "Alison";
-        final Long partnerId = 1L;
         final String password = "password";
         final boolean readOnly = false;
         final Role role = Role.admin;
         final boolean jobCreator = false;
-        final Long approverId = 1L;
         final String purpose = "Testing";
         final Status status = Status.active;
         final String username = "aalison";
@@ -906,17 +897,15 @@ public class AdminApiTestUtil {
         request.setEmail(email);
         request.setFirstName(firstName);
         request.setLastName(lastName);
-        request.setPartnerId(partnerId);
         request.setPassword(password);
         request.setReadOnly(readOnly);
         request.setRole(role);
         request.setJobCreator(jobCreator);
-        request.setApproverId(approverId);
         request.setPurpose(purpose);
         request.setStatus(status);
         request.setUsername(username);
         request.setUsingMfa(usingMfa);
-        request.setSourceCountries(sourceCountries);
+        request.setPartnerId(1L);
 
         User expectedUser = new User();
         expectedUser.setEmail(email);
@@ -929,12 +918,7 @@ public class AdminApiTestUtil {
         expectedUser.setStatus(status);
         expectedUser.setUsername(username);
         expectedUser.setUsingMfa(usingMfa);
-        expectedUser.setCreatedBy(creatingUser);
-        expectedUser.setUpdatedBy(creatingUser);
-        expectedUser.setPartner(partner);
-        expectedUser.setApprover(approver);
-        expectedUser.setPasswordEnc(password); // Users of this data will need to mock encryption.
-        expectedUser.setSourceCountries(new HashSet<>(sourceCountries));
+        expectedUser.setPasswordEnc(password);
 
         return new CreateUpdateUserTestData(request, expectedUser);
     }
