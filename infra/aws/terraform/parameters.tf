@@ -199,7 +199,7 @@ resource "aws_ssm_parameter" "spring_datasource_password" {
 resource "aws_ssm_parameter" "spring_datasource_url" {
   name  = "/${var.app}/${var.env}/SPRING_DATASOURCE_URL"
   type  = "String"
-  value = "jdbc:postgresql://${var.db_enable ? var.database_url : var.spring_datasource_url}/tbbtalent"
+  value = "jdbc:postgresql://${var.db_enable ? module.database[0].db_instance_endpoint : var.spring_datasource_url}/tbbtalent"
 }
 
 resource "aws_ssm_parameter" "spring_datasource_username" {

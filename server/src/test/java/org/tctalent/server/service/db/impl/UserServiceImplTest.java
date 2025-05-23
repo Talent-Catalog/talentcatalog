@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.security.auth.login.AccountLockedException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,26 +69,32 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.AdminApiTestUtil.CreateUpdateUserTestData;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.email.EmailHelper;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -102,6 +111,8 @@ class UserServiceImplTest {
     private List<Country> sourceCountryList;
     private String loginUsername;
     private LoginRequest loginRequest;
+    private SendVerifyEmailRequest sendVerifyEmailRequest;
+    private VerifyEmailRequest verifyEmailRequest;
 
     @Mock private UserRepository userRepository;
     @Mock private User mockUser;
@@ -118,6 +129,7 @@ class UserServiceImplTest {
     @Mock private AuthenticationManager authManager;
     @Mock private Authentication mockAuth;
     @Mock private JwtTokenProvider tokenProvider;
+    @Mock private EmailHelper emailHelper;
 
     @Captor ArgumentCaptor<User> userCaptor;
 
@@ -142,6 +154,10 @@ class UserServiceImplTest {
         loginRequest = new LoginRequest();
         loginRequest.setUsername(loginUsername);
         loginRequest.setPassword("password");
+        sendVerifyEmailRequest = new SendVerifyEmailRequest();
+        sendVerifyEmailRequest.setEmail(request.getEmail());
+        verifyEmailRequest = new VerifyEmailRequest();
+        verifyEmailRequest.setToken("fakeToken");
     }
 
     @Test
@@ -789,6 +805,140 @@ class UserServiceImplTest {
         );
 
         assertEquals("Invalid credentials for user", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("should set authentication context to null")
+    void logout_shouldSetAuthenticationContextToNull() {
+        SecurityContextHolder.getContext().setAuthentication(mockAuth);
+
+        userService.logout();
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    @DisplayName("should return null when none found")
+    void getLoggedInUser_shouldReturnNull_whenNoneRetrieved() {
+        given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+        assertNull(userService.getLoggedInUser());
+    }
+
+    @Test
+    @DisplayName("should return user when retrieved")
+    void getLoggedInUser_shouldReturnUser_whenRetrieved() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(mockUser.getId()).willReturn(userId);
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser));
+
+        User result = userService.getLoggedInUser();
+        assertEquals(mockUser, result);
+    }
+
+    @Test
+    @DisplayName("should return partner when user retrieved")
+    void getLoggedInPartner_shouldReturnPartner_whenUserRetrieved() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(mockUser.getId()).willReturn(userId);
+        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser));
+        given(mockUser.getPartner()).willReturn(mockPartnerImpl);
+
+        Partner result = userService.getLoggedInPartner();
+        assertEquals(mockPartnerImpl, result);
+    }
+
+    @Test
+    @DisplayName("should return null when no logged-in user retrieved")
+    void getLoggedInUser_shouldReturnNull_whenNoLoggedInUserRetrieved() {
+        given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+        assertNull(userService.getLoggedInPartner());
+    }
+
+    @Test
+    @DisplayName("should call findByUsernameAndRole() with correct arguments")
+    void getSystemAdminUser_shouldCallFindByUsernameAndRole_withCorrectArguments() {
+        userService.getSystemAdminUser();
+
+        verify(userRepository).findByUsernameAndRole(
+            SystemAdminConfiguration.SYSTEM_ADMIN_NAME,
+            Role.systemadmin
+        );
+    }
+
+    @Test
+    @DisplayName("should return result from find by username and role")
+    void getSystemAdminUser_shouldReturnResultFromFindByUsernameAndRole() {
+        given(userRepository.findByUsernameAndRole(any(), any())).willReturn(mockUser);
+
+        User result = userService.getSystemAdminUser();
+
+        Assertions.assertSame(mockUser, result);
+    }
+
+    @Test
+    @DisplayName("should set token, issued date and send verification email when user retrieved")
+    void sendVerifyEmailRequest_shouldSendVerificationEmail_ifUserRetrieved() {
+        given(userRepository.findByEmailIgnoreCase(sendVerifyEmailRequest.getEmail()))
+            .willReturn(mockUser);
+
+        userService.sendVerifyEmailRequest(sendVerifyEmailRequest);
+
+        verify(mockUser).setEmailVerificationToken(anyString());
+        verify(mockUser).setEmailVerificationTokenIssuedDate(any(OffsetDateTime.class));
+        verify(userRepository).save(mockUser);
+        verify(emailHelper).sendVerificationEmail(mockUser);
+    }
+
+    @Test
+    @DisplayName("should do nothing when user not retrieved")
+    void sendVerifyEmailRequest_shouldDoNothingWhenUserNotRetrieved() {
+        given(userRepository.findByEmailIgnoreCase(sendVerifyEmailRequest.getEmail()))
+            .willReturn(null);
+
+        userService.sendVerifyEmailRequest(sendVerifyEmailRequest);
+
+        verify(mockUser, never()).setEmailVerificationToken(anyString());
+        verify(mockUser, never()).setEmailVerificationTokenIssuedDate(any(OffsetDateTime.class));
+        verify(userRepository, never()).save(mockUser);
+        verify(emailHelper, never()).sendVerificationEmail(mockUser);
+    }
+
+    @Test
+    @DisplayName("should throw ServiceException when token invalid")
+    void verifyEmail_shouldThrowServiceException_whenTokenInvalid() {
+        given(userRepository.findByEmailVerificationToken(verifyEmailRequest.getToken()))
+            .willReturn(null);
+
+        assertThrows(ServiceException.class,
+            () -> userService.verifyEmail(verifyEmailRequest));
+    }
+
+    @Test
+    @DisplayName("should set email verified to true, save user and send complete email when token valid")
+    void verifyEmail_shouldSucceed_whenTokenValid() {
+        given(userRepository.findByEmailVerificationToken(verifyEmailRequest.getToken()))
+            .willReturn(mockUser);
+        given(mockUser.getEmailVerificationTokenIssuedDate()).willReturn(OffsetDateTime.now());
+
+        userService.verifyEmail(verifyEmailRequest);
+
+        verify(mockUser).setEmailVerified(eq(true));
+        verify(userRepository).save(mockUser);
+        verify(emailHelper).sendCompleteVerificationEmail(mockUser, true);
+    }
+
+    @Test
+    @DisplayName("should throw exception when token expired")
+    void verifyEmail_shouldThrowException_whenTokenExpired() {
+        given(userRepository.findByEmailVerificationToken(verifyEmailRequest.getToken()))
+            .willReturn(mockUser);
+        given(mockUser.getEmailVerificationTokenIssuedDate())
+            .willReturn(OffsetDateTime.now().minus(Period.ofDays(7)));
+
+        assertThrows(ServiceException.class,
+            () -> userService.verifyEmail(verifyEmailRequest));
     }
 
 }
