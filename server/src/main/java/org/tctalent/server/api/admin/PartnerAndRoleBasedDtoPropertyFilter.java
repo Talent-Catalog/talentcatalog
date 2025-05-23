@@ -101,7 +101,7 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
     }
 
     private boolean roleBasedFilter(Role role, Partner partner, Partner candidatePartner, String property) {
-        boolean ignore = true;
+        boolean ignore;
         switch (role) {
             case admin:
             case partneradmin:
@@ -130,6 +130,8 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
                     ignore = true;
                 }
                break;
+            default:
+                ignore = true;
         }
         return ignore;
     }
@@ -148,6 +150,12 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         return !partner.isSourcePartner() && !partner.isJobCreator() && !isDefaultPartner(partner);
     }
 
+    /**
+     * Viewer Partners shouldn't see identifiable details regardless of their role - so need to only return the
+     * semi limited properties for these partners.
+     * @param property property to check if it's ignored
+     * @return boolean of ignore value
+     */
     private boolean isVisibleToViewerPartner(String property) {
         return semiLimitedExtraProperties != null
                 && !semiLimitedExtraProperties.isEmpty()
