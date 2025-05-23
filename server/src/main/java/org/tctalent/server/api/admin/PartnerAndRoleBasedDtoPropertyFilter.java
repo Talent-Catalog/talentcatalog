@@ -77,8 +77,9 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         boolean ignore;
 
         if (role == Role.systemadmin
-                || isDefaultPartner(partner) && (role == Role.admin || role == Role.partneradmin)
-                || isInFullyVisibleCandidates(o)) {
+            || isDefaultPartner(partner) && (role == Role.admin || role == Role.partneradmin)
+            || isInFullyVisibleCandidates(o)
+        ) {
             // System admins, default partner (TBB) admins, fully visible candidates (see method) can see all fields.
             ignore = false;
         } else {
