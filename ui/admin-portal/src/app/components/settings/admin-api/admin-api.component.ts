@@ -29,6 +29,27 @@ export class AdminApiComponent implements OnInit {
   error: any;
   form: UntypedFormGroup;
 
+  // List of batch migration commands
+  readonly migrationCommands = [
+    { command: 'run_api_migration', description: 'Run full anonymization job (Aurora + Mongo)' },
+    { command: 'run_api_migration/aurora', description: 'Run Aurora-only anonymization job' },
+    { command: 'run_api_migration/mongo', description: 'Run Mongo-only anonymization job' },
+    { command: 'run_api_migration/list/{listId}', description: 'Run anonymization using a specific listId' },
+    { command: 'list_api_migrations', description: 'List recent job executions' },
+    { command: 'stop_api_migration/{executionId}', description: 'Stop a running job by executionId' },
+    { command: 'restart_api_migration/{executionId}', description: 'Restart a failed job by executionId' }
+  ];
+
+  // List of general admin commands
+  readonly adminCommands = [
+    { command: 'reassign-candidates/list-{listId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified list to the specified partner' },
+    { command: 'reassign-candidates/search-{searchId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified search to the specified partner' },
+    { command: 'move-candidate-drive/{number}', description: 'Move candidate to the current candidate data drive' },
+    { command: 'move-candidates-drive/{listId}', description: 'Move candidates from the given list to the current candidate data drive' },
+    { command: 'flush_user_cache', description: 'Flush Redis cache for cached users' }
+    // Add more general-purpose or maintenance commands here
+  ];
+
   constructor(
     private fb: UntypedFormBuilder,
     private adminService: AdminService
@@ -53,5 +74,10 @@ export class AdminApiComponent implements OnInit {
         (error) => {this.error = error}
       )
     }
+  }
+
+  fillCommand(command: string, event: MouseEvent): void {
+    event.preventDefault();  // prevent anchor navigation
+    this.form.patchValue({ apicall: command });
   }
 }
