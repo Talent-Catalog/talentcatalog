@@ -207,9 +207,6 @@ public class CandidateEs {
     }
 
     @Field(type = FieldType.Text)
-    private String migrationOccupation;
-
-    @Field(type = FieldType.Text)
     private List<String> skills;
 
     @Enumerated(EnumType.STRING)
@@ -403,7 +400,6 @@ public class CandidateEs {
         }
 
         this.occupations = new ArrayList<>();
-        this.migrationOccupation = null;
         List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
         if (candidateOccupations != null) {
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
@@ -417,10 +413,6 @@ public class CandidateEs {
                             occupation.setYearsExperience(yearsExperience);
                         }
                         occupations.add(occupation);
-                    }
-
-                    if (candidateOccupation.getMigrationOccupation() != null) {
-                        this.migrationOccupation = candidateOccupation.getMigrationOccupation();
                     }
                 }
             }
