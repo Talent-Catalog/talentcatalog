@@ -386,4 +386,51 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
     return couponRepository.countByCandidateIsNullAndCouponStatusAndTestType(DuolingoCouponStatus.AVAILABLE,DuolingoTestType.PROCTORED);
   }
 
+  @Override
+  @Transactional
+  public DuolingoCouponResponse reassignProctoredCouponToCandidate(Long candidateId, User user)
+      throws NoSuchObjectException {
+    // Find the candidate
+    Candidate candidate = candidateRepository.findById(candidateId)
+        .orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + candidateId + " not found"));
+
+    // Find all existing coupons for the candidate and mark them as REDEEMED
+    List<DuolingoCoupon> existingCoupons = couponRepository.findAllByCandidateId(candidateId);
+    for (DuolingoCoupon existingCoupon : existingCoupons) {
+      existingCoupon.setCouponStatus(DuolingoCouponStatus.REDEEMED);
+      couponRepository.save(existingCoupon);
+    }
+
+    // Find an available coupon
+    Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatusAndTestType(
+        DuolingoCouponStatus.AVAILABLE, DuolingoTestType.PROCTORED);
+
+    if (availableCoupon.isEmpty()) {
+      throw new NoSuchObjectException(
+          "There are no available coupons to assign to the candidate. Please import more coupons from the settings page.");
+    }
+
+    // Assign the new coupon to the candidate
+    DuolingoCoupon newCoupon = availableCoupon.get();
+    newCoupon.setCandidate(candidate);
+    newCoupon.setDateSent(LocalDateTime.now());
+    newCoupon.setCouponStatus(DuolingoCouponStatus.SENT);
+    couponRepository.save(newCoupon);
+
+    // Send email with the new coupon
+    emailHelper.sendDuolingoCouponEmail(candidate.getUser());
+
+    // Assign the claim coupon task
+    TaskImpl claimCouponButtonTask = taskService.getByName("claimCouponButton");
+    taskAssignmentService.assignTaskToCandidate(user, claimCouponButtonTask, candidate, null, null);
+
+    // Return the response for the new coupon
+    return new DuolingoCouponResponse(
+        newCoupon.getId(),
+        newCoupon.getCouponCode(),
+        newCoupon.getExpirationDate(),
+        newCoupon.getDateSent(),
+        newCoupon.getCouponStatus()
+    );
+  }
 }
