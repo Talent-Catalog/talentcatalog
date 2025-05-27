@@ -4,6 +4,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {TermsInfo, TermsType} from "../../../model/terms-info";
+import {TermsInfoService} from "../../../services/terms-info.service";
 
 @Component({
   selector: 'app-registration-submit',
@@ -20,7 +21,8 @@ export class RegistrationSubmitComponent implements OnInit {
 
   constructor(private builder: UntypedFormBuilder,
               private candidateService: CandidateService,
-              private authenticationService: AuthenticationService) {
+              private authenticationService: AuthenticationService,
+              private termsInfoService: TermsInfoService) {
   }
 
   ngOnInit(): void {
@@ -29,6 +31,14 @@ export class RegistrationSubmitComponent implements OnInit {
       contactConsentPartners: [false, Validators.required],
       acceptPolicy: [false, Validators.required]
     });
+
+    //Fetch the current candidate privacy policy
+    this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY).subscribe(
+      {
+        next: termsInfo => {this.currentPrivacyPolicy = termsInfo},
+        error: err => this.error = err
+      }
+    )
 
     //todo load current privacy policy
     this.currentPrivacyPolicy = {
