@@ -947,7 +947,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setState(request.getState());
 
         candidate.setCountry(country);
-        checkForChangedPartner(candidate, country);
+        reassignPartnerIfNeeded(candidate, country);
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1376,7 +1376,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setDob(request.getDob());
 
             candidate.setCountry(country);
-            checkForChangedPartner(candidate, country);
+            reassignPartnerIfNeeded(candidate, country);
 
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
@@ -1447,36 +1447,41 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    private void checkForChangedPartner(Candidate candidate, Country country) {
-        boolean partnerChanged = false;
+    /**
+     * When the updating candidate is a new registrant, we check for an auto-assign partner in their
+     * given country location, assigning them to it if there is one.
+     * <p>
+     * If not, we check that their currently assigned partner is operational in that country,
+     * assigning them to the default source partner if not.
+     * <p>
+     * Guards against the scenario where a registrant uses a link with a param that would assign
+     * them to a partner who doesn't operate in their location.
+     * @param candidate The updating/registering candidate
+     * @param country Their given country location
+     */
+    private void reassignPartnerIfNeeded(Candidate candidate, Country country) {
+
+        // If candidate not in draft status, this is an existing profile: no automated reassignment.
+        if (candidate.getStatus() != CandidateStatus.draft) {
+            return;
+        }
+
         User user = candidate.getUser();
         PartnerImpl currentUserPartner = user.getPartner();
 
-        if (candidate.getStatus() == CandidateStatus.draft // New registrant
-            && !currentUserPartner.canManageCandidatesInCountry(country)) {
-            // Registering candidate used a link containing a param causing assignment to a partner
-            // that isn't operational in their location, so we reassign them to the default source
-            // partner. They may be reassigned again in subsequent steps - this is a fallback.
-            user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
-            currentUserPartner = user.getPartner();
-            partnerChanged = true;
-        }
-
-        //Do we have an auto assignable partner in this country
-        Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
+        Partner autoAssignedCountryPartner =
+            partnerService.getAutoAssignablePartnerByCountry(country);
 
         if (autoAssignedCountryPartner != null) {
-            //The country assigned partner only overrides the default source partner.
-            if (currentUserPartner.isDefaultSourcePartner()) {
-                if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
-                    //Partner of candidate needs to change
-                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
-                    partnerChanged = true;
-                }
+            if (currentUserPartner != autoAssignedCountryPartner) {
+                user.setPartner((PartnerImpl) autoAssignedCountryPartner);
+                userRepository.save(user);
             }
+            return;
         }
 
-        if (partnerChanged) {
+        if (!currentUserPartner.canManageCandidatesInCountry(country)) {
+            user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
             userRepository.save(user);
         }
     }

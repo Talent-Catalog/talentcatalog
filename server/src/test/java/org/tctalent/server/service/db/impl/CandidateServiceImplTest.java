@@ -237,109 +237,87 @@ class CandidateServiceImplTest {
     }
 
     @Test
-    @DisplayName("should reassign new registrant when partner not operational in given country")
-    void checkForChangedPartnerShouldReassignWhenCurrentPartnerNotOperationalInGivenCountry() {
+    @DisplayName("should reassign new registrant to default source partner when there is no "
+        + "auto-assign partner and current partner is not operational in their location")
+    void reassignPartnerIfNeeded_shouldAssignDefault_whenCurrentPartnerInvalidAndNoAutoAssign() {
+      stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
 
-      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.draft); // new registrant
-
-      // Return candidate location country in which current partner isn't operational.
+      // Current partner invalid:
       Country invalidCountry = new Country();
       invalidCountry.setId(99L);
       given(countryRepository.findById(1L)).willReturn(Optional.of(invalidCountry));
 
+      // No auto-assign partner:
+      given(partnerService.getAutoAssignablePartnerByCountry(invalidCountry)).willReturn(null);
+
       given(partnerService.getDefaultSourcePartner()).willReturn(mockDefaultSourcePartnerImpl);
 
-      candidateService.updatePersonal(updateCandidatePersonalRequest);
+      candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
       verify(userRepository).save(user);
       Assertions.assertEquals(user.getPartner(), mockDefaultSourcePartnerImpl);
     }
 
     @Test
-    @DisplayName("should not reassign new registrant when partner operational in given country")
-    void checkForChangedPartnerShouldNotReassignWhenCurrentPartnerOperationalInGivenCountry() {
-
-      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.draft); // new registrant
-
-      // Return candidate location country in which current partner is operational.
+    @DisplayName("should not reassign new registrant when current partner operational and no "
+        + "auto-assign partner in given location")
+    void reassignPartnerIfNeeded_shouldNotReassign_whenCurrentPartnerValidAndNoAutoAssign() {
+      stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
       given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
+      given(partnerService.getAutoAssignablePartnerByCountry(testCountry)).willReturn(null);
 
-      candidateService.updatePersonal(updateCandidatePersonalRequest);
+      candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
       verify(userRepository, never()).save(user);
       Assertions.assertEquals(user.getPartner(), partner);
     }
 
     @Test
-    @DisplayName("should not reassign existing candidate (not a new registration) because current "
-        + "partner is not operational in given country")
-    void checkForChangedPartnerShouldNotReassignExistingCandidate() {
+    @DisplayName("should not reassign existing candidate")
+    void reassignPartnerIfNeeded_shouldNotReassignExistingCandidate() {
+      stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.pending); // Existing profile
+      given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
-      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.pending); // existing profile
-
-      // Return candidate location country in which current partner isn't operational.
-      Country invalidCountry = new Country();
-      invalidCountry.setId(99L);
-      given(countryRepository.findById(1L)).willReturn(Optional.of(invalidCountry));
-
-      candidateService.updatePersonal(updateCandidatePersonalRequest);
+      candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
       verify(userRepository, never()).save(user);
       Assertions.assertEquals(user.getPartner(), partner);
     }
 
     @Test
-    @DisplayName("should reassign existing candidate if there is an auto-assign partner in their "
-        + "new country location and they are currently assigned to the default source partner")
-    void checkForChangedPartnerShouldReassignFromAutoAssignPartnerToDefaultForExistingCandidate() {
-
-      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.pending); // existing profile
-
+    @DisplayName("should reassign new registrant to auto-assign partner when there is one")
+    void reassignPartnerIfNeeded_shouldAssignAutoAssignPartner() {
+      stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
       given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
-
-      // Assign test candidate to default source partner
-      user.setPartner(mockDefaultSourcePartnerImpl);
-      given(mockDefaultSourcePartnerImpl.isDefaultSourcePartner()).willReturn(true);
-
       given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
           .willReturn(autoAssignPartner);
 
-      candidateService.updatePersonal(updateCandidatePersonalRequest);
+      candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
       verify(userRepository).save(user);
       Assertions.assertEquals(user.getPartner(), autoAssignPartner);
     }
 
     @Test
-    @DisplayName("should reassign new registrant if there is an auto-assign partner in their "
-        + "country location and they are currently assigned to the default source partner")
-    void checkForChangedPartnerShouldReassignFromAutoAssignPartnerToDefaultForNewRegistrant() {
-
-      stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus.draft); // new registrant
+    @DisplayName("should do nothing if auto-assign partner already assigned")
+    void reassignPartnerIfNeeded_shouldODoNothingIfAutoAssignPartnerAlreadyAssigned() {
+      stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
 
       given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
-
-      // Assign test candidate to default source partner
-      user.setPartner(mockDefaultSourcePartnerImpl);
-      given(mockDefaultSourcePartnerImpl.canManageCandidatesInCountry(testCountry))
-          .willReturn(true);
-      given(mockDefaultSourcePartnerImpl.isDefaultSourcePartner()).willReturn(true);
-
       given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
-          .willReturn(autoAssignPartner);
+          .willReturn(partner); // Same partner as currently assigned
 
-      candidateService.updatePersonal(updateCandidatePersonalRequest);
+      candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
-      verify(userRepository).save(user);
-      Assertions.assertEquals(user.getPartner(), autoAssignPartner);
+      verify(userRepository, never()).save(user);
+      Assertions.assertEquals(user.getPartner(), partner);
     }
 
     /**
-     * Factors out stubbing needed to reach + test checkForChangedPartner() within updatePersonal().
-     * In order of execution at time of writing.
+     * Factors out stubbing needed to reach + test reassignPartnerIfNeeded() within updatePersonal().
      * @param candidateStatus {@code CandidateStatus} can be passed to suit test scenario
      */
-    private void stubUpdatePersonalToReachCheckForChangedPartner(CandidateStatus candidateStatus) {
+    private void stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus candidateStatus) {
       updateCandidatePersonalRequest.setCountryId(1L);
       updateCandidatePersonalRequest.setNationalityId(2L);
       updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
@@ -355,7 +333,7 @@ class CandidateServiceImplTest {
 
       given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
 
-      // Gives us our modified testCandidate for the setter block's checkForChangedPartner() call:
+      // Gives us our modified testCandidate for the setter block's reassignPartnerIfNeeded() call:
       given(userRepository.save(mockUser)).willReturn(candidate.getUser());
       candidate.setStatus(candidateStatus);
       given(candidateRepository.findByUserId(null)).willReturn(candidate);
