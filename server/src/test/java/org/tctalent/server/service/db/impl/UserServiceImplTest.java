@@ -22,10 +22,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -70,9 +73,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.AdminApiTestUtil.CreateUpdateUserTestData;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
+import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.exception.InvalidCredentialsException;
+import org.tctalent.server.exception.InvalidPasswordTokenException;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.model.db.Country;
@@ -81,11 +88,16 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
+import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
+import org.tctalent.server.request.user.ResetPasswordRequest;
 import org.tctalent.server.request.user.SearchUserRequest;
+import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
+import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
@@ -105,7 +117,10 @@ class UserServiceImplTest {
     private long userId;
     private User expectedUser;
     private UpdateUserRequest request;
-    private User testUser;
+    private User adminUser;
+    private User systemAdminUser;
+    private User limitedUser;
+    private User candidateUser;
     private Long approverId;
     private Long partnerId;
     private List<Country> sourceCountryList;
@@ -113,6 +128,12 @@ class UserServiceImplTest {
     private LoginRequest loginRequest;
     private SendVerifyEmailRequest sendVerifyEmailRequest;
     private VerifyEmailRequest verifyEmailRequest;
+    private UpdateUserPasswordRequest updateUserPasswordRequest;
+    private String encryptedPassword;
+    private SendResetPasswordEmailRequest sendResetPasswordEmailRequest;
+    private ResetPasswordRequest resetPasswordRequest;
+    private OffsetDateTime offsetDateTime;
+    private CheckPasswordResetTokenRequest checkPasswordResetTokenRequest;
 
     @Mock private UserRepository userRepository;
     @Mock private User mockUser;
@@ -130,6 +151,7 @@ class UserServiceImplTest {
     @Mock private Authentication mockAuth;
     @Mock private JwtTokenProvider tokenProvider;
     @Mock private EmailHelper emailHelper;
+    @Mock private CandidateRepository candidateRepository;
 
     @Captor ArgumentCaptor<User> userCaptor;
 
@@ -147,7 +169,10 @@ class UserServiceImplTest {
         CreateUpdateUserTestData testData = AdminApiTestUtil.createUpdateUserRequestAndExpectedUser();
         expectedUser = testData.expectedUser();
         request = testData.request();
-        testUser = AdminApiTestUtil.getFullUser();
+        adminUser = AdminApiTestUtil.getAdminUser();
+        systemAdminUser = AdminApiTestUtil.getSystemAdminUser();
+        candidateUser = AdminApiTestUtil.getCandidateUser();
+        limitedUser = AdminApiTestUtil.getLimitedUser();
         approverId = 1L;
         partnerId = 1L;
         loginUsername = "person@email.com";
@@ -158,6 +183,19 @@ class UserServiceImplTest {
         sendVerifyEmailRequest.setEmail(request.getEmail());
         verifyEmailRequest = new VerifyEmailRequest();
         verifyEmailRequest.setToken("fakeToken");
+        updateUserPasswordRequest = new UpdateUserPasswordRequest();
+        updateUserPasswordRequest.setPassword("password");
+        updateUserPasswordRequest.setPasswordConfirmation("password");
+        encryptedPassword = "lkjhdsfaioy87";
+        sendResetPasswordEmailRequest = new SendResetPasswordEmailRequest();
+        sendResetPasswordEmailRequest.setEmail("person@email.com");
+        resetPasswordRequest = new ResetPasswordRequest();
+        resetPasswordRequest.setPassword("password");
+        resetPasswordRequest.setPasswordConfirmation("password");
+        resetPasswordRequest.setToken("token");
+        offsetDateTime = OffsetDateTime.parse("2023-01-01T10:00:00+00:00");
+        checkPasswordResetTokenRequest = new CheckPasswordResetTokenRequest();
+        checkPasswordResetTokenRequest.setToken("token");
     }
 
     @Test
@@ -356,7 +394,8 @@ class UserServiceImplTest {
         given(userRepository.findByUsernameIgnoreCase(request.getUsername()))
             .willReturn(mockUser);
 
-        assertThrows(UsernameTakenException.class, () -> userService.createUser(request, mockUser));
+        assertThrows(UsernameTakenException.class, () -> userService.createUser(request,
+            mockUser));
     }
 
     @Test
@@ -365,7 +404,8 @@ class UserServiceImplTest {
         given(userRepository.findByUsernameIgnoreCase(request.getUsername())).willReturn(null);
         given(userRepository.findByEmailIgnoreCase(request.getEmail())).willReturn(mockUser);
 
-        assertThrows(UsernameTakenException.class, () -> userService.createUser(request, mockUser));
+        assertThrows(UsernameTakenException.class, () -> userService.createUser(request,
+            mockUser));
     }
 
     @Test
@@ -374,7 +414,7 @@ class UserServiceImplTest {
         // Following update() path to reach reassignPartnerIfNeeded()
         given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
         // Return test user who has a different partner than mockPartnerImpl:
-        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
         given(mockUser.getReadOnly()).willReturn(false);
         given(mockUser.getRole()).willReturn(Role.systemadmin);
         given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
@@ -384,7 +424,7 @@ class UserServiceImplTest {
 
         User result = userService.updateUser(userId, request); // When
 
-        verify(userRepository).save(testUser);
+        verify(userRepository).save(adminUser);
         assertEquals(result.getPartner(), mockPartnerImpl); // Request partner assigned
     }
 
@@ -395,7 +435,7 @@ class UserServiceImplTest {
         // Following update() path to reach reassignPartnerIfNeeded()
         given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
         // Return test user who has a different partner than mockPartnerImpl:
-        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
         given(mockUser.getReadOnly()).willReturn(false);
         given(mockUser.getRole()).willReturn(Role.admin);
         given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
@@ -414,7 +454,7 @@ class UserServiceImplTest {
         request.setPartnerId(null);
         // The below path would reassign successfully if not for the null partnerId
         given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        given(userRepository.findById(userId)).willReturn(Optional.of(testUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
         given(mockUser.getReadOnly()).willReturn(false);
         given(mockUser.getRole()).willReturn(Role.systemadmin);
         given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
@@ -437,7 +477,7 @@ class UserServiceImplTest {
 
         User result = userService.updateUser(userId, request);
 
-        verify(userRepository).save(testUser);
+        verify(userRepository).save(adminUser);
         assertEquals(result.getApprover(), mockUser2);
     }
 
@@ -446,7 +486,7 @@ class UserServiceImplTest {
         + "user is regular admin")
     void updateApproverIfNeeded_shouldThrowInvalidRequestException_whenUpdatingUserIsAdmin() {
         setupPathToUpdateApproverIfNeeded();
-        testUser.setPartner(null); // Handles partner assign path for regular admin (no update)
+        adminUser.setPartner(null); // Handles partner assign path for regular admin (no update)
         given(mockUser.getRole()).willReturn(Role.admin);
         given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
 
@@ -462,7 +502,7 @@ class UserServiceImplTest {
         request.setApproverId(approverId);
         expectedUser.setApprover(mockUser2);
         given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // Updating user
-        given(userRepository.findById(userId)).willReturn(Optional.of(testUser)); // User being updated
+        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // User being updated
     }
 
     @Test
@@ -670,15 +710,15 @@ class UserServiceImplTest {
         + " user is authorised")
     void deleteUser_shouldPerformDeleteActions_whenLoggedInUserAuthorised() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(testUser)); // user being deleted
+        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // user being deleted
         given(mockUser.getReadOnly()).willReturn(false);
         given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(true);
 
         userService.deleteUser(userId);
 
-        assertEquals(testUser.getStatus(), Status.deleted);
-        assertEquals(testUser.getUpdatedBy(), mockUser);
-        verify(userRepository).save(testUser);
+        assertEquals(adminUser.getStatus(), Status.deleted);
+        assertEquals(adminUser.getUpdatedBy(), mockUser);
+        verify(userRepository).save(adminUser);
     }
 
     @Test
@@ -699,17 +739,17 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return false when given user's role is not user")
     void isCandidate_shouldReturnFalse_whenUserRoleIsNotUser() {
-        testUser.setRole(Role.admin);
+        adminUser.setRole(Role.admin);
 
-        assertFalse(userService.isCandidate(testUser));
+        assertFalse(userService.isCandidate(adminUser));
     }
 
     @Test
     @DisplayName("should return true when given user's role is user")
     void isCandidate_shouldReturnTrue_whenUserRoleIsUser() {
-        testUser.setRole(Role.user);
+        adminUser.setRole(Role.user);
 
-        assertTrue(userService.isCandidate(testUser));
+        assertTrue(userService.isCandidate(adminUser));
     }
 
     @Test
@@ -939,6 +979,188 @@ class UserServiceImplTest {
 
         assertThrows(ServiceException.class,
             () -> userService.verifyEmail(verifyEmailRequest));
+    }
+
+    @Test
+    @DisplayName("should throw exception when confirmation doesn't match")
+    void updatePassword_shouldThrowException_whenConfirmationDoesNotMatch() {
+        updateUserPasswordRequest.setPasswordConfirmation("passwordz");
+
+        assertThrows(PasswordMatchException.class,
+            () -> userService.updatePassword(updateUserPasswordRequest));
+    }
+
+    @Test
+    @DisplayName("should throw exception user not logged in")
+    void updatePassword_shouldThrowException_whenUserNotLoggedIn() {
+        given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+        assertThrows(InvalidSessionException.class,
+            () -> userService.updatePassword(updateUserPasswordRequest));
+    }
+
+    @Test
+    @DisplayName("should set password to value returned by encryption helper method")
+    void updatePassword_shouldSetPasswordToValueReturnedByEncryptionHelperMethod() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
+
+        userService.updatePassword(updateUserPasswordRequest);
+
+        verify(mockUser).setPasswordEnc(encryptedPassword);
+        verify(userRepository).save(mockUser);
+    }
+
+    @Test
+    @DisplayName("should set change password on candidate to false if previously true and password "
+        + "successfully changed")
+    void updatePassword_shouldSetChangePasswordOnCandidateToFalseIfTrueAndPasswordChanged() {
+        candidateUser.getCandidate().setChangePassword(true);
+        // TODO how to avoid continually calling user for candidate object - but be careful!
+        given(authService.getLoggedInUser()).willReturn(Optional.of(candidateUser));
+        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
+        given(candidateRepository.findById(candidateUser.getCandidate().getId()))
+            .willReturn(Optional.of(candidateUser.getCandidate()));
+
+        userService.updatePassword(updateUserPasswordRequest);
+
+        assertFalse(candidateUser.getCandidate().isChangePassword());
+        verify(candidateRepository).save(candidateUser.getCandidate());
+    }
+    // TODO reduce mock use for everything above this line
+
+    @Test
+    @DisplayName("should throw exception if user not found")
+    void updateUserPassword_shouldThrowException_whenUserNotFound() {
+        given(userRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        assertThrows(NoSuchObjectException.class,
+            () -> userService.updateUserPassword(userId, updateUserPasswordRequest));
+    }
+
+    @Test
+    @DisplayName("should throw exception when confirmation doesn't match")
+    void updateUserPassword_shouldThrowException_whenConfirmationDoesNotMatch() {
+        updateUserPasswordRequest.setPasswordConfirmation("passwordz");
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(adminUser));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser));
+        given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
+
+        assertThrows(PasswordMatchException.class,
+            () -> userService.updateUserPassword(userId, updateUserPasswordRequest));
+    }
+
+    @Test
+    @DisplayName("should use encrypted password and save user when passwords match and updating "
+        + "user has admin privileges")
+    void updateUserPassword_shouldUseEncryptedPasswordAndSaveUser() {
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(adminUser));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser));
+        given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
+        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
+
+        userService.updateUserPassword(userId, updateUserPasswordRequest);
+
+        assertEquals(adminUser.getPasswordEnc(), encryptedPassword);
+        verify(userRepository).save(adminUser);
+    }
+
+    @Test
+    @DisplayName("should throw exception when updating user does not have admin privileges")
+    void updateUserPassword_shouldThrowException_whenUpdatingUserDoesNotHaveAdminPrivileges() {
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(adminUser));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(limitedUser));
+
+        assertThrows(InvalidRequestException.class,
+            () -> userService.updateUserPassword(userId, updateUserPasswordRequest));
+    }
+
+    @Test
+    @DisplayName("should set reset token and issue date, save user and send email")
+    void generateResetPasswordToken_shouldSetResetTokenIssuedDateAndSaveUser() {
+        given(userRepository.findByEmailIgnoreCase(sendResetPasswordEmailRequest.getEmail()))
+            .willReturn(adminUser);
+
+        userService.generateResetPasswordToken(sendResetPasswordEmailRequest);
+
+        assertNotNull(adminUser.getResetToken());
+        assertNotNull(adminUser.getResetTokenIssuedDate());
+        verify(userRepository).save(adminUser);
+        verify(emailHelper).sendResetPasswordEmail(adminUser);
+    }
+
+    @Test
+    @DisplayName("should throw exception when user not found")
+    void checkResetToken_shouldThrowException_whenUserNotFound() {
+        given(userRepository.findByResetToken(checkPasswordResetTokenRequest.getToken()))
+            .willReturn(null);
+
+        assertThrows(InvalidPasswordTokenException.class,
+            () -> userService.checkResetToken(checkPasswordResetTokenRequest));
+    }
+
+    @Test
+    @DisplayName("should throw exception when token expired")
+    void checkResetToken_shouldThrowException_whenTokenExpired() {
+        adminUser.setResetTokenIssuedDate(offsetDateTime);
+        given(userRepository.findByResetToken(checkPasswordResetTokenRequest.getToken()))
+            .willReturn(adminUser);
+
+        assertThrows(ExpiredTokenException.class,
+            () -> userService.checkResetToken(checkPasswordResetTokenRequest));
+    }
+
+    @Test
+    @DisplayName("should throw exception when confirmation doesn't match")
+    void resetPassword_shouldThrowException_whenConfirmationDoesNotMatch() {
+        resetPasswordRequest.setPasswordConfirmation("different");
+
+        assertThrows(PasswordMatchException.class,
+            () -> userService.resetPassword(resetPasswordRequest));
+    }
+
+    @Test
+    @DisplayName("should set password to encrypted version and updated date to current time, set "
+        + "token fields to null and save user")
+    void resetPassword_shouldSetEncryptedPasswordAndTokenFieldsAndSaveUser() {
+        adminUser.setResetToken("token");
+        adminUser.setResetTokenIssuedDate(offsetDateTime);
+        adminUser.setPasswordUpdatedDate(offsetDateTime);
+        given(userRepository.findByResetToken(resetPasswordRequest.getToken()))
+            .willReturn(adminUser);
+        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
+
+        userService.resetPassword(resetPasswordRequest);
+
+        assertEquals(adminUser.getPasswordEnc(), encryptedPassword);
+        assertNotEquals(adminUser.getPasswordUpdatedDate(), offsetDateTime);
+        assertNull(adminUser.getResetTokenIssuedDate());
+        assertNull(adminUser.getResetToken());
+        verify(userRepository).save(adminUser);
+    }
+
+    @Test
+    @DisplayName("should throw exception when user not found")
+    void mfaReset_shouldThrowException_whenUserNotFound() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(userRepository.findById(userId)).willReturn(Optional.empty());
+
+        assertThrows(NoSuchObjectException.class, () -> userService.mfaReset(userId));
+    }
+
+    @Test
+    @DisplayName("should reset MFA and audit fields and save user")
+    void mfaReset_shouldResetMfaAndAuditFieldsAndSaveUser() {
+        systemAdminUser.setMfaSecret("secret");
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser)); // Updating admin
+        given(userRepository.findById(userId)).willReturn(Optional.of(systemAdminUser));
+        given(authService.hasAdminPrivileges(adminUser.getRole())).willReturn(true);
+
+        userService.mfaReset(userId);
+
+        assertNull(systemAdminUser.getMfaSecret());
+        assertEquals(systemAdminUser.getUpdatedBy(), adminUser);
+        verify(userRepository).save(systemAdminUser);
     }
 
 }

@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -818,7 +819,7 @@ public class AdminApiTestUtil {
         return map;
     }
 
-    public static User getFullUser() {
+    public static User getAdminUser() {
         User u = new User("full_user",
                 "full",
                 "user",
@@ -837,6 +838,61 @@ public class AdminApiTestUtil {
         u.setPartner(getPartner());
         return u;
     }
+
+    public static User getSystemAdminUser() {
+        User u = new User("system_admin",
+            "system",
+            "admin",
+            "systemadmin@tbb.org",
+            Role.systemadmin);
+        u.setId(55L);
+        u.setJobCreator(false);
+        u.setSourceCountries(Collections.emptySet());
+        u.setReadOnly(false);
+        u.setStatus(Status.active);
+        u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setCreatedBy(caller);
+        u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setUsingMfa(true);
+        u.setPartner(getPartner());
+        return u;
+    }
+
+    public static User getLimitedUser() {
+        User u = new User("limited_user",
+            "limited",
+            "user",
+            "limited@tbb.org",
+            Role.limited);
+        u.setId(58L);
+        u.setJobCreator(false);
+        u.setSourceCountries(Collections.emptySet());
+        u.setReadOnly(false);
+        u.setStatus(Status.active);
+        u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setCreatedBy(caller);
+        u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setUsingMfa(true);
+        u.setPartner(getPartner());
+        return u;
+    }
+
+    public static User getCandidateUser() {
+        User u = new User("candidate_user",
+            "candidate",
+            "user",
+            "candidate@email.com",
+            Role.user);
+        u.setStatus(Status.active);
+        u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setCreatedBy(caller);
+        u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setUsingMfa(true);
+        u.setPartner(getPartner());
+        u.setCandidate(getCandidate());
+        return u;
+    }
+
 
   public static List<SavedSearch> getListOfSavedSearches() {
       SavedSearch savedSearch1 = getSavedSearch();

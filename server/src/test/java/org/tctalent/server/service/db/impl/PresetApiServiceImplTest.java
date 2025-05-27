@@ -81,7 +81,7 @@ class PresetApiServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    mockUser = AdminApiTestUtil.getFullUser();
+    mockUser = AdminApiTestUtil.getAdminUser();
 
     PresetGuestTokenResponse.Payload guestTokenPayload = new PresetGuestTokenResponse.Payload();
     guestTokenPayload.setGuestToken("guest-token-123");

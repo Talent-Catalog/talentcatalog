@@ -77,7 +77,7 @@ class UserAdminApiTest extends ApiTestBase {
   private static final String SEARCH_PATH = "/search";
   private static final String SEARCH_PAGED_PATH = "/search-paged";
 
-  private static final List<User> users = List.of(AdminApiTestUtil.getFullUser());
+  private static final List<User> users = List.of(AdminApiTestUtil.getAdminUser());
 
   private final Page<User> userPage =
       new PageImpl<>(
@@ -86,7 +86,7 @@ class UserAdminApiTest extends ApiTestBase {
           1
       );
 
-  private static final User fullUser = AdminApiTestUtil.getFullUser();
+  private static final User fullUser = AdminApiTestUtil.getAdminUser();
   private static final User loggedInAdminUser = AdminApiTestUtil.getUser();
   private static final User loggedInNonAdminUser = new User(
       "nonAdminUser",

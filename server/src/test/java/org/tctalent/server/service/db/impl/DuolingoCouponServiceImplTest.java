@@ -65,7 +65,7 @@ class DuolingoCouponServiceImplTest {
   private EmailHelper emailHelper;
   @InjectMocks
   private DuolingoCouponServiceImpl couponService;
-  private static final User loggedInAdminUser = AdminApiTestUtil.getFullUser();
+  private static final User loggedInAdminUser = AdminApiTestUtil.getAdminUser();
 
   @BeforeEach
   void setUp() {
