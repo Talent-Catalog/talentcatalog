@@ -18,7 +18,6 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
-import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -26,41 +25,50 @@ import {MockJob} from "../../../../../../MockData/MockJob";
 import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {LocalStorageService} from "../../../../../../services/local-storage.service";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
+import {ReadOnlyInputsDirective} from "../../../../../../directives/read-only-inputs.directive";
+import {IntProtectionComponent} from "../../../../visa/int-protection/int-protection.component";
+import {MockCandidateVisa} from "../../../../../../MockData/MockCandidateVisa";
+import {DestinationFamilyComponent} from "../../../../visa/destination-family/destination-family.component";
+import {HealthAssessmentComponent} from "../../../../visa/health-assessment/health-assessment.component";
 
-describe('VisaCheckAuComponent', () => {
+fdescribe('VisaCheckAuComponent', () => {
   let component: VisaCheckAuComponent;
   let fixture: ComponentFixture<VisaCheckAuComponent>;
   const mockCandidate = new MockCandidate();
-  let authServiceMock: jasmine.SpyObj<AuthorizationService>;
+  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
 
   beforeEach(async () => {
-    authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
-    await TestBed.configureTestingModule({
-      declarations: [ VisaCheckAuComponent ],
+    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
+    TestBed.configureTestingModule({
+      declarations: [ VisaCheckAuComponent, ReadOnlyInputsDirective, IntProtectionComponent, DestinationFamilyComponent, HealthAssessmentComponent ],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule ,NgSelectModule],
       providers: [
         { provide: NgbModal, useValue: {} },
         { provide: LocalStorageService, useValue: {} },
-        { provide: AuthorizationService, useValue: authServiceMock },
+        { provide: AuthorizationService, useValue: authServiceSpyObj },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    .compileComponents();
+    });
+
+    TestBed.overrideComponent(IntProtectionComponent, {
+      set: {
+        template: '<ng-select [class.readonly]="isEditable()"></ng-select>'
+      }
+    });
+
+    TestBed.compileComponents().then(() => {
+      fixture = TestBed.createComponent(VisaCheckAuComponent);
+      component = fixture.componentInstance;
+      authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
+    });
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VisaCheckAuComponent);
-    component = fixture.componentInstance;
 
     // Initialize input properties
     component.candidate = mockCandidate;
     component.candidateIntakeData = {...mockCandidateIntakeData,candidateDestinations:[MockJob.country]}
-    component.visaCheckRecord = {
-      candidateVisaJobChecks: [
-        { id: 1 } as CandidateVisaJobCheck,
-        { id: 2 } as CandidateVisaJobCheck
-      ]
-    } as CandidateVisa;
+    component.visaCheckRecord = MockCandidateVisa;
 
     fixture.detectChanges();
   });
@@ -79,4 +87,12 @@ describe('VisaCheckAuComponent', () => {
     expect(component.selectedJob).toBe(component.visaCheckRecord.candidateVisaJobChecks[0]);
   });
 
+  it('should set inputs to read only if isEditable is false', () => {
+    authorizationServiceSpy.isEditableCandidate.and.returnValue(false);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    const readOnly = compiled.querySelector('ng-select');
+    expect(component.isEditable()).toBeFalse();
+    expect(readOnly.classList.contains('read-only')).toBeTrue();
+  });
 });
