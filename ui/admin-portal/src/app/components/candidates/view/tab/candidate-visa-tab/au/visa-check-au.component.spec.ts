@@ -31,7 +31,7 @@ import {MockCandidateVisa} from "../../../../../../MockData/MockCandidateVisa";
 import {DestinationFamilyComponent} from "../../../../visa/destination-family/destination-family.component";
 import {HealthAssessmentComponent} from "../../../../visa/health-assessment/health-assessment.component";
 
-fdescribe('VisaCheckAuComponent', () => {
+describe('VisaCheckAuComponent', () => {
   let component: VisaCheckAuComponent;
   let fixture: ComponentFixture<VisaCheckAuComponent>;
   const mockCandidate = new MockCandidate();
