@@ -60,7 +60,7 @@ import org.tctalent.server.security.TcUserDetailsService;
  * also
  * https://www.marcobehler.com/guides/spring-security
  * <p/>
- * Summary of TBB Talent Catalog security:
+ * Summary of Talent Catalog security:
  *
  * <ul>
  *     <li>
@@ -464,7 +464,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        String urls = env.getProperty("tbb.cors.urls");
+        String urls = env.getProperty("tc.cors.urls");
         List<String> corsUrls = new ArrayList<>();
         if (StringUtils.isNotBlank(urls)) {
             Collections.addAll(corsUrls, urls.split(","));

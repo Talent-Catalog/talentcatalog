@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {OfferToAssistComponent} from './offer-to-assist.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -6,7 +6,7 @@ import {OfferToAssistService} from "../../../services/offer-to-assist.service";
 import {SearchResults} from "../../../model/search-results";
 import {CandidateAssistanceType, OfferToAssist} from "../../../model/offer-to-assist";
 import {MockPartner} from "../../../MockData/MockPartner";
-import {of} from "rxjs";
+import {of, throwError} from "rxjs";
 import {NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('OfferToAssistComponent', () => {
@@ -63,4 +63,45 @@ describe('OfferToAssistComponent', () => {
     expect(component.results).toEqual(mockResults);
     expect(component.loading).toBeFalse();
   });
+
+  it('should handle error on search failure', () => {
+    const mockError = { message: 'Search failed' };
+    offerToAssistServiceSpy.search.and.returnValue(throwError(mockError));
+
+    component.search();
+    expect(component.loading).toBeFalse();
+    expect(component.error).toBeDefined();
+  });
+
+  it('should trigger search when keyword changes (debounced)', fakeAsync(() => {
+    const searchSpy = spyOn(component, 'search').and.callThrough();
+
+    component.searchForm.controls['keyword'].setValue('developer');
+    tick(400);
+    expect(searchSpy).toHaveBeenCalled();
+  }));
+
+  it('should populate results content with expected offers', () => {
+    component.search();
+    expect(component.results.content.length).toBe(1);
+    expect(component.results.content[0].id).toBe(1);
+    expect(component.results.content[0].reason).toBe(CandidateAssistanceType.JOB_OPPORTUNITY);
+  });
+
+  it('should send correct KeywordPagedSearchRequest object', () => {
+    component.searchForm.controls['keyword'].setValue('test');
+    component.pageNumber = 2;
+    component.pageSize = 25;
+
+    component.search();
+
+    const expectedRequest = {
+      keyword: 'test',
+      pageNumber: 1,
+      pageSize: 25
+    };
+
+    expect(offerToAssistServiceSpy.search).toHaveBeenCalledWith(expectedRequest);
+  });
+
 });

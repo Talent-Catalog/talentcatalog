@@ -88,4 +88,63 @@ describe('EditCandidateOppComponent', () => {
     component.cancel();
     expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
   });
+
+  it('should close the modal with form values when onSave is called', () => {
+    component.salesforceStageForm.setValue({
+      stage: 'Interview',
+      nextStep: 'Send feedback',
+      nextStepDueDate: '2024-06-01',
+      closingComments: 'All went well.',
+      closingCommentsForCandidate: 'You did great!',
+      employerFeedback: 'Positive response from employer.'
+    });
+
+    component.onSave();
+
+    expect(mockActiveModal.close).toHaveBeenCalledWith({
+      stage: 'Interview',
+      nextStep: 'Send feedback',
+      nextStepDueDate: '2024-06-01',
+      closingComments: 'All went well.',
+      closingCommentsForCandidate: 'You did great!',
+      employerFeedback: 'Positive response from employer.'
+    });
+  });
+
+  it('should update stageHelpRequest when stage selection changes', () => {
+    const stage = { key: 'Closed_Hired' };
+    component.onStageSelectionChange(stage);
+    expect(component.stageHelpRequest).toEqual({ caseStage: 'Closed_Hired' });
+  });
+
+  it('should filter stage options to only closed ones if closing is true', () => {
+    component.opp = mockCandidateOpportunity;
+    component.closing = true;
+    component.ngOnInit();
+
+    const allStagesClosed = component.candidateOpportunityStageOptions.every(opt => opt.stringValue.startsWith('Closed'));
+    expect(allStagesClosed).toBeTrue();
+  });
+
+  it('form control getters should return correct values', () => {
+    const formValues = {
+      stage: 'Screening',
+      nextStep: 'Schedule call',
+      nextStepDueDate: '2025-01-01',
+      closingComments: 'Test comment',
+      closingCommentsForCandidate: 'Candidate comment',
+      employerFeedback: 'Great'
+    };
+
+    component.salesforceStageForm.setValue(formValues);
+
+    expect(component.stage).toBe(formValues.stage);
+    expect(component.nextStep).toBe(formValues.nextStep);
+    expect(component.nextStepDueDate).toBe(formValues.nextStepDueDate);
+    expect(component.closingComments).toBe(formValues.closingComments);
+    expect(component.closingCommentsForCandidate).toBe(formValues.closingCommentsForCandidate);
+    expect(component.employerFeedback).toBe(formValues.employerFeedback);
+  });
+
+
 });

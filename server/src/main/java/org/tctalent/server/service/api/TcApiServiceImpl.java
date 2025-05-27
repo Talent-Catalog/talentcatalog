@@ -58,6 +58,21 @@ public class TcApiServiceImpl implements TcApiService {
   }
 
   @Override
+  public String runApiMigrationByListId(long listId) throws RestClientException {
+    try {
+      return restClient.post()
+          .uri("/batch/jobs/run/list/" + listId)
+          .contentType(APPLICATION_JSON)
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
+  @Override
   public String runAuroraMigration() throws RestClientException {
     try {
       return restClient.post()
