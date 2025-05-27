@@ -52,7 +52,7 @@ describe('VisaCheckAuComponent', () => {
 
     TestBed.overrideComponent(IntProtectionComponent, {
       set: {
-        template: '<ng-select [class.readonly]="isEditable()"></ng-select>'
+        template: '<ng-select [class.readonly]="!isEditable()"></ng-select>'
       }
     });
 
@@ -89,7 +89,7 @@ describe('VisaCheckAuComponent', () => {
 
   it('should set inputs to read only if isEditable is false', () => {
     authorizationServiceSpy.isEditableCandidate.and.returnValue(false);
-    fixture.detectChanges();
+    component.isEditable()
     const compiled = fixture.nativeElement;
     const readOnly = compiled.querySelector('ng-select');
     expect(component.isEditable()).toBeFalse();
