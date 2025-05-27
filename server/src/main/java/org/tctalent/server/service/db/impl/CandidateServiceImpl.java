@@ -146,6 +146,7 @@ import org.tctalent.server.request.candidate.CreateCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -1670,9 +1671,23 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate submitRegistration() {
+    public Candidate submitRegistration(SubmitRegistrationRequest request) {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        if (request.getAcceptedPrivacyPolicyId() == null) {
+            //We can only register if the privacy policy has been accepted.
+            throw new InvalidRequestException("Privacy policy has not been accepted");
+        }
+        if (!request.isContactConsentRegistration() || !request.isContactConsentPartners()) {
+            //We can only register if both consents are given
+            throw new InvalidRequestException("Cannot register unless all consents are given");
+        }
+        candidate.setContactConsentRegistration(true);
+        candidate.setContactConsentPartners(true);
+
+        //TODO JC Need to store accepted terms id plus date
+
         // Don't update status to pending if status is already pending
         final CandidateStatus candidateStatus = candidate.getStatus();
         if (!candidateStatus.equals(CandidateStatus.pending)) {

@@ -19,7 +19,6 @@ import {UntypedFormGroup} from "@angular/forms";
 import {RegistrationService} from "../../../services/registration.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {CandidateStatus} from "../../../model/candidate";
 
 @Component({
   selector: 'app-registration-upload-file',
@@ -52,23 +51,6 @@ export class RegistrationUploadFileComponent implements OnInit {
     } else {
       this.activeIds = ''
     }
-  }
-
-  //Final registration step method
-  submit() {
-    this.saving = true;
-    this.candidateService.submitRegistration().subscribe(
-      (candidate) => {
-        this.saving = false;
-        //Successful registration changes candidate status
-        this.authenticationService.setCandidateStatus(CandidateStatus[candidate.status]);
-        this.next();
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
   }
 
   // Methods during registration process.

@@ -1,0 +1,20 @@
+.terms-wrapper {
+  max-width: 500px;
+  margin: auto;
+  padding: 1rem;
+  font-family: sans-serif;
+}
+
+.terms-box {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
+}
+
+label {
+  display: block;
+  margin-bottom: 1rem;
+}

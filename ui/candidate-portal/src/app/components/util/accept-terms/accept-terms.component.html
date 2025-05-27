@@ -1,0 +1,12 @@
+<div class="terms-wrapper">
+  <div #termsBox class="terms-box" (scroll)="onScroll(termsBox)">
+    <ng-content></ng-content>
+  </div>
+
+  <label>
+    <input type="checkbox" [disabled]="!scrolledToBottom" [(ngModel)]="termsAccepted" />
+    I accept the Terms and Conditions
+  </label>
+
+  <button [disabled]="!termsAccepted" (click)="onContinue()">Continue</button>
+</div>

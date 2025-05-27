@@ -432,6 +432,12 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   contactConsentPartners?: string;
 }
 
+export class SubmitRegistrationRequest {
+  acceptedPrivacyPolicyId?: number;
+  contactConsentRegistration?: boolean;
+  contactConsentPartners?: boolean;
+}
+
 export interface UpdateCandidateOppsRequest {
   candidateIds: number[];
   sfJobOppId: string;

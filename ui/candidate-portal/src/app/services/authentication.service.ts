@@ -37,7 +37,7 @@ import {CandidateStatus} from "../model/candidate";
 export class AuthenticationService implements OnDestroy {
   apiUrl = environment.apiUrl + '/auth';
 
-  candidateStatus: CandidateStatus;
+  private candidateStatus: CandidateStatus;
 
   /**
    * Stores current logged in state

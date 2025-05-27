@@ -228,8 +228,9 @@ import { VerifyEmailComponent } from './components/account/verify-email/verify-e
 import {DuolingoCouponComponent} from './components/profile/view/tab/services/duolingo/duolingo-coupon/duolingo-coupon.component';
 import { DuolingoComponent } from './components/profile/view/tab/services/duolingo/duolingo.component';
 import { CasiHeaderComponent } from './components/common/casi-header/casi-header.component';
-import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
+import { TermsComponent } from './components/privacy-policy/terms.component';
 import { RegistrationSubmitComponent } from './components/register/submit/registration-submit.component';
+import { AcceptTermsComponent } from './components/util/accept-terms/accept-terms.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -313,8 +314,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     DuolingoCouponComponent,
     DuolingoComponent,
     CasiHeaderComponent,
-    PrivacyPolicyComponent,
+    TermsComponent,
     RegistrationSubmitComponent,
+    AcceptTermsComponent,
   ],
   imports: [
     BrowserModule,

@@ -18,7 +18,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
-import {Candidate, UpdateCandidateNotificationPreferenceRequest} from '../model/candidate';
+import {
+  Candidate,
+  SubmitRegistrationRequest,
+  UpdateCandidateNotificationPreferenceRequest
+} from '../model/candidate';
 import {map} from 'rxjs/operators';
 import {LocalStorageService} from "./local-storage.service";
 
@@ -126,8 +130,8 @@ export class CandidateService {
     }));
   }
 
-  submitRegistration(): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/submit`, null);
+  submitRegistration(request: SubmitRegistrationRequest): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/submit`, request);
   }
 
   getCandNumberStorage(): string {

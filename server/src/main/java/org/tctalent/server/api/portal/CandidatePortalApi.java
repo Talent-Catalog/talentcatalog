@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.TaskDtoHelper;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
@@ -208,8 +209,9 @@ public class CandidatePortalApi {
     }
 
     @PostMapping("submit")
-    public Map<String, Object> submitRegistration() {
-        Candidate candidate = this.candidateService.submitRegistration();
+    public Map<String, Object> submitRegistration(
+        @RequestBody SubmitRegistrationRequest submitRegistrationRequest) {
+        Candidate candidate = this.candidateService.submitRegistration(submitRegistrationRequest);
         return candidateStatusDto().build(candidate);
     }
 
