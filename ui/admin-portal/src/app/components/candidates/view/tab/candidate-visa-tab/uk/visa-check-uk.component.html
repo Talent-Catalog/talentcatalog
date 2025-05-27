@@ -32,7 +32,7 @@
 
   <div>
     <!-- ACCORDION VERSION OF FORM  -->
-    <ngb-accordion #visaUK="ngbAccordion" [destroyOnHide]="false" [activeIds]="'visa-uk-destination'">
+    <ngb-accordion #visaUK="ngbAccordion" [destroyOnHide]="false" [activeIds]="'visa-uk-destination'" [appReadOnlyInputs]="!isEditable()">
 
 
       <ngb-panel id="visa-uk-destination" title="Destination">
@@ -59,7 +59,7 @@
   </app-candidate-visa-job>
 
   <!--  Generate all job entries - but only one is enabled and loaded at a time. Reloaded with selectedJobIndex changes.-->
-  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;" class="mt-3">
+  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;" class="mt-3" [appReadOnlyInputs]="!isEditable()">
     <app-visa-job-check-uk *ngIf="job.id == selectedJob.id"
                            [selectedJobCheck]="job"
                            [candidate]="candidate"

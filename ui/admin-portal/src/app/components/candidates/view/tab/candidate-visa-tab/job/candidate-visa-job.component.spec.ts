@@ -18,7 +18,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 
 import {CandidateVisaJobComponent} from './candidate-visa-job.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -44,7 +44,7 @@ describe('CandidateVisaJobComponent', () => {
   beforeEach(async () => {
     candidateVisaJobServiceMock = jasmine.createSpyObj('CandidateService', ['create', 'delete', 'get']);
     modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
-    authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly']);
+    authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly', 'isEditableCandidate']);
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,RouterTestingModule],
       declarations: [CandidateVisaJobComponent],

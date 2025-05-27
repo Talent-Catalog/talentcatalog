@@ -288,7 +288,6 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
-                .add("migrationOccupation")
                 ;
     }
 
