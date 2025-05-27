@@ -82,6 +82,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -121,6 +122,7 @@ class UserServiceImplTest {
     private User systemAdminUser;
     private User limitedUser;
     private User candidateUser;
+    private Partner adminUserPartner;
     private Long approverId;
     private Long partnerId;
     private List<Country> sourceCountryList;
@@ -173,6 +175,7 @@ class UserServiceImplTest {
         systemAdminUser = AdminApiTestUtil.getSystemAdminUser();
         candidateUser = AdminApiTestUtil.getCandidateUser();
         limitedUser = AdminApiTestUtil.getLimitedUser();
+        adminUserPartner = adminUser.getPartner();
         approverId = 1L;
         partnerId = 1L;
         loginUsername = "person@email.com";
@@ -875,17 +878,16 @@ class UserServiceImplTest {
         User result = userService.getLoggedInUser();
         assertEquals(mockUser, result);
     }
+    // TODO reduce mock use for everything above this line
 
     @Test
     @DisplayName("should return partner when user retrieved")
     void getLoggedInPartner_shouldReturnPartner_whenUserRetrieved() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        given(mockUser.getId()).willReturn(userId);
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser));
-        given(mockUser.getPartner()).willReturn(mockPartnerImpl);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(userRepository.findById(adminUser.getId())).willReturn(Optional.of(adminUser));
 
         Partner result = userService.getLoggedInPartner();
-        assertEquals(mockPartnerImpl, result);
+        assertEquals(adminUserPartner, result);
     }
 
     @Test
@@ -910,25 +912,25 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return result from find by username and role")
     void getSystemAdminUser_shouldReturnResultFromFindByUsernameAndRole() {
-        given(userRepository.findByUsernameAndRole(any(), any())).willReturn(mockUser);
+        given(userRepository.findByUsernameAndRole(any(), any())).willReturn(systemAdminUser);
 
         User result = userService.getSystemAdminUser();
 
-        Assertions.assertSame(mockUser, result);
+        Assertions.assertSame(systemAdminUser, result);
     }
 
     @Test
     @DisplayName("should set token, issued date and send verification email when user retrieved")
     void sendVerifyEmailRequest_shouldSendVerificationEmail_ifUserRetrieved() {
         given(userRepository.findByEmailIgnoreCase(sendVerifyEmailRequest.getEmail()))
-            .willReturn(mockUser);
+            .willReturn(adminUser);
 
         userService.sendVerifyEmailRequest(sendVerifyEmailRequest);
 
-        verify(mockUser).setEmailVerificationToken(anyString());
-        verify(mockUser).setEmailVerificationTokenIssuedDate(any(OffsetDateTime.class));
-        verify(userRepository).save(mockUser);
-        verify(emailHelper).sendVerificationEmail(mockUser);
+        assertNotNull(adminUser.getEmailVerificationToken());
+        assertNotNull(adminUser.getEmailVerificationToken());
+        verify(userRepository).save(adminUser);
+        verify(emailHelper).sendVerificationEmail(adminUser);
     }
 
     @Test
@@ -939,10 +941,10 @@ class UserServiceImplTest {
 
         userService.sendVerifyEmailRequest(sendVerifyEmailRequest);
 
-        verify(mockUser, never()).setEmailVerificationToken(anyString());
-        verify(mockUser, never()).setEmailVerificationTokenIssuedDate(any(OffsetDateTime.class));
-        verify(userRepository, never()).save(mockUser);
-        verify(emailHelper, never()).sendVerificationEmail(mockUser);
+        assertNull(adminUser.getEmailVerificationToken());
+        assertNull(adminUser.getEmailVerificationTokenIssuedDate());
+        verify(userRepository, never()).save(any(User.class));
+        verify(emailHelper, never()).sendVerificationEmail(any(User.class));
     }
 
     @Test
@@ -958,24 +960,24 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should set email verified to true, save user and send complete email when token valid")
     void verifyEmail_shouldSucceed_whenTokenValid() {
+        adminUser.setEmailVerificationTokenIssuedDate(OffsetDateTime.now());
+        adminUser.setEmailVerified(false);
         given(userRepository.findByEmailVerificationToken(verifyEmailRequest.getToken()))
-            .willReturn(mockUser);
-        given(mockUser.getEmailVerificationTokenIssuedDate()).willReturn(OffsetDateTime.now());
+            .willReturn(adminUser);
 
         userService.verifyEmail(verifyEmailRequest);
 
-        verify(mockUser).setEmailVerified(eq(true));
-        verify(userRepository).save(mockUser);
-        verify(emailHelper).sendCompleteVerificationEmail(mockUser, true);
+        assertTrue(adminUser.getEmailVerified());
+        verify(userRepository).save(adminUser);
+        verify(emailHelper).sendCompleteVerificationEmail(adminUser, true);
     }
 
     @Test
     @DisplayName("should throw exception when token expired")
     void verifyEmail_shouldThrowException_whenTokenExpired() {
+        adminUser.setEmailVerificationTokenIssuedDate(OffsetDateTime.now().minus(Period.ofDays(7)));
         given(userRepository.findByEmailVerificationToken(verifyEmailRequest.getToken()))
-            .willReturn(mockUser);
-        given(mockUser.getEmailVerificationTokenIssuedDate())
-            .willReturn(OffsetDateTime.now().minus(Period.ofDays(7)));
+            .willReturn(adminUser);
 
         assertThrows(ServiceException.class,
             () -> userService.verifyEmail(verifyEmailRequest));
@@ -1002,32 +1004,31 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should set password to value returned by encryption helper method")
     void updatePassword_shouldSetPasswordToValueReturnedByEncryptionHelperMethod() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(candidateUser));
         given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
 
         userService.updatePassword(updateUserPasswordRequest);
 
-        verify(mockUser).setPasswordEnc(encryptedPassword);
-        verify(userRepository).save(mockUser);
+        assertEquals(candidateUser.getPasswordEnc(), encryptedPassword);
+        verify(userRepository).save(candidateUser);
     }
 
     @Test
     @DisplayName("should set change password on candidate to false if previously true and password "
         + "successfully changed")
     void updatePassword_shouldSetChangePasswordOnCandidateToFalseIfTrueAndPasswordChanged() {
-        candidateUser.getCandidate().setChangePassword(true);
-        // TODO how to avoid continually calling user for candidate object - but be careful!
+        Candidate candidate = candidateUser.getCandidate();
+        candidate.setChangePassword(true);
         given(authService.getLoggedInUser()).willReturn(Optional.of(candidateUser));
         given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
-        given(candidateRepository.findById(candidateUser.getCandidate().getId()))
-            .willReturn(Optional.of(candidateUser.getCandidate()));
+        given(candidateRepository.findById(candidate.getId()))
+            .willReturn(Optional.of(candidate));
 
         userService.updatePassword(updateUserPasswordRequest);
 
-        assertFalse(candidateUser.getCandidate().isChangePassword());
-        verify(candidateRepository).save(candidateUser.getCandidate());
+        assertFalse(candidate.isChangePassword());
+        verify(candidateRepository).save(candidate);
     }
-    // TODO reduce mock use for everything above this line
 
     @Test
     @DisplayName("should throw exception if user not found")

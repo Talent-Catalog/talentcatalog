@@ -825,6 +825,7 @@ public class AdminApiTestUtil {
                 "user",
                 "full.user@tbb.org",
                 Role.admin);
+        u.setId(555L);
         u.setJobCreator(true);
         u.setApprover(caller);
         u.setPurpose("Complete intakes");
@@ -845,7 +846,7 @@ public class AdminApiTestUtil {
             "admin",
             "systemadmin@tbb.org",
             Role.systemadmin);
-        u.setId(55L);
+        u.setId(57L);
         u.setJobCreator(false);
         u.setSourceCountries(Collections.emptySet());
         u.setReadOnly(false);
