@@ -285,6 +285,12 @@ public class SystemAdminApi {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("run_api_migration/list/{listId}")
+    public ResponseEntity<String> runApiMigrationByListId(@PathVariable("listId") long listId) {
+        String response = tcApiService.runApiMigrationByListId(listId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("run_api_migration/{name}")
     public ResponseEntity<String> runApiMigration(@PathVariable("name") String name) {
         if (name == null || name.isBlank()) {

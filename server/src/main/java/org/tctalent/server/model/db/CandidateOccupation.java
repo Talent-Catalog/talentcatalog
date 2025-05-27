@@ -49,8 +49,6 @@ public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
 
     private Boolean topCandidate;
 
-    private String migrationOccupation;
-
     //Todo Figure out why Cascade = MERGE doesn't work. Why do we need ALL. What does this mean?
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateOccupation", cascade = CascadeType.ALL)
     private List<CandidateJobExperience> candidateJobExperiences;

@@ -23,9 +23,7 @@ import {
   CreateCandidateVisaCheckRequest
 } from '../../../../../services/candidate-visa-check.service';
 import {Country} from '../../../../../model/country';
-import {
-  HasNameSelectorComponent
-} from '../../../../util/has-name-selector/has-name-selector.component';
+import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../model/candidate';
@@ -190,5 +188,8 @@ export class CandidateVisaTabComponent implements OnInit {
     return this.authService.isSystemAdminOnly();
   }
 
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
+  }
 
 }

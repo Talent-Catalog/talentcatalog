@@ -21,10 +21,8 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 import {CountryService} from "../../../../../services/country.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {
-  HasNameSelectorComponent
-} from "../../../../util/has-name-selector/has-name-selector.component";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {HasNameSelectorComponent} from "../../../../util/has-name-selector/has-name-selector.component";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
@@ -47,7 +45,7 @@ describe('CandidateVisaTabComponent', () => {
     countryServiceMock = jasmine.createSpyObj('CountryService', ['listTCDestinations']);
     candidateVisaCheckServiceMock = jasmine.createSpyObj('CandidateVisaCheckService', ['create', 'list']);
     modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
-    authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly']);
+    authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly', 'isEditableCandidate']);
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
