@@ -1448,14 +1448,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * When the updating candidate is a new registrant, we check for an auto-assign partner in their
-     * given country location, assigning them to it if there is one.
-     * <p>
-     * If not, we check that their currently assigned partner is operational in that country,
-     * assigning them to the default source partner if not.
-     * <p>
-     * Guards against the scenario where a registrant uses a link with a param that would assign
-     * them to a partner who doesn't operate in their location.
+     * When a new registrant is assigned to a partner that isn't operational in their given country
+     * location, reassign them to the auto-assign partner or, if none exists, the default source
+     * partner.
      * @param candidate The updating/registering candidate
      * @param country Their given country location
      */
@@ -1467,22 +1462,25 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         User user = candidate.getUser();
-        PartnerImpl currentUserPartner = user.getPartner();
+        PartnerImpl currentPartner = user.getPartner();
 
-        Partner autoAssignedCountryPartner =
-            partnerService.getAutoAssignablePartnerByCountry(country);
+        if (
+            !currentPartner.canManageCandidatesInCountry(country) ||
+                currentPartner.isDefaultSourcePartner()
+        ) {
+            Partner autoAssignedCountryPartner =
+                partnerService.getAutoAssignablePartnerByCountry(country);
 
-        if (autoAssignedCountryPartner != null) {
-            if (currentUserPartner != autoAssignedCountryPartner) {
+            if (autoAssignedCountryPartner != null) {
                 user.setPartner((PartnerImpl) autoAssignedCountryPartner);
                 userRepository.save(user);
+                return;
             }
-            return;
-        }
 
-        if (!currentUserPartner.canManageCandidatesInCountry(country)) {
-            user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
-            userRepository.save(user);
+            if (!currentPartner.isDefaultSourcePartner()) {
+                user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
+                userRepository.save(user);
+            }
         }
     }
 
