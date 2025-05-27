@@ -14,7 +14,8 @@ export class TermsInfoService {
   constructor(private http: HttpClient) { }
 
   getCurrentByType(type: TermsType): Observable<TermsInfo> {
-    return this.http.get<TermsInfo>(`${this.apiUrl}/type/${type}`);
+    let typeName = TermsType[type];
+    return this.http.get<TermsInfo>(`${this.apiUrl}/type/${typeName}`);
   }
 
 }

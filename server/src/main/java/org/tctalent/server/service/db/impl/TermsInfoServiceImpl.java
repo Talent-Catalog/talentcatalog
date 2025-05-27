@@ -6,6 +6,7 @@ package org.tctalent.server.service.db.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.TermsInfo;
@@ -26,6 +27,7 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     private final TermsInfoRepository termsInfoRepository;
 
     @Override
+    @NonNull
     public TermsInfo getCurrentByType(TermsType termsType) {
         return termsInfoRepository.findFirstByTypeOrderByCreatedDateDesc(termsType)
             .orElseThrow(() -> new NoSuchObjectException(TermsInfo.class, termsType.name()));

@@ -4,6 +4,7 @@
 
 package org.tctalent.server.service.db;
 
+import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.TermsInfo;
 import org.tctalent.server.model.db.TermsType;
 
@@ -14,5 +15,6 @@ import org.tctalent.server.model.db.TermsType;
  */
 public interface TermsInfoService {
 
+    @NonNull
     TermsInfo getCurrentByType(TermsType termsType);
 }

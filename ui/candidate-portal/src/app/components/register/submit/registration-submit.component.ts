@@ -35,22 +35,10 @@ export class RegistrationSubmitComponent implements OnInit {
     //Fetch the current candidate privacy policy
     this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY).subscribe(
       {
-        next: termsInfo => {this.currentPrivacyPolicy = termsInfo},
+        next: termsInfo => this.currentPrivacyPolicy = termsInfo,
         error: err => this.error = err
       }
     )
-
-    //todo load current privacy policy
-    this.currentPrivacyPolicy = {
-      id: 1,
-      type: TermsType.CANDIDATE_PRIVACY_POLICY,
-
-      //todo We could substitute into this string using TimeLeaf or manually. But is it needed?
-      content: "<p>John was here {{partnerName}}</p><p>and on this line</p>",
-      version: "1.0",
-      creationDate: new Date()
-    }
-
   }
 
   //Final registration step method

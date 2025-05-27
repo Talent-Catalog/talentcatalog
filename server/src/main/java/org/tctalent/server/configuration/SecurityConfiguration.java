@@ -140,7 +140,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/admin/auth").permitAll()
                 .requestMatchers("/api/admin/auth/**").permitAll()
                 .requestMatchers("/api/admin/branding").permitAll()
-                .requestMatchers("/api/admin/terms-info").permitAll()
+                .requestMatchers("/api/admin/terms-info/**").permitAll()
                 .requestMatchers("/api/admin/user/reset-password-email").permitAll()
                 .requestMatchers("/api/admin/user/check-token").permitAll()
                 .requestMatchers("/api/admin/user/reset-password").permitAll()
