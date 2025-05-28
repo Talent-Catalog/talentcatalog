@@ -826,6 +826,7 @@ public class AdminApiTestUtil {
                 "full.user@tbb.org",
                 Role.admin);
         u.setId(555L);
+        u.setStatus(Status.active);
         u.setJobCreator(true);
         u.setApprover(caller);
         u.setPurpose("Complete intakes");

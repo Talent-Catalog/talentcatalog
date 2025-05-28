@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -114,10 +113,11 @@ class UserServiceImplTest {
 
     private Sort sort;
     private PageRequest pageRequest;
+    private List<User> userList;
     private Page<User> userPage;
     private long userId;
     private User expectedUser;
-    private UpdateUserRequest request;
+    private UpdateUserRequest updateUserRequest;
     private User adminUser;
     private User systemAdminUser;
     private User limitedUser;
@@ -126,7 +126,6 @@ class UserServiceImplTest {
     private Long approverId;
     private Long partnerId;
     private List<Country> sourceCountryList;
-    private String loginUsername;
     private LoginRequest loginRequest;
     private SendVerifyEmailRequest sendVerifyEmailRequest;
     private VerifyEmailRequest verifyEmailRequest;
@@ -138,8 +137,6 @@ class UserServiceImplTest {
     private CheckPasswordResetTokenRequest checkPasswordResetTokenRequest;
 
     @Mock private UserRepository userRepository;
-    @Mock private User mockUser;
-    @Mock private User mockUser2;
     @Mock private SearchUserRequest searchUserRequest;
     @Mock private Specification<User> mockedUserSpec;
     @Mock private CountryRepository countryRepository;
@@ -164,26 +161,26 @@ class UserServiceImplTest {
     @BeforeEach
     void setUp() {
         sort = Sort.unsorted();
-        pageRequest = PageRequest.of(0, 10, sort);
-        userPage = new PageImpl<>(List.of(mockUser, mockUser2));
         userId = 11L;
         sourceCountryList = List.of(mockCountry, mockCountry2);
         CreateUpdateUserTestData testData = AdminApiTestUtil.createUpdateUserRequestAndExpectedUser();
         expectedUser = testData.expectedUser();
-        request = testData.request();
+        updateUserRequest = testData.request();
         adminUser = AdminApiTestUtil.getAdminUser();
         systemAdminUser = AdminApiTestUtil.getSystemAdminUser();
         candidateUser = AdminApiTestUtil.getCandidateUser();
         limitedUser = AdminApiTestUtil.getLimitedUser();
         adminUserPartner = adminUser.getPartner();
+        pageRequest = PageRequest.of(0, 10, sort);
+        userList = List.of(limitedUser, adminUser);
+        userPage = new PageImpl<>(userList);
         approverId = 1L;
         partnerId = 1L;
-        loginUsername = "person@email.com";
         loginRequest = new LoginRequest();
-        loginRequest.setUsername(loginUsername);
+        loginRequest.setUsername(adminUser.getEmail()); // Simulate email used for login
         loginRequest.setPassword("password");
         sendVerifyEmailRequest = new SendVerifyEmailRequest();
-        sendVerifyEmailRequest.setEmail(request.getEmail());
+        sendVerifyEmailRequest.setEmail(updateUserRequest.getEmail());
         verifyEmailRequest = new VerifyEmailRequest();
         verifyEmailRequest.setToken("fakeToken");
         updateUserPasswordRequest = new UpdateUserPasswordRequest();
@@ -205,11 +202,11 @@ class UserServiceImplTest {
     @DisplayName("should return user")
     void findByUsernameAndRole_shouldReturnUser() {
         given(userRepository.findByUsernameAndRole("alice", Role.user))
-            .willReturn(mockUser);
+            .willReturn(adminUser);
 
         User result = userService.findByUsernameAndRole("alice", Role.user);
 
-        assertEquals(mockUser, result);
+        assertEquals(adminUser, result);
         verify(userRepository).findByUsernameAndRole("alice", Role.user);
     }
 
@@ -235,11 +232,11 @@ class UserServiceImplTest {
                 .thenReturn(mockedUserSpec);
             given(searchUserRequest.getSort()).willReturn(sort);
             given(userRepository.findAll(mockedUserSpec, sort))
-                .willReturn(List.of(mockUser, mockUser2));
+                .willReturn(List.of(limitedUser, adminUser));
 
             List<User> results = userService.search(searchUserRequest);
 
-            assertEquals(List.of(mockUser, mockUser2), results);
+            assertEquals(List.of(limitedUser, adminUser), results);
             verify(userRepository).findAll(mockedUserSpec, sort);
         }
     }
@@ -305,11 +302,11 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return user when found")
     void findById_shouldReturnUser() {
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
 
         User result = userService.getUser(userId);
 
-        assertEquals(mockUser, result);
+        assertEquals(adminUser, result);
         verify(userRepository).findById(userId);
     }
 
@@ -330,13 +327,13 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return all countries when user has no source countries")
     public void getDefaultSourceCountries_shouldReturnAllCountries_whenUserHasNoSourceCountries() {
-        request.setSourceCountries(sourceCountryList);
+        updateUserRequest.setSourceCountries(sourceCountryList);
 
         List<Country> allCountriesList = Arrays.asList(mockCountry, mockCountry2);
-        given(mockUser.getSourceCountries()).willReturn(Collections.emptySet());
+        adminUser.setSourceCountries(Collections.emptySet());
         given(countryRepository.findAll()).willReturn(allCountriesList);
 
-        Set<Country> result = userService.getDefaultSourceCountries(mockUser); // When
+        Set<Country> result = userService.getDefaultSourceCountries(adminUser); // When
 
         assertEquals(2, result.size());
         assertTrue(result.contains(mockCountry));
@@ -347,9 +344,9 @@ class UserServiceImplTest {
     @DisplayName("should return user source countries when they have some")
     public void getDefaultSourceCountries_shouldReturnUserSourceCountries() {
         Set<Country> userSourceCountries = Set.of(mockCountry, mockCountry2);
-        given(mockUser.getSourceCountries()).willReturn(userSourceCountries);
+        adminUser.setSourceCountries(userSourceCountries);
 
-        Set<Country> result = userService.getDefaultSourceCountries(mockUser); // When
+        Set<Country> result = userService.getDefaultSourceCountries(adminUser); // When
 
         assertEquals(userSourceCountries, result);
     }
@@ -358,30 +355,32 @@ class UserServiceImplTest {
     @DisplayName("should create and return new admin user matching valid request")
     void createUser_withValidRequest_shouldCreateAndReturnExpectedUser() {
         // Testing Approver path
-        request.setApproverId(approverId);
-        expectedUser.setApprover(mockUser2);
+        updateUserRequest.setApproverId(approverId);
+        expectedUser.setApprover(systemAdminUser);
 
         // Testing Partner path
-        request.setPartnerId(partnerId);
+        updateUserRequest.setPartnerId(partnerId);
         expectedUser.setPartner(mockPartnerImpl);
 
         // Source Country path
-        request.setSourceCountries(sourceCountryList);
+        updateUserRequest.setSourceCountries(sourceCountryList);
         expectedUser.setSourceCountries(new HashSet<>(sourceCountryList));
 
         // Audit fields
-        expectedUser.setCreatedBy(mockUser);
-        expectedUser.setUpdatedBy(mockUser);
+        expectedUser.setCreatedBy(systemAdminUser);
+        expectedUser.setUpdatedBy(systemAdminUser);
 
-        given(userRepository.findByUsernameIgnoreCase(request.getUsername())).willReturn(null);
-        given(userRepository.findByEmailIgnoreCase(request.getEmail())).willReturn(null);
-        given(partnerService.getPartner(request.getPartnerId())).willReturn(mockPartnerImpl);
-        doReturn(mockUser2).when(userService).getUser(request.getApproverId());
-        given(mockUser.getRole()).willReturn(Role.systemadmin);
-        given(passwordHelper.validateAndEncodePassword(request.getPassword()))
-            .willReturn(request.getPassword());
+        given(userRepository.findByUsernameIgnoreCase(updateUserRequest.getUsername()))
+            .willReturn(null);
+        given(userRepository.findByEmailIgnoreCase(updateUserRequest.getEmail()))
+            .willReturn(null);
+        given(partnerService.getPartner(updateUserRequest.getPartnerId()))
+            .willReturn(mockPartnerImpl);
+        doReturn(systemAdminUser).when(userService).getUser(updateUserRequest.getApproverId());
+        given(passwordHelper.validateAndEncodePassword(updateUserRequest.getPassword()))
+            .willReturn(updateUserRequest.getPassword());
 
-        userService.createUser(request, mockUser); // When
+        userService.createUser(updateUserRequest, systemAdminUser); // When
 
         verify(userRepository).save(userCaptor.capture());
         // MODEL: compare field values rather than object instances:
@@ -394,38 +393,38 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should throw UsernameTakenException when username taken")
     void populateUserFields_shouldThrowUsernameTakenException_whenUsernameTaken() {
-        given(userRepository.findByUsernameIgnoreCase(request.getUsername()))
-            .willReturn(mockUser);
+        given(userRepository.findByUsernameIgnoreCase(updateUserRequest.getUsername()))
+            .willReturn(adminUser); // Returns a user with same username
 
-        assertThrows(UsernameTakenException.class, () -> userService.createUser(request,
-            mockUser));
+        assertThrows(UsernameTakenException.class, () -> userService.createUser(updateUserRequest,
+            limitedUser));
     }
 
     @Test
     @DisplayName("should throw UsernameTakenException when email taken")
     void populateUserFields_shouldThrowUsernameTakenException_whenEmailTaken() {
-        given(userRepository.findByUsernameIgnoreCase(request.getUsername())).willReturn(null);
-        given(userRepository.findByEmailIgnoreCase(request.getEmail())).willReturn(mockUser);
+        given(userRepository.findByUsernameIgnoreCase(updateUserRequest.getUsername()))
+            .willReturn(null);
+        given(userRepository.findByEmailIgnoreCase(updateUserRequest.getEmail()))
+            .willReturn(adminUser); // Returns a user with same email
 
-        assertThrows(UsernameTakenException.class, () -> userService.createUser(request,
-            mockUser));
+        assertThrows(UsernameTakenException.class, () -> userService.createUser(updateUserRequest,
+            limitedUser));
     }
 
     @Test
     @DisplayName("should reassign partner when requested and logged in user is System Admin")
     void reassignPartnerIfNeeded_shouldReassignPartner_whenUserIsSystemAdmin() {
         // Following update() path to reach reassignPartnerIfNeeded()
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser));
         // Return test user who has a different partner than mockPartnerImpl:
         given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(mockUser.getRole()).willReturn(Role.systemadmin);
-        given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
+        given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
         // Mock update request has partner ID that will return mockPartnerImpl:
-        given(partnerService.getPartner(request.getPartnerId())).willReturn(mockPartnerImpl);
-        request.setApproverId(null); // We're not testing the approver path
+        given(partnerService.getPartner(updateUserRequest.getPartnerId())).willReturn(mockPartnerImpl);
+        updateUserRequest.setApproverId(null); // We're not testing the approver path
 
-        User result = userService.updateUser(userId, request); // When
+        User result = userService.updateUser(userId, updateUserRequest); // When
 
         verify(userRepository).save(adminUser);
         assertEquals(result.getPartner(), mockPartnerImpl); // Request partner assigned
@@ -436,16 +435,13 @@ class UserServiceImplTest {
         + "tries to reassign partner")
     void reassignPartnerIfNeeded_shouldThrowInvalidRequestException_whenUserIsAdmin() {
         // Following update() path to reach reassignPartnerIfNeeded()
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        // Return test user who has a different partner than mockPartnerImpl:
-        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(mockUser.getRole()).willReturn(Role.admin);
-        given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(limitedUser));
+        given(authService.hasAdminPrivileges(adminUser.getRole())).willReturn(true);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, request)
+            () -> userService.updateUser(userId, updateUserRequest)
         );
 
         assertEquals("You don't have permission to change a partner.", ex.getMessage());
@@ -454,17 +450,15 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should throw InvalidRequestException when no partnerId in request")
     void reassignPartnerIfNeeded_shouldThrowInvalidRequestException_whenNoPartnerId() {
-        request.setPartnerId(null);
+        updateUserRequest.setPartnerId(null);
         // The below path would reassign successfully if not for the null partnerId
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser));
         given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(mockUser.getRole()).willReturn(Role.systemadmin);
-        given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
+        given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, request)
+            () -> userService.updateUser(userId, updateUserRequest)
         );
 
         assertEquals("A partner must be specified.", ex.getMessage());
@@ -473,50 +467,48 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should set new approver if different and logged in user is System Admin")
     void updateApproverIfNeeded_shouldSetNewApproverIfDifferentAndLoggedInUserIsSystemAdmin() {
-        setupPathToUpdateApproverIfNeeded();
-        given(mockUser.getRole()).willReturn(Role.systemadmin);
-        given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
-        given(userRepository.findById(request.getApproverId())).willReturn(Optional.of(mockUser2));
+        setupPathToUpdateApproverIfNeeded(systemAdminUser);
+        given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
+        given(userRepository.findById(updateUserRequest.getApproverId()))
+            .willReturn(Optional.of(systemAdminUser));
 
-        User result = userService.updateUser(userId, request);
+        User result = userService.updateUser(userId, updateUserRequest);
 
-        verify(userRepository).save(adminUser);
-        assertEquals(result.getApprover(), mockUser2);
+        verify(userRepository).save(limitedUser);
+        assertEquals(result.getApprover(), systemAdminUser);
     }
 
     @Test
     @DisplayName("should throw InvalidRequestException when approver update attempted and logged in "
         + "user is regular admin")
     void updateApproverIfNeeded_shouldThrowInvalidRequestException_whenUpdatingUserIsAdmin() {
-        setupPathToUpdateApproverIfNeeded();
-        adminUser.setPartner(null); // Handles partner assign path for regular admin (no update)
-        given(mockUser.getRole()).willReturn(Role.admin);
-        given(authService.hasAdminPrivileges(Role.admin)).willReturn(true);
+        setupPathToUpdateApproverIfNeeded(adminUser);
+        limitedUser.setPartner(null); // Handles partner assign path for regular admin (no update)
+        given(authService.hasAdminPrivileges(adminUser.getRole())).willReturn(true);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, request)
+            () -> userService.updateUser(userId, updateUserRequest)
         );
 
         assertEquals("You don't have permission to assign an approver.", ex.getMessage());
     }
 
-    private void setupPathToUpdateApproverIfNeeded() {
-        request.setApproverId(approverId);
-        expectedUser.setApprover(mockUser2);
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // Updating user
-        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // User being updated
+    private void setupPathToUpdateApproverIfNeeded(User updatingUser) {
+        updateUserRequest.setApproverId(approverId);
+        expectedUser.setApprover(systemAdminUser);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(updatingUser));
+        given(userRepository.findById(userId)).willReturn(Optional.of(limitedUser)); // User being updated
     }
 
     @Test
     @DisplayName("should throw InvalidRequestException when Admin tries to create System Admin")
     void addRoleIfValid_shouldThrowInvalidRequestException_whenAdminTriesToCreateSystemAdmin() {
-        request.setRole(Role.systemadmin);
-        given(mockUser.getRole()).willReturn(Role.admin);
+        updateUserRequest.setRole(Role.systemadmin);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.createUser(request, mockUser)
+            () -> userService.createUser(updateUserRequest, adminUser)
         );
 
         assertEquals("You don't have permission to save this role type.", ex.getMessage());
@@ -525,10 +517,9 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should allow System Admin to create System Admin")
     void addRoleIfValid_shouldAllowSystemAdminToCreateSystemAdmin() {
-        request.setRole(Role.systemadmin);
-        given(mockUser.getRole()).willReturn(Role.systemadmin);
+        updateUserRequest.setRole(Role.systemadmin);
 
-        userService.createUser(request, mockUser);
+        userService.createUser(updateUserRequest, systemAdminUser);
 
         verify(userRepository).save(userCaptor.capture());
         assertEquals(userCaptor.getValue().getRole(), Role.systemadmin);
@@ -539,10 +530,9 @@ class UserServiceImplTest {
         + "any source country to new user")
     void addSourceCountriesIfValid_shouldAllowUnrestrictedAdminToCreateUserWithAnySourceCountry() {
         setupPathToAddSourceCountriesIfValid();
-        // No restrictions on creating user:
-        given(mockUser.getSourceCountries()).willReturn(Collections.emptySet());
+        adminUser.setSourceCountries(Collections.emptySet()); // No restrictions on creating user
 
-        userService.createUser(request, mockUser); // When
+        userService.createUser(updateUserRequest, adminUser); // When
 
         verify(userRepository).save(userCaptor.capture());
         assertThat(userCaptor.getValue().getSourceCountries(),
@@ -554,12 +544,11 @@ class UserServiceImplTest {
         + "can't themselves access")
     void addSourceCountriesIfValid_shouldNotAllowRestrictedAdminToCreateUserWithAnySourceCountry() {
         setupPathToAddSourceCountriesIfValid();
-        // Creating user restricted to one source country:
-        given(mockUser.getSourceCountries()).willReturn(Set.of(mockCountry));
+        adminUser.setSourceCountries(Set.of(mockCountry)); // Restricted to one source country
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.createUser(request, mockUser)
+            () -> userService.createUser(updateUserRequest, adminUser)
         );
 
         assertEquals("You don't have permission to add this country.", ex.getMessage());
@@ -570,10 +559,10 @@ class UserServiceImplTest {
         + "none specified in request")
     void addSourceCountriesIfValid_shouldSetNewUserSourceCountriesSameAsCreatingUser_whenEmptyRequest() {
         setupPathToAddSourceCountriesIfValid();
-        request.setSourceCountries(null);
-        given(mockUser.getSourceCountries()).willReturn(new HashSet<>(sourceCountryList));
+        updateUserRequest.setSourceCountries(null);
+        adminUser.setSourceCountries(new HashSet<>(sourceCountryList));
 
-        userService.createUser(request, mockUser);
+        userService.createUser(updateUserRequest, adminUser);
 
         verify(userRepository).save(userCaptor.capture());
         assertThat(userCaptor.getValue().getSourceCountries(),
@@ -581,20 +570,20 @@ class UserServiceImplTest {
     }
 
     private void setupPathToAddSourceCountriesIfValid() {
-        request.setSourceCountries(sourceCountryList);
-        request.setRole(Role.partneradmin);
-        given(mockUser.getRole()).willReturn(Role.partneradmin);
+        updateUserRequest.setSourceCountries(sourceCountryList);
+        updateUserRequest.setRole(Role.partneradmin);
+        adminUser.setRole(Role.partneradmin);
     }
 
     @Test
     @DisplayName("should throw InvalidRequestException when read-only user tries to create a user")
     void createUser_shouldThrowInvalidRequestException_whenReadonlyUserTriesToCreateUser() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        given(mockUser.getReadOnly()).willReturn(true);
+        adminUser.setReadOnly(true);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.createUser(request)
+            () -> userService.createUser(updateUserRequest)
         );
 
         assertEquals("You don't have permission to create a user.", ex.getMessage());
@@ -603,13 +592,12 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should throw InvalidRequestException when creating user has no admin privileges")
     void createUser_shouldThrowInvalidRequestException_whenCreatingUserHasNoPrivileges() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(false);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(authService.hasAdminPrivileges(adminUser.getRole())).willReturn(false);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.createUser(request)
+            () -> userService.createUser(updateUserRequest)
         );
 
         assertEquals("You don't have permission to create a user.", ex.getMessage());
@@ -620,59 +608,57 @@ class UserServiceImplTest {
     void checkAndResetEmailVerification_shouldResetEmailVerification_whenNewEmailIsSupplied() {
         setupPathToCheckAndResetEmailVerification();
 
-        userService.updateUser(userId, request);
+        userService.updateUser(userId, updateUserRequest);
 
-        verify(mockUser2).setEmailVerified(eq(false));
-        verify(mockUser2).setEmailVerificationToken(null);
-        verify(mockUser2).setEmailVerificationTokenIssuedDate(null);
+        assertFalse(adminUser.getEmailVerified());
+        assertNull(adminUser.getEmailVerificationToken());
+        assertNull(adminUser.getEmailVerificationTokenIssuedDate());
     }
 
     @Test
     @DisplayName("should do nothing when request email same as old")
     void checkAndResetEmailVerification_shouldDoNothing_whenRequestEmailIsSameAsOld() {
         setupPathToCheckAndResetEmailVerification();
-        given(mockUser2.getEmail()).willReturn(request.getEmail()); // Same email
+        adminUser.setEmail(updateUserRequest.getEmail()); // Same email
 
-        userService.updateUser(userId, request);
+        userService.updateUser(userId, updateUserRequest);
 
-        verify(mockUser2, never()).setEmailVerified(eq(false));
-        verify(mockUser2, never()).setEmailVerificationToken(null);
-        verify(mockUser2, never()).setEmailVerificationTokenIssuedDate(null);
+        assertFalse(adminUser.getEmailVerified());
+        assertNull(adminUser.getEmailVerificationToken());
+        assertNull(adminUser.getEmailVerificationTokenIssuedDate());
     }
 
     @Test
     @DisplayName("should do nothing when no email in request")
     void checkAndResetEmailVerification_shouldDoNothing_whenNoEmailInRequest() {
         setupPathToCheckAndResetEmailVerification();
-        request.setEmail(null);
+        updateUserRequest.setEmail(null);
 
-        userService.updateUser(userId, request);
+        userService.updateUser(userId, updateUserRequest);
 
-        verify(mockUser2, never()).setEmailVerified(eq(false));
-        verify(mockUser2, never()).setEmailVerificationToken(null);
-        verify(mockUser2, never()).setEmailVerificationTokenIssuedDate(null);
+        assertFalse(adminUser.getEmailVerified());
+        assertNull(adminUser.getEmailVerificationToken());
+        assertNull(adminUser.getEmailVerificationTokenIssuedDate());
     }
 
     private void setupPathToCheckAndResetEmailVerification() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
+        given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // user being updated
         // Logged-in user has required privileges:
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(mockUser.getRole()).willReturn(Role.admin);
-        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(true);
+        given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
     }
 
     @Test
     @DisplayName("should return false and cause caller updateUser() to throw InvalidRequestException"
         + " when logged in user is read-only")
     void authoriseAdminUser_shouldReturnFalse_whenLoggedInUserIsReadonly() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
-        given(mockUser.getReadOnly()).willReturn(true);
+        adminUser.setReadOnly(true);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(systemAdminUser)); // user being updated
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, request)
+            () -> userService.updateUser(userId, updateUserRequest)
         );
 
         assertEquals("You don't have permission to edit this user.", ex.getMessage());
@@ -682,14 +668,13 @@ class UserServiceImplTest {
     @DisplayName("should return false and cause caller updateUser() to throw InvalidRequestException"
         + " when hasAdminPrivileges returns false")
     void authoriseAdminUser_shouldReturnFalse_whenHasAdminPrivilegesFalse() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(false);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(systemAdminUser)); // user being updated
+        given(authService.hasAdminPrivileges(adminUser.getRole())).willReturn(false);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, request)
+            () -> userService.updateUser(userId, updateUserRequest)
         );
 
         assertEquals("You don't have permission to edit this user.", ex.getMessage());
@@ -698,38 +683,35 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return true when hasAdminPrivileges returns true")
     void authoriseAdminUser_shouldReturnFalse_whenHasAdminPrivilegesTrue() {
-        given(mockUser.getRole()).willReturn(Role.systemadmin);
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being updated
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(authService.hasAdminPrivileges(Role.systemadmin)).willReturn(true);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // user being updated
+        given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
 
         // Path should conclude successfully
-        assertDoesNotThrow(() -> userService.updateUser(userId, request));
+        assertDoesNotThrow(() -> userService.updateUser(userId, updateUserRequest));
     }
 
     @Test
     @DisplayName("should set user status to deleted, update audit fields and save user when logged-in"
         + " user is authorised")
     void deleteUser_shouldPerformDeleteActions_whenLoggedInUserAuthorised() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
+        given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser)); // logged-in user
         given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // user being deleted
-        given(mockUser.getReadOnly()).willReturn(false);
-        given(authService.hasAdminPrivileges(mockUser.getRole())).willReturn(true);
+        given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
 
         userService.deleteUser(userId);
 
         assertEquals(adminUser.getStatus(), Status.deleted);
-        assertEquals(adminUser.getUpdatedBy(), mockUser);
+        assertEquals(adminUser.getUpdatedBy(), systemAdminUser);
         verify(userRepository).save(adminUser);
     }
 
     @Test
     @DisplayName("should throw InvalidRequestException when logged-in user not authorised")
     void deleteUser_shouldThrowException_whenLoggedInUserNotAuthorised() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser2)); // user being deleted
-        given(mockUser.getReadOnly()).willReturn(true); // authoriseAdminUser() returns false
+        adminUser.setReadOnly(true); // authoriseAdminUser() will return false
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser)); // logged-in user
+        given(userRepository.findById(userId)).willReturn(Optional.of(systemAdminUser)); // user being deleted
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
@@ -759,7 +741,7 @@ class UserServiceImplTest {
     @DisplayName("should throw InvalidCredentialsException when user attempting login with "
         + "non-unique email")
     void login_shouldThrowInvalidCredentialsException_whenLoginAttemptedWithNonUniqueEmail() {
-        given(userRepository.findByEmailIgnoreCase(loginUsername))
+        given(userRepository.findByEmailIgnoreCase(loginRequest.getUsername()))
             .willThrow(new IncorrectResultSizeDataAccessException(1));
 
         InvalidCredentialsException ex = assertThrows(
@@ -776,12 +758,11 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should throw InvalidCredentialsException if user is no longer active")
     void login_shouldThrowInvalidCredentialsException_ifUserIsNotActive() {
-        given(userRepository.findByEmailIgnoreCase(loginUsername)).willReturn(mockUser);
-        given(mockUser.getUsername()).willReturn(loginUsername);
+        adminUser.setStatus(Status.inactive);
+        given(userRepository.findByEmailIgnoreCase(loginRequest.getUsername())).willReturn(adminUser);
         given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .willReturn(mockAuth);
-        given(userRepository.findByUsernameIgnoreCase(loginUsername)).willReturn(mockUser);
-        given(mockUser.getStatus()).willReturn(Status.inactive);
+        given(userRepository.findByUsernameIgnoreCase(adminUser.getUsername())).willReturn(adminUser);
 
         InvalidCredentialsException ex = assertThrows(
             InvalidCredentialsException.class,
@@ -798,31 +779,29 @@ class UserServiceImplTest {
     @DisplayName("should set last login, save user, set auth, generate and return a token when "
         + "credentials valid")
     void login_shouldPerformActions_whenLoginCredentialsValid() {
-        given(userRepository.findByEmailIgnoreCase(loginUsername)).willReturn(mockUser);
-        given(mockUser.getUsername()).willReturn(loginUsername);
+        adminUser.setLastLogin(offsetDateTime);
+        given(userRepository.findByEmailIgnoreCase(loginRequest.getUsername())).willReturn(adminUser);
         given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .willReturn(mockAuth);
-        given(userRepository.findByUsernameIgnoreCase(loginUsername)).willReturn(mockUser);
-        given(mockUser.getStatus()).willReturn(Status.active);
+        given(userRepository.findByUsernameIgnoreCase(adminUser.getUsername())).willReturn(adminUser);
         given(tokenProvider.generateToken(any())).willReturn("mock-jwt");
-        given(userRepository.save(mockUser)).willReturn(mockUser);
+        given(userRepository.save(adminUser)).willReturn(adminUser);
 
         JwtAuthenticationResponse response =
             assertDoesNotThrow(() -> userService.login(loginRequest));
 
         assertEquals(mockAuth, SecurityContextHolder.getContext().getAuthentication());
-        verify(mockUser).setLastLogin(any(OffsetDateTime.class));
-        verify(userRepository).save(mockUser);
+        assertNotEquals(adminUser.getLastLogin(), offsetDateTime);
+        verify(userRepository).save(adminUser);
         verify(tokenProvider).generateToken(mockAuth);
         assertEquals("mock-jwt", response.getAccessToken());
-        assertEquals(mockUser, response.getUser());
+        assertEquals(adminUser, response.getUser());
     }
 
     @Test
     @DisplayName("should throw AccountLockedException with correct message when account is locked")
     void login_shouldThrowAccountLockedException_whenAccountLocked() {
-        given(userRepository.findByEmailIgnoreCase(loginUsername)).willReturn(mockUser);
-        given(mockUser.getUsername()).willReturn(loginUsername);
+        given(userRepository.findByEmailIgnoreCase(loginRequest.getUsername())).willReturn(adminUser);
         given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .willThrow(new LockedException("Generic message"));
 
@@ -837,8 +816,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should throw InvalidCredentialsException with correct message when credentials bad")
     void login_shouldThrowInvalidCredentialsException_whenBadCredentials() {
-        given(userRepository.findByEmailIgnoreCase(loginUsername)).willReturn(mockUser);
-        given(mockUser.getUsername()).willReturn(loginUsername);
+        given(userRepository.findByEmailIgnoreCase(loginRequest.getUsername())).willReturn(adminUser);
         given(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .willThrow(new BadCredentialsException("Generic message"));
 
@@ -871,14 +849,12 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return user when retrieved")
     void getLoggedInUser_shouldReturnUser_whenRetrieved() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-        given(mockUser.getId()).willReturn(userId);
-        given(userRepository.findById(userId)).willReturn(Optional.of(mockUser));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(userRepository.findById(adminUser.getId())).willReturn(Optional.of(adminUser));
 
         User result = userService.getLoggedInUser();
-        assertEquals(mockUser, result);
+        assertEquals(adminUser, result);
     }
-    // TODO reduce mock use for everything above this line
 
     @Test
     @DisplayName("should return partner when user retrieved")
@@ -1162,6 +1138,26 @@ class UserServiceImplTest {
         assertNull(systemAdminUser.getMfaSecret());
         assertEquals(systemAdminUser.getUpdatedBy(), adminUser);
         verify(userRepository).save(systemAdminUser);
+    }
+
+    @Test
+    @DisplayName("should return results of repo method")
+    void searchStaffNotUsingMfa_shouldReturnResultsOfRepoMethod() {
+        given(userRepository.searchStaffNotUsingMfa()).willReturn(userList);
+
+        List<User> result = userService.searchStaffNotUsingMfa();
+
+        assertEquals(result, userList);
+    }
+
+    @Test
+    @DisplayName("should send email alert when there are staff not using mfa")
+    void checkMfaUsers_shouldSendEmailAlert_whenThereAreStaffNotUsingMfa() {
+        given(userRepository.searchStaffNotUsingMfa()).willReturn(userList);
+
+        userService.checkMfaUsers();
+
+        verify(emailHelper).sendAlert(anyString());
     }
 
 }
