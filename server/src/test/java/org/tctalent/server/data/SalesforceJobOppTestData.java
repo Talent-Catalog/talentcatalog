@@ -21,7 +21,7 @@ import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 
-public class JobTestData {
+public class SalesforceJobOppTestData {
 
     public static SalesforceJobOpp getJob() {
         SalesforceJobOpp job = new SalesforceJobOpp();

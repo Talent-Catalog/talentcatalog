@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.tctalent.server.data.JobTestData;
+import org.tctalent.server.data.SalesforceJobOppTestData;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
@@ -64,7 +64,7 @@ class JobServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        job = JobTestData.getJob();
+        job = SalesforceJobOppTestData.getJob();
         emptyUpdateJobRequest = new UpdateJobRequest();
     }
 
