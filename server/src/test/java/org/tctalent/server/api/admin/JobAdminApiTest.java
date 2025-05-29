@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -88,7 +89,7 @@ class JobAdminApiTest extends ApiTestBase {
     private static final String UPLOAD_JOI = "/{id}/upload/joi";
     private static final String UPLOAD_INTERVIEW_GUIDANCE = "/{id}/upload/interview";
     private static final String SEARCH_PATH = "/search-paged";
-    private static final SalesforceJobOpp job = AdminApiTestUtil.getJob();
+    private static final SalesforceJobOpp job = getSalesforceJobOppExtended();
 
     private final Page<SalesforceJobOpp> jobPage =
             new PageImpl<>(
@@ -207,9 +208,9 @@ class JobAdminApiTest extends ApiTestBase {
 
                 .andExpect(jsonPath("$.publishedDate", is("2023-10-30T12:30:00+02:00")))
 
-                .andExpect(jsonPath("$.jobCreator.name", is("Partner")))
-                .andExpect(jsonPath("$.jobCreator.abbreviation", is("prt")))
-                .andExpect(jsonPath("$.jobCreator.websiteUrl", is("www.partner.com")))
+                .andExpect(jsonPath("$.jobCreator.name", is("TC Partner")))
+                .andExpect(jsonPath("$.jobCreator.abbreviation", is("TCP")))
+                .andExpect(jsonPath("$.jobCreator.websiteUrl", is("website_url")))
 
                 .andExpect(jsonPath("$.stage", is("cvReview")))
 
@@ -296,9 +297,9 @@ class JobAdminApiTest extends ApiTestBase {
 
                 .andExpect(jsonPath("$.publishedDate", is("2023-10-30T12:30:00+02:00")))
 
-                .andExpect(jsonPath("$.jobCreator.name", is("Partner")))
-                .andExpect(jsonPath("$.jobCreator.abbreviation", is("prt")))
-                .andExpect(jsonPath("$.jobCreator.websiteUrl", is("www.partner.com")))
+                .andExpect(jsonPath("$.jobCreator.name", is("TC Partner")))
+                .andExpect(jsonPath("$.jobCreator.abbreviation", is("TCP")))
+                .andExpect(jsonPath("$.jobCreator.websiteUrl", is("website_url")))
 
                 .andExpect(jsonPath("$.stage", is("cvReview")))
 

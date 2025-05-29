@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
 import org.tctalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
@@ -63,8 +64,10 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
     private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateCertification candidateCertification = AdminApiTestUtil.getCandidateCertification();
-    private final List<CandidateCertification> candidateCertificationList = AdminApiTestUtil.getListOfCandidateCertifications();
+    private final CandidateCertification candidateCertification =
+        CandidateTestData.getCandidateCertification();
+    private final List<CandidateCertification> candidateCertificationList =
+        CandidateTestData.getListOfCandidateCertifications();
 
     @MockBean CandidateCertificationService candidateCertificationService;
 

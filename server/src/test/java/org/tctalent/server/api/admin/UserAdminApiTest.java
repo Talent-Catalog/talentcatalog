@@ -87,7 +87,7 @@ class UserAdminApiTest extends ApiTestBase {
       );
 
   private static final User fullUser = AdminApiTestUtil.getFullUser();
-  private static final User loggedInAdminUser = AdminApiTestUtil.getUser();
+  private static final User loggedInAdminUser = AdminApiTestUtil.getUserMinimal();
   private static final User loggedInNonAdminUser = new User(
       "nonAdminUser",
       "Not",

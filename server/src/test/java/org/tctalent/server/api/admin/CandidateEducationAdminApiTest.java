@@ -45,6 +45,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.education.UpdateCandidateEducationRequest;
@@ -63,8 +64,10 @@ class CandidateEducationAdminApiTest extends ApiTestBase {
     private static final String GET_EDUCATION_LIST_BY_ID_PATH = "/{id}/list";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateEducation candidateEducation = AdminApiTestUtil.getCandidateEducation();
-    private final List<CandidateEducation> candidateEducationList = AdminApiTestUtil.getListOfCandidateEducations();
+    private final CandidateEducation candidateEducation =
+        CandidateTestData.getCandidateEducation();
+    private final List<CandidateEducation> candidateEducationList =
+        CandidateTestData.getListOfCandidateEducations();
 
     @MockBean CandidateEducationService candidateEducationService;
     @MockBean CountryService countryService;

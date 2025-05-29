@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CountryTestData.getSourceCountryListA;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -72,7 +73,7 @@ class CountryAdminApiTest extends ApiTestBase {
   private static final String DESTINATIONS_LIST_PATH = "/destinations";
   private static final String SEARCH_PAGED_PATH = "/search-paged";
 
-  private static final List<Country> countries = AdminApiTestUtil.getCountries();
+  private static final List<Country> countries = getSourceCountryListA();
 
   private final Page<Country> countryPage =
       new PageImpl<>(
@@ -116,13 +117,11 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$").isArray())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].name", is("Jordan")))
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].name", is("Lebanon")))
         .andExpect(jsonPath("$[0].status", is("active")))
-        .andExpect(jsonPath("$[1].name", is("Pakistan")))
-        .andExpect(jsonPath("$[1].status", is("active")))
-        .andExpect(jsonPath("$[2].name", is("Palestine")))
-        .andExpect(jsonPath("$[2].status", is("active")));
+        .andExpect(jsonPath("$[1].name", is("Jordan")))
+        .andExpect(jsonPath("$[1].status", is("active")));
 
     verify(countryService).listCountries(false);
   }
@@ -143,13 +142,11 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$").isArray())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].name", is("Jordan")))
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].name", is("Lebanon")))
         .andExpect(jsonPath("$[0].status", is("active")))
-        .andExpect(jsonPath("$[1].name", is("Pakistan")))
-        .andExpect(jsonPath("$[1].status", is("active")))
-        .andExpect(jsonPath("$[2].name", is("Palestine")))
-        .andExpect(jsonPath("$[2].status", is("active")));
+        .andExpect(jsonPath("$[1].name", is("Jordan")))
+        .andExpect(jsonPath("$[1].status", is("active")));
 
     verify(countryService).listCountries(true);
   }
@@ -170,13 +167,11 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$").isArray())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].name", is("Jordan")))
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].name", is("Lebanon")))
         .andExpect(jsonPath("$[0].status", is("active")))
-        .andExpect(jsonPath("$[1].name", is("Pakistan")))
-        .andExpect(jsonPath("$[1].status", is("active")))
-        .andExpect(jsonPath("$[2].name", is("Palestine")))
-        .andExpect(jsonPath("$[2].status", is("active")));
+        .andExpect(jsonPath("$[1].name", is("Jordan")))
+        .andExpect(jsonPath("$[1].status", is("active")));
 
 
     verify(countryService).getTCDestinations();
@@ -201,18 +196,16 @@ class CountryAdminApiTest extends ApiTestBase {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.totalElements", is(3)))
+        .andExpect(jsonPath("$.totalElements", is(2)))
         .andExpect(jsonPath("$.totalPages", is(1)))
         .andExpect(jsonPath("$.number", is(0)))
         .andExpect(jsonPath("$.hasNext", is(false)))
         .andExpect(jsonPath("$.hasPrevious", is(false)))
         .andExpect(jsonPath("$.content", notNullValue()))
-        .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$.content.[0].name", is("Lebanon")))
         .andExpect(jsonPath("$.content.[0].status", is("active")))
-        .andExpect(jsonPath("$.content.[1].name", is("Pakistan")))
-        .andExpect(jsonPath("$.content.[1].status", is("active")))
-        .andExpect(jsonPath("$.content.[2].name", is("Palestine")))
-        .andExpect(jsonPath("$.content.[2].status", is("active")));
+        .andExpect(jsonPath("$.content.[1].name", is("Jordan")))
+        .andExpect(jsonPath("$.content.[1].status", is("active")));
 
     verify(countryService).searchCountries(any(SearchCountryRequest.class));
   }

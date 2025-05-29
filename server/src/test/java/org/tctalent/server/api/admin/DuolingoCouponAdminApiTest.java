@@ -16,6 +16,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.SavedListTestData.getSavedList;
+import static org.tctalent.server.data.TaskTestData.getTask;
+import static org.tctalent.server.data.TaskTestData.getTaskAssignment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -37,7 +41,6 @@ import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
@@ -66,10 +69,10 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
   private static final String DUOLINGO_TEST_TASK_NAME = "duolingoTest";
 
   private final DuolingoCoupon coupon = AdminApiTestUtil.getDuolingoCoupon();
-  private static final SavedList savedList = AdminApiTestUtil.getSavedList();
-  private static final Candidate candidate = AdminApiTestUtil.getCandidate();
-  private static final TaskImpl task = AdminApiTestUtil.getTask();
-  private static final TaskAssignmentImpl taskAssignment = AdminApiTestUtil.getTaskAssignment();
+  private static final SavedList savedList = getSavedList();
+  private static final Candidate candidate = getCandidate();
+  private static final TaskImpl task = getTask();
+  private static final TaskAssignmentImpl taskAssignment = getTaskAssignment();
 
   @MockBean
   AuthService authService;

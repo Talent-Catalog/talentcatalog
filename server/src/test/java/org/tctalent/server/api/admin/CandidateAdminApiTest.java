@@ -57,6 +57,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateVisaCheck;
@@ -131,12 +132,12 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private final Page<Candidate> candidates =
             new PageImpl<>(
-                    AdminApiTestUtil.listOfCandidates(),
+                    CandidateTestData.getListOfCandidates(),
                     PageRequest.of(0,10, Sort.unsorted()),
-                    AdminApiTestUtil.listOfCandidates().size()
+                    CandidateTestData.getListOfCandidates().size()
             );
 
-    private final Candidate candidate = AdminApiTestUtil.getCandidate();
+    private final Candidate candidate = CandidateTestData.getCandidate();
 
     @MockBean
     CandidateService candidateService;
@@ -615,7 +616,7 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements", Matchers.is(
-                    AdminApiTestUtil.listOfCandidates().size())))
+                    CandidateTestData.getListOfCandidates().size())))
                 .andExpect(jsonPath("$.totalPages", is(1)))
                 .andExpect(jsonPath("$.number", is(0)))
                 .andExpect(jsonPath("$.hasNext", is(false)))

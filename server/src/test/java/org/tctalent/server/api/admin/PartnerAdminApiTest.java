@@ -33,8 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getJob;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getUser;
+import static org.tctalent.server.data.CandidateTestData.getUser;
+import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
+import static org.tctalent.server.data.PartnerImplTestData.getListOfDestinationPartners;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -77,8 +79,8 @@ class PartnerAdminApiTest extends ApiTestBase {
   private static final String SEARCH_PAGED_PATH = "/search-paged";
   private static final String UPDATE_JOB_CONTACT_PATH = "/update-job-contact";
 
-  private static final List<PartnerImpl> partnerList = AdminApiTestUtil.getListOfPartners();
-  private static final PartnerImpl partner = AdminApiTestUtil.getPartner();
+  private static final List<PartnerImpl> partnerList = getListOfDestinationPartners();
+  private static final PartnerImpl partner = getDestinationPartner();
 
   private final Page<PartnerImpl> partnerPage =
       new PageImpl<>(
@@ -330,7 +332,7 @@ class PartnerAdminApiTest extends ApiTestBase {
 
     given(jobService
         .getJob(jobId))
-        .willReturn(getJob());
+        .willReturn(getSalesforceJobOppMinimal());
 
     given(userService
         .getUser(userId))

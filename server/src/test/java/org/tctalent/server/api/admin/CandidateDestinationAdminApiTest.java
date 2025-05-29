@@ -42,6 +42,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
 import org.tctalent.server.service.db.CandidateDestinationService;
@@ -58,7 +59,8 @@ class CandidateDestinationAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-destination";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateDestination candidateDestination = AdminApiTestUtil.getCandidateDestination();
+    private final CandidateDestination candidateDestination =
+        CandidateTestData.getCandidateDestination();
 
     @MockBean CandidateDestinationService candidateDestinationService;
     @MockBean

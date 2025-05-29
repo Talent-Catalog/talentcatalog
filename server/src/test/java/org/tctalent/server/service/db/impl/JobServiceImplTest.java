@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.tctalent.server.data.SalesforceJobOppTestData;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
@@ -64,7 +64,7 @@ class JobServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        job = SalesforceJobOppTestData.getJob();
+        job = getSalesforceJobOppMinimal();
         emptyUpdateJobRequest = new UpdateJobRequest();
     }
 

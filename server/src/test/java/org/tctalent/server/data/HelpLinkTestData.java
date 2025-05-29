@@ -16,21 +16,23 @@
 
 package org.tctalent.server.data;
 
-import java.util.List;
-import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.HelpLink;
+import org.tctalent.server.model.db.JobOpportunityStage;
+import org.tctalent.server.model.db.Status;
 
-public class CandidateOpportunityTestData {
+public class HelpLinkTestData {
 
-    public static CandidateOpportunity getCandidateOpportunity() {
-        CandidateOpportunity opportunity = new CandidateOpportunity();
-        opportunity.setCandidate(CandidateTestData.getCandidate());
-        opportunity.setClosingCommentsForCandidate("Some closing comments for candidate");
-        opportunity.setEmployerFeedback("Some employer feedback");
-        opportunity.setStage(CandidateOpportunityStage.offer);
-        opportunity.setJobOpp(SalesforceJobOppTestData.getSalesforceJobOppMinimal());
-        opportunity.setRelocatingDependantIds(List.of(1L, 2L));
-        return opportunity;
+    public static HelpLink getHelpLink() {
+        HelpLink helpLink = new HelpLink();
+        helpLink.setId(99L);
+        helpLink.setCountry(new Country("Jordan", Status.active));
+        helpLink.setCaseStage(CandidateOpportunityStage.cvReview);
+        helpLink.setJobStage(JobOpportunityStage.jobOffer);
+        helpLink.setLabel("Test label");
+        helpLink.setLink("https://www.talentbeyondboundaries.org/");
+        return helpLink;
     }
 
 }

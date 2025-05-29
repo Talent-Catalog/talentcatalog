@@ -45,6 +45,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
@@ -68,9 +69,12 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
     private static final String GET_ALL_OCCUPATIONS_PATH = "/occupation";
     private static final String GET_CANDIDATE_OCCUPATIONS_BY_ID_PATH = "/{id}/list";
 
-    private static final List<Occupation> occupationsList = AdminApiTestUtil.getListOfOccupations();
-    private static final CandidateOccupation candidateOccupation = AdminApiTestUtil.getCandidateOccupation();
-    private static final List<CandidateOccupation> candidateOccupationsList = AdminApiTestUtil.getListOfCandidateOccupations();
+    private static final List<Occupation> occupationsList =
+        CandidateTestData.getListOfOccupations();
+    private static final CandidateOccupation candidateOccupation =
+        CandidateTestData.getCandidateOccupation();
+    private static final List<CandidateOccupation> candidateOccupationsList =
+        CandidateTestData.getListOfCandidateOccupations();
 
     @MockBean OccupationService occupationService;
     @MockBean CandidateOccupationService candidateOccupationService;

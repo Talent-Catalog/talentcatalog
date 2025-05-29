@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.CandidateNote;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.request.note.SearchCandidateNotesRequest;
@@ -66,7 +67,7 @@ class CandidateNoteAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-note";
     private static final String SEARCH_PATH = "/search";
 
-    private static final CandidateNote candidateNote = AdminApiTestUtil.getCandidateNote();
+    private static final CandidateNote candidateNote = CandidateTestData.getCandidateNote();
 
     private final Page<CandidateNote> candidateNotesPage =
             new PageImpl<>(

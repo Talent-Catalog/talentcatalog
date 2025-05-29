@@ -16,20 +16,13 @@
 
 package org.tctalent.server.data;
 
-import java.util.List;
-import org.tctalent.server.model.db.CandidateOpportunity;
-import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.sf.Opportunity;
 
-public class CandidateOpportunityTestData {
+public class OpportunityTestData {
 
-    public static CandidateOpportunity getCandidateOpportunity() {
-        CandidateOpportunity opportunity = new CandidateOpportunity();
-        opportunity.setCandidate(CandidateTestData.getCandidate());
-        opportunity.setClosingCommentsForCandidate("Some closing comments for candidate");
-        opportunity.setEmployerFeedback("Some employer feedback");
-        opportunity.setStage(CandidateOpportunityStage.offer);
-        opportunity.setJobOpp(SalesforceJobOppTestData.getSalesforceJobOppMinimal());
-        opportunity.setRelocatingDependantIds(List.of(1L, 2L));
+    public static Opportunity getOpportunity() {
+        Opportunity opportunity = new Opportunity();
+        opportunity.setName("Opportunity");
         return opportunity;
     }
 

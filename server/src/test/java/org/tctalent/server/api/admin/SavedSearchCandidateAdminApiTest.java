@@ -46,6 +46,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -72,7 +73,7 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
 
   private final Page<Candidate> candidatePage =
       new PageImpl<>(
-          AdminApiTestUtil.listOfCandidates(),
+          CandidateTestData.getListOfCandidates(),
           PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
