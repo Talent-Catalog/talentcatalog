@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TermsInfo, TermsType} from "../../model/terms-info";
+import {TermsInfoDto, TermsType} from "../../model/terms-info-dto";
 
 @Component({
   selector: 'app-terms',
@@ -10,7 +10,7 @@ export class TermsComponent implements OnInit {
   @Input() content: string;
   @Input() partnerName: string = "TestPartner???";
 
-  currentPrivacyPolicy: TermsInfo;
+  currentPrivacyPolicy: TermsInfoDto;
 
   ngOnInit(): void {
   }

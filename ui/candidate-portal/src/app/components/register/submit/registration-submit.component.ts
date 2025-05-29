@@ -3,7 +3,7 @@ import {CandidateStatus, SubmitRegistrationRequest} from "../../../model/candida
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
-import {TermsInfo, TermsType} from "../../../model/terms-info";
+import {TermsInfoDto, TermsType} from "../../../model/terms-info-dto";
 import {TermsInfoService} from "../../../services/terms-info.service";
 
 @Component({
@@ -15,7 +15,7 @@ export class RegistrationSubmitComponent implements OnInit {
   error: any;
   loading: boolean;
 
-  currentPrivacyPolicy: TermsInfo;
+  currentPrivacyPolicy: TermsInfoDto;
 
   form: UntypedFormGroup;
 

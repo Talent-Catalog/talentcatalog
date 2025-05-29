@@ -19,7 +19,7 @@ export enum TermsType {
   CANDIDATE_PRIVACY_POLICY,
 }
 
-export interface TermsInfo {
+export interface TermsInfoDto {
 
   /**
    * Unique id on database
@@ -27,20 +27,7 @@ export interface TermsInfo {
   id: number;
 
   /**
-   * Type - eg CandidatePrivacyPolicy
-   */
-  type: TermsType;
-
-  /**
    * HTML content
    */
   content: string;
-
-  /**
-   * Version - eg 1.0
-   */
-  version: string;
-
-
-  creationDate: Date;
 }

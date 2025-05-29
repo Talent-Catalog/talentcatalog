@@ -4,7 +4,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,28 +18,13 @@ import lombok.ToString;
 @ToString
 public class TermsInfoDto {
 
+    /**
+     * Unique id of terms
+     */
     private long id;
 
     /**
      * HTML content of the terms.
      */
     private String content;
-
-    /**
-     * Time when these terms were created.
-     * <p/>
-     * There can be multiple versions of the same terms type.
-     * The "current" version of that type of terms will be the one with the most recent createdDate.
-     */
-    private OffsetDateTime createdDate;
-
-    /**
-     * The type of terms - for example a privacy policy.
-     */
-    private TermsType type;
-
-    /**
-     * The version this type of policy.
-     */
-    private String version;
 }
