@@ -33,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateEducation;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateEducations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -63,8 +65,8 @@ class CandidateEducationAdminApiTest extends ApiTestBase {
     private static final String GET_EDUCATION_LIST_BY_ID_PATH = "/{id}/list";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateEducation candidateEducation = AdminApiTestUtil.getCandidateEducation();
-    private final List<CandidateEducation> candidateEducationList = AdminApiTestUtil.getListOfCandidateEducations();
+    private final CandidateEducation candidateEducation = getCandidateEducation();
+    private final List<CandidateEducation> candidateEducationList = getListOfCandidateEducations();
 
     @MockBean CandidateEducationService candidateEducationService;
     @MockBean CountryService countryService;

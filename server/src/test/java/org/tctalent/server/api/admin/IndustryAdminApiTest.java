@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getIndustries;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -69,7 +70,7 @@ class IndustryAdminApiTest extends ApiTestBase {
   private static final String BASE_PATH = "/api/admin/industry";
   private static final String SEARCH_PAGED_PATH = "/search";
 
-  private final List<Industry> industries = AdminApiTestUtil.getIndustries();
+  private final List<Industry> industries = getIndustries();
 
   private final Page<Industry> industryPage =
       new PageImpl<>(

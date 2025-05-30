@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateOpportunityTestData.getCandidateOpportunity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -71,7 +72,7 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
     private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
     private static final String RELOCATING_DEPENDANTS_PATH = "/{id}/relocating-dependants";
 
-    private static final CandidateOpportunity candidateOpportunity = AdminApiTestUtil.getCandidateOpportunity();
+    private static final CandidateOpportunity candidateOpportunity = getCandidateOpportunity();
     private final Page<CandidateOpportunity> candidateOpportunityPage =
             new PageImpl<>(
                     List.of(candidateOpportunity),

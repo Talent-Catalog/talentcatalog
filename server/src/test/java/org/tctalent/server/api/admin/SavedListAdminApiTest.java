@@ -33,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.SavedListTestData.getSavedList;
+import static org.tctalent.server.data.SavedListTestData.getSavedLists;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -86,8 +88,8 @@ class SavedListAdminApiTest extends ApiTestBase {
     private static final String SEARCH_PAGED_PATH = "/search-paged";
     private static final String SEARCH_PATH = "/search";
 
-    private static final SavedList savedList = AdminApiTestUtil.getSavedList();
-    private static final List<SavedList> savedLists = AdminApiTestUtil.getSavedLists();
+    private static final SavedList savedList = getSavedList();
+    private static final List<SavedList> savedLists = getSavedLists();
 
     private final Page<SavedList> savedListPage =
         new PageImpl<>(

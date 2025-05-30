@@ -50,6 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateLanguage;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateLanguages;
 
 /**
  * Unit tests for Candidate Language Admin Api endpoints.
@@ -64,9 +66,9 @@ class CandidateLanguageAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-language";
     private static final String GET_LIST_PATH = "/{id}/list";
 
-    private static final CandidateLanguage candidateLanguage = AdminApiTestUtil.getCandidateLanguage();
+    private static final CandidateLanguage candidateLanguage = getCandidateLanguage();
 
-    private static final List<CandidateLanguage> candidateLanguageList = AdminApiTestUtil.getListOfCandidateLanguages();
+    private static final List<CandidateLanguage> candidateLanguageList = getListOfCandidateLanguages();
 
     @MockBean CandidateLanguageService candidateLanguageService;
 

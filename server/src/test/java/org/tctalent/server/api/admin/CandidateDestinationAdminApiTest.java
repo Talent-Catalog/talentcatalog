@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateDestination;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,7 @@ class CandidateDestinationAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-destination";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateDestination candidateDestination = AdminApiTestUtil.getCandidateDestination();
+    private final CandidateDestination candidateDestination = getCandidateDestination();
 
     @MockBean CandidateDestinationService candidateDestinationService;
     @MockBean

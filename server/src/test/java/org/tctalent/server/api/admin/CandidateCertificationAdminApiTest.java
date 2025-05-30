@@ -50,6 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateCertification;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateCertifications;
 
 /**
  * Unit tests for Candidate Certification Admin Api endpoints.
@@ -63,8 +65,9 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
     private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateCertification candidateCertification = AdminApiTestUtil.getCandidateCertification();
-    private final List<CandidateCertification> candidateCertificationList = AdminApiTestUtil.getListOfCandidateCertifications();
+    private final CandidateCertification candidateCertification = getCandidateCertification();
+    private final List<CandidateCertification> candidateCertificationList =
+        getListOfCandidateCertifications();
 
     @MockBean CandidateCertificationService candidateCertificationService;
 

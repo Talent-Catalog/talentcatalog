@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.HelpLinkTestData.getHelpLink;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +54,7 @@ import org.tctalent.server.service.db.HelpLinkService;
 class HelpLinkAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/help-link";
 
-    private static final HelpLink helpLink = AdminApiTestUtil.getHelpLink();
+    private static final HelpLink helpLink = getHelpLink();
 
     @MockBean
     CountryService countryService;

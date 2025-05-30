@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
 
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +33,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
@@ -54,7 +54,7 @@ class PartnerServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    partner = AdminApiTestUtil.getPartner();
+    partner = getDestinationPartner();
     partner2.setName("TC Partner 2");
     partner2.setRedirectPartner(partner);
     updateRequest = new UpdatePartnerRequest();

@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateVisaCheck;
+import static org.tctalent.server.data.CandidateTestData.getCandidateVisaCheck;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;

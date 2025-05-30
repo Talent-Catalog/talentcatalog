@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getOfferToAssist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -60,7 +61,7 @@ class OfferToAssistAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/ota";
     private static final String SEARCH_PATH = "/search";
 
-    private static final OfferToAssist offerToAssist = AdminApiTestUtil.getOfferToAssist();
+    private static final OfferToAssist offerToAssist = getOfferToAssist();
     private final Page<OfferToAssist> otaPage =
             new PageImpl<>(
                     List.of(offerToAssist),

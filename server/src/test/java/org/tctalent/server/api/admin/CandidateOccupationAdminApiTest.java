@@ -33,6 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateOccupation;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateOccupations;
+import static org.tctalent.server.data.CandidateTestData.getListOfOccupations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -68,9 +71,9 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
     private static final String GET_ALL_OCCUPATIONS_PATH = "/occupation";
     private static final String GET_CANDIDATE_OCCUPATIONS_BY_ID_PATH = "/{id}/list";
 
-    private static final List<Occupation> occupationsList = AdminApiTestUtil.getListOfOccupations();
-    private static final CandidateOccupation candidateOccupation = AdminApiTestUtil.getCandidateOccupation();
-    private static final List<CandidateOccupation> candidateOccupationsList = AdminApiTestUtil.getListOfCandidateOccupations();
+    private static final List<Occupation> occupationsList = getListOfOccupations();
+    private static final CandidateOccupation candidateOccupation = getCandidateOccupation();
+    private static final List<CandidateOccupation> candidateOccupationsList = getListOfCandidateOccupations();
 
     @MockBean OccupationService occupationService;
     @MockBean CandidateOccupationService candidateOccupationService;

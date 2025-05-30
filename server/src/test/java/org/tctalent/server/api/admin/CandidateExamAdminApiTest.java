@@ -45,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateExam;
 
 /**
  * Unit tests for Candidate Exam Admin Api endpoints.
@@ -57,7 +58,7 @@ class CandidateExamAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-exam";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateExam candidateExam = AdminApiTestUtil.getCandidateExam();
+    private final CandidateExam candidateExam = getCandidateExam();
 
     @MockBean CandidateExamService candidateExamService;
     @MockBean CandidateService candidateService;

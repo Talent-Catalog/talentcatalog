@@ -47,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateReviewStatusItem;
 
 /**
  * Unit tests for Candidate Review Status Admin Api endpoints.
@@ -61,7 +62,7 @@ class CandidateReviewStatusAdminApiTest extends ApiTestBase {
 
     private static final String BASE_PATH = "/api/admin/candidate-reviewstatus";
 
-    private static final CandidateReviewStatusItem reviewStatusItem = AdminApiTestUtil.getCandidateReviewStatusItem();
+    private static final CandidateReviewStatusItem reviewStatusItem = getCandidateReviewStatusItem();
 
     @MockBean CandidateReviewStatusService candidateReviewStatusService;
 

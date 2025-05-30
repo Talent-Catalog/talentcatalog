@@ -47,6 +47,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CandidateTestData.getCandidateDependant;
 
 /**
  * Unit tests for Candidate Dependant Admin Api endpoints.
@@ -59,8 +61,8 @@ class CandidateDependantAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-dependant";
     private static final long CANDIDATE_ID = 99L;
 
-    private final Candidate candidate = AdminApiTestUtil.getCandidate();
-    private final CandidateDependant candidateDependant = AdminApiTestUtil.getCandidateDependant();
+    private final Candidate candidate = getCandidate();
+    private final CandidateDependant candidateDependant = getCandidateDependant();
 
     @MockBean CandidateDependantService candidateDependantService;
     @MockBean CandidateService candidateService;
