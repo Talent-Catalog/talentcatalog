@@ -1,13 +1,27 @@
-<form [formGroup]="phoneForm" (ngSubmit)="onSubmit()">
-  <div class="input-group">
-    <!-- Country selector -->
-    <div class="input-group-prepend">
-      <select class="form-select" formControlName="country">
-        <option *ngFor="let c of countries" [ngValue]="c">
-          {{ c.name }}
-        </option>
-      </select>
-    </div>
+<form [formGroup]="phoneForm">
+  <div class="d-flex">
+    <!-- Country code selector -->
+<!--    <select formControlName="country" class="form-select">-->
+<!--      <option *ngFor="let country of countries" [value]="country.isoCode">-->
+<!--        {{ country.isoCode }} {{ get }}-->
+<!--      </option>-->
+<!--    </select>-->
+    <ng-select
+      id="isoCodeSelect"
+      [items]="countries"
+      class="input-group-select"
+      bindLabel="name"
+      [formControlName]="'country'"
+      [placeholder]="'Country (code)'"
+      [clearable]="false">
+      <ng-template ng-label-tmp let-item="item">
+        {{ item.isoCode ? getFlag(item.isoCode) : item.name}} {{ getDialCodeFromIso(item.isoCode) }}
+      </ng-template>
+
+      <ng-template ng-option-tmp let-item="item">
+        {{ item.isoCode ? getFlag(item.isoCode) : item.name}} {{ getDialCodeFromIso(item.isoCode) }}
+      </ng-template>
+    </ng-select>
 
     <!-- Phone number input -->
     <input
@@ -28,7 +42,7 @@
     Valid: {{ formattedNumber }}
   </div>
 
-  <button class="btn btn-primary mt-3" type="submit" [disabled]="!isValidNumber">
+  <button class="btn btn-primary mt-3" (click)="validatePhone()">
     Submit
   </button>
 </form>

@@ -1,0 +1,8 @@
+.input-group-select {
+  min-width: 150px;
+}
+ng-select#isoCodeSelect {
+  .ng-select.ng-select-single .ng-select-container {
+    height: 100% !important;
+  }
+}
