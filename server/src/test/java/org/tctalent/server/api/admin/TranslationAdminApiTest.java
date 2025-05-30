@@ -57,9 +57,13 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getTranslationFile;
+import static org.tctalent.server.data.CandidateTestData.getEducationLevels;
+import static org.tctalent.server.data.CandidateTestData.getEducationMajors;
+import static org.tctalent.server.data.CandidateTestData.getSurveyTypes;
+import static org.tctalent.server.data.LanguageTestData.getTranslation;
+import static org.tctalent.server.data.LanguageTestData.getTranslationFile;
 import static org.tctalent.server.data.CandidateTestData.getListOfOccupations;
-import static org.tctalent.server.data.CountryTestData.getSourceCountryListA;
+import static org.tctalent.server.data.CountryTestData.getSourceCountryList;
 import static org.tctalent.server.data.LanguageTestData.getLanguageLevelList;
 import static org.tctalent.server.data.LanguageTestData.getLanguageList;
 
@@ -82,9 +86,9 @@ class TranslationAdminApiTest extends ApiTestBase {
   private static final String SURVEY_TYPE_PATH = "/survey_type";
   private static final String TRANSLATION_PATH = "/file/{language}";
 
-  private static final Translation translation = AdminApiTestUtil.getTranslation();
+  private static final Translation translation = getTranslation();
   private final Page<Country> countryPage = new PageImpl<>(
-      getSourceCountryListA(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getSourceCountryList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<Language> languagePage = new PageImpl<>(
       getLanguageList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
@@ -96,13 +100,13 @@ class TranslationAdminApiTest extends ApiTestBase {
       getListOfOccupations(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<EducationLevel> educationLevelPage = new PageImpl<>(
-      AdminApiTestUtil.getEducationLevels(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getEducationLevels(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<EducationMajor> educationMajorPage = new PageImpl<>(
-      AdminApiTestUtil.getEducationMajors(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getEducationMajors(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<SurveyType> surveyTypePage = new PageImpl<>(
-      AdminApiTestUtil.getSurveyTypes(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getSurveyTypes(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   @MockBean
   TranslationService translationService;

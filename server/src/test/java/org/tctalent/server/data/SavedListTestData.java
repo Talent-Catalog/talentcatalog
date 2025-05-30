@@ -16,10 +16,10 @@
 
 package org.tctalent.server.data;
 
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.SavedSearchTestData.getSavedSearch;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getSetOfCandidateSavedLists;
 import static org.tctalent.server.data.TaskTestData.getTask;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getUserMinimal;
+import static org.tctalent.server.data.UserTestData.getAuditUser;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -58,11 +58,11 @@ public class SavedListTestData {
         savedList.setPublishedDocLink("http://published.doc.link");
         savedList.setRegisteredJob(true);
         savedList.setTcShortName("Saved list Tc short name");
-        savedList.setCreatedBy(getUserMinimal());
+        savedList.setCreatedBy(getAuditUser());
         savedList.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
-        savedList.setUpdatedBy(getUserMinimal());
+        savedList.setUpdatedBy(getAuditUser());
         savedList.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
-        savedList.setUsers(Set.of(getUserMinimal()));
+        savedList.setUsers(Set.of(getAuditUser()));
         savedList.setTasks(Set.of(getTask()));
         savedList.setCandidateSavedLists(getSetOfCandidateSavedLists());
 
@@ -72,13 +72,13 @@ public class SavedListTestData {
     public static SavedList getSavedListWithCandidates() {
         SavedList savedList = getSavedList();
 
-        final Candidate candidate1 = CandidateTestData.getCandidate();
+        final Candidate candidate1 = getCandidate();
         candidate1.setId(101L);
         CandidateSavedList csl1 = new CandidateSavedList(candidate1, savedList);
-        final Candidate candidate2 = CandidateTestData.getCandidate();
+        final Candidate candidate2 = getCandidate();
         candidate2.setId(102L);
         CandidateSavedList csl2 = new CandidateSavedList(candidate2, savedList);
-        final Candidate candidate3 = CandidateTestData.getCandidate();
+        final Candidate candidate3 = getCandidate();
         candidate3.setId(103L);
         CandidateSavedList csl3 = new CandidateSavedList(candidate3, savedList);
 
@@ -107,4 +107,14 @@ public class SavedListTestData {
         return exportColumn;
     }
 
+    static CandidateSavedList getCandidateSavedList() {
+        CandidateSavedList csl = new CandidateSavedList();
+        csl.setCandidate(getCandidate());
+        return csl;
+  }
+
+    public static Set<CandidateSavedList> getSetOfCandidateSavedLists() {
+        Set<CandidateSavedList> scsl = Set.of(getCandidateSavedList());
+        return scsl;
+  }
 }

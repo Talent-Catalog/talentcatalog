@@ -16,11 +16,14 @@
 
 package org.tctalent.server.data;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SystemLanguage;
+import org.tctalent.server.model.db.Translation;
 
 public class LanguageTestData {
 
@@ -65,4 +68,20 @@ public class LanguageTestData {
         );
     }
 
+    public static Translation getTranslation() {
+        Translation trans = new Translation(
+                UserTestData.getAuditUser(),
+                1L,
+                "Country",
+                "French",
+                "Australie"
+        );
+        return trans;
+    }
+
+    public static Map<String, Object> getTranslationFile() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("my key", "my value");
+        return map;
+    }
 }

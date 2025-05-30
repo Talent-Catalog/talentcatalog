@@ -16,6 +16,7 @@
 
 package org.tctalent.server.data;
 
+import java.util.List;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
@@ -35,4 +36,14 @@ public class SavedSearchTestData {
         return savedSearch;
     }
 
+    public static List<SavedSearch> getListOfSavedSearches() {
+      SavedSearch savedSearch1 = getSavedSearch();
+      SavedSearch savedSearch2 = getSavedSearch();
+      savedSearch2.setName("Saved Search 2");
+      SavedSearch savedSearch3 = getSavedSearch();
+      savedSearch3.setName("Saved Search 3");
+      return List.of(
+          savedSearch1, savedSearch2, savedSearch3
+      );
+  }
 }

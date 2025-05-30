@@ -31,20 +31,12 @@ public class CountryTestData {
     public static final Country PAKISTAN = new Country("Pakistan", Status.active);
     public static final Country COSTA_RICA = new Country("Costa Rica", Status.active);
 
-    public static List<Country> getSourceCountryListA() {
+    public static List<Country> getSourceCountryList() {
         return new ArrayList<>(List.of(LEBANON, JORDAN));
     }
 
-    public static List<Country> getSourceCountryListB() {
-        return new ArrayList<>(List.of(PAKISTAN, COSTA_RICA));
-    }
-
-    public static Set<Country> getSourceCountrySetA() {
+    public static Set<Country> getSourceCountrySet() {
         return new HashSet<>(Set.of(LEBANON, JORDAN));
-    }
-
-    public static Set<Country> getSourceCountrySetB() {
-        return new HashSet<>(Set.of(PAKISTAN, COSTA_RICA));
     }
 
     // Destination countries
@@ -52,22 +44,6 @@ public class CountryTestData {
     public static final Country UNITED_STATES = new Country("United States", Status.active);
     public static final Country CANADA = new Country("Canada", Status.active);
     public static final Country UNITED_KINGDOM = new Country("United Kingdom", Status.active);
-
-    public static List<Country> getDestinationCountryListA() {
-        return new ArrayList<>(List.of(AUSTRALIA, UNITED_STATES));
-    }
-
-    public static List<Country> getDestinationCountryListB() {
-        return new ArrayList<>(List.of(CANADA, UNITED_KINGDOM));
-    }
-
-    public static Set<Country> getDestinationCountrySetA() {
-        return new HashSet<>(Set.of(AUSTRALIA, UNITED_STATES));
-    }
-
-    public static Set<Country> getDestinationCountrySetB() {
-        return new HashSet<>(Set.of(CANADA, UNITED_KINGDOM));
-    }
 
     // Nationalities
     public static final Country VENEZUELA = new Country("Venezuela", Status.active);

@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getEducationMajors;
 import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,7 +81,7 @@ class EducationMajorAdminApiTest extends ApiTestBase {
 
   private final SystemLanguage systemLanguage = getSystemLanguage();
 
-  private final List<EducationMajor> educationMajors = AdminApiTestUtil.getEducationMajors();
+  private final List<EducationMajor> educationMajors = getEducationMajors();
 
   private final Page<EducationMajor> educationLevelPage =
       new PageImpl<>(

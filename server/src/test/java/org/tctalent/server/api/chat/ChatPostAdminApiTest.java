@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.JobChatTestData.getListOfPosts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -45,7 +46,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.api.admin.ApiTestBase;
-import org.tctalent.server.data.JobChatTestData;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.service.db.impl.ChatPostServiceImpl;
 
@@ -58,7 +58,7 @@ class ChatPostAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/chat-post";
     private static final String LIST = "/list";
     private static final String UPLOAD = "/upload";
-    private static final List<ChatPost> postList = JobChatTestData.getListOfPosts();
+    private static final List<ChatPost> postList = getListOfPosts();
 
     @Autowired
     MockMvc mockMvc;

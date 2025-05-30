@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
+import static org.tctalent.server.data.UserTestData.getAdminUser;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -48,9 +49,8 @@ class JobServiceImplTest {
 
     private SalesforceJobOpp job;
     private UpdateJobRequest emptyUpdateJobRequest;
+    private User adminUser;
 
-    // TODO: import real user from test data once UserService tests merged
-    @Mock private User user;
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
     @Mock private SalesforceService sfService;
@@ -66,6 +66,7 @@ class JobServiceImplTest {
     void setUp() {
         job = getSalesforceJobOppMinimal();
         emptyUpdateJobRequest = new UpdateJobRequest();
+        adminUser = getAdminUser();
     }
 
     @Test
@@ -75,7 +76,7 @@ class JobServiceImplTest {
         final String oldName = job.getName();
         emptyUpdateJobRequest.setJobName(newName);
 
-        given(userService.getLoggedInUser()).willReturn(user);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
 
         jobService.updateJob(99L, emptyUpdateJobRequest);
@@ -92,7 +93,7 @@ class JobServiceImplTest {
         final JobOpportunityStage newStage = JobOpportunityStage.jobOffer;
         emptyUpdateJobRequest.setStage(newStage);
 
-        given(userService.getLoggedInUser()).willReturn(user);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
 
         jobService.updateJob(99L, emptyUpdateJobRequest);
@@ -108,7 +109,7 @@ class JobServiceImplTest {
         final String newNextStep = "do something";
         emptyUpdateJobRequest.setNextStep(newNextStep);
 
-        given(userService.getLoggedInUser()).willReturn(user);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
         given(nextStepProcessingService.processNextStep(job, newNextStep)).willReturn(newNextStep);
 
@@ -125,7 +126,7 @@ class JobServiceImplTest {
         final LocalDate newNextStepDueDate = LocalDate.of(1970, 1,1);
         emptyUpdateJobRequest.setNextStepDueDate(newNextStepDueDate);
 
-        given(userService.getLoggedInUser()).willReturn(user);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
 
         jobService.updateJob(99L, emptyUpdateJobRequest);
@@ -145,7 +146,7 @@ class JobServiceImplTest {
         final String currentName = job.getName();
         final JobOpportunityStage currentStage = job.getStage();
 
-        given(userService.getLoggedInUser()).willReturn(user);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(job));
 
         jobService.updateJob(99L, emptyUpdateJobRequest);

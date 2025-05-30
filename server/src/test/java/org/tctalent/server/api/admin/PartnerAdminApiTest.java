@@ -33,10 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tctalent.server.data.CandidateTestData.getUser;
 import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getListOfDestinationPartners;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
+import static org.tctalent.server.data.UserTestData.getAuditUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -284,7 +284,7 @@ class PartnerAdminApiTest extends ApiTestBase {
 
     given(userService
         .getUser(11L))
-        .willReturn(getUser());
+        .willReturn(getAuditUser());
 
     given(partnerService
         .update(anyLong(), any(UpdatePartnerRequest.class)))
@@ -336,7 +336,7 @@ class PartnerAdminApiTest extends ApiTestBase {
 
     given(userService
         .getUser(userId))
-        .willReturn(getUser());
+        .willReturn(getAuditUser());
 
     mockMvc.perform(put(BASE_PATH + "/" + partnerId + UPDATE_JOB_CONTACT_PATH)
             .with(csrf())

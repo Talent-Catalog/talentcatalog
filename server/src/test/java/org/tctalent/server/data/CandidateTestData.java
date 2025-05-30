@@ -16,11 +16,17 @@
 
 package org.tctalent.server.data;
 
+import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
+import static org.tctalent.server.data.UserTestData.getAuditUser;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import org.tctalent.anonymization.model.CandidateAssistanceType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
+import org.tctalent.server.model.db.CandidateCouponCode;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
@@ -37,16 +43,19 @@ import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
+import org.tctalent.server.model.db.Industry;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.OfferToAssist;
 import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.Registration;
 import org.tctalent.server.model.db.ReviewStatus;
@@ -55,6 +64,7 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.TBBEligibilityAssessment;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VisaEligibility;
@@ -62,13 +72,6 @@ import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 
 public class CandidateTestData {
-
-    private static final User caller =
-        new User("test_user",
-            "test",
-            "user",
-            "test.user@ngo.org",
-            Role.admin);
 
     private static final User candidate1user =
         new User("candidate1",
@@ -91,16 +94,12 @@ public class CandidateTestData {
             "test.candidate3@some.thing",
             Role.user);
 
-    public static User getUser() {
-        return caller;
-    }
-
     public static Candidate getCandidate() {
         Candidate candidate = new Candidate(
             candidate1user,
             "+123-456-789",
             "+123-456-789",
-            caller
+            getAuditUser()
         );
         candidate.setId(99L);
         candidate.setNationality(CountryTestData.PAKISTAN);
@@ -110,9 +109,9 @@ public class CandidateTestData {
 
     public static List<Candidate> getListOfCandidates() {
         return List.of(
-            new Candidate(candidate1user, "+123-456-789", "+123-456-789", caller),
-            new Candidate(candidate2user, "+234-567-890", "+123-456-789", caller),
-            new Candidate(candidate3user, "+345-678-901", "+345-678-901", caller)
+            new Candidate(candidate1user, "+123-456-789", "+123-456-789", getAuditUser()),
+            new Candidate(candidate2user, "+234-567-890", "+123-456-789", getAuditUser()),
+            new Candidate(candidate3user, "+345-678-901", "+345-678-901", getAuditUser())
         );
     }
 
@@ -337,5 +336,62 @@ public class CandidateTestData {
         candidateSkill.setSkill("Adobe Photoshop");
         candidateSkill.setTimePeriod("3-5 years");
         return candidateSkill;
+    }
+
+    public static Occupation getOccupation() {
+        Occupation occupation = new Occupation("Nurse", Status.active);
+        occupation.setId(1L);
+        return occupation;
+    }
+
+    public static List<EducationLevel> getEducationLevels() {
+        return List.of(
+            new EducationLevel("Excellent", Status.active, 1),
+            new EducationLevel("Great", Status.active, 2),
+            new EducationLevel("Good", Status.active, 3)
+        );
+    }
+
+    public static List<EducationMajor> getEducationMajors() {
+        return List.of(
+            new EducationMajor("Computer Science", Status.active),
+            new EducationMajor("Mathematics", Status.active),
+            new EducationMajor("Psychology", Status.active)
+        );
+    }
+
+    public static List<Industry> getIndustries() {
+        return List.of(
+            new Industry("Tech", Status.active),
+            new Industry("Finance", Status.active),
+            new Industry("Health", Status.active)
+        );
+    }
+
+    public static OfferToAssist getOfferToAssist() {
+        OfferToAssist offerToAssist = new OfferToAssist();
+        offerToAssist.setAdditionalNotes("Notes");
+        offerToAssist.setPartner(getSourcePartner());
+
+        List<CandidateCouponCode> candidateCouponCodes  = new ArrayList<>();
+        CandidateCouponCode ccc = new CandidateCouponCode();
+        ccc.setCandidate(getCandidate());
+        ccc.setOfferToAssist(offerToAssist);
+        ccc.setId(12345678L);
+        candidateCouponCodes.add(ccc);
+
+        offerToAssist.setCandidateCouponCodes(candidateCouponCodes);
+        offerToAssist.setId(99L);
+        offerToAssist.setPublicId("123456");
+        offerToAssist.setReason(CandidateAssistanceType.OTHER);
+        return offerToAssist;
+    }
+
+    public static List<SurveyType> getSurveyTypes() {
+        SurveyType surveyType1 = new SurveyType("Survey Type One", Status.active);
+        SurveyType surveyType2 = new SurveyType("Survey Type Two", Status.inactive);
+        return List.of(
+            surveyType1, surveyType2
+        );
     }
 }

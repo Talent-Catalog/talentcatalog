@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.data.SavedListTestData.getSavedList;
+import static org.tctalent.server.data.SavedSearchTestData.getListOfSavedSearches;
 import static org.tctalent.server.data.SavedSearchTestData.getSavedSearch;
 import static org.tctalent.server.model.db.SavedSearchType.other;
 
@@ -94,7 +95,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   private static final String SEARCH_PAGED_PATH = "/search-paged";
   private static final SavedSearch savedSearch = getSavedSearch();
   private static final SavedList savedList = getSavedList();
-  private static final List<SavedSearch> savedSearchList = AdminApiTestUtil.getListOfSavedSearches();
+  private static final List<SavedSearch> savedSearchList = getListOfSavedSearches();
   private static final String CLEAR_SELECTION_PATH = "/clear-selection/";
   private static final String CREATE_FROM_DEFAULT_PATH = "/create-from-default";
   private static final String SAVE_SELECTION_PATH = "/save-selection/";

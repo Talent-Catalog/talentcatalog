@@ -16,7 +16,9 @@
 
 package org.tctalent.server.data;
 
-import java.util.Collections;
+import static java.util.Collections.emptySet;
+import static org.tctalent.server.data.UserTestData.getAuditUser;
+
 import java.util.List;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Status;
@@ -34,8 +36,8 @@ public class PartnerImplTestData {
         partner.setRegistrationLandingPage("www.registration.com");
         partner.setNotificationEmail("notification@email.address");
         partner.setStatus(Status.active);
-        partner.setSourceCountries(CountryTestData.getSourceCountrySetA());
-        partner.setDefaultContact(UserTestData.getAdminUser());
+        partner.setSourceCountries(emptySet());
+        partner.setDefaultContact(getAuditUser());
         return partner;
     }
 
@@ -51,8 +53,8 @@ public class PartnerImplTestData {
         partner.setRegistrationLandingPage("www.registration.com");
         partner.setNotificationEmail("notification@email.address");
         partner.setStatus(Status.active);
-        partner.setSourceCountries(Collections.emptySet()); // Unrestricted
-        partner.setDefaultContact(UserTestData.getSystemAdminUser());
+        partner.setSourceCountries(emptySet()); // Unrestricted
+        partner.setDefaultContact(getAuditUser());
         return partner;
     }
 

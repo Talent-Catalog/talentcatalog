@@ -16,6 +16,8 @@
 
 package org.tctalent.server.data;
 
+import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
+
 import java.util.List;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
@@ -26,7 +28,7 @@ public class JobChatTestData {
     public static JobChat getChat() {
         JobChat chat = new JobChat();
         chat.setId(99L);
-        chat.setJobOpp(SalesforceJobOppTestData.getSalesforceJobOppExtended());
+        chat.setJobOpp(getSalesforceJobOppExtended());
         return chat;
     }
 

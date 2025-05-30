@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getEducationLevels;
 import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,7 +80,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
   private static final String SEARCH_PAGED_PATH = "/search";
 
   private final SystemLanguage systemLanguage = getSystemLanguage();
-  private final List<EducationLevel> educationLevels = AdminApiTestUtil.getEducationLevels();
+  private final List<EducationLevel> educationLevels = getEducationLevels();
 
   private final Page<EducationLevel> educationLevelPage =
       new PageImpl<>(

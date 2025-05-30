@@ -16,13 +16,31 @@
 
 package org.tctalent.server.data;
 
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CountryTestData.getSourceCountrySet;
+import static org.tctalent.server.data.PartnerImplTestData.getDefaultSourcePartner;
+import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
+
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 
 public class UserTestData {
+
+    private static final User auditUser =
+        new User("audit_user",
+            "test",
+            "user",
+            "audit.user@ngo.org",
+            Role.admin);
+
+    public static User getAuditUser() {
+        return auditUser;
+    }
 
     public static User getAdminUser() {
         User u = new User(
@@ -34,15 +52,15 @@ public class UserTestData {
         );
         u.setId(555L);
         u.setStatus(Status.active);
-        u.setApprover(getSystemAdminUser());
+        u.setApprover(auditUser);
         u.setPurpose("Complete intakes");
-        u.setSourceCountries(CountryTestData.getSourceCountrySetA());
+        u.setSourceCountries(getSourceCountrySet());
         u.setStatus(Status.active);
         u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
-        u.setCreatedBy(getSystemAdminUser());
+        u.setCreatedBy(auditUser);
         u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         u.setUsingMfa(true);
-        u.setPartner(PartnerImplTestData.getSourcePartner());
+        u.setPartner(getSourcePartner());
         return u;
     }
 
@@ -56,10 +74,10 @@ public class UserTestData {
         u.setSourceCountries(Collections.emptySet()); // Unrestricted
         u.setStatus(Status.active);
         u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
-        u.setCreatedBy(getAdminUser());
+        u.setCreatedBy(auditUser);
         u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         u.setUsingMfa(true);
-        u.setPartner(PartnerImplTestData.getDefaultSourcePartner());
+        u.setPartner(getDefaultSourcePartner());
         return u;
     }
 
@@ -73,10 +91,10 @@ public class UserTestData {
         u.setSourceCountries(Collections.emptySet());
         u.setStatus(Status.active);
         u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
-        u.setCreatedBy(getSystemAdminUser());
+        u.setCreatedBy(auditUser);
         u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         u.setUsingMfa(true);
-        u.setPartner(PartnerImplTestData.getSourcePartner());
+        u.setPartner(getSourcePartner());
         return u;
     }
 
@@ -88,11 +106,31 @@ public class UserTestData {
             Role.user);
         u.setStatus(Status.active);
         u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
-        u.setCreatedBy(getAdminUser());
+        u.setCreatedBy(auditUser);
         u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         u.setUsingMfa(true);
-        u.setPartner(PartnerImplTestData.getDefaultSourcePartner());
-        u.setCandidate(CandidateTestData.getCandidate());
+        u.setPartner(getDefaultSourcePartner());
+        u.setCandidate(getCandidate());
+        return u;
+    }
+
+    public static User getFullUser() {
+        User u = new User("full_user",
+                "full",
+                "user",
+                "full.user@tbb.org",
+                Role.admin);
+        u.setJobCreator(true);
+        u.setApprover(auditUser);
+        u.setPurpose("Complete intakes");
+        u.setSourceCountries(new HashSet<>(List.of(CountryTestData.JORDAN)));
+        u.setReadOnly(false);
+        u.setStatus(Status.active);
+        u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setCreatedBy(auditUser);
+        u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        u.setUsingMfa(true);
+        u.setPartner(getSourcePartner());
         return u;
     }
 

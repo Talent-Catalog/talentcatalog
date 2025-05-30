@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateCitizenship;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.CandidateCitizenship;
 import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
@@ -60,8 +60,7 @@ class CandidateCitizenshipAdminApiTest extends ApiTestBase {
 
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateCitizenship candidateCitizenship =
-        CandidateTestData.getCandidateCitizenship();
+    private final CandidateCitizenship candidateCitizenship = getCandidateCitizenship();
 
 
     @MockBean
