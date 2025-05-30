@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {CandidateStatus, SubmitRegistrationRequest} from "../../../model/candidate";
+import {Candidate, CandidateStatus, SubmitRegistrationRequest} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {TermsInfoDto, TermsType} from "../../../model/terms-info-dto";
 import {TermsInfoService} from "../../../services/terms-info.service";
 
@@ -15,6 +15,7 @@ export class RegistrationSubmitComponent implements OnInit {
   error: any;
   loading: boolean;
 
+  candidate: Candidate;
   currentPrivacyPolicy: TermsInfoDto;
 
   form: UntypedFormGroup;
@@ -27,9 +28,9 @@ export class RegistrationSubmitComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.builder.group({
-      contactConsentRegistration: [false, Validators.required],
-      contactConsentPartners: [false, Validators.required],
-      acceptPolicy: [false, Validators.required]
+      contactConsentRegistration: [false],
+      contactConsentPartners: [false],
+      acceptPolicy: [false]
     });
 
     //Fetch the current candidate privacy policy
@@ -39,6 +40,18 @@ export class RegistrationSubmitComponent implements OnInit {
         error: err => this.error = err
       }
     )
+
+    //Grab info on candidate
+    this.candidateService.getCandidatePersonal().subscribe(
+      {
+        next: candidate => this.candidate = candidate,
+        error: err => this.error = err
+      }
+    )
+  }
+
+  get acceptedPolicy(): boolean {
+    return this.form.get('acceptPolicy').value;
   }
 
   //Final registration step method
@@ -46,10 +59,8 @@ export class RegistrationSubmitComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    let acceptedPolicy: boolean = this.form.get('acceptPolicy').value;
-
     let request: SubmitRegistrationRequest = {
-      acceptedPrivacyPolicyId: acceptedPolicy ? this.currentPrivacyPolicy.id : null,
+      acceptedPrivacyPolicyId: this.acceptedPolicy ? this.currentPrivacyPolicy.id : null,
       contactConsentPartners: this.form.get('contactConsentPartners').value,
       contactConsentRegistration: this.form.get('contactConsentRegistration').value
     }
@@ -67,8 +78,20 @@ export class RegistrationSubmitComponent implements OnInit {
   }
 
   setAcceptedTerms(accepted: boolean) {
-     this.form.get('acceptPolicy').setValue(true);
+     this.form.get('acceptPolicy').setValue(accepted);
   }
 
   protected readonly TermsType = TermsType;
+
+  getPartnerDescription(): string {
+    let description = null;
+    const partner = this.candidate?.user?.partner;
+    if (partner) {
+      description = partner.name;
+      if (partner.websiteUrl) {
+        description += " (" + partner.websiteUrl + ")";
+      }
+    }
+    return description;
+  }
 }

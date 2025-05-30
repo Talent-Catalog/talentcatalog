@@ -1,10 +1,12 @@
-<app-error [error]="error"></app-error>
 <app-loading [loading]="loading"></app-loading>
 
-<p>
-  Want to display privacy requests and submit button.
-  Own component which can do submit, which can change registered status and make itself disappear
-</p>
+<div [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS'
+| translate:{partner: getPartnerDescription()} ">
+</div>
+
+<hr class="my-4"/>
+
+<div [innerHTML]="'REGISTRATION.SUBMIT.CONSENT_INTRODUCTION' | translate"></div>
 
 <hr class="my-4"/>
 
@@ -15,10 +17,7 @@
            [formControlName]="'contactConsentRegistration'">
     <label class="form-check-label">
       {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate }}
-      <sup>*</sup>
     </label>
-    <app-form-control-error
-      [control]="form.controls.contactConsentRegistration"></app-form-control-error>
   </div>
 
   <div class="mb-3 form-check">
@@ -30,7 +29,9 @@
   </div>
 
   <app-accept-terms
-    (accepted)="setAcceptedTerms(true)"
+    [termsAccepted] = acceptedPolicy
+    [acceptanceText]="'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate"
+    (accepted)="setAcceptedTerms($event)"
   >
     <app-terms
       [content]=currentPrivacyPolicy?.content
@@ -38,15 +39,11 @@
     </app-terms>
   </app-accept-terms>
 </form>
-<hr/>
 
-<h5><a target="_blank" href="https://talentbeyondboundaries.org/privacy-and-data-protection-policy">
-  {{ 'LANDING.HEADING3' | translate }}
-</a>
-</h5>
+<app-error [error]="error"></app-error>
 
-<div [innerHTML]="'LANDING.PARA3' | translate"></div>
-
-<button class="btn btn-primary" (click)="submit()">
+<button class="btn btn-primary" (click)="submit()"
+        [disabled]="!form.valid"
+>
   {{ 'REGISTRATION.FOOTER.SUBMIT' | translate }}
 </button>

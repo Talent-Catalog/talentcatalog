@@ -242,8 +242,18 @@ public class CandidatePortalApi {
                 .add("email")
                 .add("firstName")
                 .add("lastName")
+                .add("partner", partnerDto())
                 ;
     }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+            .add("name")
+            .add("websiteUrl")
+            ;
+    }
+
+
 
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()

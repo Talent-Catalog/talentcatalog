@@ -290,11 +290,6 @@ const ALL_FIELDS = {
       "TITLE": null,
       "REGISTER": null,
       "LOGIN": null,
-      "PARA1": null,
-      "HEADING2": null,
-      "PARA2": null,
-      "HEADING3": null,
-      "PARA3": null,
       "USAFGHAN": {
         "HEADING1": null,
         "HEADING2": null
@@ -504,6 +499,7 @@ const ALL_FIELDS = {
         }
       },
       "SUBMIT": {
+        "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
           "SURVEY": null,
@@ -513,6 +509,8 @@ const ALL_FIELDS = {
           "LABEL": null,
           "WARN": null
         },
+        "POLICY_ACCEPTANCE_TEXT": null,
+        "YOUR_PARTNER_IS": null,
       },
       "COMPLETE": {
         "TITLE": null,

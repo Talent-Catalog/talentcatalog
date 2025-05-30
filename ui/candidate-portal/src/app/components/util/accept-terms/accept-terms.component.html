@@ -4,9 +4,8 @@
   </div>
 
   <label>
-    <input type="checkbox" [disabled]="!scrolledToBottom" [(ngModel)]="termsAccepted" />
-    I accept the Terms and Conditions
+    <input type="checkbox" [disabled]="!scrolledToBottom" [(ngModel)]="termsAccepted"
+           (change)="onAcceptanceChange($event)"/>
+    {{acceptanceText}}
   </label>
-
-  <button [disabled]="!termsAccepted" (click)="onContinue()">Continue</button>
 </div>
