@@ -34,6 +34,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
+import static org.tctalent.server.data.UserTestData.createUpdateUserRequestAndExpectedUser;
+import static org.tctalent.server.data.UserTestData.getAdminUser;
+import static org.tctalent.server.data.UserTestData.getCandidateUser;
+import static org.tctalent.server.data.UserTestData.getLimitedUser;
+import static org.tctalent.server.data.UserTestData.getSystemAdminUser;
 
 import java.time.OffsetDateTime;
 import java.time.Period;
@@ -69,9 +75,8 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.tctalent.server.api.admin.AdminApiTestUtil;
-import org.tctalent.server.api.admin.AdminApiTestUtil.CreateUpdateUserTestData;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
+import org.tctalent.server.data.UserTestData.CreateUpdateUserTestData;
 import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidPasswordTokenException;
@@ -135,6 +140,7 @@ class UserServiceImplTest {
     private ResetPasswordRequest resetPasswordRequest;
     private OffsetDateTime offsetDateTime;
     private CheckPasswordResetTokenRequest checkPasswordResetTokenRequest;
+    private PartnerImpl sourcePartner;
 
     @Mock private UserRepository userRepository;
     @Mock private SearchUserRequest searchUserRequest;
@@ -143,7 +149,6 @@ class UserServiceImplTest {
     @Mock private Country mockCountry;
     @Mock private Country mockCountry2;
     @Mock private PartnerService partnerService;
-    @Mock private PartnerImpl mockPartnerImpl;
     @Mock private PasswordHelper passwordHelper;
     @Mock private AuthService authService;
     @Mock private AuthenticationManager authManager;
@@ -160,16 +165,17 @@ class UserServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        sourcePartner = getSourcePartner();
         sort = Sort.unsorted();
         userId = 11L;
         sourceCountryList = List.of(mockCountry, mockCountry2);
-        CreateUpdateUserTestData testData = AdminApiTestUtil.createUpdateUserRequestAndExpectedUser();
+        CreateUpdateUserTestData testData = createUpdateUserRequestAndExpectedUser();
         expectedUser = testData.expectedUser();
         updateUserRequest = testData.request();
-        adminUser = AdminApiTestUtil.getAdminUser();
-        systemAdminUser = AdminApiTestUtil.getSystemAdminUser();
-        candidateUser = AdminApiTestUtil.getCandidateUser();
-        limitedUser = AdminApiTestUtil.getLimitedUser();
+        adminUser = getAdminUser();
+        systemAdminUser = getSystemAdminUser();
+        candidateUser = getCandidateUser();
+        limitedUser = getLimitedUser();
         adminUserPartner = adminUser.getPartner();
         pageRequest = PageRequest.of(0, 10, sort);
         userList = List.of(limitedUser, adminUser);
@@ -360,7 +366,7 @@ class UserServiceImplTest {
 
         // Testing Partner path
         updateUserRequest.setPartnerId(partnerId);
-        expectedUser.setPartner(mockPartnerImpl);
+        expectedUser.setPartner(sourcePartner);
 
         // Source Country path
         updateUserRequest.setSourceCountries(sourceCountryList);
@@ -375,7 +381,7 @@ class UserServiceImplTest {
         given(userRepository.findByEmailIgnoreCase(updateUserRequest.getEmail()))
             .willReturn(null);
         given(partnerService.getPartner(updateUserRequest.getPartnerId()))
-            .willReturn(mockPartnerImpl);
+            .willReturn(sourcePartner);
         doReturn(systemAdminUser).when(userService).getUser(updateUserRequest.getApproverId());
         given(passwordHelper.validateAndEncodePassword(updateUserRequest.getPassword()))
             .willReturn(updateUserRequest.getPassword());
@@ -421,13 +427,13 @@ class UserServiceImplTest {
         given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
         given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
         // Mock update request has partner ID that will return mockPartnerImpl:
-        given(partnerService.getPartner(updateUserRequest.getPartnerId())).willReturn(mockPartnerImpl);
+        given(partnerService.getPartner(updateUserRequest.getPartnerId())).willReturn(sourcePartner);
         updateUserRequest.setApproverId(null); // We're not testing the approver path
 
         User result = userService.updateUser(userId, updateUserRequest); // When
 
         verify(userRepository).save(adminUser);
-        assertEquals(result.getPartner(), mockPartnerImpl); // Request partner assigned
+        assertEquals(result.getPartner(), sourcePartner); // Request partner assigned
     }
 
     @Test

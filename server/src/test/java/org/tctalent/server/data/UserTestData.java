@@ -28,6 +28,7 @@ import java.util.List;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.user.UpdateUserRequest;
 
 public class UserTestData {
 
@@ -132,6 +133,59 @@ public class UserTestData {
         u.setUsingMfa(true);
         u.setPartner(getSourcePartner());
         return u;
+    }
+
+    /**
+     * Holds an {@link UpdateUserRequest} along with the expected {@link User}
+     * that should result from applying the request.
+     */
+    public record CreateUpdateUserTestData(UpdateUserRequest request, User expectedUser) { }
+
+    /**
+     * Constructs a {@link CreateUpdateUserTestData} record containing an {@link UpdateUserRequest}
+     * and the expected {@link User} that should result from using it.
+     */
+    public static CreateUpdateUserTestData createUpdateUserRequestAndExpectedUser() {
+        final String email = "alice@email.com";
+        final String firstName = "Alice";
+        final String lastName = "Alison";
+        final String password = "password";
+        final boolean readOnly = false;
+        final Role role = Role.admin;
+        final boolean jobCreator = false;
+        final String purpose = "Testing";
+        final Status status = Status.active;
+        final String username = "aalison";
+        final boolean usingMfa = true;
+
+        UpdateUserRequest request = new UpdateUserRequest();
+        request.setEmail(email);
+        request.setFirstName(firstName);
+        request.setLastName(lastName);
+        request.setPassword(password);
+        request.setReadOnly(readOnly);
+        request.setRole(role);
+        request.setJobCreator(jobCreator);
+        request.setPurpose(purpose);
+        request.setStatus(status);
+        request.setUsername(username);
+        request.setUsingMfa(usingMfa);
+        request.setPartnerId(1L);
+
+        User expectedUser = new User();
+        expectedUser.setEmail(email);
+        expectedUser.setFirstName(firstName);
+        expectedUser.setLastName(lastName);
+        expectedUser.setReadOnly(readOnly);
+        expectedUser.setRole(role);
+        expectedUser.setJobCreator(jobCreator);
+        expectedUser.setPurpose(purpose);
+        expectedUser.setStatus(status);
+        expectedUser.setUsername(username);
+        expectedUser.setUsingMfa(usingMfa);
+        expectedUser.setPasswordEnc(password);
+
+        return new CreateUpdateUserTestData(request, expectedUser);
     }
 
 }
