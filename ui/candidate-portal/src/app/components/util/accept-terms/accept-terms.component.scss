@@ -1,5 +1,5 @@
 .terms-wrapper {
-  max-width: 500px;
+  max-width: 1000px;
   margin: auto;
   padding: 1rem;
   font-family: sans-serif;
@@ -17,4 +17,8 @@
 label {
   display: block;
   margin-bottom: 1rem;
+}
+
+div {
+  text-align: start;
 }
