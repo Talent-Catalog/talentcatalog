@@ -83,13 +83,19 @@ export class RegistrationSubmitComponent implements OnInit {
 
   protected readonly TermsType = TermsType;
 
-  getPartnerDescription(): string {
+  /**
+   * Displays partner as string.
+   * @param full if true, displays full details, otherwise just displays name
+   */
+  getPartnerDescription(full: boolean): string {
     let description = null;
     const partner = this.candidate?.user?.partner;
     if (partner) {
       description = partner.name;
-      if (partner.websiteUrl) {
-        description += " (" + partner.websiteUrl + ")";
+      if (full) {
+        if (partner.websiteUrl) {
+          description += " (" + partner.websiteUrl + ")";
+        }
       }
     }
     return description;

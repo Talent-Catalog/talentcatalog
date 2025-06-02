@@ -1,7 +1,7 @@
 <app-loading [loading]="loading"></app-loading>
 
 <div [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS'
-| translate:{partner: getPartnerDescription()} ">
+| translate:{partner: getPartnerDescription(true)} ">
 </div>
 
 <hr class="my-4"/>
@@ -28,9 +28,6 @@
     </label>
   </div>
 
-  <h2>
-    Privacy policy with your Talent Catalog partner.
-  </h2>
   <app-accept-terms
     [termsAccepted] = acceptedPolicy
     [acceptanceText]="'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate"
@@ -38,7 +35,7 @@
   >
     <app-terms
       [content]=currentPrivacyPolicy?.content
-      partnerName="Jimbo">
+      [partnerName]="getPartnerDescription(false)">
     </app-terms>
   </app-accept-terms>
 </form>
