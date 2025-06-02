@@ -27,13 +27,13 @@ import org.springframework.lang.Nullable;
 public class SubmitRegistrationRequest {
 
     /**
-     * If not null, indicates the term in the database that has been accepted.
+     * If not null, indicates the id of the TermsInfo entity that has been accepted.
      */
     @Nullable
     private Long acceptedPrivacyPolicyId;
 
     /**
-     * Email consent fields - both not null as should be true/false from the front end checkbox.
+     * Email consent fields.
      */
     private boolean contactConsentRegistration;
     private boolean contactConsentPartners;

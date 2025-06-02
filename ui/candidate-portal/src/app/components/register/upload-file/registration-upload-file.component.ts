@@ -17,8 +17,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {UntypedFormGroup} from "@angular/forms";
 import {RegistrationService} from "../../../services/registration.service";
-import {CandidateService} from "../../../services/candidate.service";
-import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-registration-upload-file',
@@ -39,9 +37,7 @@ export class RegistrationUploadFileComponent implements OnInit {
   activeIds: string;
 
 
-  constructor(public registrationService: RegistrationService,
-              private candidateService: CandidateService,
-              private authenticationService: AuthenticationService) {
+  constructor(public registrationService: RegistrationService) {
   }
 
   ngOnInit() {

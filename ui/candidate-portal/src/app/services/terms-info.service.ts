@@ -8,7 +8,6 @@ import {TermsInfoDto, TermsType} from "../model/terms-info-dto";
   providedIn: 'root'
 })
 export class TermsInfoService {
-  //todo Can we just go through one api - like chat. see special environment api
   private apiUrl: string = environment.termsInfoApiUrl + '/terms-info';
 
   constructor(private http: HttpClient) { }
