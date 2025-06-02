@@ -108,6 +108,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
+import org.tctalent.server.model.db.TermsInfo;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
@@ -183,6 +184,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.TaskService;
+import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
@@ -268,6 +270,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
+    private final TermsInfoService termsInfoService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
@@ -1675,7 +1678,8 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        if (request.getAcceptedPrivacyPolicyId() == null) {
+        final Long acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
+        if (acceptedPrivacyPolicyId == null) {
             //We can only register if the privacy policy has been accepted.
             throw new InvalidRequestException("Privacy policy has not been accepted");
         }
@@ -1683,10 +1687,11 @@ public class CandidateServiceImpl implements CandidateService {
             //We can only register if both consents are given
             throw new InvalidRequestException("Cannot register unless all consents are given");
         }
+        TermsInfo termsInfo = termsInfoService.get(acceptedPrivacyPolicyId);
+        candidate.setAcceptedPrivacyPolicy(termsInfo);
+        candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
         candidate.setContactConsentRegistration(true);
         candidate.setContactConsentPartners(true);
-
-        //TODO JC Need to store accepted terms id plus date
 
         // Don't update status to pending if status is already pending
         final CandidateStatus candidateStatus = candidate.getStatus();

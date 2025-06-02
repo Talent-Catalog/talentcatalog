@@ -69,6 +69,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String publicId;
 
     /**
+     * Privacy policy that candidate has accepted
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "accepted_privacy_policy_id")
+    private TermsInfo acceptedPrivacyPolicy;
+
+    /**
+     * Date time when candidate accepted privacy policy
+     */
+    private OffsetDateTime acceptedPrivacyPolicyDate;
+
+
+
+    /**
      * True if candidate wants to receive all notifications.
      * If false, the candidate will only receive notifications when they are well progressed in
      * a job opportunity.
@@ -856,6 +870,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
             obj = ((Enum<?>) obj).name();
         }
         return obj;
+    }
+
+    public TermsInfo getAcceptedPrivacyPolicy() {
+        return acceptedPrivacyPolicy;
+    }
+
+    public void setAcceptedPrivacyPolicy(TermsInfo acceptedPrivacyPolicy) {
+        this.acceptedPrivacyPolicy = acceptedPrivacyPolicy;
+    }
+
+    public OffsetDateTime getAcceptedPrivacyPolicyDate() {
+        return acceptedPrivacyPolicyDate;
+    }
+
+    public void setAcceptedPrivacyPolicyDate(OffsetDateTime acceptedPrivacyPolicyDate) {
+        this.acceptedPrivacyPolicyDate = acceptedPrivacyPolicyDate;
     }
 
     public String getCandidateNumber() {

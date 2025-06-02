@@ -36,7 +36,14 @@ public class TermsInfoServiceImpl implements TermsInfoService {
 
     @Override
     @NonNull
-    public TermsInfo getCurrentByType(TermsType termsType) {
+    public TermsInfo get(long termsInfoId) throws NoSuchObjectException {
+        return termsInfoRepository.findById(termsInfoId)
+            .orElseThrow(() -> new NoSuchObjectException(TermsInfo.class, termsInfoId));
+    }
+
+    @Override
+    @NonNull
+    public TermsInfo getCurrentByType(TermsType termsType) throws NoSuchObjectException {
         return termsInfoRepository.findFirstByTypeOrderByCreatedDateDesc(termsType)
             .orElseThrow(() -> new NoSuchObjectException(TermsInfo.class, termsType.name()));
     }
