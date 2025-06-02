@@ -47,6 +47,8 @@ import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.DuolingoTestType;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -401,6 +403,27 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
       couponRepository.save(existingCoupon);
     }
 
+    // Find and resolve existing Duolingo-related task assignments
+    TaskImpl duolingoTestTask = taskService.getByName("duolingoTest");
+    List<TaskAssignmentImpl> taskAssignments = taskAssignmentService.findByTaskIdAndCandidateIdAndStatus(
+        duolingoTestTask.getId(), candidateId, Status.active);
+    for (TaskAssignmentImpl taskAssignment : taskAssignments) {
+      taskAssignment.setStatus(Status.inactive);
+      taskAssignmentService.update(
+          taskAssignment,
+          null,
+          true,
+          "Coupon was uncertified and manually reassigned a new coupon.",
+          null
+      );
+
+      LogBuilder.builder(log)
+          .user(Optional.ofNullable(user))
+          .action("ReassignProctoredCoupon")
+          .message("Marked task assignment ID " + taskAssignment.getId() + " as inactive for candidate " + candidateId + " due to coupon reassignment.")
+          .logInfo();
+    }
+
     // Find an available coupon
     Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatusAndTestType(
         DuolingoCouponStatus.AVAILABLE, DuolingoTestType.PROCTORED);
@@ -424,6 +447,12 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
     TaskImpl claimCouponButtonTask = taskService.getByName("claimCouponButton");
     taskAssignmentService.assignTaskToCandidate(user, claimCouponButtonTask, candidate, null, null);
 
+    // Log the reassignment
+    LogBuilder.builder(log)
+        .user(Optional.ofNullable(user))
+        .action("ReassignProctoredCoupon")
+        .message("Reassigned new coupon " + newCoupon.getCouponCode() + " to candidate " + candidateId)
+        .logInfo();
     // Return the response for the new coupon
     return new DuolingoCouponResponse(
         newCoupon.getId(),
