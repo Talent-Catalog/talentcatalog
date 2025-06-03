@@ -947,7 +947,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setState(request.getState());
 
         candidate.setCountry(country);
-        checkForChangedPartner(candidate, country);
+        reassignPartnerIfNeeded(candidate, country);
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1376,7 +1376,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setDob(request.getDob());
 
             candidate.setCountry(country);
-            checkForChangedPartner(candidate, country);
+            reassignPartnerIfNeeded(candidate, country);
 
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
@@ -1447,24 +1447,39 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    private void checkForChangedPartner(Candidate candidate, Country country) {
-        //Do we have an auto assignable partner in this country
-        Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
+    /**
+     * When a new registrant is assigned to a partner that isn't operational in their given country
+     * location, reassign them to the auto-assign partner or, if none exists, the default source
+     * partner.
+     * @param candidate The updating/registering candidate
+     * @param country Their given country location
+     */
+    private void reassignPartnerIfNeeded(Candidate candidate, Country country) {
 
-        //Is there a country assigned partner?
-        if (autoAssignedCountryPartner != null) {
+        // If candidate not in draft status, this is an existing profile: no automated reassignment.
+        if (candidate.getStatus() != CandidateStatus.draft) {
+            return;
+        }
 
-            //Get current user partner.
-            User user = candidate.getUser();
-            final PartnerImpl currentUserPartner = user.getPartner();
+        User user = candidate.getUser();
+        PartnerImpl currentPartner = user.getPartner();
 
-            //The country assigned partner only overrides the default source partner.
-            if (currentUserPartner.isDefaultSourcePartner()) {
-                if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
-                    //Partner of candidate needs to change
-                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
-                    userRepository.save(user);
-                }
+        if (
+            !currentPartner.canManageCandidatesInCountry(country) ||
+                currentPartner.isDefaultSourcePartner()
+        ) {
+            Partner autoAssignedCountryPartner =
+                partnerService.getAutoAssignablePartnerByCountry(country);
+
+            if (autoAssignedCountryPartner != null) {
+                user.setPartner((PartnerImpl) autoAssignedCountryPartner);
+                userRepository.save(user);
+                return;
+            }
+
+            if (!currentPartner.isDefaultSourcePartner()) {
+                user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
+                userRepository.save(user);
             }
         }
     }
