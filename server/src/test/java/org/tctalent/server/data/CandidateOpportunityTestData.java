@@ -28,7 +28,6 @@ public class CandidateOpportunityTestData {
         opportunity.setClosingCommentsForCandidate("Some closing comments for candidate");
         opportunity.setEmployerFeedback("Some employer feedback");
         opportunity.setStage(CandidateOpportunityStage.offer);
-        opportunity.setJobOpp(SalesforceJobOppTestData.getSalesforceJobOppMinimal());
         opportunity.setRelocatingDependantIds(List.of(1L, 2L));
         return opportunity;
     }

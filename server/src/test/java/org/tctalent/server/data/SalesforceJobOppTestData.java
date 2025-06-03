@@ -16,6 +16,7 @@
 
 package org.tctalent.server.data;
 
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.SavedListTestData.getSavedList;
 import static org.tctalent.server.data.SavedSearchTestData.getSavedSearch;
 import static org.tctalent.server.data.UserTestData.getAuditUser;
@@ -23,6 +24,8 @@ import static org.tctalent.server.data.UserTestData.getAuditUser;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Set;
+import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobOppIntake;
@@ -62,7 +65,6 @@ public class SalesforceJobOppTestData {
         job.setClosingComments("These are some closing comments.");
         job.setId(99L);
         job.setAccountId("789");
-        job.setCandidateOpportunities(Set.of(CandidateOpportunityTestData.getCandidateOpportunity()));
         job.setCountry(new Country("Australia", Status.active));
         job.setDescription("This is a description.");
         job.setEmployerEntity(getEmployer());
@@ -72,9 +74,7 @@ public class SalesforceJobOppTestData {
         job.setPublishedBy(getAuditUser());
         job.setPublishedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         job.setJobCreator(PartnerImplTestData.getDestinationPartner());
-        job.setStage(JobOpportunityStage.cvReview);
         job.setStarringUsers(Set.of(getAuditUser()));
-        job.setSubmissionDueDate(LocalDate.parse("2020-01-01"));
         job.setSubmissionList(getSavedList());
         job.setSuggestedList(getSavedList());
         job.setSuggestedSearches(Set.of(getSavedSearch()));
@@ -83,15 +83,13 @@ public class SalesforceJobOppTestData {
         job.setOpportunityScore("Opp Score");
         job.setClosed(false);
         job.setWon(false);
-        job.setClosingComments(null);
         job.setName("Opp Name");
-        job.setNextStep("Next Step");
-        job.setNextStepDueDate(LocalDate.parse("2020-01-01"));
         job.setStageOrder(1);
         job.setCreatedBy(getAuditUser());
         job.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         job.setUpdatedBy(getAuditUser());
         job.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
+        job.setCandidateOpportunities(Set.of(getChildCandidateOpp(job)));
         return job;
     }
 
@@ -122,4 +120,16 @@ public class SalesforceJobOppTestData {
         joi.setVisaPathways("The visa pathways");
         return joi;
     }
+
+    private static CandidateOpportunity getChildCandidateOpp(SalesforceJobOpp job) {
+        CandidateOpportunity co = new CandidateOpportunity();
+        co.setId(99L);
+        co.setJobOpp(job);
+        co.setStage(CandidateOpportunityStage.cvReview);
+        co.setNextStep("Review CVs");
+        co.setNextStepDueDate(LocalDate.now().plusDays(14));
+        co.setCandidate(getCandidate());
+        return co;
+    }
+
 }
