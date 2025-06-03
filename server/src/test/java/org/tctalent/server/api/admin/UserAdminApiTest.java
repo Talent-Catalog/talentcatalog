@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -39,7 +40,6 @@ import static org.tctalent.server.data.UserTestData.getFullUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -162,7 +162,7 @@ class UserAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$[0].partner.defaultPartnerRef", is(false)))
             .andExpect(jsonPath("$[0].partner.defaultSourcePartner", is(false)))
             .andExpect(jsonPath("$[0].partner.registrationLandingPage", is("www.registration.com")))
-            .andExpect(jsonPath("$[0].partner.sourceCountries", is(Matchers.empty())))
+            .andExpect(jsonPath("$[0].partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
             .andExpect(jsonPath("$[0].partner.notificationEmail", is("notification@email.address")))
             .andExpect(jsonPath("$[0].partner.sourcePartner", is(true)))
             .andExpect(jsonPath("$[0].partner.autoAssignable", is(false)))
@@ -224,7 +224,7 @@ class UserAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.content.[0].partner.defaultPartnerRef", is(false)))
             .andExpect(jsonPath("$.content.[0].partner.defaultSourcePartner", is(false)))
             .andExpect(jsonPath("$.content.[0].partner.registrationLandingPage", is("www.registration.com")))
-            .andExpect(jsonPath("$.content.[0].partner.sourceCountries", is(Matchers.empty())))
+            .andExpect(jsonPath("$.content.[0].partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
             .andExpect(jsonPath("$.content.[0].partner.notificationEmail", is("notification@email.address")))
             .andExpect(jsonPath("$.content.[0].partner.sourcePartner", is(true)))
             .andExpect(jsonPath("$.content.[0].partner.autoAssignable", is(false)))
@@ -278,7 +278,7 @@ class UserAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
         .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
         .andExpect(jsonPath("$.partner.registrationLandingPage", is("www.registration.com")))
-        .andExpect(jsonPath("$.partner.sourceCountries", is(Matchers.empty())))
+        .andExpect(jsonPath("$.partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
         .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
         .andExpect(jsonPath("$.partner.autoAssignable", is(false)))
@@ -364,7 +364,7 @@ class UserAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
         .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
         .andExpect(jsonPath("$.partner.registrationLandingPage", is("www.registration.com")))
-        .andExpect(jsonPath("$.partner.sourceCountries", is(Matchers.empty())))
+        .andExpect(jsonPath("$.partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
         .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
         .andExpect(jsonPath("$.partner.autoAssignable", is(false)))
@@ -422,7 +422,7 @@ class UserAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
         .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
         .andExpect(jsonPath("$.partner.registrationLandingPage", is("www.registration.com")))
-        .andExpect(jsonPath("$.partner.sourceCountries", is(Matchers.empty())))
+        .andExpect(jsonPath("$.partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
         .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
         .andExpect(jsonPath("$.partner.autoAssignable", is(false)))

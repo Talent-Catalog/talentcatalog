@@ -17,6 +17,7 @@
 package org.tctalent.server.data;
 
 import static java.util.Collections.emptySet;
+import static org.tctalent.server.data.CountryTestData.getSourceCountrySet;
 import static org.tctalent.server.data.UserTestData.getAuditUser;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class PartnerImplTestData {
         partner.setRegistrationLandingPage("www.registration.com");
         partner.setNotificationEmail("notification@email.address");
         partner.setStatus(Status.active);
-        partner.setSourceCountries(emptySet());
+        partner.setSourceCountries(getSourceCountrySet());
         partner.setDefaultContact(getAuditUser());
         return partner;
     }
