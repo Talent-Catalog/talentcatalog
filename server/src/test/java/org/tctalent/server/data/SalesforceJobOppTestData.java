@@ -126,7 +126,7 @@ public class SalesforceJobOppTestData {
         co.setJobOpp(job);
         co.setStage(CandidateOpportunityStage.cvReview);
         co.setNextStep("Review CVs");
-        co.setNextStepDueDate(LocalDate.now().plusDays(14));
+        co.setNextStepDueDate(LocalDate.parse("2020-01-01"));
         co.setCandidate(getCandidate());
         return co;
     }
