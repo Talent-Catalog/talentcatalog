@@ -27,6 +27,7 @@ import java.util.Set;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.ExportColumn;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
@@ -85,6 +86,21 @@ public class SavedListTestData {
         savedList.setCandidateSavedLists(Set.of(csl1, csl2, csl3));
 
         return savedList;
+    }
+
+    public static SavedList getSubmissionList() {
+        SavedList sl = new SavedList();
+        sl.setId(11L);
+        sl.setName("sub list");
+        sl.setRegisteredJob(true);
+        return sl;
+    }
+
+    public static SavedList getExclusionList() {
+        SavedList sl = getSavedList();
+        sl.setId(12L);
+        sl.setName("exclusion list");
+        return sl;
     }
 
     public static List<SavedList> getSavedLists() {

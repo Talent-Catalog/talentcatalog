@@ -26,13 +26,11 @@ import java.time.OffsetDateTime;
 import java.util.Set;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
-import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 
 public class SalesforceJobOppTestData {
@@ -65,7 +63,7 @@ public class SalesforceJobOppTestData {
         job.setClosingComments("These are some closing comments.");
         job.setId(99L);
         job.setAccountId("789");
-        job.setCountry(new Country("Australia", Status.active));
+        job.setCountry(CountryTestData.CANADA);
         job.setDescription("This is a description.");
         job.setEmployerEntity(getEmployer());
         job.setExclusionList(getSavedList());
@@ -97,6 +95,7 @@ public class SalesforceJobOppTestData {
         Employer employer = new Employer();
         employer.setName("ABC Accounts");
         employer.setWebsite("www.ABCAccounts.com");
+        employer.setCountry(CountryTestData.AUSTRALIA);
         employer.setDescription("This is an employer description.");
         employer.setHasHiredInternationally(true);
         return employer;

@@ -18,7 +18,7 @@ package org.tctalent.server.data;
 
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.CountryTestData.getSourceCountrySet;
-import static org.tctalent.server.data.PartnerImplTestData.getDefaultSourcePartner;
+import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 
 import java.time.OffsetDateTime;
@@ -78,7 +78,7 @@ public class UserTestData {
         u.setCreatedBy(auditUser);
         u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         u.setUsingMfa(true);
-        u.setPartner(getDefaultSourcePartner());
+        u.setPartner(getDefaultPartner());
         return u;
     }
 
@@ -110,7 +110,7 @@ public class UserTestData {
         u.setCreatedBy(auditUser);
         u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         u.setUsingMfa(true);
-        u.setPartner(getDefaultSourcePartner());
+        u.setPartner(getDefaultPartner());
         u.setCandidate(getCandidate());
         return u;
     }

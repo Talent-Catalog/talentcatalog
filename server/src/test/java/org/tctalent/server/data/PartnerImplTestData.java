@@ -42,21 +42,23 @@ public class PartnerImplTestData {
         return partner;
     }
 
-    public static PartnerImpl getDefaultSourcePartner() {
-        PartnerImpl partner = new PartnerImpl();
-        partner.setDefaultSourcePartner(true);
-        partner.setId(999L);
-        partner.setName("TC Default Partner");
-        partner.setAbbreviation("TCDP");
-        partner.setSourcePartner(true);
-        partner.setLogo("www.logo.com");
-        partner.setWebsiteUrl("www.website.com");
-        partner.setRegistrationLandingPage("www.registration.com");
-        partner.setNotificationEmail("notification@email.address");
-        partner.setStatus(Status.active);
-        partner.setSourceCountries(emptySet()); // Unrestricted
-        partner.setDefaultContact(getAuditUser());
-        return partner;
+    public static PartnerImpl getDefaultPartner() {
+        PartnerImpl p = new PartnerImpl();
+        p.setDefaultSourcePartner(true);
+        p.setDefaultJobCreator(true);
+        p.setJobCreator(true);
+        p.setId(999L);
+        p.setName("TC Default Partner");
+        p.setAbbreviation("TCDP");
+        p.setSourcePartner(true);
+        p.setLogo("www.logo.com");
+        p.setWebsiteUrl("www.website.com");
+        p.setRegistrationLandingPage("www.registration.com");
+        p.setNotificationEmail("notification@email.address");
+        p.setStatus(Status.active);
+        p.setSourceCountries(emptySet()); // Unrestricted
+        p.setDefaultContact(getAuditUser());
+        return p;
     }
 
     public static PartnerImpl getDestinationPartner() {
