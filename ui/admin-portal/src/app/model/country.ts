@@ -22,4 +22,5 @@ export interface Country extends HasName {
   status: string;
   translatedName: string;
   isoCode?: string;
+  countryCode?: string;
 }

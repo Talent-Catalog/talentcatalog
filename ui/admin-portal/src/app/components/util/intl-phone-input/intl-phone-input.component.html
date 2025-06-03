@@ -1,25 +1,22 @@
-<form [formGroup]="phoneForm">
+<div id="intl-phone-input">
   <div class="d-flex">
-    <!-- Country code selector -->
-<!--    <select formControlName="country" class="form-select">-->
-<!--      <option *ngFor="let country of countries" [value]="country.isoCode">-->
-<!--        {{ country.isoCode }} {{ get }}-->
-<!--      </option>-->
-<!--    </select>-->
     <ng-select
       id="isoCodeSelect"
       [items]="countries"
-      class="input-group-select"
       bindLabel="name"
-      [formControlName]="'country'"
+      bindValue="isoCode"
+      [(ngModel)]="isoCode"
       [placeholder]="'Country (code)'"
-      [clearable]="false">
+      [clearable]="false"
+      [searchable]="true"
+      [searchFn]="searchCountry"
+      (change)="checkForValidity()">
       <ng-template ng-label-tmp let-item="item">
-        {{ item.isoCode ? getFlag(item.isoCode) : item.name}} {{ getDialCodeFromIso(item.isoCode) }}
+        {{ item.countryCode }}
       </ng-template>
 
       <ng-template ng-option-tmp let-item="item">
-        {{ item.isoCode ? getFlag(item.isoCode) : item.name}} {{ getDialCodeFromIso(item.isoCode) }}
+          {{ item.isoCode ? getFlag(item.isoCode) : item.name}} {{ item.name }} {{ item.countryCode }}
       </ng-template>
     </ng-select>
 
@@ -27,22 +24,19 @@
     <input
       type="tel"
       class="form-control"
-      formControlName="phone"
+      [(ngModel)]="number"
       placeholder="Enter phone number"
-      (blur)="validatePhone()"
+      (ngModelChange)="checkForValidity()"
     />
   </div>
 
+  <div *ngIf="countryCodeRequired" class="text-danger small">
+    Please enter a country code for the phone number entered.
+  </div>
+
   <!-- Validation message -->
-  <div *ngIf="isValidNumber === false" class="text-danger mt-1">
-    Invalid phone number for selected country.
+  <div *ngIf="isInvalidNumber" class="text-danger mt-1 small">
+    Invalid phone number for selected country. Make sure area code included if applicable.
+    Example for country: {{getExampleNumberForCountry()}}
   </div>
-
-  <div *ngIf="isValidNumber && formattedNumber" class="text-success mt-1">
-    Valid: {{ formattedNumber }}
-  </div>
-
-  <button class="btn btn-primary mt-3" (click)="validatePhone()">
-    Submit
-  </button>
-</form>
+</div>
