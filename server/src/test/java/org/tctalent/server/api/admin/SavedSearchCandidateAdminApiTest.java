@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
@@ -72,7 +73,7 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
 
   private final Page<Candidate> candidatePage =
       new PageImpl<>(
-          AdminApiTestUtil.listOfCandidates(),
+          getListOfCandidates(),
           PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
