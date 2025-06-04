@@ -87,7 +87,17 @@ public class CandidateBuilderSelector {
         new HashSet<>(Arrays.asList(
             "city",
             "state",
-            "address1"
+            "address1",
+            "candidateCertifications",
+            "candidateCitizenships",
+            "candidateDestinations",
+            "candidateEducations",
+            "candidateExams",
+            "candidateLanguages",
+            "candidateOccupations",
+            "candidateSkills",
+            "candidateJobExperiences",
+            "candidateCertifications"
         ));
 
     private final Set<String> userPublicProperties =
