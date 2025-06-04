@@ -87,7 +87,7 @@ public interface UserService {
      * Checks the validity of the email verification token and verifies the user's email.
      * Throws an error if the email verification token is invalid or expired, or if sending the completion verification email fails.
      */
-    void verifyEmail(VerifyEmailRequest request);
+    User verifyEmail(VerifyEmailRequest request);
 
     User findByUsernameAndRole(String username, Role role);
 
