@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
@@ -37,6 +38,7 @@ import static org.tctalent.server.data.SavedListTestData.getSubmissionList;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,8 +50,14 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Employer;
@@ -57,14 +65,19 @@ import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
+import org.tctalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tctalent.server.request.job.JobInfoForSlackPost;
+import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.NextStepProcessingService;
@@ -88,11 +101,13 @@ class JobServiceImplTest {
     private Employer employer;
     private SavedList submissionList;
     private SavedList exclusionList;
-    private final String sfJobLink =
+    private final String SF_JOB_LINK =
         "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/006Uu33300BHCHlIAP/view";
-    private final String newNextStep = "do something";
-    private final LocalDate newNextStepDueDate = LocalDate.now().plusDays(14);
-    private final String processedNextStep = "processedNextStep";
+    private final String SF_JOB_ID = "006Uu33300BHCHlIAP";
+    private final String NEXT_STEP = "do something";
+    private final LocalDate NEXT_STEP_DUE_DATE = LocalDate.parse("2025-12-01");
+    private final String PROCESSED_NEXT_STEP = "processedNextStep";
+    private final long JOB_ID = 11L;
 
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
@@ -108,6 +123,8 @@ class JobServiceImplTest {
     @Mock private SalesforceBridgeService salesforceBridgeService;
     @Mock private JobChatService jobChatService;
     @Mock private PartnerService partnerService;
+    @Mock private SalesforceConfig salesforceConfig;
+    @Mock private CandidateSavedListService candidateSavedListService;
 
     @Captor ArgumentCaptor<CandidateOpportunityParams> caseParamsCaptor;
 
@@ -120,8 +137,8 @@ class JobServiceImplTest {
         longJob = getSalesforceJobOppExtended();
         updateJobRequest = new UpdateJobRequest();
         updateJobRequest.setStage(JobOpportunityStage.cvReview);
-        updateJobRequest.setNextStep(newNextStep);
-        updateJobRequest.setNextStepDueDate(newNextStepDueDate);
+        updateJobRequest.setNextStep(NEXT_STEP);
+        updateJobRequest.setNextStepDueDate(NEXT_STEP_DUE_DATE);
         adminUser = getAdminUser();
         employer = getEmployer();
         createJobRequest = new UpdateJobRequest();
@@ -248,7 +265,7 @@ class JobServiceImplTest {
     void createJob_shouldThrowExceptionForDefaultJobCreator_whenJobAlreadyExists() {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         adminUser.setPartner(getDefaultPartner());
-        createJobRequest.setSfJoblink(sfJobLink); // Valid request
+        createJobRequest.setSfJoblink(SF_JOB_LINK); // Default job creator must have SF equivalent
         given(salesforceJobOppService.getJobOppById(anyString())).willReturn(longJob);
 
         assertThrows(EntityExistsException.class, () -> jobService.createJob(createJobRequest));
@@ -260,7 +277,7 @@ class JobServiceImplTest {
     void createJob_shouldCallSalesforceJobOppServiceToCreateJobAndThenUpdateTCVersion() {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         adminUser.setPartner(getDefaultPartner());
-        createJobRequest.setSfJoblink(sfJobLink); // Valid request
+        createJobRequest.setSfJoblink(SF_JOB_LINK); // Default job creator must have SF equivalent
         given(salesforceJobOppService.createJobOpp(anyString())).willReturn(longJob);
         given(salesforceService.findAccount(anyString())).willReturn(new Account());
         given(employerService.findOrCreateEmployerFromSalesforceAccount(any(Account.class)))
@@ -281,13 +298,71 @@ class JobServiceImplTest {
         verify(jobChatService).createJobCreatorChat(JobChatType.AllJobCandidates, longJob);
         verify(jobChatService).createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, longJob);
         jobChatService.createJobCreatorSourcePartnerChat(longJob, getSourcePartner());
-
-        // TODO verify SF fields updated (e.g. SF ID)? - separate test for job chat creation?
     }
 
     @Test
-    @DisplayName("updateJob sets new name on SF AND TC when provided in request")
-    void updateJobSetsNewNameWhenChanged() {
+    @DisplayName("should create and set submission and exclusion lists")
+    void createJob_shouldCreateAndSetSubmissionAndExclusionLists() {
+        setUpAndCompleteCreateJobPath();
+
+        jobService.createJob(createJobRequest);
+
+        assertEquals(longJob.getSubmissionList(), submissionList);
+        assertEquals(longJob.getExclusionList(), exclusionList);
+    }
+
+    @Test
+    @DisplayName("should create relevant job chats")
+    void createJob_shouldCreateRelevantJobChats() {
+        setUpAndCompleteCreateJobPath();
+
+        jobService.createJob(createJobRequest);
+
+        verify(jobChatService).createJobCreatorChat(JobChatType.AllJobCandidates, longJob);
+        verify(jobChatService).createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, longJob);
+    }
+
+    @Test
+    @DisplayName("should create job on SF and then update TC job with SF ID")
+    void createJob_shouldCreateJobOnSfAndThenUpdateTCJobWithSfId() {
+        setUpAndCompleteCreateJobPath();
+
+        jobService.createJob(createJobRequest);
+
+        assertEquals(longJob.getSfId(), SF_JOB_ID);
+    }
+
+    @Test
+    @DisplayName("should throw exception for user of partner that is not employer or default job "
+        + "creator")
+    void createJob_shouldThrowExceptionForUserOfPartnerThatIsNotJobCreator() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        adminUser.getPartner().setJobCreator(true);
+
+        Exception ex = assertThrows(InvalidRequestException.class,
+            () -> jobService.createJob(createJobRequest));
+
+        assertEquals(ex.getMessage(),
+            "Unsupported type of partner: " + adminUser.getPartner().getName());
+    }
+
+    private void setUpAndCompleteCreateJobPath() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        adminUser.getPartner().setEmployer(getEmployer());
+        adminUser.getPartner().setJobCreator(true);
+        given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(longJob);
+        given(salesforceService.createOrUpdateJobOpportunity(longJob))
+            .willReturn(SF_JOB_ID);
+        given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
+            .willReturn(submissionList);
+        given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
+            .willReturn(exclusionList);
+        given(partnerService.listActiveSourcePartners()).willReturn(List.of(getSourcePartner()));
+    }
+
+    @Test
+    @DisplayName("should set new name on SF AND TC when provided in request")
+    void updateJob_setsNewName_whenChanged() {
         final String newName = "new name";
         final String oldName = shortJob.getName();
         updateJobRequest.setJobName(newName);
@@ -304,69 +379,68 @@ class JobServiceImplTest {
     }
 
     @Test
-    @DisplayName("updateJob sets Stage on SF AND TC when provided in request")
-    void updateJobSetsStageOnSfAndTcWhenProvided() {
+    @DisplayName("should set Stage on SF AND TC when provided in request")
+    void updateJob_setsStageOnSfAndTc_whenProvided() {
         final JobOpportunityStage newStage = JobOpportunityStage.jobOffer;
         updateJobRequest.setStage(newStage);
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(shortJob));
         given(nextStepProcessingService.processNextStep(shortJob, updateJobRequest.getNextStep()))
-            .willReturn(processedNextStep);
+            .willReturn(PROCESSED_NEXT_STEP);
 
         jobService.updateJob(99L, updateJobRequest);
 
         then(salesforceService).should().updateEmployerOpportunityStage(
             shortJob,
             newStage,
-            processedNextStep,
+            PROCESSED_NEXT_STEP,
             updateJobRequest.getNextStepDueDate()
         );
         assertEquals(shortJob.getStage(), newStage);
     }
 
     @Test
-    @DisplayName("updateJob sets Next Step using processed version on SF AND TC when provided in "
+    @DisplayName("should set Next Step using processed version on SF AND TC when provided in "
         + "request")
-    void updateJobSetsNextStepOnSfAndTcWhenProvided() {
+    void updateJob_setsNextStepOnSfAndTc_whenProvided() {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(shortJob));
         given(nextStepProcessingService.processNextStep(shortJob, updateJobRequest.getNextStep()))
-            .willReturn(processedNextStep);
+            .willReturn(PROCESSED_NEXT_STEP);
 
         jobService.updateJob(99L, updateJobRequest);
 
         then(salesforceService).should().updateEmployerOpportunityStage(
             shortJob,
             updateJobRequest.getStage(),
-            processedNextStep,
+            PROCESSED_NEXT_STEP,
             updateJobRequest.getNextStepDueDate()
         );
-        assertEquals(shortJob.getNextStep(), processedNextStep);
+        assertEquals(shortJob.getNextStep(), PROCESSED_NEXT_STEP);
     }
 
     @Test
-    @DisplayName("updateJob sets Next Step Due Date on SF AND TC when provided in request")
-    void updateJobSetsNextStepDueDateOnSfAndTcWhenProvided() {
+    @DisplayName("should set Next Step Due Date on SF AND TC when provided in request")
+    void updateJob_setsNextStepDueDateOnSfAndTc_whenProvided() {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(shortJob));
         given(nextStepProcessingService.processNextStep(shortJob, updateJobRequest.getNextStep()))
-            .willReturn(processedNextStep);
+            .willReturn(PROCESSED_NEXT_STEP);
 
         jobService.updateJob(99L, updateJobRequest);
 
         then(salesforceService).should().updateEmployerOpportunityStage(
             shortJob,
             updateJobRequest.getStage(),
-            processedNextStep,
-            newNextStepDueDate
+            PROCESSED_NEXT_STEP,
+            NEXT_STEP_DUE_DATE
         );
-        assertEquals(shortJob.getNextStepDueDate(), newNextStepDueDate);
+        assertEquals(shortJob.getNextStepDueDate(), NEXT_STEP_DUE_DATE);
     }
 
     @Test
-    @DisplayName("updateJob - when SF-pertinent request values all null, no SF update "
-        + "and corresponding TC Job values unchanged")
-    void updateJobNoUnnecessaryUpdate() {
+    @DisplayName("shouldn't update SF and corresponding TC Job values when unchanged")
+    void updateJob_noUnnecessaryUpdate() {
         UpdateJobRequest emptyRequest = new UpdateJobRequest();
         emptyRequest.setEvergreen(true); // Minor update (not pertinent to SF)
         final String currentNextStep = shortJob.getNextStep();
@@ -384,6 +458,124 @@ class JobServiceImplTest {
         assertEquals(shortJob.getNextStepDueDate(), currentDueDate);
         assertEquals(shortJob.getName(), currentName);
         assertEquals(shortJob.getStage(), currentStage);
+    }
+
+    @Test
+    @DisplayName("should return job when found")
+    void getJob_shouldReturnJob_whenFound() {
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+
+        SalesforceJobOpp result = jobService.getJob(JOB_ID);
+
+        assertEquals(longJob, result);
+    }
+
+    @Test
+    @DisplayName("should throw when not found")
+    void getJob_shouldThrow_whenNotFound() {
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.empty());
+
+        assertThrows(NoSuchObjectException.class, () -> jobService.getJob(JOB_ID));
+    }
+
+    @Test
+    @DisplayName("should create and set employer entity when not found")
+    void checkEmployerEntity_shouldCreateAndSetEmployerEntity_whenNotFound() {
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        longJob.setEmployerEntity(null);
+        given(employerService.findOrCreateEmployerFromSalesforceId(anyString()))
+            .willReturn(employer);
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.getJob(JOB_ID);
+
+        assertEquals(result.getEmployerEntity(), employer);
+        verify(salesforceJobOppRepository).save(longJob);
+    }
+
+    @Test
+    @DisplayName("should return job page and check employer entities on search")
+    void searchJobs_shouldReturnPage_andCheckEmployerEntities() {
+        SearchJobRequest request = mock(SearchJobRequest.class);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<SalesforceJobOpp> page = new PageImpl<>(List.of(longJob));
+
+        given(request.getPageRequest()).willReturn(pageRequest);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findAll(
+            any(Specification.class),
+            eq(pageRequest))
+        ).willReturn(page);
+
+        Page<SalesforceJobOpp> result = jobService.searchJobs(request);
+
+        assertEquals(page, result);
+    }
+
+    @Test
+    @DisplayName("should create and attach suggested search to job")
+    void createSuggestedSearch_shouldAttachSuggestedSearch() {
+        String suffix = "SuggestedSearch";
+
+        SavedSearch savedSearch = new SavedSearch();
+        savedSearch.setId(123L);
+
+        SavedList exclusionList = new SavedList();
+        exclusionList.setId(999L);
+        longJob.setExclusionList(exclusionList);
+        longJob.setSuggestedSearches(new HashSet<>());
+
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(savedSearchService.createSavedSearch(any())).willReturn(savedSearch);
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.createSuggestedSearch(JOB_ID, suffix);
+
+        assertTrue(result.getSuggestedSearches().contains(savedSearch));
+        assertEquals(adminUser, result.getUpdatedBy());
+        verify(salesforceJobOppRepository).save(longJob);
+    }
+
+    @Test
+    @DisplayName("should extract job info with contact and links")
+    void extractJobInfoForSlack_shouldReturnSlackPost() {
+        given(salesforceJobOppRepository.findById(1L)).willReturn(Optional.of(longJob));
+        given(salesforceConfig.getBaseLightningUrl()).willReturn("https://salesforce.example.com");
+
+        JobInfoForSlackPost result =
+            jobService.extractJobInfoForSlack(1L, "https://tc.example.com/job");
+
+        assertEquals(longJob.getName(), result.getJobName());
+        assertEquals(longJob.getContactUser(), result.getContact());
+        assertEquals(longJob.getJobSummary(), result.getJobSummary());
+        assertEquals("https://tc.example.com/job", result.getTcJobLink());
+        assertTrue(result.getSfJobLink().contains("salesforce.example.com"));
+    }
+
+    @Test
+    @DisplayName("should throw when no logged in user")
+    void publishJob_shouldThrow_whenNoLoggedInUser() {
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+        assertThrows(UnauthorisedActionException.class, () -> jobService.publishJob(JOB_ID));
+    }
+
+    @Test
+    @DisplayName("should set stage to candidateSearch when previously at earlier stage and "
+        + "skipCandidateSearch set to false")
+    void publishJob_shouldSetStageToCandidateSearch_whenPreviouslyAtEarlierStage() {
+        longJob.setStage(JobOpportunityStage.prospect);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(candidateSavedListService.copy(any(SavedList.class), any(CopySourceContentsRequest.class)))
+            .willReturn(new SavedList());
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.publishJob(JOB_ID);
+
+        assertEquals(result.getStage(), JobOpportunityStage.candidateSearch);
     }
 
 }
