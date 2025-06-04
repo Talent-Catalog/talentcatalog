@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.job.UpdateJobRequest;
 
 public class SalesforceJobOppTestData {
 
@@ -129,6 +130,32 @@ public class SalesforceJobOppTestData {
         co.setNextStepDueDate(LocalDate.parse("2020-01-01"));
         co.setCandidate(getCandidate());
         return co;
+    }
+
+    /**
+     * Holds an {@link UpdateJobRequest} along with the expected {@link SalesforceJobOpp} that
+     * should result from applying the request.
+     */
+    public record UpdateJobTestData(UpdateJobRequest request, SalesforceJobOpp expectedJob) {}
+
+    /**
+     * Constructs a {@link UpdateJobTestData record containing an {@link UpdateJobRequest}
+     * and the expected {@link SalesforceJobOpp} that should result from using it.
+     */
+    public static UpdateJobTestData createUpdateJobRequestAndExpectedJob() {
+        final String nextStep = "next step";
+        final LocalDate nextStepDueDate = LocalDate.parse("2026-01-01");
+        // TODO more update properties
+
+        UpdateJobRequest request = new UpdateJobRequest();
+        request.setNextStep(nextStep);
+        request.setNextStepDueDate(nextStepDueDate);
+        request.setEvergreen(true);
+        request.setSkipCandidateSearch(true);
+
+        SalesforceJobOpp expectedJob = new SalesforceJobOpp();
+
+        return new UpdateJobTestData(request, expectedJob);
     }
 
 }

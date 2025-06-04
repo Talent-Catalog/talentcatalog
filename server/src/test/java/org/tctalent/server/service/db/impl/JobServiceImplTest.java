@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
@@ -34,13 +35,17 @@ import static org.tctalent.server.data.SalesforceJobOppTestData.getEmployer;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
 import static org.tctalent.server.data.SavedListTestData.getExclusionList;
+import static org.tctalent.server.data.SavedListTestData.getSavedList;
 import static org.tctalent.server.data.SavedListTestData.getSubmissionList;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,6 +67,7 @@ import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobChatType;
+import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
@@ -72,14 +78,17 @@ import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tctalent.server.request.job.JobInfoForSlackPost;
+import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PartnerService;
@@ -95,19 +104,30 @@ class JobServiceImplTest {
 
     private SalesforceJobOpp shortJob;
     private SalesforceJobOpp longJob;
+    private SalesforceJobOpp emptyJob1;
+    private SalesforceJobOpp emptyJob2;
+    private List<SalesforceJobOpp> emptyJobsList;
     private UpdateJobRequest updateJobRequest;
     private UpdateJobRequest createJobRequest;
     private User adminUser;
     private Employer employer;
     private SavedList submissionList;
     private SavedList exclusionList;
-    private final String SF_JOB_LINK =
+    private SavedList suggestedList;
+    private SearchJobRequest searchJobRequest;
+    private UpdateLinkRequest updateLinkRequest;
+    private JobIntakeData jobIntakeData;
+    private JobOppIntake jobOppIntake;
+
+    private static final String SF_JOB_LINK =
         "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/006Uu33300BHCHlIAP/view";
-    private final String SF_JOB_ID = "006Uu33300BHCHlIAP";
-    private final String NEXT_STEP = "do something";
-    private final LocalDate NEXT_STEP_DUE_DATE = LocalDate.parse("2025-12-01");
-    private final String PROCESSED_NEXT_STEP = "processedNextStep";
-    private final long JOB_ID = 11L;
+    private static final String SF_JOB_ID = "006Uu33300BHCHlIAP";
+    private static final String NEXT_STEP = "do something";
+    private static final LocalDate NEXT_STEP_DUE_DATE = LocalDate.parse("2025-12-01");
+    private static final String PROCESSED_NEXT_STEP = "processedNextStep";
+    private static final long JOB_ID = 11L;
+    private static final String LINK_NAME = "name";
+    private static final String LINK_URL = "www.url.com";
 
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
@@ -125,6 +145,7 @@ class JobServiceImplTest {
     @Mock private PartnerService partnerService;
     @Mock private SalesforceConfig salesforceConfig;
     @Mock private CandidateSavedListService candidateSavedListService;
+    @Mock private JobOppIntakeService jobOppIntakeService;
 
     @Captor ArgumentCaptor<CandidateOpportunityParams> caseParamsCaptor;
 
@@ -144,6 +165,18 @@ class JobServiceImplTest {
         createJobRequest = new UpdateJobRequest();
         submissionList = getSubmissionList();
         exclusionList = getExclusionList();
+        suggestedList = getSavedList();
+        searchJobRequest = new SearchJobRequest();
+        emptyJob1 = new SalesforceJobOpp();
+        emptyJob1.setId(1L);
+        emptyJob2 = new SalesforceJobOpp();
+        emptyJob2.setId(2L);
+        emptyJobsList = new ArrayList<>(List.of(emptyJob1, emptyJob2));
+        updateLinkRequest = new UpdateLinkRequest();
+        updateLinkRequest.setUrl(LINK_URL);
+        updateLinkRequest.setName(LINK_NAME);
+        jobIntakeData = new JobIntakeData();
+        jobOppIntake = new JobOppIntake();
     }
 
     @Test
@@ -576,6 +609,223 @@ class JobServiceImplTest {
         SalesforceJobOpp result = jobService.publishJob(JOB_ID);
 
         assertEquals(result.getStage(), JobOpportunityStage.candidateSearch);
+    }
+
+    @Test
+    @DisplayName("should set stage to visaEligibility when previously at "
+        + "earlier stage and skipCandidateSearch set to true")
+    void publishJob_shouldSetStageToVisaEligibility_whenPreviouslyAtEarlierStage() {
+        longJob.setStage(JobOpportunityStage.prospect);
+        longJob.setSkipCandidateSearch(true);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(candidateSavedListService.copy(any(SavedList.class), any(CopySourceContentsRequest.class)))
+            .willReturn(new SavedList());
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.publishJob(JOB_ID);
+
+        assertEquals(result.getStage(), JobOpportunityStage.visaEligibility);
+    }
+
+    @Test
+    @DisplayName("should set a suggested list with contents of submission list when not empty")
+    void publishJob_shouldSetSuggestedListWithContentsOfSubmissionList_whenNotEmpty() {
+        longJob.setStage(JobOpportunityStage.prospect);
+        longJob.setSkipCandidateSearch(true);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(candidateSavedListService.copy(any(SavedList.class), any(CopySourceContentsRequest.class)))
+            .willReturn(suggestedList);
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.publishJob(JOB_ID);
+
+        assertEquals(result.getSuggestedList(), suggestedList);
+    }
+
+    @Test
+    @DisplayName("should remove suggested search, delete it and set audit fields")
+    void removeSuggestedSearch_shouldRemoveSuggestedSearch() {
+        SavedSearch suggestedSearch = new SavedSearch();
+        longJob.setSuggestedSearches(new HashSet<>(Set.of(suggestedSearch)));
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(savedSearchService.getSavedSearch(anyLong())).willReturn(suggestedSearch);
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.removeSuggestedSearch(JOB_ID, 1L);
+
+        assertEquals(result.getSuggestedSearches(), Collections.emptySet());
+    }
+
+    @Test
+    @DisplayName("should return list of unread chat IDs for matched job opps")
+    void findUnreadChatsInOpps_shouldReturnUnreadChatIds_whenUserIsLoggedIn() {
+        List<Long> expectedUnreadIds = List.of(1L);
+
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findAll(any(Specification.class)))
+            .willReturn(emptyJobsList);
+        given(salesforceJobOppRepository.findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L)))
+            .willReturn(expectedUnreadIds);
+
+        List<Long> result = jobService.findUnreadChatsInOpps(searchJobRequest);
+
+        assertEquals(expectedUnreadIds, result);
+        verify(salesforceJobOppRepository).findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L));
+    }
+
+    @Test
+    @DisplayName("should return matching job opportunities unpaged")
+    void searchJobsUnpaged_shouldReturnMatchingJobs() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findAll(any(Specification.class))).willReturn(emptyJobsList);
+
+        List<SalesforceJobOpp> result = jobService.searchJobsUnpaged(searchJobRequest);
+
+        assertEquals(emptyJobsList, result);
+        verify(salesforceJobOppRepository).findAll(any(Specification.class));
+    }
+
+    @Test
+    @DisplayName("should set JD link and audit fields as requested")
+    void updateJDLink_shouldSetAsRequested() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.updateJdLink(JOB_ID, updateLinkRequest);
+
+        assertEquals(result.getSubmissionList().getFileJdLink(), LINK_URL);
+        assertEquals(result.getSubmissionList().getFileJdName(), LINK_NAME);
+        assertEquals(longJob.getUpdatedBy(), adminUser);
+    }
+
+    @Test
+    @DisplayName("should throw if no submission list")
+    void updateJdLink_shouldThrowIfNoSubmissionList() {
+        longJob.setSubmissionList(null);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+
+        Exception ex = assertThrows(InvalidRequestException.class,
+            () -> jobService.updateJdLink(JOB_ID, updateLinkRequest));
+
+        assertEquals(ex.getMessage(), "Job " + JOB_ID + " does not have submission list");
+    }
+
+    @Test
+    @DisplayName("should set JOI link and audit fields as requested")
+    void updateJoiLink_shouldSetAsRequested() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.updateJoiLink(JOB_ID, updateLinkRequest);
+
+        assertEquals(result.getSubmissionList().getFileJoiLink(), LINK_URL);
+        assertEquals(result.getSubmissionList().getFileJoiName(), LINK_NAME);
+        assertEquals(longJob.getUpdatedBy(), adminUser);
+    }
+
+    @Test
+    @DisplayName("should throw if no submission list")
+    void updateJoiLink_shouldThrowIfNoSubmissionList() {
+        longJob.setSubmissionList(null);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+
+        Exception ex = assertThrows(InvalidRequestException.class,
+            () -> jobService.updateJoiLink(JOB_ID, updateLinkRequest));
+
+        assertEquals(ex.getMessage(), "Job " + JOB_ID + " does not have submission list");
+    }
+
+    @Test
+    @DisplayName("should set interview guidance link and audit fields as requested")
+    void updateInterviewGuidanceLink_shouldSetAsRequested() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.updateInterviewGuidanceLink(JOB_ID, updateLinkRequest);
+
+        assertEquals(result.getSubmissionList().getFileInterviewGuidanceLink(), LINK_URL);
+        assertEquals(result.getSubmissionList().getFileInterviewGuidanceName(), LINK_NAME);
+        assertEquals(longJob.getUpdatedBy(), adminUser);
+    }
+
+    @Test
+    @DisplayName("should throw if no submission list")
+    void updateInterviewGuidanceLink_shouldThrowIfNoSubmissionList() {
+        longJob.setSubmissionList(null);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+
+        Exception ex = assertThrows(InvalidRequestException.class,
+            () -> jobService.updateInterviewGuidanceLink(JOB_ID, updateLinkRequest));
+
+        assertEquals(ex.getMessage(), "Job " + JOB_ID + " does not have submission list");
+    }
+
+    @Test
+    @DisplayName("should set as requested")
+    void updateMouLink_shouldSetAsRequested() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        SalesforceJobOpp result = jobService.updateMouLink(JOB_ID, updateLinkRequest);
+
+        assertEquals(result.getSubmissionList().getFileMouLink(), LINK_URL);
+        assertEquals(result.getSubmissionList().getFileMouName(), LINK_NAME);
+        assertEquals(longJob.getUpdatedBy(), adminUser);
+    }
+
+    @Test
+    @DisplayName("should throw if no submission list")
+    void updateMouLink_shouldThrowIfNoSubmissionList() {
+        longJob.setSubmissionList(null);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+
+        Exception ex = assertThrows(InvalidRequestException.class,
+            () -> jobService.updateMouLink(JOB_ID, updateLinkRequest));
+
+        assertEquals(ex.getMessage(), "Job " + JOB_ID + " does not have submission list");
+    }
+
+    @Test
+    @DisplayName("should create intake and save job when intake is missing")
+    void updateIntakeData_shouldCreateIntakeAndSaveJob_whenIntakeIsMissing() {
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        longJob.setJobOppIntake(null);
+        given(jobOppIntakeService.create(jobIntakeData)).willReturn(jobOppIntake);
+        given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+
+        jobService.updateIntakeData(JOB_ID, jobIntakeData);
+
+        assertEquals(jobOppIntake, longJob.getJobOppIntake());
+        verify(salesforceJobOppRepository).save(longJob);
+        verify(jobOppIntakeService).create(jobIntakeData);
+        verify(jobOppIntakeService, never()).update(anyLong(), any());
+    }
+
+    @Test
+    @DisplayName("should update existing intake when intake is already set")
+    void updateIntakeData_shouldUpdateExistingIntake_whenIntakeIsPresent() {
+        JobOppIntake existingIntake = new JobOppIntake();
+        existingIntake.setId(123L);
+
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        longJob.setJobOppIntake(existingIntake);
+
+        jobService.updateIntakeData(JOB_ID, jobIntakeData);
+
+        verify(jobOppIntakeService).update(123L, jobIntakeData);
+        verify(salesforceJobOppRepository, never()).save(any());
+        verify(jobOppIntakeService, never()).create(any());
     }
 
 }
