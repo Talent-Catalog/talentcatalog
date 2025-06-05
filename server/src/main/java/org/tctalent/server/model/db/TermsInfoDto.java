@@ -34,7 +34,7 @@ public class TermsInfoDto {
     /**
      * Unique id of terms
      */
-    private long id;
+    private TermsId id;
 
     /**
      * HTML content of the terms.

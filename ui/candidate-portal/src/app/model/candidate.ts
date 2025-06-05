@@ -433,7 +433,7 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
 }
 
 export class SubmitRegistrationRequest {
-  acceptedPrivacyPolicyId?: number;
+  acceptedPrivacyPolicyId?: string;
   contactConsentRegistration?: boolean;
   contactConsentPartners?: boolean;
 }

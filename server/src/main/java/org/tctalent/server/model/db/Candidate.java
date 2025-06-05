@@ -71,9 +71,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     /**
      * Privacy policy that candidate has accepted
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "accepted_privacy_policy_id")
-    private TermsInfo acceptedPrivacyPolicy;
+    private TermsId acceptedPrivacyPolicy;
 
     /**
      * Date time when candidate accepted privacy policy
@@ -872,11 +870,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return obj;
     }
 
-    public TermsInfo getAcceptedPrivacyPolicy() {
+    public TermsId getAcceptedPrivacyPolicy() {
         return acceptedPrivacyPolicy;
     }
 
-    public void setAcceptedPrivacyPolicy(TermsInfo acceptedPrivacyPolicy) {
+    public void setAcceptedPrivacyPolicy(TermsId acceptedPrivacyPolicy) {
         this.acceptedPrivacyPolicy = acceptedPrivacyPolicy;
     }
 

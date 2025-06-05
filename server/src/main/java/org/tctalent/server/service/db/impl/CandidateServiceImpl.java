@@ -108,7 +108,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
-import org.tctalent.server.model.db.TermsInfo;
+import org.tctalent.server.model.db.TermsId;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
@@ -1678,7 +1678,7 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        final Long acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
+        final TermsId acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
         if (acceptedPrivacyPolicyId == null) {
             //We can only register if the privacy policy has been accepted.
             throw new InvalidRequestException("Privacy policy has not been accepted");
@@ -1687,8 +1687,7 @@ public class CandidateServiceImpl implements CandidateService {
             //We can only register if both consents are given
             throw new InvalidRequestException("Cannot register unless all consents are given");
         }
-        TermsInfo termsInfo = termsInfoService.get(acceptedPrivacyPolicyId);
-        candidate.setAcceptedPrivacyPolicy(termsInfo);
+        candidate.setAcceptedPrivacyPolicy(acceptedPrivacyPolicyId);
         candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
         candidate.setContactConsentRegistration(true);
         candidate.setContactConsentPartners(true);

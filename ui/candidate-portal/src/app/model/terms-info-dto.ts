@@ -1,5 +1,6 @@
+
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-
 export enum TermsType {
   CANDIDATE_PRIVACY_POLICY,
 }
@@ -22,9 +22,9 @@ export enum TermsType {
 export interface TermsInfoDto {
 
   /**
-   * Unique id on database
+   * Unique id (maps to enum on server)
    */
-  id: number;
+  id: string;
 
   /**
    * HTML content

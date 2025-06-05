@@ -17,11 +17,8 @@
 
 package org.tctalent.server.model.db;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +31,7 @@ import lombok.ToString;
  * Terms are classified by {@link #type}.
  * <p/>
  * There can be multiple versions of the same type of terms. Each version will have a different
- * {@link #createdDate}.
+ * {@link #createdDate} and {@link #id}.
  * <p/>
  * Users can be linked to the specific version of a type of terms that they have consented to.
  *
@@ -43,10 +40,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Entity
-@Table(name = "terms_info")
-@SequenceGenerator(name = "seq_gen", sequenceName = "terms_info_id_seq", allocationSize = 1)
-public class TermsInfo extends AbstractDomainObject<Long> {
+public class TermsInfo {
 
     /**
      * HTML content of the terms.
@@ -60,6 +54,12 @@ public class TermsInfo extends AbstractDomainObject<Long> {
      * The "current" version of that type of terms will be the one with the most recent createdDate.
      */
     private OffsetDateTime createdDate;
+
+    /**
+     * Unique id for these terms.
+     */
+    @Enumerated(EnumType.STRING)
+    private TermsId id;
 
     /**
      * The type of terms - for example a privacy policy.

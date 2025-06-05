@@ -18,6 +18,7 @@ package org.tctalent.server.service.db;
 
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.TermsId;
 import org.tctalent.server.model.db.TermsInfo;
 import org.tctalent.server.model.db.TermsType;
 
@@ -25,12 +26,12 @@ public interface TermsInfoService {
 
     /**
      * Get the TermsInfo with the given id.
-     * @param termsInfoId ID of TermsInfo to get
+     * @param id ID of TermsInfo to get
      * @return TermsInfo
      * @throws NoSuchObjectException if there is no TermsInfo with this id.
      */
     @NonNull
-    TermsInfo get(long termsInfoId) throws NoSuchObjectException;
+    TermsInfo get(TermsId id) throws NoSuchObjectException;
 
     /**
      * Get the TermsInfo of the most recent terms of the given type

@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2025 Talent Catalog.
  *
@@ -15,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.repository.db;
+package org.tctalent.server.model.db;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.tctalent.server.model.db.TermsInfo;
-import org.tctalent.server.model.db.TermsType;
-
-public interface TermsInfoRepository extends JpaRepository<TermsInfo, Long> {
-    Optional<TermsInfo> findFirstByTypeOrderByCreatedDateDesc(TermsType type);
+/**
+ * Unique id of a particular terms instance
+ *
+ * @author John Cameron
+ */
+public enum TermsId {
+    CANDIDATE_PRIVACY_POLICY_V1
 }

@@ -22,9 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.TermsId;
 import org.tctalent.server.model.db.TermsInfo;
 import org.tctalent.server.model.db.TermsType;
-import org.tctalent.server.repository.db.TermsInfoRepository;
 import org.tctalent.server.service.db.TermsInfoService;
 
 @Service
@@ -32,19 +32,22 @@ import org.tctalent.server.service.db.TermsInfoService;
 @RequiredArgsConstructor
 public class TermsInfoServiceImpl implements TermsInfoService {
 
-    private final TermsInfoRepository termsInfoRepository;
+    //TODO JC Get rid of repository and auto create TermsInfo at start up in constructor
+    //TODO JC (or on demand) driven by skeleton entries for each terms - corresponding to
+    //TODO JC a new enum with all terms. TermInfos are stored in a Map by enum value.
+    //TODO JC Maybe only load html from resource on demand.
 
     @Override
     @NonNull
-    public TermsInfo get(long termsInfoId) throws NoSuchObjectException {
-        return termsInfoRepository.findById(termsInfoId)
-            .orElseThrow(() -> new NoSuchObjectException(TermsInfo.class, termsInfoId));
+    public TermsInfo get(TermsId id) throws NoSuchObjectException {
+        //TODO JC Implement get
+        throw new UnsupportedOperationException("get not implemented");
     }
 
     @Override
     @NonNull
     public TermsInfo getCurrentByType(TermsType termsType) throws NoSuchObjectException {
-        return termsInfoRepository.findFirstByTypeOrderByCreatedDateDesc(termsType)
-            .orElseThrow(() -> new NoSuchObjectException(TermsInfo.class, termsType.name()));
+        //TODO JC Implement getCurrentByType
+        throw new UnsupportedOperationException("getCurrentByType not implemented");
     }
 }
