@@ -102,6 +102,7 @@ public class CandidateTestData {
             getAuditUser()
         );
         candidate.setId(99L);
+        candidate.setCandidateNumber("99");
         candidate.setNationality(CountryTestData.PAKISTAN);
         candidate.setStatus(CandidateStatus.active);
         return candidate;

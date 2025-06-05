@@ -23,6 +23,7 @@ public class OpportunityTestData {
     public static Opportunity getOpportunity() {
         Opportunity opportunity = new Opportunity();
         opportunity.setName("Opportunity");
+        opportunity.setId("006Uu08800HRtrRIAT");
         return opportunity;
     }
 
