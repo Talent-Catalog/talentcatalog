@@ -16,7 +16,11 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +35,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
+import static org.tctalent.server.data.SalesforceJobOppTestData.createUpdateJobRequestAndExpectedJob;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getEmployer;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
@@ -39,6 +44,9 @@ import static org.tctalent.server.data.SavedListTestData.getSavedList;
 import static org.tctalent.server.data.SavedListTestData.getSubmissionList;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +67,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.data.SalesforceJobOppTestData.UpdateJobTestData;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -87,6 +98,7 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.EmployerService;
+import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.NextStepProcessingService;
@@ -98,6 +110,9 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @ExtendWith(MockitoExtension.class)
 class JobServiceImplTest {
@@ -118,6 +133,8 @@ class JobServiceImplTest {
     private UpdateLinkRequest updateLinkRequest;
     private JobIntakeData jobIntakeData;
     private JobOppIntake jobOppIntake;
+    private SalesforceJobOpp expectedJob;
+    private UpdateJobRequest updateRequestExtended;
 
     private static final String SF_JOB_LINK =
         "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/006Uu33300BHCHlIAP/view";
@@ -126,8 +143,8 @@ class JobServiceImplTest {
     private static final LocalDate NEXT_STEP_DUE_DATE = LocalDate.parse("2025-12-01");
     private static final String PROCESSED_NEXT_STEP = "processedNextStep";
     private static final long JOB_ID = 11L;
-    private static final String LINK_NAME = "name";
-    private static final String LINK_URL = "www.url.com";
+    private static final String NAME = "name";
+    private static final String URL = "www.url.com";
 
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
@@ -146,6 +163,10 @@ class JobServiceImplTest {
     @Mock private SalesforceConfig salesforceConfig;
     @Mock private CandidateSavedListService candidateSavedListService;
     @Mock private JobOppIntakeService jobOppIntakeService;
+    @Mock private JobServiceHelper jobServiceHelper;
+    @Mock private MultipartFile mockFile;
+    @Mock private GoogleDriveConfig googleDriveConfig;
+    @Mock private FileSystemService fileSystemService;
 
     @Captor ArgumentCaptor<CandidateOpportunityParams> caseParamsCaptor;
 
@@ -173,10 +194,13 @@ class JobServiceImplTest {
         emptyJob2.setId(2L);
         emptyJobsList = new ArrayList<>(List.of(emptyJob1, emptyJob2));
         updateLinkRequest = new UpdateLinkRequest();
-        updateLinkRequest.setUrl(LINK_URL);
-        updateLinkRequest.setName(LINK_NAME);
+        updateLinkRequest.setUrl(URL);
+        updateLinkRequest.setName(NAME);
         jobIntakeData = new JobIntakeData();
         jobOppIntake = new JobOppIntake();
+        UpdateJobTestData data = createUpdateJobRequestAndExpectedJob();
+        expectedJob = data.expectedJob();
+        updateRequestExtended = data.request();
     }
 
     @Test
@@ -697,8 +721,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateJdLink(JOB_ID, updateLinkRequest);
 
-        assertEquals(result.getSubmissionList().getFileJdLink(), LINK_URL);
-        assertEquals(result.getSubmissionList().getFileJdName(), LINK_NAME);
+        assertEquals(result.getSubmissionList().getFileJdLink(), URL);
+        assertEquals(result.getSubmissionList().getFileJdName(), NAME);
         assertEquals(longJob.getUpdatedBy(), adminUser);
     }
 
@@ -724,8 +748,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateJoiLink(JOB_ID, updateLinkRequest);
 
-        assertEquals(result.getSubmissionList().getFileJoiLink(), LINK_URL);
-        assertEquals(result.getSubmissionList().getFileJoiName(), LINK_NAME);
+        assertEquals(result.getSubmissionList().getFileJoiLink(), URL);
+        assertEquals(result.getSubmissionList().getFileJoiName(), NAME);
         assertEquals(longJob.getUpdatedBy(), adminUser);
     }
 
@@ -751,8 +775,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateInterviewGuidanceLink(JOB_ID, updateLinkRequest);
 
-        assertEquals(result.getSubmissionList().getFileInterviewGuidanceLink(), LINK_URL);
-        assertEquals(result.getSubmissionList().getFileInterviewGuidanceName(), LINK_NAME);
+        assertEquals(result.getSubmissionList().getFileInterviewGuidanceLink(), URL);
+        assertEquals(result.getSubmissionList().getFileInterviewGuidanceName(), NAME);
         assertEquals(longJob.getUpdatedBy(), adminUser);
     }
 
@@ -778,8 +802,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateMouLink(JOB_ID, updateLinkRequest);
 
-        assertEquals(result.getSubmissionList().getFileMouLink(), LINK_URL);
-        assertEquals(result.getSubmissionList().getFileMouName(), LINK_NAME);
+        assertEquals(result.getSubmissionList().getFileMouLink(), URL);
+        assertEquals(result.getSubmissionList().getFileMouName(), NAME);
         assertEquals(longJob.getUpdatedBy(), adminUser);
     }
 
@@ -828,4 +852,171 @@ class JobServiceImplTest {
         verify(jobOppIntakeService, never()).create(any());
     }
 
+    @Test
+    @DisplayName("should update Salesforce Job as expected")
+    void updateJob_shouldSetFieldsAsExpected() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(nextStepProcessingService.processNextStep(longJob, updateRequestExtended.getNextStep()))
+            .willReturn(updateRequestExtended.getNextStep());
+
+        jobService.updateJob(JOB_ID, updateRequestExtended);
+
+        verify(salesforceService).updateEmployerOpportunityStage(
+            longJob,
+            updateRequestExtended.getStage(),
+            updateRequestExtended.getNextStep(),
+            updateRequestExtended.getNextStepDueDate()
+        );
+
+        verify(salesforceService).updateEmployerOpportunityName(
+            longJob.getSfId(),
+            updateRequestExtended.getJobName()
+        );
+    }
+
+    /**
+     * expectedJop is essentially shortJob with the requested updates pre-set — so, if update method
+     * working as expected, they will pass the comparison test at the end.
+     */
+    @Test
+    @DisplayName("should update TC Job as expected")
+    void updateJob_shouldUpdateTcJobAsExpected() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+        given(nextStepProcessingService.processNextStep(shortJob, updateRequestExtended.getNextStep()))
+            .willReturn(updateRequestExtended.getNextStep());
+        given(userService.getUser(updateRequestExtended.getContactUserId()))
+            .willReturn(adminUser);
+        given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
+
+        SalesforceJobOpp result = jobService.updateJob(JOB_ID, updateRequestExtended);
+
+        assertThat(result)
+            .usingRecursiveComparison()
+            .ignoringFields("createdDate", "updatedBy", "updatedDate")
+            .isEqualTo(expectedJob);
+    }
+
+    @Test
+    @DisplayName("should create evergreen child opp when evergreen and updated to employed stage")
+    void updateJob_shouldCreateEvergreenChildOpp_whenEvergreenAndUpdatedToEmployedStage() {
+        shortJob.setEvergreenChild(null);
+        updateJobRequest.setEvergreen(true);
+        updateJobRequest.setStage(JobOpportunityStage.jobOffer);
+
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+        given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(emptyJob1);
+        given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
+
+        SalesforceJobOpp result = jobService.updateJob(JOB_ID, updateJobRequest);
+
+        assertNotNull(result.getEvergreenChild());
+    }
+
+    @Test
+    @DisplayName("should not create evergreen child opp when already set")
+    void updateJob_shouldNotCreateEvergreenChildOpp_whenAlreadySet() {
+        shortJob.setEvergreenChild(emptyJob1);
+        updateJobRequest.setEvergreen(true);
+        updateJobRequest.setStage(JobOpportunityStage.jobOffer);
+
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+        given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
+
+        SalesforceJobOpp result = jobService.updateJob(JOB_ID, updateJobRequest);
+
+        assertEquals(result.getEvergreenChild(), emptyJob1);
+    }
+
+    @Test
+    @DisplayName("should not create evergreen child opp when already set")
+    void updateJob_shouldNotCreateEvergreenChildOpp_whenEvergreenSetToFalse() {
+        shortJob.setEvergreenChild(null);
+        updateJobRequest.setEvergreen(false);
+        updateJobRequest.setStage(JobOpportunityStage.jobOffer);
+
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+        given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
+
+        SalesforceJobOpp result = jobService.updateJob(JOB_ID, updateJobRequest);
+
+        assertNull(result.getEvergreenChild());
+    }
+
+    @Test
+    @DisplayName("should update summary and set audit fields")
+    void updateJobSummary_shouldUpdateSummaryAndSetAuditFields() {
+        String summary = "summary";
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+        given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
+
+        SalesforceJobOpp result = jobService.updateJobSummary(JOB_ID, summary);
+
+        assertEquals(result.getJobSummary(), summary);
+        assertEquals(result.getUpdatedBy(), adminUser);
+    }
+
+    @Test
+    @DisplayName("should remove starring user when starred is false")
+    void updateStarred_shouldRemoveStarringUser_whenStarredIsFalse() {
+        shortJob.setStarringUsers(new HashSet<>(Set.of(adminUser)));
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+        given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
+
+        SalesforceJobOpp result = jobService.updateStarred(JOB_ID, false);
+
+        assertFalse(result.getStarringUsers().contains(adminUser));
+    }
+
+    @Test
+    @DisplayName("should add starring user when starred is true")
+    void updateStarred_shouldAddStarringUser_whenStarredIsTrue() {
+        shortJob.setStarringUsers(new HashSet<>(Collections.emptySet()));
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+        given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
+
+        SalesforceJobOpp result = jobService.updateStarred(JOB_ID, true);
+
+        assertTrue(result.getStarringUsers().contains(adminUser));
+    }
+
+    @Test
+    @DisplayName("should upload JD")
+    void uploadJd_shouldUploadJd() throws IOException {
+        stubFileUpload();
+
+        SalesforceJobOpp result = jobService.uploadJd(JOB_ID, mockFile);
+
+        assertEquals(result.getSubmissionList().getFileJdLink(), URL);
+        assertEquals(result.getSubmissionList().getFileJdName(), NAME);
+        verify(savedListService).saveIt(result.getSubmissionList());
+    }
+
+    private void stubFileUpload() throws IOException {
+        InputStream mockStream = mock(InputStream.class);
+        GoogleFileSystemFile mockGoogleFile = mock(GoogleFileSystemFile.class);
+
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(mockFile.getOriginalFilename()).willReturn(NAME);
+        given(mockFile.getInputStream()).willReturn(mockStream);
+        given(mockStream.read(any())).willReturn(-1);
+        given(googleDriveConfig.getListFoldersDrive()).willReturn(mock(GoogleFileSystemDrive.class));
+        given(fileSystemService.uploadFile(
+            any(GoogleFileSystemDrive.class),
+            any(GoogleFileSystemFolder.class),
+            anyString(),
+            any(File.class))
+        ).willReturn(mockGoogleFile);
+        given(mockGoogleFile.getName()).willReturn(NAME);
+        given(mockGoogleFile.getUrl()).willReturn(URL);
+    }
+
+    // TODO throws when no sub list + repeat for other upload methods
 }
