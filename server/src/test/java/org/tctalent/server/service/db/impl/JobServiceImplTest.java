@@ -126,17 +126,18 @@ class JobServiceImplTest {
     private UpdateJobRequest updateJobRequest;
     private UpdateJobRequest createJobRequest;
     private User adminUser;
-    private Employer employer;
-    private SavedList submissionList;
-    private SavedList exclusionList;
-    private SavedList suggestedList;
-    private SearchJobRequest searchJobRequest;
     private UpdateLinkRequest updateLinkRequest;
-    private JobIntakeData jobIntakeData;
-    private JobOppIntake jobOppIntake;
     private SalesforceJobOpp expectedJob;
     private UpdateJobRequest updateRequestExtended;
 
+    private static final UpdateJobTestData DATA = createUpdateJobRequestAndExpectedJob();
+    private static final JobOppIntake JOB_OPP_INTAKE = new JobOppIntake();
+    private static final JobIntakeData JOB_INTAKE_DATA = new JobIntakeData();
+    private static final SearchJobRequest SEARCH_JOB_REQUEST = new SearchJobRequest();
+    private static final SavedList SUGGESTED_LIST = getSavedList();
+    private static final SavedList EXCLUSION_LIST = getExclusionList();
+    private static final SavedList SUBMISSION_LIST = getSubmissionList();
+    private static final Employer EMPLOYER = getEmployer();
     private static final String SF_JOB_LINK =
         "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/006Uu33300BHCHlIAP/view";
     private static final String SF_JOB_ID = "006Uu33300BHCHlIAP";
@@ -183,12 +184,7 @@ class JobServiceImplTest {
         updateJobRequest.setNextStep(NEXT_STEP);
         updateJobRequest.setNextStepDueDate(NEXT_STEP_DUE_DATE);
         adminUser = getAdminUser();
-        employer = getEmployer();
         createJobRequest = new UpdateJobRequest();
-        submissionList = getSubmissionList();
-        exclusionList = getExclusionList();
-        suggestedList = getSavedList();
-        searchJobRequest = new SearchJobRequest();
         emptyJob1 = new SalesforceJobOpp();
         emptyJob1.setId(1L);
         SalesforceJobOpp emptyJob2 = new SalesforceJobOpp();
@@ -197,11 +193,8 @@ class JobServiceImplTest {
         updateLinkRequest = new UpdateLinkRequest();
         updateLinkRequest.setUrl(URL);
         updateLinkRequest.setName(NAME);
-        jobIntakeData = new JobIntakeData();
-        jobOppIntake = new JobOppIntake();
-        UpdateJobTestData data = createUpdateJobRequestAndExpectedJob();
-        expectedJob = data.expectedJob();
-        updateRequestExtended = data.request();
+        expectedJob = DATA.expectedJob();
+        updateRequestExtended = DATA.request();
     }
 
     @Test
@@ -348,19 +341,19 @@ class JobServiceImplTest {
         given(salesforceJobOppService.createJobOpp(anyString())).willReturn(longJob);
         given(salesforceService.findAccount(anyString())).willReturn(new Account());
         given(employerService.findOrCreateEmployerFromSalesforceAccount(any(Account.class)))
-            .willReturn(employer);
+            .willReturn(EMPLOYER);
         given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
         given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
             .willThrow(RuntimeException.class);
         given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
-            .willReturn(submissionList);
+            .willReturn(SUBMISSION_LIST);
         given(partnerService.listActiveSourcePartners()).willReturn(List.of(getSourcePartner()));
 
         jobService.createJob(createJobRequest);
 
         verify(salesforceJobOppService).createJobOpp(anyString());
-        assertEquals(longJob.getCountry(), employer.getCountry());
-        assertEquals(longJob.getSubmissionList(), submissionList);
+        assertEquals(longJob.getCountry(), EMPLOYER.getCountry());
+        assertEquals(longJob.getSubmissionList(), SUBMISSION_LIST);
         verify(jobChatService).createJobCreatorChat(JobChatType.AllJobCandidates, longJob);
         verify(jobChatService).createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, longJob);
         jobChatService.createJobCreatorSourcePartnerChat(longJob, getSourcePartner());
@@ -373,8 +366,8 @@ class JobServiceImplTest {
 
         jobService.createJob(createJobRequest);
 
-        assertEquals(longJob.getSubmissionList(), submissionList);
-        assertEquals(longJob.getExclusionList(), exclusionList);
+        assertEquals(longJob.getSubmissionList(), SUBMISSION_LIST);
+        assertEquals(longJob.getExclusionList(), EXCLUSION_LIST);
     }
 
     @Test
@@ -420,9 +413,9 @@ class JobServiceImplTest {
         given(salesforceService.createOrUpdateJobOpportunity(longJob))
             .willReturn(SF_JOB_ID);
         given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
-            .willReturn(submissionList);
+            .willReturn(SUBMISSION_LIST);
         given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
-            .willReturn(exclusionList);
+            .willReturn(EXCLUSION_LIST);
         given(partnerService.listActiveSourcePartners()).willReturn(List.of(getSourcePartner()));
     }
 
@@ -549,12 +542,12 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
         longJob.setEmployerEntity(null);
         given(employerService.findOrCreateEmployerFromSalesforceId(anyString()))
-            .willReturn(employer);
+            .willReturn(EMPLOYER);
         given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
 
         SalesforceJobOpp result = jobService.getJob(JOB_ID);
 
-        assertEquals(result.getEmployerEntity(), employer);
+        assertEquals(result.getEmployerEntity(), EMPLOYER);
         verify(salesforceJobOppRepository).save(longJob);
     }
 
@@ -586,7 +579,6 @@ class JobServiceImplTest {
         savedSearch.setId(123L);
 
         SavedList exclusionList = new SavedList();
-        exclusionList.setId(999L);
         longJob.setExclusionList(exclusionList);
         longJob.setSuggestedSearches(new HashSet<>());
 
@@ -668,12 +660,12 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
         given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
         given(candidateSavedListService.copy(any(SavedList.class), any(CopySourceContentsRequest.class)))
-            .willReturn(suggestedList);
+            .willReturn(SUGGESTED_LIST);
         given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
 
         SalesforceJobOpp result = jobService.publishJob(JOB_ID);
 
-        assertEquals(result.getSuggestedList(), suggestedList);
+        assertEquals(result.getSuggestedList(), SUGGESTED_LIST);
     }
 
     @Test
@@ -702,7 +694,7 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L)))
             .willReturn(expectedUnreadIds);
 
-        List<Long> result = jobService.findUnreadChatsInOpps(searchJobRequest);
+        List<Long> result = jobService.findUnreadChatsInOpps(SEARCH_JOB_REQUEST);
 
         assertEquals(expectedUnreadIds, result);
         verify(salesforceJobOppRepository).findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L));
@@ -714,7 +706,7 @@ class JobServiceImplTest {
         given(userService.getLoggedInUser()).willReturn(null);
 
         assertThrows(InvalidSessionException.class,
-            () -> jobService.findUnreadChatsInOpps(searchJobRequest));
+            () -> jobService.findUnreadChatsInOpps(SEARCH_JOB_REQUEST));
     }
 
     @Test
@@ -723,7 +715,7 @@ class JobServiceImplTest {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findAll(any(Specification.class))).willReturn(emptyJobsList);
 
-        List<SalesforceJobOpp> result = jobService.searchJobsUnpaged(searchJobRequest);
+        List<SalesforceJobOpp> result = jobService.searchJobsUnpaged(SEARCH_JOB_REQUEST);
 
         assertEquals(emptyJobsList, result);
         verify(salesforceJobOppRepository).findAll(any(Specification.class));
@@ -842,14 +834,14 @@ class JobServiceImplTest {
     void updateIntakeData_shouldCreateIntakeAndSaveJob_whenIntakeIsMissing() {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
         longJob.setJobOppIntake(null);
-        given(jobOppIntakeService.create(jobIntakeData)).willReturn(jobOppIntake);
+        given(jobOppIntakeService.create(JOB_INTAKE_DATA)).willReturn(JOB_OPP_INTAKE);
         given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
 
-        jobService.updateIntakeData(JOB_ID, jobIntakeData);
+        jobService.updateIntakeData(JOB_ID, JOB_INTAKE_DATA);
 
-        assertEquals(jobOppIntake, longJob.getJobOppIntake());
+        assertEquals(JOB_OPP_INTAKE, longJob.getJobOppIntake());
         verify(salesforceJobOppRepository).save(longJob);
-        verify(jobOppIntakeService).create(jobIntakeData);
+        verify(jobOppIntakeService).create(JOB_INTAKE_DATA);
         verify(jobOppIntakeService, never()).update(anyLong(), any());
     }
 
@@ -862,9 +854,9 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
         longJob.setJobOppIntake(existingIntake);
 
-        jobService.updateIntakeData(JOB_ID, jobIntakeData);
+        jobService.updateIntakeData(JOB_ID, JOB_INTAKE_DATA);
 
-        verify(jobOppIntakeService).update(123L, jobIntakeData);
+        verify(jobOppIntakeService).update(123L, JOB_INTAKE_DATA);
         verify(salesforceJobOppRepository, never()).save(any());
         verify(jobOppIntakeService, never()).create(any());
     }
@@ -923,9 +915,9 @@ class JobServiceImplTest {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(shortJob);
         given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
-            .willReturn(submissionList);
+            .willReturn(SUBMISSION_LIST);
         given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
-            .willReturn(exclusionList);
+            .willReturn(EXCLUSION_LIST);
         given(salesforceJobOppService.getJobOpp(JOB_ID)).willReturn(longJob);
         given(jobOppIntakeService.create(longJob.getJobOppIntake()))
             .willReturn(longJob.getJobOppIntake());
@@ -951,7 +943,7 @@ class JobServiceImplTest {
     @DisplayName("should create evergreen child opp when evergreen and updated to employed stage")
     void updateJob_shouldCreateEvergreenChildOpp_whenEvergreenAndUpdatedToEmployedStage() {
         shortJob.setEvergreenChild(null);
-        shortJob.setSubmissionList(submissionList);
+        shortJob.setSubmissionList(SUBMISSION_LIST);
         updateJobRequest.setEvergreen(true);
         updateJobRequest.setStage(JobOpportunityStage.jobOffer);
 
@@ -960,7 +952,7 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(emptyJob1);
         given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
         given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
-            .willReturn(submissionList);
+            .willReturn(SUBMISSION_LIST);
 
         SalesforceJobOpp result = jobService.updateJob(JOB_ID, updateJobRequest);
 
