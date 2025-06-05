@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
+import static org.tctalent.server.data.PartnerImplTestData.getEmployerPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 import static org.tctalent.server.data.SalesforceJobOppTestData.createUpdateJobRequestAndExpectedJob;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getEmployer;
@@ -73,6 +74,7 @@ import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.data.SalesforceJobOppTestData.UpdateJobTestData;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
@@ -120,7 +122,6 @@ class JobServiceImplTest {
     private SalesforceJobOpp shortJob;
     private SalesforceJobOpp longJob;
     private SalesforceJobOpp emptyJob1;
-    private SalesforceJobOpp emptyJob2;
     private List<SalesforceJobOpp> emptyJobsList;
     private UpdateJobRequest updateJobRequest;
     private UpdateJobRequest createJobRequest;
@@ -190,7 +191,7 @@ class JobServiceImplTest {
         searchJobRequest = new SearchJobRequest();
         emptyJob1 = new SalesforceJobOpp();
         emptyJob1.setId(1L);
-        emptyJob2 = new SalesforceJobOpp();
+        SalesforceJobOpp emptyJob2 = new SalesforceJobOpp();
         emptyJob2.setId(2L);
         emptyJobsList = new ArrayList<>(List.of(emptyJob1, emptyJob2));
         updateLinkRequest = new UpdateLinkRequest();
@@ -296,9 +297,18 @@ class JobServiceImplTest {
     }
 
     @Test
-    @DisplayName("should throw exception if logged in user is not from job creator partner")
-    void createJob_shouldThrowExceptionIfLoggedInUserIsNotFromJobCreatorPartner() {
+    @DisplayName("should throw when logged in user is not from job creator partner")
+    void createJob_shouldThrow_whenLoggedInUserIsNotFromJobCreatorPartner() {
         given(userService.getLoggedInUser()).willReturn(adminUser);
+
+        assertThrows(UnauthorisedActionException.class,
+            () -> jobService.createJob(createJobRequest));
+    }
+
+    @Test
+    @DisplayName("should throw when no logged in user")
+    void createJob_shouldThrow_whenNoLoggedInUser() {
+        given(userService.getLoggedInUser()).willReturn(null);
 
         assertThrows(UnauthorisedActionException.class,
             () -> jobService.createJob(createJobRequest));
@@ -340,10 +350,10 @@ class JobServiceImplTest {
         given(employerService.findOrCreateEmployerFromSalesforceAccount(any(Account.class)))
             .willReturn(employer);
         given(salesforceJobOppRepository.save(longJob)).willReturn(longJob);
+        given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
+            .willThrow(RuntimeException.class);
         given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
             .willReturn(submissionList);
-        given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
-            .willReturn(exclusionList);
         given(partnerService.listActiveSourcePartners()).willReturn(List.of(getSourcePartner()));
 
         jobService.createJob(createJobRequest);
@@ -351,7 +361,6 @@ class JobServiceImplTest {
         verify(salesforceJobOppService).createJobOpp(anyString());
         assertEquals(longJob.getCountry(), employer.getCountry());
         assertEquals(longJob.getSubmissionList(), submissionList);
-        assertEquals(longJob.getExclusionList(), exclusionList);
         verify(jobChatService).createJobCreatorChat(JobChatType.AllJobCandidates, longJob);
         verify(jobChatService).createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, longJob);
         jobChatService.createJobCreatorSourcePartnerChat(longJob, getSourcePartner());
@@ -499,7 +508,6 @@ class JobServiceImplTest {
     @DisplayName("shouldn't update SF and corresponding TC Job values when unchanged")
     void updateJob_noUnnecessaryUpdate() {
         UpdateJobRequest emptyRequest = new UpdateJobRequest();
-        emptyRequest.setEvergreen(true); // Minor update (not pertinent to SF)
         final String currentNextStep = shortJob.getNextStep();
         final LocalDate currentDueDate = shortJob.getNextStepDueDate();
         final String currentName = shortJob.getName();
@@ -701,6 +709,15 @@ class JobServiceImplTest {
     }
 
     @Test
+    @DisplayName("should throw when no logged in user")
+    void findUnreadChatsInOpps_shouldThrow_whenNoLoggedInUser() {
+        given(userService.getLoggedInUser()).willReturn(null);
+
+        assertThrows(InvalidSessionException.class,
+            () -> jobService.findUnreadChatsInOpps(searchJobRequest));
+    }
+
+    @Test
     @DisplayName("should return matching job opportunities unpaged")
     void searchJobsUnpaged_shouldReturnMatchingJobs() {
         given(userService.getLoggedInUser()).willReturn(adminUser);
@@ -899,9 +916,42 @@ class JobServiceImplTest {
     }
 
     @Test
+    @DisplayName("should successfully copy existing job when getJobToCopyId true")
+    void createJob_shouldSuccessfullyCopyExistingJob_whenGetJobToCopyIdTrue() {
+        updateJobRequest.setJobToCopyId(JOB_ID);
+        adminUser.setPartner(getEmployerPartner());
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(shortJob);
+        given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
+            .willReturn(submissionList);
+        given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
+            .willReturn(exclusionList);
+        given(salesforceJobOppService.getJobOpp(JOB_ID)).willReturn(longJob);
+        given(jobOppIntakeService.create(longJob.getJobOppIntake()))
+            .willReturn(longJob.getJobOppIntake());
+
+        SalesforceJobOpp result = jobService.createJob(updateJobRequest);
+
+        assertEquals(longJob.getJobSummary(), result.getJobSummary());
+        assertEquals(longJob.getJobOppIntake(), result.getJobOppIntake());
+
+        SavedList master = longJob.getSubmissionList();
+        SavedList copy = result.getSubmissionList();
+        assertEquals(copy.getFileJdLink(), master.getFileJdLink());
+        assertEquals(copy.getFileJdName(), master.getFileJdName());
+        assertEquals(copy.getFileJoiLink(), master.getFileJoiLink());
+        assertEquals(copy.getFileJoiName(), master.getFileJoiName());
+        assertEquals(copy.getFileMouLink(), master.getFileMouLink());
+        assertEquals(copy.getFileMouName(), master.getFileMouName());
+        assertEquals(copy.getFileInterviewGuidanceLink(), master.getFileInterviewGuidanceLink());
+        assertEquals(copy.getFileInterviewGuidanceName(), master.getFileInterviewGuidanceName());
+    }
+
+    @Test
     @DisplayName("should create evergreen child opp when evergreen and updated to employed stage")
     void updateJob_shouldCreateEvergreenChildOpp_whenEvergreenAndUpdatedToEmployedStage() {
         shortJob.setEvergreenChild(null);
+        shortJob.setSubmissionList(submissionList);
         updateJobRequest.setEvergreen(true);
         updateJobRequest.setStage(JobOpportunityStage.jobOffer);
 
@@ -909,6 +959,8 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
         given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(emptyJob1);
         given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
+        given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
+            .willReturn(submissionList);
 
         SalesforceJobOpp result = jobService.updateJob(JOB_ID, updateJobRequest);
 
@@ -989,7 +1041,7 @@ class JobServiceImplTest {
 
     @Test
     @DisplayName("should upload JD")
-    void uploadJd_shouldUploadJd() throws IOException {
+    void uploadJd() throws IOException {
         stubFileUpload();
 
         SalesforceJobOpp result = jobService.uploadJd(JOB_ID, mockFile);
@@ -997,6 +1049,79 @@ class JobServiceImplTest {
         assertEquals(result.getSubmissionList().getFileJdLink(), URL);
         assertEquals(result.getSubmissionList().getFileJdName(), NAME);
         verify(savedListService).saveIt(result.getSubmissionList());
+    }
+
+    @Test
+    @DisplayName("should throw when no submission list")
+    void uploadJd_shouldThrow_whenNoSubmissionList() {
+        shortJob.setSubmissionList(null);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+
+        assertThrows(InvalidRequestException.class, () -> jobService.uploadJd(JOB_ID, mockFile));
+    }
+
+    @Test
+    @DisplayName("should upload JOI")
+    void uploadJoi() throws IOException {
+        stubFileUpload();
+
+        SalesforceJobOpp result = jobService.uploadJoi(JOB_ID, mockFile);
+
+        assertEquals(result.getSubmissionList().getFileJoiLink(), URL);
+        assertEquals(result.getSubmissionList().getFileJoiName(), NAME);
+        verify(savedListService).saveIt(result.getSubmissionList());
+    }
+
+    @Test
+    @DisplayName("should throw when no submission list")
+    void uploadJoi_shouldThrow_whenNoSubmissionList() {
+        shortJob.setSubmissionList(null);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+
+        assertThrows(InvalidRequestException.class, () -> jobService.uploadJoi(JOB_ID, mockFile));
+    }
+
+    @Test
+    @DisplayName("should upload interview guidance")
+    void uploadInterviewGuidance() throws IOException {
+        stubFileUpload();
+
+        SalesforceJobOpp result = jobService.uploadInterviewGuidance(JOB_ID, mockFile);
+
+        assertEquals(result.getSubmissionList().getFileInterviewGuidanceLink(), URL);
+        assertEquals(result.getSubmissionList().getFileInterviewGuidanceName(), NAME);
+        verify(savedListService).saveIt(result.getSubmissionList());
+    }
+
+    @Test
+    @DisplayName("should throw when no submission list")
+    void uploadInterviewGuidance_shouldThrow_whenNoSubmissionList() {
+        shortJob.setSubmissionList(null);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+
+        assertThrows(InvalidRequestException.class,
+            () -> jobService.uploadInterviewGuidance(JOB_ID, mockFile));
+    }
+
+    @Test
+    @DisplayName("should upload MOU")
+    void uploadMou() throws IOException {
+        stubFileUpload();
+
+        SalesforceJobOpp result = jobService.uploadMou(JOB_ID, mockFile);
+
+        assertEquals(result.getSubmissionList().getFileMouLink(), URL);
+        assertEquals(result.getSubmissionList().getFileMouName(), NAME);
+        verify(savedListService).saveIt(result.getSubmissionList());
+    }
+
+    @Test
+    @DisplayName("should throw when no submission list")
+    void uploadMou_shouldThrow_whenNoSubmissionList() {
+        shortJob.setSubmissionList(null);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
+
+        assertThrows(InvalidRequestException.class, () -> jobService.uploadMou(JOB_ID, mockFile));
     }
 
     private void stubFileUpload() throws IOException {
@@ -1018,5 +1143,4 @@ class JobServiceImplTest {
         given(mockGoogleFile.getUrl()).willReturn(URL);
     }
 
-    // TODO throws when no sub list + repeat for other upload methods
 }
