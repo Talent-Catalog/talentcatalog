@@ -81,15 +81,18 @@ public class TermsInfoServiceImpl implements TermsInfoService {
 
     String getContentFromResource(String resourcePath) {
         String content;
-        final InputStream resourceAsStream = this.getClass().getResourceAsStream(resourcePath);
-        if (resourceAsStream == null) {
-          content = null;
-        } else {
-            try {
-                content = new String(resourceAsStream.readAllBytes(), StandardCharsets.UTF_8);
-            } catch (IOException e) {
+        try (InputStream resourceAsStream = this.getClass().getResourceAsStream(resourcePath)) {
+            if (resourceAsStream == null) {
                 content = null;
+            } else {
+                try {
+                    content = new String(resourceAsStream.readAllBytes(), StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    content = null;
+                }
             }
+        } catch (IOException e) {
+            content = null;
         }
         return content;
     }
