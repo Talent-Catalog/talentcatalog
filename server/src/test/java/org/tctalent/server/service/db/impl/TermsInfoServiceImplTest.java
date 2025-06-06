@@ -1,11 +1,13 @@
 package org.tctalent.server.service.db.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDate;
 import java.time.Month;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,8 @@ class TermsInfoServiceImplTest {
 
     private TermsInfo validTermsInfo;
     private TermsInfo missingTermsInfo;
+    private TermsInfo v1Info;
+    private TermsInfo v2Info;
 
     @BeforeEach
     void setUp() {
@@ -40,6 +44,20 @@ class TermsInfoServiceImplTest {
             "terms/missing.html",
             TermsType.CANDIDATE_PRIVACY_POLICY,
             LocalDate.of(2025, Month.JUNE, 1)
+        );
+
+        v1Info = new TermsInfo(
+            "PolicyV1",
+            "terms/fred.html",
+            TermsType.CANDIDATE_PRIVACY_POLICY,
+            LocalDate.of(2025, Month.JUNE, 1)
+        );
+
+        v2Info = new TermsInfo(
+            "PolicyV2", // More recent version of policy - see date below
+            "terms/fred.html",
+            TermsType.CANDIDATE_PRIVACY_POLICY,
+            LocalDate.of(2025, Month.JUNE, 2) //Later version
         );
     }
 
@@ -102,5 +120,73 @@ class TermsInfoServiceImplTest {
             () -> service.initialize(terms));
 
         assertTrue(ex.getMessage().contains("Duplicate terms info id: DuplicatePolicy"));
+    }
+
+    @Test
+    void shouldThrowIfNoMatchingId() {
+        TermsInfo[] terms = new TermsInfo[]{};
+
+        // When
+        service.initialize(terms);
+
+        //Then
+        RuntimeException ex = assertThrows(NoSuchObjectException.class,
+            () -> service.get("MissingId"));
+        assertTrue(ex.getMessage().contains("Missing"));
+    }
+
+    @Test
+    void shouldSelectMatchingId() {
+        // Given
+        given(service.getContentFromResource("terms/fred.html"))
+            .willReturn("<p>Mocked Terms Content</p>");
+
+        TermsInfo[] terms = new TermsInfo[]{v1Info, v2Info};
+
+        // When
+        service.initialize(terms);
+        TermsInfo termsInfo = service.get("PolicyV1");
+
+        //Then
+        assertNotNull(termsInfo);
+        assertEquals("PolicyV1", termsInfo.getId());
+
+        // When
+        termsInfo = service.get("PolicyV2");
+
+        //Then
+        assertNotNull(termsInfo);
+        assertEquals("PolicyV2", termsInfo.getId());
+
+    }
+
+    @Test
+    void shouldThrowIfNoMatchingTermsType() {
+        TermsInfo[] terms = new TermsInfo[]{};
+
+        // When
+        service.initialize(terms);
+
+        //Then
+        RuntimeException ex = assertThrows(NoSuchObjectException.class,
+            () -> service.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY));
+        assertTrue(ex.getMessage().contains("Missing"));
+    }
+
+    @Test
+    void shouldSelectMostRecentOfTermsType() {
+        // Given
+        given(service.getContentFromResource("terms/fred.html"))
+            .willReturn("<p>Mocked Terms Content</p>");
+
+        TermsInfo[] terms = new TermsInfo[]{v1Info, v2Info};
+
+        // When
+        service.initialize(terms);
+        final TermsInfo termsInfo = service.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY);
+
+        //Then
+        assertNotNull(termsInfo);
+        assertEquals("PolicyV2", termsInfo.getId());
     }
 }

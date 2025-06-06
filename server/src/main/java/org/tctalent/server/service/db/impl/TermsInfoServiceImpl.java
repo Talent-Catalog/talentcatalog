@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +47,7 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     /**
      * Initialized at start up with all known TermsInfo's.
      */
-    private final TermsInfo[] termsInfos;
+    private TermsInfo[] termsInfos;
 
     public TermsInfoServiceImpl() {
         termsInfos = new TermsInfo[] {
@@ -73,6 +75,7 @@ public class TermsInfoServiceImpl implements TermsInfoService {
      * Package private allows it to be set up with different TermsInfo for testing purposes.
      */
     void initialize(TermsInfo[] termsInfos) {
+        this.termsInfos = termsInfos;
         termsInfoMap = new HashMap<>();
         for (TermsInfo termsInfo : termsInfos) {
             addTermsInfo(termsInfo);
@@ -128,7 +131,9 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     @Override
     @NonNull
     public TermsInfo getCurrentByType(TermsType termsType) throws NoSuchObjectException {
-        //TODO JC Implement getCurrentByType
-        throw new UnsupportedOperationException("getCurrentByType not implemented");
+        return Arrays.stream(termsInfos)
+            .filter(termsInfo -> termsInfo.getType() == termsType)
+            .max(Comparator.comparing(TermsInfo::getCreatedDate))
+            .orElseThrow(() -> new NoSuchObjectException(TermsInfo.class, termsType.name()));
     }
 }
