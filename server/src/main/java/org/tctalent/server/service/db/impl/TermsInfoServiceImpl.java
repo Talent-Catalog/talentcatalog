@@ -17,6 +17,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.HashMap;
@@ -38,13 +42,19 @@ public class TermsInfoServiceImpl implements TermsInfoService {
      */
     private Map<String, TermsInfo> termsInfoMap;
 
-    /**
-     * Used to retrieve TermsInfo html content from resource files.
-     */
-    private final ClassLoader classLoader;
-
     public TermsInfoServiceImpl() {
-        classLoader = this.getClass().getClassLoader();
+    }
+
+    /**
+     * Normally only called once after the constructor (@PostConstruct annotation) with predefined
+     * TermsInfo[].
+     * (Best to avoid running logic in the constructor especially logic that can throw
+     * exceptions, hence use of @PostConstruct).
+     * <p/>
+     * Package private allows it to be set up with different TermsInfo for testing purposes.
+     */
+    @PostConstruct
+    private void configure() {
         TermsInfo[] termsInfos = new TermsInfo[] {
             new TermsInfo(
                 "CandidatePrivacyPolicyV1",
@@ -59,16 +69,9 @@ public class TermsInfoServiceImpl implements TermsInfoService {
                 LocalDate.of(2025, Month.JUNE, 10)
             )
         };
-
         initialize(termsInfos);
     }
 
-    /**
-     * Package private for testing purposes - normally only called once from constructor with
-     * predefined TermsInfo[].
-     * <p/>
-     * This allows it to be set up with different TermsInfo for testing purposes.
-     */
     void initialize(TermsInfo[] termsInfos) {
         termsInfoMap = new HashMap<>();
         for (TermsInfo termsInfo : termsInfos) {
@@ -76,11 +79,29 @@ public class TermsInfoServiceImpl implements TermsInfoService {
         }
     }
 
+    String getContentFromResource(String resourcePath) {
+        String content;
+        final InputStream resourceAsStream = this.getClass().getResourceAsStream(resourcePath);
+        if (resourceAsStream == null) {
+          content = null;
+        } else {
+            try {
+                content = new String(resourceAsStream.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                content = null;
+            }
+        }
+        return content;
+    }
+
     private void addTermsInfo(@NonNull TermsInfo termsInfo) {
         //Check that resource path exists
-        if (classLoader.getResource(termsInfo.getPathToContent()) == null) {
+        final String content = getContentFromResource(termsInfo.getPathToContent());
+        if (content == null) {
             throw new RuntimeException("No content found for pathToContent of TermsInfo id: " + termsInfo.getId());
         }
+        //Set the content retrieved from the resource file.
+        termsInfo.setContent(content);
         TermsInfo previous = termsInfoMap.put(termsInfo.getId(), termsInfo);
         if (previous != null) {
             throw new RuntimeException("Duplicate terms info id: " + termsInfo.getId());
@@ -90,8 +111,11 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     @Override
     @NonNull
     public TermsInfo get(String id) throws NoSuchObjectException {
-        //TODO JC This could trigger reading of resource
-        return termsInfoMap.get(id);
+        final TermsInfo termsInfo = termsInfoMap.get(id);
+        if (termsInfo == null) {
+            throw new NoSuchObjectException(TermsInfo.class, id);
+        }
+        return termsInfo;
     }
 
     @Override
