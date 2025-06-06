@@ -71,7 +71,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     /**
      * Privacy policy that candidate has accepted
      */
-    private TermsId acceptedPrivacyPolicy;
+    private String acceptedPrivacyPolicyId;
 
     /**
      * Date time when candidate accepted privacy policy
@@ -870,12 +870,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return obj;
     }
 
-    public TermsId getAcceptedPrivacyPolicy() {
-        return acceptedPrivacyPolicy;
+    public String getAcceptedPrivacyPolicyId() {
+        return acceptedPrivacyPolicyId;
     }
 
-    public void setAcceptedPrivacyPolicy(TermsId acceptedPrivacyPolicy) {
-        this.acceptedPrivacyPolicy = acceptedPrivacyPolicy;
+    public void setAcceptedPrivacyPolicyId(String acceptedPrivacyPolicyId) {
+        this.acceptedPrivacyPolicyId = acceptedPrivacyPolicyId;
     }
 
     public OffsetDateTime getAcceptedPrivacyPolicyDate() {

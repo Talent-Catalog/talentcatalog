@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.model.db.TermsId;
 
 @Setter
 @Getter
@@ -31,7 +30,7 @@ public class SubmitRegistrationRequest {
      * If not null, indicates the id of the TermsInfo entity that has been accepted.
      */
     @Nullable
-    private TermsId acceptedPrivacyPolicyId;
+    private String acceptedPrivacyPolicyId;
 
     /**
      * Email consent fields.

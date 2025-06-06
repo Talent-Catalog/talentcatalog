@@ -19,7 +19,7 @@ package org.tctalent.server.model.db;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -53,13 +53,12 @@ public class TermsInfo {
      * There can be multiple versions of the same terms type.
      * The "current" version of that type of terms will be the one with the most recent createdDate.
      */
-    private OffsetDateTime createdDate;
+    private LocalDate createdDate;
 
     /**
      * Unique id for these terms.
      */
-    @Enumerated(EnumType.STRING)
-    private TermsId id;
+    private String id;
 
     /**
      * The type of terms - for example a privacy policy.
@@ -67,8 +66,9 @@ public class TermsInfo {
     @Enumerated(EnumType.STRING)
     private TermsType type;
 
-    /**
-     * The version this type of policy.
-     */
-    private String version;
+    public TermsInfo(String id, TermsType type, LocalDate createdDate) {
+        this.id = id;
+        this.type = type;
+        this.createdDate = createdDate;
+    }
 }
