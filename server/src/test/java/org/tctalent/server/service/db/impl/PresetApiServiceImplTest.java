@@ -26,6 +26,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.tctalent.server.data.UserTestData.getFullUser;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.configuration.properties.PresetProperties;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.User;
@@ -81,7 +81,7 @@ class PresetApiServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    mockUser = AdminApiTestUtil.getFullUser();
+    mockUser = getFullUser();
 
     PresetGuestTokenResponse.Payload guestTokenPayload = new PresetGuestTokenResponse.Payload();
     guestTokenPayload.setGuestToken("guest-token-123");
