@@ -81,6 +81,10 @@ public class TermsInfoServiceImpl implements TermsInfoService {
 
     String getContentFromResource(String resourcePath) {
         String content;
+
+        //Note that this is a special try-with-resources statement which automatically closes the
+        //resource (the input stream) once the block of code is completed.
+        //See, for example, https://www.baeldung.com/java-try-with-resources
         try (InputStream resourceAsStream = this.getClass().getResourceAsStream(resourcePath)) {
             if (resourceAsStream == null) {
                 content = null;
