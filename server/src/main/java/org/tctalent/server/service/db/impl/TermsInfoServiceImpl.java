@@ -33,24 +33,28 @@ import org.tctalent.server.service.db.TermsInfoService;
 @Slf4j
 public class TermsInfoServiceImpl implements TermsInfoService {
 
-    //TODO JC Get rid of TermsID
-
-    //TODO JC Auto create TermsInfo at start up in constructor
-    //TODO JC (or on demand) driven by skeleton entries for each terms - corresponding to
-    //TODO JC a new enum with all terms. TermInfos are stored in a Map by enum value.
-    //TODO JC Maybe only load html from resource on demand.
-
+    /**
+     * Stores all TermsInfo instances indexed by id
+     */
     private Map<String, TermsInfo> termsInfoMap;
 
+    /**
+     * Used to retrieve TermsInfo html content from resource files.
+     */
+    private final ClassLoader classLoader;
+
     public TermsInfoServiceImpl() {
+        classLoader = this.getClass().getClassLoader();
         TermsInfo[] termsInfos = new TermsInfo[] {
             new TermsInfo(
                 "CandidatePrivacyPolicyV1",
+                "terms/fred.html",
                 TermsType.CANDIDATE_PRIVACY_POLICY,
                 LocalDate.of(2025, Month.JUNE, 5)
             ),
             new TermsInfo(
                 "CandidatePrivacyPolicyV2",
+                "terms/fred.html",
                 TermsType.CANDIDATE_PRIVACY_POLICY,
                 LocalDate.of(2025, Month.JUNE, 10)
             )
@@ -58,11 +62,6 @@ public class TermsInfoServiceImpl implements TermsInfoService {
 
         initialize(termsInfos);
     }
-
-    //TODO JC Use String as id instead of enum.
-    //id's extracted from TermsInfo's
-    //id can be name of resource file - or that could be default (allowing renaming of resource files).
-    //id's probably should be immutable because changing id needs to change all references to it.
 
     /**
      * Package private for testing purposes - normally only called once from constructor with
@@ -78,6 +77,10 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     }
 
     private void addTermsInfo(@NonNull TermsInfo termsInfo) {
+        //Check that resource path exists
+        if (classLoader.getResource(termsInfo.getPathToContent()) == null) {
+            throw new RuntimeException("No content found for pathToContent of TermsInfo id: " + termsInfo.getId());
+        }
         TermsInfo previous = termsInfoMap.put(termsInfo.getId(), termsInfo);
         if (previous != null) {
             throw new RuntimeException("Duplicate terms info id: " + termsInfo.getId());

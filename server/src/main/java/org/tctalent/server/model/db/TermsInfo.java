@@ -61,13 +61,21 @@ public class TermsInfo {
     private String id;
 
     /**
+     * Resource path to file containing {@link #content}.
+     * <p/>
+     * For example: "terms/GDPRPrivacyPolicy-20250604.html"
+     */
+    private String pathToContent;
+
+    /**
      * The type of terms - for example a privacy policy.
      */
     @Enumerated(EnumType.STRING)
     private TermsType type;
 
-    public TermsInfo(String id, TermsType type, LocalDate createdDate) {
+    public TermsInfo(String id, String pathToContent, TermsType type, LocalDate createdDate) {
         this.id = id;
+        this.pathToContent = pathToContent;
         this.type = type;
         this.createdDate = createdDate;
     }
