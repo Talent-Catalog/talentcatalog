@@ -63,7 +63,7 @@ public class TermsInfo {
     /**
      * Resource path to file containing {@link #content}.
      * <p/>
-     * For example: "terms/GDPRPrivacyPolicy-20250604.html"
+     * For example: "/terms/GDPRPrivacyPolicy-20250604.html"
      */
     private String pathToContent;
 

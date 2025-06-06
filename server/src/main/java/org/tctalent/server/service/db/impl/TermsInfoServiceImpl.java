@@ -42,7 +42,20 @@ public class TermsInfoServiceImpl implements TermsInfoService {
      */
     private Map<String, TermsInfo> termsInfoMap;
 
+    /**
+     * Initialized at start up with all known TermsInfo's.
+     */
+    private final TermsInfo[] termsInfos;
+
     public TermsInfoServiceImpl() {
+        termsInfos = new TermsInfo[] {
+            new TermsInfo(
+                "CandidatePrivacyPolicyV1",
+                "/terms/GDPRPrivacyPolicy-20250604.html",
+                TermsType.CANDIDATE_PRIVACY_POLICY,
+                LocalDate.of(2025, Month.JUNE, 5)
+            ),
+        };
     }
 
     /**
@@ -50,28 +63,15 @@ public class TermsInfoServiceImpl implements TermsInfoService {
      * TermsInfo[].
      * (Best to avoid running logic in the constructor especially logic that can throw
      * exceptions, hence use of @PostConstruct).
-     * <p/>
-     * Package private allows it to be set up with different TermsInfo for testing purposes.
      */
     @PostConstruct
     private void configure() {
-        TermsInfo[] termsInfos = new TermsInfo[] {
-            new TermsInfo(
-                "CandidatePrivacyPolicyV1",
-                "terms/fred.html",
-                TermsType.CANDIDATE_PRIVACY_POLICY,
-                LocalDate.of(2025, Month.JUNE, 5)
-            ),
-            new TermsInfo(
-                "CandidatePrivacyPolicyV2",
-                "terms/fred.html",
-                TermsType.CANDIDATE_PRIVACY_POLICY,
-                LocalDate.of(2025, Month.JUNE, 10)
-            )
-        };
         initialize(termsInfos);
     }
 
+    /**
+     * Package private allows it to be set up with different TermsInfo for testing purposes.
+     */
     void initialize(TermsInfo[] termsInfos) {
         termsInfoMap = new HashMap<>();
         for (TermsInfo termsInfo : termsInfos) {
