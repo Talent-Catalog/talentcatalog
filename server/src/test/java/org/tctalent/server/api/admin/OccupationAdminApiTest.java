@@ -35,6 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getListOfOccupations;
+import static org.tctalent.server.data.CandidateTestData.getOccupation;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -78,9 +81,9 @@ class OccupationAdminApiTest extends ApiTestBase {
     private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
     private static final String SEARCH_PATH = "/search";
 
-    private static final List<Occupation> occupationList = AdminApiTestUtil.getListOfOccupations();
-    private static final Occupation occupation = AdminApiTestUtil.getOccupation();
-    private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
+    private static final List<Occupation> occupationList = getListOfOccupations();
+    private static final Occupation occupation = getOccupation();
+    private static final SystemLanguage systemLanguage = getSystemLanguage();
 
     private final Page<Occupation> occupationPage =
             new PageImpl<>(

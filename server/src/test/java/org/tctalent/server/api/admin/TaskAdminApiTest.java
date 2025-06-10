@@ -31,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.TaskTestData.getListOfTasks;
+import static org.tctalent.server.data.TaskTestData.getTask;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -60,7 +62,7 @@ class TaskAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/task";
     private static final String SEARCH_PAGED_PATH = "/search-paged";
 
-    private static final TaskImpl task = AdminApiTestUtil.getTask();
+    private static final TaskImpl task = getTask();
     private final Page<TaskImpl> tasksPage =
         new PageImpl<>(
             List.of(task),
@@ -68,7 +70,7 @@ class TaskAdminApiTest extends ApiTestBase {
             1
         );
 
-    private static final List<TaskImpl> taskList = AdminApiTestUtil.getListOfTasks();
+    private static final List<TaskImpl> taskList = getListOfTasks();
 
     @Autowired
     MockMvc mockMvc;
