@@ -65,6 +65,14 @@ public interface UserService {
     User getLoggedInUser();
 
     /**
+     * Retrieves a user by their email verification token.
+     * @param token The token associated with the user
+     * @return The User associated with the token
+     * @throws NoSuchObjectException if no user found with that token
+     */
+    User getUserByEmailVerificationToken(String token) throws NoSuchObjectException;
+
+    /**
      * Returns a live JPA entity representing the logged in partner.
      * @return Partner associated with logged in partner or null if no user.
      */
@@ -87,7 +95,7 @@ public interface UserService {
      * Checks the validity of the email verification token and verifies the user's email.
      * Throws an error if the email verification token is invalid or expired, or if sending the completion verification email fails.
      */
-    User verifyEmail(VerifyEmailRequest request);
+    void verifyEmail(VerifyEmailRequest request);
 
     User findByUsernameAndRole(String username, Role role);
 
