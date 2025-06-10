@@ -47,6 +47,8 @@ import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.DuolingoTestType;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -386,4 +388,80 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
     return couponRepository.countByCandidateIsNullAndCouponStatusAndTestType(DuolingoCouponStatus.AVAILABLE,DuolingoTestType.PROCTORED);
   }
 
+  @Override
+  @Transactional
+  public DuolingoCouponResponse reassignProctoredCouponToCandidate(String candidateNumber, User user)
+      throws NoSuchObjectException {
+    // Find the candidate
+    Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
+    if(candidate==null){
+      throw  new NoSuchObjectException("Candidate with Number " + candidateNumber + " not found");
+    }
+
+    // Find all existing coupons for the candidate and mark them as REDEEMED
+    List<DuolingoCoupon> existingCoupons = couponRepository.findAllByCandidateId(candidate.getId());
+    for (DuolingoCoupon existingCoupon : existingCoupons) {
+      existingCoupon.setCouponStatus(DuolingoCouponStatus.REDEEMED);
+      couponRepository.save(existingCoupon);
+    }
+
+    // Find and resolve existing Duolingo-related task assignments
+    TaskImpl duolingoTestTask = taskService.getByName("duolingoTest");
+    List<TaskAssignmentImpl> taskAssignments = taskAssignmentService.findByTaskIdAndCandidateIdAndStatus(
+        duolingoTestTask.getId(), candidate.getId(), Status.active);
+    for (TaskAssignmentImpl taskAssignment : taskAssignments) {
+      taskAssignment.setStatus(Status.inactive);
+      taskAssignmentService.update(
+          taskAssignment,
+          null,
+          true,
+          "Coupon was uncertified and manually reassigned a new coupon.",
+          null
+      );
+
+      LogBuilder.builder(log)
+          .user(Optional.ofNullable(user))
+          .action("ReassignProctoredCoupon")
+          .message("Marked task assignment ID " + taskAssignment.getId() + " as inactive for candidate " + candidate.getId() + " due to coupon reassignment.")
+          .logInfo();
+    }
+
+    // Find an available coupon
+    Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatusAndTestType(
+        DuolingoCouponStatus.AVAILABLE, DuolingoTestType.PROCTORED);
+
+    if (availableCoupon.isEmpty()) {
+      throw new NoSuchObjectException(
+          "There are no available coupons to assign to the candidate. Please import more coupons from the settings page.");
+    }
+
+    // Assign the new coupon to the candidate
+    DuolingoCoupon newCoupon = availableCoupon.get();
+    newCoupon.setCandidate(candidate);
+    newCoupon.setDateSent(LocalDateTime.now());
+    newCoupon.setCouponStatus(DuolingoCouponStatus.SENT);
+    couponRepository.save(newCoupon);
+
+    // Send email with the new coupon
+    emailHelper.sendDuolingoCouponEmail(candidate.getUser());
+
+    // Assign the claim coupon task
+    TaskImpl claimCouponButtonTask = taskService.getByName("claimCouponButton");
+    taskAssignmentService.assignTaskToCandidate(user, claimCouponButtonTask, candidate, null, null);
+
+    // Log the reassignment
+    LogBuilder.builder(log)
+        .user(Optional.ofNullable(user))
+        .action("ReassignProctoredCoupon")
+        .message("Reassigned new coupon " + newCoupon.getCouponCode() + " to candidate " + candidate.getId())
+        .logInfo();
+    // Return the response for the new coupon
+    return new DuolingoCouponResponse(
+        newCoupon.getId(),
+        newCoupon.getCouponCode(),
+        newCoupon.getExpirationDate(),
+        newCoupon.getDateSent(),
+        newCoupon.getCouponStatus()
+    );
+  }
 }
