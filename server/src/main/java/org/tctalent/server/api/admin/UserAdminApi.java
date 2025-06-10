@@ -141,7 +141,8 @@ public class UserAdminApi {
         try {
             VerifyEmailRequest request = new VerifyEmailRequest();
             request.setToken(token);
-            User user = userService.verifyEmail(request);
+            userService.verifyEmail(request);
+            User user = userService.getUserByEmailVerificationToken(token);
 
             modelAndView.setViewName("verify-email-success"); // src/main/resources/templates/verify-email-success.html
             modelAndView.addObject("displayName", user.getDisplayName());
