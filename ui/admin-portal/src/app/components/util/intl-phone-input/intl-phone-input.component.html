@@ -1,4 +1,4 @@
-<div id="intl-phone-input">
+<div *ngIf="!loading" id="intl-phone-input">
   <div class="d-flex">
     <ng-select
       id="isoCodeSelect"
@@ -30,12 +30,12 @@
     />
   </div>
 
-  <div *ngIf="countryCodeRequired" class="text-danger small">
+  <div id="codeRequired" *ngIf="countryCodeRequired" class="text-danger small">
     Please enter a country code for the phone number entered.
   </div>
 
   <!-- Validation message -->
-  <div *ngIf="isInvalidNumber" class="text-danger mt-1 small">
+  <div id="invalidNumber" *ngIf="isInvalidNumber" class="text-danger mt-1 small">
     Invalid phone number for selected country. Make sure area code included if applicable.
     Example for country: {{getExampleNumberForCountry()}}
   </div>
