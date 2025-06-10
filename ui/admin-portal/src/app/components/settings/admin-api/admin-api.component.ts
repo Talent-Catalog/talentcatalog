@@ -53,7 +53,7 @@ export class AdminApiComponent implements OnInit {
   readonly duolingoCommands = [
     { command: 'duolingo/dashboard-results', description: 'Fetch Duolingo dashboard results' },
     { command: 'duolingo/verify-score?certificateId={certificateId}&birthdate={yyyy-MM-dd}', description: 'Verify Duolingo score by certificateId and birthdate' },
-    { command: 'reassign-duolingo-coupon/{candidateId}', description: 'Reassign a new Duolingo coupon to a candidate' },
+    { command: 'reassign-duolingo-coupon/{candidateNumber}', description: 'Reassign a new Duolingo coupon to a candidate' },
   ];
 
   constructor(

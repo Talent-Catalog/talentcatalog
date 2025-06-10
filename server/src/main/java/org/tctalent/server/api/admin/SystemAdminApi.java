@@ -388,22 +388,22 @@ public class SystemAdminApi {
     /**
      * Reassigns a new Duolingo coupon to a candidate and marks any previously assigned coupons as redeemed.
      *
-     * @param candidateId The ID of the candidate to whom the new coupon will be assigned.
+     * @param candidateNumber The ID of the candidate to whom the new coupon will be assigned.
      * @return A ResponseEntity containing the details of the newly assigned coupon.
      * @throws NoSuchObjectException If the candidate or available coupons are not found.
      */
-    @GetMapping("reassign-duolingo-coupon/{candidateId}")
-    public ResponseEntity<DuolingoCouponResponse> reassignDuolingoCoupon(@PathVariable("candidateId") Long candidateId) {
+    @GetMapping("reassign-duolingo-coupon/{candidateNumber}")
+    public ResponseEntity<DuolingoCouponResponse> reassignDuolingoCoupon(@PathVariable("candidateNumber") String candidateNumber) {
         try {
             User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new NoSuchObjectException("No authenticated user found"));
-            DuolingoCouponResponse response = duolingoCouponService.reassignProctoredCouponToCandidate(candidateId, user);
+            DuolingoCouponResponse response = duolingoCouponService.reassignProctoredCouponToCandidate(candidateNumber, user);
             return ResponseEntity.ok(response);
         } catch (NoSuchObjectException e) {
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("ReassignDuolingoCoupon")
-                .message("Failed to reassign coupon for candidate " + candidateId + ": " + e.getMessage())
+                .message("Failed to reassign coupon for candidate " + candidateNumber + ": " + e.getMessage())
                 .logError();
             return ResponseEntity.badRequest().body(null);
         }

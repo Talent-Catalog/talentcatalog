@@ -390,14 +390,16 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional
-  public DuolingoCouponResponse reassignProctoredCouponToCandidate(Long candidateId, User user)
+  public DuolingoCouponResponse reassignProctoredCouponToCandidate(String candidateNumber, User user)
       throws NoSuchObjectException {
     // Find the candidate
-    Candidate candidate = candidateRepository.findById(candidateId)
-        .orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + candidateId + " not found"));
+    Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
+    if(candidate==null){
+      throw  new NoSuchObjectException("Candidate with Number " + candidateNumber + " not found");
+    }
 
     // Find all existing coupons for the candidate and mark them as REDEEMED
-    List<DuolingoCoupon> existingCoupons = couponRepository.findAllByCandidateId(candidateId);
+    List<DuolingoCoupon> existingCoupons = couponRepository.findAllByCandidateId(candidate.getId());
     for (DuolingoCoupon existingCoupon : existingCoupons) {
       existingCoupon.setCouponStatus(DuolingoCouponStatus.REDEEMED);
       couponRepository.save(existingCoupon);
@@ -406,7 +408,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
     // Find and resolve existing Duolingo-related task assignments
     TaskImpl duolingoTestTask = taskService.getByName("duolingoTest");
     List<TaskAssignmentImpl> taskAssignments = taskAssignmentService.findByTaskIdAndCandidateIdAndStatus(
-        duolingoTestTask.getId(), candidateId, Status.active);
+        duolingoTestTask.getId(), candidate.getId(), Status.active);
     for (TaskAssignmentImpl taskAssignment : taskAssignments) {
       taskAssignment.setStatus(Status.inactive);
       taskAssignmentService.update(
@@ -420,7 +422,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
       LogBuilder.builder(log)
           .user(Optional.ofNullable(user))
           .action("ReassignProctoredCoupon")
-          .message("Marked task assignment ID " + taskAssignment.getId() + " as inactive for candidate " + candidateId + " due to coupon reassignment.")
+          .message("Marked task assignment ID " + taskAssignment.getId() + " as inactive for candidate " + candidate.getId() + " due to coupon reassignment.")
           .logInfo();
     }
 
@@ -451,7 +453,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
     LogBuilder.builder(log)
         .user(Optional.ofNullable(user))
         .action("ReassignProctoredCoupon")
-        .message("Reassigned new coupon " + newCoupon.getCouponCode() + " to candidate " + candidateId)
+        .message("Reassigned new coupon " + newCoupon.getCouponCode() + " to candidate " + candidate.getId())
         .logInfo();
     // Return the response for the new coupon
     return new DuolingoCouponResponse(
