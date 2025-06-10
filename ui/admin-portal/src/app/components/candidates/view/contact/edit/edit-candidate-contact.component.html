@@ -80,8 +80,7 @@
           <!-- WHATSAPP -->
           <div class="mb-3">
             <label class="form-label" for="whatsapp">Whatsapp</label>
-            <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp"
-                   [formControlName]="'whatsapp'">
+            <app-intl-phone-input id="whatsapp" [control]="candidateForm.controls.whatsapp"></app-intl-phone-input>
           </div>
 
 
