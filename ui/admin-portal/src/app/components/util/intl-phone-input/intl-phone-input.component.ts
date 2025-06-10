@@ -110,7 +110,7 @@ export class IntlPhoneInputComponent implements OnInit {
     }
   }
 
-  // WRAP LIB-PHONENUMBERJS FUNCTIONS IN OWN METHOD FOR ABILTIY TO MOCK IN TESTS
+  // WRAP LIB-PHONENUMBERJS FUNCTIONS IN OWN METHOD TO MOCK IN TESTS
 
   // Gets an example telephone number format for the selected country code, assists user if the number entered is invalid.
   getExampleNumberForCountry() {
