@@ -41,6 +41,7 @@
     "karma-chrome-launcher": "^3.2.0",
     "karma-coverage-istanbul-reporter": "^3.0.3",
     "karma-jasmine-html-reporter": "^2.1.0",
+    "libphonenumber-js": "^1.12.8",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
     "ng2-charts": "^4.0.0",
