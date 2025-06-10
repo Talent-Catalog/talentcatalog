@@ -524,6 +524,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByEmailVerificationToken(String token) throws NoSuchObjectException {
+        User user = userRepository.findByEmailVerificationToken(token);
+        if (user == null) {
+            throw new NoSuchObjectException("Invalid or expired token");
+        }
+        return user;
+    }
+
+    @Override
     public Partner getLoggedInPartner() {
         Partner partner = null;
         User user = authService.getLoggedInUser().orElse(null);
@@ -567,7 +576,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User verifyEmail(VerifyEmailRequest request) {
+    public void verifyEmail(VerifyEmailRequest request) {
         User user = userRepository.findByEmailVerificationToken(request.getToken());
 
         if (user == null) {
@@ -578,8 +587,6 @@ public class UserServiceImpl implements UserService {
 
         user.setEmailVerified(true);
         userRepository.save(user);
-
-        return user;
     }
 
     /**
