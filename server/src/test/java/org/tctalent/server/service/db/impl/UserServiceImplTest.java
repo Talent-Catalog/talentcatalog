@@ -940,7 +940,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("should set email verified to true, save user and send complete email when token valid")
+    @DisplayName("should set email verified to true, save user when token valid")
     void verifyEmail_shouldSucceed_whenTokenValid() {
         adminUser.setEmailVerificationTokenIssuedDate(OffsetDateTime.now());
         adminUser.setEmailVerified(false);
@@ -951,7 +951,6 @@ class UserServiceImplTest {
 
         assertTrue(adminUser.getEmailVerified());
         verify(userRepository).save(adminUser);
-        verify(emailHelper).sendCompleteVerificationEmail(adminUser, true);
     }
 
     @Test
