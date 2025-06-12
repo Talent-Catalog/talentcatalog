@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.SavedListTestData.getSavedListWithCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -86,7 +87,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     private static final String EXPORT_CSV_PATH = "/export/csv";
     private static final String CREATE_FOLDERS_PATH = "/create-folders";
     private static final String SAVE_SELECTION_PATH = "/save-selection";
-    private static final SavedList savedList = AdminApiTestUtil.getSavedListWithCandidates();
+    private static final SavedList savedList = getSavedListWithCandidates();
 
     private static final List<Candidate> savedListCandidates = new ArrayList<>(savedList.getCandidates());
     private static final Page<Candidate> savedListCandidatesPage =
