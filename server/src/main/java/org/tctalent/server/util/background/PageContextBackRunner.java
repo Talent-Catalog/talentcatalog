@@ -16,12 +16,14 @@ import org.springframework.scheduling.TaskScheduler;
 public class PageContextBackRunner extends BackRunner<PageContext> {
 
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<PageContext> backProcessor, int percentageCPU) {
-        return super.start(taskScheduler, backProcessor, new PageContext(null), percentageCPU);
+        BackProcessor<PageContext> backProcessor, int percentageCPU, String jobName) {
+        return super.start(taskScheduler, backProcessor, new PageContext(null),
+            percentageCPU, jobName);
     }
 
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<PageContext> backProcessor, Duration delay) {
-        return super.start(taskScheduler, backProcessor, new PageContext(null), delay);
+        BackProcessor<PageContext> backProcessor, Duration delay, String jobName) {
+        return super.start(taskScheduler, backProcessor, new PageContext(null),
+            delay, jobName);
     }
 }
