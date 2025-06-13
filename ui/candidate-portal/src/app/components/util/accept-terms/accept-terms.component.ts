@@ -16,7 +16,7 @@ export class AcceptTermsComponent {
     //Add an extra 0.5 to scroll top - sometimes it is less than it should be at the bottom of the
     //scroll.
     const atBottom = element.scrollTop + 0.5 + element.clientHeight >= element.scrollHeight;
-    console.log(element.scrollTop, element.clientHeight, element.scrollTop + element.clientHeight, element.scrollHeight)
+    // console.log(element.scrollTop, element.clientHeight, element.scrollTop + element.clientHeight, element.scrollHeight)
     if (atBottom) {
       this.scrolledToBottom = true;
     }
