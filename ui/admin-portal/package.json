@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^16.2.12",
     "@angular/router": "^16.2.12",
     "@ctrl/ngx-emoji-mart": "^6.2.0",
+    "@fontsource/lato": "^5.2.6",
     "@fortawesome/fontawesome-free": "^6.2.0",
     "@microsoft/clarity": "^1.0.0",
     "@ng-bootstrap/ng-bootstrap": "^15.1.2",

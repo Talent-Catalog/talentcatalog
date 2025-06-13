@@ -571,6 +571,7 @@ import {LoadingIndicatorComponent} from './components/util/loading-indicator/loa
 import {ErrorDisplayComponent} from './components/util/error-display/error-display.component';
 import {IntelligenceComponent} from './components/intelligence/intelligence.component';
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
+import {SharedModule} from "./shared/shared.module";
 
 @NgModule({
   declarations: [
@@ -918,6 +919,7 @@ import {OfferToAssistComponent} from './components/settings/offer-to-assist/offe
     NgxWigModule,
     NgSelectModule,
     DirectiveModule,
+    SharedModule,
     DragulaModule.forRoot(),
     QuillModule.forRoot(),
     PickerModule,
