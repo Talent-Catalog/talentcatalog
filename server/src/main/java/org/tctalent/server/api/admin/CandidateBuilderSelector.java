@@ -80,15 +80,7 @@ public class CandidateBuilderSelector {
             "regoUtmContent",
             "regoUtmMedium",
             "regoUtmSource",
-            "regoUtmTerm"
-        ));
-
-    private final Set<String> candidateSemiLimitedExtraProperties =
-        new HashSet<>(Arrays.asList(
-            "city",
-            "state",
-            "address1",
-            "candidateCertifications",
+            "regoUtmTerm",
             "candidateCitizenships",
             "candidateDestinations",
             "candidateEducations",
@@ -98,6 +90,13 @@ public class CandidateBuilderSelector {
             "candidateSkills",
             "candidateJobExperiences",
             "candidateCertifications"
+        ));
+
+    private final Set<String> candidateSemiLimitedExtraProperties =
+        new HashSet<>(Arrays.asList(
+            "city",
+            "state",
+            "address1"
         ));
 
     private final Set<String> userPublicProperties =
