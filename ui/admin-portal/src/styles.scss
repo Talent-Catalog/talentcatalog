@@ -13,7 +13,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-@import "./scss/variables";
+@import "./theme/bootstrap-variables";
+@import "./theme/tc-theme";
 
 @import 'bootstrap/scss/bootstrap-reboot';
 @import 'bootstrap/scss/bootstrap';
@@ -30,6 +31,7 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "./scss/tag";
 
 @import "./scss/btn";
+@import "./scss/table";
 @import "./scss/dragula";
 @import "@ng-select/ng-select/themes/default.theme.css";
 @import "quill/dist/quill.snow.css";
