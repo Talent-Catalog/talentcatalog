@@ -560,7 +560,6 @@ public class CandidateBuilderSelector {
     private DtoBuilder candidateOccupationDto(DtoType type) {
         DtoBuilder builder = new DtoBuilder()
             .add("id")
-            .add("migrationOccupation")
             .add("occupation", occupationService.selectBuilder())
             .add("yearsExperience")
             .add("createdBy", userDto())

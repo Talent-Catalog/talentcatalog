@@ -29,7 +29,8 @@ import org.tctalent.server.model.db.AbstractOpportunity;
 public interface NextStepProcessingService {
 
     /**
-     * If requested Next Step differs from current, provides an audit stamped version.
+     * If requested Next Step differs from current, returns an audit stamped version. Otherwise,
+     * will return unchanged current Next Step.
      * @param opp the Opp whose Next Step may be updated
      * @param requestedNextStep the user-entered value, prior to audit stamp
      * @return processed Next Step String

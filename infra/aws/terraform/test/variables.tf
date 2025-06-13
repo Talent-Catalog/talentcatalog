@@ -1,268 +1,215 @@
 variable "app" {
-  type        = string
-  description = "Name of the application"
+  type = string
 }
 
 variable "env" {
-  type        = string
-  description = "Name of the environment"
-}
-
-variable "db_public_access" {
-  type        = bool
-  description = "Flag to set if the database publicly accessible"
-}
-
-variable "db_enable" {
-  type        = bool
-  description = "Flag to define the app will use an existance database (e.g. test env) or create new one"
-}
-
-variable "db_multi_az" {
-  type        = bool
-  description = "Flag to define if database is multiaz"
-}
-
-variable "db_instance_class" {
-  type        = string
-  description = "The database db instance class"
+  type = string
 }
 
 variable "site_domain" {
-  type        = string
-  description = "The domain name of the website"
+  type = string
 }
 
 variable "container_image" {
-  type        = string
-  description = "The ecr url for the docker image"
+  type = string
 }
 
 variable "container_port" {
-  type        = number
-  description = "Container port"
+  type = number
+}
+
+variable "db_enable" {
+  type = bool
+}
+
+variable "db_public_access" {
+  type = bool
+}
+
+variable "db_multi_az" {
+  type = bool
 }
 
 variable "ecs_tasks_count" {
-  type        = number
-  description = "The desired number of ECS tasks"
+  type = number
+}
+
+variable "db_instance_class" {
+  type = string
 }
 
 variable "aws_access_key" {
-  type        = string
-  description = "AWS access key to be used by the java application"
+  type = string
 }
 
 variable "aws_secret_key" {
-  type        = string
-  description = "AWS secret key to be used by the java application"
+  type = string
 }
 
 variable "s3_bucket" {
-  type        = string
-  description = "S3 bucket name"
+  type = string
 }
 
 variable "es_password" {
-  type        = string
-  description = "ElasticSearch password"
+  type = string
 }
 
 variable "es_url" {
-  type        = string
-  description = "ElasticSearch URL"
+  type = string
 }
 
 variable "es_username" {
-  type        = string
-  description = "ElasticSearch username"
+  type = string
 }
 
 variable "email_default" {
-  type        = string
-  description = "Default email"
+  type = string
 }
 
 variable "email_password" {
-  type        = string
-  description = "Email password"
+  type = string
 }
 
 variable "email_test_override" {
-  type        = string
-  description = "Test override email"
+  type = string
 }
 
 variable "email_user" {
-  type        = string
-  description = "Email user"
+  type = string
 }
 
 variable "environment" {
-  type        = string
-  description = "Denotes running environment"
+  type = string
 }
 
 variable "drive_id" {
-  type        = string
-  description = "Google drive candidate drive ID"
+  type = string
 }
 
 variable "drive_rootfolder" {
-  type        = string
-  description = "Google drive root folder ID"
+  type = string
 }
 
 variable "drive_list_folders_id" {
-  type        = string
-  description = "Google drive list folders drive ID"
+  type = string
 }
 
 variable "drive_list_folders_root_id" {
-  type        = string
-  description = "Google drive list folders root ID"
+  type = string
 }
 
 variable "drive_private_key" {
-  type        = string
-  description = "Google drive private key"
+  type = string
 }
 
 variable "drive_private_key_id" {
-  type        = string
-  description = "Google drive private key ID"
+  type = string
 }
 
 variable "gradle_home" {
-  type        = string
-  description = "Gradle home directory"
+  type = string
 }
 
 variable "java_home" {
-  type        = string
-  description = "Java home directory"
+  type = string
 }
 
 variable "jwt_secret" {
-  type        = string
-  description = "JWT secret"
+  type = string
 }
 
 variable "m2" {
-  type        = string
-  description = "M2"
+  type = string
 }
 
 variable "m2_home" {
-  type        = string
-  description = "M2 home directory"
+  type = string
 }
 
 variable "server_port" {
-  type        = string
-  description = "Server port"
+  type = string
 }
 
 variable "server_url" {
-  type        = string
-  description = "Server URL"
+  type = string
 }
 
 variable "sf_base_classic_url" {
-  type        = string
-  description = "Salesforce Classic base url"
+  type = string
 }
 
 variable "sf_base_lightning_url" {
-  type        = string
-  description = "Salesforce Lightning base url"
+  type = string
 }
 
 variable "sf_base_login_url" {
-  type        = string
-  description = "Salesforce login base url - for obtaining an access token"
+  type = string
 }
 
 variable "sf_consumer_key" {
-  type        = string
-  description = "Salesforce connected app client ID, also for access token"
+  type = string
 }
+
 variable "sf_private_key" {
-  type        = string
-  description = "Salesforce private key"
+  type = string
 }
 
 variable "sf_user" {
-  type        = string
-  description = "Salesforce logging-in user for access token"
+  type = string
 }
 
 variable "slack_token" {
-  type        = string
-  description = "Slack token"
+  type = string
 }
 
 variable "spring_client_url" {
-  type        = string
-  description = "Spring boot admin client URL"
+  type = string
 }
 
 variable "spring_datasource_password" {
-  type        = string
-  description = "Spring datasource password"
+  type = string
 }
 
 variable "spring_datasource_url" {
-  type        = string
-  description = "Spring datasource URL"
+  type = string
 }
 
 variable "spring_datasource_username" {
-  type        = string
-  description = "Spring datasource username"
+  type = string
 }
 
 variable "spring_db_pool_max" {
-  type        = string
-  description = "Spring database max"
+  type = string
 }
 
 variable "spring_db_pool_min" {
-  type        = string
-  description = "Spring database min"
+  type = string
 }
 
 variable "spring_servlet_max_file_size" {
-  type        = string
-  description = "Spring servlet multipart max file size"
+  type = string
 }
 
 variable "spring_servlet_max_request_size" {
-  type        = string
-  description = "Spring servlet multipart max request size"
+  type = string
 }
 
 variable "tbb_cors_urls" {
-  type        = string
-  description = "TBB Cors URLs"
+  type = string
 }
 
 variable "tbb_db_copy_config" {
-  type        = string
-  description = "TBB partner DB copy config"
+  type = string
 }
 
 variable "translation_password" {
-  type        = string
-  description = "Translation password"
+  type = string
 }
 
 variable "web_admin" {
-  type        = string
-  description = "Web admin URL"
+  type = string
 }
 
 variable "web_portal" {
-  type        = string
-  description = "Candidate portal"
+  type = string
 }

@@ -21,10 +21,13 @@ import {Role, User} from '../model/user';
 import {Candidate} from '../model/candidate';
 import {Partner} from "../model/partner";
 import {CandidateSource} from "../model/base";
+import {MockJob} from "../MockData/MockJob";
+import {Job} from "../model/job";
 
 describe('AuthorizationService', () => {
   let service: AuthorizationService;
   let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
+  let job: Job;
 
   beforeEach(() => {
     const spy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
@@ -38,6 +41,7 @@ describe('AuthorizationService', () => {
 
     service = TestBed.inject(AuthorizationService);
     authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
+    job = MockJob;
   });
 
   it('should be created', () => {
@@ -290,6 +294,27 @@ describe('AuthorizationService', () => {
 
     authenticationServiceSpy.getLoggedInUser.and.returnValue({ ...user, id: 2 });
     expect(service.isStarredByMe(users)).toBeFalse();
+  });
+
+  it('should return true for System Admin', () => {
+    const user: User = { id: 2, role: 'systemadmin' } as User; // Not the creator
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    expect(service.canChangeJobName(job)).toBeTrue();
+  })
+
+  it('should return true for job creator', () => {
+    const user: User = { id: 1, role: 'systemadmin' } as User;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    expect(service.canChangeJobName(job)).toBeTrue();
+  })
+
+  it('should return false for a user who is not the creator and not a system admin', () => {
+    const user: User = { id: 2, role: 'admin' } as User; // Not the creator or a System Admin
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    expect(service.canChangeJobName(job)).toBeFalse();
   });
 
 });

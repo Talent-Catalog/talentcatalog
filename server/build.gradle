@@ -167,7 +167,7 @@ dependencies {
     implementation 'io.github.mweirauch:micrometer-jvm-extras:0.2.2'
 
     // tc api
-    implementation "io.github.sadatmalik:tc-api-spec:1.0.11"
+    implementation "org.tctalent:tc-api-spec:1.0.0"
 
     // Mapstruct
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
@@ -188,7 +188,7 @@ jib {
 }
 
 jacoco {
-    toolVersion = "0.8.12" // Updated to latest version
+    toolVersion = "0.8.12"
 }
 test {
     useJUnitPlatform()
