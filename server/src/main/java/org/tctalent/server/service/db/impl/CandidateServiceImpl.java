@@ -738,7 +738,6 @@ public class CandidateServiceImpl implements CandidateService {
 
         /* Set the email consent fields */
         candidate.setContactConsentRegistration(request.getContactConsentRegistration());
-        candidate.setContactConsentPartners(request.getContactConsentPartners());
 
         candidate.setRegoIp(ipAddress);
         if (queryParameters != null) {
@@ -1186,8 +1185,7 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
-        createCandidateRequest.setContactConsentRegistration(request.getContactConsentRegistration());
-        createCandidateRequest.setContactConsentPartners(request.getContactConsentPartners());
+        createCandidateRequest.setContactConsentRegistration(true);
 
         Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, ipAddress,
             queryParameters, passwordEncrypted);
@@ -1682,14 +1680,9 @@ public class CandidateServiceImpl implements CandidateService {
             //We can only register if the privacy policy has been accepted.
             throw new InvalidRequestException("Privacy policy has not been accepted");
         }
-        if (!request.isContactConsentRegistration() || !request.isContactConsentPartners()) {
-            //We can only register if both consents are given
-            throw new InvalidRequestException("Cannot register unless all consents are given");
-        }
         candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
         candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
         candidate.setContactConsentRegistration(true);
-        candidate.setContactConsentPartners(true);
 
         // Don't update status to pending if status is already pending
         final CandidateStatus candidateStatus = candidate.getStatus();

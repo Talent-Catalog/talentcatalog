@@ -31,10 +31,4 @@ public class SubmitRegistrationRequest {
      */
     @Nullable
     private String acceptedPrivacyPolicyId;
-
-    /**
-     * Email consent fields.
-     */
-    private boolean contactConsentRegistration;
-    private boolean contactConsentPartners;
 }

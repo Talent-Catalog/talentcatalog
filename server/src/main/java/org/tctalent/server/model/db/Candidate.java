@@ -788,8 +788,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      * It is not used for candidates who have accepted the new Privacy Policy terms because those
      * terms cover this consent to contact candidates about any opportunities.
      */
-    @NotNull
-    private Boolean contactConsentPartners;
+    private boolean contactConsentPartners = true;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
@@ -2352,11 +2351,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         this.contactConsentRegistration = emailConsentRegistration;
     }
 
-    public Boolean getContactConsentPartners() {
+    public boolean getContactConsentPartners() {
         return contactConsentPartners;
     }
 
-    public void setContactConsentPartners(Boolean emailConsentPartners) {
+    public void setContactConsentPartners(boolean emailConsentPartners) {
         this.contactConsentPartners = emailConsentPartners;
     }
 

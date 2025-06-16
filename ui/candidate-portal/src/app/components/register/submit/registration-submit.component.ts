@@ -28,8 +28,6 @@ export class RegistrationSubmitComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.builder.group({
-      contactConsentRegistration: [false],
-      contactConsentPartners: [false],
       acceptPolicy: [false]
     });
 
@@ -61,8 +59,6 @@ export class RegistrationSubmitComponent implements OnInit {
 
     let request: SubmitRegistrationRequest = {
       acceptedPrivacyPolicyId: this.acceptedPolicy ? this.currentPrivacyPolicy.id : null,
-      contactConsentPartners: this.form.get('contactConsentPartners').value,
-      contactConsentRegistration: this.form.get('contactConsentRegistration').value
     }
     this.candidateService.submitRegistration(request).subscribe(
       (candidate) => {

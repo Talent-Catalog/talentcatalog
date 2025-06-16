@@ -434,8 +434,6 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
 
 export class SubmitRegistrationRequest {
   acceptedPrivacyPolicyId?: string;
-  contactConsentRegistration?: boolean;
-  contactConsentPartners?: boolean;
 }
 
 export interface UpdateCandidateOppsRequest {

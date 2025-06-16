@@ -12,22 +12,6 @@
 
 <form [formGroup]="form" *ngIf="!loading" (submit)="submit()">
 
-  <div class="mb-3 form-check">
-    <input class="form-check-input" type="checkbox" id="contactConsentRegistration" [value]="false"
-           [formControlName]="'contactConsentRegistration'">
-    <label class="form-check-label">
-      {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate }}
-    </label>
-  </div>
-
-  <div class="mb-3 form-check">
-    <input class="form-check-input" type="checkbox" id="contactConsentPartners" [value]="false"
-           [formControlName]="'contactConsentPartners'">
-    <label class="form-check-label">
-      {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTPARTNERS' | translate }}
-    </label>
-  </div>
-
   <h2>
     Privacy Policy with {{getPartnerDescription(false)}}
   </h2>
