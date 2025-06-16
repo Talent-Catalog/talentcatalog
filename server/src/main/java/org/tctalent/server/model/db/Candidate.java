@@ -783,6 +783,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @NotNull
     private Boolean contactConsentRegistration;
 
+    /**
+     * This field is only used for candidates who have just agreed to the old TBB Privacy Policy.
+     * It is not used for candidates who have accepted the new Privacy Policy terms because those
+     * terms cover this consent to contact candidates about any opportunities.
+     */
     @NotNull
     private Boolean contactConsentPartners;
 
