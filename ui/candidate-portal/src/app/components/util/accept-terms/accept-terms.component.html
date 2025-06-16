@@ -2,10 +2,4 @@
   <div #termsBox class="terms-box" (scroll)="onScroll(termsBox)">
     <ng-content></ng-content>
   </div>
-
-  <label>
-    <input type="checkbox" [disabled]="!scrolledToBottom" [(ngModel)]="termsAccepted"
-           (change)="onAcceptanceChange($event)"/>
-    {{acceptanceText}}
-  </label>
 </div>

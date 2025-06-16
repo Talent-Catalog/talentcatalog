@@ -6,9 +6,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
   styleUrls: ['./accept-terms.component.scss']
 })
 export class AcceptTermsComponent {
-  @Input() termsAccepted = false;
-  @Input() acceptanceText = "I accept the Terms and Conditions";
-  @Output() accepted = new EventEmitter<boolean>();
+  @Input() requestTermsRead = false;
+  @Output() readTerms = new EventEmitter<boolean>();
 
   scrolledToBottom = false;
 
@@ -19,11 +18,7 @@ export class AcceptTermsComponent {
     // console.log(element.scrollTop, element.clientHeight, element.scrollTop + element.clientHeight, element.scrollHeight)
     if (atBottom) {
       this.scrolledToBottom = true;
+      this.readTerms.emit(true);
     }
-  }
-
-  onAcceptanceChange($event: Event) {
-    const checked = ($event.target as HTMLInputElement).checked;
-    this.accepted.emit(checked)
   }
 }

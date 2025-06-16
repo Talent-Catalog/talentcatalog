@@ -10,27 +10,21 @@
 
 <hr class="my-4"/>
 
-<form [formGroup]="form" *ngIf="!loading" (submit)="submit()">
-
-  <h2>
-    Privacy Policy with {{getPartnerDescription(false)}}
-  </h2>
-  <app-accept-terms
-    [termsAccepted] = acceptedPolicy
-    [acceptanceText]="'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate"
-    (accepted)="setAcceptedTerms($event)"
-  >
-    <app-terms
-      [content]=currentPrivacyPolicy?.content
-      [partnerName]="getPartnerDescription(false)">
-    </app-terms>
-  </app-accept-terms>
-</form>
+<h2>
+  Privacy Policy with {{getPartnerDescription(false)}}
+</h2>
+<app-accept-terms
+  [requestTermsRead] = true
+  (readTerms)="setReadTerms()"
+>
+  <div [innerHtml]=currentPrivacyPolicy?.content></div>
+</app-accept-terms>
 
 <app-error [error]="error"></app-error>
 
 <button class="btn btn-primary" (click)="submit()"
-        [disabled]="!form.valid"
+        [disabled]="!readTerms"
 >
-  {{ 'REGISTRATION.FOOTER.SUBMIT' | translate }}
+<!--  todo new text-->
+  {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
 </button>

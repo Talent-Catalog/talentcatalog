@@ -1,4 +1,11 @@
 <div>
-  <div [innerHtml]="content">
-  </div>
+  {{partnerName}}
+  <app-accept-terms
+    [requestTermsRead] = "requestAcceptance"
+    (readTerms)="setReadTerms()"
+  >
+    <div [innerHtml]=content></div>
+  </app-accept-terms>
+
+  <div *ngIf="requestAcceptance && readTerms">Go baby</div>
 </div>

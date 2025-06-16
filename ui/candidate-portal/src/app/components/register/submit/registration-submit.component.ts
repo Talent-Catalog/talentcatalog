@@ -15,10 +15,10 @@ export class RegistrationSubmitComponent implements OnInit {
   error: any;
   loading: boolean;
 
+  readTerms: boolean = false;
+
   candidate: Candidate;
   currentPrivacyPolicy: TermsInfoDto;
-
-  form: UntypedFormGroup;
 
   constructor(private builder: UntypedFormBuilder,
               private candidateService: CandidateService,
@@ -27,9 +27,6 @@ export class RegistrationSubmitComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.form = this.builder.group({
-      acceptPolicy: [false]
-    });
 
     //Fetch the current candidate privacy policy
     this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY).subscribe(
@@ -48,17 +45,13 @@ export class RegistrationSubmitComponent implements OnInit {
     )
   }
 
-  get acceptedPolicy(): boolean {
-    return this.form.get('acceptPolicy').value;
-  }
-
   //Final registration step method
   submit() {
     this.loading = true;
     this.error = null;
 
     let request: SubmitRegistrationRequest = {
-      acceptedPrivacyPolicyId: this.acceptedPolicy ? this.currentPrivacyPolicy.id : null,
+      acceptedPrivacyPolicyId: this.currentPrivacyPolicy.id
     }
     this.candidateService.submitRegistration(request).subscribe(
       (candidate) => {
@@ -72,12 +65,6 @@ export class RegistrationSubmitComponent implements OnInit {
       }
     );
   }
-
-  setAcceptedTerms(accepted: boolean) {
-     this.form.get('acceptPolicy').setValue(accepted);
-  }
-
-  protected readonly TermsType = TermsType;
 
   /**
    * Displays partner as string.
@@ -95,5 +82,9 @@ export class RegistrationSubmitComponent implements OnInit {
       }
     }
     return description;
+  }
+
+  setReadTerms() {
+    this.readTerms = true;
   }
 }
