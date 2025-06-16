@@ -1307,6 +1307,27 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateAcceptedPrivacyPolicy(String acceptedPrivacyPolicyId) {
+        User user = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        Candidate candidate = user.getCandidate();
+        updatePolicyId(acceptedPrivacyPolicyId, candidate);
+        candidate = save(candidate, false);
+        return candidate;
+    }
+
+    /**
+     * Factored out some common code
+     */
+    private static void updatePolicyId(String acceptedPrivacyPolicyId, Candidate candidate) {
+        if (acceptedPrivacyPolicyId == null) {
+            throw new InvalidRequestException("Privacy policy has not been accepted");
+        }
+        candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
+        candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
+    }
+
+    @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
@@ -1676,12 +1697,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         final String acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
-        if (acceptedPrivacyPolicyId == null) {
-            //We can only register if the privacy policy has been accepted.
-            throw new InvalidRequestException("Privacy policy has not been accepted");
-        }
-        candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
-        candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
+        updatePolicyId(acceptedPrivacyPolicyId, candidate);
         candidate.setContactConsentRegistration(true);
 
         // Don't update status to pending if status is already pending

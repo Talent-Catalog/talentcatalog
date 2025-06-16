@@ -15,7 +15,7 @@
 </h2>
 <app-show-terms
   [requestTermsRead] = true
-  (readTerms)="setReadTerms()"
+  (termsRead)="setReadTerms()"
 >
   <div [innerHtml]=currentPrivacyPolicy?.content></div>
 </app-show-terms>

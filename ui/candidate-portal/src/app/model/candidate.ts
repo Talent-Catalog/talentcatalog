@@ -46,6 +46,7 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  acceptedPrivacyPolicyId: string;
   publicId: string;
   status: string;
   allNotifications: boolean;

@@ -25,7 +25,9 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -125,6 +127,12 @@ public class CandidatePortalApi {
     public Map<String, Object> getCandidateAdditionalInfo() {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        return candidateAdditionalInfoDto().build(candidate);
+    }
+
+    @PutMapping("privacy/{id}")
+    public Map<String, Object> updateCandidateAcceptedPrivacyPolicy(@PathVariable("id") String id) {
+        Candidate candidate = this.candidateService.updateAcceptedPrivacyPolicy(id);
         return candidateAdditionalInfoDto().build(candidate);
     }
 
@@ -258,6 +266,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()
                 .add("user", userDto())
+                .add("acceptedPrivacyPolicyId")
                 .add("candidateNumber")
                 .add("publicId")
                 .add("gender")

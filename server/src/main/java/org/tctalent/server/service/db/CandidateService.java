@@ -239,6 +239,13 @@ public interface CandidateService {
      */
     Candidate registerByPartner(RegisterCandidateByPartnerRequest request);
 
+    /**
+     * Updates the privacy policy that the candidate has accepted.
+     * @param acceptedPrivacyPolicyId ID of policy that candidate has accepted
+     * @return The updated candidate
+     */
+    Candidate updateAcceptedPrivacyPolicy(String acceptedPrivacyPolicyId);
+
     Candidate updateContact(UpdateCandidateContactRequest request);
 
     Candidate updatePersonal(UpdateCandidatePersonalRequest request);

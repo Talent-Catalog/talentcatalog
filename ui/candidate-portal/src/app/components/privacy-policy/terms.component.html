@@ -1,11 +1,27 @@
+<app-error [error]="error"></app-error>
 <div>
-  {{partnerName}}
+  Your Talent Catalog partner is {{partnerName}}.
   <app-show-terms
     [requestTermsRead] = "requestAcceptance"
-    (readTerms)="setReadTerms()"
+    (termsRead)="setTermsRead()"
   >
     <div [innerHtml]=content></div>
   </app-show-terms>
 
-  <div *ngIf="requestAcceptance && readTerms">Go baby</div>
+  <div *ngIf="!requestAcceptance">
+    Thank you for accepting this privacy policy with {{partnerName}}.
+  </div>
+  <div *ngIf="requestAcceptance">
+    <div *ngIf="!termsRead">
+      Scroll to bottom of terms to show that you have read it.
+    </div>
+    <div *ngIf="termsRead">
+
+      <button class="btn btn-primary" (click)="acceptTerms()"
+      >
+        <!--  todo new text-->
+        {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
+      </button>
+    </div>
+  </div>
 </div>

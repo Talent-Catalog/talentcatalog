@@ -20,8 +20,7 @@ export class RegistrationSubmitComponent implements OnInit {
   candidate: Candidate;
   currentPrivacyPolicy: TermsInfoDto;
 
-  constructor(private builder: UntypedFormBuilder,
-              private candidateService: CandidateService,
+  constructor(private candidateService: CandidateService,
               private authenticationService: AuthenticationService,
               private termsInfoService: TermsInfoService) {
   }

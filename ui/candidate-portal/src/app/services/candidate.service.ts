@@ -108,6 +108,11 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/certifications`);
   }
 
+  updateAcceptedPrivacyPolicy(acceptedPrivacyPolicyId: string):
+    Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/privacy/${acceptedPrivacyPolicyId}`, null);
+  }
+
   updateCandidateCertification(request): Observable<Candidate> {
     return this.http.post<Candidate>(`${this.apiUrl}/certifications`, request);
   }

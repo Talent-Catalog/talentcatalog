@@ -7,7 +7,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 })
 export class ShowTermsComponent {
   @Input() requestTermsRead = false;
-  @Output() readTerms = new EventEmitter<boolean>();
+  @Output() termsRead = new EventEmitter<boolean>();
 
   scrolledToBottom = false;
 
@@ -18,7 +18,7 @@ export class ShowTermsComponent {
     // console.log(element.scrollTop, element.clientHeight, element.scrollTop + element.clientHeight, element.scrollHeight)
     if (atBottom) {
       this.scrolledToBottom = true;
-      this.readTerms.emit(true);
+      this.termsRead.emit(true);
     }
   }
 }
