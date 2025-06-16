@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-  selector: 'app-accept-terms',
-  templateUrl: './accept-terms.component.html',
-  styleUrls: ['./accept-terms.component.scss']
+  selector: 'app-show-terms',
+  templateUrl: './show-terms.component.html',
+  styleUrls: ['./show-terms.component.scss']
 })
-export class AcceptTermsComponent {
+export class ShowTermsComponent {
   @Input() requestTermsRead = false;
   @Output() readTerms = new EventEmitter<boolean>();
 

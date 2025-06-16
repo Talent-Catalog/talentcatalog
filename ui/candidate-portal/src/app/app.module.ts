@@ -230,7 +230,7 @@ import { DuolingoComponent } from './components/profile/view/tab/services/duolin
 import { CasiHeaderComponent } from './components/common/casi-header/casi-header.component';
 import { TermsComponent } from './components/privacy-policy/terms.component';
 import { RegistrationSubmitComponent } from './components/register/submit/registration-submit.component';
-import { AcceptTermsComponent } from './components/util/accept-terms/accept-terms.component';
+import { ShowTermsComponent } from './components/util/accept-terms/show-terms.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -316,7 +316,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     CasiHeaderComponent,
     TermsComponent,
     RegistrationSubmitComponent,
-    AcceptTermsComponent,
+    ShowTermsComponent,
   ],
   imports: [
     BrowserModule,

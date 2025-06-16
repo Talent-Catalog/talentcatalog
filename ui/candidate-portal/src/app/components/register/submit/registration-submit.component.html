@@ -13,12 +13,12 @@
 <h2>
   Privacy Policy with {{getPartnerDescription(false)}}
 </h2>
-<app-accept-terms
+<app-show-terms
   [requestTermsRead] = true
   (readTerms)="setReadTerms()"
 >
   <div [innerHtml]=currentPrivacyPolicy?.content></div>
-</app-accept-terms>
+</app-show-terms>
 
 <app-error [error]="error"></app-error>
 

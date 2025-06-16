@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AcceptTermsComponent } from './accept-terms.component';
+import { ShowTermsComponent } from './show-terms.component';
 import { Component, DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   template: `
-    <app-accept-terms (accepted)="onAccepted()">
+    <app-show-terms (accepted)="onAccepted()">
       <div style="height: 1000px;">Mock Terms Content</div>
-    </app-accept-terms>
+    </app-show-terms>
   `
 })
 class TestHostComponent {
@@ -25,13 +25,13 @@ describe('AcceptTermsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AcceptTermsComponent, TestHostComponent],
+      declarations: [ShowTermsComponent, TestHostComponent],
       imports: [FormsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);
     hostComponent = fixture.componentInstance;
-    acceptComponent = fixture.debugElement.query(By.directive(AcceptTermsComponent));
+    acceptComponent = fixture.debugElement.query(By.directive(ShowTermsComponent));
     fixture.detectChanges();
   });
 
