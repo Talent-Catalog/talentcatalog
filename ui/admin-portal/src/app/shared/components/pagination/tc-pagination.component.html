@@ -1,0 +1,52 @@
+<div class="tc-pagination">
+  <div class="custom-ngb-pagination">
+    <ngb-pagination
+      aria-label="Custom pagination"
+      [boundaryLinks]="true"
+      [(page)]="pageNumber"
+      [pageSize]="pageSize"
+      [collectionSize]="collectionSize"
+      [maxSize]="5"
+      [ellipses]="true"
+      [rotate]="true"
+      (pageChange)="onPageChange($event)">
+      <ng-template ngbPaginationFirst>
+        <i class="fas fa-angle-double-left fa-xs"></i>
+      </ng-template>
+      <ng-template ngbPaginationPrevious>
+        <i class="fas fa-long-arrow-alt-left fa-xs"></i>
+      </ng-template>
+      <ng-template ngbPaginationNext>
+        <i class="fas fa-long-arrow-alt-right fa-xs"></i>
+      </ng-template>
+      <ng-template ngbPaginationLast>
+        <i class="fas fa-angle-double-right fa-xs"></i>
+      </ng-template>
+      <ng-template ngbPaginationPages let-page let-pages="pages">
+        <li *ngIf="pages.length > 0" class="select-pages">
+          <div class="d-flex flex-nowrap px-2 w-100 justify-content-center">
+            <label id="paginationInputLabel" for="paginationInput" class="col-form-label me-2 ms-1">Page</label>
+            <input
+              #i
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              class="form-control custom-pages-input"
+              id="paginationInput"
+              [value]="page"
+              (keyup.enter)="selectPage(i.value)"
+              (blur)="selectPage(i.value)"
+              (input)="formatInput($any($event).target)"
+              aria-labelledby="paginationInputLabel paginationDescription"
+              style="width: 2.5rem"
+            />
+            <span id="paginationDescription" class="col-form-label text-nowrap px-2"> of {{ pages.length }}</span>
+          </div>
+        </li>
+
+      </ng-template>
+    </ngb-pagination>
+  </div>
+  <p class="results-total">Found {{collectionSize}} in total</p>
+</div>
+
