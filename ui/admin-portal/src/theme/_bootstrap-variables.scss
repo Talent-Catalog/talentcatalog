@@ -13,11 +13,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import '@fontsource/lato';
 
 $primary: #0084D1;
 $secondary: #33BBBB;
 
-// For navbar (testing)
+// Fonts (See: https://getbootstrap.com/docs/5.0/content/typography/#global-settings)
+$font-family-base: 'Lato', sans-serif;
+
+// Pagination
+$pagination-bg: #FFFFFF;
+$pagination-color: #09090B;
+$pagination-active-bg: #FAFAFA;
+$pagination-active-color: #242424;
+$pagination-border-width: 0;
+$pagination-hover-bg: #FAFAFA;
+$pagination-hover-color: #09090B;
+$pagination-hover-border-color: #FAFAFA;;
+
+  // For navbar (testing)
 $background-grey: #F7F7F7;
 $body-bg: #FFFFFF;
 
