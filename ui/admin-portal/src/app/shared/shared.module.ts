@@ -16,18 +16,33 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbPagination,
+  NgbPaginationFirst,
+  NgbPaginationLast,
+  NgbPaginationNext,
+  NgbPaginationNumber,
+  NgbPaginationPages,
+  NgbPaginationPrevious
+} from "@ng-bootstrap/ng-bootstrap";
 import {DisplayTableComponent} from "./components/table/display-table.component";
+import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 
 
 @NgModule({
-  declarations: [DisplayTableComponent],
+  declarations: [DisplayTableComponent, TcPaginationComponent],
   imports: [
     CommonModule,
-    NgbPagination
+    NgbPagination,
+    NgbPaginationPrevious,
+    NgbPaginationNext,
+    NgbPaginationNumber,
+    NgbPaginationPages,
+    NgbPaginationFirst,
+    NgbPaginationLast
   ],
   exports: [
-    DisplayTableComponent
+    DisplayTableComponent, TcPaginationComponent
   ]
 })
 export class SharedModule { }

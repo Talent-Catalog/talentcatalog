@@ -1,4 +1,6 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {PageInfo} from "../pagination/tc-pagination.component";
+import {SearchResults} from "../../../model/search-results";
 
 export type TableType = 'Basic' | 'Striped' | 'Dropdown';
 
@@ -11,16 +13,14 @@ export class DisplayTableComponent {
 
   @Input() name: string;
   @Input() columns: string[] = ["Name", "Stage", "Created", "Due"];
-  // todo data this a SearchResults<any> type so we can do pagination
-  @Input() data: any[] = [
-    {name: "Blue Mountains Highway Motel",
-      stage: "Recruitement Process",
-      created: "2023-03-14",
-      due: "2023-03-14"},
-    {name: "DAIS Build Pty Ltd",
-      stage: "Visa Eligibility",
-      created: "2023-11-03",
-      due: "-"}];
+  @Input() searchResults: SearchResults<any>;
   @Input() type: TableType = 'Basic';
+  // Variables for pagination
+  @Input() pageNumber;
+  @Output() pageChange = new EventEmitter<PageInfo>();
+
+  onPageChange(pageInfo: PageInfo) {
+    this.pageChange.emit(pageInfo);
+  }
 
 }

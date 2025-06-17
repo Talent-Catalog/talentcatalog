@@ -9,7 +9,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of data">
+      <tr *ngFor="let data of searchResults?.content">
         <td *ngFor="let col of columns">
           <ng-container *ngIf="col != 'Stage'; else stageTag">
             {{data[col.toLowerCase()]}}
@@ -21,9 +21,13 @@
       </tr>
     </tbody>
   </table>
-<!--  <div>-->
-<!--    <ngb-pagination [collectionSize]="data?.length"></ngb-pagination>-->
-<!--    Found {{data?.length}} in total-->
-<!--  </div>-->
+  <div>
+    <app-tc-pagination
+            [collectionSize]="searchResults?.totalElements"
+            (pageChange)="onPageChange($event)"
+            [pageNumber]="pageNumber">
+    </app-tc-pagination>
+
+  </div>
 
 </div>

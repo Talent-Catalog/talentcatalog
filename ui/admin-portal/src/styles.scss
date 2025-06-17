@@ -37,11 +37,6 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
 
-body {
-  padding-top: 6rem;
-  background-color: $light;
-}
-
 .nav-link {
   cursor: pointer;
   color: $light;

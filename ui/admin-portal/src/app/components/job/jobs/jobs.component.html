@@ -122,83 +122,87 @@
 </div>
 
 <div *ngIf="!loading">
-<!--    <app-display-table type="Striped"></app-display-table>-->
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <!--          Header-->
-        <thead class="table-primary">
-        <tr>
-          <th (click)="toggleSort('name')">
-            <app-sorted-by [column]="'name'" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"></app-sorted-by>
-            Name
-          </th>
-          <th (click)="toggleSort('stageOrder')">
-            <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"></app-sorted-by>
-            Stage
-          </th>
+    <app-display-table
+      type="Striped"
+      [searchResults]="results"
+      [pageNumber]="pageNumber"
+      (pageChange)="onPageChange($event)"></app-display-table>
+<!--    <div class="table-responsive">-->
+<!--      <table class="table table-hover">-->
+<!--        &lt;!&ndash;          Header&ndash;&gt;-->
+<!--        <thead class="table-primary">-->
+<!--        <tr>-->
+<!--          <th (click)="toggleSort('name')">-->
+<!--            <app-sorted-by [column]="'name'" [sortColumn]="sortField"-->
+<!--                           [sortDirection]="sortDirection"></app-sorted-by>-->
+<!--            Name-->
+<!--          </th>-->
+<!--          <th (click)="toggleSort('stageOrder')">-->
+<!--            <app-sorted-by [column]="'stageOrder'" [sortColumn]="sortField"-->
+<!--                           [sortDirection]="sortDirection"></app-sorted-by>-->
+<!--            Stage-->
+<!--          </th>-->
 
-          <th (click)="toggleSort('createdDate')">
-            <app-sorted-by [column]="'createdDate'" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"></app-sorted-by>
-            Created
-          </th>
-          <th (click)="toggleSort('submissionDueDate')">
-            <app-sorted-by [column]="'submissionDueDate'" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"></app-sorted-by>
-            Due
-          </th>
-        </tr>
-        </thead>
+<!--          <th (click)="toggleSort('createdDate')">-->
+<!--            <app-sorted-by [column]="'createdDate'" [sortColumn]="sortField"-->
+<!--                           [sortDirection]="sortDirection"></app-sorted-by>-->
+<!--            Created-->
+<!--          </th>-->
+<!--          <th (click)="toggleSort('submissionDueDate')">-->
+<!--            <app-sorted-by [column]="'submissionDueDate'" [sortColumn]="sortField"-->
+<!--                           [sortDirection]="sortDirection"></app-sorted-by>-->
+<!--            Due-->
+<!--          </th>-->
+<!--        </tr>-->
+<!--        </thead>-->
 
-        <tbody>
+<!--        <tbody>-->
 
-        <!--        Opp records    -->
-        <tr *ngFor="let opp of results?.content" (click)="selectCurrent(opp)"
-            [ngClass]="{'current': currentOpp?.id == opp.id}">
-          <td title="{{opp.country?.name}}">
-            <app-chat-read-status
-              [chats]="getChats(opp)"
-            ></app-chat-read-status>
-            {{opp.name| truncate: 36}}
-            <a [routerLink]="['/job',opp.id]">
-              <i class="fa-solid fa-briefcase" title="Job"></i>
-            </a>
-            <a *ngIf="opp.submissionList && canSeeJobDetails()" [routerLink]="['/list',opp.submissionList.id]">
-              <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
-            </a>
-          </td>
-          <td title="{{getCandidateOpportunityStageName(opp)}}">
-            {{getCandidateOpportunityStageName(opp) | truncate: 15}}
-          </td>
-          <td title="Contact {{fullUserName(opp.contactUser)}}">
-            {{opp.createdDate | date}}
-          </td>
-          <td>
-            {{opp.submissionDueDate}}
-          </td>
-        </tr>
+<!--        &lt;!&ndash;        Opp records    &ndash;&gt;-->
+<!--        <tr *ngFor="let opp of results?.content" (click)="selectCurrent(opp)"-->
+<!--            [ngClass]="{'current': currentOpp?.id == opp.id}">-->
+<!--          <td title="{{opp.country?.name}}">-->
+<!--            <app-chat-read-status-->
+<!--              [chats]="getChats(opp)"-->
+<!--            ></app-chat-read-status>-->
+<!--            {{opp.name| truncate: 36}}-->
+<!--            <a [routerLink]="['/job',opp.id]">-->
+<!--              <i class="fa-solid fa-briefcase" title="Job"></i>-->
+<!--            </a>-->
+<!--            <a *ngIf="opp.submissionList && canSeeJobDetails()" [routerLink]="['/list',opp.submissionList.id]">-->
+<!--              <i class="fa-solid fa-rectangle-list" title="Submission list"></i>-->
+<!--            </a>-->
+<!--          </td>-->
+<!--          <td title="{{getCandidateOpportunityStageName(opp)}}">-->
+<!--            {{getCandidateOpportunityStageName(opp) | truncate: 15}}-->
+<!--          </td>-->
+<!--          <td title="Contact {{fullUserName(opp.contactUser)}}">-->
+<!--            {{opp.createdDate | date}}-->
+<!--          </td>-->
+<!--          <td>-->
+<!--            {{opp.submissionDueDate}}-->
+<!--          </td>-->
+<!--        </tr>-->
 
-        </tbody>
+<!--        </tbody>-->
 
-      </table>
+<!--      </table>-->
 
-      <div class="text-muted mb-2 align-middle">
+<!--      <div class="text-muted mb-2 align-middle">-->
 
-        <ngb-pagination
-          [boundaryLinks]="true"
-          [pageSize]="pageSize"
-          [collectionSize]="results?.totalElements"
-          [(page)]="pageNumber"
-          [maxSize]="5"
-          [ellipses]="true"
-          [rotate]="true"
-          (pageChange)="search()">
-        </ngb-pagination>
+<!--        <ngb-pagination-->
+<!--          [boundaryLinks]="true"-->
+<!--          [pageSize]="pageSize"-->
+<!--          [collectionSize]="results?.totalElements"-->
+<!--          [(page)]="pageNumber"-->
+<!--          [maxSize]="5"-->
+<!--          [ellipses]="true"-->
+<!--          [rotate]="true"-->
+<!--          (pageChange)="search()">-->
+<!--        </ngb-pagination>-->
 
-        Found {{results?.totalElements}} in total
-      </div>
+<!--        Found {{results?.totalElements}} in total-->
+<!--      </div>-->
 
       <!-- loading -->
       <div *ngIf="loading">
@@ -206,6 +210,4 @@
           <i class="fas fa-spinner fa-spin"></i> Loading...
         </div>
       </div>
-
-    </div>
 </div>
