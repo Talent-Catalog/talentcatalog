@@ -31,7 +31,7 @@ import org.tctalent.server.model.db.mapper.TermsInfoMapper;
 import org.tctalent.server.service.db.TermsInfoService;
 
 /**
- * TODO JC Doc
+ * API related to Privacy Policy Terms
  *
  * @author John Cameron
  */
