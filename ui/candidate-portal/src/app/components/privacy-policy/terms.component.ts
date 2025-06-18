@@ -1,9 +1,9 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TermsInfoDto, TermsType} from "../../model/terms-info-dto";
 import {TermsInfoService} from "../../services/terms-info.service";
 import {CandidateService} from "../../services/candidate.service";
 import {forkJoin} from "rxjs";
-import {Candidate, CandidateStatus} from "../../model/candidate";
+import {Candidate} from "../../model/candidate";
 
 @Component({
   selector: 'app-terms',
@@ -24,7 +24,6 @@ export class TermsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     //Fetch the current candidate privacy policy and candidate info
     forkJoin({
       'currentPolicy': this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY),
@@ -45,11 +44,7 @@ export class TermsComponent implements OnInit {
     this.partnerName = candidate?.user?.partner?.name;
 
     //Check if candidate has accepted the current policy. If not they need to accept it.
-    this.requestAcceptance = currentPolicy.id != candidate.acceptedPrivacyPolicyId;
-
-    if (this.requestAcceptance) {
-      //todo Need to tag candidate as pendingTermsAcceptance
-    }
+    this.setRequestAcceptance(currentPolicy.id != candidate.acceptedPrivacyPolicyId)
   }
 
   private setCurrentPolicy(termsInfo: TermsInfoDto) {
@@ -62,13 +57,25 @@ export class TermsComponent implements OnInit {
   }
 
   acceptTerms() {
-    //todo Mark candidate as having accepted these terms.
+    //Mark candidate as having accepted these terms.
     this.candidateService.updateAcceptedPrivacyPolicy(this.currentPrivacyPolicy?.id).subscribe(
       {
-        next: candidate => {this.requestAcceptance = false},
+        next: () => {this.setRequestAcceptance(false)},
         error: err => {this.error = err}
       }
     );
+  }
 
+  setRequestAcceptance(requestAcceptance: boolean) {
+    this.requestAcceptance = requestAcceptance;
+    if (this.requestAcceptance) {
+      //Tag candidate as pendingTermsAcceptance.
+      //Note that we don't have to untag them when the candidate accepts the terms because that
+      //is done automatically on the server.
+      this.candidateService.updatePendingTermsAcceptance(true).subscribe({
+        next: () => {},
+        error: err => {this.error = err}
+      });
+    }
   }
 }

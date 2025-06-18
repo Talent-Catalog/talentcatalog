@@ -21,8 +21,8 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,8 +43,10 @@ import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
+import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
+@RequiredArgsConstructor
 @RestController()
 @RequestMapping("/api/portal/candidate")
 public class CandidatePortalApi {
@@ -52,14 +54,7 @@ public class CandidatePortalApi {
     private final CandidateService candidateService;
     private final CountryService countryService;
     private final OccupationService occupationService;
-
-    @Autowired
-    public CandidatePortalApi(OccupationService occupationService, CandidateService candidateService,
-        CountryService countryService) {
-        this.occupationService = occupationService;
-        this.candidateService = candidateService;
-        this.countryService = countryService;
-    }
+    private final SavedListService savedListService;
 
     @GetMapping("contact")
     public Map<String, Object> getCandidateEmail() {
@@ -133,7 +128,18 @@ public class CandidatePortalApi {
     @PutMapping("privacy/{id}")
     public Map<String, Object> updateCandidateAcceptedPrivacyPolicy(@PathVariable("id") String id) {
         Candidate candidate = this.candidateService.updateAcceptedPrivacyPolicy(id);
+
+        //Remove pending terms acceptance tag now that they have accepted
+        this.savedListService.updatePendingTermsAcceptance(candidate, false);
+        
         return candidateAdditionalInfoDto().build(candidate);
+    }
+
+    @PutMapping("pending-acceptance/{flag}")
+    public void updatePendingTermsAcceptance(@PathVariable("flag") boolean flag) {
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        this.savedListService.updatePendingTermsAcceptance(candidate, flag);
     }
 
     @PostMapping("other-info")

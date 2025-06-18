@@ -163,4 +163,7 @@ export class CandidateService {
     return this.http.put<void>(`${this.apiUrl}/notification`, request);
   }
 
+  updatePendingTermsAcceptance(requestAcceptance: boolean): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/pending-acceptance/${requestAcceptance}`, null);
+  }
 }
