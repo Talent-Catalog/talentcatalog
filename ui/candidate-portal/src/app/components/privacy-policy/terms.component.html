@@ -1,19 +1,13 @@
 <app-error [error]="error"></app-error>
 <div>
-  <p>
-    Your Talent Catalog partner is {{partnerName}}.
-  </p>
+  <div
+    [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS'| translate:{partner: partnerName} ">
+  </div>
   <div *ngIf="requestAcceptance">
     <div *ngIf="!termsRead">
-      <p>
-        The Privacy Policy has changed. Please read and approve this new policy.
-      </p>
-      <p>
-        We cannot continue to support you until you do this.
-      </p>
-      <p>
-        Scroll to bottom of terms to show that you have read it.
-      </p>
+      <div
+        [innerHTML]="'PROFILE.PRIVACY.CHANGED'| translate">
+      </div>
     </div>
   </div>
 
@@ -25,14 +19,15 @@
   </app-show-terms>
 
   <div *ngIf="!requestAcceptance">
-    Thank you for accepting this privacy policy with {{partnerName}}.
+    <div
+      [innerHTML]="'PROFILE.PRIVACY.THANK_ACCEPTANCE'| translate:{partner: partnerName} ">
+    </div>
   </div>
   <div *ngIf="requestAcceptance">
     <div *ngIf="termsRead">
 
       <button class="btn btn-primary" (click)="acceptTerms()"
       >
-        <!--  todo new text-->
         {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
       </button>
     </div>

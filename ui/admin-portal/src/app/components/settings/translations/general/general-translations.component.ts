@@ -144,7 +144,7 @@ export class GeneralTranslationsComponent implements OnInit {
     this.saving = true;
     this.saveError = null;
     this.translationService.updateTranslationFile(this.systemLanguage.language, result).subscribe(
-      result => {
+      () => {
         this.saving = false;
       },
       error => {
@@ -567,6 +567,10 @@ const ALL_FIELDS = {
         "STATE": null,
         "YEAROFARRIVAL": null,
         "NATIONALITY": null
+      },
+      "PRIVACY": {
+        "CHANGED": null,
+        "THANK_ACCEPTANCE": null
       },
       "OCCUPATIONS": {
         "TITLE": null
