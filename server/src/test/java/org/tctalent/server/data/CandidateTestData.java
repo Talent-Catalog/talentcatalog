@@ -105,6 +105,7 @@ public class CandidateTestData {
         candidate.setCandidateNumber("99");
         candidate.setNationality(CountryTestData.PAKISTAN);
         candidate.setStatus(CandidateStatus.active);
+        candidate.setFolderlink("www.folderlink.com");
         return candidate;
     }
 

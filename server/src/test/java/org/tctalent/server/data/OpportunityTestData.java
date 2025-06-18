@@ -28,6 +28,8 @@ public class OpportunityTestData {
         o.setCandidateId("66JGG888GGDFDDDDFGH");
         o.setStageName("Relocated");
         o.setClosingCommentsForCandidate("Closing comments");
+        o.setClosingComments("Closing comments");
+        o.setEmployerFeedback("Employer feedback");
         o.setNextStep("Next step");
         o.setNextStepDueDate("2025-12-03");
         return o;

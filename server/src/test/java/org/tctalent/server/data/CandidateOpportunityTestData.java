@@ -36,7 +36,7 @@ public class CandidateOpportunityTestData {
         op.setClosingCommentsForCandidate("Some closing comments for candidate");
         op.setEmployerFeedback("Some employer feedback");
         op.setStage(CandidateOpportunityStage.offer);
-        op.setNextStep("Next step");
+        op.setNextStep("A next step");
         op.setRelocatingDependantIds(List.of(1L, 2L));
         return op;
     }
@@ -58,7 +58,7 @@ public class CandidateOpportunityTestData {
     public static CreateUpdateCandidateOppTestData createUpdateCandidateOppRequestAndExpectedOpp() {
         final String sfJobOppId = "UUUU8888800000YYYYIIII";
         final Set<Long> candidateIds = Set.of(1L, 2L);
-        final String nextStep = "Next step";
+        final String nextStep = "The next step";
         final String closingComments = "Closing comments";
         final String employerFeedback = "Employer feedback";
         final LocalDate nextStepDueDate = LocalDate.of(2026, 1, 1);

@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,6 +45,9 @@ import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJob
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -62,7 +66,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.data.CandidateOpportunityTestData.CreateUpdateCandidateOppTestData;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
@@ -75,16 +82,21 @@ import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.SalesforceHelper;
+import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @ExtendWith(MockitoExtension.class)
 public class CandidateOpportunityServiceImplTest {
@@ -102,15 +114,18 @@ public class CandidateOpportunityServiceImplTest {
     private List<CandidateOpportunity> candidateOppList;
     private String nextStep;
 
-    @Mock SalesforceService salesforceService;
-    @Mock CandidateService candidateService;
-    @Mock SalesforceJobOppService salesforceJobOppService;
-    @Mock CandidateOpportunityRepository candidateOpportunityRepository;
-    @Mock UserService userService;
-    @Mock NextStepProcessingService nextStepProcessingService;
-    @Mock OppNotificationService oppNotificationService;
-    @Mock AuthService authService;
-    @Mock SalesforceHelper salesforceHelper;
+    @Mock private SalesforceService salesforceService;
+    @Mock private CandidateService candidateService;
+    @Mock private SalesforceJobOppService salesforceJobOppService;
+    @Mock private CandidateOpportunityRepository candidateOpportunityRepository;
+    @Mock private UserService userService;
+    @Mock private NextStepProcessingService nextStepProcessingService;
+    @Mock private OppNotificationService oppNotificationService;
+    @Mock private AuthService authService;
+    @Mock private SalesforceHelper salesforceHelper;
+    @Mock private MultipartFile mockFile;
+    @Mock private GoogleDriveConfig googleDriveConfig;
+    @Mock private FileSystemService fileSystemService;
 
     @Captor ArgumentCaptor<CandidateOpportunity> oppCaptor;
     @Captor ArgumentCaptor<UpdateCandidateStatusInfo> statusInfoCaptor;
@@ -476,6 +491,92 @@ public class CandidateOpportunityServiceImplTest {
             .ignoringFields("candidate.createdDate", "candidate.updatedDate",
                 "createdBy", "createdDate", "updatedDate")
             .isEqualTo(expectedOpp);
+    }
+
+    @Test
+    @DisplayName("should throw when opp has no associated candidate")
+    void uploadOffer_shouldThrow_whenOppHasNoAssociatedCandidate() {
+        candidateOpp.setCandidate(null);
+        given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.of(candidateOpp));
+
+        assertThrows(InvalidRequestException.class,
+            () -> candidateOpportunityService.uploadOffer(1L, mockFile));
+    }
+
+    @Test
+    @DisplayName("should upload offer")
+    void uploadOffer_shouldUploadOffer() throws IOException {
+        GoogleFileSystemFile mockGoogleFile = mock(GoogleFileSystemFile.class);
+        InputStream mockStream = mock(InputStream.class);
+        final String fileLink = "url";
+        final String fileName = "name";
+
+        given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.of(candidateOpp));
+        given(mockFile.getInputStream()).willReturn(mockStream);
+        given(mockFile.getOriginalFilename()).willReturn("filename");
+        given(mockStream.read((any()))).willReturn(-1);
+        given(googleDriveConfig.getCandidateDataDrive()).willReturn(mock(GoogleFileSystemDrive.class));
+        given(fileSystemService.uploadFile(
+            any(GoogleFileSystemDrive.class),
+            any(GoogleFileSystemFolder.class),
+            anyString(),
+            any(File.class)
+        )).willReturn(mockGoogleFile);
+        given(mockGoogleFile.getUrl()).willReturn(fileLink);
+        given(mockGoogleFile.getName()).willReturn(fileName);
+
+        given(candidateOpportunityRepository.save(candidateOpp)).willReturn(candidateOpp);
+
+        CandidateOpportunity result = candidateOpportunityService.uploadOffer(1L, mockFile);
+
+        assertEquals(result.getFileOfferLink(), fileLink);
+        assertEquals(result.getFileOfferName(), fileName);
+    }
+
+    @Test
+    @DisplayName("should successfully update relocating dependents")
+    void updateRelocatingDependents_shouldUpdateRelocatingDependents() {
+        UpdateRelocatingDependantIds ids = new UpdateRelocatingDependantIds();
+        ids.setRelocatingDependantIds(List.of(1L, 2L, 3L));
+
+        given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.of(candidateOpp));
+        given(candidateOpportunityRepository.save(candidateOpp)).willReturn(candidateOpp);
+
+        candidateOpportunityService.updateRelocatingDependants(1L, ids);
+
+        assertEquals(candidateOpp.getRelocatingDependantIds(), ids.getRelocatingDependantIds());
+    }
+
+    @Test
+    @DisplayName("should successfully update tc opp from sf equivalent")
+    void processCaseUpdateBatch_shouldSuccessfullyUpdateBatch() {
+        given(candidateOpportunityRepository.findBySfId(sfOpp.getId()))
+            .willReturn(Optional.of(candidateOpp));
+
+        candidateOpportunityService.processCaseUpdateBatch(List.of(sfOpp));
+
+        verify(oppNotificationService).notifyCaseChanges(any(CandidateOpportunity.class),
+            any(CandidateOpportunityParams.class));
+    }
+
+    @Test
+    @DisplayName("should catch ex and continue when next step due date invalid")
+    void processCaseUpdateBatch_shouldTCatchAndContinue_whenNextStepDueDateInvalid() {
+        sfOpp.setNextStepDueDate("Tuesday");
+        given(candidateOpportunityRepository.findBySfId(sfOpp.getId()))
+            .willReturn(Optional.of(candidateOpp));
+
+        candidateOpportunityService.processCaseUpdateBatch(List.of(sfOpp));
+    }
+
+    @Test
+    @DisplayName("should return result of repo call")
+    void findAllNonNullSfIdsByClosedFalse_shouldReturnRepoCall() {
+        List<String> result = List.of("id1", "id2", "id3");
+        given(candidateOpportunityRepository.findAllNonNullSfIdsByClosedFalse())
+            .willReturn(result);
+
+        assertEquals(candidateOpportunityService.findAllNonNullSfIdsByClosedFalse(), result);
     }
 
 }
