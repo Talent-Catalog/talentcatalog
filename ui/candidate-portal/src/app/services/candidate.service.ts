@@ -44,7 +44,7 @@ export class CandidateService {
   apiUrl: string = environment.apiUrl + '/candidate';
 
   constructor(private http: HttpClient,
-              private localStorage: LocalStorageService) {
+              private localStorageService: LocalStorageService) {
   }
 
   /* Contact */
@@ -140,15 +140,15 @@ export class CandidateService {
   }
 
   getCandNumberStorage(): string {
-    return this.localStorage.get('candidateNumber');
+    return this.localStorageService.get('candidateNumber');
   }
 
   setCandNumberStorage(candidateNumber: string) {
-    this.localStorage.set('candidateNumber', candidateNumber);
+    this.localStorageService.set('candidateNumber', candidateNumber);
   }
 
   clearCandNumberStorage() {
-    this.localStorage.remove('candidateNumber');
+    this.localStorageService.remove('candidateNumber');
   }
   getCandidateCandidateExams(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/exams`);
