@@ -138,24 +138,29 @@ public class UserAdminApi {
     @GetMapping("/verify-email/{token}")
     public ModelAndView verifyEmail(@PathVariable("token") String token) {
         ModelAndView modelAndView = new ModelAndView();
-        try {
-            VerifyEmailRequest request = new VerifyEmailRequest();
-            request.setToken(token);
-            userService.verifyEmail(request);
-            User user = userService.getUserByEmailVerificationToken(token);
+        VerifyEmailRequest request = new VerifyEmailRequest();
+        request.setToken(token);
 
-            modelAndView.setViewName("verify-email-success"); // src/main/resources/templates/verify-email-success.html
-            modelAndView.addObject("displayName", user.getDisplayName());
-        } catch (ExpiredEmailTokenException e) {
-            modelAndView.setViewName("verify-email-failure"); // src/main/resources/templates/verify-email-failure.html
-            modelAndView.addObject("displayName", "User");
-        } catch (Exception e) {
+        User user = null;
+        try {
+            user = userService.getUserByEmailVerificationToken(token);
+        } catch (NoSuchObjectException e) {
             modelAndView.setViewName("verify-email-failure");
-            modelAndView.addObject("displayName", "User");
+            modelAndView.addObject("displayName", "User");   // Token is invalid (no user found)
+            return modelAndView;
         }
+
+        modelAndView.addObject("displayName", user.getDisplayName());
+
+        try {
+            userService.verifyEmail(request);
+            modelAndView.setViewName("verify-email-success");
+        } catch (ExpiredEmailTokenException e) {
+            modelAndView.setViewName("verify-email-failure");
+        }
+
         return modelAndView;
     }
-
 
     @PutMapping("/mfa-reset/{id}")
     public void mfaReset(@PathVariable("id") long id) {
