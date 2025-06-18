@@ -77,56 +77,96 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         boolean ignore;
 
         if (role == Role.systemadmin
-            //Allows default partner (eg TBB) admins to see everything.
             || isDefaultPartner(partner) && (role == Role.admin || role == Role.partneradmin)
             || isInFullyVisibleCandidates(o)
         ) {
+            // System admins, default partner (TBB) admins, fully visible candidates (see method) can see all fields.
             ignore = false;
         } else {
             if (publicProperties != null && publicProperties.contains(property)) {
                 //Public properties are never ignored
                 ignore = false;
             } else {
-                //It is not a public property - so could be ignored.
-
+                //It is not a public property - so could be ignored. Depends on partner type and role.
                 //TODO JC This code needs to be modified to understand recruiter ownership
-
-                //It is ignored if the candidate's partner do not match the given partner, or either
-                //partner is null.
                 Partner candidatePartner = fetchPartner(o);
-                if (partner == null || candidatePartner == null ||
-                    !partner.getId().equals(candidatePartner.getId())) {
-                    ignore = true;
+                if (partner != null && candidatePartner != null) {
+                    ignore = roleBasedFilter(role, partner, candidatePartner, property);
                 } else {
-                    //Partner matches.
-                    //Whether it is ignored depends on the user's role.
-                    switch (role) {
-
-                        case admin:
-                        case partneradmin:
-                            //Admins see all candidate properties
-                            ignore = false;
-                            break;
-
-                        case limited:
-                            //Limited roles can only see public properties
-                            ignore = true;
-                            break;
-
-                        case semilimited:
-                            //Ignore if property is not one of the extra semilimited properties
-                            ignore = semiLimitedExtraProperties == null
-                                || !semiLimitedExtraProperties.contains(property);
-                            break;
-
-                        default:
-                            //To be safe, ignore if null or unexpected new roles
-                            ignore = true;
-                    }
+                    // If partner or candidate partner is null, then only show public properties
+                    ignore = true;
                 }
             }
         }
         return ignore;
+    }
+
+    private boolean roleBasedFilter(Role role, Partner partner, Partner candidatePartner, String property) {
+        boolean ignore;
+        switch (role) {
+            case admin:
+            case partneradmin:
+                // Source partner admins can only see full details if the candidate is assigned to their partner
+                if (partner.isSourcePartner()) {
+                    ignore = isNotPartnerMatch(partner, candidatePartner);
+                } else if (isViewerPartner(partner)) {
+                    // Viewer partners can only see the semi limited (no personal details) fields, regardless of role
+                    ignore = !isVisibleToViewerPartner(property);
+                } else {
+                    // All other admins can see all data (e.g. destination partners, recruiter partners, TBB parter)
+                    ignore = false;
+                }
+                break;
+            case limited:
+                // Limited roles can only see public properties
+                ignore = true;
+                break;
+            case semilimited:
+                // Semi limited roles can see some additional properties to the public properties if they exist
+                ignore = semiLimitedExtraProperties == null
+                        || !semiLimitedExtraProperties.contains(property);
+                // However, source partner semi limited users can't see the extra semi limited properties if they aren't
+                // assigned to the same partner as the candidate.
+                if (partner.isSourcePartner() && isNotPartnerMatch(partner, candidatePartner)) {
+                    ignore = true;
+                }
+               break;
+            default:
+                ignore = true;
+        }
+        return ignore;
+    }
+
+    /**
+     * Checks if an admin portal user partner matches a candidate's assigned partner
+     * @param partner admin portal user partner
+     * @param candidatePartner candidate's assigned partner
+     * @return boolean if match or not
+     */
+    private boolean isNotPartnerMatch(Partner partner, Partner candidatePartner) {
+        return !partner.getId().equals(candidatePartner.getId());
+    }
+
+    /**
+     * A unique partner type that isn't source or destination, they are only to view candidate information that is not
+     * identifiable as they don't need to view personal details. E.g. UNHCR
+     * @param partner the partner of the user trying to view candidate/s
+     * @return boolean
+     */
+    private boolean isViewerPartner(Partner partner) {
+        return !partner.isSourcePartner() && !partner.isJobCreator() && !isDefaultPartner(partner);
+    }
+
+    /**
+     * Viewer Partners shouldn't see identifiable details regardless of their role - so need to only return the
+     * semi limited properties for these partners.
+     * @param property property to check if it's ignored
+     * @return boolean of ignore value
+     */
+    private boolean isVisibleToViewerPartner(String property) {
+        return semiLimitedExtraProperties != null
+                && !semiLimitedExtraProperties.isEmpty()
+                && semiLimitedExtraProperties.contains(property);
     }
 
     private boolean isDefaultPartner(Partner partner) {
