@@ -17,21 +17,37 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.CandidateOpportunityTestData.createUpdateCandidateOppRequestAndExpectedOpp;
 import static org.tctalent.server.data.CandidateOpportunityTestData.getCandidateOpp;
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
+import static org.tctalent.server.data.CountryTestData.UNITED_KINGDOM;
 import static org.tctalent.server.data.OpportunityTestData.getOpportunity;
+import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
+import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,14 +58,25 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.data.CandidateOpportunityTestData.CreateUpdateCandidateOppTestData;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
+import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.NextStepProcessingService;
@@ -57,6 +84,7 @@ import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.SalesforceHelper;
 
 @ExtendWith(MockitoExtension.class)
 public class CandidateOpportunityServiceImplTest {
@@ -67,8 +95,12 @@ public class CandidateOpportunityServiceImplTest {
     private final CreateUpdateCandidateOppTestData data = createUpdateCandidateOppRequestAndExpectedOpp();
     private UpdateCandidateOppsRequest updateRequest;
     private CandidateOpportunity expectedOpp;
+    private CandidateOpportunityParams params;
     private SalesforceJobOpp jobOpp;
     private User adminUser;
+    private Candidate candidate;
+    private List<CandidateOpportunity> candidateOppList;
+    private String nextStep;
 
     @Mock SalesforceService salesforceService;
     @Mock CandidateService candidateService;
@@ -78,8 +110,11 @@ public class CandidateOpportunityServiceImplTest {
     @Mock NextStepProcessingService nextStepProcessingService;
     @Mock OppNotificationService oppNotificationService;
     @Mock AuthService authService;
+    @Mock SalesforceHelper salesforceHelper;
 
     @Captor ArgumentCaptor<CandidateOpportunity> oppCaptor;
+    @Captor ArgumentCaptor<UpdateCandidateStatusInfo> statusInfoCaptor;
+    @Captor ArgumentCaptor<Candidate> candidateCaptor;
 
     @InjectMocks CandidateOpportunityServiceImpl candidateOpportunityService;
 
@@ -90,8 +125,12 @@ public class CandidateOpportunityServiceImplTest {
         candidateList = getListOfCandidates();
         updateRequest = data.request();
         expectedOpp = data.expectedOpp();
+        params = data.request().getCandidateOppParams();
+        nextStep = params.getNextStep();
         jobOpp = getSalesforceJobOppMinimal();
         adminUser = getAdminUser();
+        candidate = getCandidate();
+        candidateOppList = List.of(candidateOpp, candidateOpp);
     }
 
     @Test
@@ -132,14 +171,13 @@ public class CandidateOpportunityServiceImplTest {
 
         InOrder inOrder = inOrder(salesforceService, candidateOpportunityRepository);
         inOrder.verify(salesforceService).createOrUpdateCandidateOpportunities(candidateList,
-            updateRequest.getCandidateOppParams(), jobOpp);
+            params, jobOpp);
         inOrder.verify(candidateOpportunityRepository).save(any(CandidateOpportunity.class));
     }
 
     @Test
     @DisplayName("should update opp as expected")
     void createUpdateCandidateOpportunities_shouldUpdateOppAsExpected() {
-        final String nextStep = updateRequest.getCandidateOppParams().getNextStep();
         given(candidateService.findByIds(updateRequest.getCandidateIds()))
             .willReturn(candidateList);
         given(salesforceJobOppService.getOrCreateJobOppFromId(updateRequest.getSfJobOppId()))
@@ -163,7 +201,7 @@ public class CandidateOpportunityServiceImplTest {
     @Test
     @DisplayName("should create opp as expected when none exists")
     void createUpdateCandidateOpportunities_shouldCreateOppAsExpected_whenNoneExists() {
-        final String nextStep = updateRequest.getCandidateOppParams().getNextStep();
+        final String nextStep = expectedOpp.getNextStep();
         given(candidateService.findByIds(updateRequest.getCandidateIds()))
             .willReturn(candidateList);
         given(salesforceJobOppService.getOrCreateJobOppFromId(updateRequest.getSfJobOppId()))
@@ -186,6 +224,258 @@ public class CandidateOpportunityServiceImplTest {
         assertEquals(oppCaptor.getValue().getClosingComments(), expectedOpp.getClosingComments());
         assertEquals(oppCaptor.getValue().getEmployerFeedback(), expectedOpp.getEmployerFeedback());
         assertEquals(oppCaptor.getValue().getUpdatedBy(), expectedOpp.getUpdatedBy());
+        verify(oppNotificationService, times(3))
+            .notifyNewCase(any(CandidateOpportunity.class));
+    }
+
+    @Test
+    @DisplayName("should update opps as expected when candidate collection passed")
+    void createUpdateCandidateOpportunities_shouldUpdateOppAsExpected_whenPassedCandidateCollection() {
+        setUpUpdateCandidateOppPath();
+
+        candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
+            params);
+
+        assertThat(oppCaptor.getValue())
+            .usingRecursiveComparison()
+            .ignoringFields("candidate.createdDate", "candidate.updatedDate",
+                "createdBy", "createdDate", "updatedDate")
+            .isEqualTo(expectedOpp);
+    }
+
+    @Test
+    @DisplayName("should change candidate status to employed when new stage is employed")
+    void createUpdateCandidateOpportunities_shouldChangeCandidateStatusToEmployed() {
+        // Employed stage
+        params.setStage(CandidateOpportunityStage.relocating);
+
+        setUpUpdateCandidateOppPath();
+
+        candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
+            params);
+
+        verify(candidateService, times(3)).
+            updateCandidateStatus(any(Candidate.class), statusInfoCaptor.capture());
+        List<UpdateCandidateStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
+        assertEquals(statusInfos.get(0).getStatus(), CandidateStatus.employed);
+    }
+
+    @Test
+    @DisplayName("should change candidate status to ineligible when stage indicates")
+    void createUpdateCandidateOpportunities_shouldChangeCandidateStatusToIneligible() {
+        // Stage indicating ineligibility
+        updateRequest.getCandidateOppParams().setStage(CandidateOpportunityStage.notEligibleForTC);
+
+        setUpUpdateCandidateOppPath();
+
+        candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
+            updateRequest.getCandidateOppParams());
+
+        verify(candidateService, times(3)).
+            updateCandidateStatus(any(Candidate.class), statusInfoCaptor.capture());
+        List<UpdateCandidateStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
+        assertEquals(statusInfos.get(0).getStatus(), CandidateStatus.ineligible);
+    }
+
+    @Test
+    @DisplayName("should change candidate status to withdrawn when stage indicates relocated via "
+        + "no job offer pathway")
+    void createUpdateCandidateOpportunities_shouldChangeCandidateStatusToWithdrawn() {
+        // Stage indicating ineligibility
+        updateRequest.getCandidateOppParams()
+            .setStage(CandidateOpportunityStage.relocatedNoJobOfferPathway);
+
+        setUpUpdateCandidateOppPath();
+
+        candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
+            updateRequest.getCandidateOppParams());
+
+        verify(candidateService, times(3)).
+            updateCandidateStatus(any(Candidate.class), statusInfoCaptor.capture());
+        List<UpdateCandidateStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
+        assertEquals(statusInfos.get(0).getStatus(), CandidateStatus.withdrawn);
+    }
+
+    @Test
+    @DisplayName("should notify case changes when params non null")
+    void createUpdateCandidateOpportunities_shouldNotifyCaseChanges_whenParamsNonNull() {
+        setUpUpdateCandidateOppPath();
+
+        candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
+            updateRequest.getCandidateOppParams());
+
+        verify(oppNotificationService, times(3))
+            .notifyCaseChanges(any(CandidateOpportunity.class), any(CandidateOpportunityParams.class));
+    }
+
+    @Test
+    @DisplayName("should set relocated address when stage indicates")
+    void createUpdateCandidateOpportunities_shouldSetRelocatedAddress() {
+        updateRequest.getCandidateOppParams().setStage(CandidateOpportunityStage.relocated);
+        setUpUpdateCandidateOppPath();
+
+        candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
+            updateRequest.getCandidateOppParams());
+
+        verify(candidateService).save(candidateCaptor.capture(), eq(false));
+        assertEquals(candidateCaptor.getValue().getRelocatedCountry(), UNITED_KINGDOM);
+    }
+
+    private void setUpUpdateCandidateOppPath() {
+        given(salesforceJobOppService.updateJob(jobOpp)).willReturn(jobOpp);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(candidateOpportunityRepository.findByCandidateIdAndJobId(null, jobOpp.getId()))
+            .willReturn(candidateOpp);
+        given(candidateOpportunityRepository.save(oppCaptor.capture())).willReturn(candidateOpp);
+        given(nextStepProcessingService.processNextStep(any(CandidateOpportunity.class), anyString()))
+            .willReturn(nextStep);
+    }
+
+    @Test
+    @DisplayName("should return opp when found")
+    void findOpp_shouldReturnOpp() {
+        given(candidateOpportunityRepository.findByCandidateIdAndJobId(anyLong(), anyLong()))
+            .willReturn(candidateOpp);
+
+        CandidateOpportunity result = candidateOpportunityService.findOpp(candidate, jobOpp);
+
+        assertEquals(result, candidateOpp);
+    }
+
+    @Test
+    @DisplayName("should return opps when partner is of right type and opps found")
+    void findJobCreatorPartnerOpps_shouldReturnOpps() {
+        PartnerImpl destinationPartner = getDestinationPartner();
+        List<CandidateOpportunity> returnedOpps = List.of(candidateOpp);
+        given(candidateOpportunityRepository.findPartnerOpps(anyLong()))
+            .willReturn(returnedOpps);
+
+        List<CandidateOpportunity> result =
+            candidateOpportunityService.findJobCreatorPartnerOpps(destinationPartner);
+
+        assertEquals(result, returnedOpps);
+        verify(candidateOpportunityRepository).findPartnerOpps(anyLong());
+    }
+
+    @Test
+    @DisplayName("should return empty list when partner is not job creator")
+    void findJobCreatorPartnerOpps_shouldReturnEmptyList() {
+        PartnerImpl sourcePartner = getSourcePartner();
+
+        List<CandidateOpportunity> result =
+            candidateOpportunityService.findJobCreatorPartnerOpps(sourcePartner);
+
+        assertTrue(result.isEmpty());
+        verify(candidateOpportunityRepository, never()).findPartnerOpps(anyLong());
+    }
+
+    @Test
+    @DisplayName("should return CandidateOpportunity when found")
+    void getCandidateOpportunity_shouldReturnOpportunity_whenFound() {
+        given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.of(candidateOpp));
+
+        CandidateOpportunity result = candidateOpportunityService.getCandidateOpportunity(1L);
+
+        assertEquals(result, candidateOpp);
+        verify(candidateOpportunityRepository).findById(1L);
+    }
+
+    @Test
+    @DisplayName("should throw NoSuchObjectException when not found")
+    void getCandidateOpportunity_shouldThrow_whenNotFound() {
+        given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.empty());
+
+        assertThrows(NoSuchObjectException.class,
+            () -> candidateOpportunityService.getCandidateOpportunity(1L));
+    }
+
+    @Test
+    @DisplayName("should deduplicate SF IDs and copy and save each opp to TC")
+    void loadCandidateOpportunities_shouldCopyAndSaveEachOppToTc() {
+        String[] inputIds = {"id1", "id2", "id1", "id3", "id4"};
+        String[] expectedIds = {"id1", "id2", "id3", "id4"};
+
+        SalesforceJobOpp differentJob = getSalesforceJobOppExtended();
+        Candidate differentCandidate = new Candidate();
+        String inputDateTime = "2023-06-01T00:21:58.000+0000";
+        sfOpp.setLastModifiedDate(inputDateTime);
+        sfOpp.setCreatedDate(inputDateTime);
+        OffsetDateTime convertedDateTime =
+            SalesforceHelper.parseSalesforceOffsetDateTime(inputDateTime);
+
+        given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
+        given(salesforceService.findCandidateOpportunitiesByJobOpps(any(String[].class)))
+            .willReturn(List.of(sfOpp, sfOpp, sfOpp, sfOpp));
+        given(candidateOpportunityRepository.findBySfId(sfOpp.getId()))
+            .willReturn(Optional.of(candidateOpp));
+        given(salesforceJobOppService.getJobOppById(anyString())).willReturn(differentJob);
+        given(candidateService.findByCandidateNumber(anyString())).willReturn(differentCandidate);
+
+        candidateOpportunityService.loadCandidateOpportunities(inputIds); // When
+
+        // Deduplication:
+        ArgumentCaptor<String[]> idCaptor = ArgumentCaptor.forClass(String[].class);
+        verify(salesforceService).findCandidateOpportunitiesByJobOpps(idCaptor.capture());
+        assertArrayEquals(expectedIds, idCaptor.getValue());
+
+        // Fields set as expected:
+        assertEquals(candidateOpp.getJobOpp(), differentJob);
+        assertEquals(candidateOpp.getCandidate(), differentCandidate);
+        assertEquals(candidateOpp.getStage(), CandidateOpportunityStage.relocated);
+        assertEquals(candidateOpp.getNextStep(), sfOpp.getNextStep());
+        assertEquals(candidateOpp.getClosingCommentsForCandidate(), sfOpp.getClosingCommentsForCandidate());
+        assertEquals(candidateOpp.getCreatedDate(), convertedDateTime);
+        assertEquals(candidateOpp.getNextStepDueDate(), LocalDate.parse(sfOpp.getNextStepDueDate()));
+        assertEquals(candidateOpp.getUpdatedDate(), convertedDateTime);
+
+        verify(candidateOpportunityRepository, times(4)).save(candidateOpp);
+    }
+
+    @Test
+    @DisplayName("should return IDs of opps with unread chats")
+    void findUnreadChatsInOpps_shouldReturnOppsWithUnreadChats() {
+        List<Long> unreadChatIds = List.of(1L, 2L, 3L);
+        SearchCandidateOpportunityRequest request = new SearchCandidateOpportunityRequest();
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(candidateOpportunityRepository.findAll(any(Specification.class)))
+            .willReturn(candidateOppList);
+        given(candidateOpportunityRepository.findUnreadChatsInOpps(anyLong(), anyList()))
+            .willReturn(unreadChatIds);
+
+        assertEquals(candidateOpportunityService.findUnreadChatsInOpps(request), unreadChatIds);
+    }
+
+    @Test
+    @DisplayName("should return matching candidate opps")
+    void searchCandidateOpps_shouldReturnOpps() {
+        Page<CandidateOpportunity> oppsPage = new PageImpl<>(candidateOppList);
+        SearchCandidateOpportunityRequest request = new SearchCandidateOpportunityRequest();
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(candidateOpportunityRepository.findAll(any(Specification.class), any(PageRequest.class)))
+            .willReturn(oppsPage);
+
+        assertEquals(candidateOpportunityService.searchCandidateOpportunities(request), oppsPage);
+    }
+
+    @Test
+    @DisplayName("should update opp as expected")
+    void updateCandidateOpportunity_shouldUpdateOppAsExpected() {
+        given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.of(candidateOpp));
+        given(candidateOpportunityRepository.findByCandidateIdAndJobId(anyLong(), anyLong()))
+            .willReturn(candidateOpp);
+        given(salesforceJobOppService.updateJob(any(SalesforceJobOpp.class))).willReturn(jobOpp);
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(nextStepProcessingService.processNextStep(candidateOpp,
+            params.getNextStep())).willReturn(nextStep);
+        given(candidateOpportunityRepository.save(oppCaptor.capture())).willReturn(candidateOpp);
+
+        candidateOpportunityService.updateCandidateOpportunity(1L, params);
+
+        assertThat(oppCaptor.getValue())
+            .usingRecursiveComparison()
+            .ignoringFields("candidate.createdDate", "candidate.updatedDate",
+                "createdBy", "createdDate", "updatedDate")
+            .isEqualTo(expectedOpp);
     }
 
 }

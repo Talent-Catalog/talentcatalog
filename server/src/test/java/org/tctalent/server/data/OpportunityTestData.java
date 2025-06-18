@@ -21,10 +21,16 @@ import org.tctalent.server.model.sf.Opportunity;
 public class OpportunityTestData {
 
     public static Opportunity getOpportunity() {
-        Opportunity opportunity = new Opportunity();
-        opportunity.setName("Opportunity");
-        opportunity.setId("006Uu08800HRtrRIAT");
-        return opportunity;
+        Opportunity o = new Opportunity();
+        o.setName("Opportunity");
+        o.setId("006Uu08800HRBBRIAT");
+        o.setParentOpportunityId("016Uu0444GGSRAAT");
+        o.setCandidateId("66JGG888GGDFDDDDFGH");
+        o.setStageName("Relocated");
+        o.setClosingCommentsForCandidate("Closing comments");
+        o.setNextStep("Next step");
+        o.setNextStepDueDate("2025-12-03");
+        return o;
     }
 
 }

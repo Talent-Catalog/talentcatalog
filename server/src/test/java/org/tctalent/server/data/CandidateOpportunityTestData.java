@@ -36,6 +36,7 @@ public class CandidateOpportunityTestData {
         op.setClosingCommentsForCandidate("Some closing comments for candidate");
         op.setEmployerFeedback("Some employer feedback");
         op.setStage(CandidateOpportunityStage.offer);
+        op.setNextStep("Next step");
         op.setRelocatingDependantIds(List.of(1L, 2L));
         return op;
     }
