@@ -94,6 +94,10 @@ export class AuthenticationService implements OnDestroy {
   }
 
   isRegistered(): boolean {
+    //Recover status from storage - may have been lost during browser refresh.
+    if (this.candidateStatus == null) {
+      this.candidateStatus = this.localStorageService.get("candidateStatus");
+    }
     return this.candidateStatus != null && this.candidateStatus != CandidateStatus.draft;
   }
 
@@ -124,6 +128,7 @@ export class AuthenticationService implements OnDestroy {
 
   setCandidateStatus(candidateStatus: CandidateStatus) {
     this.candidateStatus = candidateStatus;
+    this.localStorageService.set('candidateStatus', this.candidateStatus);
   }
 
   private setLoggedInUser(loggedInUser: User) {
