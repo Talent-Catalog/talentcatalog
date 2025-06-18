@@ -1,6 +1,8 @@
 <app-error [error]="error"></app-error>
 <div>
-  Your Talent Catalog partner is {{partnerName}}.
+  <p>
+    Your Talent Catalog partner is {{partnerName}}.
+  </p>
   <div *ngIf="requestAcceptance">
     <div *ngIf="!termsRead">
       <p>
