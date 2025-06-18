@@ -531,7 +531,7 @@ public class UserServiceImpl implements UserService {
     public User getUserByEmailVerificationToken(String token) throws NoSuchObjectException {
         User user = userRepository.findByEmailVerificationToken(token);
         if (user == null) {
-            throw new NoSuchObjectException("Invalid or expired token");
+            throw new NoSuchObjectException("Invalid token");
         }
         return user;
     }
