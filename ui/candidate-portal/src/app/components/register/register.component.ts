@@ -68,5 +68,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
   getPartnerName(): string {
     return this.partnerName;
   }
+
+  isRegistered(): boolean {
+    return this.authenticationService.isRegistered();
+  }
 }
 

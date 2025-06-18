@@ -1,0 +1,30 @@
+<app-loading [loading]="loading"></app-loading>
+
+<div [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS'
+| translate:{partner: getPartnerDescription(true)} ">
+</div>
+
+<hr class="my-4"/>
+
+<div [innerHTML]="'REGISTRATION.SUBMIT.CONSENT_INTRODUCTION' | translate"></div>
+
+<hr class="my-4"/>
+
+<h2>
+  Privacy Policy with {{getPartnerDescription(false)}}
+</h2>
+<app-show-terms
+  [requestTermsRead] = true
+  (termsRead)="setReadTerms()"
+>
+  <div [innerHtml]=currentPrivacyPolicy?.content></div>
+</app-show-terms>
+
+<app-error [error]="error"></app-error>
+
+<button class="btn btn-primary" (click)="submit()"
+        [disabled]="!readTerms"
+>
+<!--  todo new text-->
+  {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
+</button>

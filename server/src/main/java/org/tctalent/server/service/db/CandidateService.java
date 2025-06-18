@@ -60,6 +60,7 @@ import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -238,6 +239,13 @@ public interface CandidateService {
      */
     Candidate registerByPartner(RegisterCandidateByPartnerRequest request);
 
+    /**
+     * Updates the privacy policy that the candidate has accepted.
+     * @param acceptedPrivacyPolicyId ID of policy that candidate has accepted
+     * @return The updated candidate
+     */
+    Candidate updateAcceptedPrivacyPolicy(String acceptedPrivacyPolicyId);
+
     Candidate updateContact(UpdateCandidateContactRequest request);
 
     Candidate updatePersonal(UpdateCandidatePersonalRequest request);
@@ -249,10 +257,11 @@ public interface CandidateService {
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
 
     /**
-     * Returns a candidate once they have completed their registration
+     * Submits a candidate's completed registration.
      * <p/>
+     * Returns a candidate once they have completed their registration
      */
-    Candidate submitRegistration();
+    Candidate submitRegistration(SubmitRegistrationRequest submitRegistrationRequest);
 
     /**
      * Returns the currently logged in candidate entity preloaded with

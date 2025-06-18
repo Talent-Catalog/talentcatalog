@@ -420,6 +420,18 @@ public interface SavedListService {
             throws NoSuchObjectException;
 
     /**
+     * Tags or untags the given candidate as pendingTermsAcceptance.
+     * (This is done by adding or removing them from the associated SavedList).
+     * <p>
+     *     This means that we have informed the candidate that they need to accept new terms and
+     *     that we are still waiting for them to do it.
+     * </p>
+     * @param candidate Candidate to be tagged/untagged
+     * @param flag True if we are waiting for the candidate to accept terms.
+     */
+    void updatePendingTermsAcceptance(Candidate candidate, boolean flag);
+
+    /**
      * Create a published external document from the data of candidates in the given list.
      * @param savedListId Id of saved list
      * @param request Request containing details of what is to be published

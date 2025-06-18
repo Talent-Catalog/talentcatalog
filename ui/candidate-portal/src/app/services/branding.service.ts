@@ -17,7 +17,8 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
+import {AuthenticationService} from "./authentication.service";
 
 export interface BrandingInfo {
   logo: string;
@@ -32,14 +33,23 @@ export class BrandingService {
   apiUrl: string = environment.apiUrl + '/branding';
   partnerAbbreviation: string;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authenticationService: AuthenticationService) { }
 
   getBrandingInfo(): Observable<BrandingInfo> {
-    let url = `${this.apiUrl}`;
-    if (this.partnerAbbreviation) {
-      url += `?p=${this.partnerAbbreviation}`;
+    if (this.authenticationService.isRegistered()) {
+      let url = `${this.apiUrl}`;
+      if (this.partnerAbbreviation) {
+        url += `?p=${this.partnerAbbreviation}`;
+      }
+      return this.http.get<BrandingInfo>(url);
+    } else {
+      let brandingInfo: BrandingInfo = {
+        logo: "assets/images/tc-logo-2.png",
+        partnerName: "a Talent Catalog partner",
+        websiteUrl: ""
+      }
+      return of(brandingInfo);
     }
-    return this.http.get<BrandingInfo>(url);
   }
 
   setPartnerAbbreviation(partnerAbbreviation: string) {

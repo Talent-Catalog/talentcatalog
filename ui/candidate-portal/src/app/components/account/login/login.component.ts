@@ -23,6 +23,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {LoginRequest} from "../../../model/base";
 import {ChangePasswordComponent} from '../change-password/change-password.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {CandidateStatus} from "../../../model/candidate";
 
 @Component({
   selector: 'app-login',
@@ -93,6 +94,13 @@ export class LoginComponent implements OnInit {
               });
             }
             this.candidateService.setCandNumberStorage(candidate.candidateNumber);
+          }
+        )
+
+        // Get candidate status
+        this.candidateService.getStatus().subscribe(
+          (candidate) => {
+            this.authenticationService.setCandidateStatus(CandidateStatus[candidate.status]);
           }
         )
         this.router.navigateByUrl(this.returnUrl);

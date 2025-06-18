@@ -116,12 +116,4 @@ export class LandingComponent implements OnInit {
 
     initializePhraseAppEditor(config);
   }
-
-  getPartnerName(): string {
-    let name = '';
-    if (this.brandingInfo?.partnerName) {
-      name = this.brandingInfo.partnerName;
-    }
-    return name;
-  }
 }

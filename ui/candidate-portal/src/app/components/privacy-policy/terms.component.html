@@ -1,0 +1,35 @@
+<app-error [error]="error"></app-error>
+<div>
+  <div
+    [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS'| translate:{partner: partnerName} ">
+  </div>
+  <div *ngIf="requestAcceptance">
+    <div *ngIf="!termsRead">
+      <div
+        [innerHTML]="'PROFILE.PRIVACY.CHANGED'| translate">
+      </div>
+    </div>
+  </div>
+
+  <app-show-terms
+    [requestTermsRead] = "requestAcceptance"
+    (termsRead)="setTermsRead()"
+  >
+    <div [innerHtml]=content></div>
+  </app-show-terms>
+
+  <div *ngIf="!requestAcceptance">
+    <div
+      [innerHTML]="'PROFILE.PRIVACY.THANK_ACCEPTANCE'| translate:{partner: partnerName} ">
+    </div>
+  </div>
+  <div *ngIf="requestAcceptance">
+    <div *ngIf="termsRead">
+
+      <button class="btn btn-primary" (click)="acceptTerms()"
+      >
+        {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -23,6 +23,7 @@ export const environment = {
   host: document.location.host,
   publishUrl: document.location.origin + '/published',
   chatApiUrl: '/api/admin',
+  termsInfoApiUrl: '/api/admin',
   apiUrl: '/api/portal',
   systemApiUrl: '/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',

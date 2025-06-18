@@ -113,10 +113,6 @@ export class RegistrationCreateAccountComponent implements OnInit {
     return this.registrationForm.value.passwordConfirmation;
   }
 
-  getPartnerName(): string {
-    return this.partnerName;
-  }
-
   register() {
     this.saving = true;
     this.error = null;

@@ -69,6 +69,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String publicId;
 
     /**
+     * Privacy policy that candidate has accepted
+     */
+    private String acceptedPrivacyPolicyId;
+
+    /**
+     * Date time when candidate accepted privacy policy
+     */
+    private OffsetDateTime acceptedPrivacyPolicyDate;
+
+
+
+    /**
      * True if candidate wants to receive all notifications.
      * If false, the candidate will only receive notifications when they are well progressed in
      * a job opportunity.
@@ -771,8 +783,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @NotNull
     private Boolean contactConsentRegistration;
 
-    @NotNull
-    private Boolean contactConsentPartners;
+    /**
+     * This field is only used for candidates who have just agreed to the old TBB Privacy Policy.
+     * It is not used for candidates who have accepted the new Privacy Policy terms because those
+     * terms cover this consent to contact candidates about any opportunities.
+     */
+    private boolean contactConsentPartners = true;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
@@ -856,6 +872,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
             obj = ((Enum<?>) obj).name();
         }
         return obj;
+    }
+
+    public String getAcceptedPrivacyPolicyId() {
+        return acceptedPrivacyPolicyId;
+    }
+
+    public void setAcceptedPrivacyPolicyId(String acceptedPrivacyPolicyId) {
+        this.acceptedPrivacyPolicyId = acceptedPrivacyPolicyId;
+    }
+
+    public OffsetDateTime getAcceptedPrivacyPolicyDate() {
+        return acceptedPrivacyPolicyDate;
+    }
+
+    public void setAcceptedPrivacyPolicyDate(OffsetDateTime acceptedPrivacyPolicyDate) {
+        this.acceptedPrivacyPolicyDate = acceptedPrivacyPolicyDate;
     }
 
     public String getCandidateNumber() {
@@ -2319,11 +2351,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         this.contactConsentRegistration = emailConsentRegistration;
     }
 
-    public Boolean getContactConsentPartners() {
+    public boolean getContactConsentPartners() {
         return contactConsentPartners;
     }
 
-    public void setContactConsentPartners(Boolean emailConsentPartners) {
+    public void setContactConsentPartners(boolean emailConsentPartners) {
         this.contactConsentPartners = emailConsentPartners;
     }
 

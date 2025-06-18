@@ -49,6 +49,11 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
     Optional<SavedList> findByIdLoadCandidates(@Param("id") long id);
 
     @Query(" select distinct s from SavedList s " +
+        " where s.global = true and s.name = 'PendingTermsAcceptance"
+        + "' ")
+    Optional<SavedList> findPendingTermsAcceptanceList();
+
+    @Query(" select distinct s from SavedList s " +
             " where s.createdBy.id = :userId " +
             " and s.savedSearch.id = :savedSearchId" )
     Optional<SavedList> findSelectionList(

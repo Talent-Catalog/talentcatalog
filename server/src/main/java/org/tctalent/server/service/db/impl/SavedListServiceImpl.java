@@ -739,6 +739,22 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public void updatePendingTermsAcceptance(Candidate candidate, boolean flag) {
+        SavedList ptaList = findPendingTermsAcceptanceList();
+        if (flag) {
+            addCandidateToList(ptaList, candidate, "");
+        } else {
+            removeCandidateFromList(candidate, ptaList);
+        }
+        saveIt(ptaList);
+    }
+
+    private SavedList findPendingTermsAcceptanceList() {
+        return savedListRepository.findPendingTermsAcceptanceList()
+            .orElseThrow(() -> new NoSuchObjectException(SavedList.class, "PendingTermsAcceptance"));
+    }
+
+    @Override
     public void associateTaskWithList(User user, TaskImpl task, SavedList list) {
 
         final Set<TaskImpl> listTasks = list.getTasks();

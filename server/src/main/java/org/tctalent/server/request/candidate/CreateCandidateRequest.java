@@ -34,7 +34,4 @@ public class CreateCandidateRequest extends BaseCandidateContactRequest {
 
     @NotNull
     private Boolean contactConsentRegistration;
-
-    @NotNull
-    private Boolean contactConsentPartners;
 }
