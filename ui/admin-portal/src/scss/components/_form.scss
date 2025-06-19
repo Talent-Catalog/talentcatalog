@@ -1,0 +1,97 @@
+@import '../support-colors';
+@import '../color-mixins';
+@import "../typography-mixins";
+
+.input-label {
+  @include label-md;
+  margin: 0.4rem 0;
+}
+
+.input-description {
+  @include text-color-caption;
+  @include label-sm;
+  color: color(gray, 500); // text-gray-500
+  margin: 0.4rem 0;
+}
+
+.input-form {
+  @include paragraph-md;
+  @include text-color-body;
+  border: 1px solid;
+  @include border-color-base;
+  border-radius: 0.4rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  padding: 6px 12px;
+
+  &::placeholder {
+    @include text-color-caption;
+  }
+
+  &:hover {
+    border-color: color(gray, 300);
+  }
+
+  &:focus {
+    outline: none;
+    @include border-color-blue;
+    box-shadow: 0 0 0 2px color(primary, 500);
+  }
+
+  &:focus-visible {
+    outline: none;
+    @include border-color-blue;
+    box-shadow: 0 0 0 2px color(primary, 500);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    @include background-color-soft;
+    @include text-color-caption;
+    @include border-color-light;
+  }
+}
+
+.ng-select-container-styled {
+  font-family: $font-lato;
+  .ng-select-opened.ng-select-top > .ng-select-container {
+    border-radius: 0.4rem 0.4rem 0 0;
+    border: 1px solid color(gray, 300);
+  }
+  .ng-select-container {
+    border: 1px solid color(gray, 300);
+    border-radius: 0.4rem;
+
+    .ng-value-container {
+      @include text-color-caption;
+    }
+  }
+
+  &.ng-select-focused .ng-select-container {
+    outline-offset: 2px;
+    @include border-color-red;
+    outline: none;
+    box-shadow: 0 0 0 2px color(red, 500);
+  }
+
+  .ng-dropdown-panel {
+    border-radius: 0.4rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    top: calc(100% + 0.5rem); // Adds 1rem gap below the input
+    border: 1px solid color(gray, 300);
+
+    .ng-option {
+      padding: 0.5rem 0.75rem;
+
+      &.ng-option-marked {
+        background-color: color(primary, 500);
+        color: color(core, white);
+      }
+
+      &.ng-option-selected {
+        font-weight: 600;
+        background-color: color(primary, 100);
+        color: color(primary, 700);
+      }
+    }
+  }
+}

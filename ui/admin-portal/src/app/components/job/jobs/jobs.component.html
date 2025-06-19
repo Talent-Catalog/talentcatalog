@@ -25,12 +25,14 @@
   <form [formGroup]="searchForm" (ngSubmit)="search()">
     <div class="row mb-3">
       <div class="col-10">
-        <input #searchFilter type="text" class="form-control" placeholder="Search..."
+        <label class="input-label">Job Search</label>
+        <p class="input-description">Search the list of available Jobs for candidates. </p>
+        <input #searchFilter type="text" class="input-form form-control" placeholder="Search..."
                aria-label="Search" formControlName="keyword"
                id="keyword">
       </div>
-      <div class="col-2">
-        <button class="btn btn-sm btn-accent-3" (click)="refresh($event)">
+      <div class="col-2  d-flex flex-column justify-content-end">
+        <button class="btn btn-sm btn-accent-3 align-self-end" (click)="refresh($event)">
           Refresh
           <i class="fas fa-sync" title="Refresh data"></i>
         </button>
@@ -89,8 +91,10 @@
       </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Stage</label>
+    <div class="mb-3 ng-select-container-styled">
+      <label class="input-label">Stage</label>
+      <p class="input-description">  Select the current step in the partner engagement process. </p>
+
       <ng-select
         id="stage"
         [items]="stages"
@@ -99,7 +103,7 @@
         [searchable]="false"
         bindLabel="stringValue"
         bindValue="key"
-        placeholder="Select..."
+        placeholder="Select Stage"
         formControlName="selectedStages">
       </ng-select>
     </div>
