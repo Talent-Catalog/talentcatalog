@@ -81,7 +81,7 @@ class SavedSearchServiceImplTest {
         };
 
         PageContextBackRunner runner = new PageContextBackRunner();
-        runner.start(taskScheduler, backProcessor, 20);
+        runner.start(taskScheduler, backProcessor, 20, "Test");
 
     }
 
