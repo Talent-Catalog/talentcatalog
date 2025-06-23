@@ -39,7 +39,8 @@ public class SystemAdminConfiguration {
 
   public final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
   public final static String[] GLOBAL_LIST_NAMES = new String[] {
-      "TestCandidates"
+      "TestCandidates",
+      "PendingTermsAcceptance"
   };
 
   private final SavedListService savedListService;
