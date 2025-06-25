@@ -32,6 +32,7 @@ import static org.tctalent.server.util.SalesforceHelper.parseSalesforceOffsetDat
 import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -73,6 +74,7 @@ class SalesforceJobOppServiceImplTest {
     }
 
     @Test
+    @DisplayName("should return job opp when found")
     void getJobOpp_shouldReturnJobOpp_whenFound() {
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(shortJob));
 
@@ -80,13 +82,15 @@ class SalesforceJobOppServiceImplTest {
     }
 
     @Test
-    void getJobOpp_shouldThrowNoSuchObjectException_whenNotFound() {
+    @DisplayName("should throw no such object exception when job opp not found")
+    void getJobOpp_shouldThrowNoSuchObjectException_whenJobOppNotFound() {
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.empty());
 
         assertThrows(NoSuchObjectException.class, () -> salesforceJobOppService.getJobOpp(1L));
     }
 
     @Test
+    @DisplayName("should return job opp when found")
     void getJobOppById_shouldReturnJobOpp_whenFound() {
         given(salesforceJobOppRepository.findBySfId(anyString())).willReturn(Optional.of(shortJob));
 
@@ -94,6 +98,7 @@ class SalesforceJobOppServiceImplTest {
     }
 
     @Test
+    @DisplayName("should return null when not found")
     void getJobOppById_shouldReturnNull_whenNotFound() {
         given(salesforceJobOppRepository.findBySfId(anyString())).willReturn(Optional.empty());
 
@@ -101,6 +106,7 @@ class SalesforceJobOppServiceImplTest {
     }
 
     @Test
+    @DisplayName("should return job opp when found")
     void getJobOppByUrl_shouldReturnJobOpp_whenFound() {
         given(salesforceJobOppRepository.findBySfId(anyString())).willReturn(Optional.of(shortJob));
 
@@ -108,6 +114,7 @@ class SalesforceJobOppServiceImplTest {
     }
 
     @Test
+    @DisplayName("should return null when not found")
     void getJobOppByUrl_shouldReturnNull_whenNotFound() {
         given(salesforceJobOppRepository.findBySfId(anyString())).willReturn(Optional.empty());
 
@@ -115,6 +122,7 @@ class SalesforceJobOppServiceImplTest {
     }
 
     @Test
+    @DisplayName("should create job opp with expected values")
     void createJobOpp_shouldCreateJobOppWithExpectedValues() {
         given(salesforceService.fetchJobOpportunity(SF_ID)).willReturn(sfOpp);
 
@@ -122,6 +130,7 @@ class SalesforceJobOppServiceImplTest {
 
         verify(salesforceJobOppRepository).save(oppCaptor.capture());
         SalesforceJobOpp tcOpp = oppCaptor.getValue();
+        assertEquals(SF_ID, tcOpp.getSfId());
         compareTcAndSfOpps(sfOpp, tcOpp);
     }
 
@@ -138,28 +147,31 @@ class SalesforceJobOppServiceImplTest {
         assertEquals(LocalDate.parse(sfOpp.getNextStepDueDate()), tcOpp.getNextStepDueDate());
         assertEquals(parseSalesforceOffsetDateTime(sfOpp.getCreatedDate()), tcOpp.getCreatedDate());
         assertEquals(parseSalesforceOffsetDateTime(sfOpp.getLastModifiedDate()), tcOpp.getUpdatedDate());
-        assertEquals(SF_ID, tcOpp.getSfId());
     }
 
     @Test
-    void createJobOpp_shouldThrow_whenNotFound() {
+    @DisplayName("should throw when job opp not found")
+    void createJobOpp_shouldThrow_whenJobOppNotFound() {
         given(salesforceService.fetchJobOpportunity(SF_ID)).willReturn(null);
 
         assertThrows(InvalidRequestException.class, () -> salesforceJobOppService.createJobOpp(SF_ID));
     }
 
     @Test
-    void getOrCreatedJobOppFromId_shouldReturnNull_whenSfIdIsNull() {
+    @DisplayName("should return null when sf id is null")
+    void getOrCreateJobOppFromId_shouldReturnNull_whenSfIdIsNull() {
         assertNull(salesforceJobOppService.getOrCreateJobOppFromId(null));
     }
 
     @Test
-    void getOrCreatedJobOppFromId_shouldReturnNull_whenSfIdIsEmptyString() {
+    @DisplayName("should return null when sf id is empty string")
+    void getOrCreateJobOppFromId_shouldReturnNull_whenSfIdIsEmptyString() {
         assertNull(salesforceJobOppService.getOrCreateJobOppFromId(""));
     }
 
     @Test
-    void getOrCreatedJobOppFromId_shouldCreateJobOpp_whenNoneExists() {
+    @DisplayName("should create job opp when none exists")
+    void getOrCreateJobOppFromId_shouldCreateJobOpp_whenNoneExists() {
         given(salesforceJobOppRepository.findBySfId(SF_ID)).willReturn(Optional.empty());
         given(salesforceService.fetchJobOpportunity(SF_ID)).willReturn(sfOpp);
         // We can return anything here because we'll use the job that's being saved to verify success:
@@ -170,7 +182,46 @@ class SalesforceJobOppServiceImplTest {
 
         verify(salesforceJobOppRepository).save(oppCaptor.capture());
         SalesforceJobOpp tcOpp = oppCaptor.getValue();
+        assertEquals(SF_ID, tcOpp.getSfId());
         compareTcAndSfOpps(sfOpp, tcOpp);
+    }
+
+    @Test
+    @DisplayName("should return null when sf id is null")
+    void getOrCreateJobOppFromLink_shouldReturnNull_whenSfIdIsNull() {
+        assertNull(salesforceJobOppService.getOrCreateJobOppFromLink(null));
+    }
+
+    @Test
+    @DisplayName("should return null when sf id is empty string")
+    void getOrCreateJobOppFromLink_shouldReturnNull_whenSfIdIsEmptyString() {
+        assertNull(salesforceJobOppService.getOrCreateJobOppFromLink(""));
+    }
+
+    @Test
+    @DisplayName("should create job opp when none exists")
+    void getOrCreateJobOppFromLink_shouldCreateJobOpp_whenNoneExists() {
+        given(salesforceJobOppRepository.findBySfId(SF_ID)).willReturn(Optional.empty());
+        given(salesforceService.fetchJobOpportunity(SF_ID)).willReturn(sfOpp);
+        // We can return anything here because we'll use the job that's being saved to verify success:
+        given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class)))
+            .willReturn(mock(SalesforceJobOpp.class));
+
+        salesforceJobOppService.getOrCreateJobOppFromLink(SF_URL);
+
+        verify(salesforceJobOppRepository).save(oppCaptor.capture());
+        SalesforceJobOpp tcOpp = oppCaptor.getValue();
+        compareTcAndSfOpps(sfOpp, tcOpp);
+    }
+
+    @Test
+    @DisplayName("should update and save job as expected")
+    void updateJob_shouldUpdateJobOppAsExpected() {
+        given(salesforceService.fetchJobOpportunity(shortJob.getSfId())).willReturn(sfOpp);
+
+        salesforceJobOppService.updateJob(shortJob);
+
+        compareTcAndSfOpps(sfOpp, shortJob);
     }
 
 }
