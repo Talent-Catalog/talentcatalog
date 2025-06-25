@@ -17,6 +17,8 @@
 package org.tctalent.server.data;
 
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CountryTestData.CANADA;
+import static org.tctalent.server.data.CountryTestData.UNITED_KINGDOM;
 import static org.tctalent.server.data.SavedListTestData.getSavedList;
 import static org.tctalent.server.data.SavedSearchTestData.getSavedSearch;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
@@ -50,6 +52,7 @@ public class SalesforceJobOppTestData {
         job.setCreatedBy(getAuditUser());
         job.setContactUser(getAuditUser());
         job.setAccountId("123456");
+        job.setCountry(UNITED_KINGDOM);
         return job;
     }
 
@@ -68,7 +71,7 @@ public class SalesforceJobOppTestData {
         job.setClosingComments("These are some closing comments.");
         job.setId(99L);
         job.setAccountId("789");
-        job.setCountry(CountryTestData.CANADA);
+        job.setCountry(CANADA);
         job.setDescription("This is a description.");
         job.setEmployerEntity(getEmployer());
         job.setExclusionList(getSavedList());
