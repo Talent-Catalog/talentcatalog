@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tctalent.server.data.OpportunityTestData.getOpportunity;
+import static org.tctalent.server.data.OpportunityTestData.getOpportunityForCandidate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +62,7 @@ class SalesforceAdminApiTest extends ApiTestBase {
   private static final String SF_OPPORTUNITY_PATH = "/opportunity";
   private static final String UPDATE_EMPLOYER_OPPORTUNITY_PATH = "/update-emp-opp";
 
-  private final Opportunity opportunity = getOpportunity();
+  private final Opportunity opportunity = getOpportunityForCandidate();
 
   @MockBean SalesforceService salesforceService;
   @MockBean SalesforceRecordTypeConfig salesforceRecordTypeConfig;

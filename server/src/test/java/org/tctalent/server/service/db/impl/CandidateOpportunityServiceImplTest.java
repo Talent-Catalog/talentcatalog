@@ -38,7 +38,7 @@ import static org.tctalent.server.data.CandidateOpportunityTestData.getCandidate
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 import static org.tctalent.server.data.CountryTestData.UNITED_KINGDOM;
-import static org.tctalent.server.data.OpportunityTestData.getOpportunity;
+import static org.tctalent.server.data.OpportunityTestData.getOpportunityForCandidate;
 import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
@@ -136,7 +136,7 @@ public class CandidateOpportunityServiceImplTest {
     @BeforeEach
     void setUp() {
         candidateOpp = getCandidateOpp();
-        sfOpp = getOpportunity();
+        sfOpp = getOpportunityForCandidate();
         candidateList = getListOfCandidates();
         updateRequest = data.request();
         expectedOpp = data.expectedOpp();
