@@ -16,12 +16,21 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.tctalent.server.data.CountryTestData.JORDAN;
+import static org.tctalent.server.data.CountryTestData.LEBANON;
 import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
+import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,72 +40,161 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
+import org.tctalent.server.security.PublicApiKeyGenerator;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.PublicIDService;
 
 @ExtendWith(MockitoExtension.class)
 class PartnerServiceImplTest {
-  UpdatePartnerRequest updateRequest;
+    private UpdatePartnerRequest updateRequest;
+    private PartnerImpl sourcePartner;
 
-  @Captor ArgumentCaptor<PartnerImpl> partnerCaptor;
+    private @Captor ArgumentCaptor<PartnerImpl> partnerCaptor;
 
-  @Mock PartnerRepository partnerRepository;
+    private @Mock PartnerRepository partnerRepository;
+    private @Mock PublicIDService publicIDService;
+    private @Mock CountryService countryService;
+    private @Mock PasswordEncoder passwordEncoder;
 
-  @Spy PartnerImpl partner;
-  @Spy PartnerImpl partner2;
+    private @Spy PartnerImpl partner;
+    private @Spy PartnerImpl partner2;
 
-  @Spy
-  @InjectMocks
-  PartnerServiceImpl partnerService;
+    @Spy
+    @InjectMocks
+    PartnerServiceImpl partnerService;
 
-  @BeforeEach
-  void setUp() {
-    partner = getDestinationPartner();
-    partner2.setName("TC Partner 2");
-    partner2.setRedirectPartner(partner);
-    updateRequest = new UpdatePartnerRequest();
-    updateRequest.setName("TC Partner"); // Evades NullPointerException
-  }
+    @BeforeEach
+    void setUp() {
+        partner = getDestinationPartner();
+        partner2.setName("TC Partner 2");
+        partner2.setRedirectPartner(partner);
+        updateRequest = new UpdatePartnerRequest();
+        updateRequest.setName("TC Partner"); // Evades NullPointerException
+        sourcePartner = getSourcePartner();
+    }
 
-  @Test
-  @DisplayName("update sets redirect partner - unchanged if target redirectPartner is null already")
-  void updateSetsRedirectPartner() {
-    partner2.setRedirectPartner(null);
-    updateRequest.setRedirectPartnerId(1L);
+    @Test
+    @DisplayName("update sets redirect partner - unchanged if target redirectPartner is null already")
+    void updateSetsRedirectPartner() {
+        partner2.setRedirectPartner(null);
+        updateRequest.setRedirectPartnerId(1L);
 
-    doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
-    doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
+        doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
+        doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
 
-    partnerService.update(99L, updateRequest); // Act
+        partnerService.update(99L, updateRequest); // Act
 
-    verify(partnerRepository).save(partnerCaptor.capture());
-    PartnerImpl updatedPartner = partnerCaptor.getValue();
-    Assertions.assertEquals(partner2, updatedPartner.getRedirectPartner());
-  }
+        verify(partnerRepository).save(partnerCaptor.capture());
+        PartnerImpl updatedPartner = partnerCaptor.getValue();
+        assertEquals(partner2, updatedPartner.getRedirectPartner());
+    }
 
-  // This test is specifically to safeguard against scenario where the target redirectPartner itself
-  // has a redirectPartner, which could cause a recursive loop.
-  @Test
-  @DisplayName("update sets redirect partner - with its redirectPartner set to null if needed")
-  void updateSetsRedirectPartnerWithItsRedirectPartnerSetToNull() {
-    updateRequest.setRedirectPartnerId(1L);
+    // This test is specifically to safeguard against scenario where the target redirectPartner itself
+    // has a redirectPartner, which could cause a recursive loop.
+    @Test
+    @DisplayName("update sets redirect partner - with its redirectPartner set to null if needed")
+    void updateSetsRedirectPartnerWithItsRedirectPartnerSetToNull() {
+        updateRequest.setRedirectPartnerId(1L);
 
-    doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
-    doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
-    doReturn(partner2).when(partnerRepository).save(partner2);
+        doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
+        doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
+        doReturn(partner2).when(partnerRepository).save(partner2);
 
-    partnerService.update(99L, updateRequest); // Act
+        partnerService.update(99L, updateRequest); // Act
 
-    verify(partner2).setRedirectPartner(null); // Target partner redirectPartner set to null
+        verify(partner2).setRedirectPartner(null); // Target partner redirectPartner set to null
 
-    // partnerRepository.save() called twice and updated partner has correct redirectPartner set:
-    verify(partnerRepository, times(2)).save(partnerCaptor.capture());
-    List<PartnerImpl> savedPartners = partnerCaptor.getAllValues();
-    PartnerImpl secondSavedPartner = savedPartners.get(1);
-    Assertions.assertEquals(partner2, secondSavedPartner.getRedirectPartner());
-  }
+        // partnerRepository.save() called twice and updated partner has correct redirectPartner set:
+        verify(partnerRepository, times(2)).save(partnerCaptor.capture());
+        List<PartnerImpl> savedPartners = partnerCaptor.getAllValues();
+        PartnerImpl secondSavedPartner = savedPartners.get(1);
+        assertEquals(partner2, secondSavedPartner.getRedirectPartner());
+    }
+
+    @Test
+    @DisplayName("should throw when partner name is missing from request")
+    void create_shouldThrow_whenPartnerNameIsMissingFromRequest() {
+        updateRequest.setName(null);
+
+        Exception ex = Assertions.assertThrows(InvalidRequestException.class,
+          () -> partnerService.create(updateRequest));
+
+        assertEquals(ex.getMessage(), "Missing partner name");
+    }
+
+    @Test
+    @DisplayName("should create and save new partner as expected")
+    void create_shouldCreateAndSaveNewPartner() {
+        UpdatePartnerRequest request = createUpdateRequestToMatchSourcePartner();
+
+        partnerService.create(request);
+
+        verify(partnerRepository).save(partnerCaptor.capture());
+        assertThat(partnerCaptor.getValue())
+            .usingRecursiveComparison()
+            .ignoringFields("createdDate", "updatedDate", "id", "notificationEmail")
+            .isEqualTo(sourcePartner);
+    }
+
+    @Test
+    @DisplayName("should populate fields as expected")
+    void populatePublicApiAccessFields() {
+        UpdatePartnerRequest request = createUpdateRequestToMatchSourcePartner();
+        request.setPublicApiAccess(true);
+        final String plainKey = "plain key";
+        final String hashedKey = "hashed key";
+
+        try (MockedStatic<PublicApiKeyGenerator> mockStatic = mockStatic(PublicApiKeyGenerator.class)) {
+            mockStatic.when(PublicApiKeyGenerator::generateApiKey).thenReturn(plainKey);
+            given(passwordEncoder.encode(anyString())).willReturn(hashedKey);
+
+            partnerService.create(request);
+
+            verify(partnerRepository).save(partnerCaptor.capture());
+            PartnerImpl newPartner = partnerCaptor.getValue();
+            // Usual updates should happen as expected:
+            assertThat(newPartner)
+                .usingRecursiveComparison()
+                .ignoringFields("createdDate", "updatedDate", "id",
+                    "notificationEmail", "publicApiKey", "publicApiKeyHash")
+                .isEqualTo(sourcePartner);
+
+            // New public API fields added:
+            assertEquals(newPartner.getPublicApiKey(), plainKey);
+            assertEquals(newPartner.getPublicApiKeyHash(), hashedKey);
+        }
+
+    }
+
+    private UpdatePartnerRequest createUpdateRequestToMatchSourcePartner() {
+        UpdatePartnerRequest r = new UpdatePartnerRequest();
+        r.setAbbreviation(sourcePartner.getAbbreviation());
+        r.setDefaultContact(sourcePartner.getDefaultContact());
+        r.setEmployer(sourcePartner.getEmployer());
+        r.setJobCreator(sourcePartner.isJobCreator());
+        r.setLogo(sourcePartner.getLogo());
+        r.setName(sourcePartner.getName());
+        r.setSourcePartner(sourcePartner.isSourcePartner());
+        r.setStatus(sourcePartner.getStatus());
+        r.setSflink(sourcePartner.getSflink());
+        r.setWebsiteUrl(sourcePartner.getWebsiteUrl());
+        r.setRegistrationLandingPage(sourcePartner.getRegistrationLandingPage());
+        r.setAutoAssignable(sourcePartner.isAutoAssignable());
+        r.setSourceCountryIds(Set.of(1L, 2L));
+        r.setPublicApiAuthorities(sourcePartner.getPublicApiAuthorities());
+
+        given(countryService.getCountry(1L)).willReturn(LEBANON);
+        given(countryService.getCountry(2L)).willReturn(JORDAN);
+
+        return r;
+    }
 
 }
