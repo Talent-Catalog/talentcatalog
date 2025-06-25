@@ -19,6 +19,7 @@ package org.tctalent.server.data;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.SavedListTestData.getSavedList;
 import static org.tctalent.server.data.SavedSearchTestData.getSavedSearch;
+import static org.tctalent.server.data.UserTestData.getAdminUser;
 import static org.tctalent.server.data.UserTestData.getAuditUser;
 
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.job.UpdateJobRequest;
 
 public class SalesforceJobOppTestData {
 
@@ -45,6 +47,9 @@ public class SalesforceJobOppTestData {
         job.setNextStepDueDate(LocalDate.of(1901, 1, 1));
         job.setStage(JobOpportunityStage.candidateSearch);
         job.setEmployerEntity(getEmployer());
+        job.setCreatedBy(getAuditUser());
+        job.setContactUser(getAuditUser());
+        job.setAccountId("123456");
         return job;
     }
 
@@ -129,6 +134,47 @@ public class SalesforceJobOppTestData {
         co.setNextStepDueDate(LocalDate.parse("2020-01-01"));
         co.setCandidate(getCandidate());
         return co;
+    }
+
+    /**
+     * Holds an {@link UpdateJobRequest} along with the expected {@link SalesforceJobOpp} that
+     * should result from applying the request.
+     */
+    public record UpdateJobTestData(UpdateJobRequest request, SalesforceJobOpp expectedJob) {}
+
+    /**
+     * Constructs a {@link UpdateJobTestData record containing an {@link UpdateJobRequest}
+     * and the expected {@link SalesforceJobOpp} that should result from using it.
+     */
+    public static UpdateJobTestData createUpdateJobRequestAndExpectedJob() {
+        final String nextStep = "next step";
+        final LocalDate nextStepDueDate = LocalDate.parse("2026-01-01");
+        final long contactUserId = 1L;
+        final String jobName = "The name of the job";
+        final LocalDate submissionDueDate = LocalDate.parse("2026-03-01");
+
+        UpdateJobRequest request = new UpdateJobRequest();
+        request.setNextStep(nextStep);
+        request.setNextStepDueDate(nextStepDueDate);
+        request.setEvergreen(true);
+        request.setSkipCandidateSearch(true);
+        request.setContactUserId(contactUserId);
+        request.setJobName(jobName);
+        request.setStage(JobOpportunityStage.identifyingRoles);
+        request.setSubmissionDueDate(submissionDueDate);
+
+
+        SalesforceJobOpp expectedJob = getSalesforceJobOppMinimal();
+        expectedJob.setNextStep(nextStep);
+        expectedJob.setNextStepDueDate(nextStepDueDate);
+        expectedJob.setEvergreen(true);
+        expectedJob.setSkipCandidateSearch(true);
+        expectedJob.setContactUser(getAdminUser());
+        expectedJob.setName(jobName);
+        expectedJob.setStage(JobOpportunityStage.identifyingRoles);
+        expectedJob.setSubmissionDueDate(submissionDueDate);
+
+        return new UpdateJobTestData(request, expectedJob);
     }
 
 }
