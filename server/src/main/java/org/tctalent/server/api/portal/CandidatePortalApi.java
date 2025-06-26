@@ -131,7 +131,7 @@ public class CandidatePortalApi {
 
         //Remove pending terms acceptance tag now that they have accepted
         this.savedListService.updatePendingTermsAcceptance(candidate, false);
-        
+
         return candidateAdditionalInfoDto().build(candidate);
     }
 
@@ -198,13 +198,6 @@ public class CandidatePortalApi {
         return candidateProfileDto().build(candidate);
     }
 
-    @GetMapping("candidate-number")
-    public Map<String, Object> getCandidateNumber() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return candidateNumberDto().build(candidate);
-    }
-
     @GetMapping(value = "cv.pdf")
     public void getCandidateCV(HttpServletResponse response)
             throws IOException {
@@ -227,14 +220,6 @@ public class CandidatePortalApi {
         @RequestBody SubmitRegistrationRequest submitRegistrationRequest) {
         Candidate candidate = this.candidateService.submitRegistration(submitRegistrationRequest);
         return candidateStatusDto().build(candidate);
-    }
-
-    private DtoBuilder candidateNumberDto() {
-        return new DtoBuilder()
-                .add("candidateNumber")
-                .add("publicId")
-                .add("changePassword")
-                ;
     }
 
     private DtoBuilder candidateContactDto() {
@@ -267,14 +252,13 @@ public class CandidatePortalApi {
             ;
     }
 
-
-
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()
                 .add("user", userDto())
                 .add("acceptedPrivacyPolicyId")
                 .add("candidateNumber")
                 .add("publicId")
+                .add("changePassword")
                 .add("gender")
                 .add("dob")
                 .add("country", countryService.selectBuilder())

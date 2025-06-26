@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit {
       .subscribe(() => {
         this.loading = false;
         // Get candidate number to save in storage to display in the header
-        this.candidateService.getCandidateNumber().subscribe(
+        this.candidateService.getCandidatePersonal().subscribe(
           (candidate) => {
             if (candidate.changePassword  === true) {
               this.modalService.open(ChangePasswordComponent, {

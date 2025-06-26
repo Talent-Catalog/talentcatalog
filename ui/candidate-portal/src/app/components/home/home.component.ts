@@ -92,7 +92,7 @@ export class HomeComponent implements OnInit {
     this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
 
     //todo If status is not draft (ie candidate is not registering) and the candidate's accepted terms
-    //are out of date, send them to the terms.
+    //are out of date, send them to the terms (/privacy).
 
   }
 
