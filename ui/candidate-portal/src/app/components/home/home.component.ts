@@ -63,7 +63,7 @@ export class HomeComponent implements OnInit {
         this.error = error;
       }
     );
-    this.candidateService.getStatus().subscribe(
+    this.candidateService.getCandidatePersonal().subscribe(
       (candidate) => {
         this.candidate = candidate || ({status: CandidateStatus.draft} as Candidate);
         this.user = this.candidate.user;

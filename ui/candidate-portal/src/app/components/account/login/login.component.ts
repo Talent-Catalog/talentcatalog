@@ -98,7 +98,7 @@ export class LoginComponent implements OnInit {
         )
 
         // Get candidate status
-        this.candidateService.getStatus().subscribe(
+        this.candidateService.getCandidatePersonal().subscribe(
           (candidate) => {
             this.authenticationService.setCandidateStatus(CandidateStatus[candidate.status]);
           }
