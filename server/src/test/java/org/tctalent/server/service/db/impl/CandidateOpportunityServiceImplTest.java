@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -61,6 +62,7 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -80,6 +82,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
+import org.tctalent.server.repository.db.CandidateOpportunitySpecification;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
@@ -104,7 +107,6 @@ public class CandidateOpportunityServiceImplTest {
     private CandidateOpportunity candidateOpp;
     private Opportunity sfOpp;
     private List<Candidate> candidateList;
-    private final CreateUpdateCandidateOppTestData data = createUpdateCandidateOppRequestAndExpectedOpp();
     private UpdateCandidateOppsRequest updateRequest;
     private CandidateOpportunity expectedOpp;
     private CandidateOpportunityParams params;
@@ -113,6 +115,11 @@ public class CandidateOpportunityServiceImplTest {
     private Candidate candidate;
     private List<CandidateOpportunity> candidateOppList;
     private String nextStep;
+
+    private final CreateUpdateCandidateOppTestData data =
+        createUpdateCandidateOppRequestAndExpectedOpp();
+
+    private static final Specification<CandidateOpportunity> FAKE_SPEC = (root, query, cb) -> null;
 
     @Mock private SalesforceService salesforceService;
     @Mock private CandidateService candidateService;
@@ -457,7 +464,14 @@ public class CandidateOpportunityServiceImplTest {
         given(candidateOpportunityRepository.findUnreadChatsInOpps(anyLong(), anyList()))
             .willReturn(unreadChatIds);
 
-        assertEquals(candidateOpportunityService.findUnreadChatsInOpps(request), unreadChatIds);
+        try (MockedStatic<CandidateOpportunitySpecification> mockedStatic =
+            mockStatic(CandidateOpportunitySpecification.class)) {
+            mockedStatic.when(() -> CandidateOpportunitySpecification.buildSearchQuery(any(
+                    SearchCandidateOpportunityRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
+
+            assertEquals(candidateOpportunityService.findUnreadChatsInOpps(request), unreadChatIds);
+        }
     }
 
     @Test
@@ -469,7 +483,14 @@ public class CandidateOpportunityServiceImplTest {
         given(candidateOpportunityRepository.findAll(any(Specification.class), any(PageRequest.class)))
             .willReturn(oppsPage);
 
-        assertEquals(candidateOpportunityService.searchCandidateOpportunities(request), oppsPage);
+        try (MockedStatic<CandidateOpportunitySpecification> mockedStatic =
+            mockStatic(CandidateOpportunitySpecification.class)) {
+            mockedStatic.when(() -> CandidateOpportunitySpecification.buildSearchQuery(any(
+                    SearchCandidateOpportunityRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
+
+            assertEquals(candidateOpportunityService.searchCandidateOpportunities(request), oppsPage);
+        }
     }
 
     @Test

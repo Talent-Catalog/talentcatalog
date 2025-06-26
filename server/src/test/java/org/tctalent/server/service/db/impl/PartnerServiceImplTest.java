@@ -18,6 +18,9 @@ package org.tctalent.server.service.db.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
@@ -29,7 +32,9 @@ import static org.tctalent.server.data.CountryTestData.LEBANON;
 import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,10 +48,19 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.Status;
 import org.tctalent.server.repository.db.PartnerRepository;
+import org.tctalent.server.repository.db.PartnerSpecification;
+import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.security.PublicApiKeyGenerator;
 import org.tctalent.server.service.db.CountryService;
@@ -56,6 +70,12 @@ import org.tctalent.server.service.db.PublicIDService;
 class PartnerServiceImplTest {
     private UpdatePartnerRequest updateRequest;
     private PartnerImpl sourcePartner;
+    private List<PartnerImpl> partnerList;
+    private SearchPartnerRequest searchRequest;
+
+    private static final String PUBLIC_ID = "public ID";
+    private static final String ABBREVIATION = "abbreviation";
+    private static final Specification<PartnerImpl> FAKE_SPEC = (root, query, cb) -> null;
 
     private @Captor ArgumentCaptor<PartnerImpl> partnerCaptor;
 
@@ -76,9 +96,11 @@ class PartnerServiceImplTest {
         partner = getDestinationPartner();
         partner2.setName("TC Partner 2");
         partner2.setRedirectPartner(partner);
+        partnerList = List.of(partner, partner2);
         updateRequest = new UpdatePartnerRequest();
         updateRequest.setName("TC Partner"); // Evades NullPointerException
         sourcePartner = getSourcePartner();
+        searchRequest = new SearchPartnerRequest();
     }
 
     @Test
@@ -195,6 +217,156 @@ class PartnerServiceImplTest {
         given(countryService.getCountry(2L)).willReturn(JORDAN);
 
         return r;
+    }
+
+    // TODO findPublicApiPartnerDtoByKey ???
+
+    @Test
+    @DisplayName("should throw when partner not found")
+    void findByPublicId_shouldThrow_whenPartnerNotFound() {
+        given(partnerRepository.findByPublicId(PUBLIC_ID)).willReturn(Optional.empty());
+
+        assertThrows(NoSuchObjectException.class, () -> partnerService.findByPublicId(PUBLIC_ID));
+    }
+
+    @Test
+    @DisplayName("should return job opp when found")
+    void findByPublicId_shouldReturnJobOpp_whenFound() {
+        given(partnerRepository.findByPublicId(PUBLIC_ID)).willReturn(Optional.of(partner));
+
+        assertEquals(partner, partnerService.findByPublicId(PUBLIC_ID));
+    }
+
+    @Test
+    @DisplayName("should return auto assign partner when only one is found")
+    void getAutoAssignablePartnerByCountry_shouldReturnAutoAssignPartner_whenOnlyOneIsFound() {
+        given(partnerRepository.findSourcePartnerByAutoassignableCountry(LEBANON))
+            .willReturn(List.of(partner));
+
+        assertEquals(partner, partnerService.getAutoAssignablePartnerByCountry(LEBANON));
+    }
+
+    @Test
+    @DisplayName("should return null when more than one auto assign partner is found")
+    void getAutoAssignablePartnerByCountry_shouldReturnNull_whenMoreThanOneIsFound() {
+        given(partnerRepository.findSourcePartnerByAutoassignableCountry(LEBANON))
+            .willReturn(List.of(partner, partner2));
+
+        assertNull(partnerService.getAutoAssignablePartnerByCountry(LEBANON));
+    }
+
+    @Test
+    @DisplayName("should return null when none is found")
+    void getAutoAssignablePartnerByCountry_shouldReturnNull_whenNoneIsFound() {
+        given(partnerRepository.findSourcePartnerByAutoassignableCountry(LEBANON))
+            .willReturn(Collections.emptyList());
+
+        assertNull(partnerService.getAutoAssignablePartnerByCountry(LEBANON));
+    }
+
+    @Test
+    @DisplayName("should return default source partner when found")
+    void getDefaultSourcePartner_shouldReturnDefaultSourcePartner_whenFound() {
+        given(partnerRepository.findByDefaultSourcePartner(true)).willReturn(Optional.of(partner));
+
+        assertEquals(partner, partnerService.getDefaultSourcePartner());
+    }
+
+    @Test
+    @DisplayName("should throw when none is found")
+    void getDefaultSourcePartner_shouldThrow_whenNoneIsFound() {
+        given(partnerRepository.findByDefaultSourcePartner(true)).willReturn(Optional.empty());
+
+        assertThrows(NoSuchObjectException.class, () -> partnerService.getDefaultSourcePartner());
+    }
+
+    @Test
+    @DisplayName("should return null when not found")
+    void getPartnerFromAbbreviation_shouldReturnNull_whenNotFound() {
+        given(partnerRepository.findByAbbreviation(ABBREVIATION)).willReturn(Optional.empty());
+
+        assertNull(partnerService.getPartnerFromAbbreviation(ABBREVIATION));
+    }
+
+    @Test
+    @DisplayName("should return partner when found")
+    void getPartnerFromAbbreviation_shouldReturnPartner_whenFound() {
+        given(partnerRepository.findByAbbreviation(ABBREVIATION)).willReturn(Optional.of(partner));
+
+        assertEquals(partner, partnerService.getPartnerFromAbbreviation(ABBREVIATION));
+    }
+
+    @Test
+    @DisplayName("should return list of partners")
+    void listPartners_shouldReturnListOfPartners() {
+        given(partnerRepository.findByStatusOrderByName(Status.active)).willReturn(partnerList);
+
+        try (MockedStatic<PartnerSpecification> mockedStatic = mockStatic(PartnerSpecification.class)) {
+            mockedStatic.when(
+                    () -> PartnerSpecification.buildSearchQuery(any(SearchPartnerRequest.class)))
+                .thenReturn(FAKE_SPEC);
+
+            assertEquals(partnerList, partnerService.listPartners());
+        }
+    }
+
+    @Test
+    @DisplayName("should return list of active source partners")
+    void listActiveSourcePartners_shouldReturnListOfActiveSourcePartners() {
+        given(partnerRepository.findAll(any(Specification.class), any(Sort.class)))
+            .willReturn(partnerList);
+
+        try (MockedStatic<PartnerSpecification> mockedStatic = mockStatic(PartnerSpecification.class)) {
+            mockedStatic.when(
+                    () -> PartnerSpecification.buildSearchQuery(any(SearchPartnerRequest.class)))
+                .thenReturn(FAKE_SPEC);
+
+            assertEquals(partnerList, partnerService.listActiveSourcePartners());
+        }
+    }
+
+    @Test
+    @DisplayName("should return list of source partners")
+    void listAllSourcePartners_shouldReturnListOfSourcePartners() {
+        given(partnerRepository.findAll(any(Specification.class), any(Sort.class)))
+            .willReturn(partnerList);
+
+        try (MockedStatic<PartnerSpecification> mockedStatic = mockStatic(PartnerSpecification.class)) {
+            mockedStatic.when(() -> PartnerSpecification.buildSearchQuery(any(SearchPartnerRequest.class)))
+                .thenReturn(FAKE_SPEC);
+
+            assertEquals(partnerList, partnerService.listActiveSourcePartners());
+        }
+    }
+
+    @Test
+    @DisplayName("should return list of partners")
+    void search_shouldReturnListOfPartners() {
+        given(partnerRepository.findAll(any(Specification.class), any(Sort.class)))
+            .willReturn(partnerList);
+
+        try (MockedStatic<PartnerSpecification> mockedStatic = mockStatic(PartnerSpecification.class)) {
+            mockedStatic.when(() -> PartnerSpecification.buildSearchQuery(searchRequest))
+                .thenReturn(FAKE_SPEC);
+
+            assertEquals(partnerList, partnerService.search(searchRequest));
+        }
+    }
+
+    @Test
+    @DisplayName("should return page of partners")
+    void searchPaged_shouldReturnPageOfPartners() {
+        Page<PartnerImpl> partnerPage = new PageImpl<>(partnerList);
+
+        try (MockedStatic<PartnerSpecification> mockedStatic = mockStatic(PartnerSpecification.class)) {
+            mockedStatic.when(() -> PartnerSpecification.buildSearchQuery(searchRequest))
+                .thenReturn(FAKE_SPEC);
+
+            given(partnerRepository.findAll(any(Specification.class), any(PageRequest.class)))
+                .willReturn(partnerPage);
+
+            assertEquals(partnerPage, partnerService.searchPaged(searchRequest));
+        }
     }
 
 }

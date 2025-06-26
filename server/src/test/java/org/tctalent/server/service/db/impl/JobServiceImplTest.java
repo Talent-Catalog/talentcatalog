@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
@@ -63,6 +64,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -87,6 +89,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Account;
+import org.tctalent.server.repository.db.JobSpecification;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.source.CopySourceContentsRequest;
@@ -147,6 +150,7 @@ class JobServiceImplTest {
     private static final long JOB_ID = 11L;
     private static final String NAME = "name";
     private static final String URL = "www.url.com";
+    private static final Specification<SalesforceJobOpp> FAKE_SPEC = (root, query, cb) -> null;
 
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
@@ -560,14 +564,16 @@ class JobServiceImplTest {
 
         given(request.getPageRequest()).willReturn(pageRequest);
         given(userService.getLoggedInUser()).willReturn(adminUser);
-        given(salesforceJobOppRepository.findAll(
-            any(Specification.class),
-            eq(pageRequest))
-        ).willReturn(page);
+        given(salesforceJobOppRepository.findAll(any(Specification.class), eq(pageRequest)))
+            .willReturn(page);
 
-        Page<SalesforceJobOpp> result = jobService.searchJobs(request);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(page, result);
+            assertEquals(page, jobService.searchJobs(request));
+        }
     }
 
     @Test
@@ -694,10 +700,15 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L)))
             .willReturn(expectedUnreadIds);
 
-        List<Long> result = jobService.findUnreadChatsInOpps(SEARCH_JOB_REQUEST);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(expectedUnreadIds, result);
-        verify(salesforceJobOppRepository).findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L));
+            assertEquals(expectedUnreadIds, jobService.findUnreadChatsInOpps(SEARCH_JOB_REQUEST));
+            verify(salesforceJobOppRepository)
+                .findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L));
+        }
     }
 
     @Test
@@ -715,10 +726,14 @@ class JobServiceImplTest {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findAll(any(Specification.class))).willReturn(emptyJobsList);
 
-        List<SalesforceJobOpp> result = jobService.searchJobsUnpaged(SEARCH_JOB_REQUEST);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(emptyJobsList, result);
-        verify(salesforceJobOppRepository).findAll(any(Specification.class));
+            assertEquals(emptyJobsList, jobService.searchJobsUnpaged(SEARCH_JOB_REQUEST));
+            verify(salesforceJobOppRepository).findAll(any(Specification.class));
+        }
     }
 
     @Test
