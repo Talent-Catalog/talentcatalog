@@ -135,13 +135,13 @@ class UserServiceImplTest {
     private OffsetDateTime offsetDateTime;
     private CheckPasswordResetTokenRequest checkPasswordResetTokenRequest;
 
-    private static final PartnerImpl sourcePartner = getSourcePartner();
-    private static final User candidateUser = getCandidateUser();
-    private static final Sort sort = Sort.unsorted();
-    private static final long userId = 11L;
-    private static final Long approverId = 1L;
-    private static final Long partnerId = 1L;
-    private static final String encryptedPassword = "lkjhdsfaioy87";
+    private static final PartnerImpl SOURCE_PARTNER = getSourcePartner();
+    private static final User CANDIDATE_USER = getCandidateUser();
+    private static final Sort SORT = Sort.unsorted();
+    private static final long USER_ID = 11L;
+    private static final Long APPROVER_ID = 1L;
+    private static final Long PARTNER_ID = 1L;
+    private static final String ENCRYPTED_PASSWORD = "lkjhdsfaioy87";
 
     @Mock private UserRepository userRepository;
     @Mock private SearchUserRequest searchUserRequest;
@@ -174,7 +174,7 @@ class UserServiceImplTest {
         systemAdminUser = getSystemAdminUser();
         limitedUser = getLimitedUser();
         adminUserPartner = adminUser.getPartner();
-        pageRequest = PageRequest.of(0, 10, sort);
+        pageRequest = PageRequest.of(0, 10, SORT);
         userList = List.of(limitedUser, adminUser);
         userPage = new PageImpl<>(userList);
         loginRequest = new LoginRequest();
@@ -230,14 +230,14 @@ class UserServiceImplTest {
 
             mocked.when(() -> UserSpecification.buildSearchQuery(searchUserRequest))
                 .thenReturn(mockedUserSpec);
-            given(searchUserRequest.getSort()).willReturn(sort);
-            given(userRepository.findAll(mockedUserSpec, sort))
+            given(searchUserRequest.getSort()).willReturn(SORT);
+            given(userRepository.findAll(mockedUserSpec, SORT))
                 .willReturn(List.of(limitedUser, adminUser));
 
             List<User> results = userService.search(searchUserRequest);
 
             assertEquals(List.of(limitedUser, adminUser), results);
-            verify(userRepository).findAll(mockedUserSpec, sort);
+            verify(userRepository).findAll(mockedUserSpec, SORT);
         }
     }
 
@@ -248,14 +248,14 @@ class UserServiceImplTest {
 
             mocked.when(() -> UserSpecification.buildSearchQuery(searchUserRequest))
                 .thenReturn(mockedUserSpec);
-            given(searchUserRequest.getSort()).willReturn(sort);
-            given(userRepository.findAll(mockedUserSpec, sort))
+            given(searchUserRequest.getSort()).willReturn(SORT);
+            given(userRepository.findAll(mockedUserSpec, SORT))
                 .willReturn(Collections.emptyList());
 
             List<User> results = userService.search(searchUserRequest);
 
             assertTrue(results.isEmpty());
-            verify(userRepository).findAll(mockedUserSpec, sort);
+            verify(userRepository).findAll(mockedUserSpec, SORT);
         }
     }
 
@@ -302,26 +302,26 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should return user when found")
     void findById_shouldReturnUser() {
-        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(adminUser));
 
-        User result = userService.getUser(userId);
+        User result = userService.getUser(USER_ID);
 
         assertEquals(adminUser, result);
-        verify(userRepository).findById(userId);
+        verify(userRepository).findById(USER_ID);
     }
 
     @Test
     @DisplayName("should throw NoSuchObjectException when user not found")
     void getUser_shouldThrowWhenUserNotFound() {
-        given(userRepository.findById(userId)).willReturn(Optional.empty());
+        given(userRepository.findById(USER_ID)).willReturn(Optional.empty());
 
         NoSuchObjectException exception = assertThrows(
             NoSuchObjectException.class,
-            () -> userService.getUser(userId) // When
+            () -> userService.getUser(USER_ID) // When
         );
 
-        assertTrue(exception.getMessage().contains(String.valueOf(userId)));
-        verify(userRepository).findById(userId);
+        assertTrue(exception.getMessage().contains(String.valueOf(USER_ID)));
+        verify(userRepository).findById(USER_ID);
     }
 
     @Test
@@ -355,12 +355,12 @@ class UserServiceImplTest {
     @DisplayName("should create and return new admin user matching valid request")
     void createUser_withValidRequest_shouldCreateAndReturnExpectedUser() {
         // Testing Approver path
-        updateUserRequest.setApproverId(approverId);
+        updateUserRequest.setApproverId(APPROVER_ID);
         expectedUser.setApprover(systemAdminUser);
 
         // Testing Partner path
-        updateUserRequest.setPartnerId(partnerId);
-        expectedUser.setPartner(sourcePartner);
+        updateUserRequest.setPartnerId(PARTNER_ID);
+        expectedUser.setPartner(SOURCE_PARTNER);
 
         // Source Country path
         updateUserRequest.setSourceCountries(sourceCountryList);
@@ -375,7 +375,7 @@ class UserServiceImplTest {
         given(userRepository.findByEmailIgnoreCase(updateUserRequest.getEmail()))
             .willReturn(null);
         given(partnerService.getPartner(updateUserRequest.getPartnerId()))
-            .willReturn(sourcePartner);
+            .willReturn(SOURCE_PARTNER);
         doReturn(systemAdminUser).when(userService).getUser(updateUserRequest.getApproverId());
         given(passwordHelper.validateAndEncodePassword(updateUserRequest.getPassword()))
             .willReturn(updateUserRequest.getPassword());
@@ -418,16 +418,17 @@ class UserServiceImplTest {
         // Following update() path to reach reassignPartnerIfNeeded()
         given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser));
         // Return test user who has a different partner than mockPartnerImpl:
-        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(adminUser));
         given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
         // Mock update request has partner ID that will return mockPartnerImpl:
-        given(partnerService.getPartner(updateUserRequest.getPartnerId())).willReturn(sourcePartner);
+        given(partnerService.getPartner(updateUserRequest.getPartnerId())).willReturn(
+            SOURCE_PARTNER);
         updateUserRequest.setApproverId(null); // We're not testing the approver path
 
-        User result = userService.updateUser(userId, updateUserRequest); // When
+        User result = userService.updateUser(USER_ID, updateUserRequest); // When
 
         verify(userRepository).save(adminUser);
-        assertEquals(result.getPartner(), sourcePartner); // Request partner assigned
+        assertEquals(result.getPartner(), SOURCE_PARTNER); // Request partner assigned
     }
 
     @Test
@@ -436,12 +437,12 @@ class UserServiceImplTest {
     void reassignPartnerIfNeeded_shouldThrowInvalidRequestException_whenUserIsAdmin() {
         // Following update() path to reach reassignPartnerIfNeeded()
         given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
-        given(userRepository.findById(userId)).willReturn(Optional.of(limitedUser));
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(limitedUser));
         given(authService.hasAdminPrivileges(adminUser.getRole())).willReturn(true);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, updateUserRequest)
+            () -> userService.updateUser(USER_ID, updateUserRequest)
         );
 
         assertEquals("You don't have permission to change a partner.", ex.getMessage());
@@ -453,12 +454,12 @@ class UserServiceImplTest {
         updateUserRequest.setPartnerId(null);
         // The below path would reassign successfully if not for the null partnerId
         given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser));
-        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser));
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(adminUser));
         given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, updateUserRequest)
+            () -> userService.updateUser(USER_ID, updateUserRequest)
         );
 
         assertEquals("A partner must be specified.", ex.getMessage());
@@ -472,7 +473,7 @@ class UserServiceImplTest {
         given(userRepository.findById(updateUserRequest.getApproverId()))
             .willReturn(Optional.of(systemAdminUser));
 
-        User result = userService.updateUser(userId, updateUserRequest);
+        User result = userService.updateUser(USER_ID, updateUserRequest);
 
         verify(userRepository).save(limitedUser);
         assertEquals(result.getApprover(), systemAdminUser);
@@ -488,17 +489,17 @@ class UserServiceImplTest {
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, updateUserRequest)
+            () -> userService.updateUser(USER_ID, updateUserRequest)
         );
 
         assertEquals("You don't have permission to assign an approver.", ex.getMessage());
     }
 
     private void setupPathToUpdateApproverIfNeeded(User updatingUser) {
-        updateUserRequest.setApproverId(approverId);
+        updateUserRequest.setApproverId(APPROVER_ID);
         expectedUser.setApprover(systemAdminUser);
         given(authService.getLoggedInUser()).willReturn(Optional.of(updatingUser));
-        given(userRepository.findById(userId)).willReturn(Optional.of(limitedUser)); // User being updated
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(limitedUser)); // User being updated
     }
 
     @Test
@@ -608,7 +609,7 @@ class UserServiceImplTest {
     void checkAndResetEmailVerification_shouldResetEmailVerification_whenNewEmailIsSupplied() {
         setupPathToCheckAndResetEmailVerification();
 
-        userService.updateUser(userId, updateUserRequest);
+        userService.updateUser(USER_ID, updateUserRequest);
 
         assertFalse(adminUser.getEmailVerified());
         assertNull(adminUser.getEmailVerificationToken());
@@ -621,7 +622,7 @@ class UserServiceImplTest {
         setupPathToCheckAndResetEmailVerification();
         adminUser.setEmail(updateUserRequest.getEmail()); // Same email
 
-        userService.updateUser(userId, updateUserRequest);
+        userService.updateUser(USER_ID, updateUserRequest);
 
         assertFalse(adminUser.getEmailVerified());
         assertNull(adminUser.getEmailVerificationToken());
@@ -634,7 +635,7 @@ class UserServiceImplTest {
         setupPathToCheckAndResetEmailVerification();
         updateUserRequest.setEmail(null);
 
-        userService.updateUser(userId, updateUserRequest);
+        userService.updateUser(USER_ID, updateUserRequest);
 
         assertFalse(adminUser.getEmailVerified());
         assertNull(adminUser.getEmailVerificationToken());
@@ -643,7 +644,7 @@ class UserServiceImplTest {
 
     private void setupPathToCheckAndResetEmailVerification() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // user being updated
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(adminUser)); // user being updated
         // Logged-in user has required privileges:
         given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
     }
@@ -654,11 +655,11 @@ class UserServiceImplTest {
     void authoriseAdminUser_shouldReturnFalse_whenLoggedInUserIsReadonly() {
         adminUser.setReadOnly(true);
         given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(systemAdminUser)); // user being updated
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(systemAdminUser)); // user being updated
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, updateUserRequest)
+            () -> userService.updateUser(USER_ID, updateUserRequest)
         );
 
         assertEquals("You don't have permission to edit this user.", ex.getMessage());
@@ -669,12 +670,12 @@ class UserServiceImplTest {
         + " when hasAdminPrivileges returns false")
     void authoriseAdminUser_shouldReturnFalse_whenHasAdminPrivilegesFalse() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(systemAdminUser)); // user being updated
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(systemAdminUser)); // user being updated
         given(authService.hasAdminPrivileges(adminUser.getRole())).willReturn(false);
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.updateUser(userId, updateUserRequest)
+            () -> userService.updateUser(USER_ID, updateUserRequest)
         );
 
         assertEquals("You don't have permission to edit this user.", ex.getMessage());
@@ -684,11 +685,11 @@ class UserServiceImplTest {
     @DisplayName("should return true when hasAdminPrivileges returns true")
     void authoriseAdminUser_shouldReturnFalse_whenHasAdminPrivilegesTrue() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // user being updated
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(adminUser)); // user being updated
         given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
 
         // Path should conclude successfully
-        assertDoesNotThrow(() -> userService.updateUser(userId, updateUserRequest));
+        assertDoesNotThrow(() -> userService.updateUser(USER_ID, updateUserRequest));
     }
 
     @Test
@@ -696,10 +697,10 @@ class UserServiceImplTest {
         + " user is authorised")
     void deleteUser_shouldPerformDeleteActions_whenLoggedInUserAuthorised() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(adminUser)); // user being deleted
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(adminUser)); // user being deleted
         given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
 
-        userService.deleteUser(userId);
+        userService.deleteUser(USER_ID);
 
         assertEquals(adminUser.getStatus(), Status.deleted);
         assertEquals(adminUser.getUpdatedBy(), systemAdminUser);
@@ -711,11 +712,11 @@ class UserServiceImplTest {
     void deleteUser_shouldThrowException_whenLoggedInUserNotAuthorised() {
         adminUser.setReadOnly(true); // authoriseAdminUser() will return false
         given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser)); // logged-in user
-        given(userRepository.findById(userId)).willReturn(Optional.of(systemAdminUser)); // user being deleted
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(systemAdminUser)); // user being deleted
 
         InvalidRequestException ex = assertThrows(
             InvalidRequestException.class,
-            () -> userService.deleteUser(userId)
+            () -> userService.deleteUser(USER_ID)
         );
 
         assertEquals("You don't have permission to delete this user.", ex.getMessage());
@@ -980,23 +981,23 @@ class UserServiceImplTest {
     @Test
     @DisplayName("should set password to value returned by encryption helper method")
     void updatePassword_shouldSetPasswordToValueReturnedByEncryptionHelperMethod() {
-        given(authService.getLoggedInUser()).willReturn(Optional.of(candidateUser));
-        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(CANDIDATE_USER));
+        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(ENCRYPTED_PASSWORD);
 
         userService.updatePassword(updateUserPasswordRequest);
 
-        assertEquals(candidateUser.getPasswordEnc(), encryptedPassword);
-        verify(userRepository).save(candidateUser);
+        assertEquals(CANDIDATE_USER.getPasswordEnc(), ENCRYPTED_PASSWORD);
+        verify(userRepository).save(CANDIDATE_USER);
     }
 
     @Test
     @DisplayName("should set change password on candidate to false if previously true and password "
         + "successfully changed")
     void updatePassword_shouldSetChangePasswordOnCandidateToFalseIfTrueAndPasswordChanged() {
-        Candidate candidate = candidateUser.getCandidate();
+        Candidate candidate = CANDIDATE_USER.getCandidate();
         candidate.setChangePassword(true);
-        given(authService.getLoggedInUser()).willReturn(Optional.of(candidateUser));
-        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
+        given(authService.getLoggedInUser()).willReturn(Optional.of(CANDIDATE_USER));
+        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(ENCRYPTED_PASSWORD);
         given(candidateRepository.findById(candidate.getId()))
             .willReturn(Optional.of(candidate));
 
@@ -1012,7 +1013,7 @@ class UserServiceImplTest {
         given(userRepository.findById(anyLong())).willReturn(Optional.empty());
 
         assertThrows(NoSuchObjectException.class,
-            () -> userService.updateUserPassword(userId, updateUserPasswordRequest));
+            () -> userService.updateUserPassword(USER_ID, updateUserPasswordRequest));
     }
 
     @Test
@@ -1024,7 +1025,7 @@ class UserServiceImplTest {
         given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
 
         assertThrows(PasswordMatchException.class,
-            () -> userService.updateUserPassword(userId, updateUserPasswordRequest));
+            () -> userService.updateUserPassword(USER_ID, updateUserPasswordRequest));
     }
 
     @Test
@@ -1034,11 +1035,11 @@ class UserServiceImplTest {
         given(userRepository.findById(anyLong())).willReturn(Optional.of(adminUser));
         given(authService.getLoggedInUser()).willReturn(Optional.of(systemAdminUser));
         given(authService.hasAdminPrivileges(systemAdminUser.getRole())).willReturn(true);
-        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
+        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(ENCRYPTED_PASSWORD);
 
-        userService.updateUserPassword(userId, updateUserPasswordRequest);
+        userService.updateUserPassword(USER_ID, updateUserPasswordRequest);
 
-        assertEquals(adminUser.getPasswordEnc(), encryptedPassword);
+        assertEquals(adminUser.getPasswordEnc(), ENCRYPTED_PASSWORD);
         verify(userRepository).save(adminUser);
     }
 
@@ -1049,7 +1050,7 @@ class UserServiceImplTest {
         given(authService.getLoggedInUser()).willReturn(Optional.of(limitedUser));
 
         assertThrows(InvalidRequestException.class,
-            () -> userService.updateUserPassword(userId, updateUserPasswordRequest));
+            () -> userService.updateUserPassword(USER_ID, updateUserPasswordRequest));
     }
 
     @Test
@@ -1105,11 +1106,11 @@ class UserServiceImplTest {
         adminUser.setPasswordUpdatedDate(offsetDateTime);
         given(userRepository.findByResetToken(resetPasswordRequest.getToken()))
             .willReturn(adminUser);
-        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(encryptedPassword);
+        given(passwordHelper.validateAndEncodePassword(anyString())).willReturn(ENCRYPTED_PASSWORD);
 
         userService.resetPassword(resetPasswordRequest);
 
-        assertEquals(adminUser.getPasswordEnc(), encryptedPassword);
+        assertEquals(adminUser.getPasswordEnc(), ENCRYPTED_PASSWORD);
         assertNotEquals(adminUser.getPasswordUpdatedDate(), offsetDateTime);
         assertNull(adminUser.getResetTokenIssuedDate());
         assertNull(adminUser.getResetToken());
@@ -1120,9 +1121,9 @@ class UserServiceImplTest {
     @DisplayName("should throw exception when user not found")
     void mfaReset_shouldThrowException_whenUserNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser));
-        given(userRepository.findById(userId)).willReturn(Optional.empty());
+        given(userRepository.findById(USER_ID)).willReturn(Optional.empty());
 
-        assertThrows(NoSuchObjectException.class, () -> userService.mfaReset(userId));
+        assertThrows(NoSuchObjectException.class, () -> userService.mfaReset(USER_ID));
     }
 
     @Test
@@ -1130,10 +1131,10 @@ class UserServiceImplTest {
     void mfaReset_shouldResetMfaAndAuditFieldsAndSaveUser() {
         systemAdminUser.setMfaSecret("secret");
         given(authService.getLoggedInUser()).willReturn(Optional.of(adminUser)); // Updating admin
-        given(userRepository.findById(userId)).willReturn(Optional.of(systemAdminUser));
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(systemAdminUser));
         given(authService.hasAdminPrivileges(adminUser.getRole())).willReturn(true);
 
-        userService.mfaReset(userId);
+        userService.mfaReset(USER_ID);
 
         assertNull(systemAdminUser.getMfaSecret());
         assertEquals(systemAdminUser.getUpdatedBy(), adminUser);

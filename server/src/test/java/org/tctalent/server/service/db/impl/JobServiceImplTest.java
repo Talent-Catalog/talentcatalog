@@ -133,7 +133,6 @@ class JobServiceImplTest {
     private SalesforceJobOpp expectedJob;
     private UpdateJobRequest updateRequestExtended;
 
-    private static final UpdateJobTestData DATA = createUpdateJobRequestAndExpectedJob();
     private static final JobOppIntake JOB_OPP_INTAKE = new JobOppIntake();
     private static final JobIntakeData JOB_INTAKE_DATA = new JobIntakeData();
     private static final SearchJobRequest SEARCH_JOB_REQUEST = new SearchJobRequest();
@@ -197,8 +196,9 @@ class JobServiceImplTest {
         updateLinkRequest = new UpdateLinkRequest();
         updateLinkRequest.setUrl(URL);
         updateLinkRequest.setName(NAME);
-        expectedJob = DATA.expectedJob();
-        updateRequestExtended = DATA.request();
+        UpdateJobTestData data = createUpdateJobRequestAndExpectedJob();
+        expectedJob = data.expectedJob();
+        updateRequestExtended = data.request();
     }
 
     @Test

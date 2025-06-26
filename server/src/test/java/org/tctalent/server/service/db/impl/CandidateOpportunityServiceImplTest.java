@@ -116,9 +116,6 @@ public class CandidateOpportunityServiceImplTest {
     private List<CandidateOpportunity> candidateOppList;
     private String nextStep;
 
-    private final CreateUpdateCandidateOppTestData data =
-        createUpdateCandidateOppRequestAndExpectedOpp();
-
     private static final Specification<CandidateOpportunity> FAKE_SPEC = (root, query, cb) -> null;
 
     @Mock private SalesforceService salesforceService;
@@ -145,6 +142,7 @@ public class CandidateOpportunityServiceImplTest {
         candidateOpp = getCandidateOpp();
         sfOpp = getOpportunityForCandidate();
         candidateList = getListOfCandidates();
+        CreateUpdateCandidateOppTestData data = createUpdateCandidateOppRequestAndExpectedOpp();
         updateRequest = data.request();
         expectedOpp = data.expectedOpp();
         params = data.request().getCandidateOppParams();
