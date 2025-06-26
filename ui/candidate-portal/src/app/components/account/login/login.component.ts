@@ -89,7 +89,7 @@ export class LoginComponent implements OnInit {
         this.candidateService.getCandidateNumber().subscribe(
           (candidate) => {
             if (candidate.changePassword  === true) {
-              const  changePasswordModal = this.modalService.open(ChangePasswordComponent, {
+              this.modalService.open(ChangePasswordComponent, {
                 centered: true
               });
             }
@@ -103,6 +103,9 @@ export class LoginComponent implements OnInit {
             this.authenticationService.setCandidateStatus(CandidateStatus[candidate.status]);
           }
         )
+
+        //todo If terms out of date, replace return url with /home
+
         this.router.navigateByUrl(this.returnUrl);
       }, error => {
         console.log(error);
