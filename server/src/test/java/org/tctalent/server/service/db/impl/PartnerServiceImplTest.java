@@ -31,6 +31,8 @@ import static org.tctalent.server.data.CountryTestData.JORDAN;
 import static org.tctalent.server.data.CountryTestData.LEBANON;
 import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
+import static org.tctalent.server.data.UserTestData.getAdminUser;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +59,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PartnerJobRelation;
+import org.tctalent.server.model.db.PartnerJobRelationKey;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.PartnerJobRelationRepository;
 import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.PartnerSpecification;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
@@ -72,6 +79,8 @@ class PartnerServiceImplTest {
     private PartnerImpl sourcePartner;
     private List<PartnerImpl> partnerList;
     private SearchPartnerRequest searchRequest;
+    private User adminUser;
+    private SalesforceJobOpp job;
 
     private static final String PUBLIC_ID = "public ID";
     private static final String ABBREVIATION = "abbreviation";
@@ -83,6 +92,7 @@ class PartnerServiceImplTest {
     private @Mock PublicIDService publicIDService;
     private @Mock CountryService countryService;
     private @Mock PasswordEncoder passwordEncoder;
+    private @Mock PartnerJobRelationRepository partnerJobRelationRepository;
 
     private @Spy PartnerImpl partner;
     private @Spy PartnerImpl partner2;
@@ -101,44 +111,8 @@ class PartnerServiceImplTest {
         updateRequest.setName("TC Partner"); // Evades NullPointerException
         sourcePartner = getSourcePartner();
         searchRequest = new SearchPartnerRequest();
-    }
-
-    @Test
-    @DisplayName("update sets redirect partner - unchanged if target redirectPartner is null already")
-    void updateSetsRedirectPartner() {
-        partner2.setRedirectPartner(null);
-        updateRequest.setRedirectPartnerId(1L);
-
-        doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
-        doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
-
-        partnerService.update(99L, updateRequest); // Act
-
-        verify(partnerRepository).save(partnerCaptor.capture());
-        PartnerImpl updatedPartner = partnerCaptor.getValue();
-        assertEquals(partner2, updatedPartner.getRedirectPartner());
-    }
-
-    // This test is specifically to safeguard against scenario where the target redirectPartner itself
-    // has a redirectPartner, which could cause a recursive loop.
-    @Test
-    @DisplayName("update sets redirect partner - with its redirectPartner set to null if needed")
-    void updateSetsRedirectPartnerWithItsRedirectPartnerSetToNull() {
-        updateRequest.setRedirectPartnerId(1L);
-
-        doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
-        doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
-        doReturn(partner2).when(partnerRepository).save(partner2);
-
-        partnerService.update(99L, updateRequest); // Act
-
-        verify(partner2).setRedirectPartner(null); // Target partner redirectPartner set to null
-
-        // partnerRepository.save() called twice and updated partner has correct redirectPartner set:
-        verify(partnerRepository, times(2)).save(partnerCaptor.capture());
-        List<PartnerImpl> savedPartners = partnerCaptor.getAllValues();
-        PartnerImpl secondSavedPartner = savedPartners.get(1);
-        assertEquals(partner2, secondSavedPartner.getRedirectPartner());
+        adminUser = getAdminUser();
+        job = getSalesforceJobOppMinimal();
     }
 
     @Test
@@ -218,8 +192,6 @@ class PartnerServiceImplTest {
 
         return r;
     }
-
-    // TODO findPublicApiPartnerDtoByKey ???
 
     @Test
     @DisplayName("should throw when partner not found")
@@ -367,6 +339,112 @@ class PartnerServiceImplTest {
 
             assertEquals(partnerPage, partnerService.searchPaged(searchRequest));
         }
+    }
+
+    @Test
+    @DisplayName("should set public IDs and save all")
+    void setPublicIds_shouldSetPublicIds() {
+        given(publicIDService.generatePublicID()).willReturn(PUBLIC_ID);
+
+        partnerService.setPublicIds(partnerList);
+
+        for (PartnerImpl partner : partnerList) {
+            assertEquals(PUBLIC_ID, partner.getPublicId());
+        }
+        verify(partnerRepository).saveAll(partnerList);
+    }
+
+    @Test
+    @DisplayName("should update and save new partner as expected")
+    void update_shouldUpdateAndSaveNewPartner() {
+        UpdatePartnerRequest request = createUpdateRequestToMatchSourcePartner();
+        final long partnerId = 1L;
+        given(partnerRepository.findById(partnerId)).willReturn(Optional.of(partner));
+
+        partnerService.update(partnerId, request);
+
+        verify(partnerRepository).save(partner);
+        assertThat(partner)
+            .usingRecursiveComparison()
+            .ignoringFields("createdDate", "updatedDate", "id", "notificationEmail")
+            .isEqualTo(sourcePartner);
+    }
+
+    @Test
+    @DisplayName("should throw when default contact has not been preprocessed from the id")
+    void update_shouldThrow_whenDefaultContactHasNotBeenPreprocessed() {
+        UpdatePartnerRequest request = new UpdatePartnerRequest();
+        request.setDefaultContactId(1L);
+        request.setDefaultContact(null);
+
+        assertThrows(InvalidRequestException.class, () -> partnerService.update(3L, request));
+    }
+
+    @Test
+    @DisplayName("update sets redirect partner - unchanged if target redirectPartner is null already")
+    void updateSetsRedirectPartner() {
+        partner2.setRedirectPartner(null);
+        updateRequest.setRedirectPartnerId(1L);
+
+        doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
+        doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
+
+        partnerService.update(99L, updateRequest); // Act
+
+        verify(partnerRepository).save(partnerCaptor.capture());
+        PartnerImpl updatedPartner = partnerCaptor.getValue();
+        assertEquals(partner2, updatedPartner.getRedirectPartner());
+    }
+
+    // This test is specifically to safeguard against scenario where the target redirectPartner itself
+    // has a redirectPartner, which could cause a recursive loop.
+    @Test
+    @DisplayName("update sets redirect partner - with its redirectPartner set to null if needed")
+    void updateSetsRedirectPartnerWithItsRedirectPartnerSetToNull() {
+        updateRequest.setRedirectPartnerId(1L);
+
+        doReturn(partner).when(partnerService).getPartner(99L); // Partner being updated
+        doReturn(partner2).when(partnerService).getPartner(1L); // Target redirectPartner
+        doReturn(partner2).when(partnerRepository).save(partner2);
+
+        partnerService.update(99L, updateRequest); // Act
+
+        verify(partner2).setRedirectPartner(null); // Target partner redirectPartner set to null
+
+        // partnerRepository.save() called twice and updated partner has correct redirectPartner set:
+        verify(partnerRepository, times(2)).save(partnerCaptor.capture());
+        List<PartnerImpl> savedPartners = partnerCaptor.getAllValues();
+        PartnerImpl secondSavedPartner = savedPartners.get(1);
+        assertEquals(partner2, secondSavedPartner.getRedirectPartner());
+    }
+
+    @Test
+    @DisplayName("should update contact user and save when relation already exists")
+    void updateJobContact_shouldUpdateContactUserAndSave_whenRelationAlreadyExists() {
+        PartnerJobRelation pjr = new PartnerJobRelation();
+        given(partnerJobRelationRepository.findById(any(PartnerJobRelationKey.class)))
+            .willReturn(Optional.of(pjr));
+
+        partnerService.updateJobContact(partner, job, adminUser);
+
+        verify(partnerJobRelationRepository).save(pjr);
+        assertEquals(adminUser, pjr.getContact());
+    }
+
+    @Test
+    @DisplayName("should create new relation with expected contact user when none exists")
+    void updateJobContact_shouldCreateNewRelationWithExpectedContactUser() {
+        ArgumentCaptor<PartnerJobRelation> captor = ArgumentCaptor.forClass(PartnerJobRelation.class);
+        given(partnerJobRelationRepository.findById(any(PartnerJobRelationKey.class)))
+            .willReturn(Optional.empty());
+
+        partnerService.updateJobContact(partner, job, adminUser);
+
+        verify(partnerJobRelationRepository).save(captor.capture());
+        PartnerJobRelation pjr = captor.getValue();
+        assertEquals(pjr.getContact(), adminUser);
+        assertEquals(pjr.getJob(), job);
+        assertEquals(pjr.getPartner(), partner);
     }
 
 }
