@@ -1,0 +1,1 @@
+alter table language_level add column cefr_level VARCHAR(20);
