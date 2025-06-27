@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {PageInfo} from "../pagination/tc-pagination.component";
-import {SearchResults} from "../../../model/search-results";
 
 export type TableType = 'Basic' | 'Striped' | 'Dropdown';
 
@@ -12,8 +11,6 @@ export type TableType = 'Basic' | 'Striped' | 'Dropdown';
 export class DisplayTableComponent {
 
   @Input() name: string;
-  @Input() columns: string[] = ["Name", "Stage", "Created", "Due"];
-  @Input() searchResults: SearchResults<any>;
   @Input() type: TableType = 'Basic';
   // Variables for pagination
   @Input() pageNumber;

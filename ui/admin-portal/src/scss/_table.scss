@@ -18,12 +18,20 @@
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/mixins";
 @import "bootstrap/scss/tables";
+@import '../scss/typography-mixins';
+@import "../scss/color-mixins";
+
+$table-cell-padding-y: .75rem;
+$table-cell-padding-x: .75rem;
 
 table {
   width: 100%;
-  font-family: 'Lato', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
+  @include paragraph-sm;
+  background-color: #FFFFFF;
+  padding: 32px 0 48px 0;
+  th, td {
+    padding: 10px 24px;
+  }
 }
 
 th {
@@ -36,4 +44,23 @@ td {
   border-bottom: 1px solid #F4F4F5;
   padding: 16px 24px;
   color: #242424;
+}
+
+//Table row highlighting
+highlighting.table-hover> tbody> tr:hover{
+  background-color: $accent3
+}
+
+//Current item - the one whose detailed data is displayed
+tr.current {
+  background-color: fade-out($accent1, 0.7)
+}
+
+//Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
+tr.selected {
+  background-color: fade-out($accent1, 0.7)
+}
+
+tr.clickable:hover {
+  cursor: pointer;
 }

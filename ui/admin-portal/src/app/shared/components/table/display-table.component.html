@@ -1,33 +1,41 @@
 <div class="display-table">
-  <h3 *ngIf="name">{{name}}</h3>
-  <table class="table" [ngClass]="{'table-striped': type == 'Striped' }">
-    <thead>
-      <tr>
-        <th *ngFor="let col of columns">
-          {{col}}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let data of searchResults?.content">
-        <td *ngFor="let col of columns">
-          <ng-container *ngIf="col != 'Stage'; else stageTag">
-            {{data[col.toLowerCase()]}}
-          </ng-container>
-          <ng-template #stageTag>
-            {{data[col.toLowerCase()]}}
-          </ng-template>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div>
-    <app-tc-pagination
-            [collectionSize]="searchResults?.totalElements"
-            (pageChange)="onPageChange($event)"
-            [pageNumber]="pageNumber">
-    </app-tc-pagination>
-
+  <p class="table-name" *ngIf="name">{{name}}</p>
+  <div class="table-responsive">
+    <ng-content></ng-content>
   </div>
-
 </div>
+
+
+<!--<div class="display-table">-->
+<!--  <h3 *ngIf="name">{{name}}</h3>-->
+<!--  <table class="table" [ngClass]="{'table-striped': type == 'Striped' }">-->
+<!--    <thead>-->
+<!--      <tr>-->
+<!--        <th *ngFor="let col of columns">-->
+<!--          {{col}}-->
+<!--        </th>-->
+<!--      </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--      <tr *ngFor="let data of searchResults?.content">-->
+<!--        <td *ngFor="let col of columns">-->
+<!--          <ng-container *ngIf="col != 'Stage'; else stageTag">-->
+<!--            {{data[col.toLowerCase()]}}-->
+<!--          </ng-container>-->
+<!--          <ng-template #stageTag>-->
+<!--            {{data[col.toLowerCase()]}}-->
+<!--          </ng-template>-->
+<!--        </td>-->
+<!--      </tr>-->
+<!--    </tbody>-->
+<!--  </table>-->
+<!--  <div>-->
+<!--    <app-tc-pagination-->
+<!--            [collectionSize]="searchResults?.totalElements"-->
+<!--            (pageChange)="onPageChange($event)"-->
+<!--            [pageNumber]="pageNumber">-->
+<!--    </app-tc-pagination>-->
+
+<!--  </div>-->
+
+<!--</div>-->

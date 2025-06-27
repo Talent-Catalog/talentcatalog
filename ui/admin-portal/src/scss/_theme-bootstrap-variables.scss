@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,13 +13,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-@import '@fontsource/lato';
+@import 'src/scss/support-colors';
 
-$primary: #0084D1;
-$secondary: #33BBBB;
-
-// Fonts (See: https://getbootstrap.com/docs/5.0/content/typography/#global-settings)
-$font-family-base: 'Lato', sans-serif;
+// Bootstrap SCSS variable overrides
+// Accordion
+$accordion-button-bg: #b2b7bb;
+$accordion-border-color: #f3f0e6;
+$accordion-button-active-bg: #383b48;
+$accordion-button-active-color: #f3f0e6;
 
 // Pagination
 $pagination-bg: #FFFFFF;
@@ -31,13 +32,19 @@ $pagination-hover-bg: #FAFAFA;
 $pagination-hover-color: #09090B;
 $pagination-hover-border-color: #FAFAFA;;
 
-  // For navbar (testing)
+// For navbar (testing)
 $background-grey: #F7F7F7;
 $body-bg: #FFFFFF;
 
 // Table variables
-$table-striped-order: even;
-$table-striped-bg: #FAFAFA;
+$table-striped-bg: color(gray, 100);// see mixin: background-color-soft
+$table-active-bg: color(gray, 200); // see mixin: background-color-light
 $table-cell-padding-y: 10px;
 $table-cell-padding-x: 24px;
+$table-striped-order: even;
 
+
+  // Nav tabs
+$nav-link-padding-x: 0.75rem;
+
+$offcanvas-horizontal-width: 40vw;
