@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {HasName} from "./base";
+package org.tctalent.server.util.listener;
 
-export interface Country extends HasName {
-  id: number;
-  name: string;
-  status: string;
-  translatedName: string;
-  isoCode?: string;
-  countryCode?: string;
+/**
+ * A listener interface for monitoring a batch processing lifecycle.
+ *
+ * <p>Implementations can override any of the default methods (which do nothing by default) to hook
+ * into specific points of the execution: before it starts and when it completes or fails.
+ */
+public interface BatchListener {
+    default void beforeBatch(String jobName) {}
+    default void afterBatch(String jobName) {}
+    default void onSuccess(String jobName) {}
+    default void onBatchFailure(String jobName, Exception exception) {}
 }
