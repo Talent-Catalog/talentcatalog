@@ -16,7 +16,7 @@
     </app-casi-header>
 
     <div *ngIf="requestAcceptance">
-      <div *ngIf="!termsRead" class="d-flex justify-content-center">
+      <div *ngIf="!termsRead" class="d-flex justify-content-center text-center">
         <div class="alert alert-danger"
           [innerHTML]="'PROFILE.PRIVACY.CHANGED'| translate">
         </div>
@@ -30,7 +30,7 @@
       <div [innerHtml]=content></div>
     </app-show-terms>
 
-    <div *ngIf="!requestAcceptance" class="d-flex justify-content-center">
+    <div *ngIf="!requestAcceptance" class="d-flex justify-content-center text-center">
       <div class="alert alert-success"
         [innerHTML]="'PROFILE.PRIVACY.THANK_ACCEPTANCE'| translate:{partner: partnerName} ">
       </div>
