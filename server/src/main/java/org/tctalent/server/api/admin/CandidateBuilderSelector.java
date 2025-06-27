@@ -80,7 +80,16 @@ public class CandidateBuilderSelector {
             "regoUtmContent",
             "regoUtmMedium",
             "regoUtmSource",
-            "regoUtmTerm"
+            "regoUtmTerm",
+            "candidateCitizenships",
+            "candidateDestinations",
+            "candidateEducations",
+            "candidateExams",
+            "candidateLanguages",
+            "candidateOccupations",
+            "candidateSkills",
+            "candidateJobExperiences",
+            "candidateCertifications"
         ));
 
     private final Set<String> candidateSemiLimitedExtraProperties =

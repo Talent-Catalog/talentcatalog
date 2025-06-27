@@ -216,4 +216,17 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     @JoinColumn(name = "redirect_partner_id")
     private PartnerImpl redirectPartner;
 
+    @Override
+    public boolean canManageCandidatesInCountry(Country country) {
+        if (!isSourcePartner()) {
+            return false;
+        }
+
+        if (isDefaultSourcePartner()) {
+            return true;
+        }
+
+        return this.getSourceCountries().contains(country);
+    }
+
 }
