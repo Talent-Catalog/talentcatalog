@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -37,6 +37,7 @@ import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getEmployerPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 import static org.tctalent.server.data.SalesforceJobOppTestData.createUpdateJobRequestAndExpectedJob;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getChildCandidateOpp;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getEmployer;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
@@ -179,6 +180,10 @@ class JobServiceImplTest {
     void setUp() {
         shortJob = getSalesforceJobOppMinimal();
         longJob = getSalesforceJobOppExtended();
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.cvReview)
+        ));
+
         updateJobRequest = new UpdateJobRequest();
         updateJobRequest.setStage(JobOpportunityStage.cvReview);
         updateJobRequest.setNextStep(NEXT_STEP);
@@ -198,17 +203,59 @@ class JobServiceImplTest {
     }
 
     @Test
-    @DisplayName("should update open candidate opps to closed stage when job opp closed")
-    void updateJob_shouldCloseOpenCandidateOpps_whenJobOppClosed() {
-        updateJobRequest.setStage(JobOpportunityStage.noJobOffer);
+    @DisplayName("should update candidate opp to closed stage when job opp closed")
+    void updateJob_shouldCloseOpenCandidateOpp_whenJobOppClosed() {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(1L)).willReturn(Optional.of(longJob));
 
+        //Add two active candidate opps to longJob (job 1L)
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.testing)
+        ));
+
+        updateJobRequest.setStage(JobOpportunityStage.noJobOffer);
         jobService.updateJob(1L, updateJobRequest);
 
         verify(candidateOpportunityService).createUpdateCandidateOpportunities(
             anyCollection(), eq(longJob), caseParamsCaptor.capture());
+        assertNotNull(caseParamsCaptor.getValue().getStage());
         assertTrue(caseParamsCaptor.getValue().getStage().isClosed());
+
+        String closingComments = caseParamsCaptor.getValue().getClosingComments();
+        assertNotNull(closingComments);
+
+        //Comment should note the original stage before it was closed
+        assertTrue(closingComments.contains("was Testing"));
+    }
+
+    @Test
+    @DisplayName("should update open candidate opps to closed stage when job opp closed")
+    void updateJob_shouldCloseOpenCandidateOpps_whenJobOppClosed() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(1L)).willReturn(Optional.of(longJob));
+
+        //Add two active candidate opps to longJob (job 1L)
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.cvReview),
+            getChildCandidateOpp(100L, longJob, CandidateOpportunityStage.testPreparation),
+            getChildCandidateOpp(101L, longJob, CandidateOpportunityStage.cvReview)
+        ));
+
+        updateJobRequest.setStage(JobOpportunityStage.hiringCompleted);
+        jobService.updateJob(1L, updateJobRequest);
+
+        verify(candidateOpportunityService).createUpdateCandidateOpportunities(
+            anyCollection(), eq(longJob), caseParamsCaptor.capture());
+        assertNotNull(caseParamsCaptor.getValue().getStage());
+        assertTrue(caseParamsCaptor.getValue().getStage().isClosed());
+
+        String closingComments = caseParamsCaptor.getValue().getClosingComments();
+        assertNotNull(closingComments);
+
+        //Comment should note both original stages
+        assertTrue(closingComments.contains("Test preparation") &&
+                closingComments.contains("CV review")
+            );
     }
 
     @Test
