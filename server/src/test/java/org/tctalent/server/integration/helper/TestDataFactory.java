@@ -340,7 +340,7 @@ public class TestDataFactory {
   public static AuditLog createAuditLog(String objectReference) {
     AuditLog auditLog = new AuditLog();
     auditLog.setType(AuditType.CANDIDATE_OCCUPATION);
-    auditLog.setUserId(9L);
+    auditLog.setUserId(1L);
     auditLog.setObjectRef(objectReference);
     auditLog.setEventDate(OffsetDateTime.now());
     auditLog.setAction(AuditAction.ADD);
@@ -600,7 +600,7 @@ public class TestDataFactory {
    * @return A configured User instance with ID 25000.
    */
   public static User createSystemUser() {
-    return createUser(25000L);
+    return createUser(1L);
   }
 
   /**
