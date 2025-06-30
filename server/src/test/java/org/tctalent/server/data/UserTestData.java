@@ -105,6 +105,7 @@ public class UserTestData {
             "user",
             "candidate@email.com",
             Role.user);
+        u.setId(45L);
         u.setStatus(Status.active);
         u.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         u.setCreatedBy(auditUser);
