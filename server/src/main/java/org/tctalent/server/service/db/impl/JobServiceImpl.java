@@ -1067,9 +1067,9 @@ public class JobServiceImpl implements JobService {
                     if (originalStages.size() == 1) {
                         s = originalStages.iterator().next().toString();
                     } else {
-                        s = "one of the following " + originalStages.stream()
+                        s = "one of the following (" + originalStages.stream()
                             .map(CandidateOpportunityStage::toString)
-                            .collect(Collectors.joining(", "));
+                            .collect(Collectors.joining(", ")) + ")";
                     }
                     params.setClosingComments("Closed because the candidate's stage was " + s +
                         " when the job opportunity closed as " + jobCloseStage.toString());
