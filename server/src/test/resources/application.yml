@@ -2,3 +2,11 @@ flyway:
   enabled: true
   ignoreMissingMigrations: true
   repair: true
+
+web:
+  # Used in EmailHelper
+  portal: https://tctalent.org/candidate-portal
+
+  # This is used in EmailHelper
+  # and SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
+  admin: https://tctalent.org/admin-portal
