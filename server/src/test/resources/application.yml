@@ -1,3 +1,4 @@
-spring:
-  flyway:
-    enabled: true
+flyway:
+  enabled: true
+  ignoreMissingMigrations: true
+  repair: true
