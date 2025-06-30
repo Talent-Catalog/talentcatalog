@@ -98,9 +98,10 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
     this.selectedColumns.push(field);
   }
 
-  removeColumn($event) {
-    let col : PublishedDocColumnConfig = $event.value;
-    let index = this.selectedColumns.findIndex(c => c.columnDef.key === col.columnDef.key)
+  removeColumn($event: PublishedDocColumnConfig) {
+    let index = this.selectedColumns.findIndex(
+      c => c.columnDef.key === $event.columnDef.key
+    )
     this.selectedColumns.splice(index, 1);
   }
 }
