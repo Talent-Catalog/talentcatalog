@@ -46,6 +46,7 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  acceptedPrivacyPolicyId: string;
   publicId: string;
   status: string;
   allNotifications: boolean;
@@ -430,6 +431,10 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   utmTerm?: string;
   contactConsentRegistration?: string;
   contactConsentPartners?: string;
+}
+
+export class SubmitRegistrationRequest {
+  acceptedPrivacyPolicyId?: string;
 }
 
 export interface UpdateCandidateOppsRequest {
