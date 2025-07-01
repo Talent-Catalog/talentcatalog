@@ -13,7 +13,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-@import './scss/support-colors';
 @import "scss/theme-bootstrap-variables";
 @import 'bootstrap/scss/bootstrap-reboot';
 @import 'bootstrap/scss/bootstrap';
@@ -37,6 +36,7 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import 'quill/dist/quill.bubble.css';
 @import './scss/color-classes';
 @import './scss/color-mixins';
+@import './scss/support-colors';
 @import './scss/typography-mixins';
 @import './scss/typography-classes';
 
