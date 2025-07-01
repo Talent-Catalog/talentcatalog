@@ -528,6 +528,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByEmailVerificationToken(String token) throws NoSuchObjectException {
+        User user = userRepository.findByEmailVerificationToken(token);
+        if (user == null) {
+            throw new NoSuchObjectException("Invalid token");
+        }
+        return user;
+    }
+
+    @Override
     public Partner getLoggedInPartner() {
         Partner partner = null;
         User user = authService.getLoggedInUser().orElse(null);
@@ -572,25 +581,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void verifyEmail(VerifyEmailRequest request) {
-        try {
-            User user = userRepository.findByEmailVerificationToken(request.getToken());
+        User user = userRepository.findByEmailVerificationToken(request.getToken());
 
-            if (user == null) {
-                throw new InvalidEmailVerificationTokenException();
-            } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(24))) {
-                emailHelper.sendCompleteVerificationEmail(user, false);
-                throw new ExpiredEmailTokenException();
-            }
-
-            user.setEmailVerified(true);
-            user.setEmailVerificationTokenIssuedDate(user.getEmailVerificationTokenIssuedDate());
-            user.setEmailVerificationToken(user.getEmailVerificationToken());
-            userRepository.save(user);
-            emailHelper.sendCompleteVerificationEmail(user, true);
-        } catch (Exception e) {
-            log.error("An unexpected error occurred during email verification", e);
-            throw new ServiceException("email_verification_error", "An unexpected error occurred during email verification", e);
+        if (user == null) {
+            throw new InvalidEmailVerificationTokenException();
+        } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(24))) {
+            throw new ExpiredEmailTokenException();
         }
+
+        user.setEmailVerified(true);
+        userRepository.save(user);
     }
 
     /**
