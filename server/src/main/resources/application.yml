@@ -171,7 +171,7 @@ flyway:
   ignoreMissingMigrations: false
 
 #  Set this to true if you need to repair the Flyway history.
-  repair: false
+  repair: true
 
 google:
   drive:
