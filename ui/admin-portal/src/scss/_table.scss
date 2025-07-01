@@ -1,0 +1,62 @@
+/*!
+ * Copyright (c) 2025 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+@import "src/scss/variables";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/tables";
+@import '../scss/typography-mixins';
+@import "../scss/color-mixins";
+
+table {
+  width: 100%;
+  @include paragraph-sm;
+  padding: 32px 0 48px 0;
+  th, td {
+    padding: 10px 24px;
+  }
+}
+
+th {
+  border-bottom: 1px solid #E4E4E7;
+  padding: 10px 24px;
+  color: #71717A;
+}
+
+td {
+  border-bottom: 1px solid #F4F4F5;
+  padding: 16px 24px;
+  color: #242424;
+}
+
+//Table row highlighting
+highlighting.table-hover> tbody> tr:hover{
+  @include background-color-light;
+}
+
+//Current item - the one whose detailed data is displayed
+tr.current {
+  @include background-color-soft;
+}
+
+//Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
+tr.selected {
+  @include background-color-soft;
+}
+
+tr.clickable:hover {
+  cursor: pointer;
+}
