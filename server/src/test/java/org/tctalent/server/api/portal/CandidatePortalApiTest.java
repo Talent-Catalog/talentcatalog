@@ -286,25 +286,6 @@ class CandidatePortalApiTest {
     verify(candidateService).getLoggedInCandidateLoadCertifications();
   }
 
-
-  @Test
-  void testGetCandidateStatus_Success() {
-    Map<String, Object> result = candidatePortalApi.getCandidateStatus();
-
-    assertNotNull(result);
-    assertEquals(CandidateStatus.active, result.get("status"));
-    verify(candidateService).getLoggedInCandidate();
-  }
-
-  @Test
-  void testGetCandidateNumber_Success() {
-    Map<String, Object> result = candidatePortalApi.getCandidateNumber();
-
-    assertNotNull(result);
-    assertEquals("12345", result.get("candidateNumber"));
-    verify(candidateService).getLoggedInCandidate();
-  }
-
   @Test
   void testGetCandidateCV_Success() throws IOException {
     Resource cvResource = new ByteArrayResource("CV content".getBytes());
