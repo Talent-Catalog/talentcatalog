@@ -20,8 +20,14 @@ import static java.util.Collections.emptySet;
 import static org.tctalent.server.data.CountryTestData.getSourceCountrySet;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getEmployer;
 import static org.tctalent.server.data.UserTestData.getAuditUser;
+import static org.tctalent.server.model.db.PublicApiAuthority.ADMIN;
+import static org.tctalent.server.model.db.PublicApiAuthority.OFFER_CANDIDATE_SERVICES;
+import static org.tctalent.server.model.db.PublicApiAuthority.READ_CANDIDATE_DATA;
+import static org.tctalent.server.model.db.PublicApiAuthority.REGISTER_CANDIDATES;
+import static org.tctalent.server.model.db.PublicApiAuthority.SUBMIT_JOB_MATCHES;
 
 import java.util.List;
+import java.util.Set;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Status;
 
@@ -40,6 +46,8 @@ public class PartnerImplTestData {
         partner.setStatus(Status.active);
         partner.setSourceCountries(getSourceCountrySet());
         partner.setDefaultContact(getAuditUser());
+        partner.setPublicApiAuthorities(Set.of(READ_CANDIDATE_DATA, SUBMIT_JOB_MATCHES,
+            OFFER_CANDIDATE_SERVICES, REGISTER_CANDIDATES, ADMIN));
         return partner;
     }
 
