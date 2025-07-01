@@ -131,7 +131,7 @@ public class CandidatePortalApi {
 
         //Remove pending terms acceptance tag now that they have accepted
         this.savedListService.updatePendingTermsAcceptance(candidate, false);
-        
+
         return candidateAdditionalInfoDto().build(candidate);
     }
 
@@ -222,6 +222,12 @@ public class CandidatePortalApi {
         }
     }
 
+
+    /**
+     * Complete the registration process.
+     * @param submitRegistrationRequest Contains the id of the terms that they accepted
+     * @return Candidate info
+     */
     @PostMapping("submit")
     public Map<String, Object> submitRegistration(
         @RequestBody SubmitRegistrationRequest submitRegistrationRequest) {
