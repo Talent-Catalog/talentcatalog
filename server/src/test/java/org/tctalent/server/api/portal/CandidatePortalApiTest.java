@@ -1,12 +1,18 @@
 package org.tctalent.server.api.portal;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.contains;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,7 +21,23 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.tctalent.server.exception.InvalidSessionException;
-import org.tctalent.server.model.db.*;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateCertification;
+import org.tctalent.server.model.db.CandidateEducation;
+import org.tctalent.server.model.db.CandidateExam;
+import org.tctalent.server.model.db.CandidateJobExperience;
+import org.tctalent.server.model.db.CandidateLanguage;
+import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.EducationLevel;
+import org.tctalent.server.model.db.Exam;
+import org.tctalent.server.model.db.Gender;
+import org.tctalent.server.model.db.Language;
+import org.tctalent.server.model.db.LanguageLevel;
+import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.SurveyType;
+import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
@@ -24,8 +46,6 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import java.util.Optional;
 
 class CandidatePortalApiTest {
 
@@ -316,13 +336,14 @@ class CandidatePortalApiTest {
 
   @Test
   void testSubmitRegistration_Success() {
-    when(candidateService.submitRegistration()).thenReturn(loggedInCandidate);
+    SubmitRegistrationRequest request = new SubmitRegistrationRequest();
+    when(candidateService.submitRegistration(request)).thenReturn(loggedInCandidate);
 
-    Map<String, Object> result = candidatePortalApi.submitRegistration();
+    Map<String, Object> result = candidatePortalApi.submitRegistration(request);
 
     assertNotNull(result);
     assertEquals(CandidateStatus.active, result.get("status"));
-    verify(candidateService).submitRegistration();
+    verify(candidateService).submitRegistration(request);
   }
 
   private Candidate createSampleCandidate() {
