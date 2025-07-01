@@ -18,6 +18,7 @@ package org.tctalent.server.data;
 
 import static java.util.Collections.emptySet;
 import static org.tctalent.server.data.CountryTestData.getSourceCountrySet;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getEmployer;
 import static org.tctalent.server.data.UserTestData.getAuditUser;
 
 import java.util.List;
@@ -85,6 +86,16 @@ public class PartnerImplTestData {
         return List.of(
             partner1, partner2, partner3
         );
+    }
+
+    public static PartnerImpl getEmployerPartner() {
+        PartnerImpl p = new PartnerImpl();
+        p.setName("Employer");
+        p.setAbbreviation("E");
+        p.setJobCreator(true);
+        p.setEmployer(getEmployer());
+        p.setStatus(Status.active);
+        return p;
     }
 
 }

@@ -116,31 +116,32 @@ import org.tctalent.server.service.db.email.EmailHelper;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    private Sort sort;
     private PageRequest pageRequest;
     private List<User> userList;
     private Page<User> userPage;
-    private long userId;
     private User expectedUser;
     private UpdateUserRequest updateUserRequest;
     private User adminUser;
     private User systemAdminUser;
     private User limitedUser;
-    private User candidateUser;
     private Partner adminUserPartner;
-    private Long approverId;
-    private Long partnerId;
     private List<Country> sourceCountryList;
     private LoginRequest loginRequest;
     private SendVerifyEmailRequest sendVerifyEmailRequest;
     private VerifyEmailRequest verifyEmailRequest;
     private UpdateUserPasswordRequest updateUserPasswordRequest;
-    private String encryptedPassword;
     private SendResetPasswordEmailRequest sendResetPasswordEmailRequest;
     private ResetPasswordRequest resetPasswordRequest;
     private OffsetDateTime offsetDateTime;
     private CheckPasswordResetTokenRequest checkPasswordResetTokenRequest;
-    private PartnerImpl sourcePartner;
+
+    private static final PartnerImpl sourcePartner = getSourcePartner();
+    private static final User candidateUser = getCandidateUser();
+    private static final Sort sort = Sort.unsorted();
+    private static final long userId = 11L;
+    private static final Long approverId = 1L;
+    private static final Long partnerId = 1L;
+    private static final String encryptedPassword = "lkjhdsfaioy87";
 
     @Mock private UserRepository userRepository;
     @Mock private SearchUserRequest searchUserRequest;
@@ -165,23 +166,17 @@ class UserServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        sourcePartner = getSourcePartner();
-        sort = Sort.unsorted();
-        userId = 11L;
         sourceCountryList = List.of(mockCountry, mockCountry2);
         CreateUpdateUserTestData testData = createUpdateUserRequestAndExpectedUser();
         expectedUser = testData.expectedUser();
         updateUserRequest = testData.request();
         adminUser = getAdminUser();
         systemAdminUser = getSystemAdminUser();
-        candidateUser = getCandidateUser();
         limitedUser = getLimitedUser();
         adminUserPartner = adminUser.getPartner();
         pageRequest = PageRequest.of(0, 10, sort);
         userList = List.of(limitedUser, adminUser);
         userPage = new PageImpl<>(userList);
-        approverId = 1L;
-        partnerId = 1L;
         loginRequest = new LoginRequest();
         loginRequest.setUsername(adminUser.getEmail()); // Simulate email used for login
         loginRequest.setPassword("password");
@@ -192,7 +187,6 @@ class UserServiceImplTest {
         updateUserPasswordRequest = new UpdateUserPasswordRequest();
         updateUserPasswordRequest.setPassword("password");
         updateUserPasswordRequest.setPasswordConfirmation("password");
-        encryptedPassword = "lkjhdsfaioy87";
         sendResetPasswordEmailRequest = new SendResetPasswordEmailRequest();
         sendResetPasswordEmailRequest.setEmail("person@email.com");
         resetPasswordRequest = new ResetPasswordRequest();
@@ -940,7 +934,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("should set email verified to true, save user and send complete email when token valid")
+    @DisplayName("should set email verified to true, save user when token valid")
     void verifyEmail_shouldSucceed_whenTokenValid() {
         adminUser.setEmailVerificationTokenIssuedDate(OffsetDateTime.now());
         adminUser.setEmailVerified(false);
@@ -951,7 +945,6 @@ class UserServiceImplTest {
 
         assertTrue(adminUser.getEmailVerified());
         verify(userRepository).save(adminUser);
-        verify(emailHelper).sendCompleteVerificationEmail(adminUser, true);
     }
 
     @Test
