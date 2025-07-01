@@ -181,7 +181,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   private initSearchBy() {
     this.pageNumber = 1;
-    this.pageSize = 2;
+    this.pageSize = 30;
 
     //Pick up any previous keyword filter
     const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
