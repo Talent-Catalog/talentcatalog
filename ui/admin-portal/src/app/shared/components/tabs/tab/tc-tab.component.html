@@ -1,0 +1,6 @@
+<ng-container [ngbNavItem]="name | pascalCase" >
+  <a ngbNavLink [title]="description">{{ name | uppercase}}<i class="{{iconClass}}"></i></a>
+  <ng-template ngbNavContent>
+    <ng-content></ng-content>
+  </ng-template>
+</ng-container>
