@@ -5,7 +5,7 @@
       [boundaryLinks]="true"
       [(page)]="pageNumber"
       [pageSize]="pageSize"
-      [collectionSize]="collectionSize"
+      [collectionSize]="totalElements"
       [maxSize]="5"
       [ellipses]="true"
       [rotate]="true"
@@ -47,6 +47,6 @@
       </ng-template>
     </ngb-pagination>
   </div>
-  <p class="results-total">Found {{collectionSize}} in total</p>
+  <p class="results-total">Found {{totalElements}} in total</p>
 </div>
 

@@ -25,12 +25,12 @@ import {
   NgbPaginationPages,
   NgbPaginationPrevious
 } from "@ng-bootstrap/ng-bootstrap";
-import {DisplayTableComponent} from "./components/table/display-table.component";
+import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 
 
 @NgModule({
-  declarations: [DisplayTableComponent, TcPaginationComponent],
+  declarations: [TcTableComponent, TcPaginationComponent],
   imports: [
     CommonModule,
     NgbPagination,
@@ -42,7 +42,7 @@ import {TcPaginationComponent} from './components/pagination/tc-pagination.compo
     NgbPaginationLast
   ],
   exports: [
-    DisplayTableComponent, TcPaginationComponent
+    TcTableComponent, TcPaginationComponent
   ]
 })
 export class SharedModule { }

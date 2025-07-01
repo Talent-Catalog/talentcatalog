@@ -31,7 +31,6 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
-import {PageInfo} from "../../../shared/components/pagination/tc-pagination.component";
 
 @Component({
   selector: 'app-jobs',
@@ -172,12 +171,6 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
   public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
-  }
-
-  onPageChange(pageInfo: PageInfo) {
-    this.pageNumber = pageInfo.pageNumber;
-    this.pageSize = pageInfo.pageSize;
-    this.search();
   }
 
 }
