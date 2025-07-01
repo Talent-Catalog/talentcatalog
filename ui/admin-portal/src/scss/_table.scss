@@ -21,13 +21,9 @@
 @import '../scss/typography-mixins';
 @import "../scss/color-mixins";
 
-$table-cell-padding-y: .75rem;
-$table-cell-padding-x: .75rem;
-
 table {
   width: 100%;
   @include paragraph-sm;
-  background-color: #FFFFFF;
   padding: 32px 0 48px 0;
   th, td {
     padding: 10px 24px;
@@ -48,17 +44,17 @@ td {
 
 //Table row highlighting
 highlighting.table-hover> tbody> tr:hover{
-  background-color: $accent3
+  @include background-color-light;
 }
 
 //Current item - the one whose detailed data is displayed
 tr.current {
-  background-color: fade-out($accent1, 0.7)
+  @include background-color-soft;
 }
 
 //Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
 tr.selected {
-  background-color: fade-out($accent1, 0.7)
+  @include background-color-soft;
 }
 
 tr.clickable:hover {
