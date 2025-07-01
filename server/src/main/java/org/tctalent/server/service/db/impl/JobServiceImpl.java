@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +31,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -126,7 +124,6 @@ public class JobServiceImpl implements JobService {
 
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
 
-    private final static DateTimeFormatter nextStepDateFormat = DateTimeFormatter.ofPattern("ddMMMyy", Locale.ENGLISH);
     private final AuthService authService;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
@@ -992,19 +989,24 @@ public class JobServiceImpl implements JobService {
 
     private void closeUnclosedCandidateOppsForJob(SalesforceJobOpp job, JobOpportunityStage jobCloseStage) {
         Set<CandidateOpportunity> candidateOpportunities = job.getCandidateOpportunities();
+
+        //Retrieve any still active (ie unclosed) candidate opps that will need to be auto closed.
         final List<CandidateOpportunity> activeOpps = candidateOpportunities.stream()
             //Not interested in opps which are already closed or at an employed stage
             .filter(co -> !co.isClosed() && !co.getStage().isEmployed()).toList();
 
         //This will be populated with the candidates whose opps need to be updated for each
         //closing stage.
-        Map<CandidateOpportunityStage, List<Candidate>> closingStageCandidatesMap = new HashMap<>();
+        Map<CandidateOpportunityStage, List<CandidateOpportunity>> closingStageCasesMap = new HashMap<>();
 
+        //If there are some candidate opps that need to be closed
         if (!activeOpps.isEmpty()) {
+            //Lazy creation of logic
             if (closingStageLogic == null) {
                 initialiseClosingCandidateStageLogic();
             }
 
+            //Load the logic relevant to the given job closing stage.
             final EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>
                 currentToClosingStageMap = closingStageLogic.get(jobCloseStage);
 
@@ -1036,22 +1038,47 @@ public class JobServiceImpl implements JobService {
                         //Default to closing candidate opp as notFitForRole
                         closingStage = CandidateOpportunityStage.notFitForRole;
                     }
-                    List<Candidate> candidates = closingStageCandidatesMap.computeIfAbsent(
+
+                    //Add candidate to list of candidates whose opps are also being set to this
+                    //closing stage.
+                    List<CandidateOpportunity> cases = closingStageCasesMap.computeIfAbsent(
                         closingStage, k -> new ArrayList<>());
-                    candidates.add(activeOpp.getCandidate());
+                    cases.add(activeOpp);
                 }
 
-                for (Entry<CandidateOpportunityStage, List<Candidate>> stageListEntry :
-                    closingStageCandidatesMap.entrySet()) {
+                //This loops through each identified closing stage, batching together the
+                //opps being automatically set to that stage.
+                for (Entry<CandidateOpportunityStage, List<CandidateOpportunity>> stageListEntry :
+                    closingStageCasesMap.entrySet()) {
 
                     CandidateOpportunityParams params = new CandidateOpportunityParams();
                     final CandidateOpportunityStage candidateOppClosedStage = stageListEntry.getKey();
+                    List<CandidateOpportunity> cases = stageListEntry.getValue();
                     params.setStage(candidateOppClosedStage);
-                    params.setClosingComments(
-                        "Job opportunity closed: " + jobCloseStage.toString());
 
+                    //Extract all the different original stages of the candidate opps that are
+                    //being closed.
+                    final Set<CandidateOpportunityStage> originalStages = cases.stream()
+                        .map(CandidateOpportunity::getStage).collect(Collectors.toSet());
+
+                    //There is just one common closing comment for all closed cases.
+                    //We can simplify its wording if all the original candidate stages were the same.
+                    String s;
+                    if (originalStages.size() == 1) {
+                        s = originalStages.iterator().next().toString();
+                    } else {
+                        s = "one of the following (" + originalStages.stream()
+                            .map(CandidateOpportunityStage::toString)
+                            .collect(Collectors.joining(", ")) + ")";
+                    }
+                    params.setClosingComments("Closed because the candidate's stage was " + s +
+                        " when the job opportunity closed as " + jobCloseStage.toString());
+
+                    //Just pass in the candidates rather than the candidate opps.
+                    final List<Candidate> candidates =
+                        cases.stream().map(CandidateOpportunity::getCandidate).toList();
                     candidateOpportunityService.createUpdateCandidateOpportunities(
-                        stageListEntry.getValue(), job, params);
+                        candidates, job, params);
                 }
 
                 LogBuilder.builder(log)
