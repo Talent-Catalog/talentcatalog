@@ -24,6 +24,7 @@ export class TcPaginationComponent {
   // See NGB Pagination doc for this custom example: https://ng-bootstrap.github.io/#/components/pagination/examples#customization
   selectPage(page: string) {
     this.pageNumber = parseInt(page, 10) || 1;
+    this.pageChange.emit(this.pageNumber);
   }
   formatInput(input: HTMLInputElement) {
     const FILTER_PAG_REGEX = /[^0-9]/g;
