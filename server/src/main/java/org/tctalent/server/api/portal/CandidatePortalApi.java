@@ -212,7 +212,7 @@ public class CandidatePortalApi {
     /**
      * Complete the registration process.
      * @param submitRegistrationRequest Contains the id of the terms that they accepted
-     * @return Candidate info
+     * @return Candidate personal info
      */
     @PostMapping("submit")
     public Map<String, Object> submitRegistration(
