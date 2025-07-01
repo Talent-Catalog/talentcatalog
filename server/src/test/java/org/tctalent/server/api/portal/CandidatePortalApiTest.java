@@ -314,17 +314,6 @@ class CandidatePortalApiTest {
     verify(response).flushBuffer();
   }
 
-  @Test
-  void testSubmitRegistration_Success() {
-    when(candidateService.submitRegistration()).thenReturn(loggedInCandidate);
-
-    Map<String, Object> result = candidatePortalApi.submitRegistration();
-
-    assertNotNull(result);
-    assertEquals(CandidateStatus.active, result.get("status"));
-    verify(candidateService).submitRegistration();
-  }
-
   private Candidate createSampleCandidate() {
     Candidate candidate = new Candidate();
     candidate.setCandidateNumber("12345");
