@@ -16,7 +16,6 @@
 
 package org.tctalent.server.data;
 
-import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.CountryTestData.getSourceCountrySet;
 import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
@@ -25,6 +24,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
@@ -112,7 +112,7 @@ public class UserTestData {
         u.setLastLogin(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         u.setUsingMfa(true);
         u.setPartner(getDefaultPartner());
-        u.setCandidate(getCandidate());
+        u.setCandidate(new Candidate());
         return u;
     }
 
