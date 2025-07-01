@@ -18,7 +18,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
-import {Candidate, UpdateCandidateNotificationPreferenceRequest} from '../model/candidate';
+import {
+  Candidate,
+  SubmitRegistrationRequest,
+  UpdateCandidateNotificationPreferenceRequest
+} from '../model/candidate';
 import {map} from 'rxjs/operators';
 import {LocalStorageService} from "./local-storage.service";
 
@@ -40,7 +44,7 @@ export class CandidateService {
   apiUrl: string = environment.apiUrl + '/candidate';
 
   constructor(private http: HttpClient,
-              private localStorage: LocalStorageService) {
+              private localStorageService: LocalStorageService) {
   }
 
   /* Contact */
@@ -104,6 +108,11 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/certifications`);
   }
 
+  updateAcceptedPrivacyPolicy(acceptedPrivacyPolicyId: string):
+    Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/privacy/${acceptedPrivacyPolicyId}`, null);
+  }
+
   updateCandidateCertification(request): Observable<Candidate> {
     return this.http.post<Candidate>(`${this.apiUrl}/certifications`, request);
   }
@@ -126,20 +135,20 @@ export class CandidateService {
     }));
   }
 
-  submitRegistration(): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/submit`, null);
+  submitRegistration(request: SubmitRegistrationRequest): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/submit`, request);
   }
 
   getCandNumberStorage(): string {
-    return this.localStorage.get('candidateNumber');
+    return this.localStorageService.get('candidateNumber');
   }
 
   setCandNumberStorage(candidateNumber: string) {
-    this.localStorage.set('candidateNumber', candidateNumber);
+    this.localStorageService.set('candidateNumber', candidateNumber);
   }
 
   clearCandNumberStorage() {
-    this.localStorage.remove('candidateNumber');
+    this.localStorageService.remove('candidateNumber');
   }
   getCandidateCandidateExams(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/exams`);
@@ -154,4 +163,7 @@ export class CandidateService {
     return this.http.put<void>(`${this.apiUrl}/notification`, request);
   }
 
+  updatePendingTermsAcceptance(requestAcceptance: boolean): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/pending-acceptance/${requestAcceptance}`, null);
+  }
 }
