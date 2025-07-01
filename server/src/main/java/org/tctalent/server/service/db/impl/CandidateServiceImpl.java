@@ -146,6 +146,7 @@ import org.tctalent.server.request.candidate.CreateCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -182,6 +183,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.TaskService;
+import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
@@ -267,6 +269,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
+    private final TermsInfoService termsInfoService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
@@ -735,7 +738,6 @@ public class CandidateServiceImpl implements CandidateService {
 
         /* Set the email consent fields */
         candidate.setContactConsentRegistration(request.getContactConsentRegistration());
-        candidate.setContactConsentPartners(request.getContactConsentPartners());
 
         candidate.setRegoIp(ipAddress);
         if (queryParameters != null) {
@@ -947,7 +949,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setState(request.getState());
 
         candidate.setCountry(country);
-        checkForChangedPartner(candidate, country);
+        reassignPartnerIfNeeded(candidate, country);
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1183,8 +1185,7 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
-        createCandidateRequest.setContactConsentRegistration(request.getContactConsentRegistration());
-        createCandidateRequest.setContactConsentPartners(request.getContactConsentPartners());
+        createCandidateRequest.setContactConsentRegistration(true);
 
         Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, ipAddress,
             queryParameters, passwordEncrypted);
@@ -1306,6 +1307,27 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateAcceptedPrivacyPolicy(String acceptedPrivacyPolicyId) {
+        User user = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        Candidate candidate = user.getCandidate();
+        updatePolicyId(acceptedPrivacyPolicyId, candidate);
+        candidate = save(candidate, false);
+        return candidate;
+    }
+
+    /**
+     * Factored out some common code
+     */
+    private static void updatePolicyId(String acceptedPrivacyPolicyId, Candidate candidate) {
+        if (acceptedPrivacyPolicyId == null) {
+            throw new InvalidRequestException("Privacy policy has not been accepted");
+        }
+        candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
+        candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
+    }
+
+    @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
@@ -1376,7 +1398,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setDob(request.getDob());
 
             candidate.setCountry(country);
-            checkForChangedPartner(candidate, country);
+            reassignPartnerIfNeeded(candidate, country);
 
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
@@ -1447,24 +1469,39 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    private void checkForChangedPartner(Candidate candidate, Country country) {
-        //Do we have an auto assignable partner in this country
-        Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
+    /**
+     * When a new registrant is assigned to a partner that isn't operational in their given country
+     * location, reassign them to the auto-assign partner or, if none exists, the default source
+     * partner.
+     * @param candidate The updating/registering candidate
+     * @param country Their given country location
+     */
+    private void reassignPartnerIfNeeded(Candidate candidate, Country country) {
 
-        //Is there a country assigned partner?
-        if (autoAssignedCountryPartner != null) {
+        // If candidate not in draft status, this is an existing profile: no automated reassignment.
+        if (candidate.getStatus() != CandidateStatus.draft) {
+            return;
+        }
 
-            //Get current user partner.
-            User user = candidate.getUser();
-            final PartnerImpl currentUserPartner = user.getPartner();
+        User user = candidate.getUser();
+        PartnerImpl currentPartner = user.getPartner();
 
-            //The country assigned partner only overrides the default source partner.
-            if (currentUserPartner.isDefaultSourcePartner()) {
-                if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
-                    //Partner of candidate needs to change
-                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
-                    userRepository.save(user);
-                }
+        if (
+            !currentPartner.canManageCandidatesInCountry(country) ||
+                currentPartner.isDefaultSourcePartner()
+        ) {
+            Partner autoAssignedCountryPartner =
+                partnerService.getAutoAssignablePartnerByCountry(country);
+
+            if (autoAssignedCountryPartner != null) {
+                user.setPartner((PartnerImpl) autoAssignedCountryPartner);
+                userRepository.save(user);
+                return;
+            }
+
+            if (!currentPartner.isDefaultSourcePartner()) {
+                user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
+                userRepository.save(user);
             }
         }
     }
@@ -1670,9 +1707,14 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate submitRegistration() {
+    public Candidate submitRegistration(SubmitRegistrationRequest request) {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        final String acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
+        updatePolicyId(acceptedPrivacyPolicyId, candidate);
+        candidate.setContactConsentRegistration(true);
+
         // Don't update status to pending if status is already pending
         final CandidateStatus candidateStatus = candidate.getStatus();
         if (!candidateStatus.equals(CandidateStatus.pending)) {

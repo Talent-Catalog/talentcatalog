@@ -571,7 +571,8 @@ import {LoadingIndicatorComponent} from './components/util/loading-indicator/loa
 import {ErrorDisplayComponent} from './components/util/error-display/error-display.component';
 import {IntelligenceComponent} from './components/intelligence/intelligence.component';
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
-import {SharedModule} from "./shared/shared.module";
+import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-phone-input.component';
+import {SharedModule} from "./shared/shared.module";>>>> staging
 
 @NgModule({
   declarations: [
@@ -905,7 +906,8 @@ import {SharedModule} from "./shared/shared.module";
     LoadingIndicatorComponent,
     ErrorDisplayComponent,
     IntelligenceComponent,
-    OfferToAssistComponent
+    OfferToAssistComponent,
+    IntlPhoneInputComponent
   ],
   imports: [
     BrowserModule,

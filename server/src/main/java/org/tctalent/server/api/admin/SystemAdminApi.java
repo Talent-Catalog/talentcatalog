@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +72,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.Environment;
@@ -106,6 +106,7 @@ import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.response.DuolingoDashboardResponse;
 import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
@@ -117,6 +118,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.DuolingoApiService;
+import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
@@ -134,6 +136,7 @@ import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
+import org.tctalent.server.util.listener.BatchListeningLogger;
 import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
@@ -181,6 +184,7 @@ public class SystemAdminApi {
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
     private final TcApiService tcApiService;
+    private final BatchListeningLogger batchListeningLogger;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -209,6 +213,7 @@ public class SystemAdminApi {
     @Value("${environment}")
     private String environment;
     private final DuolingoApiService duolingoApiService;
+    private final DuolingoCouponService duolingoCouponService;
 
     @Autowired
     public SystemAdminApi(
@@ -232,8 +237,8 @@ public class SystemAdminApi {
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
         SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService,
-        TcApiService tcApiService
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoCouponService duolingoCouponService,
+        TcApiService tcApiService, BatchListeningLogger batchListeningLogger
         ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
@@ -266,8 +271,10 @@ public class SystemAdminApi {
       this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
+      this.batchListeningLogger = batchListeningLogger;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
+      this.duolingoCouponService = duolingoCouponService;
       this.tcApiService = tcApiService;
     }
 
@@ -380,6 +387,29 @@ public class SystemAdminApi {
         return duolingoApiService.verifyScore(certificateId, birthdate);
     }
 
+    /**
+     * Reassigns a new Duolingo coupon to a candidate and marks any previously assigned coupons as redeemed.
+     *
+     * @param candidateNumber The ID of the candidate to whom the new coupon will be assigned.
+     * @return A ResponseEntity containing the details of the newly assigned coupon.
+     * @throws NoSuchObjectException If the candidate or available coupons are not found.
+     */
+    @GetMapping("reassign-duolingo-coupon/{candidateNumber}")
+    public ResponseEntity<DuolingoCouponResponse> reassignDuolingoCoupon(@PathVariable("candidateNumber") String candidateNumber) {
+        try {
+            User user = authService.getLoggedInUser()
+                .orElseThrow(() -> new NoSuchObjectException("No authenticated user found"));
+            DuolingoCouponResponse response = duolingoCouponService.reassignProctoredCouponToCandidate(candidateNumber, user);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchObjectException e) {
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("ReassignDuolingoCoupon")
+                .message("Failed to reassign coupon for candidate " + candidateNumber + ": " + e.getMessage())
+                .logError();
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
     @GetMapping("flush_user_cache")
     public void flushUserCache() {
@@ -2984,9 +3014,15 @@ public class SystemAdminApi {
 
         // Schedule background processing
         BackRunner<PageContext> backRunner = new BackRunner<>();
+        backRunner.addListener(batchListeningLogger);
 
-        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-            new PageContext(null), 20);
+        backRunner.start(
+            taskScheduler,
+            backProcessor,
+            new PageContext(null),
+            20,
+            "TC to SF candidate sync"
+        );
     }
 
     /**

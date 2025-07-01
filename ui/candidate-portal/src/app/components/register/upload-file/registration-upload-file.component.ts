@@ -17,7 +17,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {UntypedFormGroup} from "@angular/forms";
 import {RegistrationService} from "../../../services/registration.service";
-import {CandidateService} from "../../../services/candidate.service";
 
 @Component({
   selector: 'app-registration-upload-file',
@@ -38,8 +37,7 @@ export class RegistrationUploadFileComponent implements OnInit {
   activeIds: string;
 
 
-  constructor(public registrationService: RegistrationService,
-              private candidateService: CandidateService) {
+  constructor(public registrationService: RegistrationService) {
   }
 
   ngOnInit() {
@@ -49,21 +47,6 @@ export class RegistrationUploadFileComponent implements OnInit {
     } else {
       this.activeIds = ''
     }
-  }
-
-  //Final registration step method
-  submit() {
-    this.saving = true;
-    this.candidateService.submitRegistration().subscribe(
-      (response) => {
-        this.saving = false;
-        this.next();
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
   }
 
   // Methods during registration process.

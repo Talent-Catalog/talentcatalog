@@ -739,6 +739,22 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public void updatePendingTermsAcceptance(Candidate candidate, boolean flag) {
+        SavedList ptaList = findPendingTermsAcceptanceList();
+        if (flag) {
+            addCandidateToList(ptaList, candidate, "");
+        } else {
+            removeCandidateFromList(candidate, ptaList);
+        }
+        saveIt(ptaList);
+    }
+
+    private SavedList findPendingTermsAcceptanceList() {
+        return savedListRepository.findPendingTermsAcceptanceList()
+            .orElseThrow(() -> new NoSuchObjectException(SavedList.class, "PendingTermsAcceptance"));
+    }
+
+    @Override
     public void associateTaskWithList(User user, TaskImpl task, SavedList list) {
 
         final Set<TaskImpl> listTasks = list.getTasks();
@@ -933,7 +949,7 @@ public class SavedListServiceImpl implements SavedListService {
             }
 
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {
-                columnSetUp.setRangeName(def.getType().toString());
+                columnSetUp.setRangeName(def.getType() + "_" + def.getKey());
             }
 
             //Check for a candidate number column. We set up a range name for that column as well
