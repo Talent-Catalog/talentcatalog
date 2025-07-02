@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.exception.InvalidPasswordFormatException;
 import org.tctalent.server.exception.InvalidPasswordTokenException;
@@ -135,10 +136,30 @@ public class UserAdminApi {
     }
 
     @GetMapping("/verify-email/{token}")
-    public void verifyEmail(@PathVariable("token") String token) throws ExpiredEmailTokenException, InvalidEmailVerificationTokenException {
+    public ModelAndView verifyEmail(@PathVariable("token") String token) {
+        ModelAndView modelAndView = new ModelAndView();
         VerifyEmailRequest request = new VerifyEmailRequest();
         request.setToken(token);
-        userService.verifyEmail(request);
+
+        User user = null;
+        try {
+            user = userService.getUserByEmailVerificationToken(token);
+        } catch (NoSuchObjectException e) {
+            modelAndView.setViewName("verify-email-failure");
+            modelAndView.addObject("displayName", "User");   // Token is invalid (no user found)
+            return modelAndView;
+        }
+
+        modelAndView.addObject("displayName", user.getDisplayName());
+
+        try {
+            userService.verifyEmail(request);
+            modelAndView.setViewName("verify-email-success");
+        } catch (ExpiredEmailTokenException e) {
+            modelAndView.setViewName("verify-email-failure");
+        }
+
+        return modelAndView;
     }
 
     @PutMapping("/mfa-reset/{id}")

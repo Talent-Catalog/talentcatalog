@@ -144,7 +144,7 @@ export class GeneralTranslationsComponent implements OnInit {
     this.saving = true;
     this.saveError = null;
     this.translationService.updateTranslationFile(this.systemLanguage.language, result).subscribe(
-      result => {
+      () => {
         this.saving = false;
       },
       error => {
@@ -182,6 +182,7 @@ const ALL_FIELDS = {
         "ACCOUNT": null,
         "LOGOUT": null,
         "LOGIN": null,
+        "PRIVACY": null,
         "PROFILE": null,
         "UPLOAD": {
           "FILE": null,
@@ -289,11 +290,6 @@ const ALL_FIELDS = {
       "TITLE": null,
       "REGISTER": null,
       "LOGIN": null,
-      "PARA1": null,
-      "HEADING2": null,
-      "PARA2": null,
-      "HEADING3": null,
-      "PARA3": null,
       "USAFGHAN": {
         "HEADING1": null,
         "HEADING2": null
@@ -503,6 +499,7 @@ const ALL_FIELDS = {
         }
       },
       "SUBMIT": {
+        "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
           "SURVEY": null,
@@ -512,6 +509,8 @@ const ALL_FIELDS = {
           "LABEL": null,
           "WARN": null
         },
+        "POLICY_ACCEPTANCE_TEXT": null,
+        "YOUR_PARTNER_IS": null,
       },
       "COMPLETE": {
         "TITLE": null,
@@ -568,6 +567,10 @@ const ALL_FIELDS = {
         "STATE": null,
         "YEAROFARRIVAL": null,
         "NATIONALITY": null
+      },
+      "PRIVACY": {
+        "CHANGED": null,
+        "THANK_ACCEPTANCE": null
       },
       "OCCUPATIONS": {
         "TITLE": null
