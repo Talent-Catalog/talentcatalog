@@ -84,8 +84,10 @@ class CandidateDependantServiceImplTest {
     void createDependant_shouldThrow_whenCandidateNotFound() {
         given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
 
-        assertThrows(NoSuchObjectException.class,
+        Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateDependantService.createDependant(CANDIDATE_ID, createRequest));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(CANDIDATE_ID)));
     }
 
     @Test
