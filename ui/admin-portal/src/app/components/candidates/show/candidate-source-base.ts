@@ -278,6 +278,9 @@ export class CandidateSourceBaseComponent {
     if (!isSavedSearch(this.candidateSource)) {
       if (this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
         modifiable = true
+      } else if (isSubmissionList(this.candidateSource) &&
+        !this.authorizationService.canSeeJobDetails()) {
+        modifiable = false;
       } else {
         modifiable = !this.authorizationService.isReadOnly();
       }
