@@ -7,14 +7,15 @@ import { Component, Input } from '@angular/core';
 })
 export class ButtonComponent {
   @Input() size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'  = 'default';
-  @Input() btnType: 'primary' | 'secondary' | 'outline' | 'disabled' | 'plain' = 'primary';
+  @Input() type: 'primary' | 'secondary' | 'outline' | 'plain' = 'primary';
+  @Input() disabled = false;
 
   get sizeClass(): string {
     return `btn-${this.size}`;
   }
 
   get typeClass(): string {
-    return `btn-${this.btnType}`;
+    return `btn-${this.type}`;
   }
 
   get classList(): string[] {

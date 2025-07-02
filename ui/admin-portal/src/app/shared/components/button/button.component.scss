@@ -11,6 +11,15 @@
   transition: background-color 0.2s ease-in-out, box-shadow 0.2s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   gap: 0.5rem;
+
+  &[disabled] {
+    @include background-color-light;
+    @include text-color-secondary;
+    pointer-events: none;
+    cursor: not-allowed;
+    border: none;
+  }
+
 }
 
 .btn-xs {
@@ -118,11 +127,4 @@
     background-color: color(gray, 200);
     color: color(gray, 700);
   }
-}
-
-.btn-disabled {
-  @include background-color-light;
-  @include text-color-secondary;
-  pointer-events: none;
-  cursor: not-allowed;
 }
