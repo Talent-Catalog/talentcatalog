@@ -107,7 +107,7 @@
         </ng-container>
 
         <!-- SEARCHES -->
-        <ng-container ngbNavItem="Searches">
+        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Searches">
           <a ngbNavLink
              ngbTooltip="Create a search to help partners find suitable candidates">
             Suggested search(es)
@@ -123,7 +123,7 @@
         </ng-container>
 
         <!-- UPLOADS -->
-        <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Uploads">
+        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Uploads">
           <a ngbNavLink>Job Uploads</a>
           <ng-template ngbNavContent>
             <app-job-upload-tab
