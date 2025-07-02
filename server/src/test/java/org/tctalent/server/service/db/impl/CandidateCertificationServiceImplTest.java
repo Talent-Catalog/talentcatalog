@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -26,6 +27,7 @@ import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,6 +97,15 @@ class CandidateCertificationServiceImplTest {
             .willReturn(certificationList);
 
         assertEquals(certificationList, candidateCertificationService.list(CANDIDATE_ID));
+    }
+
+    @Test
+    @DisplayName("should return empty list when none found")
+    void list_shouldReturnEmptyList_whenNoneFound() {
+        given(candidateCertificationRepository.findByCandidateId(CANDIDATE_ID))
+            .willReturn(Collections.emptyList());
+
+        assertTrue(candidateCertificationService.list(CANDIDATE_ID).isEmpty());
     }
 
     @Test

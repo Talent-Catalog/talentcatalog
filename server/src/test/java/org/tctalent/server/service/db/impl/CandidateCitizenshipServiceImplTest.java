@@ -81,8 +81,10 @@ class CandidateCitizenshipServiceImplTest {
     void createCitizenship_shouldThrow_whenCandidateNotFound() {
         given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
 
-        assertThrows(NoSuchObjectException.class,
+        Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateCitizenshipService.createCitizenship(CANDIDATE_ID, createRequest));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(CANDIDATE_ID)));
     }
 
     @Test
@@ -112,8 +114,10 @@ class CandidateCitizenshipServiceImplTest {
         given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
         given(countryRepository.findById(NATIONALITY_ID)).willReturn(Optional.empty());
 
-        assertThrows(NoSuchObjectException.class,
+        Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateCitizenshipService.createCitizenship(CANDIDATE_ID, createRequest));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(NATIONALITY_ID)));
     }
 
     @Test
@@ -138,8 +142,10 @@ class CandidateCitizenshipServiceImplTest {
     void updateIntakeData_shouldThrow_whenNationalityCountryNotFound() {
         given(countryRepository.findById(NATIONALITY_ID)).willReturn(Optional.empty());
 
-        assertThrows(NoSuchObjectException.class,
+        Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateCitizenshipService.updateIntakeData(NATIONALITY_ID, candidate, intakeData));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(NATIONALITY_ID)));
     }
 
     @Test
@@ -149,8 +155,10 @@ class CandidateCitizenshipServiceImplTest {
         given(candidateCitizenshipRepository.findById(intakeData.getCitizenId()))
             .willReturn(Optional.empty());
 
-        assertThrows(NoSuchObjectException.class,
+        Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateCitizenshipService.updateIntakeData(NATIONALITY_ID, candidate, intakeData));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(CITIZENSHIP_ID)));
     }
 
     @Test
