@@ -1,12 +1,15 @@
 # This workflow will build a Java project with Gradle when changes are pushed to any branch
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-name: tc-build
+
+name: cep-build
+
 on:
   push:
     branches:
       - '*'
       - '!staging'
       - '!master'
+
 env:
   AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPBWDGF7
   ORG_GRADLE_PROJECT_org_gradle_jvmargs: -Xmx4096m
@@ -15,13 +18,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./talentcatalog  # Set working directory to repository root
+
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: talentcatalog  # Ensure checkout places repo in 'talentcatalog'
 
       - name: Set up Java 17
         uses: actions/setup-java@v2
@@ -41,23 +40,23 @@ jobs:
 
       - name: Download DB dump from S3
         run: |
-          pwd  # Log current working directory
           mkdir -p server/src/test/resources
-          aws s3 cp s3://tctalent-integration-db-dumps/dump.sql.gz server/src/test/resources/dump.sql.gz
-          if [ ! -f server/src/test/resources/dump.sql.gz ]; then
-            echo "Error: Dump file not found at server/src/test/resources/dump.sql.gz"
-            exit 1
-          fi
-          ls -lh server/src/test/resources/dump.sql.gz
-          gunzip -t server/src/test/resources/dump.sql.gz || { echo "Error: Dump file is corrupted or empty"; exit 1; }
-          sha256sum server/src/test/resources/dump.sql.gz || { echo "Error: Failed to compute checksum"; exit 1; }
+          aws s3 cp s3://cti-edu-test-bucket/dump.sql.gz server/src/test/resources/dump.sql.gz
+
+      - name: Verify dump file exists and is valid gzip
+        run: |
+          echo "Checking contents of server/src/test/resources:"
+          ls -lh server/src/test/resources
+          
+          echo "Checking if it's a valid gzip file:"
           file server/src/test/resources/dump.sql.gz
-          chmod 644 server/src/test/resources/dump.sql.gz
-          ls -R server/src/test  # Verify directory structure
+          
+          echo "Preview of decompressed contents (first 20 lines):"
+          zcat server/src/test/resources/dump.sql.gz | head -n 20
 
-      - name: Run integration tests
-        run: ./gradlew server:test --tests "org.tctalent.server.integration.repo.*" --stacktrace --info
 
+      - name: Run integration tests (Testcontainers will use Docker)
+        run: ./gradlew server:build server:test
       - name: Upload test report
         if: failure()
         uses: actions/upload-artifact@v4
