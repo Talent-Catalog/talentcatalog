@@ -12,6 +12,7 @@ on:
 
 env:
   AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPBWDGF7
+  ORG_GRADLE_PROJECT_org_gradle_jvmargs: -Xmx4096m
 
 jobs:
   build:
