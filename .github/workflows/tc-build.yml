@@ -45,8 +45,8 @@ jobs:
         run: ./gradlew server:build
 
       - name: Upload test report
-        if: failure() # only if tests fail
-        uses: actions/upload-artifact@v3
+        if: failure() # only uploads on test failure
+        uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: server/build/reports/tests/test
