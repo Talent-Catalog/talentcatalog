@@ -43,3 +43,10 @@ jobs:
 
       - name: Build and Run integration tests (Testcontainers will use Docker)
         run: ./gradlew server:build
+
+      - name: Upload test report
+        if: failure() # only if tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: server/build/reports/tests/test
