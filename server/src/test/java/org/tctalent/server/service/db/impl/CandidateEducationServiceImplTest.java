@@ -17,12 +17,17 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CountryTestData.LEBANON;
+import static org.tctalent.server.data.UserTestData.getAdminUser;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +37,16 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateEducation;
+import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.EducationMajor;
+import org.tctalent.server.model.db.EducationType;
+import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateEducationRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.EducationMajorRepository;
@@ -48,10 +62,21 @@ class CandidateEducationServiceImplTest {
     private CandidateEducation education;
     private List<CandidateEducation> educationList;
     private UpdateCandidateEducationRequest updateRequest;
+    private Candidate candidate;
 
     private static final long CANDIDATE_ID = getCandidate().getId();
     private static final long EDUCATION_ID = 33L;
     private static final long COUNTRY_ID = 66L;
+    private static final long MAJOR_ID = 1L;
+    private static final User ADMIN_USER = getAdminUser();
+    private static final EducationType TYPE = EducationType.Bachelor;
+    private static final Country COUNTRY = LEBANON;
+    private static final EducationMajor MAJOR = new EducationMajor("Zoology", Status.active);
+    private static final Integer LENGTH = 4;
+    private static final String INSTITUTION = "Lebanese University";
+    private static final String COURSE_NAME = "Zoology & Microbiology";
+    private static final Integer YEAR_COMPLETED = 2022;
+    private static final boolean INCOMPLETE = false;
 
     @Mock private CandidateEducationRepository candidateEducationRepository;
     @Mock private CandidateService candidateService;
@@ -66,11 +91,18 @@ class CandidateEducationServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        candidate = getCandidate();
         createRequest = new CreateCandidateEducationRequest();
         createRequest.setCountryId(COUNTRY_ID);
+        createRequest.setEducationMajorId(MAJOR_ID);
         education = new CandidateEducation();
+        education.setId(EDUCATION_ID);
+        education.setCandidate(candidate);
         educationList = List.of(education, education);
         updateRequest = new UpdateCandidateEducationRequest();
+        updateRequest.setCountryId(COUNTRY_ID);
+        updateRequest.setId(EDUCATION_ID);
+        updateRequest.setMajorId(MAJOR_ID);
     }
 
     @Test
@@ -91,93 +123,202 @@ class CandidateEducationServiceImplTest {
         assertTrue(candidateEducationService.list(CANDIDATE_ID).isEmpty());
     }
 
-//    @Test
-//    @DisplayName("should throw when candidate not found")
-//    void createDestination_shouldThrow_whenCandidateNotFound() {
-//        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
-//
-//        Exception ex = assertThrows(NoSuchObjectException.class,
-//            () -> candidateDestinationService.createDestination(CANDIDATE_ID, createRequest));
-//
-//        assertTrue(ex.getMessage().contains(String.valueOf(CANDIDATE_ID)));
-//    }
-//
-//    @Test
-//    @DisplayName("should throw when country not found")
-//    void createDestination_shouldThrow_whenCountryNotFound() {
-//        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(CANDIDATE));
-//        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.empty());
-//
-//        Exception ex = assertThrows(NoSuchObjectException.class,
-//            () -> candidateDestinationService.createDestination(CANDIDATE_ID, createRequest));
-//
-//        assertTrue(ex.getMessage().contains(String.valueOf(COUNTRY_ID)));
-//    }
-//
-//    @Test
-//    @DisplayName("should create destination as expected")
-//    void createDestination_shouldCreateDestination() {
-//        createRequest.setInterest(INTEREST);
-//        createRequest.setNotes(NOTES);
-//
-//        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(CANDIDATE));
-//        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(UNITED_KINGDOM));
-//
-//        candidateDestinationService.createDestination(CANDIDATE_ID, createRequest);
-//
-//        verify(candidateDestinationRepository).save(destinationCaptor.capture());
-//        CandidateDestination result = destinationCaptor.getValue();
-//        assertEquals(result.getCandidate(), CANDIDATE);
-//        assertEquals(result.getCountry(), UNITED_KINGDOM);
-//        assertEquals(result.getInterest(), INTEREST);
-//        assertEquals(result.getNotes(), NOTES);
-//        assertEquals(result.getCandidate(), CANDIDATE);
-//    }
-//
-//    @Test
-//    @DisplayName("should throw when destination not found")
-//    void updateDestination_shouldThrow_whenDestinationNotFound() {
-//        given(candidateDestinationRepository.findById(DESTINATION_ID))
-//            .willReturn(Optional.empty());
-//
-//        Exception ex = assertThrows(NoSuchObjectException.class,
-//            () -> candidateDestinationService.updateDestination(DESTINATION_ID, updateRequest));
-//
-//        assertTrue(ex.getMessage().contains(String.valueOf(DESTINATION_ID)));
-//    }
-//
-//    @Test
-//    @DisplayName("should update and save destination as expected")
-//    void updateDestination_shouldUpdateAndSaveDestination() {
-//        updateRequest.setInterest(INTEREST);
-//        updateRequest.setNotes(NOTES);
-//
-//        given(candidateDestinationRepository.findById(DESTINATION_ID))
-//            .willReturn(Optional.of(destination));
-//
-//        candidateDestinationService.updateDestination(DESTINATION_ID, updateRequest);
-//
-//        verify(candidateDestinationRepository).save(destinationCaptor.capture());
-//        CandidateDestination result = destinationCaptor.getValue();
-//        assertEquals(result.getNotes(), NOTES);
-//        assertEquals(result.getInterest(), INTEREST);
-//    }
-//
-//    @Test
-//    @DisplayName("should return true when no exception thrown by delete method")
-//    void deleteDestination_shouldReturnTrue_whenNoExceptionThrown() {
-//        assertTrue(candidateDestinationService.deleteDestination(DESTINATION_ID));
-//    }
-//
-//    @Test
-//    @DisplayName("should throw when delete method throws")
-//    void deleteDestination_shouldThrow_whenDeleteMethodThrows() {
-//        doThrow(new EntityReferencedException("Delete failed"))
-//            .when(candidateDestinationRepository)
-//            .deleteById(DESTINATION_ID);
-//
-//        assertThrows(EntityReferencedException.class,
-//            () -> candidateDestinationService.deleteDestination(DESTINATION_ID));
-//    }
+    @Test
+    @DisplayName("should throw when candidate not found")
+    void createDestination_shouldThrow_whenCandidateNotFound() {
+        given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+        assertThrows(InvalidSessionException.class,
+            () -> candidateEducationService.createCandidateEducation(createRequest));
+    }
+
+    @Test
+    @DisplayName("should throw when country not found")
+    void createEducation_shouldThrow_whenCountryNotFound() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.empty());
+
+        Exception ex = assertThrows(NoSuchObjectException.class,
+            () -> candidateEducationService.createCandidateEducation(createRequest));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(COUNTRY_ID)));
+    }
+
+    @Test
+    @DisplayName("should throw when major not found")
+    void createEducation_shouldThrow_whenMajorNotFound() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(COUNTRY));
+        given(educationMajorRepository.findById(MAJOR_ID)).willReturn(Optional.empty());
+
+        Exception ex = assertThrows(NoSuchObjectException.class,
+            () -> candidateEducationService.createCandidateEducation(createRequest));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(MAJOR_ID)));
+    }
+
+    @Test
+    @DisplayName("should create education as expected")
+    void createEducation() {
+        createRequest.setCandidateId(CANDIDATE_ID);
+        createRequest.setCountryId(COUNTRY_ID);
+        createRequest.setEducationType(TYPE);
+        createRequest.setLengthOfCourseYears(LENGTH);
+        createRequest.setInstitution(INSTITUTION);
+        createRequest.setCourseName(COURSE_NAME);
+        createRequest.setYearCompleted(YEAR_COMPLETED);
+        createRequest.setIncomplete(INCOMPLETE);
+
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(candidateService.getCandidateFromRequest(createRequest.getCandidateId()))
+            .willReturn(candidate);
+        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(COUNTRY));
+        given(educationMajorRepository.findById(MAJOR_ID)).willReturn(Optional.of(MAJOR));
+
+        candidateEducationService.createCandidateEducation(createRequest);
+
+        verify(candidateEducationRepository).save(educationCaptor.capture());
+        CandidateEducation result = educationCaptor.getValue();
+        assertEquals(candidate, education.getCandidate());
+        verifyEducation(result);
+
+        verify(candidateService).save(candidate, true);
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
+    }
+
+    @Test
+    @DisplayName("should throw when user not logged in")
+    void updateEducation_shouldThrow_whenUserNotLoggedIn() {
+        given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+        assertThrows(InvalidSessionException.class,
+            () -> candidateEducationService.updateCandidateEducation(updateRequest));
+    }
+
+    @Test
+    @DisplayName("should throw when education not found")
+    void updateEducation_shouldThrow_whenEducationNotFound() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(candidateEducationRepository.findById(EDUCATION_ID)).willReturn(Optional.empty());
+
+        Exception ex = assertThrows(NoSuchObjectException.class,
+            () -> candidateEducationService.updateCandidateEducation(updateRequest));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(EDUCATION_ID)));
+    }
+
+    @Test
+    @DisplayName("should throw when country not found")
+    void updateEducation_shouldThrow_whenCountryNotFound() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(candidateEducationRepository.findById(EDUCATION_ID))
+            .willReturn(Optional.of(education));
+        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.empty());
+
+        Exception ex = assertThrows(NoSuchObjectException.class,
+            () -> candidateEducationService.updateCandidateEducation(updateRequest));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(COUNTRY_ID)));
+    }
+
+    @Test
+    @DisplayName("should throw when major not found")
+    void updateEducation_shouldThrow_whenMajorNotFound() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(candidateEducationRepository.findById(EDUCATION_ID))
+            .willReturn(Optional.of(education));
+        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(COUNTRY));
+        given(educationMajorRepository.findById(MAJOR_ID)).willReturn(Optional.empty());
+
+        Exception ex = assertThrows(NoSuchObjectException.class,
+            () -> candidateEducationService.updateCandidateEducation(updateRequest));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(MAJOR_ID)));
+    }
+
+    @Test
+    @DisplayName("should update and save destination as expected")
+    void updateDestination_shouldUpdateAndSaveDestination() {
+        updateRequest.setCountryId(COUNTRY_ID);
+        updateRequest.setEducationType(TYPE);
+        updateRequest.setLengthOfCourseYears(LENGTH);
+        updateRequest.setInstitution(INSTITUTION);
+        updateRequest.setCourseName(COURSE_NAME);
+        updateRequest.setYearCompleted(YEAR_COMPLETED);
+        updateRequest.setIncomplete(INCOMPLETE);
+
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(candidateEducationRepository.findById(EDUCATION_ID))
+            .willReturn(Optional.of(education));
+        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(COUNTRY));
+        given(educationMajorRepository.findById(MAJOR_ID)).willReturn(Optional.of(MAJOR));
+        given(candidateEducationRepository.save(education)).willReturn(education);
+
+        candidateEducationService.updateCandidateEducation(updateRequest);
+
+        verify(candidateEducationRepository).save(educationCaptor.capture());
+        CandidateEducation result = educationCaptor.getValue();
+        verifyEducation(result);
+
+        verify(candidateService).save(candidate, true);
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
+    }
+
+    private static void verifyEducation(CandidateEducation education) {
+        assertEquals(COUNTRY, education.getCountry());
+        assertEquals(TYPE, education.getEducationType());
+        assertEquals(LENGTH, education.getLengthOfCourseYears());
+        assertEquals(INSTITUTION, education.getInstitution());
+        assertEquals(COURSE_NAME, education.getCourseName());
+        assertEquals(YEAR_COMPLETED, education.getYearCompleted());
+        assertEquals(INCOMPLETE, education.getIncomplete());
+    }
+
+    @Test
+    @DisplayName("should throw when user not logged in")
+    void deleteCandidateEducation_shouldThrow_whenUserNotLoggedIn() {
+        given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+        assertThrows(InvalidSessionException.class,
+            () -> candidateEducationService.deleteCandidateEducation(EDUCATION_ID));
+    }
+
+    @Test
+    @DisplayName("should throw when education not found")
+    void deleteCandidateEducation_shouldThrow_whenEducationNotFound() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(candidateEducationRepository.findByIdLoadCandidate(EDUCATION_ID)).willReturn(Optional.empty());
+
+        assertThrows(NoSuchObjectException.class,
+            () -> candidateEducationService.deleteCandidateEducation(EDUCATION_ID));
+    }
+
+    @Test
+    @DisplayName("should throw when user not authorised")
+    void deleteCandidateEducation_shouldThrow_whenUserNotAuthorised() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(candidateEducationRepository.findByIdLoadCandidate(EDUCATION_ID))
+            .willReturn(Optional.of(education));
+        given(authService.authoriseLoggedInUser(candidate)).willReturn(false);
+
+        assertThrows(UnauthorisedActionException.class,
+            () -> candidateEducationService.deleteCandidateEducation(EDUCATION_ID));
+    }
+
+    @Test
+    @DisplayName("should delete education and save candidate")
+    void deleteCandidateEducation_shouldDeleteEducationAndSaveCandidate() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(candidateEducationRepository.findByIdLoadCandidate(EDUCATION_ID))
+            .willReturn(Optional.of(education));
+        given(authService.authoriseLoggedInUser(candidate)).willReturn(true);
+
+        candidateEducationService.deleteCandidateEducation(EDUCATION_ID);
+
+        verify(candidateEducationRepository).delete(education);
+
+        verify(candidateService).save(candidate, true);
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
+    }
 
 }
