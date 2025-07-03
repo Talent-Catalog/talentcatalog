@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-button',
+  selector: 'tc-button',
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss'],
 })
