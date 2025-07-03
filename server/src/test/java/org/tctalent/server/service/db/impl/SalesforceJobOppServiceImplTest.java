@@ -78,7 +78,7 @@ class SalesforceJobOppServiceImplTest {
     void getJobOpp_shouldReturnJobOpp_whenFound() {
         given(salesforceJobOppRepository.findById(anyLong())).willReturn(Optional.of(shortJob));
 
-        assertEquals(salesforceJobOppService.getJobOpp(1L), shortJob);
+        assertEquals(shortJob, salesforceJobOppService.getJobOpp(1L));
     }
 
     @Test
@@ -94,7 +94,7 @@ class SalesforceJobOppServiceImplTest {
     void getJobOppById_shouldReturnJobOpp_whenFound() {
         given(salesforceJobOppRepository.findBySfId(anyString())).willReturn(Optional.of(shortJob));
 
-        assertEquals(salesforceJobOppService.getJobOppById(SF_ID), shortJob);
+        assertEquals(shortJob, salesforceJobOppService.getJobOppById(SF_ID));
     }
 
     @Test
@@ -110,7 +110,7 @@ class SalesforceJobOppServiceImplTest {
     void getJobOppByUrl_shouldReturnJobOpp_whenFound() {
         given(salesforceJobOppRepository.findBySfId(anyString())).willReturn(Optional.of(shortJob));
 
-        assertEquals(salesforceJobOppService.getJobOppByUrl(SF_URL), shortJob);
+        assertEquals(shortJob, salesforceJobOppService.getJobOppByUrl(SF_URL));
     }
 
     @Test
