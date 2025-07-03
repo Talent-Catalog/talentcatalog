@@ -1,9 +1,13 @@
 package org.tctalent.server.integration.helper;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.zip.GZIPInputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.context.DynamicPropertyRegistry;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.MountableFile;
@@ -34,7 +38,6 @@ public class PostgresTestContainer {
       .withDatabaseName(DB_NAME)
       .withUsername(DB_USER)
       .withPassword(DB_PASSWORD)
-      .withFileSystemBind(getDumpPath(), getContainerMountPath(), org.testcontainers.containers.BindMode.READ_ONLY)
       .withReuse(true);
 
   static {
@@ -49,7 +52,7 @@ public class PostgresTestContainer {
   public static void startContainer() throws IOException, InterruptedException {
     container.start();
     createSchema();
-//    copyDumpFile();
+    copyDumpFile();
     importDump();
   }
 
@@ -72,27 +75,32 @@ public class PostgresTestContainer {
   /**
    * Copies the SQL dump into the container.
    */
-  private static void copyDumpFile() {
-    log.info("Transferring dump file to container...");
-    container.withFileSystemBind(getDumpPath(), getContainerMountPath(), BindMode.READ_ONLY);
+  private static void copyDumpFile() throws IOException {
+    log.info("Extracting and transferring dump file to container...");
+
+    // Extract dump.sql.gz to a temporary .sql file
+    String extractedDumpPath = extractGzDumpToTemp();
+
+    // Copy the extracted SQL dump file to the container
+    container.copyFileToContainer(MountableFile.forHostPath(extractedDumpPath), getContainerMountPath());
 
     log.info("Dump file transfer complete.");
   }
+
 
   /**
    * Executes the SQL dump inside the container to preload schema and data.
    */
   private static void importDump() throws IOException, InterruptedException {
-    log.info("Importing dump inside container...");
-    String importCommand = "gzip -dc " + getContainerMountPath() + " | psql -U " + DB_USER + " -d " + DB_NAME;
-
+    log.info("Running SQL dump inside the container...");
     try {
-      container.execInContainer("sh", "-c", importCommand);
-      log.info("Dump import completed successfully.");
+      container.execInContainer(psqlImportCommand());
     } catch (IOException | InterruptedException e) {
-      log.error("Failed to import dump file: {}", e.getMessage());
+      log.error("Failed to import dump: {}", e.getMessage());
       if (e instanceof InterruptedException) throw e;
     }
+    log.info("Dump import complete. JDBC URL: {}", container.getJdbcUrl());
+    log.info("Database is ready: {}", container.isRunning());
   }
 
   /**
@@ -140,4 +148,32 @@ public class PostgresTestContainer {
   private static String[] psqlImportCommand() {
     return new String[]{"psql", "-d", DB_NAME, "-U", DB_USER, "-f", getContainerMountPath()};
   }
+
+  private static String extractGzDumpToTemp() throws IOException {
+    String gzDumpPath = getDumpPath(); // e.g. /path/to/dump.sql.gz
+    File gzFile = new File(gzDumpPath);
+    if (!gzFile.exists()) {
+      throw new IOException("Dump gzip file not found: " + gzDumpPath);
+    }
+
+    // Create temp file for extracted SQL
+    File tempSqlFile = Files.createTempFile("dump", ".sql").toFile();
+    tempSqlFile.deleteOnExit();
+
+    try (
+        FileInputStream fis = new FileInputStream(gzFile);
+        GZIPInputStream gis = new GZIPInputStream(fis);
+        FileOutputStream fos = new FileOutputStream(tempSqlFile);
+    ) {
+      byte[] buffer = new byte[8192];
+      int len;
+      while ((len = gis.read(buffer)) > 0) {
+        fos.write(buffer, 0, len);
+      }
+    }
+
+    log.info("Extracted dump.sql.gz to temporary file: {}", tempSqlFile.getAbsolutePath());
+    return tempSqlFile.getAbsolutePath();
+  }
+
 }

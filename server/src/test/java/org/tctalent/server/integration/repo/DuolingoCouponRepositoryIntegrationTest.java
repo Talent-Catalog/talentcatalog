@@ -16,11 +16,14 @@
 
 package org.tctalent.server.integration.repo;
 
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
+import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
@@ -56,6 +59,11 @@ public class DuolingoCouponRepositoryIntegrationTest extends BaseDBIntegrationTe
   private DuolingoCoupon testCoupon;
   private Candidate testCandidate;
 
+
+  @BeforeAll
+  public static void setup() throws IOException, InterruptedException {
+    PostgresTestContainer.startContainer();
+  }
   /**
    * Sets up test data by creating a user, a candidate, and two Duolingo coupons (one assigned, one unassigned).
    */

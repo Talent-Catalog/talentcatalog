@@ -16,12 +16,15 @@
 
 package org.tctalent.server.integration.repo;
 
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
+import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.User;
@@ -50,6 +53,11 @@ public class CandidateCertificationRepositoryIntegrationTest extends BaseDBInteg
 
   private CandidateCertification testCertification;
   private Candidate testCandidate;
+
+  @BeforeAll
+  public static void setup() throws IOException, InterruptedException {
+    PostgresTestContainer.startContainer();
+  }
 
   /**
    * Sets up test data by creating a user, candidate, and two certifications associated with the candidate.

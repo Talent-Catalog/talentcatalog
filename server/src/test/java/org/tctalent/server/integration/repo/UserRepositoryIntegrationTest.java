@@ -5,12 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
+import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.integration.helper.TestDataFactory;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
@@ -26,6 +29,11 @@ public class UserRepositoryIntegrationTest extends BaseDBIntegrationTest {
   private UserRepository userRepository;
 
   private User testUser;
+
+  @BeforeAll
+  public static void setup() throws IOException, InterruptedException {
+    PostgresTestContainer.startContainer();
+  }
 
   @BeforeEach
   public void setUp() {
