@@ -41,7 +41,7 @@ jobs:
       - name: Download DB dump from S3
         run: |
           mkdir -p server/src/test/resources
-          aws s3 cp s3://cti-edu-test-bucket/dump.sql.gz server/src/test/resources/dump.sql.gz
+          aws s3 cp s3://tctalent-integration-db-dumps/dump.sql.gz server/src/test/resources/dump.sql.gz
 
       - name: Verify dump file exists and is valid gzip
         run: |
