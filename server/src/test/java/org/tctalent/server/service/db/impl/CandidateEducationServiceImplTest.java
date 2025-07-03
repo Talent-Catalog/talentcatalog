@@ -125,7 +125,7 @@ class CandidateEducationServiceImplTest {
 
     @Test
     @DisplayName("should throw when candidate not found")
-    void createDestination_shouldThrow_whenCandidateNotFound() {
+    void createEducation_shouldThrow_whenCandidateNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.empty());
 
         assertThrows(InvalidSessionException.class,
@@ -136,25 +136,28 @@ class CandidateEducationServiceImplTest {
     @DisplayName("should throw when country not found")
     void createEducation_shouldThrow_whenCountryNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.empty());
+        given(countryRepository.findById(createRequest.getCountryId()))
+            .willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateEducationService.createCandidateEducation(createRequest));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(COUNTRY_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(createRequest.getCountryId())));
     }
 
     @Test
     @DisplayName("should throw when major not found")
     void createEducation_shouldThrow_whenMajorNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(COUNTRY));
-        given(educationMajorRepository.findById(MAJOR_ID)).willReturn(Optional.empty());
+        given(countryRepository.findById(createRequest.getCountryId()))
+            .willReturn(Optional.of(COUNTRY));
+        given(educationMajorRepository.findById(createRequest.getEducationMajorId()))
+            .willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateEducationService.createCandidateEducation(createRequest));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(MAJOR_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(createRequest.getEducationMajorId())));
     }
 
     @Test
@@ -172,8 +175,10 @@ class CandidateEducationServiceImplTest {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
         given(candidateService.getCandidateFromRequest(createRequest.getCandidateId()))
             .willReturn(candidate);
-        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(COUNTRY));
-        given(educationMajorRepository.findById(MAJOR_ID)).willReturn(Optional.of(MAJOR));
+        given(countryRepository.findById(createRequest.getCountryId()))
+            .willReturn(Optional.of(COUNTRY));
+        given(educationMajorRepository.findById(createRequest.getEducationMajorId()))
+            .willReturn(Optional.of(MAJOR));
 
         candidateEducationService.createCandidateEducation(createRequest);
 
@@ -188,7 +193,7 @@ class CandidateEducationServiceImplTest {
 
     @Test
     @DisplayName("should throw when user not logged in")
-    void updateEducation_shouldThrow_whenUserNotLoggedIn() {
+    void updateCandidateEducation_shouldThrow_whenUserNotLoggedIn() {
         given(authService.getLoggedInUser()).willReturn(Optional.empty());
 
         assertThrows(InvalidSessionException.class,
@@ -197,48 +202,51 @@ class CandidateEducationServiceImplTest {
 
     @Test
     @DisplayName("should throw when education not found")
-    void updateEducation_shouldThrow_whenEducationNotFound() {
+    void updateCandidateEducation_shouldThrow_whenEducationNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateEducationRepository.findById(EDUCATION_ID)).willReturn(Optional.empty());
+        given(candidateEducationRepository.findById(updateRequest.getId()))
+            .willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateEducationService.updateCandidateEducation(updateRequest));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(EDUCATION_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(updateRequest.getId())));
     }
 
     @Test
     @DisplayName("should throw when country not found")
-    void updateEducation_shouldThrow_whenCountryNotFound() {
+    void updateCandidateEducation_shouldThrow_whenCountryNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateEducationRepository.findById(EDUCATION_ID))
+        given(candidateEducationRepository.findById(updateRequest.getId()))
             .willReturn(Optional.of(education));
-        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.empty());
+        given(countryRepository.findById(updateRequest.getCountryId())).willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateEducationService.updateCandidateEducation(updateRequest));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(COUNTRY_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(updateRequest.getCountryId())));
     }
 
     @Test
     @DisplayName("should throw when major not found")
-    void updateEducation_shouldThrow_whenMajorNotFound() {
+    void updateCandidateEducation_shouldThrow_whenMajorNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateEducationRepository.findById(EDUCATION_ID))
+        given(candidateEducationRepository.findById(updateRequest.getId()))
             .willReturn(Optional.of(education));
-        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(COUNTRY));
-        given(educationMajorRepository.findById(MAJOR_ID)).willReturn(Optional.empty());
+        given(countryRepository.findById(updateRequest.getCountryId()))
+            .willReturn(Optional.of(COUNTRY));
+        given(educationMajorRepository.findById(updateRequest.getMajorId()))
+            .willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateEducationService.updateCandidateEducation(updateRequest));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(MAJOR_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(updateRequest.getMajorId())));
     }
 
     @Test
-    @DisplayName("should update and save destination as expected")
-    void updateDestination_shouldUpdateAndSaveDestination() {
+    @DisplayName("should update and save education as expected")
+    void updateCandidateEducation_shouldUpdateAndSaveEducation() {
         updateRequest.setCountryId(COUNTRY_ID);
         updateRequest.setEducationType(TYPE);
         updateRequest.setLengthOfCourseYears(LENGTH);
@@ -248,10 +256,12 @@ class CandidateEducationServiceImplTest {
         updateRequest.setIncomplete(INCOMPLETE);
 
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateEducationRepository.findById(EDUCATION_ID))
+        given(candidateEducationRepository.findById(updateRequest.getId()))
             .willReturn(Optional.of(education));
-        given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(COUNTRY));
-        given(educationMajorRepository.findById(MAJOR_ID)).willReturn(Optional.of(MAJOR));
+        given(countryRepository.findById(updateRequest.getCountryId()))
+            .willReturn(Optional.of(COUNTRY));
+        given(educationMajorRepository.findById(updateRequest.getMajorId()))
+            .willReturn(Optional.of(MAJOR));
         given(candidateEducationRepository.save(education)).willReturn(education);
 
         candidateEducationService.updateCandidateEducation(updateRequest);
