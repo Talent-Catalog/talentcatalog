@@ -10,7 +10,7 @@ import {FormsModule, UntypedFormControl} from "@angular/forms";
 import {PhoneNumber} from 'libphonenumber-js';
 import {By} from "@angular/platform-browser";
 
-fdescribe('IntlPhoneInputComponent', () => {
+describe('IntlPhoneInputComponent', () => {
   let component: IntlPhoneInputComponent;
   let fixture: ComponentFixture<IntlPhoneInputComponent>;
   let countryServiceSpy: jasmine.SpyObj<CountryService>;
