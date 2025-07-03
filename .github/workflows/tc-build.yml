@@ -40,7 +40,7 @@ jobs:
       - name: Download DB dump from S3
         run: |
           mkdir -p server/src/test/resources
-          aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
+          aws s3 cp s3://tctalent-integration-db-dumps/dump.sql.gz server/src/test/resources/dump.sql.gz
 
       - name: Build and Run integration tests (Testcontainers will use Docker)
         run: ./gradlew server:build

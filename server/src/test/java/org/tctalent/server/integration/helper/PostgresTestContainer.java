@@ -24,7 +24,7 @@ public class PostgresTestContainer {
   private static final String DB_NAME = "tctalent";
   private static final String DB_USER = "tctalent";
   private static final String DB_PASSWORD = "tctalent";
-  public static final String DEFAULT_DUMP_PATH = "/dump.sql";
+  public static final String DEFAULT_DUMP_PATH = "/dump.sql.gz";
   public static final String ENV_DUMP_PATH_KEY = "testcontainers.dump.location";
   public static final String ENV_CONTAINER_MOUNT_KEY = "testcontainers.container.mount";
 
@@ -80,15 +80,15 @@ public class PostgresTestContainer {
    * Executes the SQL dump inside the container to preload schema and data.
    */
   private static void importDump() throws IOException, InterruptedException {
-    log.info("Running SQL dump inside the container...");
+    log.info("Importing dump using gunzip stream...");
     try {
-      container.execInContainer(psqlImportCommand());
+      container.execInContainer("bash", "-c",
+          "gunzip -c " + getContainerMountPath() + " | psql -U " + DB_USER + " -d " + DB_NAME);
     } catch (IOException | InterruptedException e) {
       log.error("Failed to import dump: {}", e.getMessage());
       if (e instanceof InterruptedException) throw e;
     }
     log.info("Dump import complete. JDBC URL: {}", container.getJdbcUrl());
-    log.info("Database is ready: {}", container.isRunning());
   }
 
   /**
