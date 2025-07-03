@@ -117,16 +117,8 @@ export class CandidateService {
     return this.http.post<Candidate>(`${this.apiUrl}/certifications`, request);
   }
 
-  getStatus() {
-    return this.http.get<Candidate>(`${this.apiUrl}/status`);
-  }
-
   getProfile(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/profile`)
-  }
-
-  getCandidateNumber() {
-    return this.http.get<Candidate>(`${this.apiUrl}/candidate-number`);
   }
 
   downloadCv() {
