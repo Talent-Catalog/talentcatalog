@@ -13,16 +13,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.MountableFile;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
-/**
- * Provides a reusable PostgreSQL Testcontainer instance preloaded with a SQL dump.
- * This setup ensures the database is ready with expected schema and data before
- * Spring Boot initializes.
- *
- * Configuration Notes:
- * - Requires `testcontainers.properties` to be on the classpath.
- * - Set `TCTALENT_DB_HOME` or override via `testcontainers.dump.location`.
- * - Ensure the SQL dump path starts with a `/` (e.g., `/my-dump.sql`).
- */
 @Slf4j
 public class PostgresTestContainer {
 
@@ -32,6 +22,7 @@ public class PostgresTestContainer {
   public static final String DEFAULT_DUMP_PATH = "/dump.sql.gz";
   public static final String ENV_DUMP_PATH_KEY = "testcontainers.dump.location";
   public static final String ENV_CONTAINER_MOUNT_KEY = "testcontainers.container.mount";
+  private static final String CONTAINER_SQL_PATH = "/dump.sql"; // Use .sql extension
 
   @Container
   public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>(getImage())
@@ -46,9 +37,6 @@ public class PostgresTestContainer {
     log.info("Mount path inside container: {}", getContainerMountPath());
   }
 
-  /**
-   * Starts the PostgreSQL container and prepares the schema and users.
-   */
   public static void startContainer() throws IOException, InterruptedException {
     container.start();
     createSchema();
@@ -56,9 +44,6 @@ public class PostgresTestContainer {
     importDump();
   }
 
-  /**
-   * Executes SQL commands to create the target database and users.
-   */
   private static void createSchema() throws IOException, InterruptedException {
     log.info("Creating schema and roles...");
     try {
@@ -72,25 +57,18 @@ public class PostgresTestContainer {
     log.info("Schema and roles initialized.");
   }
 
-  /**
-   * Copies the SQL dump into the container.
-   */
   private static void copyDumpFile() throws IOException {
     log.info("Extracting and transferring dump file to container...");
 
     // Extract dump.sql.gz to a temporary .sql file
     String extractedDumpPath = extractGzDumpToTemp();
 
-    // Copy the extracted SQL dump file to the container
-    container.copyFileToContainer(MountableFile.forHostPath(extractedDumpPath), getContainerMountPath());
+    // Copy the extracted SQL dump file to the container with .sql extension
+    container.copyFileToContainer(MountableFile.forHostPath(extractedDumpPath), CONTAINER_SQL_PATH);
 
     log.info("Dump file transfer complete.");
   }
 
-
-  /**
-   * Executes the SQL dump inside the container to preload schema and data.
-   */
   private static void importDump() throws IOException, InterruptedException {
     log.info("Running SQL dump inside the container...");
     try {
@@ -103,18 +81,11 @@ public class PostgresTestContainer {
     log.info("Database is ready: {}", container.isRunning());
   }
 
-  /**
-   * Provides Spring Boot with the correct datasource properties from the container.
-   *
-   * @param registry Spring's dynamic property registry
-   */
   public static void injectContainerProperties(DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", container::getJdbcUrl);
     registry.add("spring.datasource.username", container::getUsername);
     registry.add("spring.datasource.password", container::getPassword);
   }
-
-  // Utility methods
 
   private static String getImage() {
     return "postgres:14";
@@ -141,16 +112,15 @@ public class PostgresTestContainer {
 
   private static String getContainerMountPath() {
     return TestcontainersConfiguration.getInstance()
-        .getEnvVarOrProperty(ENV_CONTAINER_MOUNT_KEY,
-            "ERROR: Container mount path not defined");
+        .getEnvVarOrProperty(ENV_CONTAINER_MOUNT_KEY, CONTAINER_SQL_PATH);
   }
 
   private static String[] psqlImportCommand() {
-    return new String[]{"psql", "-d", DB_NAME, "-U", DB_USER, "-f", getContainerMountPath()};
+    return new String[]{"psql", "-d", DB_NAME, "-U", DB_USER, "-f", CONTAINER_SQL_PATH};
   }
 
   private static String extractGzDumpToTemp() throws IOException {
-    String gzDumpPath = getDumpPath(); // e.g. /path/to/dump.sql.gz
+    String gzDumpPath = getDumpPath(); // e.g., server/src/test/resources/dump.sql.gz
     File gzFile = new File(gzDumpPath);
     if (!gzFile.exists()) {
       throw new IOException("Dump gzip file not found: " + gzDumpPath);
@@ -163,7 +133,7 @@ public class PostgresTestContainer {
     try (
         FileInputStream fis = new FileInputStream(gzFile);
         GZIPInputStream gis = new GZIPInputStream(fis);
-        FileOutputStream fos = new FileOutputStream(tempSqlFile);
+        FileOutputStream fos = new FileOutputStream(tempSqlFile)
     ) {
       byte[] buffer = new byte[8192];
       int len;
@@ -175,5 +145,4 @@ public class PostgresTestContainer {
     log.info("Extracted dump.sql.gz to temporary file: {}", tempSqlFile.getAbsolutePath());
     return tempSqlFile.getAbsolutePath();
   }
-
 }
