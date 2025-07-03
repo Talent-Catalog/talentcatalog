@@ -3,6 +3,7 @@ package org.tctalent.server.integration.helper;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.context.DynamicPropertyRegistry;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.MountableFile;
@@ -72,7 +73,8 @@ public class PostgresTestContainer {
    */
   private static void copyDumpFile() {
     log.info("Transferring dump file to container...");
-    container.copyFileToContainer(MountableFile.forHostPath(getDumpPath()), getContainerMountPath());
+    container.withFileSystemBind(getDumpPath(), getContainerMountPath(), BindMode.READ_ONLY);
+
     log.info("Dump file transfer complete.");
   }
 
