@@ -34,6 +34,7 @@ public class PostgresTestContainer {
       .withDatabaseName(DB_NAME)
       .withUsername(DB_USER)
       .withPassword(DB_PASSWORD)
+      .withFileSystemBind(getDumpPath(), getContainerMountPath(), org.testcontainers.containers.BindMode.READ_ONLY)
       .withReuse(true);
 
   static {
@@ -48,7 +49,7 @@ public class PostgresTestContainer {
   public static void startContainer() throws IOException, InterruptedException {
     container.start();
     createSchema();
-    copyDumpFile();
+//    copyDumpFile();
     importDump();
   }
 
@@ -82,15 +83,16 @@ public class PostgresTestContainer {
    * Executes the SQL dump inside the container to preload schema and data.
    */
   private static void importDump() throws IOException, InterruptedException {
-    log.info("Importing dump using gunzip stream...");
+    log.info("Importing dump inside container...");
+    String importCommand = "gzip -dc " + getContainerMountPath() + " | psql -U " + DB_USER + " -d " + DB_NAME;
+
     try {
-      container.execInContainer("bash", "-c",
-          "gunzip -c " + getContainerMountPath() + " | psql -U " + DB_USER + " -d " + DB_NAME);
+      container.execInContainer("sh", "-c", importCommand);
+      log.info("Dump import completed successfully.");
     } catch (IOException | InterruptedException e) {
-      log.error("Failed to import dump: {}", e.getMessage());
+      log.error("Failed to import dump file: {}", e.getMessage());
       if (e instanceof InterruptedException) throw e;
     }
-    log.info("Dump import complete. JDBC URL: {}", container.getJdbcUrl());
   }
 
   /**
