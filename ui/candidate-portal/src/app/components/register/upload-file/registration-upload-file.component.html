@@ -54,7 +54,7 @@
 
 </div>
 
-<app-registration-footer [type]="edit ? 'update' : 'submit'"
+<app-registration-footer [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? cancel() : back() "
-                         (nextClicked)="edit ? update() : submit()">
+                         (nextClicked)="edit ? update() : next()">
 </app-registration-footer>

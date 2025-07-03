@@ -95,7 +95,6 @@ public class SalesforceJobOppTestData {
         job.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         job.setUpdatedBy(getAuditUser());
         job.setUpdatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
-        job.setCandidateOpportunities(Set.of(getChildCandidateOpp(job)));
         return job;
     }
 
@@ -128,11 +127,12 @@ public class SalesforceJobOppTestData {
         return joi;
     }
 
-    private static CandidateOpportunity getChildCandidateOpp(SalesforceJobOpp job) {
+    public static CandidateOpportunity getChildCandidateOpp(
+        long id, SalesforceJobOpp job, CandidateOpportunityStage stage ) {
         CandidateOpportunity co = new CandidateOpportunity();
-        co.setId(99L);
+        co.setId(id);
         co.setJobOpp(job);
-        co.setStage(CandidateOpportunityStage.cvReview);
+        co.setStage(stage);
         co.setNextStep("Review CVs");
         co.setNextStepDueDate(LocalDate.parse("2020-01-01"));
         co.setCandidate(getCandidate());

@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -31,12 +31,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getEmployerPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 import static org.tctalent.server.data.SalesforceJobOppTestData.createUpdateJobRequestAndExpectedJob;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getChildCandidateOpp;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getEmployer;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
@@ -63,6 +65,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -87,6 +90,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Account;
+import org.tctalent.server.repository.db.JobSpecification;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.source.CopySourceContentsRequest;
@@ -130,7 +134,6 @@ class JobServiceImplTest {
     private SalesforceJobOpp expectedJob;
     private UpdateJobRequest updateRequestExtended;
 
-    private static final UpdateJobTestData DATA = createUpdateJobRequestAndExpectedJob();
     private static final JobOppIntake JOB_OPP_INTAKE = new JobOppIntake();
     private static final JobIntakeData JOB_INTAKE_DATA = new JobIntakeData();
     private static final SearchJobRequest SEARCH_JOB_REQUEST = new SearchJobRequest();
@@ -147,6 +150,7 @@ class JobServiceImplTest {
     private static final long JOB_ID = 11L;
     private static final String NAME = "name";
     private static final String URL = "www.url.com";
+    private static final Specification<SalesforceJobOpp> FAKE_SPEC = (root, query, cb) -> null;
 
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
@@ -179,6 +183,10 @@ class JobServiceImplTest {
     void setUp() {
         shortJob = getSalesforceJobOppMinimal();
         longJob = getSalesforceJobOppExtended();
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.cvReview)
+        ));
+
         updateJobRequest = new UpdateJobRequest();
         updateJobRequest.setStage(JobOpportunityStage.cvReview);
         updateJobRequest.setNextStep(NEXT_STEP);
@@ -193,22 +201,65 @@ class JobServiceImplTest {
         updateLinkRequest = new UpdateLinkRequest();
         updateLinkRequest.setUrl(URL);
         updateLinkRequest.setName(NAME);
-        expectedJob = DATA.expectedJob();
-        updateRequestExtended = DATA.request();
+        UpdateJobTestData data = createUpdateJobRequestAndExpectedJob();
+        expectedJob = data.expectedJob();
+        updateRequestExtended = data.request();
+    }
+
+    @Test
+    @DisplayName("should update candidate opp to closed stage when job opp closed")
+    void updateJob_shouldCloseOpenCandidateOpp_whenJobOppClosed() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(1L)).willReturn(Optional.of(longJob));
+
+        //Add two active candidate opps to longJob (job 1L)
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.testing)
+        ));
+
+        updateJobRequest.setStage(JobOpportunityStage.noJobOffer);
+        jobService.updateJob(1L, updateJobRequest);
+
+        verify(candidateOpportunityService).createUpdateCandidateOpportunities(
+            anyCollection(), eq(longJob), caseParamsCaptor.capture());
+        assertNotNull(caseParamsCaptor.getValue().getStage());
+        assertTrue(caseParamsCaptor.getValue().getStage().isClosed());
+
+        String closingComments = caseParamsCaptor.getValue().getClosingComments();
+        assertNotNull(closingComments);
+
+        //Comment should note the original stage before it was closed
+        assertTrue(closingComments.contains("was Testing"));
     }
 
     @Test
     @DisplayName("should update open candidate opps to closed stage when job opp closed")
     void updateJob_shouldCloseOpenCandidateOpps_whenJobOppClosed() {
-        updateJobRequest.setStage(JobOpportunityStage.noJobOffer);
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(1L)).willReturn(Optional.of(longJob));
 
+        //Add two active candidate opps to longJob (job 1L)
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.cvReview),
+            getChildCandidateOpp(100L, longJob, CandidateOpportunityStage.testPreparation),
+            getChildCandidateOpp(101L, longJob, CandidateOpportunityStage.cvReview)
+        ));
+
+        updateJobRequest.setStage(JobOpportunityStage.hiringCompleted);
         jobService.updateJob(1L, updateJobRequest);
 
         verify(candidateOpportunityService).createUpdateCandidateOpportunities(
             anyCollection(), eq(longJob), caseParamsCaptor.capture());
+        assertNotNull(caseParamsCaptor.getValue().getStage());
         assertTrue(caseParamsCaptor.getValue().getStage().isClosed());
+
+        String closingComments = caseParamsCaptor.getValue().getClosingComments();
+        assertNotNull(closingComments);
+
+        //Comment should note both original stages
+        assertTrue(closingComments.contains("Test preparation") &&
+                closingComments.contains("CV review")
+            );
     }
 
     @Test
@@ -560,14 +611,16 @@ class JobServiceImplTest {
 
         given(request.getPageRequest()).willReturn(pageRequest);
         given(userService.getLoggedInUser()).willReturn(adminUser);
-        given(salesforceJobOppRepository.findAll(
-            any(Specification.class),
-            eq(pageRequest))
-        ).willReturn(page);
+        given(salesforceJobOppRepository.findAll(any(Specification.class), eq(pageRequest)))
+            .willReturn(page);
 
-        Page<SalesforceJobOpp> result = jobService.searchJobs(request);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(page, result);
+            assertEquals(page, jobService.searchJobs(request));
+        }
     }
 
     @Test
@@ -694,10 +747,15 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L)))
             .willReturn(expectedUnreadIds);
 
-        List<Long> result = jobService.findUnreadChatsInOpps(SEARCH_JOB_REQUEST);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(expectedUnreadIds, result);
-        verify(salesforceJobOppRepository).findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L));
+            assertEquals(expectedUnreadIds, jobService.findUnreadChatsInOpps(SEARCH_JOB_REQUEST));
+            verify(salesforceJobOppRepository)
+                .findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L));
+        }
     }
 
     @Test
@@ -715,10 +773,14 @@ class JobServiceImplTest {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findAll(any(Specification.class))).willReturn(emptyJobsList);
 
-        List<SalesforceJobOpp> result = jobService.searchJobsUnpaged(SEARCH_JOB_REQUEST);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(emptyJobsList, result);
-        verify(salesforceJobOppRepository).findAll(any(Specification.class));
+            assertEquals(emptyJobsList, jobService.searchJobsUnpaged(SEARCH_JOB_REQUEST));
+            verify(salesforceJobOppRepository).findAll(any(Specification.class));
+        }
     }
 
     @Test
