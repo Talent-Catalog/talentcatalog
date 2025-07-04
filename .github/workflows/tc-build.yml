@@ -1,5 +1,6 @@
 # This workflow will build a Java project with Gradle when changes are pushed to any branch
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+# .github/workflows/tc-build.yml
 name: tc-build
 
 on:
@@ -10,17 +11,18 @@ on:
       - '!master'
 
 env:
-  AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPBWDGF7
   ORG_GRADLE_PROJECT_org_gradle_jvmargs: -Xmx4096m
-  testcontainers.container.mount: /dump.sql  # Updated to .sql
+  testcontainers.container.mount: /dump.sql
   testcontainers.dump.location: server/src/test/resources/dump.sql.gz
-  testcontainers.reuse.enabled: true
+  testcontainers.reuse.enabled: false  # Disable reuse to avoid container state issues
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Java 17
         uses: actions/setup-java@v2
@@ -34,7 +36,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
           aws-region: us-east-1
 
@@ -42,24 +44,39 @@ jobs:
         run: |
           mkdir -p server/src/test/resources
           aws s3 cp s3://tctalent-integration-db-dumps/dump.sql.gz server/src/test/resources/dump.sql.gz
-          ls -lh server/src/test/resources/dump.sql.gz
-          gunzip -t server/src/test/resources/dump.sql.gz
 
       - name: Verify dump file exists and is valid gzip
         run: |
-          echo "Checking contents of server/src/test/resources:"
+          echo "📦 Contents of server/src/test/resources:"
           ls -lh server/src/test/resources
-          
-          echo "Checking if it's a valid gzip file:"
+
+          echo "🔍 File type:"
           file server/src/test/resources/dump.sql.gz
-          
-          echo "Preview of decompressed contents (first 20 lines):"
-          zcat server/src/test/resources/dump.sql.gz | head -n 20
 
-      - name: Run integration tests
-        run: ./gradlew server:test --tests "org.tctalent.server.integration.repo.*" --stacktrace --info
+          echo "🧪 Gzip test:"
+          gunzip -t server/src/test/resources/dump.sql.gz
 
-      - name: Upload test report
+          echo "📖 Preview of dump.sql.gz (first 20 lines):"
+          gzip -d -c server/src/test/resources/dump.sql.gz | head -n 20
+
+      - name: Debug disk space and heap settings
+        run: |
+          echo "💾 Disk usage:"
+          df -h
+          echo "🧠 Java heap config:"
+          echo "$ORG_GRADLE_PROJECT_org_gradle_jvmargs"
+
+      - name: Check workspace size
+        run: du -sh .
+
+      - name: Run integration tests (specific class, for debugging)
+        run: ./gradlew server:test --tests "org.tctalent.server.integration.repo.CandidateCertificationRepositoryIntegrationTest" --info --stacktrace --debug
+
+      # Replace above step with this one later to run all tests:
+      # - name: Run all integration tests
+      #   run: ./gradlew server:test --tests "org.tctalent.server.integration.repo.*" --info --stacktrace --debug
+
+      - name: Upload test report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
