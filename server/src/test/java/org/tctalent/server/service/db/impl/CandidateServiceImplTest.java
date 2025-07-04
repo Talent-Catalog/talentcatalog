@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -30,8 +30,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
@@ -53,7 +53,6 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
-import org.tctalent.server.util.PersistenceContextHelper;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
@@ -61,6 +60,7 @@ import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizens
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.util.PersistenceContextHelper;
 
 @ExtendWith(MockitoExtension.class)
 class CandidateServiceImplTest {
@@ -237,7 +237,39 @@ class CandidateServiceImplTest {
     }
 
     @Test
-    @DisplayName("should reassign new registrant to default source partner when there is no "
+    @DisplayName("should not reassign registered candidate")
+    void reassignPartnerIfNeeded_shouldNotReassignExistingCandidate() {
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.pending); // Existing profile
+        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
+
+        candidateService.updatePersonal(updateCandidatePersonalRequest); // When
+
+        verify(userRepository, never()).save(user);
+        Assertions.assertEquals(user.getPartner(), partner);
+    }
+
+    /*
+      Candidate partner reassignment tests summary.
+
+      Inputs:
+      PActs - current partner acts in new country
+      PDefault - current partner is default source partner
+      CHasPartner - new country has assigned partner
+
+      * 0. PActs=0 PDefault=0 CHasPartner=0
+      * 1. PActs=0 PDefault=0 CHasPartner=1
+      X 2. PActs=0 PDefault=1 CHasPartner=0 : Not possible. PDefault=1 => PActs=1
+      X 3. PActs=0 PDefault=1 CHasPartner=1 : Not possible. PDefault=1 => PActs=1
+      * 4. PActs=1 PDefault=0 CHasPartner=0 :
+      X 5. PActs=1 PDefault=0 CHasPartner=1 : Not possible. PActs=1 and PDefault=0 => CHasPartner=1
+      * 6. PActs=1 PDefault=1 CHasPartner=0 :
+      * 7. PActs=1 PDefault=1 CHasPartner=1
+
+      From the above there are only 5 cases to test
+     */
+
+    @Test
+    @DisplayName("0-should reassign new registrant to default source partner when there is no "
         + "auto-assign partner and current partner is not operational in their location")
     void reassignPartnerIfNeeded_shouldAssignDefault_whenCurrentPartnerInvalidAndNoAutoAssign() {
         stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
@@ -257,19 +289,7 @@ class CandidateServiceImplTest {
     }
 
     @Test
-    @DisplayName("should not reassign existing candidate")
-    void reassignPartnerIfNeeded_shouldNotReassignExistingCandidate() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.pending); // Existing profile
-        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
-
-        candidateService.updatePersonal(updateCandidatePersonalRequest); // When
-
-        verify(userRepository, never()).save(user);
-        Assertions.assertEquals(user.getPartner(), partner);
-    }
-
-    @Test
-    @DisplayName("should not reassign new registrant when current partner is operational in the "
+    @DisplayName("4-should not reassign new registrant when current partner is operational in the "
         + "given country location (and is not the default source partner)")
     void reassignPartnerIfNeeded_shouldNotReassign_whenCurrentPartnerIsValidAndNotDefault() {
         stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
@@ -282,7 +302,7 @@ class CandidateServiceImplTest {
     }
 
     @Test
-    @DisplayName("should reassign to auto-assign partner (if exists) when current partner is not "
+    @DisplayName("1-should reassign to auto-assign partner (if exists) when current partner is not "
         + "operational in the given country location")
     void reassignPartnerIfNeeded_shouldAssignAutoAssignPartner_whenCurrentPartnerInvalid() {
         stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
@@ -299,7 +319,7 @@ class CandidateServiceImplTest {
     }
 
     @Test
-    @DisplayName("should not reassign or unnecessarily write to DB when current partner is default "
+    @DisplayName("6-should not reassign or unnecessarily write to DB when current partner is default "
         + "and there's no auto-assign partner for the given country location")
     void reassignPartnerIfNeeded_shouldNotReassign_whenNoAutoAssignAndCurrentPartnerIsDefault() {
         stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
@@ -314,6 +334,24 @@ class CandidateServiceImplTest {
 
         verify(userRepository, never()).save(user);
         Assertions.assertEquals(user.getPartner(), mockPartner);
+    }
+
+    @Test
+    @DisplayName("7-should reassign when current partner is default "
+        + "and there is an auto-assign partner for the given country location")
+    void reassignPartnerIfNeeded_shouldReassign_whenAutoAssignAndCurrentPartnerIsDefault() {
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
+        user.setPartner(mockPartner);
+        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
+        given(mockPartner.canManageCandidatesInCountry(testCountry)).willReturn(true);
+        given(mockPartner.isDefaultSourcePartner()).willReturn(true);
+        given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
+            .willReturn(autoAssignPartner);
+
+        candidateService.updatePersonal(updateCandidatePersonalRequest); // When
+
+        verify(userRepository).save(user);
+        Assertions.assertEquals(user.getPartner(), autoAssignPartner);
     }
 
     /**
