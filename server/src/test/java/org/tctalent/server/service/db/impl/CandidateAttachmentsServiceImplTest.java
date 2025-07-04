@@ -259,7 +259,8 @@ public class CandidateAttachmentsServiceImplTest {
     @DisplayName("should throw when candidate not found")
     void createCandidateAttachment_shouldThrow_whenCandidateNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
+        given(candidateRepository.findById(createRequest.getCandidateId()))
+            .willReturn(Optional.empty());
 
         assertThrows(NoSuchObjectException.class,
             () -> candidateAttachmentsService.createCandidateAttachment(createRequest));
@@ -281,7 +282,8 @@ public class CandidateAttachmentsServiceImplTest {
         createRequest.setType(AttachmentType.link);
 
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(createRequest.getCandidateId()))
+            .willReturn(Optional.of(candidate));
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
@@ -303,7 +305,8 @@ public class CandidateAttachmentsServiceImplTest {
         createRequest.setTextExtract(TEXT_EXTRACT);
 
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(createRequest.getCandidateId()))
+            .willReturn(Optional.of(candidate));
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
@@ -329,7 +332,8 @@ public class CandidateAttachmentsServiceImplTest {
         createRequest.setTextExtract(TEXT_EXTRACT);
 
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(createRequest.getCandidateId()))
+            .willReturn(Optional.of(candidate));
         given(s3ResourceHelper.getS3Bucket()).willReturn("bucket");
         given(s3ResourceHelper.downloadFile(anyString(), anyString())).willReturn(mock(File.class));
 
