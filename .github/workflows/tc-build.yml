@@ -71,7 +71,7 @@ jobs:
         run: du -sh .
 
       - name: Run integration tests (specific class, for debugging)
-        run: ./gradlew server:test --tests "org.tctalent.server.integration.repo.CandidateCertificationRepositoryIntegrationTest" --info --stacktrace --debug
+        run: ./gradlew server:build --info --stacktrace --debug
 
       # Replace above step with this one later to run all tests:
       # - name: Run all integration tests
