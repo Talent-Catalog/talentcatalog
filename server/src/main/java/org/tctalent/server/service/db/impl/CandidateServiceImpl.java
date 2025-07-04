@@ -183,7 +183,6 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.TaskService;
-import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
@@ -269,7 +268,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
-    private final TermsInfoService termsInfoService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
@@ -1470,22 +1468,47 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * When a new registrant is assigned to a partner that isn't operational in their given country
-     * location, reassign them to the auto-assign partner or, if none exists, the default source
-     * partner.
-     * @param candidate The updating/registering candidate
+     * Called when the country that a candidate is located in has changed.
+     * <p>
+     *     If the candidate has completed registration, just notify the current partner. The
+     *     current partner will decide, possibly after consultation with the candidate, whether
+     *     it is best to change partner.
+     * </p>
+     * <p>
+     * If the candidate is still in the registration process...
+     * </p>
+     * <p>
+     * and they are currently assigned to a partner that isn't operational in their given country
+     * location their assigned partner needs to
+     * change. This can happen when a candidate changes their country during the registration
+     * process.
+     * </p>
+     * <p>
+     * If the candidate is currently assigned to the default source partner, they also may need
+     * to change if there is a partner specifically responsible for the new country.
+     * Default source partner is only used when there is no other suitable partner.
+     * </p>
+     * <p>
+     * Reassign them to the auto-assign partner for the new country or, if none exists,
+     * to the default source partner.
+     * </p>
+     * @param candidate The updating candidate
      * @param country Their given country location
      */
     private void reassignPartnerIfNeeded(Candidate candidate, Country country) {
 
         // If candidate not in draft status, this is an existing profile: no automated reassignment.
         if (candidate.getStatus() != CandidateStatus.draft) {
+            //TODO JC notify partner
             return;
         }
 
         User user = candidate.getUser();
         PartnerImpl currentPartner = user.getPartner();
 
+        //We need to change partners if the current partner does not cover the new country.
+        //We also may need to change partners if the current partner is the default partner because
+        //candidates are always assigned to country specific partners if possible.
         if (
             !currentPartner.canManageCandidatesInCountry(country) ||
                 currentPartner.isDefaultSourcePartner()
