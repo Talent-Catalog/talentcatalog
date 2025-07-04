@@ -58,8 +58,8 @@ class CandidateExamServiceImplTest {
     private List<CandidateExam> examList;
     private UpdateCandidateExamRequest updateRequest;
     private Candidate candidate;
+    private long candidateId;
 
-    private static final long CANDIDATE_ID = getCandidate().getId();
     private static final long EXAM_ID = 33L;
     private static final User ADMIN_USER = getAdminUser();
     private static final Exam EXAM = Exam.IELTSGen;
@@ -82,6 +82,7 @@ class CandidateExamServiceImplTest {
     @BeforeEach
     void setUp() {
         candidate = getCandidate();
+        candidateId = candidate.getId();
         exam = new CandidateExam();
         exam.setId(EXAM_ID);
         exam.setCandidate(candidate);
@@ -94,10 +95,10 @@ class CandidateExamServiceImplTest {
     @Test
     @DisplayName("should throw when candidate not found")
     void createExam_shouldThrow_whenCandidateNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
 
         assertThrows(NoSuchObjectException.class,
-            () -> candidateExamService.createExam(CANDIDATE_ID, createRequest));
+            () -> candidateExamService.createExam(candidateId, createRequest));
     }
 
     @Test
@@ -109,9 +110,9 @@ class CandidateExamServiceImplTest {
         createRequest.setYear(YEAR);
         createRequest.setNotes(NOTES);
 
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
 
-        candidateExamService.createExam(CANDIDATE_ID, createRequest);
+        candidateExamService.createExam(candidateId, createRequest);
 
         verify(candidateExamRepository).save(examCaptor.capture());
         CandidateExam result = examCaptor.getValue();
@@ -175,19 +176,19 @@ class CandidateExamServiceImplTest {
     @Test
     @DisplayName("should return list of exams when found")
     void list_shouldReturnListOfExams_whenFound() {
-        given(candidateExamRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateExamRepository.findByCandidateId(candidateId))
             .willReturn(examList);
 
-        assertEquals(examList, candidateExamService.list(CANDIDATE_ID));
+        assertEquals(examList, candidateExamService.list(candidateId));
     }
 
     @Test
     @DisplayName("should return empty list when none found")
     void list_shouldReturnEmptyList_whenNoneFound() {
-        given(candidateExamRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateExamRepository.findByCandidateId(candidateId))
             .willReturn(Collections.emptyList());
 
-        assertTrue(candidateExamService.list(CANDIDATE_ID).isEmpty());
+        assertTrue(candidateExamService.list(candidateId).isEmpty());
     }
 
 }

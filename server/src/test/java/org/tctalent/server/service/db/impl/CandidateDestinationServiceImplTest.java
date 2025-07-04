@@ -58,8 +58,8 @@ class CandidateDestinationServiceImplTest {
     private List<CandidateDestination> destinationList;
     private CandidateIntakeDataUpdate intakeData;
     private UpdateCandidateDestinationRequest updateRequest;
+    private long candidateId;
 
-    private static final long CANDIDATE_ID = getCandidate().getId();
     private static final long DESTINATION_ID = 33L;
     private static final long COUNTRY_ID = 66L;
     private static final String NOTES = "notes";
@@ -77,6 +77,7 @@ class CandidateDestinationServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        candidateId = CANDIDATE.getId();
         createRequest = new CreateCandidateDestinationRequest();
         createRequest.setCountryId(COUNTRY_ID);
         destination = new CandidateDestination();
@@ -90,22 +91,22 @@ class CandidateDestinationServiceImplTest {
     @Test
     @DisplayName("should throw when candidate not found")
     void createDestination_shouldThrow_whenCandidateNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
-            () -> candidateDestinationService.createDestination(CANDIDATE_ID, createRequest));
+            () -> candidateDestinationService.createDestination(candidateId, createRequest));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(CANDIDATE_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(candidateId)));
     }
 
     @Test
     @DisplayName("should throw when country not found")
     void createDestination_shouldThrow_whenCountryNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(CANDIDATE));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(CANDIDATE));
         given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
-            () -> candidateDestinationService.createDestination(CANDIDATE_ID, createRequest));
+            () -> candidateDestinationService.createDestination(candidateId, createRequest));
 
         assertTrue(ex.getMessage().contains(String.valueOf(COUNTRY_ID)));
     }
@@ -116,10 +117,10 @@ class CandidateDestinationServiceImplTest {
         createRequest.setInterest(INTEREST);
         createRequest.setNotes(NOTES);
 
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(CANDIDATE));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(CANDIDATE));
         given(countryRepository.findById(COUNTRY_ID)).willReturn(Optional.of(UNITED_KINGDOM));
 
-        candidateDestinationService.createDestination(CANDIDATE_ID, createRequest);
+        candidateDestinationService.createDestination(candidateId, createRequest);
 
         verify(candidateDestinationRepository).save(destinationCaptor.capture());
         CandidateDestination result = destinationCaptor.getValue();
@@ -216,19 +217,19 @@ class CandidateDestinationServiceImplTest {
     @Test
     @DisplayName("should return list of destinations when found")
     void list_shouldReturnListOfDestinations_whenFound() {
-        given(candidateDestinationRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateDestinationRepository.findByCandidateId(candidateId))
             .willReturn(destinationList);
 
-        assertEquals(candidateDestinationService.list(CANDIDATE_ID), destinationList);
+        assertEquals(candidateDestinationService.list(candidateId), destinationList);
     }
 
     @Test
     @DisplayName("should return empty list when none found")
     void list_shouldReturnEmptyList_whenNoneFound() {
-        given(candidateDestinationRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateDestinationRepository.findByCandidateId(candidateId))
             .willReturn(Collections.emptyList());
 
-        assertTrue(candidateDestinationService.list(CANDIDATE_ID).isEmpty());
+        assertTrue(candidateDestinationService.list(candidateId).isEmpty());
     }
 
 }

@@ -63,8 +63,8 @@ class CandidateEducationServiceImplTest {
     private List<CandidateEducation> educationList;
     private UpdateCandidateEducationRequest updateRequest;
     private Candidate candidate;
+    private long candidateId;
 
-    private static final long CANDIDATE_ID = getCandidate().getId();
     private static final long EDUCATION_ID = 33L;
     private static final long COUNTRY_ID = 66L;
     private static final long MAJOR_ID = 1L;
@@ -92,6 +92,7 @@ class CandidateEducationServiceImplTest {
     @BeforeEach
     void setUp() {
         candidate = getCandidate();
+        candidateId = candidate.getId();
         createRequest = new CreateCandidateEducationRequest();
         createRequest.setCountryId(COUNTRY_ID);
         createRequest.setEducationMajorId(MAJOR_ID);
@@ -108,19 +109,19 @@ class CandidateEducationServiceImplTest {
     @Test
     @DisplayName("should return list of educations when found")
     void list_shouldReturnListOfEducations_whenFound() {
-        given(candidateEducationRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateEducationRepository.findByCandidateId(candidateId))
             .willReturn(educationList);
 
-        assertEquals(educationList, candidateEducationService.list(CANDIDATE_ID));
+        assertEquals(educationList, candidateEducationService.list(candidateId));
     }
 
     @Test
     @DisplayName("should return empty list when none found")
     void list_shouldReturnEmptyList_whenNoneFound() {
-        given(candidateEducationRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateEducationRepository.findByCandidateId(candidateId))
             .willReturn(Collections.emptyList());
 
-        assertTrue(candidateEducationService.list(CANDIDATE_ID).isEmpty());
+        assertTrue(candidateEducationService.list(candidateId).isEmpty());
     }
 
     @Test
@@ -163,7 +164,7 @@ class CandidateEducationServiceImplTest {
     @Test
     @DisplayName("should create education as expected")
     void createEducation() {
-        createRequest.setCandidateId(CANDIDATE_ID);
+        createRequest.setCandidateId(candidateId);
         createRequest.setCountryId(COUNTRY_ID);
         createRequest.setEducationType(TYPE);
         createRequest.setLengthOfCourseYears(LENGTH);
