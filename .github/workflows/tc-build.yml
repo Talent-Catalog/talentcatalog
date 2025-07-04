@@ -12,10 +12,10 @@ on:
 
 env:
   AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPBWDGF7
-  ORG_GRADLE_PROJECT_org_gradle_jvmargs: -Xmx4096m
+  GRADLE_OPTS: -Xmx4096m
   testcontainers.container.mount: /dump.sql
   testcontainers.dump.location: server/src/test/resources/dump.sql.gz
-  testcontainers.reuse.enabled: false  # Disable reuse to avoid container state issues
+  testcontainers.reuse.enabled: true  # Disable reuse to avoid container state issues
 
 jobs:
   build:
@@ -71,7 +71,7 @@ jobs:
         run: du -sh .
 
       - name: Run integration tests (specific class, for debugging)
-        run: ./gradlew server:build --info --stacktrace --debug
+        run: ./gradlew server:build  --no-daemon --info --stacktrace --debug
 
       # Replace above step with this one later to run all tests:
       # - name: Run all integration tests
