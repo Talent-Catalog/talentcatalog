@@ -289,19 +289,6 @@ class CandidateServiceImplTest {
     }
 
     @Test
-    @DisplayName("4-should not reassign new registrant when current partner is operational in the "
-        + "given country location (and is not the default source partner)")
-    void reassignPartnerIfNeeded_shouldNotReassign_whenCurrentPartnerIsValidAndNotDefault() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
-        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
-
-        candidateService.updatePersonal(updateCandidatePersonalRequest); // When
-
-        verify(userRepository, never()).save(user);
-        Assertions.assertEquals(user.getPartner(), partner);
-    }
-
-    @Test
     @DisplayName("1-should reassign to auto-assign partner (if exists) when current partner is not "
         + "operational in the given country location")
     void reassignPartnerIfNeeded_shouldAssignAutoAssignPartner_whenCurrentPartnerInvalid() {
@@ -316,6 +303,19 @@ class CandidateServiceImplTest {
 
         verify(userRepository).save(user);
         Assertions.assertEquals(user.getPartner(), autoAssignPartner);
+    }
+
+    @Test
+    @DisplayName("4-should not reassign new registrant when current partner is operational in the "
+        + "given country location (and is not the default source partner)")
+    void reassignPartnerIfNeeded_shouldNotReassign_whenCurrentPartnerIsValidAndNotDefault() {
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
+        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
+
+        candidateService.updatePersonal(updateCandidatePersonalRequest); // When
+
+        verify(userRepository, never()).save(user);
+        Assertions.assertEquals(user.getPartner(), partner);
     }
 
     @Test
