@@ -250,8 +250,8 @@ class CandidateServiceImplTest {
 
     @Test
     @DisplayName("should not reassign registered candidate")
-    void reassignPartnerIfNeeded_shouldNotReassignExistingCandidate() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.pending); // Existing profile
+    void reassignPartnerIfNeeded_shouldNotReassignRegisteredCandidate() {
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.pending, false, false, null); // Existing profile
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
@@ -283,11 +283,8 @@ class CandidateServiceImplTest {
     @DisplayName("0-should reassign new registrant to default source partner when there is no "
         + "auto-assign partner and current partner is not operational in their location")
     void reassignPartnerIfNeeded_shouldAssignDefault_whenCurrentPartnerInvalidAndNoAutoAssign() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
-        //Set partner so it is not associated with any countries
-        partner.setSourceCountries(Set.of());
-
-        // Default of mocked partnerService.getAutoAssignablePartnerByCountry is to return null.
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(
+            CandidateStatus.draft, false, false, null); // New registrant
 
         given(partnerService.getDefaultSourcePartner()).willReturn(partner3);
 
@@ -301,10 +298,8 @@ class CandidateServiceImplTest {
     @DisplayName("1-should reassign to auto-assign partner (if exists) when current partner is not "
         + "operational in the given country location")
     void reassignPartnerIfNeeded_shouldAssignAutoAssignPartner_whenCurrentPartnerInvalid() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
-        user.setPartner(partner3);
-        given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
-            .willReturn(autoAssignPartner);
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(
+            CandidateStatus.draft, false, false, autoAssignPartner); // New registrant
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
@@ -316,7 +311,8 @@ class CandidateServiceImplTest {
     @DisplayName("4-should not reassign new registrant when current partner is operational in the "
         + "given country location (and is not the default source partner)")
     void reassignPartnerIfNeeded_shouldNotReassign_whenCurrentPartnerIsValidAndNotDefault() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(
+            CandidateStatus.draft, true, false, null); // New registrant
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
@@ -328,45 +324,34 @@ class CandidateServiceImplTest {
     @DisplayName("5-should not reassign when current partner can manage country"
         + " and current partner is not default partner")
     void reassignPartnerIfNeeded_shouldNotReassign_whenCurrentPartnerIsAssigned_andCurrentPartnerNotDefault() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
-        user.setPartner(partner3);
-        partner3.setDefaultSourcePartner(false);
-        partner3.setSourceCountries(Set.of(testCountry));
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(
+            CandidateStatus.draft, true, false, autoAssignPartner); // New registrant
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
         verify(userRepository, never()).save(user);
-        Assertions.assertEquals(user.getPartner(), partner3);
+        Assertions.assertEquals(user.getPartner(), partner);
     }
 
     @Test
     @DisplayName("6-should not reassign or unnecessarily write to DB when current partner is default "
         + "and there's no auto-assign partner for the given country location")
     void reassignPartnerIfNeeded_shouldNotReassign_whenNoAutoAssignAndCurrentPartnerIsDefault() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
-        user.setPartner(partner3);
-        partner3.setDefaultSourcePartner(true);
-        partner3.setSourceCountries(Set.of(testCountry));
-
-        //Stubbed partnerService getAutoAssignablePartnerByCountry will always return null
-        //indicating that there is no auto assign partner for the new country.
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(
+            CandidateStatus.draft, true, true, null); // New registrant
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
         verify(userRepository, never()).save(user);
-        Assertions.assertEquals(user.getPartner(), partner3);
+        Assertions.assertEquals(user.getPartner(), partner);
     }
 
     @Test
     @DisplayName("7-should reassign when current partner is default "
         + "and there is an auto-assign partner for the given country location")
     void reassignPartnerIfNeeded_shouldReassign_whenAutoAssignAndCurrentPartnerIsDefault() {
-        stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
-        user.setPartner(partner3);
-        partner3.setDefaultSourcePartner(true);
-
-        given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
-            .willReturn(autoAssignPartner);
+        stubUpdatePersonalToReachReassignPartnerIfNeeded(
+            CandidateStatus.draft, true, true, autoAssignPartner); // New registrant
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
@@ -379,16 +364,16 @@ class CandidateServiceImplTest {
      * Factors out stubbing needed to reach + test reassignPartnerIfNeeded() within updatePersonal().
      * Set up so that user's current partner is operational in their given country location.
      * @param candidateStatus {@code CandidateStatus} can be passed to suit test scenario
-     * @param isPDefault sets candidate's partner as default source partner according to this
      * @param isPActs configures candidate's partner as being above to act in testCountry according
      *                to this
+     * @param isPDefault sets candidate's partner as default source partner according to this
      * @param testCountryAutoAssignPartner sets the testCountry auto assign partner to this partner.
      *                                     Can be null in which case testCountry has no auto assign
      *                                     partner.
      */
     private void stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus candidateStatus,
-        boolean isPDefault,
         boolean isPActs,
+        boolean isPDefault,
         @Nullable Partner testCountryAutoAssignPartner
         ) {
         //Set up so that testCountry is the updated country.
@@ -402,7 +387,9 @@ class CandidateServiceImplTest {
         user.setPartner(partner);
 
         // Set whether partner is the default source partner
-        partner.setSourcePartner(isPDefault);
+        partner.setDefaultSourcePartner(isPDefault);
+        //Always needs to be a source partner
+        partner.setSourcePartner(true);
 
         // Set whether partner operates in testCountry
         if (isPActs) {
