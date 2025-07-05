@@ -1,6 +1,6 @@
 # This workflow will build a Java project with Gradle when changes are pushed to any branch
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-# .github/workflows/tc-build.yml
+
 name: tc-build
 
 on:
@@ -12,10 +12,6 @@ on:
 
 env:
   AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPBWDGF7
-  GRADLE_OPTS: -Xmx4096m
-  testcontainers.container.mount: /dump.sql
-  testcontainers.dump.location: server/src/test/resources/dump.sql
-  testcontainers.reuse.enabled: true  # Disable reuse to avoid container state issues
 
 jobs:
   build:
@@ -46,22 +42,8 @@ jobs:
           mkdir -p server/src/test/resources
           aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
 
-      - name: Debug disk space and heap settings
-        run: |
-          echo "💾 Disk usage:"
-          df -h
-          echo "🧠 Java heap config:"
-          echo "$ORG_GRADLE_PROJECT_org_gradle_jvmargs"
-
-      - name: Check workspace size
-        run: du -sh .
-
-      - name: Run integration tests (specific class, for debugging)
+      - name: Build and Run tests
         run: ./gradlew server:build
-
-      # Replace above step with this one later to run all tests:
-      # - name: Run all integration tests
-      #   run: ./gradlew server:test --tests "org.tctalent.server.integration.repo.*" --info --stacktrace --debug
 
       - name: Upload test report on failure
         if: failure()
