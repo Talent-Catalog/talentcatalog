@@ -46,6 +46,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
@@ -251,7 +252,6 @@ class CandidateServiceImplTest {
     @DisplayName("should not reassign registered candidate")
     void reassignPartnerIfNeeded_shouldNotReassignExistingCandidate() {
         stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.pending); // Existing profile
-        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
@@ -284,13 +284,11 @@ class CandidateServiceImplTest {
         + "auto-assign partner and current partner is not operational in their location")
     void reassignPartnerIfNeeded_shouldAssignDefault_whenCurrentPartnerInvalidAndNoAutoAssign() {
         stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
-        // Current partner invalid - not mocking to also test Partner.canManageCandidatesInCountry():
-        Country invalidCountry = new Country();
-        invalidCountry.setId(99L);
-        given(countryRepository.findById(1L)).willReturn(Optional.of(invalidCountry));
+        //Set partner so it is not associated with any countries
+        partner.setSourceCountries(Set.of());
 
-        // No auto-assign partner:
-        given(partnerService.getAutoAssignablePartnerByCountry(invalidCountry)).willReturn(null);
+        // Default of mocked partnerService.getAutoAssignablePartnerByCountry is to return null.
+
         given(partnerService.getDefaultSourcePartner()).willReturn(partner3);
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
@@ -305,7 +303,6 @@ class CandidateServiceImplTest {
     void reassignPartnerIfNeeded_shouldAssignAutoAssignPartner_whenCurrentPartnerInvalid() {
         stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
         user.setPartner(partner3);
-        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
         given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
             .willReturn(autoAssignPartner);
 
@@ -320,7 +317,6 @@ class CandidateServiceImplTest {
         + "given country location (and is not the default source partner)")
     void reassignPartnerIfNeeded_shouldNotReassign_whenCurrentPartnerIsValidAndNotDefault() {
         stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus.draft); // New registrant
-        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
@@ -336,7 +332,6 @@ class CandidateServiceImplTest {
         user.setPartner(partner3);
         partner3.setDefaultSourcePartner(false);
         partner3.setSourceCountries(Set.of(testCountry));
-        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
@@ -352,7 +347,6 @@ class CandidateServiceImplTest {
         user.setPartner(partner3);
         partner3.setDefaultSourcePartner(true);
         partner3.setSourceCountries(Set.of(testCountry));
-        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
 
         //Stubbed partnerService getAutoAssignablePartnerByCountry will always return null
         //indicating that there is no auto assign partner for the new country.
@@ -371,7 +365,6 @@ class CandidateServiceImplTest {
         user.setPartner(partner3);
         partner3.setDefaultSourcePartner(true);
 
-        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
         given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
             .willReturn(autoAssignPartner);
 
@@ -382,19 +375,47 @@ class CandidateServiceImplTest {
     }
 
     /**
-    * Factors out stubbing needed to reach + test reassignPartnerIfNeeded() within updatePersonal().
-    * Set up so that user's current partner is operational in their given country location.
-    * @param candidateStatus {@code CandidateStatus} can be passed to suit test scenario
-    */
-    private void stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus candidateStatus) {
+     * Sets up candidate and testCounty's auto assign partner for reassignment test purposes.
+     * Factors out stubbing needed to reach + test reassignPartnerIfNeeded() within updatePersonal().
+     * Set up so that user's current partner is operational in their given country location.
+     * @param candidateStatus {@code CandidateStatus} can be passed to suit test scenario
+     * @param isPDefault sets candidate's partner as default source partner according to this
+     * @param isPActs configures candidate's partner as being above to act in testCountry according
+     *                to this
+     * @param testCountryAutoAssignPartner sets the testCountry auto assign partner to this partner.
+     *                                     Can be null in which case testCountry has no auto assign
+     *                                     partner.
+     */
+    private void stubUpdatePersonalToReachReassignPartnerIfNeeded(CandidateStatus candidateStatus,
+        boolean isPDefault,
+        boolean isPActs,
+        @Nullable Partner testCountryAutoAssignPartner
+        ) {
+        //Set up so that testCountry is the updated country.
         updateCandidatePersonalRequest.setCountryId(1L);
+        given(countryRepository.findById(1L)).willReturn(Optional.of(testCountry));
+
         updateCandidatePersonalRequest.setNationalityId(2L);
         updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
 
-        // Set current partner source country
-        partner.setSourcePartner(true);
-        partner.setSourceCountries(Set.of(testCountry));
+        //Make partner the partner for user.
         user.setPartner(partner);
+
+        // Set whether partner is the default source partner
+        partner.setSourcePartner(isPDefault);
+
+        // Set whether partner operates in testCountry
+        if (isPActs) {
+            partner.setSourceCountries(Set.of(testCountry));
+        } else {
+            partner.setSourceCountries(Set.of());
+        }
+
+        // If not null set auto assign partner for testCountry
+        if (testCountryAutoAssignPartner != null) {
+            given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
+                .willReturn(testCountryAutoAssignPartner);
+        }
 
         Country stubbedNationality = new Country();
         stubbedNationality.setId(2L);
