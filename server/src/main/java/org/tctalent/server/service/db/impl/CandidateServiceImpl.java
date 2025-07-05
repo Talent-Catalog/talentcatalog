@@ -1499,7 +1499,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         // If candidate not in draft status, this is an existing profile: no automated reassignment.
         if (candidate.getStatus() != CandidateStatus.draft) {
-            //TODO JC notify partner
+            //TODO JC notify partner tbd
             return;
         }
 
@@ -1521,7 +1521,9 @@ public class CandidateServiceImpl implements CandidateService {
             } else {
                 //No partner for country - set to default source partner if it is not already.
                 if (!user.getPartner().isDefaultSourcePartner()) {
-                    user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
+                    final PartnerImpl defaultSourcePartner =
+                        (PartnerImpl) partnerService.getDefaultSourcePartner();
+                    user.setPartner(defaultSourcePartner);
                     userRepository.save(user);
                 }
             }
