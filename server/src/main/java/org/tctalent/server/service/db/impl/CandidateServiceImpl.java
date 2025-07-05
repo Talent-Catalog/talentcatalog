@@ -1504,27 +1504,26 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         User user = candidate.getUser();
-        PartnerImpl currentPartner = user.getPartner();
+        PartnerImpl currentUserPartner = user.getPartner();
 
         //We need to change partners if the current partner does not cover the new country.
         //We also may need to change partners if the current partner is the default partner because
         //candidates are always assigned to country specific partners if possible.
-        if (
-            !currentPartner.canManageCandidatesInCountry(country) ||
-                currentPartner.isDefaultSourcePartner()
-        ) {
+        if (!currentUserPartner.canManageCandidatesInCountry(country) ||
+            currentUserPartner.isDefaultSourcePartner()) {
+            //We need to change the partner
             Partner autoAssignedCountryPartner =
                 partnerService.getAutoAssignablePartnerByCountry(country);
-
             if (autoAssignedCountryPartner != null) {
+                //Use partner for country
                 user.setPartner((PartnerImpl) autoAssignedCountryPartner);
                 userRepository.save(user);
-                return;
-            }
-
-            if (!currentPartner.isDefaultSourcePartner()) {
-                user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
-                userRepository.save(user);
+            } else {
+                //No partner for country - set to default source partner if it is not already.
+                if (!user.getPartner().isDefaultSourcePartner()) {
+                    user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
+                    userRepository.save(user);
+                }
             }
         }
     }
