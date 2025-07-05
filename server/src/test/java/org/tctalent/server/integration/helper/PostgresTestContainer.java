@@ -1,8 +1,6 @@
 package org.tctalent.server.integration.helper;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -78,19 +76,19 @@ public class PostgresTestContainer {
   /**
    * Copies the SQL dump into the container.
    */
-  private static void copyDumpFile() throws IOException {
-    log.info("Preparing dump file for import...");
+  private static void copyDumpFile() {
+    log.info("Transferring dump file to container...");
+    String hostPath = getDumpPath();
+    File file = new File(hostPath);
+    if (!file.exists()) {
+      log.error("❌ Dump file does not exist on host: {}", hostPath);
+      throw new RuntimeException("Dump file missing at: " + hostPath);
+    }
+    log.info("✅ Found dump file: {} ({} bytes)", file.getAbsolutePath(), file.length());
 
-    File extractedDump = decompressGzToTempFile(getDumpPath());
-
-    log.info("Transferring SQL dump to container...");
-    container.copyFileToContainer(
-        MountableFile.forHostPath(extractedDump.getAbsolutePath()),
-        getContainerMountPath()
-    );
-    log.info("✅ SQL dump file copied to container at {}", getContainerMountPath());
+    container.copyFileToContainer(MountableFile.forHostPath(hostPath), getContainerMountPath());
+    log.info("✅ Dump file transfer complete to {}", getContainerMountPath());
   }
-
 
 
   /**
@@ -176,32 +174,6 @@ public class PostgresTestContainer {
 
   private static String[] psqlImportCommand() {
     return new String[]{"psql", "-d", DB_NAME, "-U", DB_USER, "-f", getContainerMountPath()};
-  }
-
-  private static File decompressGzToTempFile(String gzPath) throws IOException {
-    log.info("Decompressing .gz file from: {}", gzPath);
-    File gzFile = new File(gzPath);
-    if (!gzFile.exists()) {
-      throw new IOException("❌ Dump .gz file not found: " + gzPath);
-    }
-
-    File tempFile = File.createTempFile("decompressed-dump", ".sql");
-    tempFile.deleteOnExit();
-
-    try (
-        FileInputStream fis = new FileInputStream(gzFile);
-        java.util.zip.GZIPInputStream gis = new java.util.zip.GZIPInputStream(fis);
-        FileOutputStream fos = new FileOutputStream(tempFile)
-    ) {
-      byte[] buffer = new byte[8192];
-      int len;
-      while ((len = gis.read(buffer)) > 0) {
-        fos.write(buffer, 0, len);
-      }
-    }
-
-    log.info("✅ Decompressed dump to temp file: {}", tempFile.getAbsolutePath());
-    return tempFile;
   }
 
 }

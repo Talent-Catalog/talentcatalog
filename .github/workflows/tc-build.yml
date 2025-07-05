@@ -14,7 +14,7 @@ env:
   AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPBWDGF7
   GRADLE_OPTS: -Xmx4096m
   testcontainers.container.mount: /dump.sql
-  testcontainers.dump.location: server/src/test/resources/dump.sql.gz
+  testcontainers.dump.location: server/src/test/resources/dump.sql
   testcontainers.reuse.enabled: true  # Disable reuse to avoid container state issues
 
 jobs:
@@ -44,21 +44,7 @@ jobs:
       - name: Download DB dump from S3
         run: |
           mkdir -p server/src/test/resources
-          aws s3 cp s3://tctalent-integration-db-dumps/dump.sql.gz server/src/test/resources/dump.sql.gz
-
-      - name: Verify dump file exists and is valid gzip
-        run: |
-          echo "📦 Contents of server/src/test/resources:"
-          ls -lh server/src/test/resources
-
-          echo "🔍 File type:"
-          file server/src/test/resources/dump.sql.gz
-
-          echo "🧪 Gzip test:"
-          gunzip -t server/src/test/resources/dump.sql.gz
-
-          echo "📖 Preview of dump.sql.gz (first 20 lines):"
-          gzip -d -c server/src/test/resources/dump.sql.gz | head -n 20
+          aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
 
       - name: Debug disk space and heap settings
         run: |
@@ -71,7 +57,7 @@ jobs:
         run: du -sh .
 
       - name: Run integration tests (specific class, for debugging)
-        run: ./gradlew server:build  --no-daemon --info --stacktrace --debug
+        run: ./gradlew server:build
 
       # Replace above step with this one later to run all tests:
       # - name: Run all integration tests
