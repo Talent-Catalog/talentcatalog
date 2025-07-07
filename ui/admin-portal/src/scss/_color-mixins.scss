@@ -32,7 +32,7 @@
   // ==========================
 
   // --- Base Border Colors ---
-  @mixin border-color-base      { border-color: color(gray, 200); }    // Standard subtle border
+  @mixin border-color-base      { border-color: color(gray, 300); }    // Standard subtle border
   @mixin  border-color-light     { border-color: color(gray, 100); }  // Softer, for nested containers
   @mixin  border-color-soft      { border-color: color(gray, 50); }         // Very light, for subtle outlines
 
