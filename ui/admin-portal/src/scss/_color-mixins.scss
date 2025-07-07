@@ -16,6 +16,7 @@
 @mixin text-color-warning  { color: color(yellow, 700); }
 @mixin text-color-error    { color: color(red, 700); }
 @mixin text-color-info     { color: color(blue, 700); }
+@mixin text-color-disabled   { color: color(gray, 500); }
 
 // --- Descriptive Text Colors ---
 @mixin text-color-red      { color: color(red, 700); }
@@ -76,6 +77,7 @@
   @mixin background-color-warning  { background-color: color(yellow, 100); }
   @mixin background-color-error    { background-color: color(red, 100); }
   @mixin background-color-info     { background-color: color(blue, 100); }
+  @mixin background-color-disabled   { background-color: color(gray, 100); }
 
   // --- Descriptive Background Colors ---
   @mixin background-color-red      { background-color: color(red, 100); }

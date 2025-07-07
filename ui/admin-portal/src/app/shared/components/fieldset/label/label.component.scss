@@ -1,0 +1,4 @@
+@import '../../../../../scss/typography-mixins';
+label {
+  @include label-md;
+}

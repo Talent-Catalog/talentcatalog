@@ -1,0 +1,7 @@
+@import '../../../../../scss/color-mixins';
+@import '../../../../../scss/typography-mixins';
+
+.form-description {
+  @include  text-color-caption;
+  @include paragraph-sm;
+}
