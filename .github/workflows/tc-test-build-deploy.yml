@@ -30,6 +30,19 @@ jobs:
         run: sudo apt update && sudo apt install amazon-ecr-credential-helper
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
+          aws-region: us-east-1
+
+      - name: Download DB dump from S3
+        run: |
+          mkdir -p server/src/test/resources
+          aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
+
       - name: Build with Gradle
         run: ./gradlew server:build -Ptest-tc-system # We won't run the perf tests here
       - name: Deploy with Jib
