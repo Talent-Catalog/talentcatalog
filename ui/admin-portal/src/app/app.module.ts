@@ -16,7 +16,7 @@
 
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
-import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateAdapter, NgbDateParserFormatter, NgbModule, NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
 import {DatePipe, TitleCasePipe} from '@angular/common';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -573,6 +573,7 @@ import {IntelligenceComponent} from './components/intelligence/intelligence.comp
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
 import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-phone-input.component';
 import {SharedModule} from "./shared/shared.module";
+import {PascalCasePipe} from './pipes/pascal-case.pipe';
 
 @NgModule({
   declarations: [
@@ -907,7 +908,8 @@ import {SharedModule} from "./shared/shared.module";
     ErrorDisplayComponent,
     IntelligenceComponent,
     OfferToAssistComponent,
-    IntlPhoneInputComponent
+    IntlPhoneInputComponent,
+    PascalCasePipe
   ],
   imports: [
     BrowserModule,
@@ -915,6 +917,7 @@ import {SharedModule} from "./shared/shared.module";
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
+    NgbNavModule,
     FormsModule,
     InfiniteScrollModule,
     NgChartsModule,
@@ -954,7 +957,8 @@ import {SharedModule} from "./shared/shared.module";
   exports: [
     ViewChatPostsComponent,
     ChatReadStatusComponent,
-    CandidateExamCardComponent
+    CandidateExamCardComponent,
+    PascalCasePipe
   ],
   bootstrap: [AppComponent]
 })

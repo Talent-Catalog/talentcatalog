@@ -1,14 +1,26 @@
-import {Component, Input} from '@angular/core';
+import {AfterContentInit, Component, ContentChild, Input, TemplateRef} from '@angular/core';
+import {TcTabHeaderComponent} from "./header/tc-tab-header.component";
+import {TcTabContentComponent} from "./content/tc-tab-content.component";
 
 @Component({
-  selector: 'app-tc-tab',
+  selector: 'tc-tab',
   templateUrl: './tc-tab.component.html',
   styleUrls: ['./tc-tab.component.scss']
 })
-export class TcTabComponent {
-  @Input() name: string;
+export class TcTabComponent implements AfterContentInit {
+  @Input() id: string;
   @Input() description: string;
-  @Input() iconClass: string;
 
+  @ContentChild(TcTabHeaderComponent) headerComponent: TcTabHeaderComponent;
+  @ContentChild(TcTabContentComponent) contentComponent: TcTabContentComponent;
+
+  header!: TemplateRef<any>;
+  content!: TemplateRef<any>;
+
+
+  ngAfterContentInit() {
+    this.header = this.headerComponent.template;
+    this.content = this.contentComponent.template;
+  }
 
 }

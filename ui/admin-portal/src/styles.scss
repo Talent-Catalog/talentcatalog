@@ -42,48 +42,7 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 
 body {
   padding-top: 6rem;
-  background-color: $light;
-}
-
-.nav-link {
-  cursor: pointer;
-  color: $light;
-  &:hover {
-    color: $secondary;
-  }
-}
-
-.nav-tabs {
-  border-bottom: $nav-tabs-border-width solid $white;
-
-  .nav-item {
-    margin-bottom: -$nav-tabs-border-width;
-  }
-
-  .nav-link {
-    color: $light;
-    background-color: $accent1;
-    border-color: $light;
-    font-size: 14px;
-    &:hover {
-      background-color: $accent2;
-      color: $light;
-    }
-
-    &.disabled {
-      color: $nav-link-disabled-color;
-      background-color: transparent;
-      border-color: transparent;
-    }
-  }
-
-  .nav-link.active,
-  .nav-item.show .nav-link {
-    color: $light;
-    background-color: $primary;
-    border-color: $nav-tabs-link-active-border-color;
-  }
-
+  font-family: 'Lato', sans-serif;
 }
 
 .card {

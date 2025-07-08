@@ -1,4 +1,23 @@
-<nav ngbNav #nav="ngbNav" class="nav-tabs mt-2"
-     [activeId]="activeTabId" (navChange)="onTabChanged($event)">
-  <ng-content></ng-content>
-</nav>
+<!--<nav ngbNav #nav="ngbNav" class="nav-tabs mt-2"-->
+<!--     [activeId]="activeTabId" (navChange)="onTabChanged($event)">-->
+<!--  <ng-content></ng-content>-->
+<!--</nav>-->
+<!--<div [ngbNavOutlet]="nav" class="m-2"></div>-->
+
+<ul class="nav nav-tabs">
+  <li *ngFor="let tab of tabs; let i = index"
+    class="nav-item"
+    (click)="selectTab(i)">
+    <a class="nav-link" [class.active]="i === activeIndex" [title]="tab.description">
+      <ng-container *ngTemplateOutlet="tab.header"></ng-container>
+    </a>
+  </li>
+</ul>
+
+<div class="tab-content mt-3 border p-3">
+  <ng-container *ngFor="let tab of tabs">
+    <div [hidden]="tab.id !== activeTabId">
+      <ng-container *ngTemplateOutlet="tab.content"></ng-container>
+    </div>
+  </ng-container>
+</div>

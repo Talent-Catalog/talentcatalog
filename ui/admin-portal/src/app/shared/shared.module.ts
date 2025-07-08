@@ -16,33 +16,37 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {
-  NgbPagination,
-  NgbPaginationFirst,
-  NgbPaginationLast,
-  NgbPaginationNext,
-  NgbPaginationNumber,
-  NgbPaginationPages,
-  NgbPaginationPrevious
-} from "@ng-bootstrap/ng-bootstrap";
+import {NgbNavModule, NgbPaginationModule,} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
+import {TcTabsComponent} from './components/tabs/tc-tabs.component';
+import {TcTabComponent} from './components/tabs/tab/tc-tab.component';
+
+import {TcTabHeaderComponent} from "./components/tabs/tab/header/tc-tab-header.component";
+import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-content.component';
 
 
 @NgModule({
-  declarations: [TcTableComponent, TcPaginationComponent],
+  declarations: [
+      TcTableComponent,
+    TcPaginationComponent,
+    TcTabsComponent,
+    TcTabComponent,
+    TcTabHeaderComponent,
+    TcTabHeaderComponent,
+    TcTabContentComponent],
   imports: [
     CommonModule,
-    NgbPagination,
-    NgbPaginationPrevious,
-    NgbPaginationNext,
-    NgbPaginationNumber,
-    NgbPaginationPages,
-    NgbPaginationFirst,
-    NgbPaginationLast
+    NgbPaginationModule,
+    NgbNavModule
   ],
   exports: [
-    TcTableComponent, TcPaginationComponent
+    TcTableComponent,
+    TcPaginationComponent,
+    TcTabsComponent,
+    TcTabComponent,
+    TcTabHeaderComponent,
+    TcTabContentComponent
   ]
 })
 export class SharedModule { }

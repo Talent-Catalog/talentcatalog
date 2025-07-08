@@ -1,0 +1,46 @@
+@import 'src/scss/color-mixins';
+
+
+.nav-link {
+  @include text-color-body;
+  cursor: pointer;
+  &:hover {
+    @include background-color-primary;
+  }
+}
+
+.nav.nav-tabs {
+  border-bottom: 1px solid #E5E5E5;
+
+  .nav-link.active {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 2px solid #0084d1;
+  }
+
+  //.nav-link {
+  //  color: $light;
+  //  background-color: $accent1;
+  //  border-color: $light;
+  //  font-size: 14px;
+  //
+  //  &:hover {
+  //    background-color: $accent2;
+  //    color: $light;
+  //  }
+  //
+  //  &.disabled {
+  //    color: $nav-link-disabled-color;
+  //    background-color: transparent;
+  //    border-color: transparent;
+  //  }
+  //}
+  //
+  //.nav-link.active,
+  //.nav-item.show .nav-link {
+  //  color: $light;
+  //  background-color: $primary;
+  //  border-color: $nav-tabs-link-active-border-color;
+  //}
+}

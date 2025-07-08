@@ -1,21 +1,64 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "../../../services/local-storage.service";
-import {Location} from "@angular/common";
+import {
+  AfterContentInit,
+  Component,
+  ContentChildren,
+  EventEmitter,
+  Input,
+  Output,
+  QueryList,
+  TemplateRef
+} from '@angular/core';
+import {TcTabComponent} from "./tab/tc-tab.component";
+
+export interface Tab {
+  id: string;
+  description: string;
+  header: TemplateRef<any>;
+  content: TemplateRef<any>;
+}
 
 @Component({
-  selector: 'app-tc-tabs',
+  selector: 'tc-tabs',
   templateUrl: './tc-tabs.component.html',
   styleUrls: ['./tc-tabs.component.scss']
 })
-export class TcTabsComponent {
+export class TcTabsComponent implements AfterContentInit {
   @Input() activeTabId: string;
   @Output() tabChanged = new EventEmitter<any>();
 
-  constructor(private localStorageService: LocalStorageService,
-              private location: Location){}
+  @ContentChildren(TcTabComponent) tabComponents!: QueryList<TcTabComponent>;
+  tabs: Tab[];
+  activeIndex = 0;
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.tabChanged.emit(event);
+  ngAfterContentInit() {
+    this.tabs = this.tabComponents.map(tab => ({
+      id: tab.id,
+      description: tab.description,
+      header: tab.header,
+      content: tab.content,
+    }));
+    if (this.activeTabId) {
+      const found = this.tabs.findIndex(tab => tab.id === this.activeTabId);
+      this.activeIndex = found >= 0 ? found : 0;
+    }
+    console.log('content init')
+    this.emitActiveTab();
+  }
+
+  selectTab(index: number) {
+    this.activeIndex = index;
+    console.log('select tab')
+    this.emitActiveTab();
+  }
+
+  private emitActiveTab() {
+    console.log('emit active tab')
+    if (this.selectedTab) {
+      this.tabChanged.emit(this.selectedTab.id);
+    }
+  }
+
+  get selectedTab() {
+    return this.tabs[this.activeIndex];
   }
 }
