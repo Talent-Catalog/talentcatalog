@@ -23,12 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -400,8 +395,8 @@ class CandidateServiceImplTest {
 
         // If not null set auto assign partner for testCountry
         if (testCountryAutoAssignPartner != null) {
-            given(partnerService.getAutoAssignablePartnerByCountry(testCountry))
-                .willReturn(testCountryAutoAssignPartner);
+            lenient().when(partnerService.getAutoAssignablePartnerByCountry(testCountry))
+                .thenReturn(testCountryAutoAssignPartner);
         }
 
         Country stubbedNationality = new Country();
