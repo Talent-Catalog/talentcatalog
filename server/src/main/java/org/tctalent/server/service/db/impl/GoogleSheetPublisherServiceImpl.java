@@ -291,12 +291,28 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
             .message(res2.getReplies().size() + " batch update responses received")
             .logInfo();
 
+        //Validate the number of candidate rows to be written fits within the bounds of the named data range.
+        //Throws an IOException which the user will see in the admin portal if the range is too small.
+        validateDataRangeCapacity(dataRangeName, dataRange, nRowsData);
+
         //File is already public - ie viewable by anyone with the link - because of the folder where
         //it is located
         //Setting it public when it is already causes Google to throw a permissions error
 
         return file.getUrl();
 
+    }
+
+    static void validateDataRangeCapacity(String rangeName, GridRange range, int nRowsData)
+        throws IOException {
+
+        int availableDataRows = range.getEndRowIndex() - range.getStartRowIndex();
+
+        if (nRowsData > availableDataRows) {
+            throw new IOException("Attempting to publish too many candidates (" + (nRowsData - 1)
+                + ") to the sheet " + rangeName + " which can hold a maximum of "
+                + (availableDataRows - 1) + " rows.");
+        }
     }
 
     @Override
