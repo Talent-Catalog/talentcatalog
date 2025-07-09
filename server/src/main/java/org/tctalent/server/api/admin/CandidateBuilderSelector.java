@@ -519,6 +519,7 @@ public class CandidateBuilderSelector {
             .add("id")
             .add("name")
             .add("level")
+            .add("cefrLevel")
             ;
     }
 
