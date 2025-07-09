@@ -107,6 +107,11 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         throws GeneralSecurityException, IOException {
 
         //Load candidates from database into persistence context
+        LogBuilder.builder(log)
+            .action("populatePublishedDoc")
+            .message("Loading " + candidateIds.size() +" candidates from database into persistence context")
+            .logInfo();
+
         List<Candidate> candidates = new ArrayList<>();
         for (Long candidateId : candidateIds) {
             final Candidate candidate = candidateService.getCandidate(candidateId);
@@ -117,8 +122,17 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         }
 
         //Create all candidate folders (and subfolders) as needed.
+        int count = 0;
         for (Candidate candidate : candidates) {
             candidateService.createCandidateFolder(candidate.getId());
+            count++;
+
+            if (count % 50 == 0 || count == candidates.size()) {
+                LogBuilder.builder(log)
+                    .action("populatePublishedDoc")
+                    .message("Created folders for " + count + " out of " + candidates.size() + " candidates")
+                    .logInfo();
+            }
         }
 
         //This is what will be used to create the published doc
