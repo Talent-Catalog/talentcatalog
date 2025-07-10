@@ -236,7 +236,7 @@ class UserServiceImplTest {
 
             List<User> results = userService.search(searchUserRequest);
 
-            assertEquals(List.of(limitedUser, adminUser), results);
+            assertEquals(results, List.of(limitedUser, adminUser));
             verify(userRepository).findAll(mockedUserSpec, SORT);
         }
     }
@@ -272,7 +272,7 @@ class UserServiceImplTest {
 
             Page<User> results = userService.searchPaged(searchUserRequest);
 
-            assertEquals(userPage, results);
+            assertEquals(results, userPage);
             verify(userRepository).findAll(mockedUserSpec, pageRequest);
         }
 
@@ -293,7 +293,7 @@ class UserServiceImplTest {
 
             Page<User> results = userService.searchPaged(searchUserRequest);
 
-            assertEquals(emptyUserPage, results);
+            assertEquals(results, emptyUserPage);
             verify(userRepository).findAll(mockedUserSpec, pageRequest);
         }
 
@@ -306,7 +306,7 @@ class UserServiceImplTest {
 
         User result = userService.getUser(USER_ID);
 
-        assertEquals(adminUser, result);
+        assertEquals(result, adminUser);
         verify(userRepository).findById(USER_ID);
     }
 
@@ -348,7 +348,7 @@ class UserServiceImplTest {
 
         Set<Country> result = userService.getDefaultSourceCountries(adminUser); // When
 
-        assertEquals(userSourceCountries, result);
+        assertEquals(result, userSourceCountries);
     }
 
     @Test
@@ -428,7 +428,7 @@ class UserServiceImplTest {
         User result = userService.updateUser(USER_ID, updateUserRequest); // When
 
         verify(userRepository).save(adminUser);
-        assertEquals(result.getPartner(), SOURCE_PARTNER); // Request partner assigned
+        assertEquals(SOURCE_PARTNER, result.getPartner()); // Request partner assigned
     }
 
     @Test
@@ -476,7 +476,7 @@ class UserServiceImplTest {
         User result = userService.updateUser(USER_ID, updateUserRequest);
 
         verify(userRepository).save(limitedUser);
-        assertEquals(result.getApprover(), systemAdminUser);
+        assertEquals(systemAdminUser, result.getApprover());
     }
 
     @Test
@@ -523,7 +523,7 @@ class UserServiceImplTest {
         userService.createUser(updateUserRequest, systemAdminUser);
 
         verify(userRepository).save(userCaptor.capture());
-        assertEquals(userCaptor.getValue().getRole(), Role.systemadmin);
+        assertEquals(Role.systemadmin, userCaptor.getValue().getRole());
     }
 
     @Test
@@ -702,8 +702,8 @@ class UserServiceImplTest {
 
         userService.deleteUser(USER_ID);
 
-        assertEquals(adminUser.getStatus(), Status.deleted);
-        assertEquals(adminUser.getUpdatedBy(), systemAdminUser);
+        assertEquals(Status.deleted, adminUser.getStatus());
+        assertEquals(systemAdminUser, adminUser.getUpdatedBy());
         verify(userRepository).save(adminUser);
     }
 
@@ -985,7 +985,7 @@ class UserServiceImplTest {
 
         userService.updatePassword(updateUserPasswordRequest);
 
-        assertEquals(CANDIDATE_USER.getPasswordEnc(), ENCRYPTED_PASSWORD);
+        assertEquals(ENCRYPTED_PASSWORD, CANDIDATE_USER.getPasswordEnc());
         verify(userRepository).save(CANDIDATE_USER);
     }
 
@@ -1038,7 +1038,7 @@ class UserServiceImplTest {
 
         userService.updateUserPassword(USER_ID, updateUserPasswordRequest);
 
-        assertEquals(adminUser.getPasswordEnc(), ENCRYPTED_PASSWORD);
+        assertEquals(ENCRYPTED_PASSWORD, adminUser.getPasswordEnc());
         verify(userRepository).save(adminUser);
     }
 
@@ -1109,8 +1109,8 @@ class UserServiceImplTest {
 
         userService.resetPassword(resetPasswordRequest);
 
-        assertEquals(adminUser.getPasswordEnc(), ENCRYPTED_PASSWORD);
-        assertNotEquals(adminUser.getPasswordUpdatedDate(), offsetDateTime);
+        assertEquals(ENCRYPTED_PASSWORD, adminUser.getPasswordEnc());
+        assertNotEquals(offsetDateTime, adminUser.getPasswordUpdatedDate());
         assertNull(adminUser.getResetTokenIssuedDate());
         assertNull(adminUser.getResetToken());
         verify(userRepository).save(adminUser);
@@ -1136,7 +1136,7 @@ class UserServiceImplTest {
         userService.mfaReset(USER_ID);
 
         assertNull(systemAdminUser.getMfaSecret());
-        assertEquals(systemAdminUser.getUpdatedBy(), adminUser);
+        assertEquals(adminUser, systemAdminUser.getUpdatedBy());
         verify(userRepository).save(systemAdminUser);
     }
 
@@ -1147,7 +1147,7 @@ class UserServiceImplTest {
 
         List<User> result = userService.searchStaffNotUsingMfa();
 
-        assertEquals(result, userList);
+        assertEquals(userList, result);
     }
 
     @Test

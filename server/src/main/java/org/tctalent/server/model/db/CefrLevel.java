@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,26 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.language.level;
+package org.tctalent.server.model.db;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.model.db.CefrLevel;
-import org.tctalent.server.model.db.Status;
-
-@Getter
-@Setter
-public class UpdateLanguageLevelRequest {
-
-    @NotBlank
-    private String name;
-    @NotNull
-    private Status status;
-
-    private int level;
-    private CefrLevel cefrLevel;
-
+public enum CefrLevel {
+  A1,
+  A2,
+  B1,
+  B2,
+  C1,
+  C2
 }

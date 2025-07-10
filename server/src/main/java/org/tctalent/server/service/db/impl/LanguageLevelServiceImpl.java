@@ -96,11 +96,10 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     public LanguageLevel createLanguageLevel(
         CreateLanguageLevelRequest request) throws EntityExistsException {
         LanguageLevel languageLevel = new LanguageLevel(
-                request.getName(), request.getStatus(), request.getLevel());
+                request.getName(), request.getStatus(), request.getLevel(), request.getCefrLevel());
         checkDuplicates(null, request.getName(), request.getLevel());
         return this.languageLevelRepository.save(languageLevel);
     }
-
 
     @Override
     @Transactional
@@ -112,6 +111,7 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
         languageLevel.setName(request.getName());
         languageLevel.setLevel(request.getLevel());
         languageLevel.setStatus(request.getStatus());
+        languageLevel.setCefrLevel(request.getCefrLevel());
         return languageLevelRepository.save(languageLevel);
     }
 

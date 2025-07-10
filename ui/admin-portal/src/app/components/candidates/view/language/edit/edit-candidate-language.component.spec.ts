@@ -43,9 +43,9 @@ describe('EditCandidateLanguageComponent', () => {
     // Add more languages as needed
   ];
   const mockLanguageLevels: LanguageLevel[] = [
-    { id: 1, name: 'Beginner', level: 1, status: 'Active' },
-    { id: 2, name: 'Intermediate', level: 2, status: 'Active' },
-    { id: 3, name: 'Advanced', level: 3, status: 'Active' },
+    { id: 1, name: 'Beginner', level: 1, cefrLevel: 'A1', status: 'Active' },
+    { id: 2, name: 'Intermediate', level: 2, cefrLevel: 'A2', status: 'Active' },
+    { id: 3, name: 'Advanced', level: 3, cefrLevel: 'B2', status: 'Active' },
     // Add more language levels as needed
   ];
 
