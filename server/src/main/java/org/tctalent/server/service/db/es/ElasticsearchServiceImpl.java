@@ -19,8 +19,9 @@ package org.tctalent.server.service.db.es;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery.Builder;
+import co.elastic.clients.elasticsearch._types.query_dsl.RangeQueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
+import co.elastic.clients.elasticsearch._types.query_dsl.UntypedRangeQuery.Builder;
 import co.elastic.clients.json.JsonData;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -143,18 +144,18 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     public NativeQuery makeRangeQuery(
         @NotNull String field, @Nullable Object min, @Nullable Object max) {
         return NativeQuery.builder()
-            .withQuery(q -> q
-                .range(ra -> {
-                        Builder build = ra.field(field);
-                        if (min != null) {
-                            build.gte(JsonData.of(min));
-                        }
-                        if (max != null) {
-                            build.lte(JsonData.of(max));
-                        }
-                        return build;
+            .withQuery(q -> {
+                    Builder build = RangeQueryBuilders.untyped();
+                    build.field(field);
+
+                    if (min != null) {
+                        build.gte(JsonData.of(min));
                     }
-                )
+                    if (max != null) {
+                        build.lte(JsonData.of(max));
+                    }
+                    return build;
+                }
             )
             .build();
     }
