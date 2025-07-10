@@ -30,7 +30,7 @@ describe('CreateLanguageLevelComponent', () => {
   let languageLevelServiceSpy: jasmine.SpyObj<LanguageLevelService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let formBuilder: UntypedFormBuilder;
-  const languageLevel: LanguageLevel = { id: 1, level: 5, name: 'Advanced', status: 'active' };
+  const languageLevel: LanguageLevel = { id: 1, level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' };
 
   beforeEach(async () => {
     const languageLevelServiceSpyObj = jasmine.createSpyObj('LanguageLevelService', ['create']);

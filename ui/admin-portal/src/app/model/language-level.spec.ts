@@ -22,7 +22,8 @@ describe('LanguageLevel Interface', () => {
     const languageLevel: LanguageLevel = {
       id: 1,
       name: 'Advanced',
-      level: 3,
+      level: 4,
+      cefrLevel: 'B2',
       status: 'active'
     };
 
