@@ -32,7 +32,7 @@ Prerequisites
 
 3. Run the script:
 
-   $ python FetchCandidateDataFromMongo.py > docs.json 2> missing.log
+   $ python3 FetchCandidateDataFromMongo.py > candidates.json 2> missing_ids.log
 """
 
 
@@ -56,7 +56,7 @@ def stream_documents_to_stdout(file_path, collection):
         print(',', end='', flush=True)
       else:
         first = False
-      print(json_util.dumps(doc), end='', flush=True)
+      print(json_util.dumps(doc, indent=2), end='', flush=True)
     else:
       print(f"Missing document for publicId: {pub_id}", file=sys.stderr)
   print(']', flush=True)
