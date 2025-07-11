@@ -22,11 +22,12 @@ import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityPar
 import org.tctalent.server.request.job.UpdateJobRequest;
 
 /**
- * Manages notifications that go out as the result of changes to opportunities
+ * Manages notifications that go out as the result of internal System changes - such as
+ * changes to opportunities
  *
  * @author John Cameron
  */
-public interface OppNotificationService {
+public interface SystemNotificationService {
 
     /**
      * Sends out posts on relevant chats notifying subscribers about the given changes to the given
