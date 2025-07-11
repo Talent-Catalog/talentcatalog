@@ -40,6 +40,7 @@ import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
+import org.tctalent.server.model.db.CefrLevel;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
@@ -102,8 +103,10 @@ public class CandidateTestData {
             getAuditUser()
         );
         candidate.setId(99L);
+        candidate.setCandidateNumber("99");
         candidate.setNationality(CountryTestData.PAKISTAN);
         candidate.setStatus(CandidateStatus.active);
+        candidate.setFolderlink("www.folderlink.com");
         return candidate;
     }
 
@@ -235,8 +238,8 @@ public class CandidateTestData {
         return new CandidateLanguage(
             getCandidate(),
             new Language("Arabic", Status.active),
-            new LanguageLevel("Good", Status.active, 9),
-            new LanguageLevel("Good", Status.active, 9)
+            new LanguageLevel("Good", Status.active, 9, CefrLevel.B2),
+            new LanguageLevel("Good", Status.active, 9, CefrLevel.B2)
         );
     }
 

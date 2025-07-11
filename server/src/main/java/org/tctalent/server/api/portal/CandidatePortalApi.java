@@ -131,7 +131,7 @@ public class CandidatePortalApi {
 
         //Remove pending terms acceptance tag now that they have accepted
         this.savedListService.updatePendingTermsAcceptance(candidate, false);
-        
+
         return candidateAdditionalInfoDto().build(candidate);
     }
 
@@ -184,25 +184,11 @@ public class CandidatePortalApi {
         return candidateWithDestinationsDto().build(candidate);
     }
 
-    @GetMapping("status")
-    public Map<String, Object> getCandidateStatus() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return candidateStatusDto().build(candidate);
-    }
-
     @GetMapping("profile")
     public Map<String, Object> getCandidateProfile() {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateProfileDto().build(candidate);
-    }
-
-    @GetMapping("candidate-number")
-    public Map<String, Object> getCandidateNumber() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return candidateNumberDto().build(candidate);
     }
 
     @GetMapping(value = "cv.pdf")
@@ -222,19 +208,17 @@ public class CandidatePortalApi {
         }
     }
 
+
+    /**
+     * Complete the registration process.
+     * @param submitRegistrationRequest Contains the id of the terms that they accepted
+     * @return Candidate personal info
+     */
     @PostMapping("submit")
     public Map<String, Object> submitRegistration(
         @RequestBody SubmitRegistrationRequest submitRegistrationRequest) {
         Candidate candidate = this.candidateService.submitRegistration(submitRegistrationRequest);
-        return candidateStatusDto().build(candidate);
-    }
-
-    private DtoBuilder candidateNumberDto() {
-        return new DtoBuilder()
-                .add("candidateNumber")
-                .add("publicId")
-                .add("changePassword")
-                ;
+        return candidatePersonalDto().build(candidate);
     }
 
     private DtoBuilder candidateContactDto() {
@@ -267,19 +251,20 @@ public class CandidatePortalApi {
             ;
     }
 
-
-
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()
                 .add("user", userDto())
                 .add("acceptedPrivacyPolicyId")
                 .add("candidateNumber")
                 .add("publicId")
+                .add("candidateMessage")
+                .add("changePassword")
                 .add("gender")
                 .add("dob")
                 .add("country", countryService.selectBuilder())
                 .add("city")
                 .add("state")
+                .add("status")
                 .add("yearOfArrival")
                 .add("nationality", countryService.selectBuilder())
                 .add("candidateCitizenships", candidateCitizenshipDto())
@@ -471,14 +456,6 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("name")
                 .add("level")
-                ;
-    }
-
-    private DtoBuilder candidateStatusDto() {
-        return new DtoBuilder()
-                .add("user", userDto())
-                .add("status")
-                .add("candidateMessage")
                 ;
     }
 

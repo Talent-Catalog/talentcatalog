@@ -19,7 +19,6 @@ package org.tctalent.server.service.db.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,8 +96,12 @@ public class CandidateOppBackgroundProcessingServiceImpl
         // Schedule background processing
         BackRunner<IdContext> backRunner = new BackRunner<>();
 
-        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-            new IdContext(null, 200, 0L), 20);
+        backRunner.start(
+            taskScheduler,
+            backProcessor,
+            new IdContext(null, 200, 0L), 20,
+            "Candidate opp sync from Salesforce"
+        );
       }
 
     } catch (Exception e) {

@@ -35,8 +35,12 @@
 
     <form [formGroup]="languageLevelForm">
       <div class="mb-3">
-        <label class="form-label" for="level">Level</label>
+        <label class="form-label" for="level">TC Level</label>
         <input type="number" min="0" class="form-control" id="level" formControlName="level">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="cefrLevel">CEFR Level</label>
+        <input type="text" min="0" class="form-control" id="cefrLevel" formControlName="cefrLevel">
       </div>
       <div class="mb-3">
         <label class="form-label" for="name">Name</label>

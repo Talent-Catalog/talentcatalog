@@ -949,7 +949,7 @@ public class SavedListServiceImpl implements SavedListService {
             }
 
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {
-                columnSetUp.setRangeName(def.getType().toString());
+                columnSetUp.setRangeName(def.getType() + "_" + def.getKey());
             }
 
             //Check for a candidate number column. We set up a range name for that column as well
