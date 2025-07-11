@@ -107,11 +107,11 @@ class CandidateDependantServiceImplTest {
 
         verify(candidateDependantRepository).save(dependantCaptor.capture());
         CandidateDependant result = dependantCaptor.getValue();
-        assertEquals(result.getCandidate(), candidate);
-        assertEquals(result.getRelation(), DependantRelations.Child);
-        assertEquals(result.getDob(), dob);
-        assertEquals(result.getHealthNotes(), healthNotes);
-        assertEquals(result.getHealthConcern(), YesNo.No);
+        assertEquals(candidate, result.getCandidate());
+        assertEquals(DependantRelations.Child, result.getRelation());
+        assertEquals(dob, result.getDob());
+        assertEquals(healthNotes, result.getHealthNotes());
+        assertEquals(YesNo.No, result.getHealthConcern());
     }
 
     @Test
@@ -143,7 +143,7 @@ class CandidateDependantServiceImplTest {
         given(candidateDependantRepository.findById(DEPENDANT_ID)).willReturn(Optional.of(dependant));
         given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
 
-        assertEquals(candidateDependantService.deleteDependant(DEPENDANT_ID), candidate); // When
+        assertEquals(candidate, candidateDependantService.deleteDependant(DEPENDANT_ID)); // When
         verify(candidateDependantRepository).deleteById(dependant.getId());
     }
 
@@ -152,7 +152,7 @@ class CandidateDependantServiceImplTest {
     void list_shouldReturnDependants() {
         given(candidateDependantRepository.findByCandidateId(candidateId)).willReturn(dependantList);
 
-        assertEquals(candidateDependantService.list(candidateId), dependantList);
+        assertEquals(dependantList, candidateDependantService.list(candidateId));
     }
 
     @Test

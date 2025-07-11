@@ -112,6 +112,7 @@ public class LanguageLevelAdminApi {
                 .add("id")
                 .add("name")
                 .add("level")
+                .add("cefrLevel")
                 .add("status")
                 ;
     }

@@ -174,7 +174,7 @@ class CandidateCertificationServiceImplTest {
         assertEquals(NAME, certification.getName());
         assertEquals(INSTITUTION, certification.getInstitution());
         assertEquals(DATE_COMPLETED, certification.getDateCompleted());
-        assertEquals(candidate.getUpdatedBy(), ADMIN_USER);
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 
     @Test
@@ -207,7 +207,7 @@ class CandidateCertificationServiceImplTest {
         candidateCertificationService.deleteCandidateCertification(CERT_ID);
 
         verify(candidateCertificationRepository).delete(certification);
-        assertEquals(candidate.getUpdatedBy(), ADMIN_USER);
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true);
     }
 

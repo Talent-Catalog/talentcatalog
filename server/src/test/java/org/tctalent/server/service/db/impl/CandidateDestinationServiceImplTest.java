@@ -124,11 +124,11 @@ class CandidateDestinationServiceImplTest {
 
         verify(candidateDestinationRepository).save(destinationCaptor.capture());
         CandidateDestination result = destinationCaptor.getValue();
-        assertEquals(result.getCandidate(), CANDIDATE);
-        assertEquals(result.getCountry(), UNITED_KINGDOM);
-        assertEquals(result.getInterest(), INTEREST);
-        assertEquals(result.getNotes(), NOTES);
-        assertEquals(result.getCandidate(), CANDIDATE);
+        assertEquals(CANDIDATE, result.getCandidate());
+        assertEquals(UNITED_KINGDOM, result.getCountry());
+        assertEquals(INTEREST, result.getInterest());
+        assertEquals(NOTES, result.getNotes());
+        assertEquals(CANDIDATE, result.getCandidate());
     }
 
     @Test
@@ -156,8 +156,8 @@ class CandidateDestinationServiceImplTest {
 
         verify(candidateDestinationRepository).save(destinationCaptor.capture());
         CandidateDestination result = destinationCaptor.getValue();
-        assertEquals(result.getNotes(), NOTES);
-        assertEquals(result.getInterest(), INTEREST);
+        assertEquals(NOTES, result.getNotes());
+        assertEquals(INTEREST, result.getInterest());
     }
 
     @Test
