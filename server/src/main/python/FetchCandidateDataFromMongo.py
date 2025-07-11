@@ -17,6 +17,25 @@ import sys
 from pymongo import MongoClient
 
 
+"""
+FetchCandidateDataFromMongo.py
+
+Prerequisites
+-------------
+1. Create & activate a virtualenv, then install PyMongo:
+
+   $ python3 -m venv venv
+   $ source venv/bin/activate
+   $ pip install pymongo
+
+2. Configure the connection settings in `main()`
+
+3. Run the script:
+
+   $ python FetchCandidateDataFromMongo.py > docs.json 2> missing.log
+"""
+
+
 def read_public_ids(file_path):
   """Yield the public_id from each row of a CSV with header."""
   with open(file_path, newline='') as f:
