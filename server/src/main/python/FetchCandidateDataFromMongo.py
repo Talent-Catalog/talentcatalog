@@ -11,42 +11,50 @@
 #
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program. If not, see https://www.gnu.org/licenses/.
-import json
+import csv
+from bson import json_util
 import sys
 from pymongo import MongoClient
 
-def read_ids_stream(file_path):
-  with open(file_path, 'r') as f:
-    for line in f:
-      id_str = line.strip()
-      if id_str:
-        yield id_str
+
+def read_public_ids(file_path):
+  """Yield the public_id from each row of a CSV with header."""
+  with open(file_path, newline='') as f:
+    reader = csv.reader(f)
+    next(reader)                       # skip header row
+    for row in reader:
+      if row and row[0].strip():
+        yield row[0].strip()
+
 
 def stream_documents_to_stdout(file_path, collection):
   print('[', end='', flush=True)
   first = True
-  for id_val in read_ids_stream(file_path):
-    doc = collection.find_one({'_id': id_val})
+  for pub_id in read_public_ids(file_path):
+    doc = collection.find_one({'publicId': pub_id})
     if doc:
       if not first:
         print(',', end='', flush=True)
       else:
         first = False
-      print(json.dumps(doc), end='', flush=True)
+      print(json_util.dumps(doc), end='', flush=True)
     else:
-      print(f"Missing document for ID: {id_val}", file=sys.stderr)
+      print(f"Missing document for publicId: {pub_id}", file=sys.stderr)
   print(']', flush=True)
 
+
 def main():
-  file_path = 'ids.txt'  # Input file with UUIDs (one per line)
-  mongo_uri = 'mongodb://localhost:27017/'
-  db_name = 'your_db'
-  collection_name = 'your_collection'
+  # file_path = 'List11741Candidates.csv'  # Input file with UUIDs (one per line)
+  file_path = 'sample.csv'
+  mongo_uri = 'mongodb://tctalent:tctalent@localhost:27018/'
+  db_name = 'tctalent'
+  collection_name = 'candidates'
 
   client = MongoClient(mongo_uri)
   collection = client[db_name][collection_name]
 
   stream_documents_to_stdout(file_path, collection)
+
 
 if __name__ == '__main__':
   main()
