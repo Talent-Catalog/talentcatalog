@@ -98,6 +98,8 @@ import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasTcQueryParameters;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -176,6 +178,7 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.RootRequestService;
@@ -273,6 +276,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final TextExtracter textExtracter;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
+    private final JobChatService jobChatService;
 
     @Transactional
     @Override
@@ -946,8 +950,9 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCity(request.getCity());
         candidate.setState(request.getState());
 
+        //TODO JC Check for changed country
         candidate.setCountry(country);
-        reassignPartnerIfNeeded(candidate, country);
+        reassignOrNotifyPartnerIfNeeded(candidate, country);
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1395,8 +1400,9 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
 
+            //TODO JC Check for changed country
             candidate.setCountry(country);
-            reassignPartnerIfNeeded(candidate, country);
+            reassignOrNotifyPartnerIfNeeded(candidate, country);
 
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
@@ -1495,39 +1501,51 @@ public class CandidateServiceImpl implements CandidateService {
      * @param candidate The updating candidate
      * @param country Their given country location
      */
-    private void reassignPartnerIfNeeded(Candidate candidate, Country country) {
+    private void reassignOrNotifyPartnerIfNeeded(Candidate candidate, Country country) {
 
         // If candidate not in draft status, this is an existing profile: no automated reassignment.
         if (candidate.getStatus() != CandidateStatus.draft) {
-            //TODO JC notify partner tbd
-            return;
-        }
+            //Candidate has completed registration - and therefore has been assigned a partner.
+            //Let that partner know that the candidate has changed location.
+            notifyPartnerOfNewCandidateCountry(candidate, country);
+        } else {
+            //Candidate is still in the process of registering so any partner that has been assigned
+            //has only been assigned temporarily and can be changed.
+            User user = candidate.getUser();
+            PartnerImpl currentUserPartner = user.getPartner();
 
-        User user = candidate.getUser();
-        PartnerImpl currentUserPartner = user.getPartner();
-
-        //We need to change partners if the current partner does not cover the new country.
-        //We also may need to change partners if the current partner is the default partner because
-        //candidates are always assigned to country specific partners if possible.
-        if (!currentUserPartner.canManageCandidatesInCountry(country) ||
-            currentUserPartner.isDefaultSourcePartner()) {
-            //We need to change the partner
-            Partner autoAssignedCountryPartner =
-                partnerService.getAutoAssignablePartnerByCountry(country);
-            if (autoAssignedCountryPartner != null) {
-                //Use partner for country
-                user.setPartner((PartnerImpl) autoAssignedCountryPartner);
-                userRepository.save(user);
-            } else {
-                //No partner for country - set to default source partner if it is not already.
-                if (!user.getPartner().isDefaultSourcePartner()) {
-                    final PartnerImpl defaultSourcePartner =
-                        (PartnerImpl) partnerService.getDefaultSourcePartner();
-                    user.setPartner(defaultSourcePartner);
+            //We need to change partners if the current partner does not cover the new country.
+            //We also may need to change partners if the current partner is the default partner because
+            //candidates are always assigned to country specific partners if possible.
+            if (!currentUserPartner.canManageCandidatesInCountry(country) ||
+                currentUserPartner.isDefaultSourcePartner()) {
+                //We need to change the partner
+                Partner autoAssignedCountryPartner =
+                    partnerService.getAutoAssignablePartnerByCountry(country);
+                if (autoAssignedCountryPartner != null) {
+                    //Use partner for country
+                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
                     userRepository.save(user);
+                } else {
+                    //No partner for country - set to default source partner if it is not already.
+                    if (!currentUserPartner.isDefaultSourcePartner()) {
+                        final PartnerImpl defaultSourcePartner =
+                            (PartnerImpl) partnerService.getDefaultSourcePartner();
+                        user.setPartner(defaultSourcePartner);
+                        userRepository.save(user);
+                    }
                 }
             }
         }
+    }
+
+    private void notifyPartnerOfNewCandidateCountry(Candidate candidate, Country country) {
+        //TODO JC Implement notifyPartnerOfNewCandidateCountry
+        //TODO JC Find candidate / source chat
+        JobChat chat = jobChatService.getOrCreateJobChat(
+            JobChatType.CandidateProspect, null, null, candidate);
+
+        return;
     }
 
     /**

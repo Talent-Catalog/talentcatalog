@@ -108,7 +108,7 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -157,7 +157,7 @@ class JobServiceImplTest {
     @Mock private SavedSearchService savedSearchService;
     @Mock private SavedListService savedListService;
     @Mock private NextStepProcessingService nextStepProcessingService;
-    @Mock private OppNotificationService oppNotificationService;
+    @Mock private SystemNotificationService systemNotificationService;
     @Mock private CandidateOpportunityService candidateOpportunityService;
     @Mock private AuthService authService;
     @Mock private SalesforceJobOppService salesforceJobOppService;

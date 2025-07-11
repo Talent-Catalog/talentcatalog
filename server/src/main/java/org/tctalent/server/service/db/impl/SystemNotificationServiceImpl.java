@@ -34,7 +34,7 @@ import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.PostService;
 import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.service.db.UserService;
@@ -45,7 +45,7 @@ import org.tctalent.server.util.TranslationHelper;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OppNotificationServiceImpl implements OppNotificationService {
+public class SystemNotificationServiceImpl implements SystemNotificationService {
     private final ChatPostService chatPostService;
     private final EmailHelper emailHelper;
     private final JobChatService jobChatService;

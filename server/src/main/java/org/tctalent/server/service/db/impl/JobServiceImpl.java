@@ -95,7 +95,7 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -135,7 +135,7 @@ public class JobServiceImpl implements JobService {
 
     private final JobChatService jobChatService;
     private final JobServiceHelper jobServiceHelper;
-    private final OppNotificationService oppNotificationService;
+    private final SystemNotificationService systemNotificationService;
     private final PartnerService partnerService;
     private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceConfig salesforceConfig;
@@ -649,7 +649,7 @@ public class JobServiceImpl implements JobService {
         }
 
         // Send out notifications
-        oppNotificationService.notifyNewJobOpp(job);
+        systemNotificationService.notifyNewJobOpp(job);
 
         return salesforceJobOppRepository.save(job);
     }
@@ -796,7 +796,7 @@ public class JobServiceImpl implements JobService {
 
         //Perform any notifications before actually applying the change so that we have the
         //old and current state
-        oppNotificationService.notifyJobOppNextStepInfoChangesIfAny(job, request);
+        systemNotificationService.notifyJobOppNextStepInfoChangesIfAny(job, request);
 
         final String nextStep = request.getNextStep();
         if (nextStep != null) {

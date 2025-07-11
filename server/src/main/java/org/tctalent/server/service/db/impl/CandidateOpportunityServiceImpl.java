@@ -72,7 +72,7 @@ import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
@@ -91,7 +91,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final NextStepProcessingService nextStepProcessingService;
-    private final OppNotificationService oppNotificationService;
+    private final SystemNotificationService systemNotificationService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
     private final UserService userService;
@@ -154,7 +154,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         if (create) {
             //Create the automated post to notify that a new has been created for a candidate.
-            oppNotificationService.notifyNewCase(opp);
+            systemNotificationService.notifyNewCase(opp);
         }
 
         return opp;
@@ -641,7 +641,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         if (oppParams != null) {
 
-            oppNotificationService.notifyCaseChanges(opp, oppParams);
+            systemNotificationService.notifyCaseChanges(opp, oppParams);
 
             final CandidateOpportunityStage newStage = oppParams.getStage();
             if (newStage != null) {
