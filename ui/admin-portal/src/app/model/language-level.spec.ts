@@ -30,7 +30,8 @@ describe('LanguageLevel Interface', () => {
     // Assertions
     expect(languageLevel.id).toEqual(1);
     expect(languageLevel.name).toEqual('Advanced');
-    expect(languageLevel.level).toEqual(3);
+    expect(languageLevel.level).toEqual(4);
+    expect(languageLevel.cefrLevel).toEqual('B2');
     expect(languageLevel.status).toEqual('active');
   });
 });
