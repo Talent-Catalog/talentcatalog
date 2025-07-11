@@ -1,23 +1,29 @@
 @import 'src/scss/color-mixins';
-
-
-.nav-link {
-  @include text-color-body;
-  cursor: pointer;
-  &:hover {
-    @include background-color-primary;
-  }
-}
+@import 'src/scss/support-colors';
 
 .nav.nav-tabs {
   border-bottom: 1px solid #E5E5E5;
-
-  .nav-link.active {
+  .nav-link {
+    @include text-color-secondary;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: inherit;
     border-top: none;
     border-left: none;
     border-right: none;
-    border-bottom: 2px solid #0084d1;
+    &:hover {
+      border-bottom: 2px solid #737373;
+    }
   }
+  .nav-link.active {
+    border-bottom: 2px solid #0084d1;
+    //todo add a text-color-primary mixin
+    color: #0084d1
+  }
+}
+
+
+
 
   //.nav-link {
   //  color: $light;
@@ -43,4 +49,3 @@
   //  background-color: $primary;
   //  border-color: $nav-tabs-link-active-border-color;
   //}
-}

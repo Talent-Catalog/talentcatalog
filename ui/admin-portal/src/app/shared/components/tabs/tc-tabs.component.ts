@@ -52,7 +52,7 @@ export class TcTabsComponent implements AfterContentInit {
   }
 
   private emitActiveTab() {
-    console.log('emit active tab')
+    console.log('emit active tab ' + this.selectedTab.id)
     if (this.selectedTab) {
       this.tabChanged.emit(this.selectedTab.id);
     }

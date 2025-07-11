@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
-import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
 import {AuthorizationService} from "../../../../services/authorization.service";
@@ -239,8 +239,8 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     this.activeTabId = defaultActiveTabID;
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   private setActiveTabId(id: string) {
