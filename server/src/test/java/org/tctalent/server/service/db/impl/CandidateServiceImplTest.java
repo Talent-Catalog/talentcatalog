@@ -23,7 +23,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.doReturn;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.lenient;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +62,7 @@ import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizens
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.util.PersistenceContextHelper;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,6 +89,7 @@ class CandidateServiceImplTest {
     @Mock private AuthService authService;
     @Mock private UserRepository userRepository;
     @Mock private CandidateCitizenshipService candidateCitizenshipService;
+    @Mock private SystemNotificationService systemNotificationService;
 
     @Spy
     @InjectMocks
@@ -245,13 +253,16 @@ class CandidateServiceImplTest {
 
     @Test
     @DisplayName("should not reassign registered candidate")
-    void reassignPartnerIfNeeded_shouldNotReassignOrNotifyRegisteredCandidate() {
+    void reassignPartnerIfNeeded_shouldNotReassignButShouldNotify() {
         stubUpdatePersonalToReachReassignOrNotifyPartnerIfNeeded(CandidateStatus.pending, false, false, null); // Existing profile
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
+        //Notification should have been sent (because candidate has completed registration - ie
+        //status is not draft)
+        verify(systemNotificationService).notifyCandidateChangesCountry(candidate, testCountry);
+        //No change made to user
         verify(userRepository, never()).save(user);
-        Assertions.assertEquals(user.getPartner(), partner);
     }
 
     /*

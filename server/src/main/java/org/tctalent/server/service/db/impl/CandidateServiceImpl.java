@@ -98,8 +98,6 @@ import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasTcQueryParameters;
-import org.tctalent.server.model.db.JobChat;
-import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -178,13 +176,13 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.RootRequestService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
@@ -276,7 +274,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final TextExtracter textExtracter;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
-    private final JobChatService jobChatService;
+    private final SystemNotificationService systemNotificationService;
 
     @Transactional
     @Override
@@ -950,9 +948,13 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCity(request.getCity());
         candidate.setState(request.getState());
 
-        //TODO JC Check for changed country
-        candidate.setCountry(country);
-        reassignOrNotifyPartnerIfNeeded(candidate, country);
+        //Check if country has changed
+        if (!country.equals(candidate.getCountry())) {
+            reassignOrNotifyPartnerIfNeeded(candidate, country);
+            //Important that new country is not set on candidate until the above method has been
+            //called. This is because it needs to know the original country
+            candidate.setCountry(country);
+        }
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1400,9 +1402,13 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
 
-            //TODO JC Check for changed country
-            candidate.setCountry(country);
-            reassignOrNotifyPartnerIfNeeded(candidate, country);
+            //Check if country has changed
+            if (!country.equals(candidate.getCountry())) {
+                reassignOrNotifyPartnerIfNeeded(candidate, country);
+                //Important that new country is not set on candidate until the above method has been
+                //called. This is because it needs to know the original country
+                candidate.setCountry(country);
+            }
 
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
@@ -1507,7 +1513,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (candidate.getStatus() != CandidateStatus.draft) {
             //Candidate has completed registration - and therefore has been assigned a partner.
             //Let that partner know that the candidate has changed location.
-            notifyPartnerOfNewCandidateCountry(candidate, country);
+            systemNotificationService.notifyCandidateChangesCountry(candidate, country);
         } else {
             //Candidate is still in the process of registering so any partner that has been assigned
             //has only been assigned temporarily and can be changed.
@@ -1537,15 +1543,6 @@ public class CandidateServiceImpl implements CandidateService {
                 }
             }
         }
-    }
-
-    private void notifyPartnerOfNewCandidateCountry(Candidate candidate, Country country) {
-        //TODO JC Implement notifyPartnerOfNewCandidateCountry
-        //TODO JC Find candidate / source chat
-        JobChat chat = jobChatService.getOrCreateJobChat(
-            JobChatType.CandidateProspect, null, null, candidate);
-
-        return;
     }
 
     /**
