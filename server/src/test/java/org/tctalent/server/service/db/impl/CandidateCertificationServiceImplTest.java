@@ -56,10 +56,10 @@ class CandidateCertificationServiceImplTest {
     private CreateCandidateCertificationRequest createRequest;
     private Candidate candidate;
     private UpdateCandidateCertificationRequest updateRequest;
+    private long candidateId;
 
     private static final long CERT_ID = 123L;
     private static final User ADMIN_USER = getAdminUser();
-    private static final long CANDIDATE_ID = getCandidate().getId();
     private static final String NAME = "name";
     private static final String INSTITUTION = "institution";
     private static final LocalDate DATE_COMPLETED = LocalDate.parse("2024-06-01");
@@ -76,10 +76,11 @@ class CandidateCertificationServiceImplTest {
         certification = new CandidateCertification();
         certification.setId(CERT_ID);
         candidate = getCandidate();
+        candidateId = candidate.getId();
         certification.setCandidate(candidate);
         certificationList = List.of(certification, certification);
         createRequest = new CreateCandidateCertificationRequest();
-        createRequest.setCandidateId(CANDIDATE_ID);
+        createRequest.setCandidateId(candidateId);
         createRequest.setName(NAME);
         createRequest.setInstitution(INSTITUTION);
         createRequest.setDateCompleted(DATE_COMPLETED);
@@ -93,19 +94,19 @@ class CandidateCertificationServiceImplTest {
     @Test
     @DisplayName("should return list of certifications")
     void list_shouldReturnListOfCertifications() {
-        given(candidateCertificationRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateCertificationRepository.findByCandidateId(candidateId))
             .willReturn(certificationList);
 
-        assertEquals(certificationList, candidateCertificationService.list(CANDIDATE_ID));
+        assertEquals(certificationList, candidateCertificationService.list(candidateId));
     }
 
     @Test
     @DisplayName("should return empty list when none found")
     void list_shouldReturnEmptyList_whenNoneFound() {
-        given(candidateCertificationRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateCertificationRepository.findByCandidateId(candidateId))
             .willReturn(Collections.emptyList());
 
-        assertTrue(candidateCertificationService.list(CANDIDATE_ID).isEmpty());
+        assertTrue(candidateCertificationService.list(candidateId).isEmpty());
     }
 
     @Test

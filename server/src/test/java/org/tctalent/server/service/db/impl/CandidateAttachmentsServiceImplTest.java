@@ -91,8 +91,8 @@ public class CandidateAttachmentsServiceImplTest {
     private User user2;
     private UpdateCandidateAttachmentRequest updateRequest;
     private Candidate candidate;
+    private long candidateId;
 
-    private final static long CANDIDATE_ID = getCandidate().getId();
     private final static User ADMIN_USER = getAdminUser();
     private final static String NAME = "name";
     private final static String LOCATION = "www.link.com";
@@ -125,10 +125,11 @@ public class CandidateAttachmentsServiceImplTest {
         attachmentPage = new PageImpl<>(List.of(attachment, attachment));
         attachmentList = List.of(attachment, attachment);
         createRequest = new CreateCandidateAttachmentRequest();
-        createRequest.setCandidateId(CANDIDATE_ID);
+        createRequest.setCandidateId(candidateId);
         createRequest.setLocation(LOCATION);
         createRequest.setName(NAME);
         candidate = getCandidate();
+        candidateId = candidate.getId();
         candidate2 = new Candidate();
         candidate2.setId(123L);
         user2 = new User();
@@ -143,7 +144,7 @@ public class CandidateAttachmentsServiceImplTest {
     @DisplayName("should return page of attachments when found")
     void searchCandidateAttachments_shouldReturnAttachment_whenFound() {
         final SearchCandidateAttachmentsRequest request = new SearchCandidateAttachmentsRequest();
-        request.setCandidateId(CANDIDATE_ID);
+        request.setCandidateId(candidateId);
 
         given(candidateAttachmentRepository.findByCandidateId(anyLong(), any(PageRequest.class)))
             .willReturn(attachmentPage);
@@ -177,10 +178,10 @@ public class CandidateAttachmentsServiceImplTest {
     @DisplayName("should return list of attachments when found")
     void listCandidateAttachmentsByType_shouldReturnListOfAttachments_whenFound() {
         ListByUploadTypeRequest request = new ListByUploadTypeRequest();
-        request.setCandidateId(CANDIDATE_ID);
+        request.setCandidateId(candidateId);
         request.setUploadType(UploadType.idCard);
 
-        given(candidateAttachmentRepository.findByCandidateIdAndType(CANDIDATE_ID, UploadType.idCard))
+        given(candidateAttachmentRepository.findByCandidateIdAndType(candidateId, UploadType.idCard))
             .willReturn(attachmentList);
 
         assertEquals(attachmentList,
@@ -199,8 +200,8 @@ public class CandidateAttachmentsServiceImplTest {
     @Test
     @DisplayName("should return list of attachments when candidate logged in")
     void listCandidateAttachmentsForLoggedInCandidate_shouldReturnListOfAttachments_whenFound() {
-        given(authService.getLoggedInCandidateId()).willReturn(CANDIDATE_ID);
-        given(candidateAttachmentRepository.findByCandidateIdLoadAudit(CANDIDATE_ID))
+        given(authService.getLoggedInCandidateId()).willReturn(candidateId);
+        given(candidateAttachmentRepository.findByCandidateIdLoadAudit(candidateId))
             .willReturn(attachmentList);
 
         assertEquals(attachmentList,
@@ -210,39 +211,39 @@ public class CandidateAttachmentsServiceImplTest {
     @Test
     @DisplayName("should return list of cvs when candidate found")
     void listCandidateCvs_shouldReturnListOfCvs_whenCandidateFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
         given(candidateAttachmentRepository.findByCandidateIdAndCv(anyLong(), eq(true)))
             .willReturn(attachmentList);
 
-        assertEquals(attachmentList, candidateAttachmentsService.listCandidateCvs(CANDIDATE_ID));
+        assertEquals(attachmentList, candidateAttachmentsService.listCandidateCvs(candidateId));
     }
 
     @Test
     @DisplayName("should throw when candidate not found")
     void listCandidateCvs_shouldThrow_whenCandidateNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
 
         assertThrows(NoSuchObjectException.class,
-            () -> candidateAttachmentsService.listCandidateCvs(CANDIDATE_ID));
+            () -> candidateAttachmentsService.listCandidateCvs(candidateId));
     }
 
     @Test
     @DisplayName("should return list of attachments when candidate found")
     void listCandidateAttachments_shouldReturnListOfAttachments_whenCandidateFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
         given(candidateAttachmentRepository.findByCandidateId(anyLong())).willReturn(attachmentList);
 
         assertEquals(attachmentList, candidateAttachmentsService.listCandidateAttachments(
-            CANDIDATE_ID));
+            candidateId));
     }
 
     @Test
     @DisplayName("should throw when candidate not found")
     void listCandidateAttachments_shouldThrow_whenCandidateNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
 
         assertThrows(NoSuchObjectException.class,
-            () -> candidateAttachmentsService.listCandidateAttachments(CANDIDATE_ID));
+            () -> candidateAttachmentsService.listCandidateAttachments(candidateId));
     }
 
     @Test
@@ -258,7 +259,8 @@ public class CandidateAttachmentsServiceImplTest {
     @DisplayName("should throw when candidate not found")
     void createCandidateAttachment_shouldThrow_whenCandidateNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(createRequest.getCandidateId()))
+            .willReturn(Optional.empty());
 
         assertThrows(NoSuchObjectException.class,
             () -> candidateAttachmentsService.createCandidateAttachment(createRequest));
@@ -280,7 +282,8 @@ public class CandidateAttachmentsServiceImplTest {
         createRequest.setType(AttachmentType.link);
 
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(createRequest.getCandidateId()))
+            .willReturn(Optional.of(candidate));
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
@@ -302,7 +305,8 @@ public class CandidateAttachmentsServiceImplTest {
         createRequest.setTextExtract(TEXT_EXTRACT);
 
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(createRequest.getCandidateId()))
+            .willReturn(Optional.of(candidate));
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
@@ -328,7 +332,8 @@ public class CandidateAttachmentsServiceImplTest {
         createRequest.setTextExtract(TEXT_EXTRACT);
 
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(createRequest.getCandidateId()))
+            .willReturn(Optional.of(candidate));
         given(s3ResourceHelper.getS3Bucket()).willReturn("bucket");
         given(s3ResourceHelper.downloadFile(anyString(), anyString())).willReturn(mock(File.class));
 
@@ -406,7 +411,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         Exception ex = assertThrows(InvalidRequestException.class,
             () -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
-        assertEquals(ex.getMessage(), "You can only delete your own uploads.");
+        assertEquals("You can only delete your own uploads.", ex.getMessage());
     }
 
     @Test
@@ -424,7 +429,7 @@ public class CandidateAttachmentsServiceImplTest {
         candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID);
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate2.getUpdatedBy(), candidate2.getUser());
+        assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
         verify(candidateService).save(candidate2, true);
         verify(s3ResourceHelper).deleteFile(anyString()); // Attempted delete of associated file
     }
@@ -447,7 +452,7 @@ public class CandidateAttachmentsServiceImplTest {
         assertDoesNotThrow(() -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate2.getUpdatedBy(), ADMIN_USER);
+        assertEquals(ADMIN_USER, candidate2.getUpdatedBy());
         verify(candidateService).save(candidate2, true);
     }
 
@@ -468,7 +473,7 @@ public class CandidateAttachmentsServiceImplTest {
         candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID);
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate2.getUpdatedBy(), candidate2.getUser());
+        assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
         verify(candidateService).save(candidate2, true);
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         verify(fileSystemService, never()).deleteFile(any(GoogleFileSystemFile.class));
@@ -491,7 +496,7 @@ public class CandidateAttachmentsServiceImplTest {
         assertDoesNotThrow(() -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate2.getUpdatedBy(), candidate2.getUser());
+        assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
         verify(candidateService).save(candidate2, true);
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         verify(fileSystemService, never()).deleteFile(any(GoogleFileSystemFile.class));
@@ -506,13 +511,13 @@ public class CandidateAttachmentsServiceImplTest {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
         given(candidateAttachmentRepository.findByIdLoadCandidate(ATTACHMENT_ID))
             .willReturn(Optional.of(attachment));
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
         given(authService.hasAdminPrivileges(ADMIN_USER.getRole())).willReturn(true);
 
         candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID);
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate.getUpdatedBy(), ADMIN_USER);
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true);
         verify(fileSystemService).deleteFile(any(GoogleFileSystemFile.class));
     }
@@ -676,7 +681,7 @@ public class CandidateAttachmentsServiceImplTest {
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         assertEquals(candidate.getUpdatedBy(), ADMIN_USER);
         verify(candidateService).save(candidate, true);
-        assertEquals(attachment.getUpdatedBy(), ADMIN_USER);
+        assertEquals(ADMIN_USER, attachment.getUpdatedBy());
         verify(candidateAttachmentRepository).save(attachment);
     }
 
@@ -697,11 +702,11 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.updateCandidateAttachment(ATTACHMENT_ID, updateRequest);
 
-        assertEquals(attachment.getName(), newName);
-        assertEquals(attachment.getLocation(), newLocation);
-        assertEquals(candidate.getUpdatedBy(), ADMIN_USER);
+        assertEquals(newName, attachment.getName());
+        assertEquals(newLocation, attachment.getLocation());
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true);
-        assertEquals(attachment.getUpdatedBy(), ADMIN_USER);
+        assertEquals(ADMIN_USER, attachment.getUpdatedBy());
         verify(candidateAttachmentRepository).save(attachment);
     }
 
@@ -717,17 +722,17 @@ public class CandidateAttachmentsServiceImplTest {
     @Test
     @DisplayName("should throw when candidate not found")
     void uploadAttachment_shouldThrow_whenCandidateNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
 
         assertThrows(NoSuchObjectException.class,
-            () -> candidateAttachmentsService.uploadAttachment(CANDIDATE_ID, true, file));
+            () -> candidateAttachmentsService.uploadAttachment(candidateId, true, file));
     }
 
     @Test
     @DisplayName("should upload file as expected")
     void uploadAttachment_shouldUploadFile() throws IOException {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
-        given(candidateService.createCandidateFolder(CANDIDATE_ID)).willReturn(candidate);
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
+        given(candidateService.createCandidateFolder(candidateId)).willReturn(candidate);
         given(fileSystemService.getDriveFromEntity(any(GoogleFileSystemBaseEntity.class)))
             .willReturn(mock(GoogleFileSystemDrive.class));
         given(fileSystemService.uploadFile(any(GoogleFileSystemDrive.class),
@@ -735,24 +740,24 @@ public class CandidateAttachmentsServiceImplTest {
             .willReturn(mock(GoogleFileSystemFile.class));
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
 
-        candidateAttachmentsService.uploadAttachment(CANDIDATE_ID, false, file);
+        candidateAttachmentsService.uploadAttachment(candidateId, false, file);
 
-        assertEquals(candidate.getUpdatedBy(), ADMIN_USER);
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment upload = attachmentCaptor.getValue();
-        assertEquals(upload.getCandidate(), candidate);
-        assertEquals(upload.getType(), AttachmentType.googlefile);
-        assertEquals(upload.getName(), ORIGINAL_FILE_NAME);
-        assertEquals(upload.getFileType(), "pdf");
-        assertEquals(upload.getUpdatedBy(), ADMIN_USER);
+        assertEquals(candidate, upload.getCandidate());
+        assertEquals(AttachmentType.googlefile, upload.getType());
+        assertEquals(ORIGINAL_FILE_NAME, upload.getName());
+        assertEquals("pdf", upload.getFileType());
+        assertEquals(ADMIN_USER, upload.getUpdatedBy());
     }
 
     @Test
     @DisplayName("should upload file and create subfolder as expected")
     void uploadAttachment_shouldUploadFileAndCreateSubFolder() throws IOException {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
-        given(candidateService.createCandidateFolder(CANDIDATE_ID)).willReturn(candidate);
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
+        given(candidateService.createCandidateFolder(candidateId)).willReturn(candidate);
         given(fileSystemService.getDriveFromEntity(any(GoogleFileSystemBaseEntity.class)))
             .willReturn(mock(GoogleFileSystemDrive.class));
         given(fileSystemService.uploadFile(any(GoogleFileSystemDrive.class),

@@ -53,8 +53,8 @@ class CandidateCitizenshipServiceImplTest {
     private Candidate candidate;
     private CreateCandidateCitizenshipRequest createRequest;
     private CandidateIntakeDataUpdate intakeData;
+    private long candidateId;
 
-    private static final long CANDIDATE_ID = getCandidate().getId();
     private static final long NATIONALITY_ID = 11L;
     private static final long CITIZENSHIP_ID = 133L;
 
@@ -70,6 +70,7 @@ class CandidateCitizenshipServiceImplTest {
     @BeforeEach
     void setUp() {
         candidate = getCandidate();
+        candidateId = candidate.getId();
         createRequest = new CreateCandidateCitizenshipRequest();
         createRequest.setNationalityId(NATIONALITY_ID);
         intakeData = new CandidateIntakeDataUpdate();
@@ -79,12 +80,12 @@ class CandidateCitizenshipServiceImplTest {
     @Test
     @DisplayName("should throw when candidate not found")
     void createCitizenship_shouldThrow_whenCandidateNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
-            () -> candidateCitizenshipService.createCitizenship(CANDIDATE_ID, createRequest));
+            () -> candidateCitizenshipService.createCitizenship(candidateId, createRequest));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(CANDIDATE_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(candidateId)));
     }
 
     @Test
@@ -95,10 +96,10 @@ class CandidateCitizenshipServiceImplTest {
         createRequest.setNotes(notes);
         createRequest.setHasPassport(HasPassport.ValidPassport);
 
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
         given(countryRepository.findById(NATIONALITY_ID)).willReturn(Optional.of(JORDAN));
 
-        candidateCitizenshipService.createCitizenship(CANDIDATE_ID, createRequest);
+        candidateCitizenshipService.createCitizenship(candidateId, createRequest);
 
         verify(candidateCitizenshipRepository).save(citizenshipCaptor.capture());
         final CandidateCitizenship citizenship = citizenshipCaptor.getValue();
@@ -111,11 +112,11 @@ class CandidateCitizenshipServiceImplTest {
     @Test
     @DisplayName("should throw when nationality country not found")
     void createCitizenship_shouldThrow_whenNationalityCountryNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
         given(countryRepository.findById(NATIONALITY_ID)).willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
-            () -> candidateCitizenshipService.createCitizenship(CANDIDATE_ID, createRequest));
+            () -> candidateCitizenshipService.createCitizenship(candidateId, createRequest));
 
         assertTrue(ex.getMessage().contains(String.valueOf(NATIONALITY_ID)));
     }

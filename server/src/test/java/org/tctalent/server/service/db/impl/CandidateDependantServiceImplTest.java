@@ -55,8 +55,8 @@ class CandidateDependantServiceImplTest {
     private CandidateDependant dependant;
     private List<CandidateDependant> dependantList;
     private CandidateIntakeDataUpdate intakeData;
+    private long candidateId;
 
-    private static final long CANDIDATE_ID = getCandidate().getId();
     private static final long DEPENDANT_ID = 33L;
 
     @Mock private CandidateDependantRepository candidateDependantRepository;
@@ -70,6 +70,7 @@ class CandidateDependantServiceImplTest {
     @BeforeEach
     void setUp() {
         candidate = getCandidate();
+        candidateId = candidate.getId();
         createRequest = new CreateCandidateDependantRequest();
         dependant = new CandidateDependant();
         dependant.setId(DEPENDANT_ID);
@@ -82,12 +83,12 @@ class CandidateDependantServiceImplTest {
     @Test
     @DisplayName("should throw when candidate not found")
     void createDependant_shouldThrow_whenCandidateNotFound() {
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
-            () -> candidateDependantService.createDependant(CANDIDATE_ID, createRequest));
+            () -> candidateDependantService.createDependant(candidateId, createRequest));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(CANDIDATE_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(candidateId)));
     }
 
     @Test
@@ -100,9 +101,9 @@ class CandidateDependantServiceImplTest {
         final String healthNotes = "health notes";
         createRequest.setHealthNotes(healthNotes);
 
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
 
-        candidateDependantService.createDependant(CANDIDATE_ID, createRequest);
+        candidateDependantService.createDependant(candidateId, createRequest);
 
         verify(candidateDependantRepository).save(dependantCaptor.capture());
         CandidateDependant result = dependantCaptor.getValue();
@@ -128,19 +129,19 @@ class CandidateDependantServiceImplTest {
     @DisplayName("should throw when candidate not found")
     void deleteDependant_shouldThrow_whenCandidateNotFound() {
         given(candidateDependantRepository.findById(DEPENDANT_ID)).willReturn(Optional.of(dependant));
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.empty());
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
             () -> candidateDependantService.deleteDependant(DEPENDANT_ID));
 
-        assertTrue(ex.getMessage().contains(String.valueOf(CANDIDATE_ID)));
+        assertTrue(ex.getMessage().contains(String.valueOf(candidateId)));
     }
 
     @Test
     @DisplayName("should delete dependant")
     void deleteDependant_shouldDeleteDependantAndReturnCandidate() {
         given(candidateDependantRepository.findById(DEPENDANT_ID)).willReturn(Optional.of(dependant));
-        given(candidateRepository.findById(CANDIDATE_ID)).willReturn(Optional.of(candidate));
+        given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
 
         assertEquals(candidate, candidateDependantService.deleteDependant(DEPENDANT_ID)); // When
         verify(candidateDependantRepository).deleteById(dependant.getId());
@@ -149,18 +150,18 @@ class CandidateDependantServiceImplTest {
     @Test
     @DisplayName("should return list of dependants")
     void list_shouldReturnDependants() {
-        given(candidateDependantRepository.findByCandidateId(CANDIDATE_ID)).willReturn(dependantList);
+        given(candidateDependantRepository.findByCandidateId(candidateId)).willReturn(dependantList);
 
-        assertEquals(dependantList, candidateDependantService.list(CANDIDATE_ID));
+        assertEquals(dependantList, candidateDependantService.list(candidateId));
     }
 
     @Test
     @DisplayName("should return empty list when none found")
     void list_shouldReturnEmptyList_whenNoneFound() {
-        given(candidateDependantRepository.findByCandidateId(CANDIDATE_ID))
+        given(candidateDependantRepository.findByCandidateId(candidateId))
             .willReturn(Collections.emptyList());
 
-        assertTrue(candidateDependantService.list(CANDIDATE_ID).isEmpty());
+        assertTrue(candidateDependantService.list(candidateId).isEmpty());
     }
 
     @Test
