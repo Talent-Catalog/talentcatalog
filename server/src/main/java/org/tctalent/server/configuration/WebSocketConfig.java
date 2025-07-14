@@ -53,7 +53,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(@NotNull StompEndpointRegistry registry) {
-        String urls = env.getProperty("tbb.cors.urls");
+        String urls = env.getProperty("tc.cors.urls");
         String[] corsUrls;
         if (StringUtils.isNotBlank(urls)) {
             corsUrls = urls.split(",");
