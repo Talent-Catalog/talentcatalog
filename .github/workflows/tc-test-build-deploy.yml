@@ -8,12 +8,6 @@ on:
   push:
     branches: [ staging ]
 
-#This should correspond to the AWS IAM user test-tc-deploy
-#The matching secret key is stored as a GitHub secret and is accessible
-#as ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
-env:
-  AWS_ACCESS_KEY_ID: AKIATLUVZAGYXPBWDGF7
-
 jobs:
   build:
 
@@ -34,7 +28,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
           aws-region: us-east-1
 
@@ -47,9 +41,3 @@ jobs:
         run: ./gradlew server:build -Ptest-tc-system # We won't run the perf tests here
       - name: Deploy with Jib
         run: ./gradlew jib -Ptest-tc-system
-
-        # These env variables will be used by the jib stage of the gradle
-        # build which is configured to use the ecr credential helper.
-        env:
-          AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
