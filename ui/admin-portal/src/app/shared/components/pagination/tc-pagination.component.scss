@@ -1,0 +1,28 @@
+// Apply desired font size (this may be able to be removed once we globally set the font size)
+.tc-pagination {
+  font-size: 14px;
+}
+
+// Make the pagination span full width
+.custom-ngb-pagination {
+  display: flex;
+  width: 100%;
+  ngb-pagination {
+    width: 100%;
+    .select-pages {
+      display: flex;
+      flex: 1 1 auto !important;
+    }
+  }
+}
+
+// Round the edges of the hover background
+.page-link:hover {
+  border-radius: 0.5rem;
+}
+
+// Align the results total to the center
+.results-total {
+  display: flex;
+  justify-content: center;
+}

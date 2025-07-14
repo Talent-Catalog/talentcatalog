@@ -42,44 +42,6 @@
   }
 }
 
-.page-link {
-  position: relative;
-  display: block;
-  color: $accent1;
-  background-color: $accent3;
-  border-color: $light;
-
-  &:hover {
-    z-index: 2;
-    text-decoration: none;
-    background-color: $accent2;
-    color: $light;
-  }
-
-  &:focus {
-    z-index: 2;
-    outline: $pagination-focus-outline;
-    box-shadow: $pagination-focus-box-shadow;
-  }
-}
-
-.page-item {
-
-  &.active .page-link {
-    background-color: $accent2;
-    border-color: $accent2;
-  }
-
-  &.disabled .page-link {
-    color: $light;
-    background-color: $accent3;
-    pointer-events: none;
-    border-color: $light;
-    // Opinionated: remove the "hand" cursor set previously for .page-link
-    cursor: auto;
-  }
-}
-
 table {
   background-color: $white;
   border: $white;
