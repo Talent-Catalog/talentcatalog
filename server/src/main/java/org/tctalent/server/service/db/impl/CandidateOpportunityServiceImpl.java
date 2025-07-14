@@ -175,9 +175,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     public void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws NoSuchObjectException, SalesforceException, WebClientException {
         // Get the logged-in user and their partner
-        User loggedInUser = authService.getLoggedInUser()
-            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
+        User loggedInUser = userService.getLoggedInUser();
+        assert loggedInUser != null;
         Partner userPartner = loggedInUser.getPartner();
         if (userPartner == null) {
             throw new InvalidRequestException("User is not associated with a partner");
@@ -206,9 +205,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException {
         // Get the logged-in user and their partner
-        User loggedInUser = authService.getLoggedInUser()
-            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
+        User loggedInUser = userService.getLoggedInUser();
+        assert loggedInUser != null;
         Partner userPartner = loggedInUser.getPartner();
         if (userPartner == null) {
             throw new InvalidRequestException("User is not associated with a partner");
@@ -931,7 +929,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         return candidateOpportunityRepository.findAllNonNullSfIdsByClosedFalse();
     }
 
-    private boolean isPartnerAuthorizedForCandidate(Partner userPartner, Candidate candidate) {
+    public boolean isPartnerAuthorizedForCandidate(Partner userPartner, Candidate candidate) {
         Partner candidatePartner = candidate.getUser().getPartner();
         // If the user is a source partner, they can only access their own candidates
         if (userPartner.isSourcePartner()) {
