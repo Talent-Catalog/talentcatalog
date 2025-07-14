@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.tctalent.server.data.UserTestData.getFullUser;
 
 import com.opencsv.exceptions.CsvValidationException;
 import java.io.IOException;
@@ -33,7 +34,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
-import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
@@ -65,7 +65,7 @@ class DuolingoCouponServiceImplTest {
   private EmailHelper emailHelper;
   @InjectMocks
   private DuolingoCouponServiceImpl couponService;
-  private static final User loggedInAdminUser = AdminApiTestUtil.getFullUser();
+  private static final User loggedInAdminUser = getFullUser();
 
   @BeforeEach
   void setUp() {

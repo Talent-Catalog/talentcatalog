@@ -83,7 +83,7 @@ describe('PublishedDocColumnSelectorComponent', () => {
 
   it('should remove column when removeColumn is called', () => {
     component.selectedColumns = [mockPublishedDocColumnConfig];
-    component.removeColumn({ value: mockPublishedDocColumnConfig });
+    component.removeColumn(mockPublishedDocColumnConfig);
     expect(component.selectedColumns.length).toBe(0);
   });
 
