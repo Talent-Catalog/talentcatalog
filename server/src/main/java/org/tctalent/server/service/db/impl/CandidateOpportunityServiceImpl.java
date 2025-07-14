@@ -174,18 +174,57 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws NoSuchObjectException, SalesforceException, WebClientException {
+        // Get the logged-in user and their partner
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
+        Partner userPartner = loggedInUser.getPartner();
+        if (userPartner == null) {
+            throw new InvalidRequestException("User is not associated with a partner");
+        }
         List<Candidate> candidates = candidateService.findByIds(request.getCandidateIds());
 
         final String sfJobOppId = request.getSfJobOppId();
         final SalesforceJobOpp sfJobOpp =
             salesforceJobOppService.getOrCreateJobOppFromId(sfJobOppId);
+        // Validate that the user's partner is authorized to manage all candidates
+        for (Candidate candidate : candidates) {
+            if (!isPartnerAuthorizedForCandidate(userPartner, candidate)) {
+                LogBuilder.builder(log)
+                    .user(Optional.of(loggedInUser))
+                    .action("createUpdateCandidateOpportunities")
+                    .message("Unauthorized attempt to update opportunity for candidate " + candidate.getCandidateNumber() + " by partner " + userPartner.getName())
+                    .logWarn();
+                throw new InvalidRequestException("User's partner is not authorized to update opportunities for candidate " + candidate.getCandidateNumber());
+            }
+        }
+
         createUpdateCandidateOpportunities(candidates, sfJobOpp, request.getCandidateOppParams());
     }
 
     public void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException {
+        // Get the logged-in user and their partner
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Partner userPartner = loggedInUser.getPartner();
+        if (userPartner == null) {
+            throw new InvalidRequestException("User is not associated with a partner");
+        }
+
+        // Validate candidates
+        for (Candidate candidate : candidates) {
+            if (!isPartnerAuthorizedForCandidate(userPartner, candidate)) {
+                LogBuilder.builder(log)
+                    .user(Optional.of(loggedInUser))
+                    .action("createUpdateCandidateOpportunities")
+                    .message("Unauthorized attempt to update opportunity for candidate " + candidate.getCandidateNumber() + " by partner " + userPartner.getName())
+                    .logWarn();
+                throw new InvalidRequestException("User's partner is not authorized to update opportunities for candidate " + candidate.getCandidateNumber());
+            }
+        }
         //Need ordered list so that can match with returned contacts.
         List<Candidate> orderedCandidates = new ArrayList<>(candidates);
 
@@ -890,6 +929,15 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public List<String> findAllNonNullSfIdsByClosedFalse() {
         return candidateOpportunityRepository.findAllNonNullSfIdsByClosedFalse();
+    }
+
+    private boolean isPartnerAuthorizedForCandidate(Partner userPartner, Candidate candidate) {
+        Partner candidatePartner = candidate.getUser().getPartner();
+        // If the user is a source partner, they can only access their own candidates
+        if (userPartner.isSourcePartner()) {
+            return userPartner.getId().equals(candidatePartner.getId());
+        }
+        return true;
     }
 
 }
