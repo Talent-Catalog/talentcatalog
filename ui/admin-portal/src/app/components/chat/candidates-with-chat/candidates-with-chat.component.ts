@@ -86,23 +86,4 @@ export class CandidatesWithChatComponent extends MainSidePanelBase implements On
     return this.authorizationService.isReadOnly();
   }
 
-  public computeMuteButtonLabel() {
-    return (this.selectedCandidate?.muted ? "Unmute": "Mute") + " Candidate";
-  }
-
-  public toggleMuted() {
-    this.error = null;
-    const request: UpdateCandidateMutedRequest = {
-      muted: !this.selectedCandidate.muted
-    };
-    this.candidateService.updateMuted(this.selectedCandidate.id, request).subscribe(
-      () => {
-        //Update candidate with new status
-        this.selectedCandidate.muted = request.muted;
-      },
-      (error) => {
-        this.error = error;
-      });
-
-  }
 }
