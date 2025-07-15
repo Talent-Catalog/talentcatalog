@@ -1,5 +1,5 @@
 @import '../../../../../scss/typography-mixins';
-label {
+.form-label {
   @include label-md;
   margin: 0;
 }

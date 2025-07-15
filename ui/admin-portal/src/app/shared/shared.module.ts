@@ -24,14 +24,14 @@ import { DescriptionComponent } from './components/fieldset/description/descript
 import { ErrorMessageComponent } from './components/fieldset/error-message/error-message.component';
 
 @NgModule({
-  declarations: [InputComponent, InputComponent, FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent],
+  declarations: [InputComponent, FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent],
   imports: [
     CommonModule,
   ],
   exports: [
     InputComponent,
     FieldComponent,
-    FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent
+    FieldsetComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent
   ]
 })
 export class SharedModule {
