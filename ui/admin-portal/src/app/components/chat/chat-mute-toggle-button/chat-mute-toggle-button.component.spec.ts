@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatMuteToggleButtonComponent } from './chat-mute-toggle-button.component';
+import {HttpClientModule} from "@angular/common/http";
 
 describe('MuteToggleButtonComponent', () => {
   let component: ChatMuteToggleButtonComponent;
@@ -8,7 +9,8 @@ describe('MuteToggleButtonComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ChatMuteToggleButtonComponent]
+      declarations: [ChatMuteToggleButtonComponent],
+      imports: [HttpClientModule]
     });
     fixture = TestBed.createComponent(ChatMuteToggleButtonComponent);
     component = fixture.componentInstance;
