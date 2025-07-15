@@ -22,16 +22,17 @@ import { FieldComponent } from './components/fieldset/field/field.component';
 import { LabelComponent } from './components/fieldset/label/label.component';
 import { DescriptionComponent } from './components/fieldset/description/description.component';
 import { ErrorMessageComponent } from './components/fieldset/error-message/error-message.component';
+import { TextareaComponent } from './components/textarea/textarea.component';
 
 @NgModule({
-  declarations: [InputComponent, InputComponent, FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent],
+  declarations: [InputComponent, InputComponent, FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent, TextareaComponent],
   imports: [
     CommonModule,
   ],
   exports: [
     InputComponent,
     FieldComponent,
-    FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent
+    FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent, TextareaComponent
   ]
 })
 export class SharedModule {
