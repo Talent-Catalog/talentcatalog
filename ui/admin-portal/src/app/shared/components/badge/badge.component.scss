@@ -1,0 +1,30 @@
+@import '../../../../scss/typography-mixins';
+@import "../../../../scss/color-mixins";
+
+.badge {
+  border-radius: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+  border: none;
+  margin:0.5em;
+  @include paragraph-xs;
+}
+
+.badge-gray { @include background-color-soft; @include text-color-secondary; }
+.badge-red    { @include background-color-red;    @include text-color-red; }
+.badge-orange { @include background-color-orange; @include text-color-orange; }
+.badge-yellow { @include background-color-yellow; @include text-color-yellow; }
+.badge-green  { @include background-color-green;  @include text-color-green; }
+.badge-blue   { @include background-color-blue;   @include text-color-blue; }
+.badge-purple { @include background-color-purple; @include text-color-purple; }
+.badge-pink   { @include background-color-pink;   @include text-color-pink; }
+
+a.badge, button.badge {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    filter: brightness(0.95);
+  }
+}
