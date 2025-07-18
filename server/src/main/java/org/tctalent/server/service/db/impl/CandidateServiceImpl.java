@@ -182,8 +182,8 @@ import org.tctalent.server.service.db.RootRequestService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.TaskService;
-import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
@@ -269,12 +269,12 @@ public class CandidateServiceImpl implements CandidateService {
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
-    private final TermsInfoService termsInfoService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
+    private final SystemNotificationService systemNotificationService;
 
     @Transactional
     @Override
@@ -948,8 +948,13 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCity(request.getCity());
         candidate.setState(request.getState());
 
-        candidate.setCountry(country);
-        reassignPartnerIfNeeded(candidate, country);
+        //Check if country has changed
+        if (!country.equals(candidate.getCountry())) {
+            reassignOrNotifyPartnerIfNeeded(candidate, country);
+            //Important that new country is not set on candidate until the above method has been
+            //called. This is because it needs to know the original country
+            candidate.setCountry(country);
+        }
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
@@ -1397,8 +1402,13 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
 
-            candidate.setCountry(country);
-            reassignPartnerIfNeeded(candidate, country);
+            //Check if country has changed
+            if (!country.equals(candidate.getCountry())) {
+                reassignOrNotifyPartnerIfNeeded(candidate, country);
+                //Important that new country is not set on candidate until the above method has been
+                //called. This is because it needs to know the original country
+                candidate.setCountry(country);
+            }
 
             candidate.setCity(request.getCity());
             candidate.setState(request.getState());
@@ -1470,38 +1480,67 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * When a new registrant is assigned to a partner that isn't operational in their given country
-     * location, reassign them to the auto-assign partner or, if none exists, the default source
-     * partner.
-     * @param candidate The updating/registering candidate
+     * Called when the country that a candidate is located in has changed.
+     * <p>
+     *     If the candidate has completed registration, just notify the current partner. The
+     *     current partner will decide, possibly after consultation with the candidate, whether
+     *     it is best to change partner.
+     * </p>
+     * <p>
+     * If the candidate is still in the registration process...
+     * </p>
+     * <p>
+     * and they are currently assigned to a partner that isn't operational in their given country
+     * location their assigned partner needs to
+     * change. This can happen when a candidate changes their country during the registration
+     * process.
+     * </p>
+     * <p>
+     * If the candidate is currently assigned to the default source partner, they also may need
+     * to change if there is a partner specifically responsible for the new country.
+     * Default source partner is only used when there is no other suitable partner.
+     * </p>
+     * <p>
+     * Reassign them to the auto-assign partner for the new country or, if none exists,
+     * to the default source partner.
+     * </p>
+     * @param candidate The updating candidate
      * @param country Their given country location
      */
-    private void reassignPartnerIfNeeded(Candidate candidate, Country country) {
+    private void reassignOrNotifyPartnerIfNeeded(Candidate candidate, Country country) {
 
         // If candidate not in draft status, this is an existing profile: no automated reassignment.
         if (candidate.getStatus() != CandidateStatus.draft) {
-            return;
-        }
+            //Candidate has completed registration - and therefore has been assigned a partner.
+            //Let that partner know that the candidate has changed location.
+            systemNotificationService.notifyCandidateChangesCountry(candidate, country);
+        } else {
+            //Candidate is still in the process of registering so any partner that has been assigned
+            //has only been assigned temporarily and can be changed.
+            User user = candidate.getUser();
+            PartnerImpl currentUserPartner = user.getPartner();
 
-        User user = candidate.getUser();
-        PartnerImpl currentPartner = user.getPartner();
-
-        if (
-            !currentPartner.canManageCandidatesInCountry(country) ||
-                currentPartner.isDefaultSourcePartner()
-        ) {
-            Partner autoAssignedCountryPartner =
-                partnerService.getAutoAssignablePartnerByCountry(country);
-
-            if (autoAssignedCountryPartner != null) {
-                user.setPartner((PartnerImpl) autoAssignedCountryPartner);
-                userRepository.save(user);
-                return;
-            }
-
-            if (!currentPartner.isDefaultSourcePartner()) {
-                user.setPartner((PartnerImpl) partnerService.getDefaultSourcePartner());
-                userRepository.save(user);
+            //We need to change partners if the current partner does not cover the new country.
+            //We also may need to change partners if the current partner is the default partner because
+            //candidates are always assigned to country specific partners if possible.
+            if (!currentUserPartner.canManageCandidatesInCountry(country) ||
+                currentUserPartner.isDefaultSourcePartner()) {
+                //We need to change the partner
+                Partner autoAssignedCountryPartner =
+                    partnerService.getAutoAssignablePartnerByCountry(country);
+                if (autoAssignedCountryPartner != null) {
+                    //Use partner for country
+                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
+                    userRepository.save(user);
+                } else {
+                    //No partner for country - set to default source partner if it is not already.
+                    if (!currentUserPartner.isDefaultSourcePartner()) {
+                        final PartnerImpl defaultSourcePartner =
+                            (PartnerImpl) partnerService.getDefaultSourcePartner();
+                        user.setPartner(defaultSourcePartner);
+                        userRepository.save(user);
+                    }
+                }
             }
         }
     }

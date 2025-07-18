@@ -24,6 +24,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.NextStepWithDueDate;
@@ -34,7 +35,7 @@ import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.PostService;
 import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.service.db.UserService;
@@ -45,7 +46,7 @@ import org.tctalent.server.util.TranslationHelper;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OppNotificationServiceImpl implements OppNotificationService {
+public class SystemNotificationServiceImpl implements SystemNotificationService {
     private final ChatPostService chatPostService;
     private final EmailHelper emailHelper;
     private final JobChatService jobChatService;
@@ -53,6 +54,25 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     private final PostService postService;
     private final TranslationService translationService;
     private final UserService userService;
+
+    @Override
+    public void notifyCandidateChangesCountry(Candidate candidate, Country country) {
+        //Find candidate / source chat. Both the candidate and their source partner should see
+        //this notification.
+        JobChat chat = jobChatService.getOrCreateJobChat(
+            JobChatType.CandidateProspect, null, null, candidate);
+
+        String candidateNameAndNumber = constructCandidateNameNumber(candidate);
+        Post changeCountryPost = postService.createPost(
+            candidateNameAndNumber + " has relocated from "
+                + candidate.getCountry().getName() + " to " + country.getName() + "."
+                + " A change of partner may be desirable. Please contact a Talent Catalog"
+                + " administrator if the candidate should be assigned to a new partner."
+            , true
+        );
+
+        publishPost(chat, changeCountryPost);
+    }
 
     @Override
     public void notifyCaseChanges(CandidateOpportunity opp, CandidateOpportunityParams changes) {
@@ -112,7 +132,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     @Override
     public void notifyNewCase(CandidateOpportunity opp) {
         Candidate candidate = opp.getCandidate();
-        String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
+        String candidateNameAndNumber = constructCandidateNameNumber(candidate);
 
         Post autoPostNewOpp = postService.createPost("The candidate " + candidateNameAndNumber +
             " is a prospect for the job '" + opp.getJobOpp().getName() +"'.", true);

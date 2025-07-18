@@ -92,9 +92,9 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -124,7 +124,7 @@ public class CandidateOpportunityServiceImplTest {
     @Mock private CandidateOpportunityRepository candidateOpportunityRepository;
     @Mock private UserService userService;
     @Mock private NextStepProcessingService nextStepProcessingService;
-    @Mock private OppNotificationService oppNotificationService;
+    @Mock private SystemNotificationService systemNotificationService;
     @Mock private AuthService authService;
     @Mock private SalesforceHelper salesforceHelper;
     @Mock private MultipartFile mockFile;
@@ -244,7 +244,7 @@ public class CandidateOpportunityServiceImplTest {
         assertEquals(expectedOpp.getClosingComments(), result.getClosingComments());
         assertEquals(expectedOpp.getEmployerFeedback(), result.getEmployerFeedback());
         assertEquals(expectedOpp.getUpdatedBy(), result.getUpdatedBy());
-        verify(oppNotificationService, times(3))
+        verify(systemNotificationService, times(3))
             .notifyNewCase(any(CandidateOpportunity.class));
     }
 
@@ -324,7 +324,7 @@ public class CandidateOpportunityServiceImplTest {
         candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
             updateRequest.getCandidateOppParams());
 
-        verify(oppNotificationService, times(3))
+        verify(systemNotificationService, times(3))
             .notifyCaseChanges(any(CandidateOpportunity.class), any(CandidateOpportunityParams.class));
     }
 
@@ -534,7 +534,6 @@ public class CandidateOpportunityServiceImplTest {
         given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.of(candidateOpp));
         given(mockFile.getInputStream()).willReturn(mockStream);
         given(mockFile.getOriginalFilename()).willReturn("filename");
-        given(mockStream.read((any()))).willReturn(-1);
         given(googleDriveConfig.getCandidateDataDrive()).willReturn(mock(GoogleFileSystemDrive.class));
         given(fileSystemService.uploadFile(
             any(GoogleFileSystemDrive.class),
@@ -575,7 +574,7 @@ public class CandidateOpportunityServiceImplTest {
 
         candidateOpportunityService.processCaseUpdateBatch(List.of(sfOpp));
 
-        verify(oppNotificationService).notifyCaseChanges(any(CandidateOpportunity.class),
+        verify(systemNotificationService).notifyCaseChanges(any(CandidateOpportunity.class),
             any(CandidateOpportunityParams.class));
     }
 

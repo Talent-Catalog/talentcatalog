@@ -95,13 +95,13 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
@@ -135,7 +135,7 @@ public class JobServiceImpl implements JobService {
 
     private final JobChatService jobChatService;
     private final JobServiceHelper jobServiceHelper;
-    private final OppNotificationService oppNotificationService;
+    private final SystemNotificationService systemNotificationService;
     private final PartnerService partnerService;
     private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceConfig salesforceConfig;
@@ -649,7 +649,7 @@ public class JobServiceImpl implements JobService {
         }
 
         // Send out notifications
-        oppNotificationService.notifyNewJobOpp(job);
+        systemNotificationService.notifyNewJobOpp(job);
 
         return salesforceJobOppRepository.save(job);
     }
@@ -796,7 +796,7 @@ public class JobServiceImpl implements JobService {
 
         //Perform any notifications before actually applying the change so that we have the
         //old and current state
-        oppNotificationService.notifyJobOppNextStepInfoChangesIfAny(job, request);
+        systemNotificationService.notifyJobOppNextStepInfoChangesIfAny(job, request);
 
         final String nextStep = request.getNextStep();
         if (nextStep != null) {
@@ -1350,14 +1350,10 @@ public class JobServiceImpl implements JobService {
         MultipartFile file) throws IOException {
 
         //Save to a temporary file
-        InputStream is = file.getInputStream();
         File tempFile = File.createTempFile("job", ".tmp");
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-            int read;
-            byte[] bytes = new byte[1024];
-            while ((read = is.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+            InputStream inputStream = file.getInputStream()) {
+            inputStream.transferTo(outputStream);
         }
 
         final GoogleFileSystemDrive listFoldersDrive = googleDriveConfig.getListFoldersDrive();

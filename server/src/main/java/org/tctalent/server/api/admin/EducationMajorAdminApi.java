@@ -16,10 +16,11 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,11 +58,13 @@ public class EducationMajorAdminApi {
     public Map<String, Object> addSystemLanguageTranslations(
         @PathVariable("langCode") String langCode, @RequestParam("file") MultipartFile file)
         throws EntityExistsException, IOException, NoSuchObjectException {
-        SystemLanguage systemLanguage =
-            languageService.addSystemLanguageTranslations(
-                langCode, "education_major", file.getInputStream());
+        try (InputStream translations = file.getInputStream()) {
+            SystemLanguage systemLanguage =
+                languageService.addSystemLanguageTranslations(
+                    langCode, "education_major", translations);
 
-        return systemLanguageDtoBuilder.build(systemLanguage);
+            return systemLanguageDtoBuilder.build(systemLanguage);
+        }
     }
 
     @GetMapping

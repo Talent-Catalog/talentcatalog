@@ -16,17 +16,31 @@
 
 package org.tctalent.server.service.db;
 
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.job.UpdateJobRequest;
 
 /**
- * Manages notifications that go out as the result of changes to opportunities
+ * Manages notifications that go out as the result of internal System changes - such as
+ * changes to opportunities
  *
  * @author John Cameron
  */
-public interface OppNotificationService {
+public interface SystemNotificationService {
+
+    /**
+     * Sends out a post to the candidate and their source partner chat notifying them that the
+     * given candidate has changed country.
+     * The candidate's source partner needs to be informed so that they can decide
+     * whether to keep managing that candidate or to hand them over to another partner - operating
+     * in the new country. The candidate may also be involved in that decision.
+     * @param candidate Candidate (before country change - so has current country)
+     * @param country Candidate's new country
+     */
+    void notifyCandidateChangesCountry(Candidate candidate, Country country);
 
     /**
      * Sends out posts on relevant chats notifying subscribers about the given changes to the given
