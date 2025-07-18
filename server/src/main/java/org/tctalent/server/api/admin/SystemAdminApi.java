@@ -175,7 +175,7 @@ public class SystemAdminApi {
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final Map<Integer, Integer> countryForGeneralCountry;
+    final Map<Integer, Integer> countryForGeneralCountry;
 
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
@@ -2615,7 +2615,7 @@ public class SystemAdminApi {
         return referenceIds;
     }
 
-    private Map<String, Long> loadCandidateOccupations(Connection targetConn) throws SQLException {
+    Map<String, Long> loadCandidateOccupations(Connection targetConn) throws SQLException {
         Map<String, Long> candidateOccupations = new HashMap<>();
         Statement stmt = targetConn.createStatement();
         ResultSet result = stmt.executeQuery("select id, candidate_id, occupation_id from candidate_occupation");
@@ -2632,7 +2632,7 @@ public class SystemAdminApi {
         return candidateOccupations;
     }
 
-    private Map<Long, Long> loadCandidateIds(Connection targetConn) throws SQLException {
+    Map<Long, Long> loadCandidateIds(Connection targetConn) throws SQLException {
         Map<Long, Long> referenceMap = new HashMap<>();
         Statement stmt = targetConn.createStatement();
         ResultSet result = stmt.executeQuery("select id, user_id from candidate");
@@ -2649,7 +2649,7 @@ public class SystemAdminApi {
         return referenceMap;
     }
 
-    private Set<Long> loadAdminIds(Connection targetConn) throws SQLException {
+    Set<Long> loadAdminIds(Connection targetConn) throws SQLException {
         Set<Long> referenceMap = new HashSet<>();
         Statement stmt = targetConn.createStatement();
         ResultSet result = stmt.executeQuery("select id from users where role = 'admin'");
@@ -2666,8 +2666,8 @@ public class SystemAdminApi {
         return referenceMap;
     }
 
-    private Long checkReference(int value,
-                                Set<Long> referenceIds) {
+    Long checkReference(int value,
+        Set<Long> referenceIds) {
         // null values coming from source db are converted to integer 0 which would be incorrectly linked to "unknown", so treat as null
         Long lookupVal = value > 0 ? (long) value : null;
         if (referenceIds.contains(lookupVal)) {
@@ -2676,7 +2676,7 @@ public class SystemAdminApi {
         return null;
     }
 
-    private String getUserStatus(Integer status) {
+    String getUserStatus(Integer status) {
         /*
         0=Deleted
         1=Incomplete profile
@@ -2710,7 +2710,7 @@ public class SystemAdminApi {
         return Status.deleted.name();
     }
 
-    private String getCandidateStatus(Integer status, Integer nationalityId, Integer countryId) {
+    String getCandidateStatus(Integer status, Integer nationalityId, Integer countryId) {
         if (nationalityId == null || nationalityId == 0 || countryId == null || countryId == 0){
             return CandidateStatus.draft.name();
         }
@@ -2739,7 +2739,7 @@ public class SystemAdminApi {
         return CandidateStatus.deleted.name();
     }
 
-    private String getGender(String gender) {
+    String getGender(String gender) {
         if (StringUtils.isNotEmpty(gender)) {
             switch (gender) {
                 case "M": return Gender.male.name();
@@ -2749,12 +2749,12 @@ public class SystemAdminApi {
         return null;
     }
 
-    private boolean getUNStatus(int value) {
+    boolean getUNStatus(int value) {
         // 1=UNHCR, 2=UNRWA, 3=not registered
         return (value == 1 ||  value == 2);
     }
 
-    private String getEducationLevel(Integer value) {
+    String getEducationLevel(Integer value) {
         /*
         | 6864 | degree | Bachelor's Degree  |
         | 6865 | degree | Master's Degree    |
@@ -2776,7 +2776,7 @@ public class SystemAdminApi {
         return null;
     }
 
-    private String getEducationType(String name) {
+    String getEducationType(String name) {
         if (name != null) {
             switch (name) {
                 case "Bachelor's Degree": return EducationType.Bachelor.name();
@@ -2790,7 +2790,7 @@ public class SystemAdminApi {
         return null;
     }
 
-    private boolean getPaid(int paidValue) {
+    boolean getPaid(int paidValue) {
         /*
         | 9561 | fulltime | Full time |
         | 9562 | fulltime | Part time |
@@ -2798,7 +2798,7 @@ public class SystemAdminApi {
         return (paidValue == 9557);
     }
 
-    private boolean getFullTime(int fullTimeValue) {
+    boolean getFullTime(int fullTimeValue) {
         /*
         | 9561 | fulltime | Full time |
         | 9562 | fulltime | Part time |
@@ -2806,7 +2806,7 @@ public class SystemAdminApi {
         return (fullTimeValue == 9561);
     }
 
-    private String getSkillTimePeriod(int period) {
+    String getSkillTimePeriod(int period) {
         /*
         | 336 | time_period | 1 year or less   |
         | 337 | time_period | 1-2 years        |
@@ -2828,15 +2828,15 @@ public class SystemAdminApi {
         return null;
     }
 
-    private Long whackyExtraCountryLookup(Integer origCountryId) {
+    Long whackyExtraCountryLookup(Integer origCountryId) {
         Integer val = countryForGeneralCountry.get(origCountryId);
         if (val != null) return val.longValue();
         return null;
     }
 
-    private Date getDate(ResultSet result,
-                         String columnName,
-                         Long candidateId) {
+    Date getDate(ResultSet result,
+        String columnName,
+        Long candidateId) {
         try {
             Date date = result.getDate(columnName);
             if (date != null && !"1970-01-01".equals(date.toString())) {
@@ -2857,7 +2857,7 @@ public class SystemAdminApi {
         return null;
     }
 
-    private Timestamp convertToTimestamp(Long epoch) {
+    Timestamp convertToTimestamp(Long epoch) {
         if (epoch != null && epoch > 0) {
             epoch = epoch*1000;
             java.util.Date date = new java.util.Date(epoch);
@@ -2882,7 +2882,7 @@ public class SystemAdminApi {
     }
 
 
-    private Date convertToDate(String isoDateStr) {
+    Date convertToDate(String isoDateStr) {
         if (StringUtils.isNotEmpty(isoDateStr)) {
             try {
                 java.util.Date date = sdf.parse(isoDateStr);
@@ -2898,7 +2898,7 @@ public class SystemAdminApi {
         return null;
     }
 
-    private Map<Integer, Integer> getExtraCountryMappings() {
+    Map<Integer, Integer> getExtraCountryMappings() {
 
         /*
         +------+------+---------+---------+
