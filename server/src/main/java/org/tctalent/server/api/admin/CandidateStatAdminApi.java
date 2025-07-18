@@ -46,7 +46,6 @@ import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CandidateStatsService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -58,7 +57,6 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @Slf4j
 public class CandidateStatAdminApi {
 
-    private final CandidateService candidateService;
     private final CandidateStatsService candidateStatsService;
     private final CountryRepository countryRepository;
     private final SavedListService savedListService;
@@ -162,7 +160,7 @@ public class CandidateStatAdminApi {
 
                     SearchCandidateRequest searchRequest =
                         savedSearchService.loadSavedSearch(searchId);
-                    String sql = searchRequest.extractSQL(true);
+                    String sql = searchRequest.extractSQL();
                     String constraint = "candidate.id in (" + sql + ")";
 
                     statReports = createNewReports(request.getDateFrom(), request.getDateTo(),

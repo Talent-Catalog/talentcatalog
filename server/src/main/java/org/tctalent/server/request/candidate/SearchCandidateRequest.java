@@ -176,13 +176,14 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
     /**
      * Extracts the database query SQL corresponding to the given search request.
-     *
-     * @param nativeQuery True if native database SQL is required, otherwise JPQL is returned
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
      * @return String containing the SQL or JPQL
      */
-    public String extractSQL(boolean nativeQuery,
-        @Nullable User user,
-        @Nullable Collection<Candidate> excludedCandidates) {
+    public String extractSQL(
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
 
         Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
@@ -394,10 +395,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     }
 
     /**
-     * @see #extractSQL(boolean, User, Collection)
+     * @see #extractSQL(User, Collection)
      */
-    public String extractSQL(boolean nativeQuery) {
-        return extractSQL(nativeQuery, null, null);
+    public String extractSQL() {
+        return extractSQL(null, null);
     }
 
     /**
