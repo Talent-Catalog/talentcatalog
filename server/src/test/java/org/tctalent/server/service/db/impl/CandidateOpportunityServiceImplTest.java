@@ -151,6 +151,30 @@ public class CandidateOpportunityServiceImplTest {
         adminUser = getAdminUser();
         candidate = getCandidate();
         candidateOppList = List.of(candidateOpp, candidateOpp);
+        // Set up adminUser with a Partner
+        adminUser.setPartner(getSourcePartner()); // Already done, kept for clarity
+
+        // Ensure candidate and candidateList have a User with a Partner
+        candidate.setUser(adminUser);
+        for (Candidate c : candidateList) {
+            c.setUser(adminUser);
+        }
+
+        // Ensure candidateOpp's Candidate has a User with a Partner
+        Candidate oppCandidate = candidateOpp.getCandidate();
+        if (oppCandidate == null) {
+            oppCandidate = new Candidate();
+            candidateOpp.setCandidate(oppCandidate);
+        }
+        oppCandidate.setUser(adminUser); // Set the same adminUser with Partner
+
+        // Ensure expectedOpp's Candidate has a User with a Partner
+        Candidate expectedOppCandidate = expectedOpp.getCandidate();
+        if (expectedOppCandidate == null) {
+            expectedOppCandidate = new Candidate();
+            expectedOpp.setCandidate(expectedOppCandidate);
+        }
+        expectedOppCandidate.setUser(adminUser); // Set the same adminUser with Partner
     }
 
     @Test
@@ -500,8 +524,7 @@ public class CandidateOpportunityServiceImplTest {
             .willReturn(candidateOpp);
         given(salesforceJobOppService.updateJob(any(SalesforceJobOpp.class))).willReturn(jobOpp);
         given(userService.getLoggedInUser()).willReturn(adminUser);
-        given(nextStepProcessingService.processNextStep(candidateOpp,
-            params.getNextStep())).willReturn(nextStep);
+        given(nextStepProcessingService.processNextStep(candidateOpp, params.getNextStep())).willReturn(nextStep);
         given(candidateOpportunityRepository.save(oppCaptor.capture())).willReturn(candidateOpp);
 
         candidateOpportunityService.updateCandidateOpportunity(1L, params);
