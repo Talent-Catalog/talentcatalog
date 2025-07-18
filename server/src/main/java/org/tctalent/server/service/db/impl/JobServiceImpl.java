@@ -1352,12 +1352,8 @@ public class JobServiceImpl implements JobService {
         //Save to a temporary file
         File tempFile = File.createTempFile("job", ".tmp");
         try (FileOutputStream outputStream = new FileOutputStream(tempFile);
-            InputStream is = file.getInputStream()) {
-            int read;
-            byte[] bytes = new byte[1024];
-            while ((read = is.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
+            InputStream inputStream = file.getInputStream()) {
+            inputStream.transferTo(outputStream);
         }
 
         final GoogleFileSystemDrive listFoldersDrive = googleDriveConfig.getListFoldersDrive();
