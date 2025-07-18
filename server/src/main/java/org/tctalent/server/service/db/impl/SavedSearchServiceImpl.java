@@ -49,6 +49,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -1835,10 +1836,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 !searchRequest.getSearchJoinRequests().isEmpty();
 
         String simpleQueryString = searchRequest.getSimpleQueryString();
+        boolean haveSimpleQueryString = simpleQueryString != null && !simpleQueryString.isEmpty();
 
-        //TODO JC Reconsider this logic of forcing all searches based on other searches to be
-        //elastic searches.
-        if ((simpleQueryString != null && !simpleQueryString.isEmpty()) || hasBaseSearch) {
+        boolean usingPostgresForTextSearch = true; //todo hard coded
+
+        if (usingPostgresForTextSearch) {
+            //TODO JC user always null?
+            String idsSql = searchRequest.extractSQL(null, excludedCandidates);
+            candidates = findCandidatesWhereIdIn(idsSql, searchRequest.getPageRequestWithoutSort());
+        } else if (haveSimpleQueryString || hasBaseSearch) {
+            //TODO JC Reconsider this logic of forcing all searches based on other searches to be
+            //elastic searches.
             // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
@@ -1888,6 +1896,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             .message("Found " + candidates.getTotalElements() + " candidates in search")
             .logInfo();
 
+        return candidates;
+    }
+
+    private Page<Candidate> findCandidatesWhereIdIn(String idsSql, Pageable pageable) {
+        Page<Candidate> candidates = candidateRepository.findByIdIn(idsSql, pageable);
         return candidates;
     }
 

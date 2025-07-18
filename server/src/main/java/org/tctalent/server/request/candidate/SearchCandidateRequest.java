@@ -175,7 +175,13 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     }
 
     /**
+     * <p>
      * Extracts the database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     * The returned SQL will return all matching candidate ids. It always starts as:
+     * </p>
+     * <code>select distinct candidate.id from candidate...</code>
      * @param user User making the request. If not null, user-specific constraints are added to the
      *             generated SQL - for example, some users are restricted to seeing candidates
      *             located in certain countries.
@@ -187,6 +193,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
+
+        //Text search
+        if (getSimpleQueryString() != null && !getSimpleQueryString().isEmpty()) {
+            String tsquery = computeTsQuerySQL(getSimpleQueryString());
+            ands.add(tsquery);
+        }
 
         // STATUS SEARCH
         if (!ObjectUtils.isEmpty(getStatuses())) {
@@ -392,6 +404,11 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         return query;
+    }
+
+    private String computeTsQuerySQL(String simpleQueryString) {
+        //TODO JC Implement computeTsQuerySQL - this probably belongs in a utils class.
+        return "";
     }
 
     /**
