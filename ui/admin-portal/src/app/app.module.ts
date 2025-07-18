@@ -572,6 +572,7 @@ import {ErrorDisplayComponent} from './components/util/error-display/error-displ
 import {IntelligenceComponent} from './components/intelligence/intelligence.component';
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
 import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-phone-input.component';
+import {ChatMuteToggleButtonComponent} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 
 @NgModule({
   declarations: [
@@ -906,7 +907,8 @@ import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-p
     ErrorDisplayComponent,
     IntelligenceComponent,
     OfferToAssistComponent,
-    IntlPhoneInputComponent
+    IntlPhoneInputComponent,
+    ChatMuteToggleButtonComponent
   ],
   imports: [
     BrowserModule,

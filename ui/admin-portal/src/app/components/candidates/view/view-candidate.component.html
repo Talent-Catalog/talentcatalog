@@ -277,39 +277,12 @@
 <!--                </div>-->
 <!--              </div>-->
 
-
-              <!-- Mute/Unmute candidate button for non read only users-->
-              <div *ngIf="!isReadOnlyUser()" class="container">
-                <ng-template #mutingTip>
-                  <div>
-                    <p>
-                      Muting a candidate prevents them from posting on any chat - but they can see
-                      posts that are sent to them.
-                    </p>
-                    <p>
-                      You should only mute a candidate when their posts do not adhere to TC rules.
-                    </p>
-                    <p>
-                      You can unmute them at any time.
-                    </p>
-                    <p>
-                      Whenever a candidate is muted or unmuted a candidate note is automatically
-                      generated recording the fact.
-                    </p>
-                  </div>
-                </ng-template>
-
-                <div class="mute-btn-align">
-                  <button class="btn btn-sm btn-accent-2" (click)="toggleMuted()"
-                  title="">
-                    {{computeMuteButtonLabel()}}
-                    <i *ngIf="this.candidate.muted; else notMute" class="fas fa-comment"></i>
-                    <ng-template #notMute><i class="fas fa-comment-slash"></i></ng-template>
-                  </button>
-                  <button class="tool-tip-button" [ngbTooltip]="mutingTip" triggers="click" tooltipClass="mute-tip">
-                    <i class="fa-regular fa-circle-question fa-xs"></i>
-                  </button>
-                </div>
+              <div class="mute-btn-align" *ngIf="!isReadOnlyUser()">
+                <app-chat-mute-toggle-button
+                  [candidate]="candidate"
+                  [refreshAfterToggle]="true"
+                  (mutedToggled)="onMuteToggled()">
+                </app-chat-mute-toggle-button>
               </div>
 
               <app-view-chat-posts *ngIf="candidateChat; else createChatButton"
