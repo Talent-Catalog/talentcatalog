@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:14.12
+    image: pgvector/pgvector:0.8.0-pg17
     environment:
       POSTGRES_USER: tctalent
       POSTGRES_PASSWORD: tctalent
