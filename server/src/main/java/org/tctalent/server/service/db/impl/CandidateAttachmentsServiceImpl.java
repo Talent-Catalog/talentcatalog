@@ -438,7 +438,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         UploadType uploadType) throws IOException, NoSuchObjectException {
 
         //Save to a temporary file
-        File tempFile = File.createTempFile("tc", ".tmp");
+        File tempFile = File.createTempFile("talent", ".tmp");
         try (FileOutputStream outputStream = new FileOutputStream(tempFile);
             InputStream inputStream = file.getInputStream()) {
             inputStream.transferTo(outputStream);

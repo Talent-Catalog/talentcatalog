@@ -92,9 +92,9 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -534,7 +534,6 @@ public class CandidateOpportunityServiceImplTest {
         given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.of(candidateOpp));
         given(mockFile.getInputStream()).willReturn(mockStream);
         given(mockFile.getOriginalFilename()).willReturn("filename");
-        given(mockStream.read((any()))).willReturn(-1);
         given(googleDriveConfig.getCandidateDataDrive()).willReturn(mock(GoogleFileSystemDrive.class));
         given(fileSystemService.uploadFile(
             any(GoogleFileSystemDrive.class),

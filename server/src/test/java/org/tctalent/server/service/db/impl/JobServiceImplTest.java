@@ -108,13 +108,13 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -1185,7 +1185,6 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
         given(mockFile.getOriginalFilename()).willReturn(NAME);
         given(mockFile.getInputStream()).willReturn(mockStream);
-        given(mockStream.read(any())).willReturn(-1);
         given(googleDriveConfig.getListFoldersDrive()).willReturn(mock(GoogleFileSystemDrive.class));
         given(fileSystemService.uploadFile(
             any(GoogleFileSystemDrive.class),
