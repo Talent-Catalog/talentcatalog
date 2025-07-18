@@ -43,6 +43,20 @@ public class UserTestData {
         return auditUser;
     }
 
+    private static final User auditCandidateUser =
+        new User("candidate_audit_user",
+            "candidate audit",
+            "user",
+            "candidate.user2@gmail.com",
+            Role.user);
+
+    /**
+     * Returns a minimal candidate user object
+     */
+    public static User getAuditCandidateUser() {
+        return auditCandidateUser;
+    }
+
     public static User getAdminUser() {
         User u = new User(
             "admin_user",
