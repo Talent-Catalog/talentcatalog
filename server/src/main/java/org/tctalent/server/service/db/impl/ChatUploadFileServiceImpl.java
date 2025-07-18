@@ -57,9 +57,10 @@ public class ChatUploadFileServiceImpl implements ChatUploadFileService {
         String fileName = chat.getId() + "-" + file.getOriginalFilename();
 
         //Save to a temporary file
-        InputStream is = file.getInputStream();
+
         File tempFile = File.createTempFile("job", ".tmp");
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+            InputStream is = file.getInputStream()) {
             int read;
             byte[] bytes = new byte[1024];
             while ((read = is.read(bytes)) != -1) {

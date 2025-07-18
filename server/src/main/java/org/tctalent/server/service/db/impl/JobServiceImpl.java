@@ -95,13 +95,13 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
@@ -1350,9 +1350,9 @@ public class JobServiceImpl implements JobService {
         MultipartFile file) throws IOException {
 
         //Save to a temporary file
-        InputStream is = file.getInputStream();
         File tempFile = File.createTempFile("job", ".tmp");
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+            InputStream is = file.getInputStream()) {
             int read;
             byte[] bytes = new byte[1024];
             while ((read = is.read(bytes)) != -1) {
