@@ -1,0 +1,17 @@
+.tc-description-list {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  row-gap: 0.75rem;
+  column-gap: 1rem;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+
+  &.grid-row {
+    grid-template-columns: 1fr 2fr;
+  }
+  &.grid-column {
+    grid-template-columns: 1fr;
+  }
+}
