@@ -20,6 +20,9 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import com.opencsv.CSVWriter;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -143,6 +146,9 @@ import org.tctalent.server.util.PersistenceContextHelper;
 public class SavedSearchServiceImpl implements SavedSearchService {
     @Value("${web.admin}")
     private String adminUrl;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
@@ -1842,8 +1848,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         if (usingPostgresForTextSearch) {
             //TODO JC user always null?
-            String idsSql = searchRequest.extractSQL(null, excludedCandidates);
-            candidates = findCandidatesWhereIdIn(idsSql, searchRequest.getPageRequestWithoutSort());
+            String whereSql = searchRequest.extractSQL(null, excludedCandidates);
+            candidates = findCandidatesFromSql(whereSql, searchRequest.getPageRequest());
         } else if (haveSimpleQueryString || hasBaseSearch) {
             //TODO JC Reconsider this logic of forcing all searches based on other searches to be
             //elastic searches.
@@ -1899,9 +1905,36 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
-    private Page<Candidate> findCandidatesWhereIdIn(String idsSql, Pageable pageable) {
-        Page<Candidate> candidates = candidateRepository.findByIdIn(idsSql, pageable);
-        return candidates;
+    private Page<Candidate> findCandidatesFromSql(String whereSql, Pageable pageable) {
+        //todo Factor this out as suggested by laptop ChatGpt
+
+
+        //TODO JC Need sort as well
+        String sql = "SELECT candidate.id FROM candidate" + whereSql;
+
+        //Sort not needed on count
+        String countSql = "SELECT count(*) FROM candidate" + whereSql;;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+
+        final List<?> results = query.getResultList();
+
+        List<Long> ids = results.stream()
+            .map(r -> ((Number) r).longValue())
+            .toList();
+
+        //Compute count
+        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+
+        List<Candidate> candidates = candidateRepository.findByIds(ids);
+
+        return new PageImpl<>(candidates, pageable, total);
     }
 
     @NonNull
