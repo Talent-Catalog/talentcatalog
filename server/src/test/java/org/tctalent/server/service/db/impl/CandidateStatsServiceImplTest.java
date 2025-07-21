@@ -95,7 +95,7 @@ class CandidateStatsServiceImplTest {
         //search request.
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeBirthYearStats(
             null, dateFrom, dateTo, null, sourceCountryIds,
@@ -130,7 +130,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeMaxEducationStats(
                 Gender.female, dateFrom, dateTo, null, sourceCountryIds,
@@ -160,7 +160,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeMostCommonOccupationStats(
                 Gender.female, dateFrom, dateTo, null, sourceCountryIds,
@@ -190,7 +190,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeNationalityStats(
             Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
@@ -240,7 +240,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeStatusStats(
             Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
@@ -290,7 +290,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeSurveyStats(
             Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
@@ -340,7 +340,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeOccupationStats(
                 Gender.female, dateFrom, dateTo, null, sourceCountryIds,
@@ -370,7 +370,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeReferrerStats(
             Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
@@ -400,7 +400,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeSourceCountryStats(
             Gender.female, dateFrom, dateTo, null, sourceCountryIds,
@@ -431,7 +431,7 @@ class CandidateStatsServiceImplTest {
 
         String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeSpokenLanguageLevelStats(
             Gender.female, "English", dateFrom, dateTo, null, sourceCountryIds,
@@ -460,7 +460,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(3);
 
         String sql = request.extractSQL();
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeGenderStats(
              dateFrom, dateTo, null, sourceCountryIds,
@@ -490,7 +490,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(3);
 
         String sql = request.extractSQL();
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLanguageStats(
              null, dateFrom, dateTo, null, sourceCountryIds,
@@ -519,7 +519,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(3);
 
         String sql = request.extractSQL();
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLinkedInExistsStats(
                 dateFrom, dateTo, null, sourceCountryIds,
@@ -548,7 +548,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(3);
 
         String sql = request.extractSQL();
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLinkedInStats(
                 dateFrom, dateTo, null, sourceCountryIds,
@@ -577,7 +577,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(3);
 
         String sql = request.extractSQL();
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeRegistrationStats(
                 dateFrom, dateTo, null, sourceCountryIds,
@@ -606,7 +606,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(3);
 
         String sql = request.extractSQL();
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeRegistrationOccupationStats(
                 dateFrom, dateTo, null, sourceCountryIds,
@@ -635,7 +635,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(3);
 
         String sql = request.extractSQL();
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeUnhcrRegisteredStats(
              dateFrom, dateTo, null, sourceCountryIds,
@@ -664,7 +664,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(3);
 
         String sql = request.extractSQL();
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeUnhcrStatusStats(
              dateFrom, dateTo, null, sourceCountryIds,

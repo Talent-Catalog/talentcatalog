@@ -175,13 +175,34 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     }
 
     /**
+     * @see #extractSQL(User, Collection)
+     */
+    public String extractSQL() {
+        return extractSQL(null, null);
+    }
+
+    /**
      * <p>
-     * Extracts the database query SQL corresponding to the given search request.
+     * Extracts the where clause of database query SQL corresponding to the given search request.
      * </p>
      * <p>
-     * The returned SQL will return all matching candidate ids. It always starts as:
+     *     The where clause assumes that it is associated with a SELECT FROM candidate.
+     *     In particular joins will assume that the candidate table is at the root.
      * </p>
-     * <code>select distinct candidate.id from candidate...</code>
+     * <p>
+     *     For example, if the SQL is being used to retrieve all candidate ids matching the query
+     *     your code might look like this:
+     * </p>
+     * <p>
+     * <code>
+     *    String whereClauseSql = searchRequest.extractSQL();
+     * </code>
+     * </p>
+     * <p>
+     * <code>
+     *    String querySql = "select distinct candidate.id from candidate" + whereClauseSql;
+     * </code>
+     * </p>
      * @param user User making the request. If not null, user-specific constraints are added to the
      *             generated SQL - for example, some users are restricted to seeing candidates
      *             located in certain countries.
@@ -395,7 +416,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         String joinClause = String.join(" left join ", joins);
         String whereClause = String.join(" and ", ands);
 
-        String query = "select distinct candidate.id from candidate";
+        String query = "";
         if (!joinClause.isEmpty()) {
             query += " left join " + joinClause;
         }
@@ -409,13 +430,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private String computeTsQuerySQL(String simpleQueryString) {
         //TODO JC Implement computeTsQuerySQL - this probably belongs in a utils class.
         return "";
-    }
-
-    /**
-     * @see #extractSQL(User, Collection)
-     */
-    public String extractSQL() {
-        return extractSQL(null, null);
     }
 
     /**
