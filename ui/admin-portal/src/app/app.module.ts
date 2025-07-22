@@ -572,7 +572,7 @@ import {ErrorDisplayComponent} from './components/util/error-display/error-displ
 import {IntelligenceComponent} from './components/intelligence/intelligence.component';
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
 import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-phone-input.component';
-import {EditMaxEducationLevelComponent} from './components/candidates/view/education/view-candidate-education-level/edit-candidate-max-education-level'
+import {EditMaxEducationLevelComponent} from './components/candidates/view/education/edit--candidate-max-education-level/edit-candidate-max-education-level'
 @NgModule({
   declarations: [
     AppComponent,
