@@ -20,9 +20,6 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import com.opencsv.CSVWriter;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -52,7 +49,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -125,6 +121,7 @@ import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.CandidateSearchService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.EducationMajorService;
@@ -147,13 +144,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Value("${web.admin}")
     private String adminUrl;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
+    private final CandidateSearchService candidateSearchService;
     private final CountryService countryService;
     private final PartnerService partnerService;
     private final ElasticsearchService esService;
@@ -1847,9 +1842,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         boolean usingPostgresForTextSearch = true; //todo hard coded
 
         if (usingPostgresForTextSearch) {
-            //TODO JC user always null?
-            String whereSql = searchRequest.extractSQL(null, excludedCandidates);
-            candidates = findCandidatesFromSql(whereSql, searchRequest.getPageRequest());
+            candidates = candidateSearchService.searchCandidates(searchRequest, excludedCandidates);
         } else if (haveSimpleQueryString || hasBaseSearch) {
             //TODO JC Reconsider this logic of forcing all searches based on other searches to be
             //elastic searches.
@@ -1893,6 +1886,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         } else {
             //Compute the non-elastic query
             Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
+
+            //The above query generates the sorting so it does not need to be passed in here.
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
         }
         LogBuilder.builder(log)
@@ -1903,38 +1898,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             .logInfo();
 
         return candidates;
-    }
-
-    private Page<Candidate> findCandidatesFromSql(String whereSql, Pageable pageable) {
-        //todo Factor this out as suggested by laptop ChatGpt
-
-
-        //TODO JC Need sort as well
-        String sql = "SELECT candidate.id FROM candidate" + whereSql;
-
-        //Sort not needed on count
-        String countSql = "SELECT count(*) FROM candidate" + whereSql;;
-
-        LogBuilder.builder(log).action("findCandidates")
-            .message("Query: " + sql).logInfo();
-
-        Query query = entityManager.createNativeQuery(sql);
-
-        query.setFirstResult((int) pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize());
-
-        final List<?> results = query.getResultList();
-
-        List<Long> ids = results.stream()
-            .map(r -> ((Number) r).longValue())
-            .toList();
-
-        //Compute count
-        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
-
-        List<Candidate> candidates = candidateRepository.findByIds(ids);
-
-        return new PageImpl<>(candidates, pageable, total);
     }
 
     @NonNull
