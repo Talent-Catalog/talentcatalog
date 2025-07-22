@@ -63,6 +63,7 @@ import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
@@ -219,6 +220,14 @@ public class CandidateAdminApi {
     public Map<String, Object> updateContactDetails(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateRequest request) {
         Candidate candidate = candidateService.updateCandidate(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
+    @PutMapping("{id}/education")
+    public Map<String, Object> updateMaxEducationLevel(@PathVariable("id") long id,
+        @RequestBody UpdateCandidateMaxEducationLevelRequest request) {
+        Candidate candidate = candidateService.updateCandidateMaxEducationLevel(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
