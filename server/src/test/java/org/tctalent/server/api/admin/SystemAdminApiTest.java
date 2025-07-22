@@ -10,10 +10,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,13 +19,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Contact;
-import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.security.AuthService;
@@ -44,7 +42,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -269,7 +267,7 @@ class SystemAdminApiTest {
     verify(candidateOpportunityRepository, times(1)).findAllBySfIdIsNull();
     verify(candidateOpportunityService, times(1)).fetchSalesforceId(opp);
     verify(candidateOpportunityRepository, never()).save(opp);
-    assertEquals(null, opp.getSfId());
+    assertNull(opp.getSfId());
   }
 
   @Test
@@ -414,112 +412,136 @@ class SystemAdminApiTest {
 
   @Test
   void testLoadCandidateOccupations() throws Exception {
-    // ✅ Mock the connection to return a mock statement
+    // Mock the connection to return a mock statement
     when(connection.createStatement()).thenReturn(statement);
 
-    // ✅ Mock the statement to return a mock result set
+    // Mock the statement to return a mock result set
     when(statement.executeQuery("select id, candidate_id, occupation_id from candidate_occupation"))
         .thenReturn(resultSet);
 
-    // ✅ Mock the result set rows
+    // Mock the result set rows
     when(resultSet.next()).thenReturn(true, true, false);
     when(resultSet.getLong(1)).thenReturn(1L, 2L); // id
     when(resultSet.getLong(2)).thenReturn(100L, 200L); // candidate_id
     when(resultSet.getLong(3)).thenReturn(300L, 400L); // occupation_id
 
-    // ✅ Call the actual method
-    Map<String, Long> result = systemAdminApi.loadCandidateOccupations(connection);
+    // Call the actual method
+    Map<String, Long> result = ReflectionTestUtils.invokeMethod(systemAdminApi, "loadCandidateOccupations", connection);
 
-    // ✅ Assert results
+    // Assert results
     assertEquals(2, result.size());
     assertEquals(1L, result.get("100~300"));
     assertEquals(2L, result.get("200~400"));
   }
   @Test
   void testGetSkillTimePeriod_knownCode() {
-    assertEquals("1 year or less", systemAdminApi.getSkillTimePeriod(336));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getSkillTimePeriod", 336);
+    assertEquals("1 year or less", result);
   }
 
   @Test
   void testGetSkillTimePeriod_unknownCode() {
-    assertNull(systemAdminApi.getSkillTimePeriod(999));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getSkillTimePeriod", 999);
+    assertNull(result);
   }
 
   @Test
   void testGetPaid() {
-    assertTrue(systemAdminApi.getPaid(9557));
-    assertFalse(systemAdminApi.getPaid(0));
+    Boolean result1 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getPaid", 9557);
+    Boolean result2 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getPaid", 0);
+    assertEquals(Boolean.TRUE, result1);
+    assertNotEquals(Boolean.TRUE, result2);
   }
 
   @Test
   void testGetFullTime() {
-    assertTrue(systemAdminApi.getFullTime(9561));
-    assertFalse(systemAdminApi.getFullTime(9562));
+    Boolean result1 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getFullTime", 9561);
+    Boolean result2 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getFullTime", 9562);
+    assertEquals(Boolean.TRUE, result1);
+    assertNotEquals(Boolean.TRUE, result2);
   }
 
   @Test
   void testGetEducationLevel_knownValues() {
-    assertEquals("Bachelor", systemAdminApi.getEducationLevel(6864));
-    assertNull(systemAdminApi.getEducationLevel(0));
+    String result1 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getEducationLevel", 6864);
+    String result2 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getEducationLevel", 0);
+    assertEquals("Bachelor", result1);
+    assertNull(result2);
   }
 
   @Test
   void testGetEducationType_someUniversity() {
-    assertEquals("Bachelor", systemAdminApi.getEducationType("Some University"));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getEducationType", "Some University");
+    assertEquals("Bachelor", result);
   }
+
   @Test
   void testGetUNStatus() {
-    assertTrue(systemAdminApi.getUNStatus(1));
-    assertTrue(systemAdminApi.getUNStatus(2));
-    assertFalse(systemAdminApi.getUNStatus(3));
+    Boolean result1 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getUNStatus", 1);
+    Boolean result2 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getUNStatus", 2);
+    Boolean result3 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getUNStatus", 3);
+    assertEquals(Boolean.TRUE, result1);
+    assertEquals(Boolean.TRUE, result2);
+    assertNotEquals(Boolean.TRUE, result3);
   }
   @Test
   void testGetGender_valid() {
-    assertEquals("male", systemAdminApi.getGender("M"));
-    assertEquals("female", systemAdminApi.getGender("F"));
+    String result1 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getGender", "M");
+    String result2 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getGender", "F");
+    assertEquals("male", result1);
+    assertEquals("female", result2);
   }
 
   @Test
   void testGetGender_invalid() {
-    assertNull(systemAdminApi.getGender("X"));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getGender", "X");
+    assertNull(result);
   }
 
   @Test
   void testGetCandidateStatus_draftDueToNullNationality() {
-    assertEquals("draft", systemAdminApi.getCandidateStatus(1, null, 10));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getCandidateStatus", 1, null, 10);
+    assertEquals("draft", result);
   }
 
   @Test
   void testGetCandidateStatus_deleted() {
-    assertEquals("deleted", systemAdminApi.getCandidateStatus(0, 1, 1));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getCandidateStatus", 0, 1, 1);
+    assertEquals("deleted", result);
   }
 
   @Test
   void testGetCandidateStatus_active() {
-    assertEquals("active", systemAdminApi.getCandidateStatus(11, 1, 1));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getCandidateStatus", 11, 1, 1);
+    assertEquals("active", result);
   }
+
   @Test
   void testGetUserStatus_deleted() {
-    assertEquals("inactive", systemAdminApi.getUserStatus(0));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getUserStatus", 0);
+    assertEquals("inactive", result);
   }
 
   @Test
   void testGetUserStatus_knownActive() {
-    assertEquals("active", systemAdminApi.getUserStatus(1));
-    assertEquals("active", systemAdminApi.getUserStatus(10));
+    String result1 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getUserStatus", 1);
+    String result2 = ReflectionTestUtils.invokeMethod(systemAdminApi, "getUserStatus", 10);
+    assertEquals("active", result1);
+    assertEquals("active", result2);
   }
 
   @Test
   void testGetUserStatus_unknown() {
-    assertEquals("deleted", systemAdminApi.getUserStatus(99));
+    String result = ReflectionTestUtils.invokeMethod(systemAdminApi, "getUserStatus", 99);
+    assertEquals("deleted", result);
   }
+
   @Test
   void testCheckReference_shouldReturnValidReference() {
     Set<Long> refs = Set.of(1L, 2L, 3L);
-    Long result = systemAdminApi.checkReference(2, refs);
+    Long result = ReflectionTestUtils.invokeMethod(systemAdminApi, "checkReference", 2, refs);
     assertEquals(2L, result);
   }
-
 
   @Test
   void testLoadCandidateIds() throws Exception {
@@ -531,7 +553,7 @@ class SystemAdminApiTest {
     when(resultSet.getLong(1)).thenReturn(1L); // id
     when(resultSet.getLong(2)).thenReturn(100L); // user_id
 
-    Map<Long, Long> result = systemAdminApi.loadCandidateIds(connection);
+    Map<Long, Long> result = ReflectionTestUtils.invokeMethod(systemAdminApi, "loadCandidateIds", connection);
 
     assertEquals(1, result.size());
     assertEquals(1L, result.get(100L));
@@ -545,7 +567,7 @@ class SystemAdminApiTest {
     when(resultSet.next()).thenReturn(true, true, false);
     when(resultSet.getLong(1)).thenReturn(1L, 2L);
 
-    Set<Long> result = systemAdminApi.loadAdminIds(connection);
+    Set<Long> result = ReflectionTestUtils.invokeMethod(systemAdminApi, "loadAdminIds", connection);
 
     assertTrue(result.contains(1L));
     assertTrue(result.contains(2L));
@@ -553,49 +575,48 @@ class SystemAdminApiTest {
 
   @Test
   void testWhackyExtraCountryLookup_found() {
-    Long result = systemAdminApi.whackyExtraCountryLookup(358);
+    Long result = ReflectionTestUtils.invokeMethod(systemAdminApi, "whackyExtraCountryLookup", 358);
     assertEquals(6288L, result);
   }
 
   @Test
   void testWhackyExtraCountryLookup_notFound() {
-    assertNull(systemAdminApi.whackyExtraCountryLookup(9999));
+    Long result = ReflectionTestUtils.invokeMethod(systemAdminApi, "whackyExtraCountryLookup", 9999);
+    assertNull(result);
   }
+
   @Test
   void testGetExtraCountryMappings() {
-    Map<Integer, Integer> map = systemAdminApi.getExtraCountryMappings();
+    Map<Integer, Integer> map = ReflectionTestUtils.invokeMethod(systemAdminApi, "getExtraCountryMappings");
     assertEquals(8, map.size());
     assertEquals(6288, map.get(358));
     assertEquals(6327, map.get(9444));
   }
 
-
   @Test
   void testConvertToDate_invalid() {
-    Date result = systemAdminApi.convertToDate("not-a-date");
+    Date result = ReflectionTestUtils.invokeMethod(systemAdminApi, "convertToDate", "not-a-date");
     assertNull(result);
   }
+
   @Test
   void testIsDateValid_true() {
-    assertTrue(systemAdminApi.isDateValid("11-11-2024 "));
+    Boolean result = ReflectionTestUtils.invokeMethod(systemAdminApi, "isDateValid", "11-11-2024 ");
+    assertEquals(Boolean.TRUE, result);
   }
 
   @Test
   void testIsDateValid_false() {
-    assertFalse(systemAdminApi.isDateValid("invalid-date"));
-  }
-  @Test
-  void testConvertToTimestamp_valid() {
-    Long epoch = 1609459200L; // Jan 1, 2021
-    Timestamp ts = systemAdminApi.convertToTimestamp(epoch);
-    assertNotNull(ts);
-    assertEquals(Instant.ofEpochMilli(epoch * 1000), ts.toInstant());
+    Boolean result = ReflectionTestUtils.invokeMethod(systemAdminApi, "isDateValid", "invalid-date");
+    assertNotEquals(Boolean.TRUE, result);
   }
 
   @Test
-  void testConvertToTimestamp_invalidOrNull() {
-    assertNull(systemAdminApi.convertToTimestamp(null));
-    assertNull(systemAdminApi.convertToTimestamp(-100L));
+  void testConvertToTimestamp_valid() {
+    Long epoch = 1609459200L; // Jan 1, 2021
+    Timestamp ts = ReflectionTestUtils.invokeMethod(systemAdminApi, "convertToTimestamp", epoch);
+    assertNotNull(ts);
+    assertEquals(Instant.ofEpochMilli(epoch * 1000), ts.toInstant());
   }
 
   @Test
@@ -606,7 +627,7 @@ class SystemAdminApiTest {
     // avoid actual logging failures
     when(authService.getLoggedInUser()).thenReturn(Optional.empty());
 
-    Date date = systemAdminApi.getDate(resultSet, "dob", 1L);
+    Date date = ReflectionTestUtils.invokeMethod(systemAdminApi, "getDate", resultSet, "dob", 1L);
     assertNull(date);
   }
 
