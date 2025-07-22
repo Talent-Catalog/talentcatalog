@@ -65,6 +65,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoReques
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
@@ -172,6 +173,8 @@ public interface CandidateService {
     Candidate updateCandidateMedia(long id, UpdateCandidateMediaRequest request);
 
     Candidate updateCandidateRegistration(long id, UpdateCandidateRegistrationRequest request);
+
+    Candidate updateCandidateMaxEducationLevel(long id, UpdateCandidateMaxEducationLevelRequest request);
 
     Candidate updateCandidateSalesforceLink(Candidate candidate, String sfLink);
 
