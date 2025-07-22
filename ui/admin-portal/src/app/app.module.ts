@@ -573,6 +573,7 @@ import {IntelligenceComponent} from './components/intelligence/intelligence.comp
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
 import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-phone-input.component';
 import {EditMaxEducationLevelComponent} from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
+import {ChatMuteToggleButtonComponent} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 
 @NgModule({
   declarations: [
@@ -908,7 +909,8 @@ import {EditMaxEducationLevelComponent} from './components/candidates/view/educa
     IntelligenceComponent,
     OfferToAssistComponent,
     IntlPhoneInputComponent,
-    EditMaxEducationLevelComponent
+    EditMaxEducationLevelComponent,
+    ChatMuteToggleButtonComponent
   ],
   imports: [
     BrowserModule,

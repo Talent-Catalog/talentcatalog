@@ -524,26 +524,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       });
   }
 
-  public computeMuteButtonLabel() {
-    return (this.candidate?.muted ? "Unmute": "Mute") + " Candidate";
-  }
-
-  public toggleMuted() {
-    this.error = null;
-    const request: UpdateCandidateMutedRequest = {
-      muted: !this.candidate.muted
-    };
-    this.candidateService.updateMuted(this.candidate.id, request).subscribe(
-      () => {
-        //Update candidate with new status
-        this.candidate.muted = request.muted;
-
-        //Refresh to get new candidate notes.
-        this.refreshCandidateProfile();
-      },
-      (error) => {
-        this.error = error;
-      });
-
+  onMuteToggled() {
+    this.refreshCandidateProfile();
   }
 }
