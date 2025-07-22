@@ -425,6 +425,8 @@ class SystemAdminApiTest {
     when(resultSet.getLong(2)).thenReturn(100L, 200L); // candidate_id
     when(resultSet.getLong(3)).thenReturn(300L, 400L); // occupation_id
 
+    //MODEL: Using ReflectionTestUtils to invoke the private method 'loadCandidateOccupations' on the 'systemAdminApi' instance.
+    // This approach allows testing internal logic without changing the method's visibility.
     // Call the actual method
     Map<String, Long> result = ReflectionTestUtils.invokeMethod(systemAdminApi, "loadCandidateOccupations", connection);
 
