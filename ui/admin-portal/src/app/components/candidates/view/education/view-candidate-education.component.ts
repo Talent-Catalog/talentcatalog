@@ -23,7 +23,7 @@ import {EditCandidateEducationComponent} from "./edit/edit-candidate-education.c
 import {CreateCandidateEducationComponent} from "./create/create-candidate-education.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {CandidateService} from "../../../../services/candidate.service";
-import {EditMaxEducationLevelComponent} from "./view-candidate-education-level/edit-candidate-max-education-level";
+import {EditMaxEducationLevelComponent} from "./edit--candidate-max-education-level/edit-candidate-max-education-level";
 
 @Component({
   selector: 'app-view-candidate-education',
