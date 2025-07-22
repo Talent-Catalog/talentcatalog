@@ -29,7 +29,9 @@
     <small class="space-before" *ngIf="candidate.maxEducationLevel">
       (Max Level: {{candidate.maxEducationLevel?.name}})
     </small>
-
+    <button *ngIf="editable" class="btn btn-sm btn-link" (click)="editMaxEducationLevel()">
+      <i class="fas fa-edit"></i>
+    </button>
     <div class="float-end" *ngIf="editable">
       <button class="btn btn-primary btn-sm" (click)="createCandidateEducation()">
         <i class="fas fa-plus"></i>
