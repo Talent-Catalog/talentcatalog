@@ -151,6 +151,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoReques
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
@@ -968,6 +969,25 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setRelocatedState(request.getRelocatedState());
         candidate.setRelocatedCountry(relocatedCountry);
 
+        return save(candidate, true);
+    }
+
+    @Override
+    public Candidate updateCandidateMaxEducationLevel(long id, UpdateCandidateMaxEducationLevelRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Candidate candidate = this.candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+        // If null is passed, this means removing the max education level
+        EducationLevel educationLevel = null;
+        if (request.getMaxEducationLevel() != null) {
+            // Load the education level from the database - throw an exception if not found
+            educationLevel = educationLevelRepository.findById(request.getMaxEducationLevel())
+                .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getMaxEducationLevel()));
+        }
+        candidate.setMaxEducationLevel(educationLevel);
+        candidate.setAuditFields(loggedInUser);
         return save(candidate, true);
     }
 
