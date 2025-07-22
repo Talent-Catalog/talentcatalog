@@ -103,6 +103,8 @@ import org.tctalent.server.request.PagedSearchRequest;
 @ToString(callSuper = true)
 public class SearchCandidateRequest extends PagedSearchRequest {
 
+    private boolean pgOnlySqlSearch;
+
     private String simpleQueryString;
     @NotNull
     private Long savedSearchId;

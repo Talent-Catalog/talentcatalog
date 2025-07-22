@@ -74,7 +74,7 @@
         {{getError()}}
       </div>
 
-      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="checkSelectionsAndApply()" #formWrapper>
+      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="onSubmit()" #formWrapper>
         <ng-template #keywordSearchTip>
           <span class="search-tips-content">
             Search candidate CVs using these tips to create powerful queries:
@@ -708,7 +708,16 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col text-center">
-              <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || searchForm.invalid || searchForm.pristine"><i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search</button>
+              <button type="submit" (click)="pgOnlySqlSearch = false" class="btn btn-success btn-lg"
+                      [disabled]="loading || searchForm.invalid || searchForm.pristine">
+                <i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search
+              </button>
+            </div>
+            <div class="col text-center">
+              <button type="submit" (click)="pgOnlySqlSearch = true" class="btn btn-success btn-lg"
+                      [disabled]="loading || searchForm.invalid || searchForm.pristine">
+                <i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> New Search
+              </button>
             </div>
           </div>
         </div>

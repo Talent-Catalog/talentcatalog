@@ -123,6 +123,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   error: any;
   loading: boolean;
+  pgOnlySqlSearch: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
@@ -365,7 +366,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  checkSelectionsAndApply() {
+  onSubmit() {
+   //checkSelectionsAndApply
    // If there are candidates selected, run a check before applying search.
     if (this.selectedCandidates.length > 0) {
       this.confirmClearSelectionAndApply();
@@ -385,6 +387,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
+
+    request.pgOnlySqlSearch = this.pgOnlySqlSearch;
 
     //Note that just changing searchRequest triggers the display of the results
     //See the html of this component, for which <app-show-candidates takes
@@ -614,7 +618,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       .then((result) => {
         if (result === true) {
           this.savedSearchService.delete(this.savedSearch.id).subscribe(
-            (found) => {
+            () => {
               this.router.navigate(['search']);
               this.loading = false;
             },

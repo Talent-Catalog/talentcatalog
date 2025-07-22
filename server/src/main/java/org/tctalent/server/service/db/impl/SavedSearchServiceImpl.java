@@ -1839,9 +1839,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         String simpleQueryString = searchRequest.getSimpleQueryString();
         boolean haveSimpleQueryString = simpleQueryString != null && !simpleQueryString.isEmpty();
 
-        boolean usingPostgresForTextSearch = true; //todo hard coded
-
-        if (usingPostgresForTextSearch) {
+        boolean pgOnlySqlSearch = searchRequest.isPgOnlySqlSearch();
+        if (pgOnlySqlSearch) {
             candidates = candidateSearchService.searchCandidates(searchRequest, excludedCandidates);
         } else if (haveSimpleQueryString || hasBaseSearch) {
             //TODO JC Reconsider this logic of forcing all searches based on other searches to be
