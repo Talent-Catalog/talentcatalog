@@ -60,6 +60,16 @@ public abstract class CandidateSearchUtils {
         return orderBy.isEmpty() ? "" : " ORDER BY " + orderBy;
     }
 
+    /**
+     * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
+     * @param simpleQueryString Elasticsearch simple query
+     * @return Postgres tsQuery SQL
+     */
+    public static @NonNull String buildTsQuerySQL(@NonNull String simpleQueryString) {
+        //TODO JC Implement computeTsQuerySQL
+        return "";
+    }
+
     private static @NonNull String mapPropertyNameToDbField(String propertyName) {
         if (!propertyName.contains(".")) {
             propertyName = "candidate." + propertyName;

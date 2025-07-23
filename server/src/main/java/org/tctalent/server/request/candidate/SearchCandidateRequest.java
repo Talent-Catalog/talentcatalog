@@ -47,6 +47,7 @@ import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateQueryHelper;
 import org.tctalent.server.request.PagedSearchRequest;
+import org.tctalent.server.util.CandidateSearchUtils;
 
 /*
   TODO Fix this whole messy confusion around the relationships between SavedSearch
@@ -219,7 +220,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         //Text search
         if (getSimpleQueryString() != null && !getSimpleQueryString().isEmpty()) {
-            String tsquery = computeTsQuerySQL(getSimpleQueryString());
+            String tsquery = CandidateSearchUtils.buildTsQuerySQL(getSimpleQueryString());
             ands.add(tsquery);
         }
 
@@ -427,11 +428,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         return query;
-    }
-
-    private String computeTsQuerySQL(String simpleQueryString) {
-        //TODO JC Implement computeTsQuerySQL - this probably belongs in a utils class.
-        return "";
     }
 
     /**
