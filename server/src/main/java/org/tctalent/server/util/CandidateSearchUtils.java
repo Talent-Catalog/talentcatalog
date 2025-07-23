@@ -81,7 +81,7 @@ public abstract class CandidateSearchUtils {
                 inQuote = !inQuote;
                 if (!inQuote) {
                     // End of quote
-                    String phrase = phraseBuffer.toString().trim().replaceAll("\\s+", " <-> ");
+                    String phrase = phraseBuffer.toString().trim().replaceAll("\\s+", "<->");
                     result.append(phrase);
                     phraseBuffer.setLength(0);
                 }
@@ -98,10 +98,12 @@ public abstract class CandidateSearchUtils {
 
         // Step 2: Handle operators
         String tsquery = intermediate
-            .replaceAll("(?i)\\s+\\s+", " | ") // OR -> |
-            .replaceAll("(?i)\\s+\\+\\s+", " & ") // AND -> &
-            .replaceAll("-", "!") // -term -> !term
-            .replaceAll("\\s+", " | "); // default OR
+            .replaceAll("\\s+\\+\\s+", "&") // + -> &
+            .replaceAll("\\s+", "|") // spaces -> |
+            //Now add space padding back in around operators
+            .replaceAll("&", " & ")
+            .replaceAll("\\|", " | ")
+            .replaceAll("<->", " <-> ");
 
         return tsquery.trim();
     }
