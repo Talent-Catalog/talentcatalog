@@ -27,6 +27,24 @@ import org.springframework.lang.Nullable;
  * @author John Cameron
  */
 public abstract class CandidateSearchUtils {
+    public static final String CANDIDATE__USER__JOIN__NATIVE =
+        "users on candidate.user_id = users.id";
+    public static final String CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE =
+        "education_level on candidate.max_education_level_id = education_level.id";
+    public static final String CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE =
+        "candidate_education on candidate.id = candidate_education.candidate_id";
+    public static final String CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE =
+        "candidate_occupation on candidate.id = candidate_occupation.candidate_id";
+    public static final String CANDIDATE__CANDIDATE_JOB_EXPERIENCE__JOIN__NATIVE =
+        "candidate_job_experience on candidate.id = candidate_job_experience.candidate_id";
+    public static final String CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE =
+        "candidate_language on candidate.id = candidate_language.candidate_id";
+    public static final String CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE =
+        "language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id";
+    public static final String CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE =
+        "language_level as written_level on candidate_language.written_level_id = written_level_id";
+    public static final String CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE =
+        "language on candidate_language.language_id = language.id";
 
     /**
      * Generates ORDER BY clause given a Sort.

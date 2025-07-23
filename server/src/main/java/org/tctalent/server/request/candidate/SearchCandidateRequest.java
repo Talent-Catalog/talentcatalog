@@ -45,7 +45,6 @@ import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.repository.db.CandidateQueryHelper;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.util.CandidateSearchUtils;
 
@@ -220,8 +219,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         //Text search
         if (getSimpleQueryString() != null && !getSimpleQueryString().isEmpty()) {
+            joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_JOB_EXPERIENCE__JOIN__NATIVE);
             String tsquery = CandidateSearchUtils.buildTsQuerySQL(getSimpleQueryString());
-            ands.add(tsquery);
+            String clause = "candidate_job_experience.ts @@ to_tsquery('english', '" + tsquery + "')";
+            ands.add(clause);
         }
 
         // STATUS SEARCH
@@ -233,7 +234,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // Occupations SEARCH
         if (!ObjectUtils.isEmpty(getOccupationIds())) {
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE);
             String values = getOccupationIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("candidate_occupation.occupation_id in (" + values + ")");
@@ -286,7 +287,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // PARTNER SEARCH
         if (!ObjectUtils.isEmpty(getPartnerIds())) {
-            joins.add(CandidateQueryHelper.CANDIDATE__USER__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__USER__JOIN__NATIVE);
             String values = getPartnerIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("users.partner_id in (" + values + ")");
@@ -342,7 +343,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // EDUCATION LEVEL SEARCH
         if (getMinEducationLevel() != null) {
-            joins.add(CandidateQueryHelper.CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE);
             ands.add("education_level.level >= " + getMinEducationLevel());
         }
 
@@ -368,7 +369,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         if (!ObjectUtils.isEmpty(getEducationMajorIds())) {
             String values = getEducationMajorIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE);
             ands.add("(major_id in (" + values + ") "
                 + "or migration_education_major_id in (" + values + "))");
         }
@@ -378,38 +379,38 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             || getOtherLanguageId() != null
             || getOtherMinSpokenLevel() != null || getOtherMinWrittenLevel() != null) {
 
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE);
-            joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE);
 
             if (getEnglishMinSpokenLevel() != null && getEnglishMinWrittenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
                 ands.add("lower(language.name) = 'english'");
                 ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
                 ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
             } else if (getEnglishMinSpokenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
                 ands.add("lower(language.name) = 'english'");
                 ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
             } else if (getEnglishMinWrittenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
                 ands.add("lower(language.name) = 'english'");
                 ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
             }
 
             if (getOtherLanguageId() != null) {
                 if (getOtherMinSpokenLevel() != null && getOtherMinWrittenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                    joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                    joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
                     ands.add("written_level.level >= " + getOtherMinWrittenLevel());
                 } else if (getOtherMinSpokenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                    joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
                 } else if (getOtherMinWrittenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                    joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("written_level.level >= " + getOtherMinWrittenLevel());
                 }
