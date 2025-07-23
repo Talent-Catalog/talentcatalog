@@ -63,15 +63,47 @@ public abstract class CandidateSearchUtils {
 
     /**
      * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
-     * @param simpleQueryString Elasticsearch simple query. If null, it will return an empty string.
+     * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
      * @return Postgres tsQuery SQL
      */
-    public static @NonNull String buildTsQuerySQL(@Nullable String simpleQueryString) {
-        String tsQuery = "";
-        if (simpleQueryString != null) {
-            //TODO JC Implement computeTsQuerySQL
+    public static @NonNull String buildTsQuerySQL(@Nullable String esQuery) {
+        if (esQuery == null || esQuery.trim().isEmpty()) {
+            return "";
         }
-        return tsQuery;
+
+        // Step 1: Handle quoted phrases: "quick brown" => quick <-> brown
+        StringBuilder result = new StringBuilder();
+        boolean inQuote = false;
+        StringBuilder phraseBuffer = new StringBuilder();
+        for (int i = 0; i < esQuery.length(); i++) {
+            char c = esQuery.charAt(i);
+            if (c == '"') {
+                inQuote = !inQuote;
+                if (!inQuote) {
+                    // End of quote
+                    String phrase = phraseBuffer.toString().trim().replaceAll("\\s+", " <-> ");
+                    result.append(phrase);
+                    phraseBuffer.setLength(0);
+                }
+                continue;
+            }
+            if (inQuote) {
+                phraseBuffer.append(c);
+            } else {
+                result.append(c);
+            }
+        }
+
+        String intermediate = result.toString();
+
+        // Step 2: Handle operators
+        String tsquery = intermediate
+            .replaceAll("(?i)\\s+\\s+", " | ") // OR -> |
+            .replaceAll("(?i)\\s+\\+\\s+", " & ") // AND -> &
+            .replaceAll("-", "!") // -term -> !term
+            .replaceAll("\\s+", " | "); // default OR
+
+        return tsquery.trim();
     }
 
     private static @NonNull String mapPropertyNameToDbField(String propertyName) {
