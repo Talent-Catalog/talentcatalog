@@ -708,16 +708,14 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col text-center">
-              <button type="submit" (click)="pgOnlySqlSearch = false" class="btn btn-success btn-lg"
+              <button type="submit" class="btn btn-success btn-lg">
                       [disabled]="loading || searchForm.invalid || searchForm.pristine">
                 <i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search
               </button>
             </div>
             <div class="col text-center">
-              <button type="submit" (click)="pgOnlySqlSearch = true" class="btn btn-success btn-lg"
-                      [disabled]="loading || searchForm.invalid || searchForm.pristine">
-                <i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> New Search
-              </button>
+              <input type="checkbox" [checked]="pgOnlySqlSearch"
+                     (change)="pgOnlySqlSearch = !pgOnlySqlSearch"> Only SQL search
             </div>
           </div>
         </div>
@@ -754,7 +752,7 @@
 </div>
 
 <!-- Modals -->
-<ng-template #downloadCsvErrorModal let-c="close" let-d="dismiss">
+<ng-template #downloadCsvErrorModal let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title">CSV download failed</h4>
 
