@@ -43,4 +43,24 @@ class CandidateSearchUtilsTest {
         s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "user.firstName"));
         Assertions.assertEquals(" ORDER BY users.first_name ASC,candidate.id DESC", s);
     }
+
+    @Test
+    void buildTsQuerySQL() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL(null);
+        Assertions.assertEquals("", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("accounting + excel");
+        Assertions.assertEquals("accounting & excel", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("accounting excel");
+        Assertions.assertEquals("accounting | excel", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("(accounting excel) + powerpoint");
+        Assertions.assertEquals("(accounting | excel) & powerpoint", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("\"accounting excel\"");
+        Assertions.assertEquals("accounting <-> excel", s);
+    }
 }

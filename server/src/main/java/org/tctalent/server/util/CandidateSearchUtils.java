@@ -19,6 +19,7 @@ package org.tctalent.server.util;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * Helpers for performing Candidate Searches
@@ -62,12 +63,15 @@ public abstract class CandidateSearchUtils {
 
     /**
      * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
-     * @param simpleQueryString Elasticsearch simple query
+     * @param simpleQueryString Elasticsearch simple query. If null, it will return an empty string.
      * @return Postgres tsQuery SQL
      */
-    public static @NonNull String buildTsQuerySQL(@NonNull String simpleQueryString) {
-        //TODO JC Implement computeTsQuerySQL
-        return "";
+    public static @NonNull String buildTsQuerySQL(@Nullable String simpleQueryString) {
+        String tsQuery = "";
+        if (simpleQueryString != null) {
+            //TODO JC Implement computeTsQuerySQL
+        }
+        return tsQuery;
     }
 
     private static @NonNull String mapPropertyNameToDbField(String propertyName) {
