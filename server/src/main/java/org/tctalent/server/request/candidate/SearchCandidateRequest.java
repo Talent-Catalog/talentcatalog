@@ -221,7 +221,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         if (getSimpleQueryString() != null && !getSimpleQueryString().isEmpty()) {
             joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_JOB_EXPERIENCE__JOIN__NATIVE);
             String tsquery = CandidateSearchUtils.buildTsQuerySQL(getSimpleQueryString());
-            String clause = "candidate_job_experience.ts @@ to_tsquery('english', '" + tsquery + "')";
+            String clause = "candidate.ts_text @@ to_tsquery('english', '" + tsquery + "')";
             ands.add(clause);
         }
 
@@ -416,6 +416,8 @@ public class SearchCandidateRequest extends PagedSearchRequest {
                 }
             }
         }
+
+        //TODO JC Need to process sort fields and add extra joins if needed
 
         String joinClause = String.join(" left join ", joins);
         String whereClause = String.join(" and ", ands);

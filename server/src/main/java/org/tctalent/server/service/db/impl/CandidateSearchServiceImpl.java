@@ -57,16 +57,15 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         User user = userService.getLoggedInUser();
 
         String whereSql = request.extractSQL(user, excludedCandidates);
-        //TODO JC Sort fields may require extra joins.
 
         return findCandidatesFromSql(whereSql, request.getPageRequest());
     }
 
     private Page<Candidate> findCandidatesFromSql(String whereSql, Pageable pageable) {
 
-        String sql = "SELECT candidate.id FROM candidate" + whereSql;
+        String sql = "SELECT distinct candidate.id FROM candidate" + whereSql;
 
-        String countSql = "SELECT count(*) FROM candidate" + whereSql;
+        String countSql = "SELECT count(distinct candidate.id) FROM candidate" + whereSql;
 
         //Take sort into account
         String orderBySql = CandidateSearchUtils.buildOrderByClause(pageable.getSort());
