@@ -493,6 +493,13 @@ public interface CandidateService {
     Candidate save(Candidate candidate, boolean updateCandidateEs);
 
     /**
+     * Allows for automatic updating of the candidate text before saving the candidate.
+     * @see #save(Candidate, boolean)
+     * @return Candidate object as returned by {@link CandidateRepository#save}
+     */
+    Candidate save(Candidate candidate, boolean updateCandidateEs, boolean updateCandidateText);
+
+    /**
      * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.
      * <p/>
      * If a link to the folder or subfolders are already recorded for the candidate, does nothing.
