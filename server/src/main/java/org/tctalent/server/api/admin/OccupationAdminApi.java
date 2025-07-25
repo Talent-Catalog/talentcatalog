@@ -18,6 +18,7 @@ package org.tctalent.server.api.admin;
 
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,11 +64,13 @@ public class OccupationAdminApi {
     public Map<String, Object> addSystemLanguageTranslations(
         @PathVariable("langCode") String langCode, @RequestParam("file") MultipartFile file)
         throws EntityExistsException, IOException, NoSuchObjectException {
-        SystemLanguage systemLanguage =
-            this.languageService.addSystemLanguageTranslations(
-                langCode, "occupation", file.getInputStream());
+        try (InputStream translations = file.getInputStream()) {
+            SystemLanguage systemLanguage =
+                languageService.addSystemLanguageTranslations(
+                    langCode, "occupation", translations);
 
-        return systemLanguageDtoBuilder.build(systemLanguage);
+            return systemLanguageDtoBuilder.build(systemLanguage);
+        }
     }
 
     @GetMapping()

@@ -1,5 +1,7 @@
-/*!
- * Copyright (c) 2024 Talent Catalog.
+CREATE EXTENSION IF NOT EXISTS vector;
+
+/*
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,40 +16,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "src/scss/variables";
+-- Add a temporary text search field. We will drop this later - replacing it with a candidate level
+-- field which will be computed concatenation of all job description fields
+ALTER TABLE candidate_job_experience ADD COLUMN ts tsvector
+    GENERATED ALWAYS AS (to_tsvector('english', description)) STORED;
 
-.admin-panel {
-  display: flex;
-  justify-content: space-between;
-  //align-items: flex-end;
-  background-color: fade-out($accent3, 0.7);
-  padding: 1em;
-  border-radius: 0.25rem;
-}
-
-.dropdown-text {
-  font-size: 15px;
-}
-
-#status {
-  background-color: #ffffff;
-  font-size: 13px;
-}
-
-.card-header {
-  font-size: 17px;
-}
-
-:host ::ng-deep .mute-tip .tooltip-inner {
-  text-align: left;
-  font-size: small;
-  background-color: #000000;
-  padding: 1em;
-  max-width: 200px;
-}
-
-.mute-btn-align {
-  top: 30px;
-  position: relative;
-  text-align: end;
-}
+-- Temporary - see above comments
+CREATE INDEX ts_idx ON candidate_job_experience USING GIN (ts);
