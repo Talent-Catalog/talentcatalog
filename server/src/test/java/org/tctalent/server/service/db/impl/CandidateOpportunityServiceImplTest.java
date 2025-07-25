@@ -92,9 +92,9 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -124,7 +124,7 @@ public class CandidateOpportunityServiceImplTest {
     @Mock private CandidateOpportunityRepository candidateOpportunityRepository;
     @Mock private UserService userService;
     @Mock private NextStepProcessingService nextStepProcessingService;
-    @Mock private OppNotificationService oppNotificationService;
+    @Mock private SystemNotificationService systemNotificationService;
     @Mock private AuthService authService;
     @Mock private SalesforceHelper salesforceHelper;
     @Mock private MultipartFile mockFile;
@@ -151,6 +151,30 @@ public class CandidateOpportunityServiceImplTest {
         adminUser = getAdminUser();
         candidate = getCandidate();
         candidateOppList = List.of(candidateOpp, candidateOpp);
+        // Set up adminUser with a Partner
+        adminUser.setPartner(getSourcePartner()); // Already done, kept for clarity
+
+        // Ensure candidate and candidateList have a User with a Partner
+        candidate.setUser(adminUser);
+        for (Candidate c : candidateList) {
+            c.setUser(adminUser);
+        }
+
+        // Ensure candidateOpp's Candidate has a User with a Partner
+        Candidate oppCandidate = candidateOpp.getCandidate();
+        if (oppCandidate == null) {
+            oppCandidate = new Candidate();
+            candidateOpp.setCandidate(oppCandidate);
+        }
+        oppCandidate.setUser(adminUser); // Set the same adminUser with Partner
+
+        // Ensure expectedOpp's Candidate has a User with a Partner
+        Candidate expectedOppCandidate = expectedOpp.getCandidate();
+        if (expectedOppCandidate == null) {
+            expectedOppCandidate = new Candidate();
+            expectedOpp.setCandidate(expectedOppCandidate);
+        }
+        expectedOppCandidate.setUser(adminUser); // Set the same adminUser with Partner
     }
 
     @Test
@@ -237,14 +261,14 @@ public class CandidateOpportunityServiceImplTest {
             .willReturn(nextStep);
 
         candidateOpportunityService.createUpdateCandidateOpportunities(updateRequest);
-
-        assertEquals(oppCaptor.getValue().getNextStep(), nextStep);
-        assertEquals(oppCaptor.getValue().getNextStepDueDate(), expectedOpp.getNextStepDueDate());
-        assertEquals(oppCaptor.getValue().getStage(), expectedOpp.getStage());
-        assertEquals(oppCaptor.getValue().getClosingComments(), expectedOpp.getClosingComments());
-        assertEquals(oppCaptor.getValue().getEmployerFeedback(), expectedOpp.getEmployerFeedback());
-        assertEquals(oppCaptor.getValue().getUpdatedBy(), expectedOpp.getUpdatedBy());
-        verify(oppNotificationService, times(3))
+        CandidateOpportunity result = oppCaptor.getValue();
+        assertEquals(nextStep, result.getNextStep());
+        assertEquals(expectedOpp.getNextStepDueDate(), result.getNextStepDueDate());
+        assertEquals(expectedOpp.getStage(), result.getStage());
+        assertEquals(expectedOpp.getClosingComments(), result.getClosingComments());
+        assertEquals(expectedOpp.getEmployerFeedback(), result.getEmployerFeedback());
+        assertEquals(expectedOpp.getUpdatedBy(), result.getUpdatedBy());
+        verify(systemNotificationService, times(3))
             .notifyNewCase(any(CandidateOpportunity.class));
     }
 
@@ -277,7 +301,7 @@ public class CandidateOpportunityServiceImplTest {
         verify(candidateService, times(3)).
             updateCandidateStatus(any(Candidate.class), statusInfoCaptor.capture());
         List<UpdateCandidateStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
-        assertEquals(statusInfos.get(0).getStatus(), CandidateStatus.employed);
+        assertEquals(CandidateStatus.employed, statusInfos.get(0).getStatus());
     }
 
     @Test
@@ -294,7 +318,7 @@ public class CandidateOpportunityServiceImplTest {
         verify(candidateService, times(3)).
             updateCandidateStatus(any(Candidate.class), statusInfoCaptor.capture());
         List<UpdateCandidateStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
-        assertEquals(statusInfos.get(0).getStatus(), CandidateStatus.ineligible);
+        assertEquals(CandidateStatus.ineligible, statusInfos.get(0).getStatus());
     }
 
     @Test
@@ -313,7 +337,7 @@ public class CandidateOpportunityServiceImplTest {
         verify(candidateService, times(3)).
             updateCandidateStatus(any(Candidate.class), statusInfoCaptor.capture());
         List<UpdateCandidateStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
-        assertEquals(statusInfos.get(0).getStatus(), CandidateStatus.withdrawn);
+        assertEquals(CandidateStatus.withdrawn, statusInfos.get(0).getStatus());
     }
 
     @Test
@@ -324,7 +348,7 @@ public class CandidateOpportunityServiceImplTest {
         candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
             updateRequest.getCandidateOppParams());
 
-        verify(oppNotificationService, times(3))
+        verify(systemNotificationService, times(3))
             .notifyCaseChanges(any(CandidateOpportunity.class), any(CandidateOpportunityParams.class));
     }
 
@@ -338,7 +362,7 @@ public class CandidateOpportunityServiceImplTest {
             updateRequest.getCandidateOppParams());
 
         verify(candidateService).save(candidateCaptor.capture(), eq(false));
-        assertEquals(candidateCaptor.getValue().getRelocatedCountry(), UNITED_KINGDOM);
+        assertEquals(UNITED_KINGDOM, candidateCaptor.getValue().getRelocatedCountry());
     }
 
     private void setUpUpdateCandidateOppPath() {
@@ -359,7 +383,7 @@ public class CandidateOpportunityServiceImplTest {
 
         CandidateOpportunity result = candidateOpportunityService.findOpp(candidate, jobOpp);
 
-        assertEquals(result, candidateOpp);
+        assertEquals(candidateOpp, result);
     }
 
     @Test
@@ -373,7 +397,7 @@ public class CandidateOpportunityServiceImplTest {
         List<CandidateOpportunity> result =
             candidateOpportunityService.findJobCreatorPartnerOpps(destinationPartner);
 
-        assertEquals(result, returnedOpps);
+        assertEquals(returnedOpps, result);
         verify(candidateOpportunityRepository).findPartnerOpps(anyLong());
     }
 
@@ -396,7 +420,7 @@ public class CandidateOpportunityServiceImplTest {
 
         CandidateOpportunity result = candidateOpportunityService.getCandidateOpportunity(1L);
 
-        assertEquals(result, candidateOpp);
+        assertEquals(candidateOpp, result);
         verify(candidateOpportunityRepository).findById(1L);
     }
 
@@ -439,14 +463,15 @@ public class CandidateOpportunityServiceImplTest {
         assertArrayEquals(expectedIds, idCaptor.getValue());
 
         // Fields set as expected:
-        assertEquals(candidateOpp.getJobOpp(), differentJob);
-        assertEquals(candidateOpp.getCandidate(), differentCandidate);
-        assertEquals(candidateOpp.getStage(), CandidateOpportunityStage.relocated);
-        assertEquals(candidateOpp.getNextStep(), sfOpp.getNextStep());
-        assertEquals(candidateOpp.getClosingCommentsForCandidate(), sfOpp.getClosingCommentsForCandidate());
-        assertEquals(candidateOpp.getCreatedDate(), convertedDateTime);
-        assertEquals(candidateOpp.getNextStepDueDate(), LocalDate.parse(sfOpp.getNextStepDueDate()));
-        assertEquals(candidateOpp.getUpdatedDate(), convertedDateTime);
+        assertEquals(differentJob, candidateOpp.getJobOpp());
+        assertEquals(differentCandidate, candidateOpp.getCandidate());
+        assertEquals(CandidateOpportunityStage.relocated, candidateOpp.getStage());
+        assertEquals(sfOpp.getNextStep(), candidateOpp.getNextStep());
+        assertEquals(sfOpp.getClosingCommentsForCandidate(),
+            candidateOpp.getClosingCommentsForCandidate());
+        assertEquals(convertedDateTime, candidateOpp.getCreatedDate());
+        assertEquals(LocalDate.parse(sfOpp.getNextStepDueDate()), candidateOpp.getNextStepDueDate());
+        assertEquals(convertedDateTime, candidateOpp.getUpdatedDate());
 
         verify(candidateOpportunityRepository, times(4)).save(candidateOpp);
     }
@@ -468,7 +493,7 @@ public class CandidateOpportunityServiceImplTest {
                     SearchCandidateOpportunityRequest.class), any(User.class)))
                 .thenReturn(FAKE_SPEC);
 
-            assertEquals(candidateOpportunityService.findUnreadChatsInOpps(request), unreadChatIds);
+            assertEquals(unreadChatIds, candidateOpportunityService.findUnreadChatsInOpps(request));
         }
     }
 
@@ -487,7 +512,7 @@ public class CandidateOpportunityServiceImplTest {
                     SearchCandidateOpportunityRequest.class), any(User.class)))
                 .thenReturn(FAKE_SPEC);
 
-            assertEquals(candidateOpportunityService.searchCandidateOpportunities(request), oppsPage);
+            assertEquals(oppsPage, candidateOpportunityService.searchCandidateOpportunities(request));
         }
     }
 
@@ -499,8 +524,7 @@ public class CandidateOpportunityServiceImplTest {
             .willReturn(candidateOpp);
         given(salesforceJobOppService.updateJob(any(SalesforceJobOpp.class))).willReturn(jobOpp);
         given(userService.getLoggedInUser()).willReturn(adminUser);
-        given(nextStepProcessingService.processNextStep(candidateOpp,
-            params.getNextStep())).willReturn(nextStep);
+        given(nextStepProcessingService.processNextStep(candidateOpp, params.getNextStep())).willReturn(nextStep);
         given(candidateOpportunityRepository.save(oppCaptor.capture())).willReturn(candidateOpp);
 
         candidateOpportunityService.updateCandidateOpportunity(1L, params);
@@ -533,7 +557,6 @@ public class CandidateOpportunityServiceImplTest {
         given(candidateOpportunityRepository.findById(1L)).willReturn(Optional.of(candidateOpp));
         given(mockFile.getInputStream()).willReturn(mockStream);
         given(mockFile.getOriginalFilename()).willReturn("filename");
-        given(mockStream.read((any()))).willReturn(-1);
         given(googleDriveConfig.getCandidateDataDrive()).willReturn(mock(GoogleFileSystemDrive.class));
         given(fileSystemService.uploadFile(
             any(GoogleFileSystemDrive.class),
@@ -548,8 +571,8 @@ public class CandidateOpportunityServiceImplTest {
 
         CandidateOpportunity result = candidateOpportunityService.uploadOffer(1L, mockFile);
 
-        assertEquals(result.getFileOfferLink(), fileLink);
-        assertEquals(result.getFileOfferName(), fileName);
+        assertEquals(fileLink, result.getFileOfferLink());
+        assertEquals(fileName, result.getFileOfferName());
     }
 
     @Test
@@ -563,7 +586,7 @@ public class CandidateOpportunityServiceImplTest {
 
         candidateOpportunityService.updateRelocatingDependants(1L, ids);
 
-        assertEquals(candidateOpp.getRelocatingDependantIds(), ids.getRelocatingDependantIds());
+        assertEquals(ids.getRelocatingDependantIds(), candidateOpp.getRelocatingDependantIds());
     }
 
     @Test
@@ -574,7 +597,7 @@ public class CandidateOpportunityServiceImplTest {
 
         candidateOpportunityService.processCaseUpdateBatch(List.of(sfOpp));
 
-        verify(oppNotificationService).notifyCaseChanges(any(CandidateOpportunity.class),
+        verify(systemNotificationService).notifyCaseChanges(any(CandidateOpportunity.class),
             any(CandidateOpportunityParams.class));
     }
 
@@ -595,7 +618,7 @@ public class CandidateOpportunityServiceImplTest {
         given(candidateOpportunityRepository.findAllNonNullSfIdsByClosedFalse())
             .willReturn(result);
 
-        assertEquals(candidateOpportunityService.findAllNonNullSfIdsByClosedFalse(), result);
+        assertEquals(result, candidateOpportunityService.findAllNonNullSfIdsByClosedFalse());
     }
 
 }

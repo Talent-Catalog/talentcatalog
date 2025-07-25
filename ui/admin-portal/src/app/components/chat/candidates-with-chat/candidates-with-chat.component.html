@@ -41,6 +41,15 @@
         <div class="alert alert-danger" *ngIf="error">
           {{error}}
         </div>
+
+        <div class="mute-btn-align" *ngIf="!isReadOnlyUser()">
+          <app-chat-mute-toggle-button
+            [candidate]="selectedCandidate"
+            [refreshAfterToggle]="false"
+            >
+          </app-chat-mute-toggle-button>
+        </div>
+
         <app-view-chat-posts
           [readOnly] = "isReadOnlyUser()"
           [chat]="selectedCandidateChat"

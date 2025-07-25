@@ -17,7 +17,9 @@
 package org.tctalent.server.data;
 
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
+import static org.tctalent.server.data.UserTestData.getAuditCandidateUser;
 import static org.tctalent.server.data.UserTestData.getAuditUser;
+import static org.tctalent.server.data.UserTestData.getCandidateUser;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
+import org.tctalent.server.model.db.CefrLevel;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
@@ -99,13 +102,28 @@ public class CandidateTestData {
             candidate1user,
             "+123-456-789",
             "+123-456-789",
-            getAuditUser()
+            getCandidateUser()
         );
         candidate.setId(99L);
         candidate.setCandidateNumber("99");
         candidate.setNationality(CountryTestData.PAKISTAN);
         candidate.setStatus(CandidateStatus.active);
         candidate.setFolderlink("www.folderlink.com");
+        return candidate;
+    }
+
+    public static Candidate getCandidate2() {
+        Candidate candidate = new Candidate(
+            candidate2user,
+            "+61-040-178-040",
+            "+61-456-789-235",
+            getAuditCandidateUser()
+        );
+        candidate.setId(488L);
+        candidate.setCandidateNumber("488");
+        candidate.setNationality(CountryTestData.VENEZUELA);
+        candidate.setStatus(CandidateStatus.active);
+        candidate.setFolderlink("www.anotherfolder.com");
         return candidate;
     }
 
@@ -237,8 +255,8 @@ public class CandidateTestData {
         return new CandidateLanguage(
             getCandidate(),
             new Language("Arabic", Status.active),
-            new LanguageLevel("Good", Status.active, 9),
-            new LanguageLevel("Good", Status.active, 9)
+            new LanguageLevel("Good", Status.active, 9, CefrLevel.B2),
+            new LanguageLevel("Good", Status.active, 9, CefrLevel.B2)
         );
     }
 

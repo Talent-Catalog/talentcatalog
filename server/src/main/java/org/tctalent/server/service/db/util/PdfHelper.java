@@ -76,6 +76,9 @@ public class PdfHelper {
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
 
+            if (Boolean.TRUE.equals(showContact)) {
+                cleanCandidateContactInfo(candidate);
+            }
             cleanCandidateJobDescriptions(candidate);
 
             Context context = new Context();
@@ -102,6 +105,16 @@ public class PdfHelper {
         }
 
     }
+    private static void cleanCandidateContactInfo(Candidate candidate) {
+        if (candidate.getPhone() != null) {
+            candidate.setPhone(StringSanitizer.sanitizeContactField(candidate.getPhone()));
+        }
+
+        if (candidate.getWhatsapp() != null) {
+            candidate.setWhatsapp(StringSanitizer.sanitizeContactField(candidate.getWhatsapp()));
+        }
+    }
+
 
     private static void cleanCandidateJobDescriptions(Candidate candidate) {
         candidate.getCandidateJobExperiences().forEach(jobExperience ->

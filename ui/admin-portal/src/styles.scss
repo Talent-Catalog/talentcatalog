@@ -34,6 +34,11 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "@ng-select/ng-select/themes/default.theme.css";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
+@import './scss/color-classes';
+@import './scss/color-mixins';
+@import './scss/support-colors';
+@import './scss/typography-mixins';
+@import './scss/typography-classes';
 
 body {
   padding-top: 6rem;
