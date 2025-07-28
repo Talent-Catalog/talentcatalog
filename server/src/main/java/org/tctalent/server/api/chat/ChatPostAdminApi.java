@@ -36,6 +36,7 @@ import org.tctalent.server.model.db.UrlDto;
 import org.tctalent.server.request.chat.SearchChatPostRequest;
 import org.tctalent.server.request.chat.UpdateChatPostRequest;
 import org.tctalent.server.service.db.ChatPostService;
+import org.tctalent.server.service.db.ChatUploadFileService;
 
 @RestController()
 @RequestMapping("/api/admin/chat-post")
@@ -45,6 +46,7 @@ public class ChatPostAdminApi implements
     IJoinedTableApi<SearchChatPostRequest, UpdateChatPostRequest, UpdateChatPostRequest> {
 
     private final ChatPostService chatPostService;
+    private final ChatUploadFileService chatUploadFileService;
 
     @Override
     @GetMapping("{id}/list")
@@ -60,7 +62,7 @@ public class ChatPostAdminApi implements
     public UrlDto upload(
         @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
         throws InvalidRequestException, IOException, NoSuchObjectException {
-        String fileUrl = chatPostService.uploadFile(id, file);
+        String fileUrl = chatUploadFileService.uploadFile(id, file);
         UrlDto urlDto = new UrlDto(fileUrl);
         return urlDto;
     }

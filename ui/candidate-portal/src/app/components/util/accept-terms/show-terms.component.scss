@@ -1,24 +1,15 @@
 .terms-wrapper {
-  max-width: 1000px;
   margin: auto;
   padding: 1rem;
   font-family: sans-serif;
 }
 
 .terms-box {
-  height: 200px;
+  height: 400px;
   overflow-y: auto;
   border: 1px solid #ccc;
+  border-radius: 5px;
   padding: 1rem;
   margin-bottom: 1rem;
   background-color: #f9f9f9;
-}
-
-label {
-  display: block;
-  margin-bottom: 1rem;
-}
-
-div {
-  text-align: start;
 }

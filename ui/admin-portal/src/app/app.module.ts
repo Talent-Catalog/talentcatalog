@@ -573,6 +573,7 @@ import {IntelligenceComponent} from './components/intelligence/intelligence.comp
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
 import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-phone-input.component';
 import {SharedModule} from "./shared/shared.module";
+import {ChatMuteToggleButtonComponent} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 
 @NgModule({
   declarations: [
@@ -907,7 +908,8 @@ import {SharedModule} from "./shared/shared.module";
     ErrorDisplayComponent,
     IntelligenceComponent,
     OfferToAssistComponent,
-    IntlPhoneInputComponent
+    IntlPhoneInputComponent,
+    ChatMuteToggleButtonComponent
   ],
   imports: [
     BrowserModule,
