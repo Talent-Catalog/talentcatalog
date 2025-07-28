@@ -1071,6 +1071,15 @@ public class SavedListServiceImpl implements SavedListService {
         return savedListRepository.findUnionOfCandidates(Collections.singletonList(listId));
     }
 
+    @NonNull
+    @Override
+    public Set<String> fetchCandidatePublicIds(String publicListId) {
+        return savedListRepository
+            .findCandidatePublicIdsBySavedListPublicIds(
+                Collections.singletonList(publicListId)
+            );
+    }
+
     @Nullable
     @Override
     public Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds) {
@@ -1079,6 +1088,21 @@ public class SavedListServiceImpl implements SavedListService {
             candidateIds = null;
         } else {
             candidateIds = savedListRepository.findUnionOfCandidates(listIds);
+        }
+        return candidateIds;
+    }
+
+    @Nullable
+    @Override
+    public Set<String> fetchUnionCandidatePublicIds(@Nullable List<String> publicListIds) {
+        Set<String> candidateIds;
+        if (publicListIds == null) {
+            candidateIds = null;
+        } else {
+            candidateIds = savedListRepository
+                .findCandidatePublicIdsBySavedListPublicIds(
+                    publicListIds
+                );
         }
         return candidateIds;
     }
