@@ -123,7 +123,7 @@ class PartnerServiceImplTest {
         Exception ex = Assertions.assertThrows(InvalidRequestException.class,
           () -> partnerService.create(updateRequest));
 
-        assertEquals(ex.getMessage(), "Missing partner name");
+        assertEquals("Missing partner name", ex.getMessage());
     }
 
     @Test
@@ -164,8 +164,8 @@ class PartnerServiceImplTest {
                 .isEqualTo(sourcePartner);
 
             // New public API fields added:
-            assertEquals(newPartner.getPublicApiKey(), plainKey);
-            assertEquals(newPartner.getPublicApiKeyHash(), hashedKey);
+            assertEquals(plainKey, newPartner.getPublicApiKey());
+            assertEquals(hashedKey, newPartner.getPublicApiKeyHash());
         }
 
     }
@@ -442,9 +442,9 @@ class PartnerServiceImplTest {
 
         verify(partnerJobRelationRepository).save(captor.capture());
         PartnerJobRelation pjr = captor.getValue();
-        assertEquals(pjr.getContact(), adminUser);
-        assertEquals(pjr.getJob(), job);
-        assertEquals(pjr.getPartner(), partner);
+        assertEquals(adminUser, pjr.getContact());
+        assertEquals(job, pjr.getJob());
+        assertEquals(partner, pjr.getPartner());
     }
 
 }

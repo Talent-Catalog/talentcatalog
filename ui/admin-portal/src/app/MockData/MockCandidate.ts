@@ -278,12 +278,14 @@ export class MockCandidate implements Candidate {
         id: 1,
         name: "Fluent",
         level: 3,
+        cefrLevel: "C2",
         status: "Active"
       },
       writtenLevel: {
         id: 2,
         name: "Advanced",
         level: 1,
+        cefrLevel: "C1",
         status: "Active"
       },
       migrationLanguage: "French"

@@ -354,3 +354,5 @@ terraform.rc
 
 # Exclude binary files
 server/bin/
+server/src/test/resources/dump.sql
+server/src/test/resources/dump.sql

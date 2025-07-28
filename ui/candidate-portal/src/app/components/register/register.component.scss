@@ -25,6 +25,12 @@
   }
 }
 
+// Applying our own step-header for the RegistrationSubmit component, so need to remove the step-body padding to align
+// the step-header at top.
+.step-body.register-submit {
+  padding-top: 0;
+}
+
 .explain {
   color: #e7d362;
   padding-top: 10px;
