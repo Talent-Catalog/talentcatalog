@@ -60,7 +60,9 @@ import {
   ReviewStatus,
   Status
 } from '../../../model/base';
-import {CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
+import {
+  CandidateSourceResultsCacheService
+} from '../../../services/candidate-source-results-cache.service';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -78,7 +80,9 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService
+} from '../../../services/candidate-source-candidate.service';
 import {
   EditCandidateReviewStatusItemComponent
 } from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
@@ -92,7 +96,9 @@ import {SavedListService} from '../../../services/saved-list.service';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {EditCandidateOppComponent} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
+import {
+  EditCandidateOppComponent
+} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -408,6 +414,18 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.searching = true;
     const request = this.searchRequest;
 
+    //todo jc Display a text sort toggle if there is a query string
+
+    //Guard against the case where we have a text sort where there is no query string.
+    let queryString = request.simpleQueryString;
+    const haveSimpleQueryString: boolean =  queryString != null && queryString.trim().length > 0;
+    if (!haveSimpleQueryString && this.sortField === "text") {
+      //Text sort when there is no query strung does not make sense.
+      //So revert to standard id sort.
+      this.sortField = "id";
+      this.sortDirection = "DESC";
+    }
+
     //Search passed in externally will not have current reviewStatusFilter applied
     //because that is only managed by this component. So fill it in.
     if (this.isReviewable()) {
@@ -442,7 +460,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
        * This component is used in two ways:
        * - To display saved lists
        * - To display saved searches.
-       * This affects the way to a refresh is done.
+       * This affects the way that a refresh is done.
        *
        * For saved lists, it is simply going to the server requesting the requested
        * page of the list.
