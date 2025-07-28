@@ -152,7 +152,11 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   updatingTasks: boolean;
   savingSelection: boolean;
   showDescription: boolean = false;
-  searchForm: UntypedFormGroup;
+
+  //This form is defined differently depending on whether the candidate source is a list or a search.
+  //It is used to search within existing results.
+  searchInResultsForm: UntypedFormGroup;
+
   monitoredTask: Task;
   tasksAssignedToList: Task[];
 
@@ -256,12 +260,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
     if (isSavedSearch(this.candidateSource)) {
       const reviewable = this.candidateSource.reviewable;
-      this.searchForm = this.fb.group({
+      this.searchInResultsForm = this.fb.group({
         statusesDisplay: [reviewable ? defaultReviewStatusFilter: []],
       });
     }
     if (isSavedList(this.candidateSource)) {
-      this.searchForm = this.fb.group({
+      this.searchInResultsForm = this.fb.group({
         keyword: [''],
         showClosedOpps: [this.showClosedOpps]
       });
@@ -293,7 +297,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   get keyword(): string {
-    return this.searchForm ? this.searchForm.value.keyword : "";
+    return this.searchInResultsForm ? this.searchInResultsForm.value.keyword : "";
   }
 
   private savedListStateKey(): string {
@@ -314,7 +318,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   subscribeToFilterChanges(): void {
-    this.searchForm.valueChanges
+    this.searchInResultsForm.valueChanges
       .pipe(
         debounceTime(800),
         distinctUntilChanged()
@@ -327,7 +331,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   private saveShowClosedOpps(): void {
-    const showClosedOppsValue = this.searchForm.get('showClosedOpps').value;
+    const showClosedOppsValue = this.searchInResultsForm.get('showClosedOpps').value;
     this.localStorageService.set(this.savedListStateKey() + this.showClosedOppsSuffix, showClosedOppsValue.toString());
   }
 
@@ -793,7 +797,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   onReviewStatusFilterChange() {
 
-    this.reviewStatusFilter = this.searchForm.value.statusesDisplay;
+    this.reviewStatusFilter = this.searchInResultsForm.value.statusesDisplay;
 
     //We can ignore page number because changing the reviewStatus filter will
     //completely change the number of results.

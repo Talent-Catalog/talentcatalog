@@ -152,7 +152,7 @@
     <!-- Review status -->
     <div *ngIf="isReviewable()">
       <label class="form-label" for="reviewStatuses">Don't show candidates reviewed as: </label>
-      <form id="reviewStatuses" class="filter-form" [formGroup]="searchForm">
+      <form id="reviewStatuses" class="filter-form" [formGroup]="searchInResultsForm">
 
         <!-- REVIEW STATUS FILTER -->
         <div *ngIf="isReviewable()" class="mb-3 col-12">
@@ -241,11 +241,11 @@
 <!--      </div>-->
 
       <!--    Results summary-->
-              <div class="d-flex flex-grow-1 justify-content-end">
-                      <div class="text-end">
-        <span>{{results?.totalElements}} candidates returned</span><br/>
-        <span class="small">Timestamp {{timestamp | date: 'customDateTime'}}</span>
-                        </div>
+      <div class="d-flex flex-grow-1 justify-content-end">
+        <div class="text-end">
+          <span>{{results?.totalElements}} candidates returned</span><br/>
+          <span class="small">Timestamp {{timestamp | date: 'customDateTime'}}</span>
+        </div>
       </div>
     </div>
 
@@ -369,7 +369,7 @@
         <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
       </div>
       <div *ngIf="isSavedList()" class="col">
-        <form [formGroup]="searchForm">
+        <form [formGroup]="searchInResultsForm">
           <div class="d-flex align-items-center">
             <div>
               <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
