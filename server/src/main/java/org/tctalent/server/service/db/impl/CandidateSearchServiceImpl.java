@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
@@ -55,20 +55,13 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
     public Page<Candidate> searchCandidates(
         SearchCandidateRequest request, Set<Candidate> excludedCandidates) {
         User user = userService.getLoggedInUser();
+        final PageRequest pageRequest = request.getPageRequest();
 
-        String whereSql = request.extractSQL(user, excludedCandidates);
-
-        return findCandidatesFromSql(whereSql, request.getPageRequest());
-    }
-
-    private Page<Candidate> findCandidatesFromSql(String whereSql, Pageable pageable) {
-
-        String sql = "SELECT distinct candidate.id FROM candidate" + whereSql;
-
-        String countSql = "SELECT count(distinct candidate.id) FROM candidate" + whereSql;
+        String whereSqlFetch = request.extractSQL(user, excludedCandidates, true);
+        String sql = "SELECT distinct candidate.id FROM candidate" + whereSqlFetch;
 
         //Take sort into account
-        String orderBySql = CandidateSearchUtils.buildOrderByClause(pageable.getSort());
+        String orderBySql = CandidateSearchUtils.buildOrderByClause(pageRequest.getSort());
 
         String sqlWithSort = sql + orderBySql;
         LogBuilder.builder(log).action("findCandidates")
@@ -76,8 +69,8 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
 
         //Create and execute the query to return the candidate ids
         Query query = entityManager.createNativeQuery(sqlWithSort);
-        query.setFirstResult((int) pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize());
+        query.setFirstResult((int) pageRequest.getOffset());
+        query.setMaxResults(pageRequest.getPageSize());
         List<Long> ids = executeIdsQuery(query);
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
@@ -95,8 +88,11 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         }
 
         //Compute count
+        String whereSqlCount = request.extractSQL(user, excludedCandidates, false);
+        String countSql = "SELECT count(distinct candidate.id) FROM candidate" + whereSqlCount;
         long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
-        return new PageImpl<>(candidatesSorted, pageable, total);
+        return new PageImpl<>(candidatesSorted, pageRequest, total);
+
     }
 
     private List<Long> executeIdsQuery(Query query) {

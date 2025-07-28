@@ -205,7 +205,7 @@ class SearchCandidateRequestTest {
         candidate = new Candidate();
         candidate.setId(456L);
         excluded.add(candidate);
-        String sql = request.extractSQL(null, excluded);
+        String sql = request.extractSQL(null, excluded, false);
         assertEquals(" where not candidate.id in (123,456)", sql);
     }
 
@@ -222,7 +222,7 @@ class SearchCandidateRequestTest {
         country.setId(456L);
         countries.add(country);
         user.setSourceCountries(countries);
-        String sql = request.extractSQL(user, null);
+        String sql = request.extractSQL(user, null, false);
         assertEquals(" where candidate.country_id in (456,123)", sql);
     }
 

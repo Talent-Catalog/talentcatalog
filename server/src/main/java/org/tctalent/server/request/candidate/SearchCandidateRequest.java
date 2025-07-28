@@ -177,10 +177,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     }
 
     /**
-     * @see #extractSQL(User, Collection)
+     * @see #extractSQL(User, Collection, boolean)
      */
     public String extractSQL() {
-        return extractSQL(null, null);
+        return extractSQL(null, null, false);
     }
 
     /**
@@ -209,10 +209,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      *             generated SQL - for example, some users are restricted to seeing candidates
      *             located in certain countries.
      * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
+     * @param ordered If true the generated sql includes any joins required to support ordering
+     *                specified by the request.
      * @return String containing the SQL or JPQL
      */
     public String extractSQL(
-        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
 
         Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
@@ -417,7 +419,9 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             }
         }
 
-        //TODO JC Need to process sort fields and add extra joins if needed
+        if (ordered) {
+            //TODO JC Need to process sort fields and add extra joins if needed
+        }
 
         String joinClause = String.join(" left join ", joins);
         String whereClause = String.join(" and ", ands);
