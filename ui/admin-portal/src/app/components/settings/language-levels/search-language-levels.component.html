@@ -77,7 +77,8 @@
 
     <thead class="table-primary">
     <tr>
-      <th>Level</th>
+      <th>TC Level</th>
+      <th>CEFR Level</th>
       <th>Name</th>
       <th>Status</th>
       <th>Translation count</th>
@@ -88,6 +89,7 @@
     <tbody>
     <tr *ngFor="let languageLevel of results?.content">
       <td>{{languageLevel.level}}</td>
+      <td>{{languageLevel.cefrLevel}}</td>
       <td>{{languageLevel.name}}</td>
       <td>{{languageLevel.status}}</td>
       <td></td>

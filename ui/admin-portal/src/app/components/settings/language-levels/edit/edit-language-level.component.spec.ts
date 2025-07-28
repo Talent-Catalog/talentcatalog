@@ -30,9 +30,9 @@ describe('EditLanguageLevelComponent', () => {
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let formBuilder: UntypedFormBuilder;
   // @ts-expect-error
-  const languageLevel: LanguageLevel = { level: 5, name: 'Advanced', status: 'active' };
+  const languageLevel: LanguageLevel = { level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' };
   // @ts-expect-error
-  const updatedLanguageLevel: LanguageLevel = { level: 4, name: 'Intermediate', status: 'active' };
+  const updatedLanguageLevel: LanguageLevel = { level: 4, name: 'Intermediate', cefrLevel: 'B1', status: 'active' };
 
   beforeEach(async () => {
     const languageLevelServiceSpyObj = jasmine.createSpyObj('LanguageLevelService', ['get', 'update']);
@@ -75,7 +75,7 @@ describe('EditLanguageLevelComponent', () => {
   }));
 
   it('should call onSave and close modal when language level is successfully updated', fakeAsync(() => {
-    component.languageLevelForm.patchValue({ level: 4, name: 'Intermediate', status: 'active' });
+    component.languageLevelForm.patchValue({ level: 4, name: 'Intermediate', cefrLevel: 'B1', status: 'active' });
 
     component.onSave();
     tick(); // Waiting for async operation to complete
@@ -83,6 +83,7 @@ describe('EditLanguageLevelComponent', () => {
     expect(languageLevelServiceSpy.update).toHaveBeenCalledWith(component.languageLevelId, {
       level: 4,
       name: 'Intermediate',
+      cefrLevel: 'B1',
       status: 'active'
     });
     expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(updatedLanguageLevel);
