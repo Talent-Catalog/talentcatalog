@@ -127,6 +127,7 @@ public abstract class CandidateSearchUtils {
     }
 
     private static @NonNull String mapPropertyNameToDbField(String propertyName) {
+        //Can assume that candidate and user tables are in select so sorting by those fields
         if (!propertyName.contains(".")) {
             propertyName = "candidate." + propertyName;
         }

@@ -176,11 +176,19 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         super(Sort.Direction.DESC, new String[]{"id"});
     }
 
+    public String extractCountSQL(
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(user, excludedCandidates, false);
+        String selectSql = extractCountSelectSql();
+        return selectSql + joinAndWhereSql;
+    }
+
     /**
-     * @see #extractSQL(User, Collection, boolean)
+     * @see #extractFetchSQL(User, Collection, boolean)
      */
-    public String extractSQL() {
-        return extractSQL(null, null, false);
+    public String extractFetchSQL() {
+        return extractFetchSQL(null, null, false);
     }
 
     /**
@@ -209,11 +217,40 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      *             generated SQL - for example, some users are restricted to seeing candidates
      *             located in certain countries.
      * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
+     *
      * @param ordered If true the generated sql includes any joins required to support ordering
      *                specified by the request.
      * @return String containing the SQL or JPQL
      */
-    public String extractSQL(
+    public String extractFetchSQL(
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(user, excludedCandidates, ordered);
+
+        String selectSql = extractFetchSelectSql(ordered);
+
+        return selectSql + joinAndWhereSql;
+
+    }
+
+    private String extractCountSelectSql() {
+        return "select count(distinct candidate.id) from candidate";
+    }
+
+    private String extractFetchSelectSql(boolean ordered) {
+        String sql;
+        if (!ordered) {
+            sql = "select distinct candidate.id from candidate";
+        } else {
+            //TODO JC Implement extractFetchSelectSql
+            //Ordered selects need to add the ORDER BY fields to the select (this is a standard
+            //constraint when using SELECT DISTINCT with ORDER BY
+            sql = "select distinct candidate.id from candidate";
+        }
+        return sql;
+    }
+
+    private String extractJoinAndWhereSQL(
         @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
 
         Set<String> joins = new LinkedHashSet<>();
