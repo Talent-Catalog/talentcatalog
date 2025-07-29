@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav ngbNav #nav="ngbNav" class="nav-tabs mt-2" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+<nav ngbNav #nav="ngbNav" class="nav-tabs mt-2" [activeId]="activeTabId" (navChange)="onTabChanged($event.nextId)">
 
   <ng-container ngbNavItem="MyLists">
     <a ngbNavLink title="Lists that I created">My Lists</a>
