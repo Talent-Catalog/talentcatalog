@@ -238,16 +238,6 @@ public class JobServiceImpl implements JobService {
             CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
         addClosingLogic(JobOpportunityStage.noVisa,
             CandidateOpportunityStage.acceptance, CandidateOpportunityStage.candidateRejectsOffer);
-
-        //Candidates in later stages when job is closed with noVisa are set to noVisa
-        addClosingLogic(JobOpportunityStage.noVisa,
-            CandidateOpportunityStage.provincialVisaPreparation, CandidateOpportunityStage.noVisa);
-        addClosingLogic(JobOpportunityStage.noVisa,
-            CandidateOpportunityStage.provincialVisaProcessing, CandidateOpportunityStage.noVisa);
-        addClosingLogic(JobOpportunityStage.noVisa,
-            CandidateOpportunityStage.visaPreparation, CandidateOpportunityStage.noVisa);
-        addClosingLogic(JobOpportunityStage.noVisa,
-            CandidateOpportunityStage.visaProcessing, CandidateOpportunityStage.noVisa);
     }
 
     @Override
