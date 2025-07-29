@@ -19,8 +19,12 @@ export class TcTabComponent implements AfterContentInit {
 
 
   ngAfterContentInit() {
-    this.header = this.headerComponent.template;
-    this.content = this.contentComponent.template;
+    if (this.headerComponent) {
+      this.header = this.headerComponent.template;
+    }
+    if (this.contentComponent) {
+      this.content = this.contentComponent.template;
+    }
   }
 
 }
