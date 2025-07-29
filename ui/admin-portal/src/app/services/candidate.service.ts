@@ -124,6 +124,10 @@ export class CandidateService implements IntakeService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/survey`, details);
   }
 
+  updateMaxEducationLevel(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/education`, details);
+  }
+
   updateMedia(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/media`, details);
   }
