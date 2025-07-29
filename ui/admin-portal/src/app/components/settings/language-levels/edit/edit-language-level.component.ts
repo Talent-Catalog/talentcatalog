@@ -43,6 +43,7 @@ export class EditLanguageLevelComponent implements OnInit {
     this.languageLevelService.get(this.languageLevelId).subscribe(languageLevel => {
       this.languageLevelForm = this.fb.group({
         level: [languageLevel.level, Validators.required],
+        cefrLevel: [languageLevel.cefrLevel, Validators.required],
         name: [languageLevel.name, Validators.required],
         status: [languageLevel.status, Validators.required],
       });

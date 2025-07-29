@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -31,12 +31,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getEmployerPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 import static org.tctalent.server.data.SalesforceJobOppTestData.createUpdateJobRequestAndExpectedJob;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getChildCandidateOpp;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getEmployer;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
@@ -63,6 +65,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -87,6 +90,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Account;
+import org.tctalent.server.repository.db.JobSpecification;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.source.CopySourceContentsRequest;
@@ -104,13 +108,13 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -130,7 +134,6 @@ class JobServiceImplTest {
     private SalesforceJobOpp expectedJob;
     private UpdateJobRequest updateRequestExtended;
 
-    private static final UpdateJobTestData DATA = createUpdateJobRequestAndExpectedJob();
     private static final JobOppIntake JOB_OPP_INTAKE = new JobOppIntake();
     private static final JobIntakeData JOB_INTAKE_DATA = new JobIntakeData();
     private static final SearchJobRequest SEARCH_JOB_REQUEST = new SearchJobRequest();
@@ -147,13 +150,14 @@ class JobServiceImplTest {
     private static final long JOB_ID = 11L;
     private static final String NAME = "name";
     private static final String URL = "www.url.com";
+    private static final Specification<SalesforceJobOpp> FAKE_SPEC = (root, query, cb) -> null;
 
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
     @Mock private SavedSearchService savedSearchService;
     @Mock private SavedListService savedListService;
     @Mock private NextStepProcessingService nextStepProcessingService;
-    @Mock private OppNotificationService oppNotificationService;
+    @Mock private SystemNotificationService systemNotificationService;
     @Mock private CandidateOpportunityService candidateOpportunityService;
     @Mock private AuthService authService;
     @Mock private SalesforceJobOppService salesforceJobOppService;
@@ -179,6 +183,10 @@ class JobServiceImplTest {
     void setUp() {
         shortJob = getSalesforceJobOppMinimal();
         longJob = getSalesforceJobOppExtended();
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.cvReview)
+        ));
+
         updateJobRequest = new UpdateJobRequest();
         updateJobRequest.setStage(JobOpportunityStage.cvReview);
         updateJobRequest.setNextStep(NEXT_STEP);
@@ -193,22 +201,65 @@ class JobServiceImplTest {
         updateLinkRequest = new UpdateLinkRequest();
         updateLinkRequest.setUrl(URL);
         updateLinkRequest.setName(NAME);
-        expectedJob = DATA.expectedJob();
-        updateRequestExtended = DATA.request();
+        UpdateJobTestData data = createUpdateJobRequestAndExpectedJob();
+        expectedJob = data.expectedJob();
+        updateRequestExtended = data.request();
+    }
+
+    @Test
+    @DisplayName("should update candidate opp to closed stage when job opp closed")
+    void updateJob_shouldCloseOpenCandidateOpp_whenJobOppClosed() {
+        given(userService.getLoggedInUser()).willReturn(adminUser);
+        given(salesforceJobOppRepository.findById(1L)).willReturn(Optional.of(longJob));
+
+        //Add two active candidate opps to longJob (job 1L)
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.testing)
+        ));
+
+        updateJobRequest.setStage(JobOpportunityStage.noJobOffer);
+        jobService.updateJob(1L, updateJobRequest);
+
+        verify(candidateOpportunityService).createUpdateCandidateOpportunities(
+            anyCollection(), eq(longJob), caseParamsCaptor.capture());
+        assertNotNull(caseParamsCaptor.getValue().getStage());
+        assertTrue(caseParamsCaptor.getValue().getStage().isClosed());
+
+        String closingComments = caseParamsCaptor.getValue().getClosingComments();
+        assertNotNull(closingComments);
+
+        //Comment should note the original stage before it was closed
+        assertTrue(closingComments.contains("was Testing"));
     }
 
     @Test
     @DisplayName("should update open candidate opps to closed stage when job opp closed")
     void updateJob_shouldCloseOpenCandidateOpps_whenJobOppClosed() {
-        updateJobRequest.setStage(JobOpportunityStage.noJobOffer);
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findById(1L)).willReturn(Optional.of(longJob));
 
+        //Add two active candidate opps to longJob (job 1L)
+        longJob.setCandidateOpportunities(Set.of(
+            getChildCandidateOpp(99L, longJob, CandidateOpportunityStage.cvReview),
+            getChildCandidateOpp(100L, longJob, CandidateOpportunityStage.testPreparation),
+            getChildCandidateOpp(101L, longJob, CandidateOpportunityStage.cvReview)
+        ));
+
+        updateJobRequest.setStage(JobOpportunityStage.hiringCompleted);
         jobService.updateJob(1L, updateJobRequest);
 
         verify(candidateOpportunityService).createUpdateCandidateOpportunities(
             anyCollection(), eq(longJob), caseParamsCaptor.capture());
+        assertNotNull(caseParamsCaptor.getValue().getStage());
         assertTrue(caseParamsCaptor.getValue().getStage().isClosed());
+
+        String closingComments = caseParamsCaptor.getValue().getClosingComments();
+        assertNotNull(closingComments);
+
+        //Comment should note both original stages
+        assertTrue(closingComments.contains("Test preparation") &&
+                closingComments.contains("CV review")
+            );
     }
 
     @Test
@@ -223,7 +274,7 @@ class JobServiceImplTest {
 
         verify(candidateOpportunityService).createUpdateCandidateOpportunities(
             anyCollection(), eq(longJob), caseParamsCaptor.capture());
-        assertEquals(caseParamsCaptor.getValue().getStage(), CandidateOpportunityStage.jobIneligible);
+        assertEquals(CandidateOpportunityStage.jobIneligible, caseParamsCaptor.getValue().getStage());
     }
 
     @Test
@@ -238,7 +289,7 @@ class JobServiceImplTest {
 
         verify(candidateOpportunityService).createUpdateCandidateOpportunities(
             anyCollection(), eq(longJob), caseParamsCaptor.capture());
-        assertEquals(caseParamsCaptor.getValue().getStage(), CandidateOpportunityStage.jobWithdrawn);
+        assertEquals(CandidateOpportunityStage.jobWithdrawn, caseParamsCaptor.getValue().getStage());
     }
 
     @Test
@@ -253,7 +304,7 @@ class JobServiceImplTest {
 
         verify(candidateOpportunityService).createUpdateCandidateOpportunities(
             anyCollection(), eq(longJob), caseParamsCaptor.capture());
-        assertEquals(caseParamsCaptor.getValue().getStage(), CandidateOpportunityStage.notFitForRole);
+        assertEquals(CandidateOpportunityStage.notFitForRole, caseParamsCaptor.getValue().getStage());
     }
 
     @Test
@@ -269,7 +320,7 @@ class JobServiceImplTest {
 
         verify(candidateOpportunityService).createUpdateCandidateOpportunities(
             anyCollection(), eq(longJob), caseParamsCaptor.capture());
-        assertEquals(caseParamsCaptor.getValue().getStage(), CandidateOpportunityStage.noJobOffer);
+        assertEquals(CandidateOpportunityStage.noJobOffer, caseParamsCaptor.getValue().getStage());
     }
 
     @Test
@@ -285,8 +336,8 @@ class JobServiceImplTest {
 
         verify(candidateOpportunityService).createUpdateCandidateOpportunities(
             anyCollection(), eq(longJob), caseParamsCaptor.capture());
-        assertEquals(caseParamsCaptor.getValue().getStage(),
-            CandidateOpportunityStage.candidateRejectsOffer);
+        assertEquals(CandidateOpportunityStage.candidateRejectsOffer,
+            caseParamsCaptor.getValue().getStage());
     }
 
     @Test
@@ -317,7 +368,7 @@ class JobServiceImplTest {
         Exception ex = assertThrows(InvalidRequestException.class,
             () -> jobService.createJob(createJobRequest));
 
-        assertEquals(ex.getMessage(), "Missing link to Salesforce opportunity");
+        assertEquals("Missing link to Salesforce opportunity", ex.getMessage());
     }
 
     @Test
@@ -352,8 +403,8 @@ class JobServiceImplTest {
         jobService.createJob(createJobRequest);
 
         verify(salesforceJobOppService).createJobOpp(anyString());
-        assertEquals(longJob.getCountry(), EMPLOYER.getCountry());
-        assertEquals(longJob.getSubmissionList(), SUBMISSION_LIST);
+        assertEquals(EMPLOYER.getCountry(), longJob.getCountry());
+        assertEquals(SUBMISSION_LIST, longJob.getSubmissionList());
         verify(jobChatService).createJobCreatorChat(JobChatType.AllJobCandidates, longJob);
         verify(jobChatService).createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, longJob);
         jobChatService.createJobCreatorSourcePartnerChat(longJob, getSourcePartner());
@@ -366,8 +417,8 @@ class JobServiceImplTest {
 
         jobService.createJob(createJobRequest);
 
-        assertEquals(longJob.getSubmissionList(), SUBMISSION_LIST);
-        assertEquals(longJob.getExclusionList(), EXCLUSION_LIST);
+        assertEquals(SUBMISSION_LIST, longJob.getSubmissionList());
+        assertEquals(EXCLUSION_LIST, longJob.getExclusionList());
     }
 
     @Test
@@ -388,7 +439,7 @@ class JobServiceImplTest {
 
         jobService.createJob(createJobRequest);
 
-        assertEquals(longJob.getSfId(), SF_JOB_ID);
+        assertEquals(SF_JOB_ID, longJob.getSfId());
     }
 
     @Test
@@ -401,8 +452,8 @@ class JobServiceImplTest {
         Exception ex = assertThrows(InvalidRequestException.class,
             () -> jobService.createJob(createJobRequest));
 
-        assertEquals(ex.getMessage(),
-            "Unsupported type of partner: " + adminUser.getPartner().getName());
+        assertEquals("Unsupported type of partner: " + adminUser.getPartner().getName(),
+            ex.getMessage());
     }
 
     private void setUpAndCompleteCreateJobPath() {
@@ -432,7 +483,7 @@ class JobServiceImplTest {
         jobService.updateJob(99L, updateJobRequest);
 
         then(salesforceService).should().updateEmployerOpportunityName(shortJob.getSfId(), newName);
-        assertEquals(shortJob.getName(), newName);
+        assertEquals(newName, shortJob.getName());
         then(savedSearchService).should().updateSuggestedSearchesNames(shortJob, oldName);
         then(savedListService).should().updateAssociatedListsNames(shortJob);
     }
@@ -455,7 +506,7 @@ class JobServiceImplTest {
             PROCESSED_NEXT_STEP,
             updateJobRequest.getNextStepDueDate()
         );
-        assertEquals(shortJob.getStage(), newStage);
+        assertEquals(newStage, shortJob.getStage());
     }
 
     @Test
@@ -475,7 +526,7 @@ class JobServiceImplTest {
             PROCESSED_NEXT_STEP,
             updateJobRequest.getNextStepDueDate()
         );
-        assertEquals(shortJob.getNextStep(), PROCESSED_NEXT_STEP);
+        assertEquals(PROCESSED_NEXT_STEP, shortJob.getNextStep());
     }
 
     @Test
@@ -494,7 +545,7 @@ class JobServiceImplTest {
             PROCESSED_NEXT_STEP,
             NEXT_STEP_DUE_DATE
         );
-        assertEquals(shortJob.getNextStepDueDate(), NEXT_STEP_DUE_DATE);
+        assertEquals(NEXT_STEP_DUE_DATE, shortJob.getNextStepDueDate());
     }
 
     @Test
@@ -512,10 +563,10 @@ class JobServiceImplTest {
         jobService.updateJob(99L, emptyRequest);
 
         then(salesforceService).shouldHaveNoInteractions();
-        assertEquals(shortJob.getNextStep(), currentNextStep);
-        assertEquals(shortJob.getNextStepDueDate(), currentDueDate);
-        assertEquals(shortJob.getName(), currentName);
-        assertEquals(shortJob.getStage(), currentStage);
+        assertEquals(currentNextStep, shortJob.getNextStep());
+        assertEquals(currentDueDate, shortJob.getNextStepDueDate());
+        assertEquals(currentName, shortJob.getName());
+        assertEquals(currentStage, shortJob.getStage());
     }
 
     @Test
@@ -547,7 +598,7 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.getJob(JOB_ID);
 
-        assertEquals(result.getEmployerEntity(), EMPLOYER);
+        assertEquals(EMPLOYER, result.getEmployerEntity());
         verify(salesforceJobOppRepository).save(longJob);
     }
 
@@ -560,14 +611,16 @@ class JobServiceImplTest {
 
         given(request.getPageRequest()).willReturn(pageRequest);
         given(userService.getLoggedInUser()).willReturn(adminUser);
-        given(salesforceJobOppRepository.findAll(
-            any(Specification.class),
-            eq(pageRequest))
-        ).willReturn(page);
+        given(salesforceJobOppRepository.findAll(any(Specification.class), eq(pageRequest)))
+            .willReturn(page);
 
-        Page<SalesforceJobOpp> result = jobService.searchJobs(request);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(page, result);
+            assertEquals(page, jobService.searchJobs(request));
+        }
     }
 
     @Test
@@ -632,7 +685,7 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.publishJob(JOB_ID);
 
-        assertEquals(result.getStage(), JobOpportunityStage.candidateSearch);
+        assertEquals(JobOpportunityStage.candidateSearch, result.getStage());
     }
 
     @Test
@@ -649,7 +702,7 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.publishJob(JOB_ID);
 
-        assertEquals(result.getStage(), JobOpportunityStage.visaEligibility);
+        assertEquals(JobOpportunityStage.visaEligibility, result.getStage());
     }
 
     @Test
@@ -665,7 +718,7 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.publishJob(JOB_ID);
 
-        assertEquals(result.getSuggestedList(), SUGGESTED_LIST);
+        assertEquals(SUGGESTED_LIST, result.getSuggestedList());
     }
 
     @Test
@@ -680,7 +733,7 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.removeSuggestedSearch(JOB_ID, 1L);
 
-        assertEquals(result.getSuggestedSearches(), Collections.emptySet());
+        assertEquals(Collections.emptySet(), result.getSuggestedSearches());
     }
 
     @Test
@@ -694,10 +747,15 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L)))
             .willReturn(expectedUnreadIds);
 
-        List<Long> result = jobService.findUnreadChatsInOpps(SEARCH_JOB_REQUEST);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(expectedUnreadIds, result);
-        verify(salesforceJobOppRepository).findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L));
+            assertEquals(expectedUnreadIds, jobService.findUnreadChatsInOpps(SEARCH_JOB_REQUEST));
+            verify(salesforceJobOppRepository)
+                .findUnreadChatsInOpps(adminUser.getId(), List.of(1L, 2L));
+        }
     }
 
     @Test
@@ -715,10 +773,14 @@ class JobServiceImplTest {
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.findAll(any(Specification.class))).willReturn(emptyJobsList);
 
-        List<SalesforceJobOpp> result = jobService.searchJobsUnpaged(SEARCH_JOB_REQUEST);
+        try (MockedStatic<JobSpecification> mockedStatic = mockStatic(JobSpecification.class)) {
+            mockedStatic.when(() -> JobSpecification.buildSearchQuery(any(
+                    SearchJobRequest.class), any(User.class)))
+                .thenReturn(FAKE_SPEC);
 
-        assertEquals(emptyJobsList, result);
-        verify(salesforceJobOppRepository).findAll(any(Specification.class));
+            assertEquals(emptyJobsList, jobService.searchJobsUnpaged(SEARCH_JOB_REQUEST));
+            verify(salesforceJobOppRepository).findAll(any(Specification.class));
+        }
     }
 
     @Test
@@ -730,9 +792,9 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateJdLink(JOB_ID, updateLinkRequest);
 
-        assertEquals(result.getSubmissionList().getFileJdLink(), URL);
-        assertEquals(result.getSubmissionList().getFileJdName(), NAME);
-        assertEquals(longJob.getUpdatedBy(), adminUser);
+        assertEquals(URL, result.getSubmissionList().getFileJdLink());
+        assertEquals(NAME, result.getSubmissionList().getFileJdName());
+        assertEquals(adminUser, longJob.getUpdatedBy());
     }
 
     @Test
@@ -745,7 +807,7 @@ class JobServiceImplTest {
         Exception ex = assertThrows(InvalidRequestException.class,
             () -> jobService.updateJdLink(JOB_ID, updateLinkRequest));
 
-        assertEquals(ex.getMessage(), "Job " + JOB_ID + " does not have submission list");
+        assertEquals("Job " + JOB_ID + " does not have submission list", ex.getMessage());
     }
 
     @Test
@@ -757,9 +819,9 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateJoiLink(JOB_ID, updateLinkRequest);
 
-        assertEquals(result.getSubmissionList().getFileJoiLink(), URL);
-        assertEquals(result.getSubmissionList().getFileJoiName(), NAME);
-        assertEquals(longJob.getUpdatedBy(), adminUser);
+        assertEquals(URL, result.getSubmissionList().getFileJoiLink());
+        assertEquals(NAME, result.getSubmissionList().getFileJoiName());
+        assertEquals(adminUser, longJob.getUpdatedBy());
     }
 
     @Test
@@ -772,7 +834,7 @@ class JobServiceImplTest {
         Exception ex = assertThrows(InvalidRequestException.class,
             () -> jobService.updateJoiLink(JOB_ID, updateLinkRequest));
 
-        assertEquals(ex.getMessage(), "Job " + JOB_ID + " does not have submission list");
+        assertEquals("Job " + JOB_ID + " does not have submission list", ex.getMessage());
     }
 
     @Test
@@ -784,9 +846,9 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateInterviewGuidanceLink(JOB_ID, updateLinkRequest);
 
-        assertEquals(result.getSubmissionList().getFileInterviewGuidanceLink(), URL);
-        assertEquals(result.getSubmissionList().getFileInterviewGuidanceName(), NAME);
-        assertEquals(longJob.getUpdatedBy(), adminUser);
+        assertEquals(URL, result.getSubmissionList().getFileInterviewGuidanceLink());
+        assertEquals(NAME, result.getSubmissionList().getFileInterviewGuidanceName());
+        assertEquals(adminUser, longJob.getUpdatedBy());
     }
 
     @Test
@@ -799,7 +861,7 @@ class JobServiceImplTest {
         Exception ex = assertThrows(InvalidRequestException.class,
             () -> jobService.updateInterviewGuidanceLink(JOB_ID, updateLinkRequest));
 
-        assertEquals(ex.getMessage(), "Job " + JOB_ID + " does not have submission list");
+        assertEquals("Job " + JOB_ID + " does not have submission list", ex.getMessage());
     }
 
     @Test
@@ -811,9 +873,9 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateMouLink(JOB_ID, updateLinkRequest);
 
-        assertEquals(result.getSubmissionList().getFileMouLink(), URL);
-        assertEquals(result.getSubmissionList().getFileMouName(), NAME);
-        assertEquals(longJob.getUpdatedBy(), adminUser);
+        assertEquals(URL, result.getSubmissionList().getFileMouLink());
+        assertEquals(NAME, result.getSubmissionList().getFileMouName());
+        assertEquals(adminUser, longJob.getUpdatedBy());
     }
 
     @Test
@@ -826,7 +888,7 @@ class JobServiceImplTest {
         Exception ex = assertThrows(InvalidRequestException.class,
             () -> jobService.updateMouLink(JOB_ID, updateLinkRequest));
 
-        assertEquals(ex.getMessage(), "Job " + JOB_ID + " does not have submission list");
+        assertEquals("Job " + JOB_ID + " does not have submission list", ex.getMessage());
     }
 
     @Test
@@ -929,14 +991,14 @@ class JobServiceImplTest {
 
         SavedList master = longJob.getSubmissionList();
         SavedList copy = result.getSubmissionList();
-        assertEquals(copy.getFileJdLink(), master.getFileJdLink());
-        assertEquals(copy.getFileJdName(), master.getFileJdName());
-        assertEquals(copy.getFileJoiLink(), master.getFileJoiLink());
-        assertEquals(copy.getFileJoiName(), master.getFileJoiName());
-        assertEquals(copy.getFileMouLink(), master.getFileMouLink());
-        assertEquals(copy.getFileMouName(), master.getFileMouName());
-        assertEquals(copy.getFileInterviewGuidanceLink(), master.getFileInterviewGuidanceLink());
-        assertEquals(copy.getFileInterviewGuidanceName(), master.getFileInterviewGuidanceName());
+        assertEquals(master.getFileJdLink(), copy.getFileJdLink());
+        assertEquals(master.getFileJdName(), copy.getFileJdName());
+        assertEquals(master.getFileJoiLink(), copy.getFileJoiLink());
+        assertEquals(master.getFileJoiName(), copy.getFileJoiName());
+        assertEquals(master.getFileMouLink(), copy.getFileMouLink());
+        assertEquals(master.getFileMouName(), copy.getFileMouName());
+        assertEquals(master.getFileInterviewGuidanceLink(), copy.getFileInterviewGuidanceLink());
+        assertEquals(master.getFileInterviewGuidanceName(), copy.getFileInterviewGuidanceName());
     }
 
     @Test
@@ -972,7 +1034,7 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateJob(JOB_ID, updateJobRequest);
 
-        assertEquals(result.getEvergreenChild(), emptyJob1);
+        assertEquals(emptyJob1, result.getEvergreenChild());
     }
 
     @Test
@@ -1001,8 +1063,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.updateJobSummary(JOB_ID, summary);
 
-        assertEquals(result.getJobSummary(), summary);
-        assertEquals(result.getUpdatedBy(), adminUser);
+        assertEquals(summary, result.getJobSummary());
+        assertEquals(adminUser, result.getUpdatedBy());
     }
 
     @Test
@@ -1038,8 +1100,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.uploadJd(JOB_ID, mockFile);
 
-        assertEquals(result.getSubmissionList().getFileJdLink(), URL);
-        assertEquals(result.getSubmissionList().getFileJdName(), NAME);
+        assertEquals(URL, result.getSubmissionList().getFileJdLink());
+        assertEquals(NAME, result.getSubmissionList().getFileJdName());
         verify(savedListService).saveIt(result.getSubmissionList());
     }
 
@@ -1059,8 +1121,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.uploadJoi(JOB_ID, mockFile);
 
-        assertEquals(result.getSubmissionList().getFileJoiLink(), URL);
-        assertEquals(result.getSubmissionList().getFileJoiName(), NAME);
+        assertEquals(URL, result.getSubmissionList().getFileJoiLink());
+        assertEquals(NAME, result.getSubmissionList().getFileJoiName());
         verify(savedListService).saveIt(result.getSubmissionList());
     }
 
@@ -1080,8 +1142,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.uploadInterviewGuidance(JOB_ID, mockFile);
 
-        assertEquals(result.getSubmissionList().getFileInterviewGuidanceLink(), URL);
-        assertEquals(result.getSubmissionList().getFileInterviewGuidanceName(), NAME);
+        assertEquals(URL, result.getSubmissionList().getFileInterviewGuidanceLink());
+        assertEquals(NAME, result.getSubmissionList().getFileInterviewGuidanceName());
         verify(savedListService).saveIt(result.getSubmissionList());
     }
 
@@ -1102,8 +1164,8 @@ class JobServiceImplTest {
 
         SalesforceJobOpp result = jobService.uploadMou(JOB_ID, mockFile);
 
-        assertEquals(result.getSubmissionList().getFileMouLink(), URL);
-        assertEquals(result.getSubmissionList().getFileMouName(), NAME);
+        assertEquals(URL, result.getSubmissionList().getFileMouLink());
+        assertEquals(NAME, result.getSubmissionList().getFileMouName());
         verify(savedListService).saveIt(result.getSubmissionList());
     }
 
@@ -1123,7 +1185,6 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
         given(mockFile.getOriginalFilename()).willReturn(NAME);
         given(mockFile.getInputStream()).willReturn(mockStream);
-        given(mockStream.read(any())).willReturn(-1);
         given(googleDriveConfig.getListFoldersDrive()).willReturn(mock(GoogleFileSystemDrive.class));
         given(fileSystemService.uploadFile(
             any(GoogleFileSystemDrive.class),

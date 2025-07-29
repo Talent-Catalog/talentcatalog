@@ -43,7 +43,11 @@ public interface CandidateOpportunityService {
      * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp
      * is not null, indicating that these candidates are associated with a job opportunity,
      * this will also create/update the associated candidate opportunities associated with that
-     * job on both Salesforce and on the local database.
+     * job on both Salesforce and on the TC.
+     * <p/>
+     * Note that it may be necessary to create contact records on Salesforce because Salesforce
+     * is designed to only store contact records for candidate who have opportunities - not ALL
+     * contacts registered on the TC.
      *
      * @param candidates Candidates to update
      * @param sfJobOpp If not null candidate opportunities are created/updated
