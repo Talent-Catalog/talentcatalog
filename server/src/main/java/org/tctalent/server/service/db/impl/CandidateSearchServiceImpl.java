@@ -58,7 +58,10 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         final PageRequest pageRequest = request.getPageRequest();
 
         String whereSqlFetch = request.extractSQL(user, excludedCandidates, true);
-        String sql = "SELECT distinct candidate.id FROM candidate" + whereSqlFetch;
+        //Note that we can't use distinct(candidate.id) here because that won't work with
+        //order by (standard SQL error because ordering is ambiguous when there are duplicate
+        //id's returned by the query)
+        String sql = "SELECT candidate.id FROM candidate" + whereSqlFetch;
 
         //Take sort into account
         String orderBySql = CandidateSearchUtils.buildOrderByClause(pageRequest.getSort());
@@ -89,7 +92,7 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
 
         //Compute count
         String whereSqlCount = request.extractSQL(user, excludedCandidates, false);
-        String countSql = "SELECT count(distinct candidate.id) FROM candidate" + whereSqlCount;
+        String countSql = "SELECT count(candidate.id) FROM candidate" + whereSqlCount;
         long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
         return new PageImpl<>(candidatesSorted, pageRequest, total);
 
