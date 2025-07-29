@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -146,7 +147,9 @@ public class SavedListCandidateAdminApi implements
     @PutMapping("{id}/merge-from-file")
     public void mergeFromFile(@PathVariable("id") long savedListId,
         @RequestParam("file") MultipartFile file) throws NoSuchObjectException, IOException {
-        savedListService.mergeSavedListFromInputStream(savedListId, file.getInputStream());
+        try (InputStream inputStream = file.getInputStream()) {
+            savedListService.mergeSavedListFromInputStream(savedListId, inputStream);
+        }
     }
 
     @Override
