@@ -1,0 +1,48 @@
+<div class="container">
+  <app-error [error]="error"></app-error>
+  <div>
+    <app-casi-header>
+      <div class="text-center d-sm-flex justify-content-between align-items-center">
+        <div class="text-sm-start mb-3 mb-sm-0">
+          <h3>{{ 'HEADER.NAV.PRIVACY' | translate }}</h3>
+          <div
+            [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS'| translate:{partner: partnerName} ">
+          </div>
+        </div>
+        <button class="btn btn-sm btn-secondary" [routerLink]="'/profile'">
+          <fa-icon class="me-1" icon="arrow-left"></fa-icon> Back
+        </button>
+      </div>
+    </app-casi-header>
+
+    <div *ngIf="requestAcceptance">
+      <div *ngIf="!termsRead" class="d-flex justify-content-center text-center">
+        <div class="alert alert-danger"
+          [innerHTML]="'PROFILE.PRIVACY.CHANGED'| translate">
+        </div>
+      </div>
+    </div>
+
+    <app-show-terms
+      [requestTermsRead] = "requestAcceptance"
+      (termsRead)="setTermsRead()"
+    >
+      <div [innerHtml]=content></div>
+    </app-show-terms>
+
+    <div *ngIf="!requestAcceptance" class="d-flex justify-content-center text-center">
+      <div class="alert alert-success"
+        [innerHTML]="'PROFILE.PRIVACY.THANK_ACCEPTANCE'| translate:{partner: partnerName} ">
+      </div>
+    </div>
+    <div *ngIf="requestAcceptance">
+      <div *ngIf="termsRead">
+
+        <button class="btn btn-success" (click)="acceptTerms()"
+        >
+          {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

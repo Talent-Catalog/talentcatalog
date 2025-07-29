@@ -276,6 +276,24 @@ use it to populate your empty database:
    docker exec -it docker-compose-postgres-1 psql -U tctalent -d tctalent -f /tmp/dump.sql
    ```
 
+### Create Postgres Vector Extension ###
+We use pgvector—[the vector extension of Postgres](https://github.com/pgvector/pgvector). 
+This can be turned on with a special SQL command in the psql console which can be launched
+either like this:
+```shell
+docker exec -it docker-compose-postgres-1 psql -U tctalent -d tctalent
+```
+or by running the following in the Terminal of the postgres service in the Intellij Docker 
+Compose services.
+```shell
+psql -U tctalent -d tctalent
+```
+
+Either way, execute this SQL in the psql console.
+```shell
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
 ### Connect IntelliJ to your database ###
 - File > New > Data Source > PostgreSQL > PostgreSQL
 - Give the DB a name that clearly identifies it as your local development version.

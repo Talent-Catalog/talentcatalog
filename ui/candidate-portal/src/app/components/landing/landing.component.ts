@@ -27,6 +27,24 @@ import {AuthenticationService} from "../../services/authentication.service";
   styleUrls: ['./landing.component.scss']
 })
 
+/**
+ * This is where the application starts if there is no extra path in the url.
+ * This is specified in the AppRoutingModel when the url path is empty ('').
+ * <p/>
+ * The ngInit method will determine whether the user is already authenticated...
+ * <p>
+ *  If authenticated - redirected to '/home' - which is serviced by HomeComponent (as defined
+ *  in AppRoutingModule).
+ * </p>
+ * <p>
+ *  If not authenticated then processing stays in this component, which displays the
+ *  LoginComponent (app-login) and a Registration button.
+ * </p>
+ * <p>
+ *   If the Registration button is clicked the user is redirected to '/register', serviced by the
+ *   RegisterComponent (as defined in AppRoutingModule).
+ * </p>
+ */
 export class LandingComponent implements OnInit {
 
   private brandingInfo: BrandingInfo;
@@ -115,13 +133,5 @@ export class LandingComponent implements OnInit {
     };
 
     initializePhraseAppEditor(config);
-  }
-
-  getPartnerName(): string {
-    let name = '';
-    if (this.brandingInfo?.partnerName) {
-      name = this.brandingInfo.partnerName;
-    }
-    return name;
   }
 }

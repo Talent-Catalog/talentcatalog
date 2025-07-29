@@ -40,6 +40,7 @@ export class CreateLanguageLevelComponent implements OnInit {
   ngOnInit() {
     this.languageLevelForm = this.fb.group({
       level: [null, Validators.required],
+      cefrLevel: [null, Validators.required],
       name: [null, Validators.required],
       status: [null, Validators.required],
     });

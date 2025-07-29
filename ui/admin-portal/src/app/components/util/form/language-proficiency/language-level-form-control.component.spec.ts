@@ -33,9 +33,9 @@ describe('LanguageLevelFormControlComponent', () => {
 
   const mockLanguages: Language[] = [{ id: 1, name: 'English',status:'active' }, { id: 2, name: 'Spanish',status:'inactive' }];
   const mockLanguageLevels: LanguageLevel[] = [
-    { id:1, level: 1, name: 'Basic',status:'active' },
-    { id:2, level: 2, name: 'Intermediate',status:'active' },
-    { id:3,level: 3, name: 'Advanced',status:'active'  }
+    { id:1, level: 1, name: 'Basic', cefrLevel: 'A1', status:'active' },
+    { id:2, level: 2, name: 'Intermediate', cefrLevel: 'B1', status:'active' },
+    { id:3, level: 3, name: 'Advanced', cefrLevel: 'B2', status:'active'  }
   ];
 
   beforeEach(async () => {

@@ -572,6 +572,7 @@ import {ErrorDisplayComponent} from './components/util/error-display/error-displ
 import {IntelligenceComponent} from './components/intelligence/intelligence.component';
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
 import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-phone-input.component';
+import {ChatMuteToggleButtonComponent} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 import {SharedModule} from "./shared/shared.module";
 import {PascalCasePipe} from './pipes/pascal-case.pipe';
 
@@ -909,6 +910,7 @@ import {PascalCasePipe} from './pipes/pascal-case.pipe';
     IntelligenceComponent,
     OfferToAssistComponent,
     IntlPhoneInputComponent,
+    ChatMuteToggleButtonComponent,
     PascalCasePipe
   ],
   imports: [
