@@ -76,8 +76,7 @@ describe('SearchHomeComponent', () => {
   it('should save the last active tab to local storage on tab change', () => {
     fixture.detectChanges();
     const event = { nextId: 'NewSearch' };
-    // @ts-expect-error
-    component.onTabChanged(event);
+    component.onTabChanged(event.nextId);
     expect(localStorageServiceSpy.set).toHaveBeenCalledWith(component["lastTabKey"], 'NewSearch');
   });
 
@@ -95,8 +94,7 @@ describe('SearchHomeComponent', () => {
   it('should handle tab change event with valid tab ID', () => {
     fixture.detectChanges();
     const event = { nextId: 'SearchesSharedWithMe' };
-    // @ts-expect-error
-    component.onTabChanged(event);
+    component.onTabChanged(event.nextId);
     expect(component.activeTabId).toBe('SearchesSharedWithMe');
     expect(localStorageServiceSpy.set).toHaveBeenCalledWith(component["lastTabKey"], 'SearchesSharedWithMe');
   });
