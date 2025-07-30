@@ -40,9 +40,10 @@ class SearchCandidateRequestTest {
     private SearchCandidateRequest request;
 
     private static final String FROM_CANDIDATE = " from candidate";
-    private static final String JOIN = " join ";
+    private static final String JOIN = " left join ";
     private static final String ID_SORT = "candidate.id DESC";
     private static final String ORDER_BY = " order by ";
+    private static final String WHERE = " where ";
     private static final String UNORDERED_SELECT = "select distinct candidate.id" + FROM_CANDIDATE;
     private static final String ORDERED_SELECT_PREFIX = "select distinct candidate.id";
 
@@ -78,12 +79,80 @@ class SearchCandidateRequestTest {
     @Test
     @DisplayName("SQL generated from ordered request requiring join")
     void extractFetchSQLFromOrderedRequestRequiringJoin() {
-        request.setSortFields(new String[] {"firstName"});
+        request.setSortFields(new String[] {"user.firstName"});
         request.setSortDirection(Direction.ASC);
         String sql = request.extractFetchSQL(null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + ",users.first_name" + FROM_CANDIDATE +
-                JOIN + CandidateSearchUtils.CANDIDATE__USER__JOIN__NATIVE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
             ORDER_BY + "users.first_name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request requiring join which filter has already joined")
+    void extractFetchSQLFromOrderedRequestRequiringJoinWithFilter() {
+        request.setPartnerIds(List.of(123L));
+        request.setSortFields(new String[] {"user.lastName"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",users.last_name" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+            WHERE + "users.partner_id in (123)" +
+            ORDER_BY + "users.last_name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request requiring joins from filter and order")
+    void extractFetchSQLFromOrderedRequestRequiringJoinsFromFilterAndOrder() {
+        request.setPartnerIds(List.of(123L));
+        request.setSortFields(new String[] {"nationality.name"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",nationality.name" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+                JOIN + CandidateSearchUtils.getTableJoin("nationality") +
+            WHERE + "users.partner_id in (123)" +
+            ORDER_BY + "nationality.name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request on country")
+    void extractFetchSQLFromOrderedRequestOnCountry() {
+        request.setPartnerIds(List.of(1L));
+        request.setSortFields(new String[] {"country.name"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",country.name" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+                JOIN + CandidateSearchUtils.getTableJoin("country") +
+            WHERE + "users.partner_id in (1)" +
+            ORDER_BY + "country.name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request on partner abbreviation")
+    void extractFetchSQLFromOrderedRequestOnPartnerAbbreviation() {
+        request.setPartnerIds(List.of(1L));
+        request.setSortFields(new String[] {"user.partner.abbreviation"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",partner.abbreviation" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+                JOIN + CandidateSearchUtils.getTableJoin("partner") +
+            WHERE + "users.partner_id in (1)" +
+            ORDER_BY + "partner.abbreviation " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request on partner abbreviation when user join is not needed")
+    void extractFetchSQLFromOrderedRequestOnPartnerAbbreviationWithoutUserJoin() {
+        request.setSortFields(new String[] {"user.partner.abbreviation"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",partner.abbreviation" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+                JOIN + CandidateSearchUtils.getTableJoin("partner") +
+            WHERE + "users.partner_id in (1)" +
+            ORDER_BY + "partner.abbreviation " + Direction.ASC + "," + ID_SORT, sql);
     }
 
     @Test

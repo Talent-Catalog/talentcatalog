@@ -161,8 +161,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   tasksAssignedToList: Task[];
 
   subscription: Subscription;
-  sortField = 'id';
-  sortDirection = 'DESC';
 
   //Request full details on candidates
   searchDetail = DtoType.EXTENDED;

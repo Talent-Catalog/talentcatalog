@@ -16,8 +16,13 @@
 
 package org.tctalent.server.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -27,24 +32,34 @@ import org.springframework.lang.Nullable;
  * @author John Cameron
  */
 public abstract class CandidateSearchUtils {
-    public static final String CANDIDATE__USER__JOIN__NATIVE =
-        "users on candidate.user_id = users.id";
-    public static final String CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE =
-        "education_level on candidate.max_education_level_id = education_level.id";
-    public static final String CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE =
-        "candidate_education on candidate.id = candidate_education.candidate_id";
-    public static final String CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE =
-        "candidate_occupation on candidate.id = candidate_occupation.candidate_id";
-    public static final String CANDIDATE__CANDIDATE_JOB_EXPERIENCE__JOIN__NATIVE =
-        "candidate_job_experience on candidate.id = candidate_job_experience.candidate_id";
-    public static final String CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE =
-        "candidate_language on candidate.id = candidate_language.candidate_id";
-    public static final String CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE =
-        "language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id";
-    public static final String CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE =
-        "language_level as written_level on candidate_language.written_level_id = written_level_id";
-    public static final String CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE =
-        "language on candidate_language.language_id = language.id";
+
+    private static final Map<String, String> tableJoins = new HashMap<>();
+    static {
+        tableJoins.put("candidate_education",
+            "candidate_education on candidate.id = candidate_education.candidate_id");
+        tableJoins.put("candidate_job_experience",
+            "candidate_job_experience on candidate.id = candidate_job_experience.candidate_id");
+        tableJoins.put("candidate_language",
+            "candidate_language on candidate.id = candidate_language.candidate_id");
+        tableJoins.put("candidate_occupation",
+            "candidate_occupation on candidate.id = candidate_occupation.candidate_id");
+        tableJoins.put("country",
+            "country on candidate.country_id = country.id");
+        tableJoins.put("education_level",
+            "education_level on candidate.max_education_level_id = education_level.id");
+        tableJoins.put("language",
+            "language on candidate_language.language_id = language.id");
+        tableJoins.put("nationality",
+            "country as nationality on candidate.nationality_id = nationality.id");
+        tableJoins.put("partner",
+            "partner on users.partner_id = partner.id");
+        tableJoins.put("spoken_level",
+            "language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id");
+        tableJoins.put("written_level",
+            "language_level as written_level on candidate_language.written_level_id = written_level_id");
+        tableJoins.put("users",
+            "users on candidate.user_id = users.id");
+    }
 
     /**
      * Generates ORDER BY clause given a Sort.
@@ -76,7 +91,47 @@ public abstract class CandidateSearchUtils {
             })
             .collect(Collectors.joining(","));
 
-        return orderBy.isEmpty() ? "" : " ORDER BY " + orderBy;
+        return orderBy.isEmpty() ? "" : " order by " + orderBy;
+    }
+
+    /**
+     * Generates list of fields in a given Sort excluding the default id field
+     * @param sort Sort specifying fields
+     * @return list of non id fields delimited by comma, if any. If none, returns an empty string.
+     */
+    public static @NonNull String buildNonIdFieldList(Sort sort) {
+        String fields = "";
+        if (sort != null && !sort.isUnsorted()) {
+            //Excluding the id field, map other fields
+            fields = sort.stream()
+                .map(Order::getProperty)
+                .filter(property -> !property.equals("id"))
+                .map(CandidateSearchUtils::mapPropertyNameToDbField)
+                .collect(Collectors.joining(","));
+        }
+
+        return fields;
+    }
+
+    public static @NonNull List<String> buildNonCandidateTableSet(Sort sort) {
+        List<String> tableSet = new ArrayList<>();
+        if (sort != null && !sort.isUnsorted()) {
+            sort.stream()
+                .map(Order::getProperty)
+                .map(CandidateSearchUtils::mapPropertyNameToDbReference)
+                .filter(property -> !property.startsWith("candidate."))
+                .forEach(property -> {
+                    //All but the last part (which is the field name) will be table names.
+                    //eg users.partner.abbreviation
+                    final String[] parts = property.split("\\.");
+                    if (parts.length > 1) {
+                        for (int i = 0; i < parts.length-1; i++) {
+                            tableSet.add(parts[i]);
+                        }
+                    }
+                });
+        }
+        return tableSet;
     }
 
     /**
@@ -126,13 +181,23 @@ public abstract class CandidateSearchUtils {
         return tsquery.trim();
     }
 
+    public static String getTableJoin(String table) {
+        return tableJoins.get(table);
+    }
+
+    //TODO JC Doc all this
     private static @NonNull String mapPropertyNameToDbField(String propertyName) {
+        String dbReference = mapPropertyNameToDbReference(propertyName);
+        String[] parts = dbReference.split("\\.");
+        return parts[parts.length-2]+"."+parts[parts.length-1];
+    }
+
+    private static @NonNull String mapPropertyNameToDbReference(String propertyName) {
         //Can assume that candidate and user tables are in select so sorting by those fields
         if (!propertyName.contains(".")) {
             propertyName = "candidate." + propertyName;
         }
 
-        propertyName = propertyName.replace("user.partner", "partner.");
         propertyName = propertyName.replace("user.", "users.");
 
         return RegexHelpers.camelToSnakeCase(propertyName);

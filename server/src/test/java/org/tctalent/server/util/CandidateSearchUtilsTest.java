@@ -32,16 +32,30 @@ class CandidateSearchUtilsTest {
         String s;
 
         s = CandidateSearchUtils.buildOrderByClause(null);
-        Assertions.assertEquals(" ORDER BY candidate.id DESC", s);
+        Assertions.assertEquals(" order by candidate.id DESC", s);
 
         s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "id"));
-        Assertions.assertEquals(" ORDER BY candidate.id ASC", s);
+        Assertions.assertEquals(" order by candidate.id ASC", s);
 
         s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "status"));
-        Assertions.assertEquals(" ORDER BY candidate.status ASC,candidate.id DESC", s);
+        Assertions.assertEquals(" order by candidate.status ASC,candidate.id DESC", s);
 
         s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "user.firstName"));
-        Assertions.assertEquals(" ORDER BY users.first_name ASC,candidate.id DESC", s);
+        Assertions.assertEquals(" order by users.first_name ASC,candidate.id DESC", s);
+    }
+
+    @Test
+    void buildNonIdFieldList() {
+        String s;
+
+        s = CandidateSearchUtils.buildNonIdFieldList(null);
+        Assertions.assertEquals("", s);
+
+        s = CandidateSearchUtils.buildNonIdFieldList(Sort.by("id"));
+        Assertions.assertEquals("", s);
+
+        s = CandidateSearchUtils.buildNonIdFieldList(Sort.by("user.firstName"));
+        Assertions.assertEquals("users.first_name", s);
     }
 
     @Test
