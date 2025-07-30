@@ -193,34 +193,23 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
     /**
      * <p>
-     * Extracts the where clause of database query SQL corresponding to the given search request.
+     * Extracts native database query SQL corresponding to the given search request.
      * </p>
      * <p>
-     *     The where clause assumes that it is associated with a SELECT FROM candidate.
-     *     In particular joins will assume that the candidate table is at the root.
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     *     If ordered is true, there will also be an ORDER BY clause.
      * </p>
      * <p>
-     *     For example, if the SQL is being used to retrieve all candidate ids matching the query
-     *     your code might look like this:
-     * </p>
-     * <p>
-     * <code>
-     *    String whereClauseSql = searchRequest.extractSQL();
-     * </code>
-     * </p>
-     * <p>
-     * <code>
-     *    String querySql = "select distinct candidate.id from candidate" + whereClauseSql;
-     * </code>
+     *     The request will return candidate data without duplicates.
      * </p>
      * @param user User making the request. If not null, user-specific constraints are added to the
      *             generated SQL - for example, some users are restricted to seeing candidates
      *             located in certain countries.
      * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
      *
-     * @param ordered If true the generated sql includes any joins required to support ordering
-     *                specified by the request.
-     * @return String containing the SQL or JPQL
+     * @param ordered If true the generated sql will return ordered data as specified in the request.
+     * @return String containing the SQL
      */
     public String extractFetchSQL(
         @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
