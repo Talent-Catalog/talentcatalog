@@ -1130,6 +1130,28 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Nullable
+    @Override
+    public Set<String> fetchIntersectionCandidatePublicIds(@Nullable List<String> publicListIds) {
+        Set<String> candidatePublicIds;
+        if (publicListIds == null) {
+            candidatePublicIds = null;
+        } else {
+            final Iterator<String> iterator = publicListIds.iterator();
+            if (iterator.hasNext()) {
+                candidatePublicIds = fetchCandidatePublicIds(iterator.next());
+                while (iterator.hasNext() && !candidatePublicIds.isEmpty()) {
+                    String nextPublicListId = iterator.next();
+                    candidatePublicIds.retainAll(fetchCandidatePublicIds(nextPublicListId));
+                }
+            } else {
+                // No lists provided. Return empty set of candidate public ids.
+                candidatePublicIds = new HashSet<>();
+            }
+        }
+        return candidatePublicIds;
+    }
+
+    @Nullable
     public SavedList fetchSourceList(UpdateSavedListContentsRequest request)
             throws NoSuchObjectException {
         SavedList sourceList = null;
