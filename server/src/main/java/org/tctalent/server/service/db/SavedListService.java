@@ -251,6 +251,15 @@ public interface SavedListService {
     @Nullable
     Set<Long> fetchIntersectionCandidateIds(@Nullable List<Long> listIds);
 
+    /**
+     * Fetches the public ids of the intersection of all candidates in all the given lists, note
+     * that the list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates common to all the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchIntersectionCandidatePublicIds(@Nullable List<String> publicListIds);
 
     /**
      * Get the SavedList with the given id.
