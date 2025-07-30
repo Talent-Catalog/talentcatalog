@@ -26,18 +26,25 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort.Direction;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.util.CandidateSearchUtils;
 
 class SearchCandidateRequestTest {
 
     private SearchCandidateRequest request;
 
-    private static final String UNORDERED_SELECT = "select distinct candidate.id from candidate";
+    private static final String FROM_CANDIDATE = " from candidate";
+    private static final String JOIN = " join ";
+    private static final String ID_SORT = "candidate.id DESC";
+    private static final String ORDER_BY = " order by ";
+    private static final String UNORDERED_SELECT = "select distinct candidate.id" + FROM_CANDIDATE;
+    private static final String ORDERED_SELECT_PREFIX = "select distinct candidate.id";
 
     @BeforeEach
     void setUp() {
@@ -49,6 +56,44 @@ class SearchCandidateRequestTest {
     void extractFetchSQLFromEmptyRequest() {
         String sql = request.extractFetchSQL();
         assertEquals(UNORDERED_SELECT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from empty ordered request")
+    void extractFetchSQLFromEmptyOrderedRequest() {
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + FROM_CANDIDATE + ORDER_BY + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request")
+    void extractFetchSQLFromOrderedRequest() {
+        request.setSortFields(new String[] {"gender"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",candidate.gender" + FROM_CANDIDATE +
+            ORDER_BY + "candidate.gender " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request requiring join")
+    void extractFetchSQLFromOrderedRequestRequiringJoin() {
+        request.setSortFields(new String[] {"firstName"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",users.first_name" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.CANDIDATE__USER__JOIN__NATIVE +
+            ORDER_BY + "users.first_name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from local enumeration")
+    void extractFetchSQLFromLocalEnumerationRequest() {
+        Gender gender = Gender.male;
+        request.setGender(gender);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " where candidate.gender = '" + gender.name() + "'", sql);
     }
 
     @Test
@@ -90,16 +135,6 @@ class SearchCandidateRequestTest {
                 " left join candidate_education on candidate.id = candidate_education.candidate_id"
                 + " where (major_id in (123) or migration_education_major_id in (123))"
                 , sql);
-    }
-
-    @Test
-    @DisplayName("SQL generated from local enumeration")
-    void extractFetchSQLFromLocalEnumerationRequest() {
-        Gender gender = Gender.male;
-        request.setGender(gender);
-        String sql = request.extractFetchSQL();
-        assertEquals(UNORDERED_SELECT +
-            " where candidate.gender = '" + gender.name() + "'", sql);
     }
 
     @Test
