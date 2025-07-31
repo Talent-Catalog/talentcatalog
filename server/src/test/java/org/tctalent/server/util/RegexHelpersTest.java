@@ -21,26 +21,42 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class RegexHelpersTest {
-    RegexHelpers regexHelpers = new RegexHelpers();
 
     @Test
     void extractLinkUrlsFromHtml() {
         List<String> urls;
 
-        urls = regexHelpers.extractLinkUrlsFromHtml(null);
+        urls = RegexHelpers.extractLinkUrlsFromHtml(null);
         Assertions.assertNotNull(urls);
         Assertions.assertEquals(0, urls.size());
 
-        urls = regexHelpers.extractLinkUrlsFromHtml("Other stuff, blah blah <a>Blah blah</a>");
+        urls = RegexHelpers.extractLinkUrlsFromHtml("Other stuff, blah blah <a>Blah blah</a>");
         Assertions.assertNotNull(urls);
         Assertions.assertEquals(0, urls.size());
 
-        urls = regexHelpers.extractLinkUrlsFromHtml(
+        urls = RegexHelpers.extractLinkUrlsFromHtml(
             "Other stuff, blah blah <a href=\"http://example.com\">http://example.com</a>"
                 + "more blah <a href=\"http://example2.com\">Anything</a>");
         Assertions.assertNotNull(urls);
         Assertions.assertEquals(2, urls.size());
         Assertions.assertEquals("http://example.com", urls.get(0));
         Assertions.assertEquals("http://example2.com", urls.get(1));
+    }
+
+    @Test
+    void camelToSnakeCase() {
+        String s;
+
+        s = RegexHelpers.camelToSnakeCase("candidate");
+        Assertions.assertEquals("candidate", s);
+
+        s = RegexHelpers.camelToSnakeCase("candidateExam");
+        Assertions.assertEquals("candidate_exam", s);
+
+        s = RegexHelpers.camelToSnakeCase("candidateJobExperience");
+        Assertions.assertEquals("candidate_job_experience", s);
+
+        s = RegexHelpers.camelToSnakeCase("candidate.ieltsScore");
+        Assertions.assertEquals("candidate.ielts_score", s);
     }
 }
