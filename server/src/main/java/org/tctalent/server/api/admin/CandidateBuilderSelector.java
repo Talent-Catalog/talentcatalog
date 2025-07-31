@@ -225,6 +225,9 @@ public class CandidateBuilderSelector {
             .add("miniIntakeCompletedDate")
             .add("fullIntakeCompletedDate")
             .add("potentialDuplicate")
+            .add("acceptedPrivacyPolicyId")
+            .add("acceptedPrivacyPolicyDate")
+            .add("acceptedPrivacyPolicyPartner",partnerDto())
             ;
 
             if (!DtoType.PREVIEW.equals(type)) {
