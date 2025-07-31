@@ -38,7 +38,6 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateSearchService;
 import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.util.CandidateSearchUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -58,16 +57,11 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         final PageRequest pageRequest = request.getPageRequest();
 
         String sql = request.extractFetchSQL(user, excludedCandidates, true);
-
-        //Take sort into account
-        String orderBySql = CandidateSearchUtils.buildOrderByClause(pageRequest.getSort());
-
-        String sqlWithSort = sql + orderBySql;
         LogBuilder.builder(log).action("findCandidates")
-            .message("Query: " + sqlWithSort).logInfo();
+            .message("Query: " + sql).logInfo();
 
         //Create and execute the query to return the candidate ids
-        Query query = entityManager.createNativeQuery(sqlWithSort);
+        Query query = entityManager.createNativeQuery(sql);
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
         List<Long> ids = executeIdsQuery(query);
@@ -100,7 +94,8 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         final List<?> results = query.getResultList();
         //and convert to List of Longs
         return results.stream()
-            .map(r -> ((Number) r).longValue())
+            .map(r -> (Object[]) r)
+            .map(r -> ((Number) r[0]).longValue())
             .toList();
     }
 

@@ -17,6 +17,7 @@
 package org.tctalent.server.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,8 +114,8 @@ public abstract class CandidateSearchUtils {
         return fields;
     }
 
-    public static @NonNull List<String> buildNonCandidateTableSet(Sort sort) {
-        List<String> tableSet = new ArrayList<>();
+    public static @NonNull List<String> buildNonCandidateTableList(Sort sort) {
+        List<String> tables = new ArrayList<>();
         if (sort != null && !sort.isUnsorted()) {
             sort.stream()
                 .map(Order::getProperty)
@@ -125,13 +126,11 @@ public abstract class CandidateSearchUtils {
                     //eg users.partner.abbreviation
                     final String[] parts = property.split("\\.");
                     if (parts.length > 1) {
-                        for (int i = 0; i < parts.length-1; i++) {
-                            tableSet.add(parts[i]);
-                        }
+                        tables.addAll(Arrays.asList(parts).subList(0, parts.length - 1));
                     }
                 });
         }
-        return tableSet;
+        return tables;
     }
 
     /**
@@ -185,13 +184,58 @@ public abstract class CandidateSearchUtils {
         return tableJoins.get(table);
     }
 
-    //TODO JC Doc all this
+    /**
+     * Converts a property name into a field name that will be used when referencing the field
+     * in generated SQL queries. In SQL queries fields are referred to just as table.field.
+     * <p>
+     *     Examples
+     * </p>
+     * <ul>
+     *     <li>
+     *     user.partner.abbreviation -> partner.abbreviation
+     *     </li>
+     *     <li>
+     *         yearOfArrival -> candidate.year_of_arrival
+     *     </li>
+     * </ul>
+     * @param propertyName Name received from the front end code
+     * @return Field name as it appears in generated SQL queries
+     */
     private static @NonNull String mapPropertyNameToDbField(String propertyName) {
         String dbReference = mapPropertyNameToDbReference(propertyName);
         String[] parts = dbReference.split("\\.");
-        return parts[parts.length-2]+"."+parts[parts.length-1];
+        //Note that references returned by mapPropertyNameToDbReference will always have at least
+        //two fields: xxx.yyy
+        return parts[parts.length-2] + "." + parts[parts.length-1];
     }
 
+    /**
+     * Converts a property name received from front end code (usually in the sort fields
+     * of a request) into a standard form which refers to the database relative to the
+     * candidate table.
+     * <p>
+     *     For example:
+     * </p><p>
+     *     <code>
+     *         users.partner.abbreviation
+     *     </code>
+     *</p><p>
+     *     This refers to the abbreviation field of the partner table which is joined to the
+     *     users table which is joined to the candidate table.
+     * </p><p>
+     *     Property names received from the front end as sort fields don't mention the candidate
+     *     table - that is implied if no other table is supplied.
+     *     Front end code also refers to the "users" table as "user".
+     *     Lastly property names received from the front end are expressed in camel case. But they
+     *     are converted by this method to snakeCase - which is what is used in the database.
+     * </p><p>
+     *     So, for example, user.partner.notificationEmail is received from the front end in the Sort
+     *     fields, and this method will convert it to users.partner.notification_email.
+     * </p>
+     * @param propertyName Name received from the front end code
+     * @return property name converted into a standard database reference like
+     * table.table...table.field
+     */
     private static @NonNull String mapPropertyNameToDbReference(String propertyName) {
         //Can assume that candidate and user tables are in select so sorting by those fields
         if (!propertyName.contains(".")) {

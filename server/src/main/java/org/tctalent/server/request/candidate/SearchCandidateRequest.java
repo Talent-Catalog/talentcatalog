@@ -458,7 +458,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         if (ordered) {
-            List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableSet(getSort());
+            List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(getSort());
             if (!tableSet.isEmpty()) {
                 joins.addAll(tableSet);
             }
