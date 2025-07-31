@@ -570,7 +570,11 @@ const ALL_FIELDS = {
       },
       "PRIVACY": {
         "CHANGED": null,
-        "THANK_ACCEPTANCE": null
+        "THANK_ACCEPTANCE": null,
+        "VERSION": null,
+        "ACCEPTED_ON": null,
+        "ACCEPTED_WITH": null,
+        "ACCEPTANCE_DETAILS": null
       },
       "OCCUPATIONS": {
         "TITLE": null
