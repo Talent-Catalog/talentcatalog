@@ -2,7 +2,8 @@
 @import 'src/scss/support-colors';
 
 .nav.nav-tabs {
-  border-bottom: 1px solid #E5E5E5;
+  border-bottom: 1px solid;
+  @include border-color-base;
   .nav-link {
     @include text-color-secondary;
     font-size: 14px;
@@ -11,14 +12,16 @@
     border-top: none;
     border-left: none;
     border-right: none;
+    border-bottom: 2px solid transparent;
     &:hover {
-      border-bottom: 2px solid #737373;
+      border-bottom: 2px solid;
+      @include border-color-base-dark;
     }
   }
   .nav-link.active {
-    border-bottom: 2px solid #0084d1;
-    //todo add a text-color-primary mixin
-    color: #0084d1
+    border-bottom: 2px solid;
+    @include border-color-primary;
+    @include text-color-primary;
   }
 }
 
