@@ -38,6 +38,7 @@ import {CandidateLanguage} from "./candidate-language";
 import {CandidateOccupation} from "./candidate-occupation";
 import {CandidateSkill} from "./candidate-skill";
 import {CandidateNote} from "./candidate-note";
+import {Partner} from "./partner";
 
 export interface ShortCandidate {
   id: number;
@@ -133,6 +134,10 @@ export interface Candidate extends HasId {
   relocatedState: string;
   relocatedCountry: Country;
 
+  // privacy policy info
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: Partner;
 }
 
 export interface CandidateProperty {
