@@ -26,9 +26,12 @@ Prerequisites
 
 2. Configure the connection settings in `main()`
 
-3. Run the script:
+3. Run the script, redirecting output to a file and errors to a log:
 
    $ python3 FetchCandidateDataFromMongo.py > candidates.json 2> missing_ids.log
+
+   - candidates.json: will contain a JSON array of all found candidate documents.
+   - missing_ids.log: will list any `publicId` values that weren’t found in MongoDB.
 """
 
 
