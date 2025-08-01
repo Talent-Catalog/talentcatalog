@@ -66,7 +66,7 @@ def generate_public_ids_file(
   GET /public/{publicListId}/public-ids using the JWT bearer token,
   then write the returned IDs (one per line) into output_csv with a header.
   """
-  url = f"{base_url}/public/{public_list_id}/public-ids"
+  url = f"{base_url}/saved-list-candidate/public/{public_list_id}/public-ids"
   headers = {"Authorization": auth_header}
   resp = requests.get(url, headers=headers)
   resp.raise_for_status()
