@@ -34,9 +34,10 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -241,7 +242,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             Sort sort = getSort();
 
             sql = "select distinct candidate.id";
-            String nonIdSortFields = CandidateSearchUtils.buildNonIdFieldList(sort);
+            String nonIdSortFields = CandidateSearchUtils.buildNonIdFieldList(sort, getSimpleQueryString());
             if (!nonIdSortFields.isEmpty()) {
                 sql += "," + nonIdSortFields;
             }
@@ -258,10 +259,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         List<String> ands = new ArrayList<>();
 
         //Text search
-        if (getSimpleQueryString() != null && !getSimpleQueryString().isEmpty()) {
+        if (StringUtils.hasText(getSimpleQueryString())) {
             joins.add("candidate_job_experience");
-            String tsquery = CandidateSearchUtils.buildTsQuerySQL(getSimpleQueryString());
-            String clause = "candidate.ts_text @@ to_tsquery('english', '" + tsquery + "')";
+            String to_tsquery = CandidateSearchUtils.buildToTsQueryFunction(getSimpleQueryString());
+            String clause = CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD + " @@ " + to_tsquery;
             ands.add(clause);
         }
 

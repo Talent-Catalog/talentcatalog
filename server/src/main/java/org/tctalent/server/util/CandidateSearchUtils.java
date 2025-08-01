@@ -26,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 /**
  * Helpers for performing Candidate Searches
@@ -62,6 +63,8 @@ public abstract class CandidateSearchUtils {
             "users on candidate.user_id = users.id");
     }
 
+    public static final String CANDIDATE_TS_TEXT_FIELD = "candidate.ts_text";
+
     /**
      * Generates ORDER BY clause given a Sort.
      * @param sort Sort specifying fields and direction
@@ -87,7 +90,12 @@ public abstract class CandidateSearchUtils {
         String orderBy = sort.stream()
             .map( order -> {
                 String propertyName = order.getProperty();
-                String column = mapPropertyNameToDbField(propertyName);
+                String column;
+                if (propertyName.equals("text_match")) {
+                    column = "rank";
+                } else {
+                    column = mapPropertyNameToDbField(propertyName);
+                }
                 return column + " " + order.getDirection().name();
             })
             .collect(Collectors.joining(","));
@@ -98,16 +106,26 @@ public abstract class CandidateSearchUtils {
     /**
      * Generates list of fields in the given Sort excluding the default id field
      * @param sort Sort specifying fields
+     * @param textQuery Text query
      * @return list of non id fields delimited by comma, if any. If none, returns an empty string.
      */
-    public static @NonNull String buildNonIdFieldList(Sort sort) {
+    public static @NonNull String buildNonIdFieldList(Sort sort, @Nullable String textQuery) {
         String fields = "";
         if (sort != null && !sort.isUnsorted()) {
             //Excluding the id field, map other fields
             fields = sort.stream()
                 .map(Order::getProperty)
                 .filter(property -> !property.equals("id"))
-                .map(CandidateSearchUtils::mapPropertyNameToDbField)
+                .map(propertyName -> {
+                    String s;
+                    if (propertyName.equals("text_match")) {
+                        s = "ts_rank(" + CANDIDATE_TS_TEXT_FIELD + ","
+                            + buildToTsQueryFunction(textQuery) + ") as rank";
+                    } else {
+                        s = mapPropertyNameToDbField(propertyName);
+                    }
+                    return s;
+                })
                 .collect(Collectors.joining(","));
         }
 
@@ -144,12 +162,22 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
+     * Builds the Postgres to_tsquery function suitable for inserting into Postgres text matching
+     * SQL.
+     * @param esQuery  Elasticsearch simple query. If null, it will return an empty string.
+     * @return to_tsquery function call suitable for inserting into Postgres SQL
+     */
+    public static @NonNull String buildToTsQueryFunction(@Nullable String esQuery) {
+        return "to_tsquery('english','" + buildTsQuerySQL(esQuery) + "')";
+    }
+
+    /**
      * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
      * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
      * @return Postgres tsQuery SQL
      */
     public static @NonNull String buildTsQuerySQL(@Nullable String esQuery) {
-        if (esQuery == null || esQuery.trim().isEmpty()) {
+        if (!StringUtils.hasText(esQuery)) {
             return "";
         }
 
