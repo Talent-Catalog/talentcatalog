@@ -73,7 +73,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {CandidateSource, CandidateSourceType, SearchPartnerRequest} from '../../../model/base';
+import {CandidateSource, CandidateSourceType} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -123,6 +123,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   error: any;
   loading: boolean;
+  pgOnlySqlSearch: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
@@ -256,7 +257,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchQueryService.changeSearchQuery(initialValue || '');
     });
 
-    const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
     forkJoin({
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
@@ -365,7 +365,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  checkSelectionsAndApply() {
+  onSubmit() {
+   //checkSelectionsAndApply
    // If there are candidates selected, run a check before applying search.
     if (this.selectedCandidates.length > 0) {
       this.confirmClearSelectionAndApply();
@@ -386,8 +387,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
 
+    request.pgOnlySqlSearch = this.pgOnlySqlSearch;
+
     //Note that just changing searchRequest triggers the display of the results
-    //See the html of this component, for which <app-show-candidates takes
+    //See the html of this component, for which app-show-candidates takes
     //searchRequest as an input.
     this.searchRequest = request;
 
@@ -614,7 +617,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       .then((result) => {
         if (result === true) {
           this.savedSearchService.delete(this.savedSearch.id).subscribe(
-            (found) => {
+            () => {
               this.router.navigate(['search']);
               this.loading = false;
             },

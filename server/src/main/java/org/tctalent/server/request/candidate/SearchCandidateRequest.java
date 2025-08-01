@@ -103,6 +103,8 @@ import org.tctalent.server.request.PagedSearchRequest;
 @ToString(callSuper = true)
 public class SearchCandidateRequest extends PagedSearchRequest {
 
+    private boolean pgOnlySqlSearch;
+
     private String simpleQueryString;
     @NotNull
     private Long savedSearchId;
@@ -175,17 +177,51 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     }
 
     /**
-     * Extracts the database query SQL corresponding to the given search request.
-     *
-     * @param nativeQuery True if native database SQL is required, otherwise JPQL is returned
+     * @see #extractSQL(User, Collection)
+     */
+    public String extractSQL() {
+        return extractSQL(null, null);
+    }
+
+    /**
+     * <p>
+     * Extracts the where clause of database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The where clause assumes that it is associated with a SELECT FROM candidate.
+     *     In particular joins will assume that the candidate table is at the root.
+     * </p>
+     * <p>
+     *     For example, if the SQL is being used to retrieve all candidate ids matching the query
+     *     your code might look like this:
+     * </p>
+     * <p>
+     * <code>
+     *    String whereClauseSql = searchRequest.extractSQL();
+     * </code>
+     * </p>
+     * <p>
+     * <code>
+     *    String querySql = "select distinct candidate.id from candidate" + whereClauseSql;
+     * </code>
+     * </p>
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
      * @return String containing the SQL or JPQL
      */
-    public String extractSQL(boolean nativeQuery,
-        @Nullable User user,
-        @Nullable Collection<Candidate> excludedCandidates) {
+    public String extractSQL(
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
 
         Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
+
+        //Text search
+        if (getSimpleQueryString() != null && !getSimpleQueryString().isEmpty()) {
+            String tsquery = computeTsQuerySQL(getSimpleQueryString());
+            ands.add(tsquery);
+        }
 
         // STATUS SEARCH
         if (!ObjectUtils.isEmpty(getStatuses())) {
@@ -382,7 +418,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         String joinClause = String.join(" left join ", joins);
         String whereClause = String.join(" and ", ands);
 
-        String query = "select distinct candidate.id from candidate";
+        String query = "";
         if (!joinClause.isEmpty()) {
             query += " left join " + joinClause;
         }
@@ -393,11 +429,9 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         return query;
     }
 
-    /**
-     * @see #extractSQL(boolean, User, Collection)
-     */
-    public String extractSQL(boolean nativeQuery) {
-        return extractSQL(nativeQuery, null, null);
+    private String computeTsQuerySQL(String simpleQueryString) {
+        //TODO JC Implement computeTsQuerySQL - this probably belongs in a utils class.
+        return "";
     }
 
     /**
