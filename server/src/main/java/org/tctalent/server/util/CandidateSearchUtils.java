@@ -96,7 +96,7 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
-     * Generates list of fields in a given Sort excluding the default id field
+     * Generates list of fields in the given Sort excluding the default id field
      * @param sort Sort specifying fields
      * @return list of non id fields delimited by comma, if any. If none, returns an empty string.
      */
@@ -114,6 +114,16 @@ public abstract class CandidateSearchUtils {
         return fields;
     }
 
+    /**
+     * Generates list of tables specified in the given Sort excluding the parent Candidate table.
+     * <p>
+     * Note that table names can include table aliases - for example "nationality.name" might be
+     * a sort field where "nationality" is an alias for "country" - ie "country as nationality"
+     * in SQL.
+     * </p>
+     * @param sort Sort specifying fields (and their tables)
+     * @return list of table names, if any. If none, returns an empty List.
+     */
     public static @NonNull List<String> buildNonCandidateTableList(Sort sort) {
         List<String> tables = new ArrayList<>();
         if (sort != null && !sort.isUnsorted()) {
