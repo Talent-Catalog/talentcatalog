@@ -11,10 +11,6 @@
 #
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program. If not, see https://www.gnu.org/licenses/.
-import csv
-from bson import json_util
-import sys
-from pymongo import MongoClient
 
 
 """
@@ -34,6 +30,54 @@ Prerequisites
 
    $ python3 FetchCandidateDataFromMongo.py > candidates.json 2> missing_ids.log
 """
+
+
+import csv
+import sys
+import requests
+from pymongo import MongoClient
+from bson import json_util
+from pymongo.errors import ServerSelectionTimeoutError, OperationFailure
+
+
+def login_to_tc(base_url: str, username: str, password: str) -> str:
+  """
+  POST to /auth/login to retrieve a JWT.
+  Returns the full Authorization header value, e.g. "Bearer eyJ..."
+  """
+  url = f"{base_url}/auth/login"
+  payload = {"username": username, "password": password}
+  resp = requests.post(url, json=payload)
+  resp.raise_for_status()
+
+  data = resp.json()
+  token_type = data.get("tokenType", "Bearer")
+  access_token = data["accessToken"]
+  return f"{token_type} {access_token}"
+
+
+def generate_public_ids_file(
+    base_url: str,
+    auth_header: str,
+    public_list_id: str,
+    output_csv: str
+) -> None:
+  """
+  GET /public/{publicListId}/public-ids using the JWT bearer token,
+  then write the returned IDs (one per line) into output_csv with a header.
+  """
+  url = f"{base_url}/public/{public_list_id}/public-ids"
+  headers = {"Authorization": auth_header}
+  resp = requests.get(url, headers=headers)
+  resp.raise_for_status()
+
+  public_ids = resp.json()  # should be a list or set of strings
+
+  with open(output_csv, "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["publicId"])  # header (will be skipped by read_public_ids)
+    for pid in public_ids:
+      writer.writerow([pid])
 
 
 def read_public_ids(file_path):
@@ -63,16 +107,43 @@ def stream_documents_to_stdout(file_path, collection):
 
 
 def main():
-  # file_path = 'List11741Candidates.csv'  # Input file with UUIDs (one per line)
-  file_path = 'sample.csv'
+  # ┌───────────────────────────────────────────────────────────────────────────┐
+  # │              CONFIGURE TC SERVICE & LIST ID TO PULL                       │
+  # └───────────────────────────────────────────────────────────────────────────┘
+  tc_base_url    = "http://localhost:8080/api/admin"
+  tc_username    = "appAnonDatabaseService"
+  tc_password    = "12345678"
+  public_list_id = "7201"
+
+  # ┌───────────────────────────────────────────────────────────────────────────┐
+  # │           FETCH & SAVE THE PUBLIC IDs CSV FOR MONGO LOOKUP                │
+  # └───────────────────────────────────────────────────────────────────────────┘
+  ids_csv = "sample.csv"
+  auth_hdr = login_to_tc(tc_base_url, tc_username, tc_password)
+  generate_public_ids_file(tc_base_url, auth_hdr, public_list_id, ids_csv)
+
+  # ┌───────────────────────────────────────────────────────────────────────────┐
+  # │              CONFIGURE MONGO DB CONNECTION                                │
+  # └───────────────────────────────────────────────────────────────────────────┘
   mongo_uri = 'mongodb://tctalent:tctalent@localhost:27018/'
   db_name = 'tctalent'
   collection_name = 'candidates'
 
+  # ┌───────────────────────────────────────────────────────────────────────────┐
+  # │                NOW CONNECT TO MONGO & STREAM DOCUMENTS                    │
+  # └───────────────────────────────────────────────────────────────────────────┘
   client = MongoClient(mongo_uri)
-  collection = client[db_name][collection_name]
+  try:
+    client.admin.command('ping')
+  except ServerSelectionTimeoutError as e:
+    print("Could not connect to MongoDB:", e, file=sys.stderr)
+    sys.exit(1)
+  except OperationFailure as e:
+    print("Authentication failed:", e, file=sys.stderr)
+    sys.exit(1)
 
-  stream_documents_to_stdout(file_path, collection)
+  collection = client[db_name][collection_name]
+  stream_documents_to_stdout(ids_csv, collection)
 
 
 if __name__ == '__main__':
