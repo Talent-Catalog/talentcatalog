@@ -22,7 +22,7 @@ Prerequisites
 
    $ python3 -m venv venv
    $ source venv/bin/activate
-   $ pip install pymongo
+   $ pip install pymongo requests
 
 2. Configure the connection settings in `main()`
 
