@@ -113,7 +113,7 @@ def main():
   tc_base_url    = "http://localhost:8080/api/admin"
   tc_username    = "appAnonDatabaseService"
   tc_password    = "12345678"
-  public_list_id = "7201"
+  public_list_id = "a2JqM7-7SQ-uy7pZnX0S8w"
 
   # ┌───────────────────────────────────────────────────────────────────────────┐
   # │           FETCH & SAVE THE PUBLIC IDs CSV FOR MONGO LOOKUP                │
