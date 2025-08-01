@@ -94,8 +94,15 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         final List<?> results = query.getResultList();
         //and convert to List of Longs
         return results.stream()
-            .map(r -> (Object[]) r)
-            .map(r -> ((Number) r[0]).longValue())
+            .map(r -> {
+                long id;
+                if (r instanceof Object[] arr) {
+                    id = ((Number) arr[0]).longValue();
+                } else {
+                    id = ((Number) r).longValue();
+                }
+                return id;
+            })
             .toList();
     }
 
