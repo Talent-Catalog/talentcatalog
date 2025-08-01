@@ -153,7 +153,7 @@ export class CandidateSourceBaseComponent {
     let defaultSortDirection = 'DESC';
     if (isSavedSearch(this.candidateSource)) {
       if (this.candidateSource.simpleQueryString != null) { //todo or empty string
-        defaultSortField = 'text' //todo Maybe this should be 'rank' - and give it a column
+        // defaultSortField = 'text' //todo Maybe this should be 'rank' - and give it a column
       }
     }
 
