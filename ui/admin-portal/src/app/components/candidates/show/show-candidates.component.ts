@@ -421,8 +421,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     //Guard against the case where we have a text sort where there is no query string.
     let queryString = request.simpleQueryString;
     const haveSimpleQueryString: boolean =  queryString != null && queryString.trim().length > 0;
-    if (!haveSimpleQueryString && this.sortField === "text") {
-      //Text sort when there is no query strung does not make sense.
+    if (!haveSimpleQueryString && this.sortField === "text_match") {
+      //Text sort when there is no query string does not make sense.
       //So revert to standard id sort.
       this.sortField = "id";
       this.sortDirection = "DESC";

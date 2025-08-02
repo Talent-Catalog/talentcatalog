@@ -55,6 +55,8 @@ export class CandidateSourceBaseComponent {
   reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
   @Input() candidateSource: CandidateSource;
+  //Temporary - todo to be removed when we no longer use Elasticsearch or CandidateSpecifications
+  @Input() pgOnlySqlSearch: boolean;
 
   selectedFields: CandidateFieldInfo[] = [];
 
@@ -148,8 +150,10 @@ export class CandidateSourceBaseComponent {
     let defaultSortField = 'id';
     let defaultSortDirection = 'DESC';
     if (isSavedSearch(this.candidateSource)) {
-      if (!isNullOrEmpty(this.candidateSource.simpleQueryString)) {
-        defaultSortField = 'rank'
+      if (this.pgOnlySqlSearch) {
+        if (!isNullOrEmpty(this.candidateSource.simpleQueryString)) {
+          defaultSortField = 'text_match'
+        }
       }
     }
 

@@ -727,6 +727,7 @@
   </div>
 
   <app-show-candidates *ngIf="!error && !loading"
+                       [pgOnlySqlSearch]="pgOnlySqlSearch"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"
