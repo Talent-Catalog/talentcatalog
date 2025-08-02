@@ -83,9 +83,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      * Partner associated with the accepted privacy policy.
      * Nullable because it may not be set initially.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accepted_privacy_policy_partner_id", foreignKey = @ForeignKey(name = "fk_candidate_accepted_privacy_policy_partner"))
     @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accepted_privacy_policy_partner_id")
     private PartnerImpl acceptedPrivacyPolicyPartner;
 
     /**
