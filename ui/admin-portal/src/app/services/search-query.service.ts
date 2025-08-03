@@ -26,7 +26,7 @@ export class SearchQueryService {
   constructor() {}
 
   changeSearchQuery(query: string) {
-    if (query && query.length > 0) {
+    if (query && query.trim().length > 0) {
       try {
         const queryArray = this.parseSearchQuery(query);
         this.searchTermsSource.next(queryArray);
@@ -38,8 +38,15 @@ export class SearchQueryService {
     }
   }
 
-  get currentSearchTerms(): Observable<string[]> {
+  get currentSearchTerms$(): Observable<string[]> {
     return this.searchTermsSource.asObservable();
+  }
+
+  /**
+   *
+   */
+  getCurrentSearchTerms(): string[] {
+    return this.searchTermsSource.getValue();
   }
 
   /*
