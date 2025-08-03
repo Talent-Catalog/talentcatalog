@@ -42,13 +42,6 @@ export class SearchQueryService {
     return this.searchTermsSource.asObservable();
   }
 
-  /**
-   *
-   */
-  getCurrentSearchTerms(): string[] {
-    return this.searchTermsSource.getValue();
-  }
-
   /*
    * Parses the input search query string based on elastic search syntax. Extracts and returns an
    * array of search terms and phrases.
