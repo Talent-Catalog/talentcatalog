@@ -151,7 +151,6 @@ class SearchCandidateRequestTest {
         assertEquals(ORDERED_SELECT_PREFIX + ",partner.abbreviation" + FROM_CANDIDATE +
                 JOIN + CandidateSearchUtils.getTableJoin("users") +
                 JOIN + CandidateSearchUtils.getTableJoin("partner") +
-            WHERE + "users.partner_id in (1)" +
             ORDER_BY + "partner.abbreviation " + Direction.ASC + "," + ID_SORT, sql);
     }
 
