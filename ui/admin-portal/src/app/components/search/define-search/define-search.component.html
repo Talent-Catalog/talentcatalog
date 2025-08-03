@@ -728,6 +728,7 @@
 
   <app-show-candidates *ngIf="!error && !loading"
                        [pgOnlySqlSearch]="pgOnlySqlSearch"
+                       [showTextMatchRank]="!isEmptySearchTerms()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"

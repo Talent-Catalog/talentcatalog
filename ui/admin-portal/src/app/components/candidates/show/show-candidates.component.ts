@@ -131,6 +131,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
+  @Input() showTextMatchRank: boolean = false;
   @Input() declare pageNumber: number;
   @Input() declare pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
@@ -822,6 +823,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     //Not supported for saved searches because swapping an empty selection on a search could
     //potentially end up selecting huge numbers of candidates - up to the whole database.
     return !isSavedSearch(this.candidateSource);
+  }
+
+  displayTextMatchRank(): boolean {
+    return this.isSavedSearch() && this.pgOnlySqlSearch && this.showTextMatchRank;
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
