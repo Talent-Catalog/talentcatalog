@@ -38,6 +38,7 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateSearchService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.textExtract.IdAndRank;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +65,9 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         Query query = entityManager.createNativeQuery(sql);
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
-        List<Long> ids = executeIdsQuery(query);
+        //Ids of sorted candidates
+        List<IdAndRank> idAndRanks = executeIdsQuery(query);
+        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
         List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
@@ -76,8 +79,10 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
 
         //Construct a sorted list of the candidates in the same order as the returned ids.
         List<Candidate> candidatesSorted = new ArrayList<>();
-        for (Long id : ids) {
-            candidatesSorted.add(candidatesById.get(id));
+        for (IdAndRank idAndRank : idAndRanks) {
+            final Candidate candidate = candidatesById.get(idAndRank.id());
+            candidate.setRank(idAndRank.rank());
+            candidatesSorted.add(candidate);
         }
 
         //Compute count
@@ -89,19 +94,26 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
 
     }
 
-    private List<Long> executeIdsQuery(Query query) {
+    private List<IdAndRank> executeIdsQuery(Query query) {
         //Get results
         final List<?> results = query.getResultList();
         //and convert to List of Longs
         return results.stream()
             .map(r -> {
                 long id;
+                Number rank;
                 if (r instanceof Object[] arr) {
                     id = ((Number) arr[0]).longValue();
+                    if (arr.length > 1) {
+                        rank = (Number) arr[1];
+                    } else {
+                        rank = null;
+                    }
                 } else {
                     id = ((Number) r).longValue();
+                    rank = null;
                 }
-                return id;
+                return new IdAndRank(id, rank);
             })
             .toList();
     }
