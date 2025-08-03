@@ -181,6 +181,9 @@ public abstract class CandidateSearchUtils {
             return "";
         }
 
+        //Trim leading or trailing spaces - they confuse the regex below
+        esQuery = esQuery.trim();
+
         // Step 1: Handle quoted phrases: "quick brown" => quick <-> brown
         StringBuilder result = new StringBuilder();
         boolean inQuote = false;

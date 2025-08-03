@@ -96,6 +96,14 @@ class CandidateSearchUtilsTest {
     }
 
     @Test
+    void buildTsQueryLeadingSpaces() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("    accounting excel   ");
+        Assertions.assertEquals("accounting | excel", s);
+    }
+
+    @Test
     void buildTsQuerySQLOr() {
         String s;
 
