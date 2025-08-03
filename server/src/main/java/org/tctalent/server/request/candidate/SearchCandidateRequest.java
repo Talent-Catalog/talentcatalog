@@ -423,34 +423,34 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             joins.add("language");
 
             if (getEnglishMinSpokenLevel() != null && getEnglishMinWrittenLevel() != null) {
-                joins.add("language_level_spoken");
-                joins.add("language_level_written");
+                joins.add("spoken_level");
+                joins.add("written_level");
                 ands.add("lower(language.name) = 'english'");
                 ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
                 ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
             } else if (getEnglishMinSpokenLevel() != null) {
-                joins.add("language_level_spoken");
+                joins.add("spoken_level");
                 ands.add("lower(language.name) = 'english'");
                 ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
             } else if (getEnglishMinWrittenLevel() != null) {
-                joins.add("language_level_written");
+                joins.add("written_level");
                 ands.add("lower(language.name) = 'english'");
                 ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
             }
 
             if (getOtherLanguageId() != null) {
                 if (getOtherMinSpokenLevel() != null && getOtherMinWrittenLevel() != null) {
-                    joins.add("language_level_spoken");
-                    joins.add("language_level_written");
+                    joins.add("spoken_level");
+                    joins.add("written_level");
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
                     ands.add("written_level.level >= " + getOtherMinWrittenLevel());
                 } else if (getOtherMinSpokenLevel() != null) {
-                    joins.add("language_level_spoken");
+                    joins.add("spoken_level");
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
                 } else if (getOtherMinWrittenLevel() != null) {
-                    joins.add("language_level_written");
+                    joins.add("written_level");
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("written_level.level >= " + getOtherMinWrittenLevel());
                 }
