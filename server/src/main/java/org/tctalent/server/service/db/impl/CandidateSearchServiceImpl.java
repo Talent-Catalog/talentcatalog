@@ -38,6 +38,7 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateSearchService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.textExtract.IdAndRank;
 
 @Service
@@ -65,8 +66,14 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         Query query = entityManager.createNativeQuery(sql);
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
-        //Ids of sorted candidates
-        List<IdAndRank> idAndRanks = executeIdsQuery(query);
+
+        //Get results
+        final List<?> results = query.getResultList();
+        //Process the results
+        List<IdAndRank> idAndRanks =
+            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+
+        //Get ids of sorted candidates
         List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
@@ -81,7 +88,11 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         List<Candidate> candidatesSorted = new ArrayList<>();
         for (IdAndRank idAndRank : idAndRanks) {
             final Candidate candidate = candidatesById.get(idAndRank.id());
-            candidate.setRank(idAndRank.rank());
+            final Number rank = idAndRank.rank();
+            //Rank is a transient field so no need to set to null
+            if (rank != null) {
+                candidate.setRank(rank);
+            }
             candidatesSorted.add(candidate);
         }
 
@@ -93,29 +104,4 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         return new PageImpl<>(candidatesSorted, pageRequest, total);
 
     }
-
-    private List<IdAndRank> executeIdsQuery(Query query) {
-        //Get results
-        final List<?> results = query.getResultList();
-        //and convert to List of Longs
-        return results.stream()
-            .map(r -> {
-                long id;
-                Number rank;
-                if (r instanceof Object[] arr) {
-                    id = ((Number) arr[0]).longValue();
-                    if (arr.length > 1) {
-                        rank = (Number) arr[1];
-                    } else {
-                        rank = null;
-                    }
-                } else {
-                    id = ((Number) r).longValue();
-                    rank = null;
-                }
-                return new IdAndRank(id, rank);
-            })
-            .toList();
-    }
-
 }

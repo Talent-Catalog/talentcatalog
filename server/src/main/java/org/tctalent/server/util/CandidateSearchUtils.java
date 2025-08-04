@@ -21,12 +21,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+import org.tctalent.server.util.textExtract.IdAndRank;
 
 /**
  * Helpers for performing Candidate Searches
@@ -226,6 +228,22 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
+     * True if the first sorting order is by computed rank (eg a "text_match" sort).
+     * @param sort Sort to be tested
+     * @return True if sorted by a computed ranking.
+     */
+    private static boolean isSortedByRank(Sort sort) {
+        boolean sortedByRank = false;
+        if (sort != null && !sort.isUnsorted()) {
+            final Optional<Order> firstOrder = sort.stream().findFirst();
+            if (firstOrder.isPresent()) {
+                sortedByRank = firstOrder.get().getProperty().equals("text_match");
+            }
+        }
+        return sortedByRank;
+    }
+
+    /**
      * Converts a property name into a field name that will be used when referencing the field
      * in generated SQL queries. In SQL queries fields are referred to just as table.field.
      * <p>
@@ -286,5 +304,33 @@ public abstract class CandidateSearchUtils {
         propertyName = propertyName.replace("user.", "users.");
 
         return RegexHelpers.camelToSnakeCase(propertyName);
+    }
+
+    /**
+     * Convert untyped results into the standard form of a List of id and optional rank.
+     * @param results Untyped results
+     * @param sort The sort associated with the query that the results are associated with. Rank
+     *             will only be decoded if the sort was by rank.
+     * @return Decoded results.
+     */
+    public static List<IdAndRank> processIdRankSearchResults(List<?> results, Sort sort) {
+        //Convert results to List of IdAndRank.
+        //Rank will only be populated if the query was sorted by rank.
+        final boolean sortedByRank = isSortedByRank(sort);
+        return results.stream()
+            .map(r -> {
+                long id;
+                Number rank = null;
+                if (r instanceof Object[] arr) {
+                    id = ((Number) arr[0]).longValue();
+                    if (arr.length > 1 && sortedByRank && arr[1] instanceof Number) {
+                        rank = (Number) arr[1];
+                    }
+                } else {
+                    id = ((Number) r).longValue();
+                }
+                return new IdAndRank(id, rank);
+            })
+            .toList();
     }
 }
