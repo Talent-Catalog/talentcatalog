@@ -9,6 +9,7 @@ export class ButtonComponent {
   @Input() size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'  = 'default';
   @Input() type: 'primary' | 'secondary' | 'outline' | 'plain' = 'primary';
   @Input() disabled = false;
+  @Input() ariaLabel?: string;
 
   get sizeClass(): string {
     return `btn-${this.size}`;
