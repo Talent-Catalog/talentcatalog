@@ -26,7 +26,8 @@ Prerequisites
 
 2. Configure the connection settings in `main()`
 
-3. Run the script, redirecting output to a file and errors to a log:
+3. Run the script with the public list ID as an argument, redirecting output to
+   a file and errors to a log:
 
    $ python3 FetchCandidateDataFromMongo.py > candidates.json 2> missing_ids.log
 
@@ -35,6 +36,7 @@ Prerequisites
 """
 
 
+import argparse
 import csv
 import sys
 import requests
@@ -110,13 +112,22 @@ def stream_documents_to_stdout(file_path, collection):
 
 
 def main():
+  parser = argparse.ArgumentParser(
+      description="Fetch candidate docs given a TC public list ID"
+  )
+  parser.add_argument(
+      'public_list_id',
+      help='The public list ID to fetch candidate public IDs'
+  )
+  args = parser.parse_args()
+
   # ┌───────────────────────────────────────────────────────────────────────────┐
   # │              CONFIGURE TC SERVICE & LIST ID TO PULL                       │
   # └───────────────────────────────────────────────────────────────────────────┘
   tc_base_url    = "http://localhost:8080/api/admin"
   tc_username    = "appAnonDatabaseService"
   tc_password    = "12345678"
-  public_list_id = "a2JqM7-7SQ-uy7pZnX0S8w"
+  public_list_id = args.public_list_id
 
   # ┌───────────────────────────────────────────────────────────────────────────┐
   # │           FETCH & SAVE THE PUBLIC IDs CSV FOR MONGO LOOKUP                │
