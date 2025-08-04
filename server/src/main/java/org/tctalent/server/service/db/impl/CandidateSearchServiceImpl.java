@@ -52,6 +52,59 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
     private final CandidateRepository candidateRepository;
     private final UserService userService;
 
+    /**
+     * Overview of searching:
+     * <ol>
+     *    <li>
+     *        Construct a query which collects the sorted candidate ids of a page of candidates who
+     *        match the given search request.
+     *        This request will look like:
+     *        <p>
+     *           <code>
+     *              select distinct candidate.id from candidate ...
+     *              <br>
+     *              where ...
+     *              <br>
+     *              order by ...
+     *           </code>
+     *        </p>
+     *    </li>
+     *    <li>
+     *      Construct a very similar query which counts the total number of candidates matching
+     *      the search request. This count is used to support paging.
+     *      This request will look like:
+     *        <p>
+     *           <code>
+     *              select count(distinct candidate.id) from candidate ...
+     *              <br>
+     *              where ...
+     *           </code>
+     *        </p>
+     *        <p>
+     *            Note that there is no order by. It is unnecessary to get the total count. But the
+     *            where clause is the same for both queries.
+     *        </p>
+     *    </li>
+     *    <li>
+     *        Retrieve the candidate entities for the page of id's that are returned in the first
+     *        query and sort those candidates in the same order as the retrieved ids.
+     *    </li>
+     *    <li>
+     *        <p>
+     *        If the original query was sorted by a computed ranking then the ranking values will
+     *        have been returned in the results of the first query. Those ranks are
+     *        added to the candidate entity data so that they can be displayed to the user.
+     *        </p>
+     *        <p>
+     *           Matching keywords against a candidate's text data is an example of a ranking.
+     *           Close matches will display a higher ranking.
+     *        </p>
+     *    </li>
+     * </ol>
+     * @param request Specifies the details of the search
+     * @param excludedCandidates If specified, indicates candidates to be excluded from the search.
+     * @return A page of candidates
+     */
     @Override
     public Page<Candidate> searchCandidates(
         SearchCandidateRequest request, Set<Candidate> excludedCandidates) {
@@ -88,6 +141,8 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         List<Candidate> candidatesSorted = new ArrayList<>();
         for (IdAndRank idAndRank : idAndRanks) {
             final Candidate candidate = candidatesById.get(idAndRank.id());
+
+            //Optionally update candidate data with any ranking values.
             final Number rank = idAndRank.rank();
             //Rank is a transient field so no need to set to null
             if (rank != null) {
