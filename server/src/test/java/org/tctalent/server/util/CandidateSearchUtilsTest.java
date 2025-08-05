@@ -32,15 +32,109 @@ class CandidateSearchUtilsTest {
         String s;
 
         s = CandidateSearchUtils.buildOrderByClause(null);
-        Assertions.assertEquals(" ORDER BY candidate.id DESC", s);
+        Assertions.assertEquals(" order by candidate.id DESC", s);
 
-        s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "id"));
-        Assertions.assertEquals(" ORDER BY candidate.id ASC", s);
+        s = CandidateSearchUtils.buildOrderByClause(
+            Sort.by(Sort.Direction.ASC, "id"));
+        Assertions.assertEquals(" order by candidate.id ASC", s);
 
-        s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "status"));
-        Assertions.assertEquals(" ORDER BY candidate.status ASC,candidate.id DESC", s);
+        s = CandidateSearchUtils.buildOrderByClause(
+            Sort.by(Sort.Direction.ASC, "status"));
+        Assertions.assertEquals(" order by candidate.status ASC,candidate.id DESC", s);
 
-        s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "user.firstName"));
-        Assertions.assertEquals(" ORDER BY users.first_name ASC,candidate.id DESC", s);
+        s = CandidateSearchUtils.buildOrderByClause(
+            Sort.by(Sort.Direction.ASC, "user.firstName"));
+        Assertions.assertEquals(" order by users.first_name ASC,candidate.id DESC", s);
+    }
+
+    @Test
+    void buildOrderByTextMatchClause() {
+        String s;
+
+        s = CandidateSearchUtils.buildOrderByClause(
+            Sort.by(Sort.Direction.ASC, "text_match"));
+        Assertions.assertEquals(" order by rank ASC,candidate.id DESC", s);
+    }
+
+    @Test
+    void buildNonIdFieldList() {
+        String s;
+
+        s = CandidateSearchUtils.buildNonIdFieldList(null, null);
+        Assertions.assertEquals("", s);
+
+        s = CandidateSearchUtils.buildNonIdFieldList(Sort.by("id"), null);
+        Assertions.assertEquals("", s);
+
+        s = CandidateSearchUtils.buildNonIdFieldList(
+            Sort.by("user.firstName"), null);
+        Assertions.assertEquals("users.first_name", s);
+    }
+
+    @Test
+    void buildNonIdFieldListWithTextMatch() {
+        String s;
+
+        String textQuery = "accountant + (excel powerpoint)";
+        s = CandidateSearchUtils.buildNonIdFieldList(
+            Sort.by("text_match"), textQuery);
+        String tsQuerySql = CandidateSearchUtils.buildTsQuerySQL(textQuery);
+        Assertions.assertEquals("ts_rank("
+            + CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD
+            +",to_tsquery('english','" + tsQuerySql + "')) as rank", s);
+    }
+
+    @Test
+    void buildTsQuerySQLNullEmpty() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL(null);
+        Assertions.assertEquals("", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("   ");
+        Assertions.assertEquals("", s);
+    }
+
+    @Test
+    void buildTsQueryLeadingSpaces() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("    accounting excel   ");
+        Assertions.assertEquals("accounting | excel", s);
+    }
+
+    @Test
+    void buildTsQuerySQLOr() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("accounting excel");
+        Assertions.assertEquals("accounting | excel", s);
+    }
+
+    @Test
+    void buildTsQuerySQLAnd() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("accounting + excel");
+        Assertions.assertEquals("accounting & excel", s);
+    }
+
+    @Test
+    void buildTsQuerySQLQuote() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("\"accounting excel\"");
+        Assertions.assertEquals("accounting <-> excel", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("\"accounting excel powerpoint\"");
+        Assertions.assertEquals("accounting <-> excel <-> powerpoint", s);
+    }
+
+    @Test
+    void buildTsQuerySQLBrackets() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("(accounting excel) + powerpoint");
+        Assertions.assertEquals("(accounting | excel) & powerpoint", s);
     }
 }

@@ -41,7 +41,7 @@ describe('DirectiveModule', () => {
   beforeEach(() => {
     searchTerms$ = new Subject<string[]>();
     searchServiceMock = {
-      currentSearchTerms: searchTerms$.asObservable()
+      currentSearchTerms$: searchTerms$.asObservable()
     };
 
     TestBed.configureTestingModule({

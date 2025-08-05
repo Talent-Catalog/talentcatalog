@@ -38,7 +38,7 @@ export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContent
   ) {}
 
   ngOnInit(): void {
-    this.searchQueryService.currentSearchTerms.pipe(
+    this.searchQueryService.currentSearchTerms$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(terms => {
       this.currentSearchTerms = terms;
