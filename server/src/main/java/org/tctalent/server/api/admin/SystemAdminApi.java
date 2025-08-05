@@ -52,6 +52,7 @@ import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.batch.core.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -112,6 +113,7 @@ import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.api.TcApiService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
+import org.tctalent.server.service.db.BatchJobService;
 import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
@@ -180,6 +182,8 @@ public class SystemAdminApi {
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
     private final BackgroundProcessingService backgroundProcessingService;
+    private final BatchJobService batchJobService;
+    private final Job candidateJob;
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
@@ -236,6 +240,7 @@ public class SystemAdminApi {
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
+        BatchJobService batchJobService, Job candidateJob,
         SavedSearchService savedSearchService, PartnerService partnerService,
         CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoCouponService duolingoCouponService,
         TcApiService tcApiService, BatchListeningLogger batchListeningLogger
@@ -268,7 +273,9 @@ public class SystemAdminApi {
         this.cacheService = cacheService;
         this.taskScheduler = taskScheduler;
       this.backgroundProcessingService = backgroundProcessingService;
-      this.savedSearchService = savedSearchService;
+        this.batchJobService = batchJobService;
+        this.candidateJob = candidateJob;
+        this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
       this.batchListeningLogger = batchListeningLogger;
@@ -276,6 +283,12 @@ public class SystemAdminApi {
       this.duolingoApiService = duolingoApiService;
       this.duolingoCouponService = duolingoCouponService;
       this.tcApiService = tcApiService;
+    }
+
+    @GetMapping("set_candidate_text")
+    public ResponseEntity<String> setCandidateText() throws Exception {
+        String response = batchJobService.launchJob(candidateJob, "candidateJob", null);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("set_public_ids")

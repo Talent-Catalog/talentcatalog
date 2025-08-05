@@ -25,9 +25,9 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.tctalent.server.batchjob.LoggingChunkListener;
 import org.tctalent.server.batchjob.LoggingJobExecutionListener;
 import org.tctalent.server.model.db.Candidate;
@@ -54,6 +54,7 @@ public class JobConfig {
 
     @Bean
     public Step candidateStep(JobRepository jobRepository,
+        PlatformTransactionManager transactionManager,
         ItemReader<Candidate> candidateReader,
         ItemProcessor<Candidate, Candidate> candidateProcessor,
         ItemWriter<Candidate> candidateWriter,
@@ -62,7 +63,7 @@ public class JobConfig {
         return new StepBuilder("candidateStep", jobRepository)
             .<Candidate, Candidate>chunk(
                 100, //todo jc config
-                new ResourcelessTransactionManager())
+                transactionManager)
             .reader(candidateReader)
             .processor(candidateProcessor)
             .writer(candidateWriter)
