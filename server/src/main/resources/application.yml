@@ -42,6 +42,13 @@ spring:
       # We only want to use Redis as a cache so we do not want it to auto configure as a data store
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
+  # Batch
+  batch:
+    jdbc:
+      initialize-schema: never # batch schema are initialised by flyway
+    job:
+      enabled: false
+
   servlet:
     multipart:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
@@ -270,10 +277,3 @@ preset:
 tc-api:
   apiUrl: ${TC_API_URL:http://localhost:8082}
   apiKey: ${TC_API_KEY:}
-
-  # Batch
-  batch:
-    jdbc:
-      initialize-schema: never # batch schema are initialised by flyway
-    job:
-      enabled: false

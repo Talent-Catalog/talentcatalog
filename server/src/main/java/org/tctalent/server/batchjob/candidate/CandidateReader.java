@@ -24,7 +24,6 @@ import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.model.db.Candidate;
 
 /**
@@ -42,6 +41,6 @@ public class CandidateReader implements ItemReader<Candidate> {
     public Candidate read()
         throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         //TODO JC read not implemented in CandidateReader
-        throw new NotImplementedException("CandidateReader", "read");
+        return null;
     }
 }
