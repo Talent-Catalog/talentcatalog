@@ -270,3 +270,10 @@ preset:
 tc-api:
   apiUrl: ${TC_API_URL:http://localhost:8082}
   apiKey: ${TC_API_KEY:}
+
+  # Batch
+  batch:
+    jdbc:
+      initialize-schema: never # batch schema are initialised by flyway
+    job:
+      enabled: false
