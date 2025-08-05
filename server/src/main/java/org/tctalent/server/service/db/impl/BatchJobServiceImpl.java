@@ -31,63 +31,16 @@ import org.tctalent.server.service.db.BatchJobService;
 public class BatchJobServiceImpl implements BatchJobService {
 
   private final JobLauncher asyncJobLauncher;
-  private final Job candidateMigrationJob;
-  private final Job auroraMigrationJob;
-  private final Job mongoMigrationJob;
   private final JobOperator jobOperator;
   private final JobExplorer jobExplorer;
 
   public BatchJobServiceImpl(
       @Qualifier("asyncJobLauncher") JobLauncher asyncJobLauncher,
-      @Qualifier("candidateMigrationJob") Job candidateMigrationJob,
-      @Qualifier("auroraMigrationJob") Job auroraMigrationJob,
-      @Qualifier("mongoMigrationJob") Job mongoMigrationJob,
       @Qualifier("asyncJobOperator") JobOperator jobOperator,
       JobExplorer jobExplorer) {
     this.asyncJobLauncher = asyncJobLauncher;
-    this.candidateMigrationJob = candidateMigrationJob;
-    this.auroraMigrationJob = auroraMigrationJob;
-    this.mongoMigrationJob = mongoMigrationJob;
     this.jobOperator = jobOperator;
     this.jobExplorer = jobExplorer;
-  }
-
-  /**
-   * Launches the full candidate anonymisation batch job.
-   *
-   * @return a String with a success message if the job is launched successfully
-   * @throws JobExecutionException if the job launch fails
-   */
-  @Override
-  public String runCandidateMigrationJob() throws JobExecutionException {
-    return launchJob(candidateMigrationJob, "full", null);
-  }
-
-  /**
-   * Launches the aurora migration batch job.
-   *
-   * @return a String with a success message if the job is launched successfully
-   * @throws JobExecutionException if the job launch fails
-   */
-  @Override
-  public String runAuroraMigrationJob() throws JobExecutionException {
-    return launchJob(auroraMigrationJob, "aurora", null);
-  }
-
-  /**
-   * Launches the mongo migration batch job.
-   *
-   * @return a String with a success message if the job is launched successfully
-   * @throws JobExecutionException if the job launch fails
-   */
-  @Override
-  public String runMongoMigrationJob() throws JobExecutionException {
-    return launchJob(mongoMigrationJob, "mongo", null);
-  }
-
-  @Override
-  public String runCandidateMigrationJobFromList(long listId) throws JobExecutionException {
-    return launchJob(candidateMigrationJob, "full", listId);
   }
 
   /**
@@ -132,7 +85,8 @@ public class BatchJobServiceImpl implements BatchJobService {
     return "Job execution " + executionId + " was restarted successfully with new execution ID: " + newExecutionId;
   }
 
-  private String launchJob(Job job, String label, @Nullable Long listId) throws JobExecutionException {
+  @Override
+  public String launchJob(Job job, String label, @Nullable Long listId) throws JobExecutionException {
     try {
       // Job params must be unique per job execution, if not the job will not run
       // We enforce a max of one job instance per job type per day by setting a date parameter
