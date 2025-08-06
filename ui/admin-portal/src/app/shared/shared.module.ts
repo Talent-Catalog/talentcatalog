@@ -35,4 +35,4 @@ import { ErrorMessageComponent } from './components/fieldset/error-message/error
   ]
 })
 export class SharedModule {
-};
+}
