@@ -2,7 +2,6 @@ package org.tctalent.server.service.db;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionException;
-import org.springframework.lang.Nullable;
 
 /**
  * Service interface for managing and running Spring Batch jobs.
@@ -22,13 +21,11 @@ public interface BatchJobService {
    * Launches the given job.
    * Returns a confirmation message or throws on failure.
    * @param job Job to be launched
-   * @param label Name assigned to job
-   * @param listId //TODO JC This needs to be another parameter for job
+   * @param oncePerDayOnly If true only one successful run per day will be allowed for this job.
    * @return Confirmation message
    * @throws JobExecutionException if the job launch fails
    */
-  String launchJob(
-      Job job, String label, @Nullable Long listId) throws JobExecutionException;
+  String launchJob(Job job, boolean oncePerDayOnly) throws JobExecutionException;
 
   /**
    * Attempts to stop a running job execution by ID.

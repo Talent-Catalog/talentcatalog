@@ -53,6 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -71,6 +72,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.batchjob.candidate.CandidateJobFactory;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -152,6 +154,7 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateJobFactory candidateJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateOpportunityRepository candidateOpportunityRepository;
@@ -183,7 +186,6 @@ public class SystemAdminApi {
     private final TaskScheduler taskScheduler;
     private final BackgroundProcessingService backgroundProcessingService;
     private final BatchJobService batchJobService;
-    private final Job candidateJob;
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
@@ -224,6 +226,7 @@ public class SystemAdminApi {
             DataSharingService dataSharingService,
             AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
+        CandidateJobFactory candidateJobFactory,
             CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
         CandidateOpportunityRepository candidateOpportunityRepository,
@@ -240,7 +243,7 @@ public class SystemAdminApi {
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-        BatchJobService batchJobService, Job candidateJob,
+        BatchJobService batchJobService,
         SavedSearchService savedSearchService, PartnerService partnerService,
         CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoCouponService duolingoCouponService,
         TcApiService tcApiService, BatchListeningLogger batchListeningLogger
@@ -248,6 +251,7 @@ public class SystemAdminApi {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.candidateJobFactory = candidateJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
         this.candidateOpportunityRepository = candidateOpportunityRepository;
@@ -274,7 +278,6 @@ public class SystemAdminApi {
         this.taskScheduler = taskScheduler;
       this.backgroundProcessingService = backgroundProcessingService;
         this.batchJobService = batchJobService;
-        this.candidateJob = candidateJob;
         this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
@@ -287,7 +290,19 @@ public class SystemAdminApi {
 
     @GetMapping("set_candidate_text")
     public ResponseEntity<String> setCandidateText() throws Exception {
-        String response = batchJobService.launchJob(candidateJob, "candidateJob", null);
+        //Anonymous class. Alternately you could create a named class and pass in an instance.
+        ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
+            candidate -> {
+                candidate.updateText();
+
+                //Update candidate on database by returning the candidate (rather than returning null).
+                return candidate;
+            };
+
+        Job candidateUpdateTextJob = candidateJobFactory.createCandidateJob(
+            "candidateTextJob", 42, 50, candidateUpdateTextProcessor);
+
+        String response = batchJobService.launchJob(candidateUpdateTextJob, false);
         return ResponseEntity.ok(response);
     }
 

@@ -27,7 +27,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.repository.db.CandidateRepository;
 
 /**
- * TODO JC Doc
+ * Standard CandidateWriter for CandidateJob batches as created by CandidateJobFactory.
  *
  * @author John Cameron
  */

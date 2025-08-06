@@ -18,47 +18,43 @@ package org.tctalent.server.batchjob.candidate;
 
 import java.util.Iterator;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.service.db.SavedSearchService;
 
 /**
- * TODO JC Doc
+ * Standard CandidateReader for CandidateJob batches as created by CandidateJobFactory.
  *
  * @author John Cameron
  */
 @Slf4j
-@Component
-@RequiredArgsConstructor
-@Qualifier("candidateReader")
 public class CandidateReader implements ItemReader<Candidate>, StepExecutionListener {
+    private final int chunkSize;
+    private final long searchId;
     private final SavedSearchService savedSearchService;
 
     private int currentPage = 0;
     private int totalPages = 1; // Initialise with 1 to start fetching
     private Iterator<Candidate> batchIterator;
 
-    private long lastFetchTime = 0;
+    public CandidateReader(long searchId, int chunkSize, SavedSearchService savedSearchService) {
+        this.searchId = searchId;
+        this.chunkSize = chunkSize;
+        this.savedSearchService = savedSearchService;
+    }
 
     @Nullable
     @Override
-    public Candidate read()
-        throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public Candidate read() throws Exception {
         try {
             if (batchIterator == null || !batchIterator.hasNext()) {
                 fetchNextBatch();
@@ -70,23 +66,20 @@ public class CandidateReader implements ItemReader<Candidate>, StepExecutionList
     }
 
     private void fetchNextBatch() {
-        //TODO JC This is configuration
-        //Process all candidates except deleted or withdrawn
+
         SavedSearchGetRequest searchRequest = new SavedSearchGetRequest();
 
         //Set page size
-        searchRequest.setPageSize(100);
+        searchRequest.setPageSize(chunkSize);
 
         if (currentPage < totalPages) {
             // Fetch next batch
-            Page<Candidate> page = savedSearchService.searchCandidates(42, searchRequest);
+            Page<Candidate> page = savedSearchService.searchCandidates(searchId, searchRequest);
 
             final List<Candidate> currentBatch = page.getContent();
             totalPages = page.getTotalPages();
             batchIterator = currentBatch.iterator();
             currentPage++;
-
-            lastFetchTime = System.currentTimeMillis(); // Update fetch timestamp
         }
     }
 
@@ -100,7 +93,6 @@ public class CandidateReader implements ItemReader<Candidate>, StepExecutionList
         this.currentPage = 0;
         this.totalPages = 1;
         this.batchIterator = null;
-        this.lastFetchTime = 0;
     }
 
     @Override

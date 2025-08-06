@@ -1,6 +1,5 @@
 package org.tctalent.server.service.db.impl;
 
-import jakarta.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -86,25 +85,22 @@ public class BatchJobServiceImpl implements BatchJobService {
   }
 
   @Override
-  public String launchJob(Job job, String label, @Nullable Long listId) throws JobExecutionException {
+  public String launchJob(Job job, boolean onlyOncePerDay) throws JobExecutionException {
     try {
       // Job params must be unique per job execution, if not the job will not run
       // We enforce a max of one job instance per job type per day by setting a date parameter
       JobParametersBuilder builder = new JobParametersBuilder()
           .addString("jobDate", LocalDate.now().toString()) // e.g., "2025-04-15"
-          .addString("jobLabel", label);
+          .addString("jobLabel", job.getName());
 
-      // If a listId is provided, add it to the job parameters
-      if (listId != null) {
-        builder.addLong("listId", listId)
-            .addString("jobTime", LocalDateTime.now().toString()); // Allows multiple list migrations runs per day
+      if (!onlyOncePerDay) {
+        builder.addString("jobTime", LocalDateTime.now().toString()); // Allows multiple list migrations runs per day
       }
-
       JobParameters params = builder.toJobParameters();
 
+
       asyncJobLauncher.run(job, params);
-      return "Job '" + job.getName() + "' launched successfully" +
-          (listId != null ? " for listId: " + listId : ".");
+      return "Job '" + job.getName() + "' launched successfully";
 
     } catch (Exception e) {
       throw new JobExecutionException("Job launch failed: " + e.getMessage(), e);
