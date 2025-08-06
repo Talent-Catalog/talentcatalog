@@ -16,6 +16,7 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {ButtonComponent} from './components/button/button.component';
 import { InputComponent } from './components/input/input.component';
 import { FieldsetComponent } from './components/fieldset/fieldset.component';
 import { FieldComponent } from './components/fieldset/field/field.component';
@@ -24,11 +25,12 @@ import { DescriptionComponent } from './components/fieldset/description/descript
 import { ErrorMessageComponent } from './components/fieldset/error-message/error-message.component';
 
 @NgModule({
-  declarations: [InputComponent, FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent],
+  declarations: [ButtonComponent, InputComponent, FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent],
   imports: [
     CommonModule,
   ],
   exports: [
+    ButtonComponent,
     InputComponent,
     FieldComponent,
     FieldsetComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent
