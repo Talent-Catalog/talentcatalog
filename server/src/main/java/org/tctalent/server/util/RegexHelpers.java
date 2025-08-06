@@ -10,26 +10,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Service;
 
 /**
  * Some useful Regex based utilities
  *
  * @author John Cameron
  */
-@Service
-public class RegexHelpers {
+public abstract class RegexHelpers {
     //Initial Regex pattern to extract urls from html links.
-    private final Pattern findUrls = Pattern.compile("<a href=\"(\\S+)\"");
+    private static final Pattern findUrls = Pattern.compile("<a href=\"(\\S+)\"");
 
-                     /**
+    /**
      * Searches the given html string looking for links of the form <a href="...">, and extracts
      * the url(s) found in them.
      * @param html String to search
      * @return List of urls detected - not null but may be empty.
      */
     @NonNull
-    public List<String> extractLinkUrlsFromHtml(@Nullable String html) {
+    public static List<String> extractLinkUrlsFromHtml(@Nullable String html) {
         //Scan content looking for links their associated urls.
         List<String> urls = new ArrayList<>();
         if (html != null) {
@@ -39,5 +37,9 @@ public class RegexHelpers {
             }
         }
         return urls;
+    }
+
+    public static @NonNull String camelToSnakeCase(@NonNull String camel) {
+        return camel.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
     }
 }
