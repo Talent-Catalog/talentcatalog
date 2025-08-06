@@ -17,6 +17,7 @@
 package org.tctalent.server.request.translation;
 
 import jakarta.validation.constraints.NotBlank;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 public class UpdateTranslationRequest {
 
@@ -28,6 +29,6 @@ public class UpdateTranslationRequest {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        this.value = HtmlSanitizer.sanitize(value);
     }
 }
