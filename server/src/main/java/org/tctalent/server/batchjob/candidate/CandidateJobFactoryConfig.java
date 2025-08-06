@@ -20,6 +20,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.tctalent.server.batchjob.LoggingChunkListener;
 import org.tctalent.server.batchjob.LoggingJobExecutionListener;
@@ -38,14 +39,15 @@ public class CandidateJobFactoryConfig {
         ItemWriter<Candidate> candidateWriter, LoggingChunkListener loggingChunkListener,
         LoggingJobExecutionListener loggingJobExecutionListener,
         PlatformTransactionManager transactionManager, JobRepository jobRepository,
-        SavedSearchService savedSearchService) {
+        SavedSearchService savedSearchService, TaskScheduler taskScheduler) {
         return new CandidateJobFactory(
             candidateWriter,
             loggingChunkListener,
             loggingJobExecutionListener,
             transactionManager,
             jobRepository,
-            savedSearchService);
+            savedSearchService,
+            taskScheduler);
     }
 
 }

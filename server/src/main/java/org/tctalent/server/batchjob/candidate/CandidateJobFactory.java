@@ -22,9 +22,16 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.core.step.item.SimpleChunkProcessor;
+import org.springframework.batch.core.step.item.SimpleChunkProvider;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
+import org.springframework.batch.repeat.support.RepeatTemplate;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.tctalent.server.batchjob.AdaptiveScheduledTasklet;
 import org.tctalent.server.batchjob.LoggingChunkListener;
 import org.tctalent.server.batchjob.LoggingJobExecutionListener;
 import org.tctalent.server.model.db.Candidate;
@@ -48,18 +55,20 @@ public class CandidateJobFactory {
     private final PlatformTransactionManager transactionManager;
     private final JobRepository jobRepository;
     private final SavedSearchService savedSearchService;
+    private final TaskScheduler taskScheduler;
 
     public CandidateJobFactory(
         ItemWriter<Candidate> candidateWriter, LoggingChunkListener loggingChunkListener,
         LoggingJobExecutionListener loggingJobExecutionListener,
         PlatformTransactionManager transactionManager, JobRepository jobRepository,
-        SavedSearchService savedSearchService) {
+        SavedSearchService savedSearchService, TaskScheduler taskScheduler) {
         this.candidateWriter = candidateWriter;
         this.loggingChunkListener = loggingChunkListener;
         this.loggingJobExecutionListener = loggingJobExecutionListener;
         this.transactionManager = transactionManager;
         this.jobRepository = jobRepository;
         this.savedSearchService = savedSearchService;
+        this.taskScheduler = taskScheduler;
     }
 
     /**
@@ -84,14 +93,17 @@ public class CandidateJobFactory {
 
         CandidateReader candidateReader = new CandidateReader(searchId, chunkSize, savedSearchService);
 
+        RepeatTemplate repeatTemplate = new RepeatTemplate();
+        repeatTemplate.setCompletionPolicy(new SimpleCompletionPolicy(chunkSize));
+        SimpleChunkProvider<Candidate> chunkProvider = new SimpleChunkProvider<>(candidateReader, repeatTemplate);
+        SimpleChunkProcessor<Candidate, Candidate> chunkProcessor = new SimpleChunkProcessor<>(candidateProcessor, candidateWriter);
+
+        Tasklet adaptiveTasklet = new AdaptiveScheduledTasklet<>(chunkProvider, chunkProcessor, taskScheduler, 1000);
+
         Step candidateStep =
             new StepBuilder("candidateStep", jobRepository)
-                .<Candidate, Candidate>chunk(chunkSize, transactionManager)
-                .reader(candidateReader)
-                .processor(candidateProcessor)
-                .writer(candidateWriter)
+                .tasklet(adaptiveTasklet, transactionManager)
                 .listener(loggingChunkListener)
-                .faultTolerant()
                 .build();
 
         return new JobBuilder(jobName, jobRepository)
