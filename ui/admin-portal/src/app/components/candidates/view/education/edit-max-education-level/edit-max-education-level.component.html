@@ -1,0 +1,18 @@
+<div class="modal-header">
+  <h5 class="modal-title">Edit Max Education Level</h5>
+  <button type="button" class="btn-close" aria-label="Close"
+          (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <select class="form-select" [(ngModel)]="selectedLevel">
+    <option *ngFor="let level of educationLevels" [ngValue]="level">
+      {{ level.name }}
+    </option>
+  </select>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+  <button class="btn btn-primary" (click)="save()">Save</button>
+</div>

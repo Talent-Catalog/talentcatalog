@@ -16,6 +16,7 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {ButtonComponent} from './components/button/button.component';
 import {NgbNavModule, NgbPaginationModule,} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
@@ -28,7 +29,8 @@ import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-conten
 
 @NgModule({
   declarations: [
-      TcTableComponent,
+    ButtonComponent,
+    TcTableComponent,
     TcPaginationComponent,
     TcTabsComponent,
     TcTabComponent,
@@ -41,6 +43,7 @@ import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-conten
     NgbNavModule
   ],
   exports: [
+    ButtonComponent,
     TcTableComponent,
     TcPaginationComponent,
     TcTabsComponent,
