@@ -22,102 +22,130 @@
 </div>
 
 <div class="searches" *ngIf="searchBy">
+  <tc-button class="d-flex justify-content-end" size="sm" type="outline" (click)="refresh($event)">
+    Refresh
+    <i class="fas fa-sync" title="Refresh data"></i>
+  </tc-button>
   <form [formGroup]="searchForm" (ngSubmit)="search()">
-    <div class="row mb-3">
-      <div class="col-10">
-        <input #searchFilter type="text" class="form-control" placeholder="Search..."
-               aria-label="Search" formControlName="keyword"
-               id="keyword">
-      </div>
-      <div class="col-2">
-        <tc-button size="sm" type="outline" (click)="refresh($event)">
-          Refresh
-          <i class="fas fa-sync" title="Refresh data"></i>
-        </tc-button>
-      </div>
-    </div>
+    <tc-fieldset>
+      <tc-field>
+        <tc-label for="keyword">
+          Job Search
+        </tc-label>
+        <tc-description>Search the list of available jobs for candidates</tc-description>
+        <tc-input #searchFilter id="keyword" placeholder="Job Name" ariaLabel="Search"></tc-input>
+      </tc-field>
 
-    <div *ngIf="searchBy === SearchOppsBy.mineAsJobCreator ||
-                searchBy === SearchOppsBy.mineAsSourcePartner" class="my-2">
-      <div class="row justify-content-center mb-2">
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <label class="form-check-label" [title]="myOppsOnlyTip"
-                   for="myOppsOnly">{{myOppsOnlyLabel}}</label>
-            <input [title]="myOppsOnlyTip" type="checkbox"
-                   formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
-          </div>
-        </div>
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="showClosedOppsTip" type="checkbox"
-                   formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
-            <label class="form-check-label" [title]="showClosedOppsTip"
-                   for="showClosedOpps">{{showClosedOppsLabel}}</label>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-center mb-2">
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="showInactiveOppsTip" type="checkbox"
-                   formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">
-            <label class="form-check-label" [title]="showInactiveOppsTip"
-                   for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
-          </div>
-        </div>
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="withUnreadMessagesTip" type="checkbox"
-                   formControlName="withUnreadMessages" id="withUnreadMessages" class="form-check-input">
-            <label class="form-check-label" [title]="withUnreadMessagesTip"
-                   for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>
-          </div>
-        </div>
-      </div>
-      <div *ngIf="searchBy===SearchOppsBy.mineAsJobCreator" class="row justify-content-center">
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="showUnpublishedTip" type="checkbox"
-                   formControlName="showUnpublishedOpps" id="showUnpublished" class="form-check-input">
-            <label class="form-check-label" [title]="showUnpublishedTip"
-                   for="showUnpublished">{{showUnpublishedLabel}}</label>
-          </div>
-        </div>
-        <div class="col-md-5">
-        </div>
-      </div>
-    </div>
+      <tc-field>
+        <tc-label for="stage">Stage</tc-label>
+        <tc-description>Select the step in the partner engagement process</tc-description>
+        <tc-input id="stage" placeholder="Stage of the project" ariaLabel="Search"></tc-input>
+      </tc-field>
 
-    <div class="mb-3">
-      <label class="form-label">Stage</label>
-      <ng-select
-        id="stage"
-        [items]="stages"
-        [multiple]="true"
-        [closeOnSelect]="true"
-        [searchable]="false"
-        bindLabel="stringValue"
-        bindValue="key"
-        placeholder="Select..."
-        formControlName="selectedStages">
-      </ng-select>
-    </div>
+      <tc-field>
+        <tc-label for="destination">Destination Country</tc-label>
+        <tc-input id="destination" placeholder="Country name" ariaLabel="Search"></tc-input>
+      </tc-field>
 
-<div *ngIf="needsFilterByDestination()" class="mb-3">
-      <label class="form-label">Destination Country</label>
-      <ng-select
-        id="destinations"
-        [items]="destinations"
-        [multiple]="true"
-        [closeOnSelect]="true"
-        [searchable]="true"
-        placeholder="Select or type..."
-        bindLabel="name"
-        bindValue="id"
-        formControlName="destinationIds">
-      </ng-select>
-    </div>
+
+
+    </tc-fieldset>
+
+<!--    <div class="row mb-3">-->
+<!--      <div class="col-10">-->
+<!--        <input #searchFilter type="text" class="form-control" placeholder="Search..."-->
+<!--               aria-label="Search" formControlName="keyword"-->
+<!--               id="keyword">-->
+<!--      </div>-->
+<!--      <div class="col-2">-->
+<!--        <tc-button size="sm" type="outline" (click)="refresh($event)">-->
+<!--          Refresh-->
+<!--          <i class="fas fa-sync" title="Refresh data"></i>-->
+<!--        </tc-button>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div *ngIf="searchBy === SearchOppsBy.mineAsJobCreator ||-->
+<!--                searchBy === SearchOppsBy.mineAsSourcePartner" class="my-2">-->
+<!--      <div class="row justify-content-center mb-2">-->
+<!--        <div class="col-md-5">-->
+<!--          <div class="form-check form-check-reverse">-->
+<!--            <label class="form-check-label" [title]="myOppsOnlyTip"-->
+<!--                   for="myOppsOnly">{{myOppsOnlyLabel}}</label>-->
+<!--            <input [title]="myOppsOnlyTip" type="checkbox"-->
+<!--                   formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-5">-->
+<!--          <div class="form-check form-check-reverse">-->
+<!--            <input [title]="showClosedOppsTip" type="checkbox"-->
+<!--                   formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">-->
+<!--            <label class="form-check-label" [title]="showClosedOppsTip"-->
+<!--                   for="showClosedOpps">{{showClosedOppsLabel}}</label>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="row justify-content-center mb-2">-->
+<!--        <div class="col-md-5">-->
+<!--          <div class="form-check form-check-reverse">-->
+<!--            <input [title]="showInactiveOppsTip" type="checkbox"-->
+<!--                   formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">-->
+<!--            <label class="form-check-label" [title]="showInactiveOppsTip"-->
+<!--                   for="showInactiveOpps">{{showInactiveOppsLabel}}</label>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-5">-->
+<!--          <div class="form-check form-check-reverse">-->
+<!--            <input [title]="withUnreadMessagesTip" type="checkbox"-->
+<!--                   formControlName="withUnreadMessages" id="withUnreadMessages" class="form-check-input">-->
+<!--            <label class="form-check-label" [title]="withUnreadMessagesTip"-->
+<!--                   for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div *ngIf="searchBy===SearchOppsBy.mineAsJobCreator" class="row justify-content-center">-->
+<!--        <div class="col-md-5">-->
+<!--          <div class="form-check form-check-reverse">-->
+<!--            <input [title]="showUnpublishedTip" type="checkbox"-->
+<!--                   formControlName="showUnpublishedOpps" id="showUnpublished" class="form-check-input">-->
+<!--            <label class="form-check-label" [title]="showUnpublishedTip"-->
+<!--                   for="showUnpublished">{{showUnpublishedLabel}}</label>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-5">-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="mb-3">-->
+<!--      <label class="form-label">Stage</label>-->
+<!--      <ng-select-->
+<!--        id="stage"-->
+<!--        [items]="stages"-->
+<!--        [multiple]="true"-->
+<!--        [closeOnSelect]="true"-->
+<!--        [searchable]="false"-->
+<!--        bindLabel="stringValue"-->
+<!--        bindValue="key"-->
+<!--        placeholder="Select..."-->
+<!--        formControlName="selectedStages">-->
+<!--      </ng-select>-->
+<!--    </div>-->
+
+<!--<div *ngIf="needsFilterByDestination()" class="mb-3">-->
+<!--      <label class="form-label">Destination Country</label>-->
+<!--      <ng-select-->
+<!--        id="destinations"-->
+<!--        [items]="destinations"-->
+<!--        [multiple]="true"-->
+<!--        [closeOnSelect]="true"-->
+<!--        [searchable]="true"-->
+<!--        placeholder="Select or type..."-->
+<!--        bindLabel="name"-->
+<!--        bindValue="id"-->
+<!--        formControlName="destinationIds">-->
+<!--      </ng-select>-->
+<!--    </div>-->
   </form>
 </div>
 
