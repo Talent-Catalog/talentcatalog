@@ -17,13 +17,10 @@
 package org.tctalent.server.batchjob.candidate;
 
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.tctalent.server.batchjob.LoggingChunkListener;
-import org.tctalent.server.batchjob.LoggingJobExecutionListener;
-import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.service.db.SavedSearchService;
 
 /**
@@ -35,16 +32,14 @@ import org.tctalent.server.service.db.SavedSearchService;
 public class CandidateJobFactoryConfig {
 
     @Bean CandidateJobFactory candidateJobFactory(
-        ItemWriter<Candidate> candidateWriter, LoggingChunkListener loggingChunkListener,
-        LoggingJobExecutionListener loggingJobExecutionListener,
-        PlatformTransactionManager transactionManager, JobRepository jobRepository,
+        PlatformTransactionManager transactionManager,
+        JobRepository jobRepository,
+        CandidateRepository candidateRepository,
         SavedSearchService savedSearchService) {
         return new CandidateJobFactory(
-            candidateWriter,
-            loggingChunkListener,
-            loggingJobExecutionListener,
             transactionManager,
             jobRepository,
+            candidateRepository,
             savedSearchService);
     }
 

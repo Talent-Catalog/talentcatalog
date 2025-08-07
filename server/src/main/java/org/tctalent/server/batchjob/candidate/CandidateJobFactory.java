@@ -26,7 +26,6 @@ import org.springframework.batch.core.step.item.SimpleChunkProcessor;
 import org.springframework.batch.core.step.item.SimpleChunkProvider;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
 import org.springframework.batch.repeat.support.RepeatTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -34,6 +33,7 @@ import org.tctalent.server.batchjob.AdaptiveDelayTasklet;
 import org.tctalent.server.batchjob.LoggingChunkListener;
 import org.tctalent.server.batchjob.LoggingJobExecutionListener;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.service.db.SavedSearchService;
 
 /**
@@ -48,22 +48,18 @@ import org.tctalent.server.service.db.SavedSearchService;
 @Slf4j
 public class CandidateJobFactory {
 
-    private final ItemWriter<Candidate> candidateWriter;
-    private final LoggingChunkListener loggingChunkListener;
-    private final LoggingJobExecutionListener loggingJobExecutionListener;
     private final PlatformTransactionManager transactionManager;
+    private final CandidateRepository candidateRepository;
     private final JobRepository jobRepository;
     private final SavedSearchService savedSearchService;
 
     public CandidateJobFactory(
-        ItemWriter<Candidate> candidateWriter, LoggingChunkListener loggingChunkListener,
-        LoggingJobExecutionListener loggingJobExecutionListener,
-        PlatformTransactionManager transactionManager, JobRepository jobRepository,
+        PlatformTransactionManager transactionManager,
+        JobRepository jobRepository,
+        CandidateRepository candidateRepository,
         SavedSearchService savedSearchService) {
-        this.candidateWriter = candidateWriter;
-        this.loggingChunkListener = loggingChunkListener;
-        this.loggingJobExecutionListener = loggingJobExecutionListener;
         this.transactionManager = transactionManager;
+        this.candidateRepository = candidateRepository;
         this.jobRepository = jobRepository;
         this.savedSearchService = savedSearchService;
     }
@@ -85,28 +81,31 @@ public class CandidateJobFactory {
      * @return the created batch up. It can be run by calling BatchJobService.launchJob
      */
     public Job createCandidateJob(
-        String jobName, long searchId, int chunkSize,
+        String jobName, long searchId, int chunkSize, long maxDelayMs,
         ItemProcessor<Candidate, Candidate> candidateProcessor) {
 
-        CandidateReader candidateReader = new CandidateReader(searchId, chunkSize, savedSearchService);
+        CandidateReader candidateReader =
+            new CandidateReader(searchId, chunkSize, savedSearchService);
+        CandidateWriter candidateWriter = new CandidateWriter(candidateRepository);
 
         RepeatTemplate repeatTemplate = new RepeatTemplate();
         repeatTemplate.setCompletionPolicy(new SimpleCompletionPolicy(chunkSize));
-        SimpleChunkProvider<Candidate> chunkProvider = new SimpleChunkProvider<>(candidateReader, repeatTemplate);
-        SimpleChunkProcessor<Candidate, Candidate> chunkProcessor = new SimpleChunkProcessor<>(candidateProcessor, candidateWriter);
+        SimpleChunkProvider<Candidate> chunkProvider =
+            new SimpleChunkProvider<>(candidateReader, repeatTemplate);
+        SimpleChunkProcessor<Candidate, Candidate> chunkProcessor =
+            new SimpleChunkProcessor<>(candidateProcessor, candidateWriter);
 
-        Tasklet adaptiveTasklet = new AdaptiveDelayTasklet<>(chunkProvider, chunkProcessor,
-            //TODO JC config
-            1000);
+        Tasklet adaptiveTasklet =
+            new AdaptiveDelayTasklet<>(chunkProvider, chunkProcessor, maxDelayMs);
 
         Step candidateStep =
             new StepBuilder("candidateStep", jobRepository)
                 .tasklet(adaptiveTasklet, transactionManager)
-                .listener(loggingChunkListener)
+                .listener(new LoggingChunkListener())
                 .build();
 
         return new JobBuilder(jobName, jobRepository)
-            .listener(loggingJobExecutionListener)
+            .listener(new LoggingJobExecutionListener())
             .start(candidateStep)
             .build();
     }
