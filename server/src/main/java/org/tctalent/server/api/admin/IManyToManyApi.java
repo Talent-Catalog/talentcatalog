@@ -179,4 +179,21 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
         throw new NotImplementedException(this.getClass(), "fetchPublicIds");
     }
 
+    /**
+     * Returns a page of public IDs of slave records associated with the given master public ID,
+     * matching the provided request filters and pagination.
+     * <p/>
+     * @param masterPublicId public ID of the master record whose slave record public IDs we want
+     * @param request Defines filtering and pagination for slave records
+     * @return A page of public IDs of slave records
+     * @throws NoSuchObjectException if masterPublicId is unknown
+     */
+    @PostMapping("public/{publicId}/public-ids-paged")
+    default @NotNull Map<String, Object> fetchPublicIdsPaged(
+        @PathVariable("publicId") String masterPublicId,
+        @Valid @RequestBody SEARCH request)
+        throws NoSuchObjectException {
+        throw new NotImplementedException(this.getClass(), "fetchPublicIdsPaged");
+    }
+
 }
