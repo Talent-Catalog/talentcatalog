@@ -42,26 +42,6 @@
   }
 }
 
-table {
-  background-color: $white;
-  border: $white;
-  border-radius: 5px;
-  td {
-    white-space: nowrap;
-    a {
-      > i {
-        color: $info;
-        &:hover {
-          color: $accent1;
-        }
-      }
-      &:hover {
-        color: $secondary;
-      }
-    }
-  }
-}
-
 .card-header {
   background-color: $accent3 !important;
   background-image: var(--bs-gradient);

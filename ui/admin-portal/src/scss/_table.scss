@@ -31,15 +31,22 @@ table {
 }
 
 th {
-  border-bottom: 1px solid #E4E4E7;
+  border-bottom: 1px solid;
+  @include border-color-base;
   padding: 10px 24px;
   color: #71717A;
 }
 
 td {
-  border-bottom: 1px solid #F4F4F5;
+  border-bottom: 1px solid;
+  @include border-color-light;
   padding: 16px 24px;
-  color: #242424;
+  @include text-color-body;
+  a {
+    > i {
+      color: color(secondary, 500);
+    }
+  }
 }
 
 //Table row highlighting
@@ -49,7 +56,7 @@ highlighting.table-hover> tbody> tr:hover{
 
 //Current item - the one whose detailed data is displayed
 tr.current {
-  @include background-color-soft;
+  @include background-color-light;
 }
 
 //Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
