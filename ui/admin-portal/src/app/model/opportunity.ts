@@ -16,6 +16,7 @@
 import {CandidateOpportunityStage, isCandidateOpportunity} from "./candidate-opportunity";
 import {Auditable, HasId} from "./base";
 import {isJob, JobOpportunityStage} from "./job";
+import {BadgeColor} from "../shared/components/badge/badge.component";
 
 /**
  * Given an opportunity (job or candidate), return the string value of the opportunity's stage's
@@ -54,6 +55,19 @@ export function getOpportunityStageName(opp: Opportunity): string {
     }
   }
   return s;
+}
+
+export function getStageBadgeColor(status: string): BadgeColor {
+  switch (status) {
+    case 'Recruitment process':
+      return "purple";      // or 'success' if you're using semantic tokens
+    case "Job offer":
+      return "orange";
+    case 'Candidate search':
+      return "green";
+    default:
+      return "gray";    // grey is default
+  }
 }
 
 export interface OpportunityProgressParams {

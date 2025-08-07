@@ -1,4 +1,6 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
+
+export type BadgeColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'gray';
 
 @Component({
   selector: 'tc-badge',
@@ -6,7 +8,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./badge.component.scss']
 })
 export class BadgeComponent {
-  @Input() color: 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'gray'= 'gray';
+  @Input() color: BadgeColor = 'gray';
   @Input() href?: string;
   @Input() type: 'link' | 'button' | 'span' = 'span';
   @Input() onClick?: (e: MouseEvent) => void;
