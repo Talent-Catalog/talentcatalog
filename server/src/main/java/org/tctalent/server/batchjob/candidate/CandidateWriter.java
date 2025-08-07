@@ -20,9 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.repository.db.CandidateRepository;
 
@@ -32,9 +30,7 @@ import org.tctalent.server.repository.db.CandidateRepository;
  * @author John Cameron
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
-@Qualifier("candidateWriter")
 public class CandidateWriter implements ItemWriter<Candidate> {
     private final CandidateRepository candidateRepository;
 
