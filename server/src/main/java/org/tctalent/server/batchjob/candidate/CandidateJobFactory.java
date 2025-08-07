@@ -28,6 +28,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
 import org.springframework.batch.repeat.support.RepeatTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.tctalent.server.batchjob.AdaptiveDelayTasklet;
 import org.tctalent.server.batchjob.LoggingChunkListener;
@@ -46,6 +47,7 @@ import org.tctalent.server.service.db.SavedSearchService;
  * @author John Cameron
  */
 @Slf4j
+@Component
 public class CandidateJobFactory {
 
     private final PlatformTransactionManager transactionManager;
