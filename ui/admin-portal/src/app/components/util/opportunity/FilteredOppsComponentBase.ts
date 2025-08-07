@@ -33,7 +33,12 @@ import {EnumOption} from "../../../util/enum";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
-import {getOpportunityStageName, Opportunity, OpportunityOwnershipType} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  getStageBadgeColor,
+  Opportunity,
+  OpportunityOwnershipType
+} from "../../../model/opportunity";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
@@ -435,6 +440,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   get getCandidateOpportunityStageName() {
     return getOpportunityStageName;
+  }
+
+  get getBadgeColor() {
+    return getStageBadgeColor;
   }
 
   getChats(opp: Opportunity): JobChat[] {
