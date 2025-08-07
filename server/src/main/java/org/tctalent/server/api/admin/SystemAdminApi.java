@@ -91,6 +91,7 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -290,17 +291,16 @@ public class SystemAdminApi {
 
     @GetMapping("set_candidate_text")
     public ResponseEntity<String> setCandidateText() throws Exception {
-        //Anonymous class. Alternately you could create a named class and pass in an instance.
         ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
             candidate -> {
                 candidate.updateText();
-
-                //Update candidate on database by returning the candidate (rather than returning null).
                 return candidate;
             };
 
-        Job candidateUpdateTextJob = candidateJobFactory.createCandidateJob(
-            "candidateTextJob", 11, 50, 5000, candidateUpdateTextProcessor);
+        SavedSearch search = savedSearchService.getSavedSearch(11);
+        Job candidateUpdateTextJob = candidateJobFactory
+            .builder("candidateTextJob", search, candidateUpdateTextProcessor)
+            .build();
 
         String response = batchJobService.launchJob(candidateUpdateTextJob, false);
         return ResponseEntity.ok(response);

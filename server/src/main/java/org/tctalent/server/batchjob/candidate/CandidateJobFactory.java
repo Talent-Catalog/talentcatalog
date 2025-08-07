@@ -16,6 +16,7 @@
 
 package org.tctalent.server.batchjob.candidate;
 
+import kotlin.NotImplementedError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -34,6 +35,8 @@ import org.tctalent.server.batchjob.AdaptiveDelayTasklet;
 import org.tctalent.server.batchjob.LoggingChunkListener;
 import org.tctalent.server.batchjob.LoggingJobExecutionListener;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.service.db.SavedSearchService;
 
@@ -66,7 +69,16 @@ public class CandidateJobFactory {
         this.savedSearchService = savedSearchService;
     }
 
+    public CandidateJobBuilder builder(String name, SavedSearch search, ItemProcessor<Candidate, Candidate> processor) {
+        return new CandidateJobBuilder(name, search, processor );
+    }
+
+    public CandidateJobBuilder builder(String name, SavedList savedList, ItemProcessor<Candidate, Candidate> processor) {
+        return new CandidateJobBuilder(name, savedList, processor );
+    }
+
     /**
+     * //TODO JC Update this for builder
      * Creates a simple single step Spring batch job with the given name which calls the
      * given candidateProcessor on all candidates returned by the given search.
      * <p>
@@ -82,33 +94,70 @@ public class CandidateJobFactory {
      * @param candidateProcessor Processor to execute on each candidate.
      * @return the created batch up. It can be run by calling BatchJobService.launchJob
      */
-    public Job createCandidateJob(
-        String jobName, long searchId, int chunkSize, long maxDelayMs,
-        ItemProcessor<Candidate, Candidate> candidateProcessor) {
+    public class CandidateJobBuilder {
+        private final String name;
+        private SavedList savedList;
+        private SavedSearch savedSearch;
+        private final ItemProcessor<Candidate, Candidate> processor;
+        private int chunkSize = 100;
+        private long maxDelayMs = 30000;
 
-        CandidateReader candidateReader =
-            new CandidateReader(searchId, chunkSize, savedSearchService);
-        CandidateWriter candidateWriter = new CandidateWriter(candidateRepository);
+        public CandidateJobBuilder(
+            String name, SavedSearch savedSearch, ItemProcessor<Candidate, Candidate> processor) {
+            this.name = name;
+            this.savedSearch = savedSearch;
+            this.processor = processor;
+        }
 
-        RepeatTemplate repeatTemplate = new RepeatTemplate();
-        repeatTemplate.setCompletionPolicy(new SimpleCompletionPolicy(chunkSize));
-        SimpleChunkProvider<Candidate> chunkProvider =
-            new SimpleChunkProvider<>(candidateReader, repeatTemplate);
-        SimpleChunkProcessor<Candidate, Candidate> chunkProcessor =
-            new SimpleChunkProcessor<>(candidateProcessor, candidateWriter);
+        public CandidateJobBuilder(
+            String name, SavedList savedList, ItemProcessor<Candidate, Candidate> processor) {
+            this.name = name;
+            this.savedList = savedList;
+            this.processor = processor;
+        }
 
-        Tasklet adaptiveTasklet =
-            new AdaptiveDelayTasklet<>(chunkProvider, chunkProcessor, maxDelayMs);
+        public CandidateJobBuilder chunkSize(int chunkSize){
+            this.chunkSize = chunkSize;
+            return this;
+        }
 
-        Step candidateStep =
-            new StepBuilder("candidateStep", jobRepository)
-                .tasklet(adaptiveTasklet, transactionManager)
-                .listener(new LoggingChunkListener())
+        public CandidateJobBuilder maxDelayMs(long maxDelayMs) {
+            this.maxDelayMs = maxDelayMs;
+            return this;
+        }
+
+        public Job build() {
+            CandidateReader candidateReader;
+            if (savedList != null) {
+                //TODO JC
+                throw  new NotImplementedError("SavedList not yet implemented");
+            } else if (savedSearch != null) {
+                candidateReader = new CandidateReader(savedSearch.getId(), chunkSize, savedSearchService);
+            } else {
+               throw new IllegalArgumentException("No saved search or saved list specified");
+            }
+            CandidateWriter candidateWriter = new CandidateWriter(candidateRepository);
+
+            RepeatTemplate repeatTemplate = new RepeatTemplate();
+            repeatTemplate.setCompletionPolicy(new SimpleCompletionPolicy(chunkSize));
+            SimpleChunkProvider<Candidate> chunkProvider =
+                new SimpleChunkProvider<>(candidateReader, repeatTemplate);
+            SimpleChunkProcessor<Candidate, Candidate> chunkProcessor =
+                new SimpleChunkProcessor<>(processor, candidateWriter);
+
+            Tasklet adaptiveTasklet =
+                new AdaptiveDelayTasklet<>(chunkProvider, chunkProcessor, maxDelayMs);
+
+            Step candidateStep =
+                new StepBuilder("candidateStep", jobRepository)
+                    .tasklet(adaptiveTasklet, transactionManager)
+                    .listener(new LoggingChunkListener())
+                    .build();
+
+            return new JobBuilder(name, jobRepository)
+                .listener(new LoggingJobExecutionListener())
+                .start(candidateStep)
                 .build();
-
-        return new JobBuilder(jobName, jobRepository)
-            .listener(new LoggingJobExecutionListener())
-            .start(candidateStep)
-            .build();
+        }
     }
 }
