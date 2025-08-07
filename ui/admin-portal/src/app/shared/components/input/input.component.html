@@ -1,0 +1,14 @@
+<input
+  [attr.id]="id"
+  [attr.name]="name"
+  [type]="type"
+  class="form-input"
+  [placeholder]="placeholder"
+  [attr.aria-label]="ariaLabel"
+  [attr.aria-invalid]="invalid"
+  [class.input--invalid]="invalid"
+  [value]="value"
+  (input)="handleInput($event)"
+  (blur)="onTouched()"
+  [disabled]="disabled"
+/>
