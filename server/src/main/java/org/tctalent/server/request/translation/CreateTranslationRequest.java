@@ -19,7 +19,6 @@ package org.tctalent.server.request.translation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.tctalent.server.model.db.Translation;
-import org.tctalent.server.util.html.HtmlSanitizer;
 
 /**
  * See doc for {@link Translation} entity for description of fields.
@@ -64,6 +63,6 @@ public class CreateTranslationRequest {
     }
 
     public void setValue(String value) {
-        this.value = HtmlSanitizer.sanitize(value);
+        this.value = value;
     }
 }
