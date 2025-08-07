@@ -42,6 +42,11 @@ td {
   @include border-color-light;
   padding: 16px 24px;
   @include text-color-body;
+  a {
+    > i {
+      color: color(secondary, 500);
+    }
+  }
 }
 
 //Table row highlighting
