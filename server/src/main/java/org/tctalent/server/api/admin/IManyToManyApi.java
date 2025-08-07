@@ -22,6 +22,7 @@ import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Set;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -162,6 +163,20 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
             @PathVariable("id") long masterId, @Valid @RequestBody SEARCH request)
             throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "searchPaged");
+    }
+
+    /**
+     * Returns the public IDs of slave records associated with the given master public ID.
+     * <p/>
+     * @param masterPublicId public ID of the master record whose slave record public IDs we want
+     * @return Set of public IDs of slave records
+     * @throws NoSuchObjectException if masterPublicId is unknown
+     */
+    @GetMapping("public/{publicId}/public-ids")
+    default @NotNull Set<String> fetchPublicIds(
+            @PathVariable("publicId") String masterPublicId)
+            throws NoSuchObjectException {
+        throw new NotImplementedException(this.getClass(), "fetchPublicIds");
     }
 
 }
