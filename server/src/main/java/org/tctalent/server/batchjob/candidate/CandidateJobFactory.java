@@ -29,7 +29,6 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
 import org.springframework.batch.repeat.support.RepeatTemplate;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.tctalent.server.batchjob.AdaptiveDelayTasklet;
 import org.tctalent.server.batchjob.LoggingChunkListener;
@@ -55,20 +54,18 @@ public class CandidateJobFactory {
     private final PlatformTransactionManager transactionManager;
     private final JobRepository jobRepository;
     private final SavedSearchService savedSearchService;
-    private final TaskScheduler taskScheduler;
 
     public CandidateJobFactory(
         ItemWriter<Candidate> candidateWriter, LoggingChunkListener loggingChunkListener,
         LoggingJobExecutionListener loggingJobExecutionListener,
         PlatformTransactionManager transactionManager, JobRepository jobRepository,
-        SavedSearchService savedSearchService, TaskScheduler taskScheduler) {
+        SavedSearchService savedSearchService) {
         this.candidateWriter = candidateWriter;
         this.loggingChunkListener = loggingChunkListener;
         this.loggingJobExecutionListener = loggingJobExecutionListener;
         this.transactionManager = transactionManager;
         this.jobRepository = jobRepository;
         this.savedSearchService = savedSearchService;
-        this.taskScheduler = taskScheduler;
     }
 
     /**
