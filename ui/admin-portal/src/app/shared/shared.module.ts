@@ -26,6 +26,7 @@ import {TcTabComponent} from './components/tabs/tab/tc-tab.component';
 import {TcTabHeaderComponent} from "./components/tabs/tab/header/tc-tab-header.component";
 import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-content.component';
 
+import {BadgeComponent} from './components/badge/badge.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-conten
     TcTabComponent,
     TcTabHeaderComponent,
     TcTabHeaderComponent,
-    TcTabContentComponent],
+    TcTabContentComponent,
+    BadgeComponent],
   imports: [
     CommonModule,
     NgbPaginationModule,
@@ -49,7 +51,8 @@ import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-conten
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
-    TcTabContentComponent
+    TcTabContentComponent,
+    BadgeComponent,
   ]
 })
 export class SharedModule { }
