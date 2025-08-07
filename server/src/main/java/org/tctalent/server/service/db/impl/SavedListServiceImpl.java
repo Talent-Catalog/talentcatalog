@@ -528,6 +528,13 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @NonNull
+    public SavedList getByPublicId(@NonNull String publicId) throws NoSuchObjectException {
+        return savedListRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new NoSuchObjectException(SavedList.class, publicId));
+    }
+
+    @Override
     @Nullable
     public SavedList get(@NonNull User user, String listName) {
         return listName == null ? null :
