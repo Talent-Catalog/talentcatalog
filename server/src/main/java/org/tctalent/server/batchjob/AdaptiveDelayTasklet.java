@@ -16,36 +16,31 @@
 
 package org.tctalent.server.batchjob;
 
-import java.time.Instant;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.item.ChunkOrientedTasklet;
 import org.springframework.batch.core.step.item.ChunkProcessor;
 import org.springframework.batch.core.step.item.ChunkProvider;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.TaskScheduler;
 
 /**
  * TODO JC Doc
  *
  * @author John Cameron
  */
-public class AdaptiveScheduledTasklet<I> implements Tasklet {
-
-  private final ChunkOrientedTasklet<I> delegate;
-  private final TaskScheduler scheduler;
+public class AdaptiveDelayTasklet<I> implements Tasklet {
+  private final ChunkProvider<I> chunkProvider;
+  private final ChunkProcessor<I> chunkProcessor;
   private final long maxDelayMs;
 
-  public AdaptiveScheduledTasklet(
+  public AdaptiveDelayTasklet(
       ChunkProvider<I> chunkProvider,
       ChunkProcessor<I> chunkProcessor,
-      TaskScheduler scheduler, long maxDelayMs) {
-
-    this.delegate = new ChunkOrientedTasklet<>(chunkProvider, chunkProcessor);
-    this.scheduler = scheduler;
+      long maxDelayMs) {
+    this.chunkProvider = chunkProvider;
+    this.chunkProcessor = chunkProcessor;
     this.maxDelayMs = maxDelayMs;
   }
 
@@ -54,27 +49,24 @@ public class AdaptiveScheduledTasklet<I> implements Tasklet {
   public RepeatStatus execute(
       @NonNull StepContribution contribution, @NonNull ChunkContext chunkContext) throws Exception {
 
-    long start = System.currentTimeMillis();
-
-    RepeatStatus status = delegate.execute(contribution, chunkContext);
-
-    long duration = System.currentTimeMillis() - start;
-
-    //TODO JC Better logic - see Trigger
-    long nextDelay = Math.min(duration * 2, maxDelayMs);
-
-    if (status == RepeatStatus.FINISHED) {
+    var chunk = chunkProvider.provide(contribution);
+    if (chunk.isEmpty()) {
       return RepeatStatus.FINISHED;
     }
 
-    scheduler.schedule(() -> {
-        try {
-          delegate.execute(contribution, chunkContext);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-      }, Instant.now().plusMillis(nextDelay)
-    );
+    // Read + process one chunk
+    long start = System.currentTimeMillis();
+
+    chunkProcessor.process(contribution, chunk);
+    chunkProvider.postProcess(contribution, chunk);
+
+    long duration = System.currentTimeMillis() - start;
+    //TODO JC Better logic - see Trigger
+    long delay = Math.min((long) (duration * 1.5), maxDelayMs);
+
+    System.out.printf("Processed chunk in %d ms. Sleeping for %d ms.%n", duration, delay);
+
+    Thread.sleep(delay); // synchronous, no session loss
 
     return RepeatStatus.CONTINUABLE;
   }

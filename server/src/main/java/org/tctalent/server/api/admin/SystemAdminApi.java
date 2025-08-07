@@ -300,7 +300,7 @@ public class SystemAdminApi {
             };
 
         Job candidateUpdateTextJob = candidateJobFactory.createCandidateJob(
-            "candidateTextJob", 42, 50, candidateUpdateTextProcessor);
+            "candidateTextJob", 11, 50, candidateUpdateTextProcessor);
 
         String response = batchJobService.launchJob(candidateUpdateTextJob, false);
         return ResponseEntity.ok(response);

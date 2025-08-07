@@ -31,7 +31,7 @@ import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
 import org.springframework.batch.repeat.support.RepeatTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.tctalent.server.batchjob.AdaptiveScheduledTasklet;
+import org.tctalent.server.batchjob.AdaptiveDelayTasklet;
 import org.tctalent.server.batchjob.LoggingChunkListener;
 import org.tctalent.server.batchjob.LoggingJobExecutionListener;
 import org.tctalent.server.model.db.Candidate;
@@ -98,7 +98,9 @@ public class CandidateJobFactory {
         SimpleChunkProvider<Candidate> chunkProvider = new SimpleChunkProvider<>(candidateReader, repeatTemplate);
         SimpleChunkProcessor<Candidate, Candidate> chunkProcessor = new SimpleChunkProcessor<>(candidateProcessor, candidateWriter);
 
-        Tasklet adaptiveTasklet = new AdaptiveScheduledTasklet<>(chunkProvider, chunkProcessor, taskScheduler, 1000);
+        Tasklet adaptiveTasklet = new AdaptiveDelayTasklet<>(chunkProvider, chunkProcessor,
+            //TODO JC config
+            1000);
 
         Step candidateStep =
             new StepBuilder("candidateStep", jobRepository)
