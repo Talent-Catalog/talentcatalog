@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -93,9 +93,9 @@ class CandidateStatsServiceImplTest {
         //New way of running stats is to restrict data over which stats are run by adding a
         //constraint that the candidates should belong to the search query extracted from the
         //search request.
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeBirthYearStats(
             null, dateFrom, dateTo, null, sourceCountryIds,
@@ -128,9 +128,9 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeMaxEducationStats(
                 Gender.female, dateFrom, dateTo, null, sourceCountryIds,
@@ -158,9 +158,9 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeMostCommonOccupationStats(
                 Gender.female, dateFrom, dateTo, null, sourceCountryIds,
@@ -188,9 +188,9 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeNationalityStats(
             Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
@@ -238,9 +238,9 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeStatusStats(
             Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
@@ -288,9 +288,9 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeSurveyStats(
             Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
@@ -338,9 +338,9 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeOccupationStats(
                 Gender.female, dateFrom, dateTo, null, sourceCountryIds,
@@ -368,9 +368,9 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeReferrerStats(
             Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
@@ -398,9 +398,9 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeSourceCountryStats(
             Gender.female, dateFrom, dateTo, null, sourceCountryIds,
@@ -429,9 +429,9 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(60);
         request.setGender(Gender.female);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractSQL();
 
-        String constraint = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         List<DataRow> rows;
         rows = candidateStatsService.computeSpokenLanguageLevelStats(
             Gender.female, "English", dateFrom, dateTo, null, sourceCountryIds,
@@ -459,8 +459,8 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String sql = request.extractSQL();
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeGenderStats(
              dateFrom, dateTo, null, sourceCountryIds,
@@ -489,8 +489,8 @@ class CandidateStatsServiceImplTest {
         request.setGender(Gender.female);
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String sql = request.extractSQL();
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLanguageStats(
              null, dateFrom, dateTo, null, sourceCountryIds,
@@ -518,8 +518,8 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String sql = request.extractSQL();
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLinkedInExistsStats(
                 dateFrom, dateTo, null, sourceCountryIds,
@@ -547,8 +547,8 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String sql = request.extractSQL();
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLinkedInStats(
                 dateFrom, dateTo, null, sourceCountryIds,
@@ -576,8 +576,8 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String sql = request.extractSQL();
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeRegistrationStats(
                 dateFrom, dateTo, null, sourceCountryIds,
@@ -605,8 +605,8 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String sql = request.extractSQL();
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeRegistrationOccupationStats(
                 dateFrom, dateTo, null, sourceCountryIds,
@@ -634,8 +634,8 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String sql = request.extractSQL();
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeUnhcrRegisteredStats(
              dateFrom, dateTo, null, sourceCountryIds,
@@ -663,8 +663,8 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String sql = request.extractSQL();
+        String constraintPredicate = "candidate.id in (select distinct candidate.id from candidate" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeUnhcrStatusStats(
              dateFrom, dateTo, null, sourceCountryIds,

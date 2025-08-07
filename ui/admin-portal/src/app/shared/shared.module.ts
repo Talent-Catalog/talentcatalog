@@ -16,6 +16,7 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {ButtonComponent} from './components/button/button.component';
 import {
   NgbPagination,
   NgbPaginationFirst,
@@ -30,7 +31,7 @@ import {TcPaginationComponent} from './components/pagination/tc-pagination.compo
 
 
 @NgModule({
-  declarations: [TcTableComponent, TcPaginationComponent],
+  declarations: [ButtonComponent, TcTableComponent, TcPaginationComponent],
   imports: [
     CommonModule,
     NgbPagination,
@@ -42,7 +43,9 @@ import {TcPaginationComponent} from './components/pagination/tc-pagination.compo
     NgbPaginationLast
   ],
   exports: [
-    TcTableComponent, TcPaginationComponent
+    ButtonComponent,
+    TcTableComponent,
+    TcPaginationComponent
   ]
 })
 export class SharedModule { }
