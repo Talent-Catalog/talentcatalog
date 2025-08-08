@@ -18,8 +18,7 @@ package org.tctalent.server.batchjob;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.item.ChunkProcessor;
-import org.springframework.batch.core.step.item.ChunkProvider;
+import org.springframework.batch.core.step.item.ChunkOrientedTasklet;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.lang.NonNull;
@@ -31,18 +30,15 @@ import org.springframework.lang.Nullable;
  * @author John Cameron
  */
 public class AdaptiveDelayTasklet<I> implements Tasklet {
-  private final ChunkProvider<I> chunkProvider;
-  private final ChunkProcessor<I> chunkProcessor;
+  private final ChunkOrientedTasklet<I> delegate;
   private final int percentageOfCpu;
   private final long maxDelayMs;
 
   public AdaptiveDelayTasklet(
-      ChunkProvider<I> chunkProvider,
-      ChunkProcessor<I> chunkProcessor,
+      ChunkOrientedTasklet<I> delegate,
       int percentageOfCpu,
       long maxDelayMs) {
-    this.chunkProvider = chunkProvider;
-    this.chunkProcessor = chunkProcessor;
+    this.delegate = delegate;
     this.maxDelayMs = maxDelayMs;
     this.percentageOfCpu = percentageOfCpu;
   }
@@ -52,21 +48,19 @@ public class AdaptiveDelayTasklet<I> implements Tasklet {
   public RepeatStatus execute(
       @NonNull StepContribution contribution, @NonNull ChunkContext chunkContext) throws Exception {
 
-    var chunk = chunkProvider.provide(contribution);
-    if (chunk.isEmpty()) {
-      return RepeatStatus.FINISHED;
-    }
-
     // Read + process one chunk
     long start = System.currentTimeMillis();
 
-    chunkProcessor.process(contribution, chunk);
-    chunkProvider.postProcess(contribution, chunk);
+    RepeatStatus status = delegate.execute(contribution, chunkContext);
 
     long processingTime = System.currentTimeMillis() - start;
     long delay = Math.min(computeDelay(processingTime), maxDelayMs);
 
     System.out.printf("Processed chunk in %d ms. Sleeping for %d ms.%n", processingTime, delay);
+
+    if (status == RepeatStatus.FINISHED) {
+      return RepeatStatus.FINISHED;
+    }
 
     Thread.sleep(delay);
 

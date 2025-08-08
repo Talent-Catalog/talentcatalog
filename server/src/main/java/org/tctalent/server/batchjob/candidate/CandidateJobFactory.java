@@ -22,12 +22,14 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.core.step.item.ChunkOrientedTasklet;
 import org.springframework.batch.core.step.item.SimpleChunkProcessor;
 import org.springframework.batch.core.step.item.SimpleChunkProvider;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
 import org.springframework.batch.repeat.support.RepeatTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.tctalent.server.batchjob.AdaptiveDelayTasklet;
@@ -175,13 +177,8 @@ public class CandidateJobFactory {
 
             RepeatTemplate repeatTemplate = new RepeatTemplate();
             repeatTemplate.setCompletionPolicy(new SimpleCompletionPolicy(chunkSize));
-            SimpleChunkProvider<Candidate> chunkProvider =
-                new SimpleChunkProvider<>(candidateReader, repeatTemplate);
-            SimpleChunkProcessor<Candidate, Candidate> chunkProcessor =
-                new SimpleChunkProcessor<>(processor, candidateWriter);
-
-            Tasklet adaptiveTasklet =
-                new AdaptiveDelayTasklet<>(chunkProvider, chunkProcessor, percentageOfCpu, maxDelayMs);
+            final Tasklet adaptiveTasklet =
+                getAdaptiveTasklet(candidateReader, repeatTemplate, candidateWriter);
 
             Step candidateStep =
                 new StepBuilder("candidateStep", jobRepository)
@@ -193,6 +190,22 @@ public class CandidateJobFactory {
                 .listener(new LoggingJobExecutionListener())
                 .start(candidateStep)
                 .build();
+        }
+
+        @NonNull
+        private Tasklet getAdaptiveTasklet(
+            CandidateReader candidateReader,
+            RepeatTemplate repeatTemplate,
+            CandidateWriter candidateWriter) {
+
+            SimpleChunkProvider<Candidate> chunkProvider =
+                new SimpleChunkProvider<>(candidateReader, repeatTemplate);
+            SimpleChunkProcessor<Candidate, Candidate> chunkProcessor =
+                new SimpleChunkProcessor<>(processor, candidateWriter);
+            ChunkOrientedTasklet<Candidate> chunkOrientedTasklet =
+                new ChunkOrientedTasklet<>(chunkProvider, chunkProcessor);
+
+            return new AdaptiveDelayTasklet<>(chunkOrientedTasklet, percentageOfCpu, maxDelayMs);
         }
     }
 }
