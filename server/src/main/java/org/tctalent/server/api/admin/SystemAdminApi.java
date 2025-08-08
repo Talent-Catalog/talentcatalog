@@ -73,6 +73,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.batchjob.candidate.CandidateJobFactory;
+import org.tctalent.server.batchjob.candidate.CandidateJobFactory.CandidateJobBuilder;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -289,17 +290,35 @@ public class SystemAdminApi {
       this.tcApiService = tcApiService;
     }
 
-    @GetMapping("set_candidate_text")
-    public ResponseEntity<String> setCandidateText() throws Exception {
+    @GetMapping("set_candidate_text/{candidateSource}-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateText(
+        @PathVariable("candidateSource") String candidateSource,
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+
         ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
             candidate -> {
                 candidate.updateText();
                 return candidate;
             };
 
-        SavedSearch search = savedSearchService.getSavedSearch(11);
-        Job candidateUpdateTextJob = candidateJobFactory
-            .builder("candidateTextJob", search, candidateUpdateTextProcessor)
+        CandidateJobBuilder jobBuilder;
+        if (candidateSource.equals("list")) {
+            SavedList savedList = savedListService.get(sourceId);
+            jobBuilder = candidateJobFactory
+                .builder("candidateTextJob", savedList, candidateUpdateTextProcessor);
+        } else if (candidateSource.equals("search")) {
+            SavedSearch search = savedSearchService.getSavedSearch(sourceId);
+            jobBuilder = candidateJobFactory
+                .builder("candidateTextJob", search, candidateUpdateTextProcessor);
+        } else {
+            throw new IllegalArgumentException(
+                "Parameter candidateSource must be 'search' or 'list'."
+            );
+        }
+
+        Job candidateUpdateTextJob= jobBuilder
+            .percentageOfCpu(cpu)
             .build();
 
         String response = batchJobService.launchJob(candidateUpdateTextJob, false);

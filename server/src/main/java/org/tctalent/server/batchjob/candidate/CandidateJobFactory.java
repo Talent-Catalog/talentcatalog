@@ -16,7 +16,6 @@
 
 package org.tctalent.server.batchjob.candidate;
 
-import kotlin.NotImplementedError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -38,6 +37,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
 
 /**
@@ -55,16 +55,18 @@ public class CandidateJobFactory {
 
     private final PlatformTransactionManager transactionManager;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final JobRepository jobRepository;
     private final SavedSearchService savedSearchService;
 
     public CandidateJobFactory(
         PlatformTransactionManager transactionManager,
         JobRepository jobRepository,
-        CandidateRepository candidateRepository,
+        CandidateRepository candidateRepository, CandidateService candidateService,
         SavedSearchService savedSearchService) {
         this.transactionManager = transactionManager;
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.jobRepository = jobRepository;
         this.savedSearchService = savedSearchService;
     }
@@ -146,7 +148,7 @@ public class CandidateJobFactory {
         /**
          * Desired maximum CPU load
          * <p>
-         * Defaults to 50. Must be greater than 0.
+         * Defaults to 50. Must be greater than 0 and less than or equal to 100.
          * </p>
          */
         public CandidateJobBuilder percentageOfCpu(int percentageOfCpu) {
@@ -157,16 +159,16 @@ public class CandidateJobFactory {
         public Job build() {
             CandidateReader candidateReader;
             if (savedList != null) {
-                //TODO JC
-                throw  new NotImplementedError("SavedList not yet implemented");
+                candidateReader = new CandidateReader(savedList, chunkSize, candidateService);
             } else if (savedSearch != null) {
-                candidateReader = new CandidateReader(savedSearch.getId(), chunkSize, savedSearchService);
+                candidateReader = new CandidateReader(savedSearch, chunkSize, savedSearchService);
             } else {
                throw new IllegalArgumentException("No saved search or saved list specified");
             }
 
-            if (percentageOfCpu <= 0) {
-                throw new IllegalArgumentException("Percentage of CPU must be greater than 0");
+            if (percentageOfCpu <= 0 || percentageOfCpu > 100) {
+                throw new IllegalArgumentException(
+                    "Percentage of CPU must be greater than 0 and less than or equal to 100");
             }
 
             CandidateWriter candidateWriter = new CandidateWriter(candidateRepository);

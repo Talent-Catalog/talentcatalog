@@ -28,7 +28,12 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.request.PagedSearchRequest;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
 
 /**
@@ -39,15 +44,25 @@ import org.tctalent.server.service.db.SavedSearchService;
 @Slf4j
 public class CandidateReader implements ItemReader<Candidate>, StepExecutionListener {
     private final int chunkSize;
-    private final long searchId;
-    private final SavedSearchService savedSearchService;
+    private SavedList savedList;
+    private SavedSearch savedSearch;
+    private CandidateService candidateService;
+    private SavedSearchService savedSearchService;
 
     private int currentPage = 0;
     private int totalPages = 1; // Initialise with 1 to start fetching
     private Iterator<Candidate> batchIterator;
 
-    public CandidateReader(long searchId, int chunkSize, SavedSearchService savedSearchService) {
-        this.searchId = searchId;
+    public CandidateReader(
+        @NonNull SavedList savedList, int chunkSize, CandidateService candidateService) {
+        this.savedList = savedList;
+        this.chunkSize = chunkSize;
+        this.candidateService = candidateService;
+    }
+
+    public CandidateReader(
+        @NonNull SavedSearch savedSearch, int chunkSize, SavedSearchService savedSearchService) {
+        this.savedSearch = savedSearch;
         this.chunkSize = chunkSize;
         this.savedSearchService = savedSearchService;
     }
@@ -66,15 +81,32 @@ public class CandidateReader implements ItemReader<Candidate>, StepExecutionList
     }
 
     private void fetchNextBatch() {
-
-        SavedSearchGetRequest searchRequest = new SavedSearchGetRequest();
+        PagedSearchRequest request;
+        if (savedSearch != null) {
+            request = new SavedSearchGetRequest();
+        } else if (savedList != null) {
+            request = new SavedListGetRequest();
+        } else {
+            throw new RuntimeException("No saved search or saved list specified");
+        }
 
         //Set page size
-        searchRequest.setPageSize(chunkSize);
+        request.setPageSize(chunkSize);
 
         if (currentPage < totalPages) {
             // Fetch next batch
-            Page<Candidate> page = savedSearchService.searchCandidates(searchId, searchRequest);
+            Page<Candidate> page;
+            if (savedSearch != null) {
+                assert request instanceof SavedSearchGetRequest;
+                page = savedSearchService.searchCandidates(
+                    savedSearch.getId(), (SavedSearchGetRequest) request);
+            } else if (savedList != null) {
+                assert request instanceof SavedListGetRequest;
+                page = candidateService.getSavedListCandidates(
+                    savedList, (SavedListGetRequest) request);
+            } else {
+                throw new RuntimeException("No saved search or saved list specified");
+            }
 
             final List<Candidate> currentBatch = page.getContent();
             totalPages = page.getTotalPages();
