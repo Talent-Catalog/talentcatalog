@@ -33,15 +33,18 @@ import org.springframework.lang.Nullable;
 public class AdaptiveDelayTasklet<I> implements Tasklet {
   private final ChunkProvider<I> chunkProvider;
   private final ChunkProcessor<I> chunkProcessor;
+  private final int percentageOfCpu;
   private final long maxDelayMs;
 
   public AdaptiveDelayTasklet(
       ChunkProvider<I> chunkProvider,
       ChunkProcessor<I> chunkProcessor,
+      int percentageOfCpu,
       long maxDelayMs) {
     this.chunkProvider = chunkProvider;
     this.chunkProcessor = chunkProcessor;
     this.maxDelayMs = maxDelayMs;
+    this.percentageOfCpu = percentageOfCpu;
   }
 
   @Nullable
@@ -60,14 +63,29 @@ public class AdaptiveDelayTasklet<I> implements Tasklet {
     chunkProcessor.process(contribution, chunk);
     chunkProvider.postProcess(contribution, chunk);
 
-    long duration = System.currentTimeMillis() - start;
-    //TODO JC Better logic - see Trigger
-    long delay = Math.min((long) (duration * 1.5), maxDelayMs);
+    long processingTime = System.currentTimeMillis() - start;
+    long delay = Math.min(computeDelay(processingTime), maxDelayMs);
 
-    System.out.printf("Processed chunk in %d ms. Sleeping for %d ms.%n", duration, delay);
+    System.out.printf("Processed chunk in %d ms. Sleeping for %d ms.%n", processingTime, delay);
 
     Thread.sleep(delay); // synchronous, no session loss
 
     return RepeatStatus.CONTINUABLE;
   }
+
+  private long computeDelay(long processingTime) {
+      /*
+        As an example, if desired percentageOfCPU is 50% then the delay will match the processing
+        time. (100-50)/50 = 1.
+
+        The minimum percentage is 1%, which means a long delay 99 times the processing time.
+        (100-1)/1 = 99.
+
+        The maximum percentage is 100%, in which case there will be no delay. (100-100)/100 = 0.
+
+        So the delay ranges from 0 to 99 times the last processing time.
+       */
+      return processingTime * (100 - percentageOfCpu) /percentageOfCpu;
+  }
+
 }

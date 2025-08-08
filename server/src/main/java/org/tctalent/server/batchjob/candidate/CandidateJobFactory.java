@@ -78,30 +78,31 @@ public class CandidateJobFactory {
     }
 
     /**
-     * //TODO JC Update this for builder
-     * Creates a simple single step Spring batch job with the given name which calls the
-     * given candidateProcessor on all candidates returned by the given search.
-     * <p>
-     *     If the processor updates the candidate it is passed, it should return the candidate
-     *     that it has updated. However, if the processor does not update the candidate it should
-     *     return null in which case the candidate will not be updated on the database.
-     *     So processors can be used just to scan data without making any changes.
-     * </p>
-     * @param jobName Name for job
-     * @param searchId Id of search called to return candidates
-     * @param chunkSize Number of candidates to process at a time. This translates to the page size
-     *                  in the search query
-     * @param candidateProcessor Processor to execute on each candidate.
-     * @return the created batch up. It can be run by calling BatchJobService.launchJob
+     * Builder used to Create a simple single step Spring batch job which runs a processor over
+     * all candidates returned by a candidate source: saved list or search.
      */
     public class CandidateJobBuilder {
         private final String name;
         private SavedList savedList;
         private SavedSearch savedSearch;
         private final ItemProcessor<Candidate, Candidate> processor;
+
+        //Default values
         private int chunkSize = 100;
         private long maxDelayMs = 30000;
+        private int percentageOfCpu = 50;
 
+        /**
+         * Builder which can be used to creates a simple single step Spring batch job with the given
+         * name which calls the given processor on all candidates returned by the given search.
+         * @param name Name for job
+         * @param savedSearch Search called to return candidates
+         * @param processor Processor to execute on each candidate.
+         *    If the processor updates the candidate it is passed, it should return the candidate
+         *    that it has updated. However, if the processor does not update the candidate,
+         *    it should return null, in which case the candidate will not be updated on the database.
+         *    So processors can be used just to scan data without making any changes.
+         */
         public CandidateJobBuilder(
             String name, SavedSearch savedSearch, ItemProcessor<Candidate, Candidate> processor) {
             this.name = name;
@@ -109,6 +110,9 @@ public class CandidateJobFactory {
             this.processor = processor;
         }
 
+        /**
+         * See comments for above constructor - except that the source of candidates is a SavedList.
+         */
         public CandidateJobBuilder(
             String name, SavedList savedList, ItemProcessor<Candidate, Candidate> processor) {
             this.name = name;
@@ -116,13 +120,37 @@ public class CandidateJobFactory {
             this.processor = processor;
         }
 
+        /**
+         * Number of candidates to process at a time.
+         * This translates to the page size in the query.
+         * <p>
+         * Defaults to 100 candidates.
+         * </p>
+         */
         public CandidateJobBuilder chunkSize(int chunkSize){
             this.chunkSize = chunkSize;
             return this;
         }
 
+        /**
+         * Maximum delay in milliseconds between running chunks.
+         * <p>
+         * Defaults to 30,000 milliseconds.
+         * </p>
+         */
         public CandidateJobBuilder maxDelayMs(long maxDelayMs) {
             this.maxDelayMs = maxDelayMs;
+            return this;
+        }
+
+        /**
+         * Desired maximum CPU load
+         * <p>
+         * Defaults to 50. Must be greater than 0.
+         * </p>
+         */
+        public CandidateJobBuilder percentageOfCpu(int percentageOfCpu) {
+            this.percentageOfCpu = percentageOfCpu;
             return this;
         }
 
@@ -136,6 +164,11 @@ public class CandidateJobFactory {
             } else {
                throw new IllegalArgumentException("No saved search or saved list specified");
             }
+
+            if (percentageOfCpu <= 0) {
+                throw new IllegalArgumentException("Percentage of CPU must be greater than 0");
+            }
+
             CandidateWriter candidateWriter = new CandidateWriter(candidateRepository);
 
             RepeatTemplate repeatTemplate = new RepeatTemplate();
@@ -146,7 +179,7 @@ public class CandidateJobFactory {
                 new SimpleChunkProcessor<>(processor, candidateWriter);
 
             Tasklet adaptiveTasklet =
-                new AdaptiveDelayTasklet<>(chunkProvider, chunkProcessor, maxDelayMs);
+                new AdaptiveDelayTasklet<>(chunkProvider, chunkProcessor, percentageOfCpu, maxDelayMs);
 
             Step candidateStep =
                 new StepBuilder("candidateStep", jobRepository)
