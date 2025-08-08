@@ -1,9 +1,11 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 
 @Component({
   selector: 'app-tc-table',
   templateUrl: './tc-table.component.html',
-  styleUrls: ['./tc-table.component.scss']
+  styleUrls: ['./tc-table.component.scss'],
+  // This means the tc-table scss style only applies to <table> elements within the tc-table component
+  encapsulation: ViewEncapsulation.None
 })
 export class TcTableComponent {
 
