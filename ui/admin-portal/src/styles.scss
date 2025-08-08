@@ -98,6 +98,22 @@ h1 {
   margin-bottom: 2rem;
 }
 
+//Table row highlighting
+highlighting.table-hover> tbody> tr:hover{
+  background-color: $accent3
+}
+
+//Current item - the one whose detailed data is displayed
+tr.current {
+  background-color: fade-out($accent1, 0.7)
+}
+
+//Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
+tr.selected {
+  background-color: fade-out($accent1, 0.7)
+}
+//end - Table row highlighting
+
 .dropdown-btn > span {
   color: $accent2;
 }
@@ -221,5 +237,9 @@ ngx-wig {
 }
 
 .sortable-column-header:hover {
+  cursor: pointer;
+}
+
+tr.clickable:hover {
   cursor: pointer;
 }
