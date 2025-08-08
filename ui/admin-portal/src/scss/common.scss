@@ -41,6 +41,64 @@
     text-decoration: $link-hover-decoration;
   }
 }
+// TODO REMOVE THIS PAGINATION CSS ONCE MOVED OVER TO NEW STYLE
+.page-link {
+  position: relative;
+  display: block;
+  color: $accent1;
+  background-color: $accent3;
+  border-color: $light;
+
+  &:hover {
+    z-index: 2;
+    text-decoration: none;
+    background-color: $accent2;
+    color: $light;
+  }
+
+  &:focus {
+    z-index: 2;
+    outline: $pagination-focus-outline;
+    box-shadow: $pagination-focus-box-shadow;
+  }
+}
+
+.page-item {
+
+  &.active .page-link {
+    background-color: $accent2;
+    border-color: $accent2;
+  }
+
+  &.disabled .page-link {
+    color: $light;
+    background-color: $accent3;
+    pointer-events: none;
+    border-color: $light;
+    // Opinionated: remove the "hand" cursor set previously for .page-link
+    cursor: auto;
+  }
+}
+// TODO REMOVE THIS TABLE CSS ONCE MOVED OVER TO NEW STYLE
+table {
+  background-color: $white;
+  border: $white;
+  border-radius: 5px;
+  td {
+    white-space: nowrap;
+    a {
+      > i {
+        color: $info;
+        &:hover {
+          color: $accent1;
+        }
+      }
+      &:hover {
+        color: $secondary;
+      }
+    }
+  }
+}
 
 .card-header {
   background-color: $accent3 !important;
