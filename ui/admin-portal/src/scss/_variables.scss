@@ -28,34 +28,14 @@ $warning: #b0a007;
 $highlight: #ffff00;
 $danger: #a91206;
 
-//// Bootstrap SCSS variable overrides
-//// Accordion
-//$accordion-button-bg: $accent3;
-//$accordion-border-color: $light;
-//$accordion-button-active-bg: $accent1;
-//$accordion-button-active-color: $light;
-//
-//// Pagination
-//$pagination-bg: #FFFFFF;
-//$pagination-color: #09090B;
-//$pagination-active-bg: #FAFAFA;
-//$pagination-active-color: #242424;
-//$pagination-border-width: 0;
-//$pagination-hover-bg: #FAFAFA;
-//$pagination-hover-color: #09090B;
-//$pagination-hover-border-color: #FAFAFA;;
-//
-//// For navbar (testing)
-//$background-grey: #F7F7F7;
-//$body-bg: #FFFFFF;
-//
-//// Table variables
-//$table-striped-order: even;
-//$table-striped-bg: #FAFAFA;
-//$table-cell-padding-y: 10px;
-//$table-cell-padding-x: 24px;
-//
-//// Nav tabs
-//$nav-link-padding-x: 0.75rem;
-//
-//$offcanvas-horizontal-width: 40vw;
+// Bootstrap SCSS variable overrides
+// Accordion
+$accordion-button-bg: $accent3;
+$accordion-border-color: $light;
+$accordion-button-active-bg: $accent1;
+$accordion-button-active-color: $light;
+
+// Nav tabs
+$nav-link-padding-x: 0.75rem;
+
+$offcanvas-horizontal-width: 40vw;
