@@ -43,4 +43,50 @@ class CandidateSearchUtilsTest {
         s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "user.firstName"));
         Assertions.assertEquals(" ORDER BY users.first_name ASC,candidate.id DESC", s);
     }
+
+    @Test
+    void buildTsQuerySQLNullEmpty() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL(null);
+        Assertions.assertEquals("", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("   ");
+        Assertions.assertEquals("", s);
+    }
+
+    @Test
+    void buildTsQuerySQLOr() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("accounting excel");
+        Assertions.assertEquals("accounting | excel", s);
+    }
+
+    @Test
+    void buildTsQuerySQLAnd() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("accounting + excel");
+        Assertions.assertEquals("accounting & excel", s);
+    }
+
+    @Test
+    void buildTsQuerySQLQuote() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("\"accounting excel\"");
+        Assertions.assertEquals("accounting <-> excel", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("\"accounting excel powerpoint\"");
+        Assertions.assertEquals("accounting <-> excel <-> powerpoint", s);
+    }
+
+    @Test
+    void buildTsQuerySQLBrackets() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("(accounting excel) + powerpoint");
+        Assertions.assertEquals("(accounting | excel) & powerpoint", s);
+    }
 }

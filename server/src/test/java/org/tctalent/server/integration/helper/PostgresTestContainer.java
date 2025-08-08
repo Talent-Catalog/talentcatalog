@@ -144,7 +144,7 @@ public class PostgresTestContainer {
   // Utility methods
 
   private static String getImage() {
-    return "postgres:14";
+    return "pgvector/pgvector:0.8.0-pg17";
   }
 
   private static String[] createDatabaseCommand() {
