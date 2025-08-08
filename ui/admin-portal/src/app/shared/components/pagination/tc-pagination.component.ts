@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 
 export interface PageInfo {
   pageSize: number;
@@ -8,7 +8,8 @@ export interface PageInfo {
 @Component({
   selector: 'app-tc-pagination',
   templateUrl: './tc-pagination.component.html',
-  styleUrls: ['./tc-pagination.component.scss']
+  styleUrls: ['./tc-pagination.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class TcPaginationComponent {
   @Input() totalElements: number;
