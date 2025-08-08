@@ -123,7 +123,7 @@
 
 <div *ngIf="!loading">
 
-  <app-tc-table [totalElements]="results?.totalElements"
+  <tc-table [totalElements]="results?.totalElements"
                 [pageSize]="pageSize" [(pageNumber)]="pageNumber" (pageChange)="search()" >
       <!--          Header-->
       <thead>
@@ -181,5 +181,5 @@
       </tr>
 
       </tbody>
-  </app-tc-table>
+  </tc-table>
 </div>
