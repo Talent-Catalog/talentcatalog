@@ -17,15 +17,17 @@ export class TcPaginationComponent {
   @Output() pageChange = new EventEmitter<number>();
 
   onPageChange(newPageNumber: number) {
-    this.pageNumber = newPageNumber
-    this.pageChange.emit(newPageNumber);
+    if (newPageNumber >= 1) {
+      this.pageNumber = newPageNumber
+      this.pageChange.emit(newPageNumber);
+    }
   }
 
   // See NGB Pagination doc for this custom example: https://ng-bootstrap.github.io/#/components/pagination/examples#customization
   selectPage(page: string) {
-    this.pageNumber = parseInt(page, 10) || 1;
-    this.pageChange.emit(this.pageNumber);
+    this.onPageChange(parseInt(page, 10) || 1);
   }
+
   formatInput(input: HTMLInputElement) {
     const FILTER_PAG_REGEX = /[^0-9]/g;
     input.value = input.value.replace(FILTER_PAG_REGEX, '');
