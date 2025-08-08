@@ -63,7 +63,8 @@ public class AdaptiveDelayTasklet<I> implements Tasklet {
     long processingTime = System.currentTimeMillis() - start;
     long delay = Math.min(computeDelay(processingTime), maxDelayMs);
 
-    System.out.printf("Processed chunk in %d ms. Sleeping for %d ms.%n", processingTime, delay);
+    chunkContext.setAttribute("processingTime", processingTime);
+    chunkContext.setAttribute("delay", delay);
 
     if (status == RepeatStatus.FINISHED) {
       return RepeatStatus.FINISHED;

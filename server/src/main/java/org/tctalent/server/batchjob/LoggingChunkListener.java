@@ -21,7 +21,9 @@ public class LoggingChunkListener implements ChunkListener {
   public void afterChunk(ChunkContext context) {
     LogBuilder.builder(log)
         .action("Chunk processed successfully")
-        .message("Chunk details: " + context.getStepContext().getStepExecution())
+        .message("Processing time: " + context.getAttribute("processingTime")
+            + " | Delay: " + context.getAttribute("delay")
+            + " | Chunk details: " + context.getStepContext().getStepExecution())
         .logInfo();
   }
 
