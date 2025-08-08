@@ -2562,9 +2562,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     }
 
     public void updateText() {
-        String combinedText = getCandidateJobExperiences().stream()
+        String combinedJobText = getCandidateJobExperiences().stream()
             .map(CandidateJobExperience::getDescription)
             .collect(Collectors.joining(" || "));
-        this.text = combinedText;
+        String combinedCvText = getCandidateAttachments().stream()
+            .filter(CandidateAttachment::isCv)
+            .map(CandidateAttachment::getTextExtract)
+            .collect(Collectors.joining(" || "));
+        this.text = combinedJobText + " || " + combinedCvText;
     }
 }
