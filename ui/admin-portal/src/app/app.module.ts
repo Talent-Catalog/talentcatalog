@@ -575,10 +575,11 @@ import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-p
 import {
   EditMaxEducationLevelComponent
 } from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
+import {SharedModule} from "./shared/shared.module";
 import {
   ChatMuteToggleButtonComponent
 } from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
-import {SharedModule} from "./shared/shared.module";
+
 
 @NgModule({
   declarations: [
