@@ -175,10 +175,7 @@ public class CandidateJobFactory {
 
             CandidateWriter candidateWriter = new CandidateWriter(candidateRepository);
 
-            RepeatTemplate repeatTemplate = new RepeatTemplate();
-            repeatTemplate.setCompletionPolicy(new SimpleCompletionPolicy(chunkSize));
-            final Tasklet adaptiveTasklet =
-                getAdaptiveTasklet(candidateReader, repeatTemplate, candidateWriter);
+            final Tasklet adaptiveTasklet = getAdaptiveTasklet(candidateReader, candidateWriter);
 
             Step candidateStep =
                 new StepBuilder("candidateStep", jobRepository)
@@ -194,10 +191,10 @@ public class CandidateJobFactory {
 
         @NonNull
         private Tasklet getAdaptiveTasklet(
-            CandidateReader candidateReader,
-            RepeatTemplate repeatTemplate,
-            CandidateWriter candidateWriter) {
+            CandidateReader candidateReader, CandidateWriter candidateWriter) {
 
+            RepeatTemplate repeatTemplate = new RepeatTemplate();
+            repeatTemplate.setCompletionPolicy(new SimpleCompletionPolicy(chunkSize));
             SimpleChunkProvider<Candidate> chunkProvider =
                 new SimpleChunkProvider<>(candidateReader, repeatTemplate);
             SimpleChunkProcessor<Candidate, Candidate> chunkProcessor =

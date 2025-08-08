@@ -34,6 +34,13 @@ public class AdaptiveDelayTasklet<I> implements Tasklet {
   private final int percentageOfCpu;
   private final long maxDelayMs;
 
+  /**
+   * Tasklet that just delegates to the standard chunking tasklet - allowing us to manage
+   * delays between chunk processing.
+   * @param delegate Standard chunking tasklet
+   * @param percentageOfCpu Desired maximum CPU load
+   * @param maxDelayMs Maximum delay in milliseconds between running chunks
+   */
   public AdaptiveDelayTasklet(
       ChunkOrientedTasklet<I> delegate,
       int percentageOfCpu,
