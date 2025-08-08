@@ -68,7 +68,7 @@ public class AdaptiveDelayTasklet<I> implements Tasklet {
 
     System.out.printf("Processed chunk in %d ms. Sleeping for %d ms.%n", processingTime, delay);
 
-    Thread.sleep(delay); // synchronous, no session loss
+    Thread.sleep(delay);
 
     return RepeatStatus.CONTINUABLE;
   }
