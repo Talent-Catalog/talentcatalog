@@ -209,6 +209,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       minAge: [null],
       maxAge: [null],
       minEducationLevel: [],
+      maxEducationLevel: [],
       educationMajorIds: [[]],
       surveyTypeIds: [[]],
       miniIntakeCompleted: [null],
