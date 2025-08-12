@@ -38,6 +38,8 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateSearchService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.CandidateSearchUtils;
+import org.tctalent.server.util.textExtract.IdAndRank;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +52,59 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
     private final CandidateRepository candidateRepository;
     private final UserService userService;
 
+    /**
+     * Overview of searching:
+     * <ol>
+     *    <li>
+     *        Construct a query which collects the sorted candidate ids of a page of candidates who
+     *        match the given search request.
+     *        This request will look like:
+     *        <p>
+     *           <code>
+     *              select distinct candidate.id from candidate ...
+     *              <br>
+     *              where ...
+     *              <br>
+     *              order by ...
+     *           </code>
+     *        </p>
+     *    </li>
+     *    <li>
+     *      Construct a very similar query which counts the total number of candidates matching
+     *      the search request. This count is used to support paging.
+     *      This request will look like:
+     *        <p>
+     *           <code>
+     *              select count(distinct candidate.id) from candidate ...
+     *              <br>
+     *              where ...
+     *           </code>
+     *        </p>
+     *        <p>
+     *            Note that there is no order by. It is unnecessary to get the total count. But the
+     *            where clause is the same for both queries.
+     *        </p>
+     *    </li>
+     *    <li>
+     *        Retrieve the candidate entities for the page of id's that are returned in the first
+     *        query and sort those candidates in the same order as the retrieved ids.
+     *    </li>
+     *    <li>
+     *        <p>
+     *        If the original query was sorted by a computed ranking then the ranking values will
+     *        have been returned in the results of the first query. Those ranks are
+     *        added to the candidate entity data so that they can be displayed to the user.
+     *        </p>
+     *        <p>
+     *           Matching keywords against a candidate's text data is an example of a ranking.
+     *           Close matches will display a higher ranking.
+     *        </p>
+     *    </li>
+     * </ol>
+     * @param request Specifies the details of the search
+     * @param excludedCandidates If specified, indicates candidates to be excluded from the search.
+     * @return A page of candidates
+     */
     @Override
     public Page<Candidate> searchCandidates(
         SearchCandidateRequest request, Set<Candidate> excludedCandidates) {
@@ -64,7 +119,15 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         Query query = entityManager.createNativeQuery(sql);
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
-        List<Long> ids = executeIdsQuery(query);
+
+        //Get results
+        final List<?> results = query.getResultList();
+        //Process the results
+        List<IdAndRank> idAndRanks =
+            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+
+        //Get ids of sorted candidates
+        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
         List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
@@ -76,8 +139,16 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
 
         //Construct a sorted list of the candidates in the same order as the returned ids.
         List<Candidate> candidatesSorted = new ArrayList<>();
-        for (Long id : ids) {
-            candidatesSorted.add(candidatesById.get(id));
+        for (IdAndRank idAndRank : idAndRanks) {
+            final Candidate candidate = candidatesById.get(idAndRank.id());
+
+            //Optionally update candidate data with any ranking values.
+            final Number rank = idAndRank.rank();
+            //Rank is a transient field so no need to set to null
+            if (rank != null) {
+                candidate.setRank(rank);
+            }
+            candidatesSorted.add(candidate);
         }
 
         //Compute count
@@ -88,22 +159,4 @@ public class CandidateSearchServiceImpl implements CandidateSearchService {
         return new PageImpl<>(candidatesSorted, pageRequest, total);
 
     }
-
-    private List<Long> executeIdsQuery(Query query) {
-        //Get results
-        final List<?> results = query.getResultList();
-        //and convert to List of Longs
-        return results.stream()
-            .map(r -> {
-                long id;
-                if (r instanceof Object[] arr) {
-                    id = ((Number) arr[0]).longValue();
-                } else {
-                    id = ((Number) r).longValue();
-                }
-                return id;
-            })
-            .toList();
-    }
-
 }

@@ -396,6 +396,15 @@
           <thead class="table-primary">
           <tr>
             <th></th>
+            <th *ngIf="displayTextMatchRank()">
+              <ng-container (click)="toggleSort('text_match')">
+                <div (click)="toggleSort('text_match')" class="sortable-column-header">
+                  <app-sorted-by [column]="'text_match'" [sortColumn]="sortField"
+                                 [sortDirection]="sortDirection"></app-sorted-by>
+                  Rank
+                </div>
+              </ng-container>
+            </th>
             <th *ngIf="isReviewable()">
               <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
             </th>
@@ -478,6 +487,9 @@
                     </li>
                   </ul>
                 </div>
+              </td>
+              <td *ngIf="displayTextMatchRank()">
+                {{candidate.rank}}
               </td>
               <td *ngIf="isReviewable()">
                 <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."

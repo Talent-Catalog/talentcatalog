@@ -21,11 +21,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
+import org.tctalent.server.util.textExtract.IdAndRank;
 
 /**
  * Helpers for performing Candidate Searches
@@ -62,6 +65,8 @@ public abstract class CandidateSearchUtils {
             "users on candidate.user_id = users.id");
     }
 
+    public static final String CANDIDATE_TS_TEXT_FIELD = "candidate.ts_text";
+
     /**
      * Generates ORDER BY clause given a Sort.
      * @param sort Sort specifying fields and direction
@@ -87,7 +92,12 @@ public abstract class CandidateSearchUtils {
         String orderBy = sort.stream()
             .map( order -> {
                 String propertyName = order.getProperty();
-                String column = mapPropertyNameToDbField(propertyName);
+                String column;
+                if (propertyName.equals("text_match")) {
+                    column = "rank";
+                } else {
+                    column = mapPropertyNameToDbField(propertyName);
+                }
                 return column + " " + order.getDirection().name();
             })
             .collect(Collectors.joining(","));
@@ -98,16 +108,26 @@ public abstract class CandidateSearchUtils {
     /**
      * Generates list of fields in the given Sort excluding the default id field
      * @param sort Sort specifying fields
+     * @param textQuery Text query
      * @return list of non id fields delimited by comma, if any. If none, returns an empty string.
      */
-    public static @NonNull String buildNonIdFieldList(Sort sort) {
+    public static @NonNull String buildNonIdFieldList(Sort sort, @Nullable String textQuery) {
         String fields = "";
         if (sort != null && !sort.isUnsorted()) {
             //Excluding the id field, map other fields
             fields = sort.stream()
                 .map(Order::getProperty)
                 .filter(property -> !property.equals("id"))
-                .map(CandidateSearchUtils::mapPropertyNameToDbField)
+                .map(propertyName -> {
+                    String s;
+                    if (propertyName.equals("text_match")) {
+                        s = "ts_rank(" + CANDIDATE_TS_TEXT_FIELD + ","
+                            + buildToTsQueryFunction(textQuery) + ") as rank";
+                    } else {
+                        s = mapPropertyNameToDbField(propertyName);
+                    }
+                    return s;
+                })
                 .collect(Collectors.joining(","));
         }
 
@@ -144,14 +164,27 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
+     * Builds the Postgres to_tsquery function suitable for inserting into Postgres text matching
+     * SQL.
+     * @param esQuery  Elasticsearch simple query. If null, it will return an empty string.
+     * @return to_tsquery function call suitable for inserting into Postgres SQL
+     */
+    public static @NonNull String buildToTsQueryFunction(@Nullable String esQuery) {
+        return "to_tsquery('english','" + buildTsQuerySQL(esQuery) + "')";
+    }
+
+    /**
      * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
      * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
      * @return Postgres tsQuery SQL
      */
     public static @NonNull String buildTsQuerySQL(@Nullable String esQuery) {
-        if (esQuery == null || esQuery.trim().isEmpty()) {
+        if (!StringUtils.hasText(esQuery)) {
             return "";
         }
+
+        //Trim leading or trailing spaces - they confuse the regex below
+        esQuery = esQuery.trim();
 
         // Step 1: Handle quoted phrases: "quick brown" => quick <-> brown
         StringBuilder result = new StringBuilder();
@@ -192,6 +225,22 @@ public abstract class CandidateSearchUtils {
 
     public static String getTableJoin(String table) {
         return tableJoins.get(table);
+    }
+
+    /**
+     * True if the first sorting order is by computed rank (eg a "text_match" sort).
+     * @param sort Sort to be tested
+     * @return True if sorted by a computed ranking.
+     */
+    private static boolean isSortedByRank(Sort sort) {
+        boolean sortedByRank = false;
+        if (sort != null && !sort.isUnsorted()) {
+            final Optional<Order> firstOrder = sort.stream().findFirst();
+            if (firstOrder.isPresent()) {
+                sortedByRank = firstOrder.get().getProperty().equals("text_match");
+            }
+        }
+        return sortedByRank;
     }
 
     /**
@@ -255,5 +304,33 @@ public abstract class CandidateSearchUtils {
         propertyName = propertyName.replace("user.", "users.");
 
         return RegexHelpers.camelToSnakeCase(propertyName);
+    }
+
+    /**
+     * Convert untyped results into the standard form of a List of id and optional rank.
+     * @param results Untyped results
+     * @param sort The sort associated with the query that the results are associated with. Rank
+     *             will only be decoded if the sort was by rank.
+     * @return Decoded results.
+     */
+    public static List<IdAndRank> processIdRankSearchResults(List<?> results, Sort sort) {
+        //Convert results to List of IdAndRank.
+        //Rank will only be populated if the query was sorted by rank.
+        final boolean sortedByRank = isSortedByRank(sort);
+        return results.stream()
+            .map(r -> {
+                long id;
+                Number rank = null;
+                if (r instanceof Object[] arr) {
+                    id = ((Number) arr[0]).longValue();
+                    if (arr.length > 1 && sortedByRank && arr[1] instanceof Number) {
+                        rank = (Number) arr[1];
+                    }
+                } else {
+                    id = ((Number) r).longValue();
+                }
+                return new IdAndRank(id, rank);
+            })
+            .toList();
     }
 }

@@ -141,6 +141,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String partnerRef;
 
     /**
+     * This can be set to define an optional ranking associated with the candidate as a result
+     * of some kind of sorting logic.
+     */
+    @Transient
+    @Nullable
+    private Number rank;
+
+    /**
      * If null the candidate registered themselves.
      * If not null, the candidate was registered through the public API by the given partner.
      */
@@ -1968,6 +1976,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public String getLeftHomeNotes() { return leftHomeNotes; }
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
+
+    public @Nullable Number getRank() {
+        return rank;
+    }
+
+    public void setRank(@Nullable Number rank) {
+        this.rank = rank;
+    }
 
     @Nullable
     public PartnerImpl getRegisteredBy() {
