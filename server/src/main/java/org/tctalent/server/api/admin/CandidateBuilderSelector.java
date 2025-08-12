@@ -123,6 +123,10 @@ public class CandidateBuilderSelector {
 
     @NonNull
     public DtoBuilder selectBuilder(DtoType type) {
+        if (DtoType.PUBLIC_ID_ONLY.equals(type)) {
+            return publicIdOnlyCandidateDto();
+        }
+
         if (DtoType.MINIMAL.equals(type)) {
             return minimalCandidateDto();
         }
@@ -340,6 +344,12 @@ public class CandidateBuilderSelector {
                 .add("partner", partnerDto())
                 .add("emailVerified")
                 ;
+    }
+
+    private DtoBuilder publicIdOnlyCandidateDto() {
+        return new DtoBuilder()
+            .add("publicId")
+            ;
     }
 
     private DtoBuilder minimalCandidateDto() {
