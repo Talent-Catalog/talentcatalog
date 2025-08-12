@@ -16,20 +16,21 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {ButtonComponent} from './components/button/button.component';
 import { DescriptionListComponent } from './components/description-list/description-list.component';
 import { DescriptionDetailsComponent } from './components/description-list/description-details/description-details.component';
 import { DescriptionTermComponent } from './components/description-list/description-term/description-term.component';
 
 @NgModule({
-  declarations: [
+  declarations: [ButtonComponent,
     DescriptionListComponent,
     DescriptionDetailsComponent,
-    DescriptionTermComponent,
-  ],
+    DescriptionTermComponent,],
   imports: [
     CommonModule,
   ],
   exports: [
+    ButtonComponent,
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,

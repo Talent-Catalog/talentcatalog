@@ -45,8 +45,8 @@ import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.repository.db.CandidateQueryHelper;
 import org.tctalent.server.request.PagedSearchRequest;
+import org.tctalent.server.util.CandidateSearchUtils;
 
 /*
   TODO Fix this whole messy confusion around the relationships between SavedSearch
@@ -102,6 +102,8 @@ import org.tctalent.server.request.PagedSearchRequest;
 @Setter
 @ToString(callSuper = true)
 public class SearchCandidateRequest extends PagedSearchRequest {
+
+    private boolean pgOnlySqlSearch;
 
     private String simpleQueryString;
     @NotNull
@@ -175,17 +177,53 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     }
 
     /**
-     * Extracts the database query SQL corresponding to the given search request.
-     *
-     * @param nativeQuery True if native database SQL is required, otherwise JPQL is returned
+     * @see #extractSQL(User, Collection)
+     */
+    public String extractSQL() {
+        return extractSQL(null, null);
+    }
+
+    /**
+     * <p>
+     * Extracts the where clause of database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The where clause assumes that it is associated with a SELECT FROM candidate.
+     *     In particular joins will assume that the candidate table is at the root.
+     * </p>
+     * <p>
+     *     For example, if the SQL is being used to retrieve all candidate ids matching the query
+     *     your code might look like this:
+     * </p>
+     * <p>
+     * <code>
+     *    String whereClauseSql = searchRequest.extractSQL();
+     * </code>
+     * </p>
+     * <p>
+     * <code>
+     *    String querySql = "select distinct candidate.id from candidate" + whereClauseSql;
+     * </code>
+     * </p>
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
      * @return String containing the SQL or JPQL
      */
-    public String extractSQL(boolean nativeQuery,
-        @Nullable User user,
-        @Nullable Collection<Candidate> excludedCandidates) {
+    public String extractSQL(
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
 
         Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
+
+        //Text search
+        if (getSimpleQueryString() != null && !getSimpleQueryString().isEmpty()) {
+            joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_JOB_EXPERIENCE__JOIN__NATIVE);
+            String tsquery = CandidateSearchUtils.buildTsQuerySQL(getSimpleQueryString());
+            String clause = "candidate_job_experience.ts @@ to_tsquery('english', '" + tsquery + "')";
+            ands.add(clause);
+        }
 
         // STATUS SEARCH
         if (!ObjectUtils.isEmpty(getStatuses())) {
@@ -196,7 +234,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // Occupations SEARCH
         if (!ObjectUtils.isEmpty(getOccupationIds())) {
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE);
             String values = getOccupationIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("candidate_occupation.occupation_id in (" + values + ")");
@@ -249,7 +287,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // PARTNER SEARCH
         if (!ObjectUtils.isEmpty(getPartnerIds())) {
-            joins.add(CandidateQueryHelper.CANDIDATE__USER__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__USER__JOIN__NATIVE);
             String values = getPartnerIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("users.partner_id in (" + values + ")");
@@ -305,7 +343,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // EDUCATION LEVEL SEARCH
         if (getMinEducationLevel() != null) {
-            joins.add(CandidateQueryHelper.CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE);
             ands.add("education_level.level >= " + getMinEducationLevel());
         }
 
@@ -331,7 +369,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         if (!ObjectUtils.isEmpty(getEducationMajorIds())) {
             String values = getEducationMajorIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE);
             ands.add("(major_id in (" + values + ") "
                 + "or migration_education_major_id in (" + values + "))");
         }
@@ -341,38 +379,38 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             || getOtherLanguageId() != null
             || getOtherMinSpokenLevel() != null || getOtherMinWrittenLevel() != null) {
 
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE);
-            joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE);
+            joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE);
 
             if (getEnglishMinSpokenLevel() != null && getEnglishMinWrittenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
                 ands.add("lower(language.name) = 'english'");
                 ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
                 ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
             } else if (getEnglishMinSpokenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
                 ands.add("lower(language.name) = 'english'");
                 ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
             } else if (getEnglishMinWrittenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
                 ands.add("lower(language.name) = 'english'");
                 ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
             }
 
             if (getOtherLanguageId() != null) {
                 if (getOtherMinSpokenLevel() != null && getOtherMinWrittenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                    joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                    joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
                     ands.add("written_level.level >= " + getOtherMinWrittenLevel());
                 } else if (getOtherMinSpokenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                    joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
                 } else if (getOtherMinWrittenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                    joins.add(CandidateSearchUtils.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("written_level.level >= " + getOtherMinWrittenLevel());
                 }
@@ -382,7 +420,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         String joinClause = String.join(" left join ", joins);
         String whereClause = String.join(" and ", ands);
 
-        String query = "select distinct candidate.id from candidate";
+        String query = "";
         if (!joinClause.isEmpty()) {
             query += " left join " + joinClause;
         }
@@ -391,13 +429,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         return query;
-    }
-
-    /**
-     * @see #extractSQL(boolean, User, Collection)
-     */
-    public String extractSQL(boolean nativeQuery) {
-        return extractSQL(nativeQuery, null, null);
     }
 
     /**

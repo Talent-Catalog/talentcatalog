@@ -1,0 +1,92 @@
+/*
+ * Copyright (c) 2025 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+package org.tctalent.server.util;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
+
+class CandidateSearchUtilsTest {
+
+    @BeforeEach
+    void setUp() {
+    }
+
+    @Test
+    void buildOrderByClause() {
+        String s;
+
+        s = CandidateSearchUtils.buildOrderByClause(null);
+        Assertions.assertEquals(" ORDER BY candidate.id DESC", s);
+
+        s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "id"));
+        Assertions.assertEquals(" ORDER BY candidate.id ASC", s);
+
+        s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "status"));
+        Assertions.assertEquals(" ORDER BY candidate.status ASC,candidate.id DESC", s);
+
+        s = CandidateSearchUtils.buildOrderByClause(Sort.by(Sort.Direction.ASC, "user.firstName"));
+        Assertions.assertEquals(" ORDER BY users.first_name ASC,candidate.id DESC", s);
+    }
+
+    @Test
+    void buildTsQuerySQLNullEmpty() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL(null);
+        Assertions.assertEquals("", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("   ");
+        Assertions.assertEquals("", s);
+    }
+
+    @Test
+    void buildTsQuerySQLOr() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("accounting excel");
+        Assertions.assertEquals("accounting | excel", s);
+    }
+
+    @Test
+    void buildTsQuerySQLAnd() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("accounting + excel");
+        Assertions.assertEquals("accounting & excel", s);
+    }
+
+    @Test
+    void buildTsQuerySQLQuote() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("\"accounting excel\"");
+        Assertions.assertEquals("accounting <-> excel", s);
+
+        s = CandidateSearchUtils.buildTsQuerySQL("\"accounting excel powerpoint\"");
+        Assertions.assertEquals("accounting <-> excel <-> powerpoint", s);
+    }
+
+    @Test
+    void buildTsQuerySQLBrackets() {
+        String s;
+
+        s = CandidateSearchUtils.buildTsQuerySQL("(accounting excel) + powerpoint");
+        Assertions.assertEquals("(accounting | excel) & powerpoint", s);
+    }
+}
