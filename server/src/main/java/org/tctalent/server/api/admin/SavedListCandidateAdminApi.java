@@ -196,6 +196,11 @@ public class SavedListCandidateAdminApi implements
         return builder.buildPage(candidates);
     }
 
+    @Override
+    public @NotNull Set<String> fetchPublicIds(String publicListId) throws NoSuchObjectException {
+        return savedListService.fetchCandidatePublicIds(publicListId);
+    }
+
     /**
      * Creates a new SavedList and initializes it's contents.
      * <p>
