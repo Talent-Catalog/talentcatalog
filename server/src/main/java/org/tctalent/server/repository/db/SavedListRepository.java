@@ -78,4 +78,14 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
     @Query(value = "select csl.candidate_id from candidate_saved_list csl "
         + "where csl.saved_list_id in (:listIds)", nativeQuery = true)
     Set<Long> findUnionOfCandidates(@Param("listIds") List<Long> listIds);
+
+    @Query(value = """
+        select c.public_id
+        from candidate_saved_list csl
+        join saved_list sl on csl.saved_list_id = sl.id
+        join candidate c on csl.candidate_id = c.id
+        where sl.public_id in (:publicListIds)
+        """, nativeQuery = true)
+    Set<String> findCandidatePublicIdsBySavedListPublicIds(@Param("publicListIds") List<String> publicListIds);
+
 }
