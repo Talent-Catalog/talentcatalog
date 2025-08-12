@@ -19,11 +19,20 @@ public class LoggingChunkListener implements ChunkListener {
 
   @Override
   public void afterChunk(ChunkContext context) {
+    String s = "";
+
+    //Check for extra attributes added if AdaptiveDelayTasklet is used.
+    if (context.hasAttribute("processingTime"))  {
+      s += "Processing time: " + context.getAttribute("processingTime") + " | ";
+    }
+    if (context.hasAttribute("delay"))  {
+      s += "Delay: " + context.getAttribute("delay") + " | ";
+    }
+    s += "Chunk details: " + context.getStepContext().getStepExecution();
+
     LogBuilder.builder(log)
         .action("Chunk processed successfully")
-        .message("Processing time: " + context.getAttribute("processingTime")
-            + " | Delay: " + context.getAttribute("delay")
-            + " | Chunk details: " + context.getStepContext().getStepExecution())
+        .message(s)
         .logInfo();
   }
 
