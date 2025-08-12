@@ -19,6 +19,7 @@ package org.tctalent.server.util;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * Helpers for performing Candidate Searches
@@ -26,6 +27,24 @@ import org.springframework.lang.NonNull;
  * @author John Cameron
  */
 public abstract class CandidateSearchUtils {
+    public static final String CANDIDATE__USER__JOIN__NATIVE =
+        "users on candidate.user_id = users.id";
+    public static final String CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE =
+        "education_level on candidate.max_education_level_id = education_level.id";
+    public static final String CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE =
+        "candidate_education on candidate.id = candidate_education.candidate_id";
+    public static final String CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE =
+        "candidate_occupation on candidate.id = candidate_occupation.candidate_id";
+    public static final String CANDIDATE__CANDIDATE_JOB_EXPERIENCE__JOIN__NATIVE =
+        "candidate_job_experience on candidate.id = candidate_job_experience.candidate_id";
+    public static final String CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE =
+        "candidate_language on candidate.id = candidate_language.candidate_id";
+    public static final String CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE =
+        "language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id";
+    public static final String CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE =
+        "language_level as written_level on candidate_language.written_level_id = written_level_id";
+    public static final String CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE =
+        "language on candidate_language.language_id = language.id";
 
     /**
      * Generates ORDER BY clause given a Sort.
@@ -58,6 +77,53 @@ public abstract class CandidateSearchUtils {
             .collect(Collectors.joining(","));
 
         return orderBy.isEmpty() ? "" : " ORDER BY " + orderBy;
+    }
+
+    /**
+     * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
+     * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
+     * @return Postgres tsQuery SQL
+     */
+    public static @NonNull String buildTsQuerySQL(@Nullable String esQuery) {
+        if (esQuery == null || esQuery.trim().isEmpty()) {
+            return "";
+        }
+
+        // Step 1: Handle quoted phrases: "quick brown" => quick <-> brown
+        StringBuilder result = new StringBuilder();
+        boolean inQuote = false;
+        StringBuilder phraseBuffer = new StringBuilder();
+        for (int i = 0; i < esQuery.length(); i++) {
+            char c = esQuery.charAt(i);
+            if (c == '"') {
+                inQuote = !inQuote;
+                if (!inQuote) {
+                    // End of quote
+                    String phrase = phraseBuffer.toString().trim().replaceAll("\\s+", "<->");
+                    result.append(phrase);
+                    phraseBuffer.setLength(0);
+                }
+                continue;
+            }
+            if (inQuote) {
+                phraseBuffer.append(c);
+            } else {
+                result.append(c);
+            }
+        }
+
+        String intermediate = result.toString();
+
+        // Step 2: Handle operators
+        String tsquery = intermediate
+            .replaceAll("\\s+\\+\\s+", "&") // + -> &
+            .replaceAll("\\s+", "|") // spaces -> |
+            //Now add space padding back in around operators
+            .replaceAll("&", " & ")
+            .replaceAll("\\|", " | ")
+            .replaceAll("<->", " <-> ");
+
+        return tsquery.trim();
     }
 
     private static @NonNull String mapPropertyNameToDbField(String propertyName) {

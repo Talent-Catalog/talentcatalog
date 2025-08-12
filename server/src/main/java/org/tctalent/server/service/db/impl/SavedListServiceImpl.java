@@ -987,13 +987,11 @@ public class SavedListServiceImpl implements SavedListService {
             //For job lists where publishClosedOpps is false, filter out closed opps (unless they
             //are "won" - we always publish won opps, which are a special kind of closed).
             candidates = savedList.getCandidates().stream().filter(
-                candidate -> {
-                    return candidate.getCandidateOpportunities().stream()
-                        .anyMatch(opp -> {
-                            return opp.getJobOpp().getId().equals(sfJob.getId())
-                                && (opp.isWon() || !opp.isClosed());
-                        });
-                }
+                candidate ->
+                    candidate.getCandidateOpportunities()
+                    .stream()
+                    .anyMatch(opp -> opp.getJobOpp().getId().equals(sfJob.getId())
+                            && (opp.isWon() || !opp.isClosed()))
             ).toList();
         } else {
             //Publish all for non job lists, or job lists where we have been asked to publish all
@@ -1071,6 +1069,15 @@ public class SavedListServiceImpl implements SavedListService {
         return savedListRepository.findUnionOfCandidates(Collections.singletonList(listId));
     }
 
+    @NonNull
+    @Override
+    public Set<String> fetchCandidatePublicIds(String publicListId) {
+        return savedListRepository
+            .findCandidatePublicIdsBySavedListPublicIds(
+                Collections.singletonList(publicListId)
+            );
+    }
+
     @Nullable
     @Override
     public Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds) {
@@ -1079,6 +1086,21 @@ public class SavedListServiceImpl implements SavedListService {
             candidateIds = null;
         } else {
             candidateIds = savedListRepository.findUnionOfCandidates(listIds);
+        }
+        return candidateIds;
+    }
+
+    @Nullable
+    @Override
+    public Set<String> fetchUnionCandidatePublicIds(@Nullable List<String> publicListIds) {
+        Set<String> candidateIds;
+        if (publicListIds == null) {
+            candidateIds = null;
+        } else {
+            candidateIds = savedListRepository
+                .findCandidatePublicIdsBySavedListPublicIds(
+                    publicListIds
+                );
         }
         return candidateIds;
     }
@@ -1103,6 +1125,28 @@ public class SavedListServiceImpl implements SavedListService {
             }
         }
         return candidateIds;
+    }
+
+    @Nullable
+    @Override
+    public Set<String> fetchIntersectionCandidatePublicIds(@Nullable List<String> publicListIds) {
+        Set<String> candidatePublicIds;
+        if (publicListIds == null) {
+            candidatePublicIds = null;
+        } else {
+            final Iterator<String> iterator = publicListIds.iterator();
+            if (iterator.hasNext()) {
+                candidatePublicIds = fetchCandidatePublicIds(iterator.next());
+                while (iterator.hasNext() && !candidatePublicIds.isEmpty()) {
+                    String nextPublicListId = iterator.next();
+                    candidatePublicIds.retainAll(fetchCandidatePublicIds(nextPublicListId));
+                }
+            } else {
+                // No lists provided. Return empty set of candidate public ids.
+                candidatePublicIds = new HashSet<>();
+            }
+        }
+        return candidatePublicIds;
     }
 
     @Nullable
