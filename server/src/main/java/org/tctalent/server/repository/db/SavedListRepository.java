@@ -88,4 +88,15 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
         """, nativeQuery = true)
     Set<String> findCandidatePublicIdsBySavedListPublicIds(@Param("publicListIds") List<String> publicListIds);
 
+    /**
+     * Retrieves a SavedList by its public ID.
+     * <p/>
+     * No explicit query is needed here — Spring Data JPA will automatically generate the query
+     * based on the method name.
+     *
+     * @param publicId the public ID of the SavedList
+     * @return Optional containing the SavedList if found
+     */
+    Optional<SavedList> findByPublicId(String publicId);
+
 }
