@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -74,9 +73,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
-
-    @Value("${aws.s3.bucketName}")
-    String s3Bucket;
 
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
@@ -222,7 +218,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // Update candidate audit fields
         candidate.setAuditFields(user);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate, true, request.getCv());
 
         return candidateAttachmentRepository.save(attachment);
     }
