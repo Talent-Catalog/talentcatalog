@@ -218,7 +218,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // Update candidate audit fields
         candidate.setAuditFields(user);
-        candidateService.save(candidate, true, request.getCv());
+        boolean updateCandidateText = request.getCv() != null ? request.getCv() : false;
+        candidateService.save(candidate, true, updateCandidateText);
 
         return candidateAttachmentRepository.save(attachment);
     }
