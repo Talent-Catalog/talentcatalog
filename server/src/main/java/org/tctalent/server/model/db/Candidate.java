@@ -220,6 +220,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private CandidateStatus status;
 
     /**
+     * Computed field of all searchable text associated with the candidate.
+     * <p/>
+     * Updated in {@link #updateText}
+     */
+    private String text;
+
+    /**
      * ID of corresponding candidate record in Elasticsearch
      * @see CandidateEs#getId()
      */
@@ -2532,5 +2539,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setRelocatedCountry(Country relocatedCountry) {
         this.relocatedCountry = relocatedCountry;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void updateText() {
+        String combinedText = getCandidateJobExperiences().stream()
+            .map(CandidateJobExperience::getDescription)
+            .collect(Collectors.joining(" || "));
+        this.text = combinedText;
     }
 }

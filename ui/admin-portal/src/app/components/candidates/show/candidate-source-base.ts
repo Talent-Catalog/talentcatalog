@@ -144,10 +144,21 @@ export class CandidateSourceBaseComponent {
     //  Need do defaulting in search request, then pick up actual info from returned results.
     //  Currently server sends back used page number and size but does not echo back sort info.
     //  It should be changed to do so.
+
     this.pageNumber = this.pageNumber || 1;
     this.pageSize = this.pageSize || defaultPageSize;
-    this.sortField = this.sortField || 'id';
-    this.sortDirection = this.sortDirection || 'DESC';
+
+    //Use candidateSource to default sort based on whether or not there is a query string
+    let defaultSortField = 'id';
+    let defaultSortDirection = 'DESC';
+    if (isSavedSearch(this.candidateSource)) {
+      if (this.candidateSource.simpleQueryString != null) { //todo or empty string
+        // defaultSortField = 'text' //todo Maybe this should be 'rank' - and give it a column
+      }
+    }
+
+    this.sortField = this.sortField || defaultSortField;
+    this.sortDirection = this.sortDirection || defaultSortDirection;
 
     //Create the appropriate request
     const request = this.createSearchRequest(keyword, showClosedOpps);
