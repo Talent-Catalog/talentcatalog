@@ -53,7 +53,7 @@ import org.tctalent.server.service.db.SavedSearchService;
  */
 @Slf4j
 @Component
-public class CandidateJobFactory {
+public class CandidateBatchJobFactory {
 
     private final PlatformTransactionManager transactionManager;
     private final CandidateRepository candidateRepository;
@@ -61,7 +61,7 @@ public class CandidateJobFactory {
     private final JobRepository jobRepository;
     private final SavedSearchService savedSearchService;
 
-    public CandidateJobFactory(
+    public CandidateBatchJobFactory(
         PlatformTransactionManager transactionManager,
         JobRepository jobRepository,
         CandidateRepository candidateRepository, CandidateService candidateService,
@@ -73,19 +73,19 @@ public class CandidateJobFactory {
         this.savedSearchService = savedSearchService;
     }
 
-    public CandidateJobBuilder builder(String name, SavedSearch search, ItemProcessor<Candidate, Candidate> processor) {
-        return new CandidateJobBuilder(name, search, processor );
+    public CandidateBatchJobBuilder builder(String name, SavedSearch search, ItemProcessor<Candidate, Candidate> processor) {
+        return new CandidateBatchJobBuilder(name, search, processor );
     }
 
-    public CandidateJobBuilder builder(String name, SavedList savedList, ItemProcessor<Candidate, Candidate> processor) {
-        return new CandidateJobBuilder(name, savedList, processor );
+    public CandidateBatchJobBuilder builder(String name, SavedList savedList, ItemProcessor<Candidate, Candidate> processor) {
+        return new CandidateBatchJobBuilder(name, savedList, processor );
     }
 
     /**
      * Builder used to Create a simple single step Spring batch job which runs a processor over
      * all candidates returned by a candidate source: saved list or search.
      */
-    public class CandidateJobBuilder {
+    public class CandidateBatchJobBuilder {
         private final String name;
         private SavedList savedList;
         private SavedSearch savedSearch;
@@ -107,7 +107,7 @@ public class CandidateJobFactory {
          *    it should return null, in which case the candidate will not be updated on the database.
          *    So processors can be used just to scan data without making any changes.
          */
-        public CandidateJobBuilder(
+        public CandidateBatchJobBuilder(
             String name, SavedSearch savedSearch, ItemProcessor<Candidate, Candidate> processor) {
             this.name = name;
             this.savedSearch = savedSearch;
@@ -117,7 +117,7 @@ public class CandidateJobFactory {
         /**
          * See comments for above constructor - except that the source of candidates is a SavedList.
          */
-        public CandidateJobBuilder(
+        public CandidateBatchJobBuilder(
             String name, SavedList savedList, ItemProcessor<Candidate, Candidate> processor) {
             this.name = name;
             this.savedList = savedList;
@@ -131,7 +131,7 @@ public class CandidateJobFactory {
          * Defaults to 100 candidates.
          * </p>
          */
-        public CandidateJobBuilder chunkSize(int chunkSize){
+        public CandidateBatchJobBuilder chunkSize(int chunkSize){
             this.chunkSize = chunkSize;
             return this;
         }
@@ -142,7 +142,7 @@ public class CandidateJobFactory {
          * Defaults to 30,000 milliseconds.
          * </p>
          */
-        public CandidateJobBuilder maxDelayMs(long maxDelayMs) {
+        public CandidateBatchJobBuilder maxDelayMs(long maxDelayMs) {
             this.maxDelayMs = maxDelayMs;
             return this;
         }
@@ -153,7 +153,7 @@ public class CandidateJobFactory {
          * Defaults to 50. Must be greater than 0 and less than or equal to 100.
          * </p>
          */
-        public CandidateJobBuilder percentageOfCpu(int percentageOfCpu) {
+        public CandidateBatchJobBuilder percentageOfCpu(int percentageOfCpu) {
             this.percentageOfCpu = percentageOfCpu;
             return this;
         }

@@ -72,8 +72,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tctalent.server.batchjob.candidate.CandidateJobFactory;
-import org.tctalent.server.batchjob.candidate.CandidateJobFactory.CandidateJobBuilder;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory.CandidateBatchJobBuilder;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -156,7 +156,7 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
-    private final CandidateJobFactory candidateJobFactory;
+    private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateOpportunityRepository candidateOpportunityRepository;
@@ -228,7 +228,7 @@ public class SystemAdminApi {
             DataSharingService dataSharingService,
             AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
-        CandidateJobFactory candidateJobFactory,
+        CandidateBatchJobFactory candidateBatchJobFactory,
             CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
         CandidateOpportunityRepository candidateOpportunityRepository,
@@ -253,7 +253,7 @@ public class SystemAdminApi {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
-        this.candidateJobFactory = candidateJobFactory;
+        this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
         this.candidateOpportunityRepository = candidateOpportunityRepository;
@@ -302,14 +302,14 @@ public class SystemAdminApi {
                 return candidate;
             };
 
-        CandidateJobBuilder jobBuilder;
+        CandidateBatchJobBuilder jobBuilder;
         if (candidateSource.equals("list")) {
             SavedList savedList = savedListService.get(sourceId);
-            jobBuilder = candidateJobFactory
+            jobBuilder = candidateBatchJobFactory
                 .builder("candidateTextJob", savedList, candidateUpdateTextProcessor);
         } else if (candidateSource.equals("search")) {
             SavedSearch search = savedSearchService.getSavedSearch(sourceId);
-            jobBuilder = candidateJobFactory
+            jobBuilder = candidateBatchJobFactory
                 .builder("candidateTextJob", search, candidateUpdateTextProcessor);
         } else {
             throw new IllegalArgumentException(
