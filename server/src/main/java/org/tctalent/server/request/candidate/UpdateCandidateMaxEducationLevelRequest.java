@@ -14,20 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {ButtonComponent} from './components/button/button.component';
-import {BadgeComponent} from './components/badge/badge.component';
+package org.tctalent.server.request.candidate;
 
-@NgModule({
-  declarations: [ButtonComponent, BadgeComponent, BadgeComponent],
-  imports: [
-    CommonModule,
-  ],
-  exports: [
-    ButtonComponent,
-    BadgeComponent,
-  ]
-})
-export class SharedModule {
-};
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class UpdateCandidateMaxEducationLevelRequest {
+  private Long maxEducationLevel;
+}

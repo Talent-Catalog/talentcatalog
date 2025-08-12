@@ -175,7 +175,7 @@ public class SystemAdminApi {
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final Map<Integer, Integer> countryForGeneralCountry;
+    final Map<Integer, Integer> countryForGeneralCountry;
 
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
@@ -2667,7 +2667,7 @@ public class SystemAdminApi {
     }
 
     private Long checkReference(int value,
-                                Set<Long> referenceIds) {
+        Set<Long> referenceIds) {
         // null values coming from source db are converted to integer 0 which would be incorrectly linked to "unknown", so treat as null
         Long lookupVal = value > 0 ? (long) value : null;
         if (referenceIds.contains(lookupVal)) {
@@ -2835,8 +2835,8 @@ public class SystemAdminApi {
     }
 
     private Date getDate(ResultSet result,
-                         String columnName,
-                         Long candidateId) {
+        String columnName,
+        Long candidateId) {
         try {
             Date date = result.getDate(columnName);
             if (date != null && !"1970-01-01".equals(date.toString())) {
