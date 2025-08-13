@@ -573,6 +573,7 @@ import {IntelligenceComponent} from './components/intelligence/intelligence.comp
 import {OfferToAssistComponent} from './components/settings/offer-to-assist/offer-to-assist.component';
 import {IntlPhoneInputComponent} from './components/util/intl-phone-input/intl-phone-input.component';
 import {EditMaxEducationLevelComponent} from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
+import {SharedModule} from "./shared/shared.module";
 import {ChatMuteToggleButtonComponent} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 import {ViewPrivacyPolicyInfoComponent} from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
 
@@ -926,6 +927,7 @@ import {ViewPrivacyPolicyInfoComponent} from './components/candidates/view/priva
     NgxWigModule,
     NgSelectModule,
     DirectiveModule,
+    SharedModule,
     DragulaModule.forRoot(),
     QuillModule.forRoot(),
     PickerModule,

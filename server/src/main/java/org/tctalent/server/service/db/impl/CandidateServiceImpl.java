@@ -2426,6 +2426,15 @@ public class CandidateServiceImpl implements CandidateService {
         return candidate;
     }
 
+    @Override
+    public Candidate save(Candidate candidate, boolean updateCandidateEs,
+        boolean updateCandidateText) {
+        if (updateCandidateText) {
+            candidate.updateText();
+        }
+        return save(candidate, updateCandidateEs);
+    }
+
     /**
      * Does whatever is needed to bring the Elastic proxy into sync with
      * its parent candidate on the normal database.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.util.textExtract;
 
-public enum DtoType {
-  PUBLIC_ID_ONLY,
-  MINIMAL,
-  PREVIEW,
-  FULL,
-  EXTENDED,
-  API
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+
+/**
+ * Used for returning an Id as well as an optional rank - a value that is associated with a
+ * potential sorting order.
+ *
+ * @author John Cameron
+ */
+public record IdAndRank(@NonNull Long id, @Nullable Number rank) {
+
 }

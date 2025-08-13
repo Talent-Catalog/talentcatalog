@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ButtonComponent} from './components/button/button.component';
 
-public enum DtoType {
-  PUBLIC_ID_ONLY,
-  MINIMAL,
-  PREVIEW,
-  FULL,
-  EXTENDED,
-  API
-}
+@NgModule({
+  declarations: [ButtonComponent],
+  imports: [
+    CommonModule,
+  ],
+  exports: [
+    ButtonComponent,
+  ]
+})
+export class SharedModule {
+};
