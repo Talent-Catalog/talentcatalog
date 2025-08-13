@@ -94,6 +94,20 @@ import org.tctalent.server.service.db.SavedSearchService;
  * <p>
  *     ...and configure in an instance of that class.
  * </p>
+ * <p>
+ *     There are also a number of options you can specify when building the job...
+ * </p>
+ * <pre>{@code
+ *    Job myJob = candidateBatchJobFactory
+ *       .builder("MyJob", savedSearch, myCandidateProcessor)
+ *       .percentageOfCpu(25) //25% of cpu
+ *       .chunkSize(50)       //Process 50 candidates at a time
+ *       .maxDelayMs(60000)   //Maximum delay between processing chunks is a minute
+ *       .build();
+ * }</pre>
+ * <p>
+ *     Defaults are 50% cpu, chunk size of 100 and max delay of 30 seconds.
+ * </p>
  * @author John Cameron
  */
 @Slf4j
