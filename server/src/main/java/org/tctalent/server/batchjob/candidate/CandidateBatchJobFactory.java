@@ -43,10 +43,12 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
 
 /**
- * Factory for creating simple, single step candidate jobs which process all candidates
- * specified in a candidate source.
  * <p>
- *     The jobs created here are designed to be called using BatchJobService.launch.
+ * Factory for creating simple, single step candidate batch jobs which process all candidates
+ * specified in a candidate source.
+ * </p>
+ * <p>
+ *     The jobs created here are designed to be called using BatchJobService.launchJob.
  * </p>
  * <p>
  *     Example:
@@ -55,7 +57,7 @@ import org.tctalent.server.service.db.SavedSearchService;
  *     Just create a processor with the code you want to apply to each candidate...
  * </p>
  * <pre>{@code
- *         //Create an anonymous class instance on an ItemProcessor.
+ *         //Create an anonymous class instance of an ItemProcessor.
  *         ItemProcessor<Candidate, Candidate> myCandidateProcessor =
  *             candidate -> {
  *                 //Do something with the candidate
