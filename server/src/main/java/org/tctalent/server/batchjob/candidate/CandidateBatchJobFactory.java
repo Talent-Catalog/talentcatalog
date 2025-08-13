@@ -48,7 +48,52 @@ import org.tctalent.server.service.db.SavedSearchService;
  * <p>
  *     The jobs created here are designed to be called using BatchJobService.launch.
  * </p>
+ * <p>
+ *     Example:
+ * </p>
+ * <p>
+ *     Just create a processor with the code you want to apply to each candidate...
+ * </p>
+ * <pre>{@code
+ *         //Create an anonymous class instance on an ItemProcessor.
+ *         ItemProcessor<Candidate, Candidate> myCandidateProcessor =
+ *             candidate -> {
+ *                 //Do something with the candidate
+ *                 candidate.updateText();
  *
+ *                 //Return the candidate if you want to update it, or else return null.
+ *                 return candidate;
+ *             };
+ * }</pre>
+ * <p>
+ *     Then create a job to run on candidates in a given saved search...
+ * </p>
+ * <pre>{@code
+ *         Job myJob = candidateBatchJobFactory
+ *             .builder("MyJob", savedSearch, myCandidateProcessor)
+ *             .build();
+ * }</pre>
+ * <p>
+ *     Then start the batch running...
+ * </p>
+ * <pre>{@code
+ *         //batchJobService is a standard TC service
+ *         batchJobService.launchJob(myJob, false);
+ * }</pre>
+ * <p>
+ *     You could also create a normal ItemProcessor class like...
+ * </p>
+ * <pre>{@code
+ * public class MyProcessorClass implements ItemProcessor<Candidate,Candidate> {
+ *     public Candidate process(Candidate candidate) throws Exception {
+ *         candidate.updateText();
+ *         return candidate;
+ *     }
+ * }
+ * }</pre>
+ * <p>
+ *     ...and configure in an instance of that class.
+ * </p>
  * @author John Cameron
  */
 @Slf4j
