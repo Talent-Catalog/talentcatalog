@@ -184,8 +184,8 @@ public class SavedListCandidateAdminApi implements
             long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(savedListId);
 
-        Page<Candidate> candidates = this.candidateService
-                .getSavedListCandidates(savedList, request);
+        Page<Candidate> candidates = candidateService
+            .getSavedListCandidates(savedList, request);
 
         savedListService.setCandidateContext(savedListId, candidates);
 
@@ -193,6 +193,24 @@ public class SavedListCandidateAdminApi implements
         candidateService.populateCandidatesTransientTaskAssignments(candidates);
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
+        return builder.buildPage(candidates);
+    }
+
+    @Override
+    public @NotNull Set<String> fetchPublicIds(String publicListId) throws NoSuchObjectException {
+        return savedListService.fetchCandidatePublicIds(publicListId);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> fetchPublicIdsPaged(
+        String publicListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
+
+        SavedList savedList = savedListService.getByPublicId(publicListId);
+
+        Page<Candidate> candidates = candidateService.getSavedListCandidates(savedList, request);
+
+        // We only want to send the public ids
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(DtoType.PUBLIC_ID_ONLY);
         return builder.buildPage(candidates);
     }
 

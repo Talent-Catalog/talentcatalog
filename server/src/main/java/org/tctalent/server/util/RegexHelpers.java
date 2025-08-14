@@ -6,6 +6,7 @@ package org.tctalent.server.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.lang.NonNull;
@@ -40,6 +41,7 @@ public abstract class RegexHelpers {
     }
 
     public static @NonNull String camelToSnakeCase(@NonNull String camel) {
-        return camel.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+        return camel.replaceAll("([a-z])([A-Z]+)", "$1_$2")
+            .toLowerCase(Locale.ENGLISH);
     }
 }
