@@ -51,6 +51,7 @@ public class CandidateBuilderSelector {
     private final Set<String> candidatePublicProperties =
         new HashSet<>(Arrays.asList(
             "id",
+            "rank",
             "status",
             "muted",
             "candidateNumber",
@@ -123,6 +124,10 @@ public class CandidateBuilderSelector {
 
     @NonNull
     public DtoBuilder selectBuilder(DtoType type) {
+        if (DtoType.PUBLIC_ID_ONLY.equals(type)) {
+            return publicIdOnlyCandidateDto();
+        }
+
         if (DtoType.MINIMAL.equals(type)) {
             return minimalCandidateDto();
         }
@@ -167,6 +172,7 @@ public class CandidateBuilderSelector {
         DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter, DtoType type) {
         final DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
+            .add("rank")
             .add("status")
             .add("muted")
             .add("candidateNumber")
@@ -340,6 +346,12 @@ public class CandidateBuilderSelector {
                 .add("partner", partnerDto())
                 .add("emailVerified")
                 ;
+    }
+
+    private DtoBuilder publicIdOnlyCandidateDto() {
+        return new DtoBuilder()
+            .add("publicId")
+            ;
     }
 
     private DtoBuilder minimalCandidateDto() {
