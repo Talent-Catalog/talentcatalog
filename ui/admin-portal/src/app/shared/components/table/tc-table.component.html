@@ -5,7 +5,7 @@
       <ng-content></ng-content>
     </table>
   </div>
-  <app-tc-pagination *ngIf="totalElements > 0" [totalElements]="totalElements" [pageSize]="pageSize"
+  <tc-pagination *ngIf="totalElements > 0" [totalElements]="totalElements" [pageSize]="pageSize"
                      [pageNumber]="pageNumber" (pageChange)="onPageChange($event)">
-  </app-tc-pagination>
+  </tc-pagination>
 </div>

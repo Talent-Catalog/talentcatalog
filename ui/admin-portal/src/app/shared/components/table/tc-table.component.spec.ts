@@ -44,10 +44,10 @@ describe('TcTableComponent', () => {
   it('should only show pagination when totalElements > 0', () => {
     component.totalElements = 0;
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('app-tc-pagination')).toBeNull();
+    expect(fixture.nativeElement.querySelector('tc-pagination')).toBeNull();
 
     component.totalElements = 5;
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('app-tc-pagination')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('tc-pagination')).not.toBeNull();
   });
 });
