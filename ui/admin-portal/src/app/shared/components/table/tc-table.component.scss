@@ -6,11 +6,52 @@
   border: 1px solid;
   @include border-color-base;
   border-radius: 12px;
-  padding: 32px 0 48px 0;
-}
+  padding: 32px 0 48px;
 
-.table-name {
-  @include label-md;
-  font-weight: 600;
-  padding-left: 24px;
+  .table-name {
+    @include label-md;
+    font-weight: 600;
+    padding-left: 24px;
+  }
+
+  .table-responsive {
+    table.table {
+      width: 100%;
+      @include paragraph-sm;
+
+      th {
+        border-bottom: 1px solid;
+        @include border-color-base;
+        padding: 10px;
+        color: #71717A;
+      }
+
+      td {
+        border-bottom: 1px solid;
+        @include border-color-light;
+        padding: 10px;
+        @include text-color-body;
+
+        a > i {
+          @include text-color-secondary;
+        }
+      }
+
+      &.table-hover > tbody > tr:hover {
+        @include background-color-light;
+      }
+
+      tr.current {
+        @include background-color-light;
+      }
+
+      tr.selected {
+        @include background-color-soft;
+      }
+
+      tr.clickable:hover {
+        cursor: pointer;
+      }
+    }
+  }
 }
