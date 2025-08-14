@@ -385,7 +385,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // EDUCATION LEVEL SEARCH
         if (getMinEducationLevel() != null || getMaxEducationLevel() != null) {
-            joins.add(CandidateSearchUtils.getTableJoin("education_level"));
+            joins.add("education_level");
             if (getMinEducationLevel() != null) {
                 ands.add("education_level.level >= " + getMinEducationLevel());
             }
