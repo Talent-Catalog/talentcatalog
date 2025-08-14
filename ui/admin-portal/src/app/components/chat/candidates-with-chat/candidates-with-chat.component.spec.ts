@@ -32,7 +32,7 @@ import {MockChatPost} from "../../../MockData/MockChatPost";
 import {Component, Input} from "@angular/core";
 import {ChatPost} from "../../../model/chat";
 
-fdescribe('CandidatesWithChatComponent', () => {
+describe('CandidatesWithChatComponent', () => {
   let component: CandidatesWithChatComponent;
   let fixture: ComponentFixture<CandidatesWithChatComponent>;
   let chatService: jasmine.SpyObj<ChatService>;
