@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,6 +54,7 @@ import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
 import org.tctalent.server.api.admin.SystemAdminApi;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.BackgroundProcessingService;
@@ -2504,6 +2506,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
             savedLists.add(candidateSavedList.getSavedList());
         }
         return savedLists;
+    }
+
+    /**
+     * True if this candidate has been presented with our terms but has not yet accepted them.
+     * <p/>
+     * This is equivalent to the candidate being in the PendingTermsAcceptance list.
+     * @return True if the candidate has not accepted our terms.
+     */
+    public boolean isPendingTerms() {
+        return isTagged(SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID);
+    }
+
+    /**
+     * True if this is a test candidate.
+     * <p/>
+     * This is equivalent to the candidate being in the TestCandidates list.
+     * @return True if the candidate is a test candidate.
+     */
+    public boolean isTestCandidate() {
+        return isTagged(SystemAdminConfiguration.TEST_CANDIDATE_LIST_ID);
+    }
+
+    /**
+     * True if this candidate is in (ie tagged by) the given list
+     * @param savedListId Saved list id
+     * @return True if in list (ie tagged by that list)
+     */
+    public boolean isTagged(long savedListId) {
+        Optional<CandidateSavedList> optional = candidateSavedLists.stream()
+            .filter(sl -> sl.getSavedList().getId() == savedListId)
+            .findAny();
+        return optional.isPresent();
     }
 
     public void addSavedLists(Set<SavedList> savedLists) {
