@@ -110,116 +110,145 @@
   </form>
 </div>
 
-<div *ngIf="!loading">
-  <tc-table [totalElements]="results?.totalElements" [pageSize]="pageSize"
-                [(pageNumber)]="pageNumber" (pageChange)="search()">
-    <!--          Header-->
-    <thead>
-    <tr>
-      <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
-        <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField"
-                       [sortDirection]="sortDirection"
-                       *ngIf="searchBy"></app-sorted-by>
-        NS Due
-      </th>
-      <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
-        <app-sorted-by [column]="'name'" [sortColumn]="sortField"
-                       [sortDirection]="sortDirection"
-                       *ngIf="searchBy"></app-sorted-by>
-        Candidate Opportunity
-      </th>
-      <th *ngIf="showJobOppName" (click)="toggleSort('jobOpp.name')">
-        <app-sorted-by column="jobOpp.name" [sortColumn]="sortField"
-                       [sortDirection]="sortDirection"
-                       *ngIf="searchBy"></app-sorted-by>
-        Candidate Job Opportunity
-      </th>
-      <th (click)="toggleSort('stage')">
-        <app-sorted-by [column]="'stage'" [sortColumn]="sortField"
-                       [sortDirection]="sortDirection"
-                       *ngIf="searchBy"></app-sorted-by>
-        Stage
-      </th>
-      <th *ngIf="!preview" (click)="toggleSort('updatedDate', 'DESC')">
-        <app-sorted-by column="updatedDate" [sortColumn]="sortField"
-                       [sortDirection]="sortDirection"
-                       *ngIf="searchBy"></app-sorted-by>
-        Next step
-      </th>
-      <th *ngIf="preview">
-        Next?
-      </th>
-    </tr>
-    </thead>
+<div class="card" *ngIf="!loading">
 
-    <tbody>
-    <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
-        [title]="isOverdue(opp) ? 'The next step is overdue' : ''"
-        [ngClass]="{'current': currentOpp?.id == opp.id, 'alert alert-warning': isOverdue(opp)}">
-      <td *ngIf="!preview">
-        {{ opp.nextStepDueDate }}
-      </td>
-      <td *ngIf="!showJobOppName" [title]="opp.name">
-        <app-chat-read-status
-          [chats]="getChats(opp)"
-        ></app-chat-read-status>
-        {{ opp.name | truncate: 25 }}
-        <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
-          <i class="fas fa-user" title="Candidate"></i>
-        </a>
-        <a [routerLink]="['/opp',opp.id]">
-          <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
-        </a>
-        <a [routerLink]="['/job',opp.jobOpp.id]">
-          <i class="fa-solid fa-briefcase" title="Job"></i>
-        </a>
-        <a *ngIf="opp.jobOpp.submissionList"
-           [routerLink]="['/list',opp.jobOpp.submissionList.id]">
-          <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
-        </a>
-        <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
-           target="_blank">
-          <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
-        </a>
-      </td>
-      <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
-        <app-chat-read-status
-          [chats]="getChats(opp)"
-        ></app-chat-read-status>
-        <a [routerLink]="['/opp',opp.id]">
-          {{ opp.jobOpp.name }} <i class="fas fa-address-book"
-                                   title="Case (candidate opportunity)"></i>
-        </a>
-        <a [routerLink]="['/job',opp.jobOpp.id]">
-          <i class="fa-solid fa-briefcase" title="Job"></i>
-        </a>
-        <a *ngIf="opp.jobOpp.submissionList"
-           [routerLink]="['/list',opp.jobOpp.submissionList.id]">
-          <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
-        </a>
-        <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
-           target="_blank">
-          <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
-        </a>
-      </td>
-      <td>
-        {{ getCandidateOpportunityStageName(opp) }}
-      </td>
-      <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
-        {{ opp.nextStep | truncate: 38 }}
-      </td>
-      <td *ngIf="preview">
-        <div *ngIf="opp?.nextStep" [ngbPopover]="nextStepPopover"
-             triggers="mouseenter:mouseleave" container="body">
-          <i class="fa-solid fa-shoe-prints"></i>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <!--          Header-->
+        <thead class="table-primary">
+        <tr>
+          <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
+            <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
+            NS Due
+          </th>
+          <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
+            <app-sorted-by [column]="'name'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
+            Candidate Opportunity
+          </th>
+          <th *ngIf="showJobOppName" (click)="toggleSort('jobOpp.name')">
+            <app-sorted-by column="jobOpp.name" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
+            Candidate Job Opportunity
+          </th>
+          <th (click)="toggleSort('stage')">
+            <app-sorted-by [column]="'stage'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
+            Stage
+          </th>
+          <th *ngIf="!preview" (click)="toggleSort('updatedDate', 'DESC')">
+            <app-sorted-by column="updatedDate" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
+                           *ngIf="searchBy"></app-sorted-by>
+            Next step
+          </th>
+          <th *ngIf="preview">
+            Next?
+          </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
+            [title]="isOverdue(opp) ? 'The next step is overdue' : ''"
+            [ngClass]="{'current': currentOpp?.id == opp.id, 'alert alert-warning': isOverdue(opp)}">
+          <td *ngIf="!preview">
+            {{ opp.nextStepDueDate }}
+          </td>
+          <td *ngIf="!showJobOppName" [title]="opp.name">
+            <app-chat-read-status
+              [chats]="getChats(opp)"
+            ></app-chat-read-status>
+            {{ opp.name | truncate: 25 }}
+            <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+              <i class="fas fa-user" title="Candidate"></i>
+            </a>
+            <a [routerLink]="['/opp',opp.id]">
+              <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+            </a>
+            <a [routerLink]="['/job',opp.jobOpp.id]">
+              <i class="fa-solid fa-briefcase" title="Job"></i>
+            </a>
+            <a *ngIf="opp.jobOpp.submissionList"
+               [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+              <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
+            </a>
+            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
+               target="_blank">
+              <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+            </a>
+          </td>
+          <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
+            <app-chat-read-status
+              [chats]="getChats(opp)"
+            ></app-chat-read-status>
+            <a [routerLink]="['/opp',opp.id]">
+              {{ opp.jobOpp.name }} <i class="fas fa-address-book"
+                                       title="Case (candidate opportunity)"></i>
+            </a>
+            <a [routerLink]="['/job',opp.jobOpp.id]">
+              <i class="fa-solid fa-briefcase" title="Job"></i>
+            </a>
+            <a *ngIf="opp.jobOpp.submissionList"
+               [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+              <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
+            </a>
+            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
+               target="_blank">
+              <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+            </a>
+          </td>
+          <td>
+            {{ getCandidateOpportunityStageName(opp) }}
+          </td>
+          <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
+            {{ opp.nextStep | truncate: 38 }}
+          </td>
+          <td *ngIf="preview">
+            <div *ngIf="opp?.nextStep" [ngbPopover]="nextStepPopover"
+                 triggers="mouseenter:mouseleave" container="body">
+              <i class="fa-solid fa-shoe-prints"></i>
+            </div>
+            <ng-template #nextStepPopover>
+              <strong>Due date: </strong>{{ opp.nextStepDueDate }}<br>
+              <strong>Next step: </strong>{{ opp.nextStep }}
+            </ng-template>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+
+      <div class="text-muted mb-2 align-middle" *ngIf="searchBy">
+
+        <ngb-pagination
+          [boundaryLinks]="true"
+          [pageSize]="pageSize"
+          [collectionSize]="results?.totalElements"
+          [(page)]="pageNumber"
+          [maxSize]="5"
+          [ellipses]="true"
+          [rotate]="true"
+          (pageChange)="search()">
+        </ngb-pagination>
+
+        Found {{ results?.totalElements }} in total
+      </div>
+
+      <!-- loading -->
+      <div *ngIf="loading">
+        <div>
+          <i class="fas fa-spinner fa-spin"></i> Loading...
         </div>
-        <ng-template #nextStepPopover>
-          <strong>Due date: </strong>{{ opp.nextStepDueDate }}<br>
-          <strong>Next step: </strong>{{ opp.nextStep }}
-        </ng-template>
-      </td>
-    </tr>
-    </tbody>
-  </tc-table>
+      </div>
+
+    </div>
+  </div>
 </div>
 
