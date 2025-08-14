@@ -206,7 +206,8 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
       from Candidate c 
       left join c.user u 
       where lower(u.firstName) like lower(:candidateName)
-      or lower(u.lastName) like lower(:candidateName) 
+         or lower(u.lastName) like lower(:candidateName) 
+         or lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)
       """ + excludeDeleted + sourceCountryRestriction)
     Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
