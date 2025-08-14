@@ -141,6 +141,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String partnerRef;
 
     /**
+     * This can be set to define an optional ranking associated with the candidate as a result
+     * of some kind of sorting logic.
+     */
+    @Transient
+    @Nullable
+    private Number rank;
+
+    /**
      * If null the candidate registered themselves.
      * If not null, the candidate was registered through the public API by the given partner.
      */
@@ -218,6 +226,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
+
+    /**
+     * Computed field of all searchable text associated with the candidate.
+     * <p/>
+     * Updated in {@link #updateText}
+     */
+    private String text;
 
     /**
      * ID of corresponding candidate record in Elasticsearch
@@ -1962,6 +1977,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
 
+    public @Nullable Number getRank() {
+        return rank;
+    }
+
+    public void setRank(@Nullable Number rank) {
+        this.rank = rank;
+    }
+
     @Nullable
     public PartnerImpl getRegisteredBy() {
         return registeredBy;
@@ -2532,5 +2555,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setRelocatedCountry(Country relocatedCountry) {
         this.relocatedCountry = relocatedCountry;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void updateText() {
+        String combinedText = getCandidateJobExperiences().stream()
+            .map(CandidateJobExperience::getDescription)
+            .collect(Collectors.joining(" || "));
+        this.text = combinedText;
     }
 }

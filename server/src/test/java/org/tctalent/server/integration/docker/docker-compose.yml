@@ -1,12 +1,12 @@
 services:
   local-database:
     container_name: postgres-integration-db
-    image: postgres:14
+    image: pgvector/pgvector:0.8.0-pg17
     env_file:
       - postgres.env
     ports:
       - 5432:5432
     volumes:
-      - postgres-14-data:/var/lib/postgresql-14/data
+      - postgres-data:/var/lib/postgresql/data
 volumes:
-  postgres-14-data:
+  postgres-data:
