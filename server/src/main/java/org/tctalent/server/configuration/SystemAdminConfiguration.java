@@ -39,7 +39,11 @@ public class SystemAdminConfiguration {
 
   public final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
   public final static String[] GLOBAL_LIST_NAMES = new String[] {
+
+      //Tags candidates as test candidates
       "TestCandidates",
+
+      //Tags candidates who have been asked to accept our latest terms but who have not yet done so
       "PendingTermsAcceptance"
   };
 
