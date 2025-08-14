@@ -73,7 +73,6 @@ export class HomeComponent implements OnInit {
   onTabChanged(activeTabId: string) {
     this.setActiveTabId(activeTabId);
     this.setTabParam(activeTabId);
-    console.log(activeTabId)
   }
 
   onSavedSearchSubtypeChange($event: SavedSearchTypeSubInfo) {
