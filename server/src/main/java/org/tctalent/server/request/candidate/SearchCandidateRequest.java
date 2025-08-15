@@ -471,14 +471,16 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         //LIST ALL
-            /* where
-            candidate in (select candidate from candidateSavedList where savedList.id = id1)
-            and
-            candidate in (select candidate from candidateSavedList where savedList.id = id2)
-            and
-              ...
-            */
-        //TODO JC 
+        SearchType listAllSearchType = getListAllSearchType();
+        final List<Long> listAllIds = getListAllIds();
+        if (!ObjectUtils.isEmpty(listAllIds)) {
+            boolean notIn = SearchType.not.equals(listAllSearchType);
+            for (Long listAllId : listAllIds) {
+                ands.add("candidate.id " + (notIn ? "not in" : "in")
+                    + " (select candidate_id from candidate_saved_list"
+                    + " where saved_list_id = " + listAllId + ")");
+            }
+        }
 
         if (ordered) {
             List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(getSort());
