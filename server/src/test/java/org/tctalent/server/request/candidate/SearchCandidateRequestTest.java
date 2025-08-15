@@ -31,6 +31,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
+import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.util.CandidateSearchUtils;
@@ -203,6 +204,48 @@ class SearchCandidateRequestTest {
                 " left join candidate_education on candidate.id = candidate_education.candidate_id"
                 + " where (major_id in (123) or migration_education_major_id in (123))"
                 , sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from list any request")
+    void extractFetchSQLFromListAnyRequest() {
+        List<Long> listAnyIds = List.of(123L, 456L);
+        request.setListAnyIds(listAnyIds);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.id in (select candidate_id from candidate_saved_list" 
+                + " where saved_list_id in (123,456))"
+                , sql);
+
+        request.setListAnySearchType(SearchType.not);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.id not in (select candidate_id from candidate_saved_list" 
+                + " where saved_list_id in (123,456))"
+                , sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from list all request")
+    void extractFetchSQLFromListAllRequest() {
+        List<Long> listAllIds = List.of(123L, 456L);
+        request.setListAllIds(listAllIds);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.id in (select candidate_id from candidate_saved_list" 
+                + " where saved_list_id = 123)" 
+                + " and candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 456)"
+                , sql);
+
+        request.setListAllSearchType(SearchType.not);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.id not in (select candidate_id from candidate_saved_list" 
+                + " where saved_list_id = 123)" 
+                + " and candidate.id not in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 456)"
+            , sql);
     }
 
     @Test
