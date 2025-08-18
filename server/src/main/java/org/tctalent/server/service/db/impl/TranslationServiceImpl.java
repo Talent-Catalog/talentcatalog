@@ -44,6 +44,7 @@ import org.tctalent.server.request.translation.UpdateTranslationRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
@@ -97,8 +98,10 @@ public class TranslationServiceImpl implements TranslationService {
 
     @Override
     public Translation createTranslation(User user, CreateTranslationRequest request) {
+        String sanitizedValue = HtmlSanitizer.sanitize(request.getValue());
+
         Translation translation = new Translation(user, request.getObjectId(), request.getObjectType(),
-            request.getLanguage(), request.getValue());
+            request.getLanguage(), sanitizedValue);
         Translation existing = translationRepository.findByObjectIdTypeLang(request.getObjectId(), request.getObjectType(), request.getLanguage()).orElse(null);
         if (existing != null){
             throw new EntityExistsException("translation");
@@ -121,9 +124,10 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     @Transactional
     public Translation updateTranslation(long id, UpdateTranslationRequest request) throws EntityExistsException {
+        String sanitizedValue = HtmlSanitizer.sanitize(request.getValue());
         Translation translation = this.translationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Translation.class, id));
-        translation.setValue(request.getValue());
+        translation.setValue(sanitizedValue);
         return translationRepository.save(translation);
     }
 

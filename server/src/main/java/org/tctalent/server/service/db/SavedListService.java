@@ -271,6 +271,15 @@ public interface SavedListService {
     SavedList get(long savedListId) throws NoSuchObjectException;
 
     /**
+     * Get the SavedList with the given public id.
+     * @param publicId public ID of the SavedList to get
+     * @return Saved list
+     * @throws NoSuchObjectException if there is no saved list with this public id.
+     */
+    @NonNull
+    SavedList getByPublicId(@NonNull String publicId) throws NoSuchObjectException;
+
+    /**
      * Get the SavedList, if any, with the given name (ignoring case), owned by the given user.
      * @param user Owner of list
      * @param listName Name of list (case insensitive - eg "test" will match "Test")

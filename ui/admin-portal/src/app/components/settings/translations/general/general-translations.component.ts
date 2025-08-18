@@ -531,7 +531,8 @@ const ALL_FIELDS = {
         },
         "CV": {
           "NAME": null,
-          "EXPLANATION": null
+          "EXPLANATION": null,
+          "WARNING": null,
         },
         "OTHER": {
           "NAME": null,
