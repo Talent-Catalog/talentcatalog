@@ -1,6 +1,47 @@
 import { Component, Input, Output, EventEmitter, forwardRef, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
+/**
+ * @component InputComponent
+ * @selector tc-input
+ * @description
+ * A reusable, accessible input component that implements Angular’s `ControlValueAccessor`
+ * to work seamlessly with both Reactive Forms and Template-driven Forms.
+ *
+ * **Features**
+ * - Standard HTML `<input>` under the hood with sane defaults
+ * - Works with `formControlName` / `ngModel`
+ * - Emits `valueChange` when the value updates
+ *
+ * @example
+ * ### Reactive Forms
+ * ```html
+ * <form [formGroup]="form">
+ *   <label for="email">Email</label>
+ *   <tc-input
+ *     id="email"
+ *     name="email"
+ *     type="email"
+ *     placeholder="you@example.com"
+ *     formControlName="email"
+ *     [invalid]="form.get('email')?.invalid && form.get('email')?.touched">
+ *   </tc-input>
+ * </form>
+ * ```
+ *
+ * ### Template-driven
+ * ```html
+ * <label for="username">Username</label>
+ * <tc-input
+ *   id="username"
+ *   name="username"
+ *   [(ngModel)]="model.username"
+ *   placeholder="Enter username"
+ *   (valueChange)="onUsernameChange($event)">
+ * </tc-input>
+ * ```
+ */
+
 @Component({
   selector: 'tc-input',
   templateUrl: './input.component.html',
