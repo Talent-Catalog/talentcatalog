@@ -486,6 +486,13 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
         ));
         given(builder.buildPage(savedListCandidatesPage)).willReturn(page);
 
+        // inject the candidateBuilderSelector into the savedListCandidateAdminApi
+        // so that it can be used to select the correct builder for the response
+        // This is necessary because the candidateBuilderSelector is not injected by Spring
+        // due to the way the SavedListCandidateAdminApi is set up.
+        ReflectionTestUtils
+            .setField(savedListCandidateAdminApi, "candidateBuilderSelector", candidateBuilderSelector);
+
         // when / then
         mockMvc.perform(
                 post(BASE_PATH + "/public/" + publicListId + "/public-ids-paged")
