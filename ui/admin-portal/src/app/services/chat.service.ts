@@ -393,10 +393,7 @@ export class ChatService implements OnDestroy {
   getChatIsRead$(chat: JobChat): Observable<boolean> {
     const subject = this.getChatIsReadSubject(chat);
 
-    if (subject.value == null && !this.chatsLoading.has(chat.id)) {
-      console.log('Fetching read status for chat', chat.id);
-      this.chatsLoading.add(chat.id);
-
+    if (subject.value == null) {
       //If we don't know the status, we need to get it from the server.
       this.getJobChatUserInfo(chat).subscribe({
           next: info => {
