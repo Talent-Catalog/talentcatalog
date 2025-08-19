@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav ngbNav #navSearch="ngbNav" class="nav-tabs mt-2" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+<nav ngbNav #navSearch="ngbNav" class="nav-tabs mt-2" [activeId]="activeTabId" (navChange)="onTabChanged($event.nextId)">
 
   <ng-container ngbNavItem="NewSearch">
     <a ngbNavLink title="Search TC candidate database">New Search</a>

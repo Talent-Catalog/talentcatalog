@@ -24,7 +24,7 @@ import {of} from "rxjs";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {ShowCandidatesWithChatComponent} from "../show-candidates-with-chat/show-candidates-with-chat.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {ViewChatPostsComponent} from "../view-chat-posts/view-chat-posts.component";
@@ -41,10 +41,11 @@ describe('CandidatesWithChatComponent', () => {
   const mockCandidate: Candidate = new MockCandidate();
 
   chatService = jasmine.createSpyObj('ChatService',
-    ['getCandidateProspectChat','getChatPosts$','getChatIsRead$']);
+    ['getCandidateProspectChat','getChatPosts$','getChatIsRead$', 'combineChatReadStatuses']);
   chatService.getCandidateProspectChat.and.returnValue(of(mockJobChat));
   chatService.getChatPosts$.and.returnValue(of(new MockChatPost()));
   chatService.getChatIsRead$.and.returnValue(of(false));
+  chatService.combineChatReadStatuses.and.returnValue(of(false));
 
   authorizationService = jasmine.createSpyObj('AuthorizationService', ['isReadOnly']);
   authorizationService.isReadOnly.and.returnValue(true);

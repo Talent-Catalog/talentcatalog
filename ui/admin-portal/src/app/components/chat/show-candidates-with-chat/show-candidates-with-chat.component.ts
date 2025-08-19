@@ -14,22 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  ElementRef,
-  EventEmitter, Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, shareReplay, takeUntil} from "rxjs/operators";
 import {ChatService} from "../../../services/chat.service";
-import {BehaviorSubject, forkJoin, Observable, Subscription} from "rxjs";
+import {BehaviorSubject, forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
 
 /**
@@ -63,6 +56,8 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
   @ViewChild("searchFilter") searchFilter: ElementRef;
+
+  private destroy$ = new Subject<void>();
 
   error: any;
   loading: boolean;
@@ -109,6 +104,14 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     this.searchForm = this.fb.group({
       keyword: [''],
       unreadOnly: [false]
+    });
+
+    this.chatService.combineChatReadStatuses(this.allChats).pipe(
+      takeUntil(this.destroy$),
+      shareReplay(1)
+    ).subscribe({
+      next: chatsRead => this.processVisibleChatsReadUpdate(chatsRead),
+      error: err => this.error = err
     });
 
     this.subscribeToFilterChanges();
@@ -292,6 +295,11 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     error => {
       this.error = error
     })
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }
