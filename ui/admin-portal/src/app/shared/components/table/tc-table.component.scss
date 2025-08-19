@@ -38,11 +38,12 @@
       }
 
       &.table-hover > tbody > tr:hover {
-        @include background-color-light;
+        @include background-color-soft;
+        cursor: pointer;
       }
 
       tr.current {
-        @include background-color-light;
+        background-color: color(gray, 400);
       }
 
       tr.selected {
