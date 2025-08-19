@@ -480,6 +480,7 @@ public class CandidatePortalApi {
                 .add("yearOfArrival")
                 .add("nationality", countryService.selectBuilder())
                 .add("country", countryService.selectBuilder())
+                .add("birthCountry", countryService.selectBuilder())
                 .add("externalId")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
