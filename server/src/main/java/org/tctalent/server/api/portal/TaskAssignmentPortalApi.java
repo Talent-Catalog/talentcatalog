@@ -16,6 +16,8 @@
 
 package org.tctalent.server.api.portal;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -99,6 +101,34 @@ public class TaskAssignmentPortalApi {
         taskAssignmentService.completeUploadTaskAssignment(ta, file);
 
         return TaskDtoHelper.getTaskAssignmentDto().build(ta);
+    }
+
+
+    /**
+     * Attempts completion of a candidate's upload task assignment.
+     * The given files will be added as attachments to the candidate associated with the given task
+     * assignment according to the attributes of the task assignment.
+     * If the upload is successful, the task will be marked as complete.
+     * @param id Task assignment id
+     * @param files Attachment files
+     * @param fieldAnswers JSON string of required field answers
+     * @return The details of the updated upload task assignment
+     * @throws NoSuchObjectException if no task assignment is found with that id
+     * @throws IOException if there was a problem uploading the files
+     * @throws UnauthorisedActionException if the task assignment does not belong to logged in candidate
+     */
+    @PostMapping("{id}/complete-upload-task")
+    public Map<String, Object> completeUploadTask(
+        @PathVariable("id") long id,
+        @RequestParam("file") MultipartFile[] files,
+        @RequestParam("fieldAnswers") String fieldAnswers)
+        throws IOException, NoSuchObjectException, UnauthorisedActionException {
+        TaskAssignmentImpl ta = taskAssignmentService.get(id);
+        checkAuthorisation(ta);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> fieldAnswersMap = mapper.readValue(fieldAnswers, new TypeReference<Map<String, String>>(){});
+        TaskAssignment updatedTa = taskAssignmentService.completeUploadTask(id, files, fieldAnswersMap);
+        return TaskDtoHelper.getTaskAssignmentDto().build(updatedTa);
     }
 
     /**
