@@ -842,6 +842,20 @@ const ALL_FIELDS = {
       "RETURN": null,
       "SUBMIT": null,
     },
+    "META_DATA": {
+      "FIRSTNAME": null,
+      "LASTNAME": null,
+      "DOB": null,
+      "GENDER": null,
+      "BIRTH_COUNTRY": null,
+      "PLACE_OF_BIRTH": null,
+      "REFUGEE_STATUS": null,
+      "DOCUMENT_TYPE": null,
+      "DOCUMENT_NUMBER": null,
+      "ISSUED_BY": null,
+      "ISSUE_DATE": null,
+      "EXPIRY_DATE": null
+    }
   },
   "CANDIDATE-OPPS": {
     "HEADER": null,
