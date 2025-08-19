@@ -65,13 +65,6 @@ export class ChatService implements OnDestroy {
    */
   private chatByRequest$: Map<string, Observable<JobChat>> = new Map();
 
-  /**
-   * Tracks which chats are already loading, as we are using tabs there are multiple subscription points using
-   * getChatIsRead$ (tc-tab-header, tc-tab-content).
-   * @private
-   */
-  private chatsLoading = new Set<number>();
-
   constructor(
     private authenticationService: AuthenticationService,
     private http: HttpClient,

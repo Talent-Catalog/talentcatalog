@@ -41,11 +41,10 @@ describe('CandidatesWithChatComponent', () => {
   const mockCandidate: Candidate = new MockCandidate();
 
   chatService = jasmine.createSpyObj('ChatService',
-    ['getCandidateProspectChat','getChatPosts$','getChatIsRead$', 'combineChatReadStatuses']);
+    ['getCandidateProspectChat','getChatPosts$','getChatIsRead$']);
   chatService.getCandidateProspectChat.and.returnValue(of(mockJobChat));
   chatService.getChatPosts$.and.returnValue(of(new MockChatPost()));
   chatService.getChatIsRead$.and.returnValue(of(false));
-  chatService.combineChatReadStatuses.and.returnValue(of(false));
 
   authorizationService = jasmine.createSpyObj('AuthorizationService', ['isReadOnly']);
   authorizationService.isReadOnly.and.returnValue(true);
