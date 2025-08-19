@@ -28,12 +28,12 @@ import {
 } from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
-import { InputComponent } from './components/input/input.component';
-import { FieldsetComponent } from './components/fieldset/fieldset.component';
-import { FieldComponent } from './components/fieldset/field/field.component';
-import { LabelComponent } from './components/fieldset/label/label.component';
-import { DescriptionComponent } from './components/fieldset/description/description.component';
-import { ErrorMessageComponent } from './components/fieldset/error-message/error-message.component';
+import {InputComponent} from './components/input/input.component';
+import {FieldsetComponent} from './components/fieldset/fieldset.component';
+import {FieldComponent} from './components/fieldset/field/field.component';
+import {LabelComponent} from './components/fieldset/label/label.component';
+import {DescriptionComponent} from './components/fieldset/description/description.component';
+import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
 
 @NgModule({
   declarations: [ButtonComponent, TcTableComponent, TcPaginationComponent, InputComponent, FieldsetComponent, FieldComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent],
@@ -56,4 +56,5 @@ import { ErrorMessageComponent } from './components/fieldset/error-message/error
     FieldsetComponent, LabelComponent, DescriptionComponent, ErrorMessageComponent
   ]
 })
-export class SharedModule { }
+export class SharedModule {
+}
