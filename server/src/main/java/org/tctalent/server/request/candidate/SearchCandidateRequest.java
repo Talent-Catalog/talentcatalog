@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.candidate;
 
+import static org.tctalent.server.configuration.SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -97,6 +98,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Integer minEducationLevel;
     private List<Long> educationMajorIds;
 
+    private Boolean includePendingTermsCandidates;
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
     private Boolean potentialDuplicate;
@@ -243,7 +245,17 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             String values = excludedCandidates.stream()
                 .map(candidate -> candidate.getId().toString())
                 .collect(Collectors.joining(","));
-            ands.add("not candidate.id in (" + values + ")");
+            ands.add("candidate.id not in (" + values + ")");
+        }
+
+        // Exclude candidates belonging to the PENDING_TERMS_ACCEPTANCE_LIST unless specifically
+        // asked to include them.
+        boolean excludePendingTermsCandidates
+            = includePendingTermsCandidates == null || !includePendingTermsCandidates;
+        if (excludePendingTermsCandidates) {
+            ands.add("candidate.id not in"
+                + " (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = " + PENDING_TERMS_ACCEPTANCE_LIST_ID + ")");
         }
 
         // NATIONALITY SEARCH
