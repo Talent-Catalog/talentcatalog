@@ -95,7 +95,8 @@ describe('SearchHomeComponent', () => {
   it('should handle tab change event with valid tab ID', () => {
     fixture.detectChanges();
     const event = { nextId: 'SearchesSharedWithMe' };
-    component.onTabChanged(event.nextId);
+    // @ts-expect-error
+    component.onTabChanged(event);
     expect(component.activeTabId).toBe('SearchesSharedWithMe');
     expect(localStorageServiceSpy.set).toHaveBeenCalledWith(component["lastTabKey"], 'SearchesSharedWithMe');
   });
