@@ -16,7 +16,7 @@
 
 import {ShowCandidatesComponent} from "./show-candidates.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
@@ -121,7 +121,7 @@ describe('ShowCandidatesComponent', () => {
     // Setup default mocks
     formBuilder = TestBed.inject(UntypedFormBuilder);
     component.candidateSource = new MockCandidateSource();
-    component.searchForm = formBuilder.group({
+    component.searchInResultsForm = formBuilder.group({
       keyword: [''],
       showClosedOpps: [false],
       statusesDisplay: [[]]
@@ -179,8 +179,8 @@ describe('ShowCandidatesComponent', () => {
 
   it('should initialize form and user correctly', () => {
     component.ngOnInit();
-    expect(component.searchForm.get('keyword')).toBeTruthy();
-    expect(component.searchForm.get('showClosedOpps')).toBeTruthy();
+    expect(component.searchInResultsForm.get('keyword')).toBeTruthy();
+    expect(component.searchInResultsForm.get('showClosedOpps')).toBeTruthy();
     expect(component.loggedInUser).toEqual(new MockUser());
   });
 

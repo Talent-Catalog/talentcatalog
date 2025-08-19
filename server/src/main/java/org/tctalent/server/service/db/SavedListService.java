@@ -216,12 +216,32 @@ public interface SavedListService {
     Set<Long> fetchCandidateIds(long listId);
 
     /**
+     * Fetches the public ids of candidates in the given list, note that the list id provided
+     * must be the public id of the list, not the internal id.
+     *
+     * @param publicListId public Id of list
+     * @return public Ids of candidates contained in the list
+     */
+    @NonNull
+    Set<String> fetchCandidatePublicIds(String publicListId);
+
+    /**
      * Fetches the ids of the union of all candidates in all the given lists
      * @param listIds Ids of lists
      * @return Ids of candidates contained in the lists or null if ids is null
      */
     @Nullable
     Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds);
+
+    /**
+     * Fetches the public ids of the union of all candidates in all the given lists, note that the
+     * list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates contained in the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchUnionCandidatePublicIds(@Nullable List<String> publicListIds);
 
     /**
      * Fetches the ids of candidates which appear in all the given lists
@@ -231,6 +251,15 @@ public interface SavedListService {
     @Nullable
     Set<Long> fetchIntersectionCandidateIds(@Nullable List<Long> listIds);
 
+    /**
+     * Fetches the public ids of the intersection of all candidates in all the given lists, note
+     * that the list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates common to all the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchIntersectionCandidatePublicIds(@Nullable List<String> publicListIds);
 
     /**
      * Get the SavedList with the given id.
@@ -240,6 +269,15 @@ public interface SavedListService {
      */
     @NonNull
     SavedList get(long savedListId) throws NoSuchObjectException;
+
+    /**
+     * Get the SavedList with the given public id.
+     * @param publicId public ID of the SavedList to get
+     * @return Saved list
+     * @throws NoSuchObjectException if there is no saved list with this public id.
+     */
+    @NonNull
+    SavedList getByPublicId(@NonNull String publicId) throws NoSuchObjectException;
 
     /**
      * Get the SavedList, if any, with the given name (ignoring case), owned by the given user.
