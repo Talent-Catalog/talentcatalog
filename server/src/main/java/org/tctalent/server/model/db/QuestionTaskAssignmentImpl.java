@@ -18,7 +18,9 @@ package org.tctalent.server.model.db;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
@@ -35,6 +37,8 @@ import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 @Setter
 public class QuestionTaskAssignmentImpl extends TaskAssignmentImpl implements
     QuestionTaskAssignment {
+    @OneToMany(mappedBy = "relatedTaskAssignment")
+    private List<CandidateProperty> properties;
 
     @Transient
     @Nullable
