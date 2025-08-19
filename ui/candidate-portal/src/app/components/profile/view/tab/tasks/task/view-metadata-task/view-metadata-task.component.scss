@@ -1,0 +1,29 @@
+section {
+  margin-bottom: 1rem;
+}
+
+.section-heading {
+  margin-bottom: 0.5rem;
+}
+
+.card {
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.form-control, ng-select {
+  font-size: 0.9rem;
+}
+/* Use ::ng-deep so Angular allows styling nested elements */
+::ng-deep .ng-select.is-invalid .ng-select-container {
+  border-color: #dc3545 !important;
+  background-color: #fff3f3 !important;
+  border-radius: 4px;
+}
