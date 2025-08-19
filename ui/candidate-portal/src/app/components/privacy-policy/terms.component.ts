@@ -55,8 +55,6 @@ export class TermsComponent implements OnInit {
 
     //Check if candidate has accepted the current policy. If not they need to accept it.
     this.setRequestAcceptance(currentPolicy.id != candidate.acceptedPrivacyPolicyId)
-
-    console.log(candidate)
   }
 
   private setCurrentPolicy(termsInfo: TermsInfoDto) {
