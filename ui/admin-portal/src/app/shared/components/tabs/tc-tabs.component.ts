@@ -72,13 +72,11 @@ export class TcTabsComponent implements AfterContentInit {
       const found = this.tabs.findIndex(tab => tab.id === this.activeTabId);
       this.activeIndex = found >= 0 ? found : 0;
     }
-    console.log('content init')
     this.emitActiveTab();
   }
 
   selectTab(index: number) {
     this.activeIndex = index;
-    console.log('select tab')
     this.emitActiveTab();
   }
 
