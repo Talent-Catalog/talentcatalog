@@ -51,17 +51,28 @@
   <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
 </ng-container>
 
+<!-- METADATA FIELDS -->
+<ng-container *ngIf="(selectedTask.task.requiredMetadata?.length > 0) && (!formAbandoned && !abandonedTask)">
+  <app-view-metadata-task
+    [form]="form"
+    [candidate]="candidate"
+    [discrepantFields]="discrepantFields"
+    [selectedTask]="selectedTask">
+  </app-view-metadata-task>
+</ng-container>
+
 <!-- UPLOAD ACTION -->
 <ng-container *ngIf="selectedTask.task.taskType === 'Upload'">
   <app-view-upload-task
     [form]="form"
     [candidate]="candidate"
     [selectedTask]="selectedTask"
+    (errorWithDiscrepancies)="handleUploadError($event)"
     (successfulUpload)="completedUploadTask($event)">
   </app-view-upload-task>
 </ng-container>
 
-<form [formGroup]="form" (submit)="submitTask()">
+<form [formGroup]="commentForm" (submit)="submitTask()">
   <!-- OTHER ACTIONS -->
   <!-- Only show these containers if the task is NOT abandoned. If the task is abandoned we want to hide these containers until the task is un-abandoned. -->
   <ng-container *ngIf="!formAbandoned && !abandonedTask">
@@ -107,7 +118,7 @@
   </section>
 
   <button class="btn btn-primary mt-2" type="submit"
-          [disabled]="form.invalid || form.pristine">
+          [disabled]="commentForm.invalid || commentForm.pristine">
     {{ 'TASKS.TASK.SUBMIT' | translate }}
     <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
   </button>
