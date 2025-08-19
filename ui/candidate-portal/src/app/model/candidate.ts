@@ -125,7 +125,7 @@ export interface Candidate extends HasId {
   candidateLanguages?: CandidateLanguage[];
   candidateOccupations?: CandidateOccupation[];
   candidateDestinations?: CandidateDestination[];
-
+  birthCountry: Country
 }
 
 export interface CandidateProperty {
