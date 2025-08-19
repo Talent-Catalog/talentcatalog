@@ -213,15 +213,15 @@ class SearchCandidateRequestTest {
         request.setListAnyIds(listAnyIds);
         String sql = request.extractFetchSQL();
         assertEquals(UNORDERED_SELECT +
-                " where candidate.id in (select candidate_id from candidate_saved_list" 
+                " where candidate.id in (select candidate_id from candidate_saved_list"
                 + " where saved_list_id in (123,456))"
                 , sql);
 
         request.setListAnySearchType(SearchType.not);
         sql = request.extractFetchSQL();
         assertEquals(UNORDERED_SELECT +
-                " where candidate.id not in (select candidate_id from candidate_saved_list" 
-                + " where saved_list_id in (123,456))"
+                " where not (candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id in (123,456)))"
                 , sql);
     }
 
@@ -232,8 +232,8 @@ class SearchCandidateRequestTest {
         request.setListAllIds(listAllIds);
         String sql = request.extractFetchSQL();
         assertEquals(UNORDERED_SELECT +
-                " where candidate.id in (select candidate_id from candidate_saved_list" 
-                + " where saved_list_id = 123)" 
+                " where candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 123)"
                 + " and candidate.id in (select candidate_id from candidate_saved_list"
                 + " where saved_list_id = 456)"
                 , sql);
@@ -241,10 +241,10 @@ class SearchCandidateRequestTest {
         request.setListAllSearchType(SearchType.not);
         sql = request.extractFetchSQL();
         assertEquals(UNORDERED_SELECT +
-                " where candidate.id not in (select candidate_id from candidate_saved_list" 
-                + " where saved_list_id = 123)" 
-                + " and candidate.id not in (select candidate_id from candidate_saved_list"
-                + " where saved_list_id = 456)"
+                " where not (candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 123)"
+                + " and candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 456))"
             , sql);
     }
 
