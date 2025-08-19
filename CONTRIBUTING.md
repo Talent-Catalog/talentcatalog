@@ -27,6 +27,12 @@ We aspire to following the
 
 We aspire to following the [Angular style guide](https://angular.io/guide/styleguide).
 
+### Documentation ###
+To improve code readability and maintainability we aspire to document the code with clear explanations of components, classes, functions and variables.
+The documentation standard we have decided to follow is JSDoc for Angular and Javadoc for Java code. 
+
+For JSDoc we follow the [JSDoc style](https://jsdoc.app/about-getting-started) using annotations like @description for useful descriptions of components and @example to provide code examples.
+For Javadoc we follow the [Javadoc style](https://www.baeldung.com/javadoc) using @code for code examples, @link for useful links and html for easy to read formatting.
 
 ## Standard tools
 
