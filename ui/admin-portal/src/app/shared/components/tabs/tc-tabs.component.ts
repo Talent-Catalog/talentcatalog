@@ -17,6 +17,37 @@ export interface Tab {
   content: TemplateRef<any>;
 }
 
+/**
+ * @component TcTabsComponent
+ * @description
+ * An outer component that contains all the <tc-tab> components. It keeps track of the active tab and outputs event
+ * on tab change.
+ *
+ * **Features:**
+ * - Contains the tabs
+ * - Outputs event on tab change
+ * - Sets with the active tab
+ *
+ * @selector tc-tabs
+ *
+ * @example
+ * ```html
+ * <tc-tabs [activeTabId]="activeTabId" (tabChanged)="setActiveTab($event)">
+ *   <tc-tab id="FirstTab" description="This is the first tab">
+ *     <tc-tab-header>First Tab</tc-tab-header>
+ *     <tc-tab-content>
+ *       <app-component></app-component>
+ *     </tc-tab-content>
+ *   </tc-tab>
+ *   <tc-tab id="SecondTab" description="This is the second tab">
+ *     <tc-tab-header>Second Tab</tc-tab-header>
+ *     <tc-tab-content>
+ *       This is some content that isn't in a component.
+ *     </tc-tab-content>
+ *   </tc-tab>
+ * </tc-tabs>
+ * ```
+ */
 @Component({
   selector: 'tc-tabs',
   templateUrl: './tc-tabs.component.html',
