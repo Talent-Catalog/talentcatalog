@@ -219,7 +219,6 @@ export class CandidateTaskComponent implements OnInit {
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.addRequiredFormControls();
-        console.log("task",taskAssignment)
         this.saving = false;
       }, error => {
         this.error = error;
