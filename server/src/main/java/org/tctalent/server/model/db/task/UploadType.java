@@ -55,5 +55,6 @@ public enum UploadType {
     unhcrUnrwaRegCard,
     vaccination,
     vaccinationTrans,
-    visa
+    visa,
+    candidateTravelDocumentUpload
 }
