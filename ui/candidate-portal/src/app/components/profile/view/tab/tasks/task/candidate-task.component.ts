@@ -38,49 +38,40 @@ export class CandidateTaskComponent implements OnInit {
   @Input() candidate: Candidate;
   @Output() back = new EventEmitter();
   form: UntypedFormGroup;
+  commentForm: UntypedFormGroup;
+
   url: SafeResourceUrl;
   loading: boolean;
   saving: boolean;
   error;
+  errorMessage: string | null = null;
+  discrepantFields: Set<string> = new Set();
 
   constructor(private fb: UntypedFormBuilder,
               private taskAssignmentService: TaskAssignmentService,
               public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
-    this.form = this.fb.group({
+    this.form = this.fb.group({});
+    this.commentForm = this.fb.group({
       abandoned: [this.abandonedTask],
       comment: [this.selectedTask.candidateNotes]
     })
-
     this.addRequiredFormControls();
 
     if (this.selectedTask.task.docLink) {
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.docLink);
     }
 
-    // todo this validation seems very messy! May be a better way to handle this. Perhaps use seperate forms?
     // Validation requiring comment if abandoned, and resetting the required validation on the answer/completed fields.
-    this.form.get('abandoned').valueChanges.subscribe(abandoned => {
+    // subscribe abandoned logic only on commentForm
+    this.commentForm.get('abandoned').valueChanges.subscribe(abandoned => {
       if (abandoned) {
-        this.form.get('comment').setValidators([Validators.required]);
-        this.form.get('response')?.clearValidators();
-        this.form.get('completed')?.clearValidators();
+        this.commentForm.get('comment').setValidators([Validators.required]);
       } else {
-        // If task isn't already abandoned, and the abandon checkbox is false. Set required validators. But don't set
-        // these required validators if we are unchecking an already abandoned task.
-        if (this.selectedTask.abandonedDate == null) {
-          this.form.get('response')?.setValidators([Validators.required]);
-          this.form.get('completed')?.setValidators([Validators.requiredTrue]);
-        } else {
-          this.form.get('response')?.clearValidators();
-          this.form.get('completed')?.clearValidators();
-        }
-        this.form.get('comment').clearValidators();
+        this.commentForm.get('comment').clearValidators();
       }
-      this.form.controls['comment'].updateValueAndValidity()
-      this.form.controls['response']?.updateValueAndValidity()
-      this.form.controls['completed']?.updateValueAndValidity()
+      this.commentForm.get('comment').updateValueAndValidity();
     });
   }
 
@@ -96,7 +87,7 @@ export class CandidateTaskComponent implements OnInit {
   }
 
   get formAbandoned() {
-    return this.form.get('abandoned').value;
+    return this.commentForm.get('abandoned').value;
   }
 
   get abandonedTask() {
@@ -143,6 +134,7 @@ export class CandidateTaskComponent implements OnInit {
         } else if (this.selectedTask.task.taskType === TaskType.Simple) {
           this.updateSimpleTask();
         } else {
+          console.log("Upload")
           this.updateUploadTask();
         }
       } else {
@@ -155,8 +147,8 @@ export class CandidateTaskComponent implements OnInit {
     this.saving = true;
     const request: UpdateQuestionTaskAssignmentRequest = {
       answer: this.form.value.response,
-      abandoned: this.form.value.abandoned,
-      candidateNotes: this.form.value.comment
+      abandoned: this.commentForm.value.abandoned,
+      candidateNotes: this.commentForm.value.comment
     }
     this.taskAssignmentService.updateQuestionTask(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
@@ -173,8 +165,8 @@ export class CandidateTaskComponent implements OnInit {
     this.saving = true;
     const request: UpdateTaskAssignmentRequest = {
       completed: this.form.value.completed,
-      abandoned: this.form.value.abandoned,
-      candidateNotes: this.form.value.comment
+      abandoned: this.commentForm.value.abandoned,
+      candidateNotes: this.commentForm.value.comment
     }
     this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
@@ -192,9 +184,10 @@ export class CandidateTaskComponent implements OnInit {
   updateUploadTask() {
     this.saving = true;
     const request: UpdateUploadTaskAssignmentRequest = {
-      abandoned: this.form.value.abandoned,
-      candidateNotes: this.form.value.comment
+      abandoned: this.commentForm.value.abandoned,
+      candidateNotes: this.commentForm.value.comment
     }
+    console.log(request)
     this.taskAssignmentService.updateUploadTaskAssignment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
@@ -206,18 +199,27 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
+  // Handle errors from ViewUploadTaskComponent
+  handleUploadError(event: { message: string, discrepantFields: Set<string> }) {
+    this.errorMessage = event.message;
+    this.discrepantFields = event.discrepantFields;
+  }
+
   // If we want to update an abandoned task, the completed field is false and we are only updating the abandoned/comment field.
   updateAbandonedTask() {
+    console.log("AS")
     this.saving = true;
     const request: UpdateTaskAssignmentRequest = {
       completed: false,
-      abandoned: this.form.value.abandoned,
-      candidateNotes: this.form.value.comment
+      abandoned: this.commentForm.value.abandoned,
+      candidateNotes: this.commentForm.value.comment
     }
+    console.log(request)
     this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
         this.selectedTask = taskAssignment;
         this.addRequiredFormControls();
+        console.log("task",taskAssignment)
         this.saving = false;
       }, error => {
         this.error = error;
@@ -229,7 +231,7 @@ export class CandidateTaskComponent implements OnInit {
   updateTaskComment() {
     this.saving = true;
     const request: UpdateTaskCommentRequest = {
-      candidateNotes: this.form.value.comment
+      candidateNotes: this.commentForm.value.comment
     }
     this.taskAssignmentService.updateTaskComment(this.selectedTask.id, request).subscribe(
       (taskAssignment) => {
@@ -241,5 +243,4 @@ export class CandidateTaskComponent implements OnInit {
       }
     )
   }
-
 }
