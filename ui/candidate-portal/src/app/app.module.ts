@@ -231,6 +231,7 @@ import { CasiHeaderComponent } from './components/common/casi-header/casi-header
 import { TermsComponent } from './components/privacy-policy/terms.component';
 import { RegistrationSubmitComponent } from './components/register/submit/registration-submit.component';
 import { ShowTermsComponent } from './components/util/accept-terms/show-terms.component';
+import { ViewMetadataTaskComponent } from './components/profile/view/tab/tasks/task/view-metadata-task/view-metadata-task.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -317,6 +318,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TermsComponent,
     RegistrationSubmitComponent,
     ShowTermsComponent,
+    ViewMetadataTaskComponent,
   ],
   imports: [
     BrowserModule,
