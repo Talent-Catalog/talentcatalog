@@ -17,15 +17,35 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
+import {
+  NgbPagination,
+  NgbPaginationFirst,
+  NgbPaginationLast,
+  NgbPaginationNext,
+  NgbPaginationNumber,
+  NgbPaginationPages,
+  NgbPaginationPrevious
+} from "@ng-bootstrap/ng-bootstrap";
+import {TcTableComponent} from "./components/table/tc-table.component";
+import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
+
 
 @NgModule({
-  declarations: [ButtonComponent],
+  declarations: [ButtonComponent, TcTableComponent, TcPaginationComponent],
   imports: [
     CommonModule,
+    NgbPagination,
+    NgbPaginationPrevious,
+    NgbPaginationNext,
+    NgbPaginationNumber,
+    NgbPaginationPages,
+    NgbPaginationFirst,
+    NgbPaginationLast
   ],
   exports: [
     ButtonComponent,
+    TcTableComponent,
+    TcPaginationComponent
   ]
 })
-export class SharedModule {
-};
+export class SharedModule { }
