@@ -1565,7 +1565,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setStatus(status);
 
             final String tcAccountCreated = String.valueOf(candidate.getCreatedDate());
-            setTcAccountCreated(tcAccountCreated.substring(0, 9));
+            setTcAccountCreated(tcAccountCreated.substring(0, 10));
 
             final String unhcrRegistered = String.valueOf(candidate.getUnhcrRegistered());
             if (unhcrRegistered != null) {
