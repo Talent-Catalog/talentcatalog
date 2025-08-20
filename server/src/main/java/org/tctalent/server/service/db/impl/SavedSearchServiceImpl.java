@@ -1688,6 +1688,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
                     getListAsString(request.getEducationMajorIds()));
+            savedSearch.setIncludePendingTermsCandidates(request.getIncludePendingTermsCandidates());
             savedSearch.setMiniIntakeCompleted(request.getMiniIntakeCompleted());
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
             savedSearch.setPotentialDuplicate(request.getPotentialDuplicate());
@@ -1766,6 +1767,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxAge(search.getMaxAge());
         searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
+        searchCandidateRequest.setIncludePendingTermsCandidates(search.getIncludePendingTermsCandidates());
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
         searchCandidateRequest.setPotentialDuplicate(search.getPotentialDuplicate());
