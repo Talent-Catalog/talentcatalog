@@ -41,7 +41,7 @@
     text-decoration: $link-hover-decoration;
   }
 }
-
+// TODO REMOVE THIS PAGINATION CSS ONCE MOVED OVER TO NEW STYLE
 .page-link {
   position: relative;
   display: block;
@@ -79,7 +79,7 @@
     cursor: auto;
   }
 }
-
+// TODO REMOVE THIS TABLE CSS ONCE MOVED OVER TO NEW STYLE
 table {
   background-color: $white;
   border: $white;
