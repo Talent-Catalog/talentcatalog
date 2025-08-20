@@ -56,6 +56,7 @@ export interface SearchCandidateRequest {
   otherSpokenLevel?: string;
   minEducationLevelName?: string;
   includeDraftAndDeleted?: boolean;
+  includePendingTermsCandidates?: boolean;
   searchJoins?: SavedSearchJoin[];
   exclusionListId?: number;
   miniIntakeCompleted?: boolean;

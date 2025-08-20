@@ -700,6 +700,14 @@
             (deleteBaseSearch)="deleteBaseSearchJoin()"
             [baseSearch]= "selectedBaseJoin">
           </app-join-saved-search>
+
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="includePendingTermsCandidates"
+                   [value]="false" formControlName="includePendingTermsCandidates">
+            <label class="form-check-label small" for="includePendingTermsCandidates">
+              Should candidates who have not accepted terms be included?
+            </label>
+          </div>
         </div>
 
 
