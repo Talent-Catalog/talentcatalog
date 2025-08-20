@@ -104,9 +104,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Boolean potentialDuplicate;
     private String regoReferrerParam;
     private List<ReviewStatus> reviewStatusFilter;
-
-    //TODO JC I don't think is used - possible Zombie code
-    private Boolean includeUploadedFiles;
     private LocalDate fromDate;
     private List<SearchJoinRequest> searchJoinRequests;
 
