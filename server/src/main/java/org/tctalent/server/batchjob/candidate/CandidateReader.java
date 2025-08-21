@@ -33,6 +33,7 @@ import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
 
@@ -46,6 +47,7 @@ public class CandidateReader implements ItemReader<Candidate>, StepExecutionList
     private final int chunkSize;
     private SavedList savedList;
     private SavedSearch savedSearch;
+    private SearchCandidateRequest searchCandidateRequest;
     private CandidateService candidateService;
     private SavedSearchService savedSearchService;
 
@@ -63,6 +65,14 @@ public class CandidateReader implements ItemReader<Candidate>, StepExecutionList
     public CandidateReader(
         @NonNull SavedSearch savedSearch, int chunkSize, SavedSearchService savedSearchService) {
         this.savedSearch = savedSearch;
+        this.chunkSize = chunkSize;
+        this.savedSearchService = savedSearchService;
+    }
+
+    public CandidateReader(
+        @NonNull SearchCandidateRequest searchCandidateRequest, int chunkSize,
+        SavedSearchService savedSearchService) {
+        this.searchCandidateRequest = searchCandidateRequest;
         this.chunkSize = chunkSize;
         this.savedSearchService = savedSearchService;
     }
@@ -86,10 +96,14 @@ public class CandidateReader implements ItemReader<Candidate>, StepExecutionList
             request = new SavedSearchGetRequest();
         } else if (savedList != null) {
             request = new SavedListGetRequest();
+        } else if (searchCandidateRequest != null) {
+            request = searchCandidateRequest;
         } else {
             throw new RuntimeException("No saved search or saved list specified");
         }
 
+        //Set page number
+        request.setPageNumber(currentPage);
         //Set page size
         request.setPageSize(chunkSize);
 
@@ -100,6 +114,8 @@ public class CandidateReader implements ItemReader<Candidate>, StepExecutionList
                 assert request instanceof SavedSearchGetRequest;
                 page = savedSearchService.searchCandidates(
                     savedSearch.getId(), (SavedSearchGetRequest) request);
+            } else if (searchCandidateRequest != null) {
+                page = savedSearchService.searchCandidates(searchCandidateRequest);
             } else if (savedList != null) {
                 assert request instanceof SavedListGetRequest;
                 page = candidateService.getSavedListCandidates(
