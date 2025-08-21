@@ -8,7 +8,7 @@
 // Use these for normal text on light backgrounds
 @mixin text-color-body    { color: color(gray, 900); } //  Primary text on light backgrounds; best for body content and high readability.
 @mixin text-color-secondary   { color: color(gray, 500); } //  For secondary text like descriptions, hints, or helper text on light backgrounds. On dark backgrounds, use for small labels or subtle captions.
-@mixin text-color-caption { color: color(gray, 400); } //  For tertiary text like captions, timestamps and placeholders,. On dark backgrounds, can be used as muted text.
+@mixin text-color-caption { color: color(gray, 400); } //  For tertiary text like captions, timestamps and placeholders. On dark backgrounds, can be used as muted text.
 @mixin text-color-white   { color: color(core, white); } // Use on dark backgrounds for maximum legibility and contrast.
 
 // --- Semantic Text Colors ---
@@ -16,6 +16,7 @@
 @mixin text-color-warning  { color: color(yellow, 700); }
 @mixin text-color-error    { color: color(red, 700); }
 @mixin text-color-info     { color: color(blue, 700); }
+@mixin text-color-disabled   { color: color(gray, 500); }
 
 // --- Descriptive Text Colors ---
 @mixin text-color-red      { color: color(red, 700); }
@@ -31,7 +32,7 @@
   // ==========================
 
   // --- Base Border Colors ---
-  @mixin border-color-base      { border-color: color(gray, 200); }    // Standard subtle border
+  @mixin border-color-base      { border-color: color(gray, 300); }    // Standard subtle border
   @mixin  border-color-light     { border-color: color(gray, 100); }  // Softer, for nested containers
   @mixin  border-color-soft      { border-color: color(gray, 50); }         // Very light, for subtle outlines
 
@@ -76,6 +77,7 @@
   @mixin background-color-warning  { background-color: color(yellow, 100); }
   @mixin background-color-error    { background-color: color(red, 100); }
   @mixin background-color-info     { background-color: color(blue, 100); }
+  @mixin background-color-disabled   { background-color: color(gray, 100); }
 
   // --- Descriptive Background Colors ---
   @mixin background-color-red      { background-color: color(red, 100); }

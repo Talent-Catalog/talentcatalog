@@ -579,7 +579,6 @@ import {SharedModule} from "./shared/shared.module";
 import {ChatMuteToggleButtonComponent} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 import {ViewPrivacyPolicyInfoComponent} from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
