@@ -68,22 +68,24 @@ export class TcTabsComponent implements AfterContentInit {
       header: tab.header,
       content: tab.content,
     }));
-    if (this.activeTabId) {
-      const found = this.tabs.findIndex(tab => tab.id === this.activeTabId);
-      this.activeIndex = found >= 0 ? found : 0;
-    }
-    this.emitActiveTab();
+    this.setActiveById(this.activeTabId);
   }
 
   selectTab(index: number) {
     this.activeIndex = index;
+    this.activeTabId = this.tabs[index].id;
+    this.emitActiveTab();
+  }
+
+  private setActiveById(id?: string) {
+    const found = this.tabs.findIndex(tab => tab.id === id);
+    this.activeIndex = found >= 0 ? found : 0;
+    this.activeTabId = this.tabs[this.activeIndex].id;
     this.emitActiveTab();
   }
 
   private emitActiveTab() {
-    if (this.selectedTab) {
-      this.tabChanged.emit(this.selectedTab.id);
-    }
+    this.tabChanged.emit(this.activeTabId!);
   }
 
   get selectedTab() {
