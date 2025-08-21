@@ -168,6 +168,10 @@ public class CandidateEs {
     }
 
     private String regoReferrerParam;
+    private String regoUtmCampaign;
+    private String regoUtmSource;
+    private String regoUtmMedium;
+
 
     private Long updated;
 
@@ -281,6 +285,10 @@ public class CandidateEs {
         this.partner = candidate.getUser() == null ? null
                 : candidate.getUser().getPartner().getAbbreviation();
         this.regoReferrerParam = candidate.getRegoReferrerParam();
+        this.regoUtmCampaign = candidate.getRegoUtmCampaign();
+        this.regoUtmSource = candidate.getRegoUtmSource();
+        this.regoUtmMedium = candidate.getRegoUtmMedium();
+
         this.status = candidate.getStatus();
 
         this.phone = candidate.getPhone();
