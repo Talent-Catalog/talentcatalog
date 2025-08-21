@@ -54,7 +54,10 @@ export interface Tab {
   styleUrls: ['./tc-tabs.component.scss']
 })
 export class TcTabsComponent implements AfterContentInit {
-  @Input() activeTabId: string;
+  /** Optional input to set the active tab, defaults to first tab is not provided */
+  @Input() activeTabId?: string;
+
+  /** Optional event to hook into, parent can keep track of the active tab (e.g. caching purposes) */
   @Output() tabChanged = new EventEmitter<any>();
 
   @ContentChildren(TcTabComponent) tabComponents!: QueryList<TcTabComponent>;
@@ -68,7 +71,11 @@ export class TcTabsComponent implements AfterContentInit {
       header: tab.header,
       content: tab.content,
     }));
-    this.setActiveById(this.activeTabId);
+    // Set the active tab: either activeTabId value or first tab if activeTabId undefined/not found
+    const foundIndex = this.tabs.findIndex(tab => tab.id === this.activeTabId);
+    this.activeIndex = foundIndex >= 0 ? foundIndex : 0;
+    this.activeTabId = this.tabs[this.activeIndex]?.id;
+    this.emitActiveTab();
   }
 
   selectTab(index: number) {
@@ -77,18 +84,7 @@ export class TcTabsComponent implements AfterContentInit {
     this.emitActiveTab();
   }
 
-  private setActiveById(id?: string) {
-    const found = this.tabs.findIndex(tab => tab.id === id);
-    this.activeIndex = found >= 0 ? found : 0;
-    this.activeTabId = this.tabs[this.activeIndex].id;
-    this.emitActiveTab();
-  }
-
   private emitActiveTab() {
-    this.tabChanged.emit(this.activeTabId!);
-  }
-
-  get selectedTab() {
-    return this.tabs[this.activeIndex];
+    this.tabChanged.emit(this.activeTabId);
   }
 }

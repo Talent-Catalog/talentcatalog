@@ -56,32 +56,32 @@ describe('TcTabsComponent', () => {
   });
 
   it('should only show content of the active tab', () => {
-    const contents = fixture.debugElement.queryAll(By.css('.tab-content div'));
-    expect(contents.length).toBe(2);
+    fixture.detectChanges();
 
-    // First tab visible
-    expect(contents[0].nativeElement.hidden).toBeFalse();
-    expect(contents[1].nativeElement.hidden).toBeTrue();
+    const contents = fixture.debugElement.queryAll(By.css('.tab-content .tab-pane'));
+
+    // Only one tab content should exist in the DOM
+    expect(contents.length).toBe(1);
+
+    // The content should be the first tab
+    expect(contents[0].nativeElement.textContent).toContain('First Tab Content');
   });
 
   it('should switch tab when header is clicked', () => {
     fixture.detectChanges();
-
     // Query all tab header links
     const headers = fixture.debugElement.queryAll(By.css('ul.nav-tabs li a'));
 
-    // Click the second tab header using nativeElement.click()
+    // Click the second tab header
     headers[1].nativeElement.click();
     fixture.detectChanges();
 
-    // Query all tab content divs
-    const contents = fixture.debugElement.queryAll(By.css('.tab-content div'));
+    // After click, only the second tab content should be rendered
+    const contents = fixture.debugElement.queryAll(By.css('.tab-content .tab-pane'));
+    expect(contents.length).toBe(1);
+    expect(contents[0].nativeElement.textContent).toContain('Second Tab Content');
 
-    // Verify the first tab is hidden and the second tab is visible
-    expect(contents[0].nativeElement.hasAttribute('hidden')).toBeTrue();
-    expect(contents[1].nativeElement.hasAttribute('hidden')).toBeFalse();
-
-    // Verify the host component received the correct tab ID
-    expect(host.lastChanged).toBe('SecondTab'); // Use the actual tab ID
+    // Verify the component output is emitted correctly
+    expect(host.lastChanged).toBe('SecondTab');
   });
 });
