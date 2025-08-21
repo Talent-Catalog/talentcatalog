@@ -52,6 +52,8 @@ import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -70,6 +72,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory.CandidateBatchJobBuilder;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -88,6 +92,7 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -112,6 +117,7 @@ import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.api.TcApiService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
+import org.tctalent.server.service.db.BatchJobService;
 import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
@@ -150,6 +156,7 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateOpportunityRepository candidateOpportunityRepository;
@@ -180,6 +187,7 @@ public class SystemAdminApi {
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
     private final BackgroundProcessingService backgroundProcessingService;
+    private final BatchJobService batchJobService;
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
@@ -220,6 +228,7 @@ public class SystemAdminApi {
             DataSharingService dataSharingService,
             AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
+        CandidateBatchJobFactory candidateBatchJobFactory,
             CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
         CandidateOpportunityRepository candidateOpportunityRepository,
@@ -236,6 +245,7 @@ public class SystemAdminApi {
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
+        BatchJobService batchJobService,
         SavedSearchService savedSearchService, PartnerService partnerService,
         CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoCouponService duolingoCouponService,
         TcApiService tcApiService, BatchListeningLogger batchListeningLogger
@@ -243,6 +253,7 @@ public class SystemAdminApi {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
         this.candidateOpportunityRepository = candidateOpportunityRepository;
@@ -268,7 +279,8 @@ public class SystemAdminApi {
         this.cacheService = cacheService;
         this.taskScheduler = taskScheduler;
       this.backgroundProcessingService = backgroundProcessingService;
-      this.savedSearchService = savedSearchService;
+        this.batchJobService = batchJobService;
+        this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
       this.batchListeningLogger = batchListeningLogger;
@@ -276,6 +288,41 @@ public class SystemAdminApi {
       this.duolingoApiService = duolingoApiService;
       this.duolingoCouponService = duolingoCouponService;
       this.tcApiService = tcApiService;
+    }
+
+    @GetMapping("set_candidate_text/{candidateSource}-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateText(
+        @PathVariable("candidateSource") String candidateSource,
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+
+        ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
+            candidate -> {
+                candidate.updateText();
+                return candidate;
+            };
+
+        CandidateBatchJobBuilder jobBuilder;
+        if (candidateSource.equals("list")) {
+            SavedList savedList = savedListService.get(sourceId);
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", savedList, candidateUpdateTextProcessor);
+        } else if (candidateSource.equals("search")) {
+            SavedSearch search = savedSearchService.getSavedSearch(sourceId);
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", search, candidateUpdateTextProcessor);
+        } else {
+            throw new IllegalArgumentException(
+                "Parameter candidateSource must be 'search' or 'list'."
+            );
+        }
+
+        Job candidateUpdateTextJob= jobBuilder
+            .percentageOfCpu(cpu)
+            .build();
+
+        String response = batchJobService.launchJob(candidateUpdateTextJob, false);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("set_public_ids")

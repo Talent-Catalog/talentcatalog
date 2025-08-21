@@ -287,7 +287,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate, true,false);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
@@ -310,7 +310,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate, true, true);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
@@ -341,7 +341,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         verify(s3ResourceHelper).downloadFile(anyString(), anyString());
         verify(s3ResourceHelper).copyObject(anyString(), anyString());
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate, true,false);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertTrue(attachment.getLocation().contains(NAME));
@@ -395,7 +395,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         Exception ex = assertThrows(InvalidCredentialsException.class,
             () -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
-        assertEquals(ex.getMessage(), "You do not have permission to perform that action");
+        assertEquals("You do not have permission to perform that action", ex.getMessage());
     }
 
     @Test
@@ -677,9 +677,9 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.updateCandidateAttachment(ATTACHMENT_ID, updateRequest);
 
-        assertEquals(attachment.getName(), newName);
+        assertEquals(newName, attachment.getName());
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
-        assertEquals(candidate.getUpdatedBy(), ADMIN_USER);
+        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true);
         assertEquals(ADMIN_USER, attachment.getUpdatedBy());
         verify(candidateAttachmentRepository).save(attachment);
@@ -743,7 +743,7 @@ public class CandidateAttachmentsServiceImplTest {
         candidateAttachmentsService.uploadAttachment(candidateId, false, file);
 
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate, true, false);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment upload = attachmentCaptor.getValue();
         assertEquals(candidate, upload.getCandidate());
