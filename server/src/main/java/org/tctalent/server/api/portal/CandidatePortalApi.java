@@ -255,6 +255,8 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("user", userDto())
                 .add("acceptedPrivacyPolicyId")
+                .add("acceptedPrivacyPolicyDate")
+                .add("acceptedPrivacyPolicyPartner",partnerDto())
                 .add("candidateNumber")
                 .add("publicId")
                 .add("candidateMessage")

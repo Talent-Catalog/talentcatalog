@@ -49,3 +49,11 @@
   </app-view-candidate-account>
 </ng-container>
 
+<ng-container *ngIf="adminUser">
+  <hr/>
+  <app-view-privacy-policy-info
+    [candidate]="candidate"
+    [editable]="editable">
+  </app-view-privacy-policy-info>
+</ng-container>
+

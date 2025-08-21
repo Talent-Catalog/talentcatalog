@@ -36,6 +36,8 @@ import {CandidateLanguage} from "../model/candidate-language";
 import {CandidateOccupation} from "../model/candidate-occupation";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {Status} from "../model/base";
+import {Partner} from "../model/partner";
+import {MockPartner} from "./MockPartner";
 
 const mockUser = new MockUser();
 export class MockCandidate implements Candidate {
@@ -337,7 +339,10 @@ export class MockCandidate implements Candidate {
       notes: "I do not like Toronto."
     },
   ];
-
+  // privacy policy info
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: MockPartner;
 
   constructor() {}
 }
