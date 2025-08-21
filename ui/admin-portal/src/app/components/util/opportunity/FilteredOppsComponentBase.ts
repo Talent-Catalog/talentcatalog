@@ -39,13 +39,13 @@ import {
   Opportunity,
   OpportunityOwnershipType
 } from "../../../model/opportunity";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
-import {BehaviorSubject, Subscription} from "rxjs";
+import {BehaviorSubject, Subject, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
 import {Partner} from "../../../model/partner";
@@ -138,6 +138,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private sortDirectionSuffix: string = 'SortDir';
   private sortFieldSuffix: string = 'Sort';
   private withUnreadMessagesSuffix: string = 'WithUnreadMessages';
+
+  private destroy$ = new Subject<void>();
 
   protected constructor(
     protected chatService: ChatService,
@@ -454,7 +456,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.searchForm.valueChanges
     .pipe(
       debounceTime(1000),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
     )
     .subscribe(() => {
       this.search();
@@ -467,8 +470,9 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
    * when a stage is added. Re-enable once the stages are removed.
    */
   private subscribeToStagesChanges() {
-    this.searchForm.get('selectedStages').valueChanges.subscribe(
-      (stages) => {
+    this.searchForm.get('selectedStages').valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((stages) => {
           if (stages.length > 0) {
             this.searchForm.get('showClosedOpps').reset({value: false, disabled: true});
             this.searchForm.get('showInactiveOpps').reset({value: false, disabled: true});
@@ -588,8 +592,12 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   // These changes ensure subscriptions are torn down whenever the tab content is destroyed, preventing multiple overlapping subscriptions and eliminating the repeated console logs.
   ngOnDestroy(): void {
-    // Release the combined chat subscription when this component is destroyed
+    // Existing: release combined chat subscription
     this.unsubscribe();
+
+    // New: terminate form subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

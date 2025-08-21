@@ -29,9 +29,9 @@ import {SearchResults} from "../../../model/search-results";
 import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
 import {ChatService} from "../../../services/chat.service";
-import {BehaviorSubject, forkJoin, Observable, Subscription} from "rxjs";
+import {BehaviorSubject, forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
 
 /**
@@ -51,6 +51,8 @@ import {JobChat, JobChatUserInfo} from "../../../model/chat";
   styleUrls: ['./show-candidates-with-chat.component.scss']
 })
 export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
+  // Using takeUntil(destroy$) ensures all form-related streams terminate when the component is destroyed, allowing the instance to be garbage-collected and stopping further logs.
+  private destroy$ = new Subject<void>();
 
   @Output() candidateSelection = new EventEmitter<Candidate>();
 
@@ -130,7 +132,8 @@ export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
     this.searchForm.valueChanges
     .pipe(
       debounceTime(1000),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
     )
     .subscribe(() => {
       this.fetchCandidatesWithActiveChat(true);
@@ -297,7 +300,12 @@ export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Existing: release combined chat subscription
     this.unsubscribe();
+
+    // New: terminate form subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }
