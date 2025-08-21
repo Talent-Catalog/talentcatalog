@@ -39,6 +39,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
 
@@ -142,6 +143,11 @@ public class CandidateBatchJobFactory {
         return new CandidateBatchJobBuilder(name, savedList, processor );
     }
 
+    public CandidateBatchJobBuilder builder(String name, SearchCandidateRequest
+        searchCandidateRequest, ItemProcessor<Candidate, Candidate> processor) {
+        return new CandidateBatchJobBuilder(name, searchCandidateRequest, processor );
+    }
+
     /**
      * Builder used to Create a simple single step Spring batch job which runs a processor over
      * all candidates returned by a candidate source: saved list or search.
@@ -150,6 +156,7 @@ public class CandidateBatchJobFactory {
         private final String name;
         private SavedList savedList;
         private SavedSearch savedSearch;
+        private SearchCandidateRequest searchCandidateRequest;
         private final ItemProcessor<Candidate, Candidate> processor;
 
         //Default values
@@ -182,6 +189,16 @@ public class CandidateBatchJobFactory {
             String name, SavedList savedList, ItemProcessor<Candidate, Candidate> processor) {
             this.name = name;
             this.savedList = savedList;
+            this.processor = processor;
+        }
+
+        /**
+         * See comments for above constructor - except that the source of candidates is a SavedList.
+         */
+        public CandidateBatchJobBuilder(
+            String name, SearchCandidateRequest searchCandidateRequest, ItemProcessor<Candidate, Candidate> processor) {
+            this.name = name;
+            this.searchCandidateRequest = searchCandidateRequest;
             this.processor = processor;
         }
 
@@ -225,6 +242,8 @@ public class CandidateBatchJobFactory {
                 candidateReader = new CandidateReader(savedList, chunkSize, candidateService);
             } else if (savedSearch != null) {
                 candidateReader = new CandidateReader(savedSearch, chunkSize, savedSearchService);
+            } else if (searchCandidateRequest != null) {
+                candidateReader = new CandidateReader(searchCandidateRequest, chunkSize, savedSearchService);
             } else {
                throw new IllegalArgumentException("No saved search or saved list specified");
             }

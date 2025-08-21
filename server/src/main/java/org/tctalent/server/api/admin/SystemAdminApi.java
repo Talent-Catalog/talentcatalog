@@ -290,8 +290,27 @@ public class SystemAdminApi {
       this.tcApiService = tcApiService;
     }
 
-    @GetMapping("set_candidate_text/{candidateSource}-{sourceId}-cpu-{cpu}")
+    @GetMapping("set_candidate_text/cpu-{cpu}")
     public ResponseEntity<String> setCandidateText(
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("", 0, cpu);
+    }
+
+    @GetMapping("set_candidate_text/search-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateTextBySearch(
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("search", sourceId, cpu);
+    }
+
+    @GetMapping("set_candidate_text/list-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateTextByList(
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("list", sourceId, cpu);
+    }
+
+    private ResponseEntity<String> setCandidateTextCommon(
         @PathVariable("candidateSource") String candidateSource,
         @PathVariable("sourceId") int sourceId,
         @PathVariable("cpu") int cpu) throws Exception {
@@ -312,9 +331,14 @@ public class SystemAdminApi {
             jobBuilder = candidateBatchJobFactory
                 .builder("candidateTextJob", search, candidateUpdateTextProcessor);
         } else {
-            throw new IllegalArgumentException(
-                "Parameter candidateSource must be 'search' or 'list'."
-            );
+            //If no source is specified, generate a default search request which processes all
+            //candidates except deleted or withdrawn
+            SearchCandidateRequest request = new SearchCandidateRequest();
+            EnumSet<CandidateStatus> includedStatuses = EnumSet.complementOf(
+                EnumSet.of(CandidateStatus.deleted, CandidateStatus.withdrawn));
+            request.setStatuses(new ArrayList<>(includedStatuses));
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", request, candidateUpdateTextProcessor);
         }
 
         Job candidateUpdateTextJob= jobBuilder
