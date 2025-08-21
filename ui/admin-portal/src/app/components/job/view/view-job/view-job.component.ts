@@ -14,9 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
-import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
 import {AuthorizationService} from "../../../../services/authorization.service";
@@ -35,7 +43,9 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
+import {
+  CandidateSourceCandidateService
+} from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
 import {forkJoin, Observable} from "rxjs";
@@ -239,8 +249,8 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     this.activeTabId = defaultActiveTabID;
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   private setActiveTabId(id: string) {
