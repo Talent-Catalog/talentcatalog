@@ -35,6 +35,28 @@
         [innerHTML]="'PROFILE.PRIVACY.THANK_ACCEPTANCE'| translate:{partner: partnerName} ">
       </div>
     </div>
+    <div class="card mt-4 border-success shadow-sm mb-2" *ngIf="!requestAcceptance">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <h6 class="mb-0 text-success">{{ 'PROFILE.PRIVACY.ACCEPTANCE_DETAILS' | translate }}</h6>
+        </div>
+        <ul class="list-unstyled mb-0 text-muted small">
+          <li>
+            <strong>{{ 'PROFILE.PRIVACY.VERSION' | translate }}:</strong>
+            {{ acceptedPrivacyPolicyId }}
+          </li>
+          <li>
+            <strong>{{ 'PROFILE.PRIVACY.ACCEPTED_ON' | translate }}:</strong>
+            {{ acceptedPrivacyPolicyDate | date:'mediumDate' }}
+          </li>
+          <li>
+            <strong>{{ 'PROFILE.PRIVACY.ACCEPTED_WITH' | translate }}:</strong>
+            {{ acceptedPrivacyPolicyPartner }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <div *ngIf="requestAcceptance">
       <div *ngIf="termsRead">
 
