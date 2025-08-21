@@ -22,6 +22,9 @@ export interface SearchCandidateRequest {
   keyword?: string;
   gender?: string;
   regoReferrerParam?: string;
+  regoUtmCampaign?: string;
+  regoUtmSource?: string;
+  regoUtmMedium?: string;
   statuses?: string[];
   occupationIds?: number[];
   orProfileKeyword?: string;
