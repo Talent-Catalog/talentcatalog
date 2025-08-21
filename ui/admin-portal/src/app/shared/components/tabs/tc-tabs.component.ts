@@ -17,6 +17,37 @@ export interface Tab {
   content: TemplateRef<any>;
 }
 
+/**
+ * @component TcTabsComponent
+ * @description
+ * An outer component that contains all the <tc-tab> components. It keeps track of the active tab and outputs event
+ * on tab change.
+ *
+ * **Features:**
+ * - Contains the tabs
+ * - Outputs event on tab change
+ * - Sets with the active tab
+ *
+ * @selector tc-tabs
+ *
+ * @example
+ * ```html
+ * <tc-tabs [activeTabId]="activeTabId" (tabChanged)="setActiveTab($event)">
+ *   <tc-tab id="FirstTab" description="This is the first tab">
+ *     <tc-tab-header>First Tab</tc-tab-header>
+ *     <tc-tab-content>
+ *       <app-component></app-component>
+ *     </tc-tab-content>
+ *   </tc-tab>
+ *   <tc-tab id="SecondTab" description="This is the second tab">
+ *     <tc-tab-header>Second Tab</tc-tab-header>
+ *     <tc-tab-content>
+ *       This is some content that isn't in a component.
+ *     </tc-tab-content>
+ *   </tc-tab>
+ * </tc-tabs>
+ * ```
+ */
 @Component({
   selector: 'tc-tabs',
   templateUrl: './tc-tabs.component.html',
@@ -37,24 +68,24 @@ export class TcTabsComponent implements AfterContentInit {
       header: tab.header,
       content: tab.content,
     }));
-    if (this.activeTabId) {
-      const found = this.tabs.findIndex(tab => tab.id === this.activeTabId);
-      this.activeIndex = found >= 0 ? found : 0;
-    }
-    console.log('content init')
-    this.emitActiveTab();
+    this.setActiveById(this.activeTabId);
   }
 
   selectTab(index: number) {
     this.activeIndex = index;
-    console.log('select tab')
+    this.activeTabId = this.tabs[index].id;
+    this.emitActiveTab();
+  }
+
+  private setActiveById(id?: string) {
+    const found = this.tabs.findIndex(tab => tab.id === id);
+    this.activeIndex = found >= 0 ? found : 0;
+    this.activeTabId = this.tabs[this.activeIndex].id;
     this.emitActiveTab();
   }
 
   private emitActiveTab() {
-    if (this.selectedTab) {
-      this.tabChanged.emit(this.selectedTab.id);
-    }
+    this.tabChanged.emit(this.activeTabId!);
   }
 
   get selectedTab() {

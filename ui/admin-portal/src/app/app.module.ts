@@ -580,7 +580,6 @@ import {
   ChatMuteToggleButtonComponent
 } from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
