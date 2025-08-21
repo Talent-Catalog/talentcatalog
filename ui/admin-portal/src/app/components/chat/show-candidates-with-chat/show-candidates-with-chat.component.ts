@@ -14,7 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
@@ -41,7 +50,7 @@ import {JobChat, JobChatUserInfo} from "../../../model/chat";
   templateUrl: './show-candidates-with-chat.component.html',
   styleUrls: ['./show-candidates-with-chat.component.scss']
 })
-export class ShowCandidatesWithChatComponent implements OnInit {
+export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
 
   @Output() candidateSelection = new EventEmitter<Candidate>();
 
@@ -285,6 +294,10 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     error => {
       this.error = error
     })
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe();
   }
 
 }

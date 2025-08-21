@@ -22,6 +22,7 @@ import {
   Input,
   LOCALE_ID,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges
@@ -33,7 +34,11 @@ import {EnumOption} from "../../../util/enum";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
-import {getOpportunityStageName, Opportunity, OpportunityOwnershipType} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  Opportunity,
+  OpportunityOwnershipType
+} from "../../../model/opportunity";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
@@ -47,7 +52,7 @@ import {Partner} from "../../../model/partner";
 import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Directive()
-export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
+export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges, OnDestroy {
 
   /**
    * Defines type of opportunity search.
@@ -579,6 +584,12 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       this.subscription.unsubscribe();
       this.subscription = null;
     }
+  }
+
+  // These changes ensure subscriptions are torn down whenever the tab content is destroyed, preventing multiple overlapping subscriptions and eliminating the repeated console logs.
+  ngOnDestroy(): void {
+    // Release the combined chat subscription when this component is destroyed
+    this.unsubscribe();
   }
 
 }
