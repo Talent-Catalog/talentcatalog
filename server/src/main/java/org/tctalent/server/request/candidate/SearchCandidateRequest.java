@@ -55,7 +55,7 @@ import org.tctalent.server.util.CandidateSearchUtils;
 @ToString(callSuper = true)
 public class SearchCandidateRequest extends PagedSearchRequest {
 
-    private boolean pgOnlySqlSearch;
+    private boolean useOldSearch;
 
     private String simpleQueryString;
     @NotNull

@@ -1841,8 +1841,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         String simpleQueryString = searchRequest.getSimpleQueryString();
         boolean haveSimpleQueryString = simpleQueryString != null && !simpleQueryString.isEmpty();
 
-        boolean pgOnlySqlSearch = searchRequest.isPgOnlySqlSearch();
-        if (pgOnlySqlSearch) {
+        boolean useOldSearch = searchRequest.isUseOldSearch();
+        if (!useOldSearch) {
+            //New search is Postgres SQL only - no elastic search and no CandidateSepecification
             candidates = candidateSearchService.searchCandidates(searchRequest, excludedCandidates);
         } else if (haveSimpleQueryString || hasBaseSearch) {
             //TODO JC Reconsider this logic of forcing all searches based on other searches to be

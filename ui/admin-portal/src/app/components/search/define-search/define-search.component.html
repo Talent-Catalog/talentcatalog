@@ -725,8 +725,8 @@
               </button>
             </div>
             <div class="col text-center">
-              <input type="checkbox" [checked]="pgOnlySqlSearch"
-                     (change)="pgOnlySqlSearch = !pgOnlySqlSearch"> Only SQL search
+              <input type="checkbox" [checked]="useOldSearch"
+                     (change)="useOldSearch = !useOldSearch"> Use old way of searching
             </div>
           </div>
         </div>
@@ -738,7 +738,7 @@
   </div>
 
   <app-show-candidates *ngIf="!error && !loading"
-                       [pgOnlySqlSearch]="pgOnlySqlSearch"
+                       [useOldSearch]="useOldSearch"
                        [showTextMatchRank]="!isEmptySearchTerms()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"

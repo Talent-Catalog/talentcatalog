@@ -17,7 +17,7 @@
 import {SavedSearchJoin} from './saved-search';
 
 export interface SearchCandidateRequest {
-  pgOnlySqlSearch?: boolean;
+  useOldSearch?: boolean;
   simpleQueryString?: string;
   keyword?: string;
   gender?: string;
