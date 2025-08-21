@@ -96,6 +96,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Integer minAge;
     private Integer maxAge;
     private Integer minEducationLevel;
+    private Integer maxEducationLevel;
     private List<Long> educationMajorIds;
 
     private Boolean includePendingTermsCandidates;
@@ -342,9 +343,14 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         // EDUCATION LEVEL SEARCH
-        if (getMinEducationLevel() != null) {
+        if (getMinEducationLevel() != null || getMaxEducationLevel() != null) {
             joins.add("education_level");
-            ands.add("education_level.level >= " + getMinEducationLevel());
+            if (getMinEducationLevel() != null) {
+                ands.add("education_level.level >= " + getMinEducationLevel());
+            }
+            if (getMaxEducationLevel() != null) {
+                ands.add("education_level.level <= " + getMaxEducationLevel());
+            }
         }
 
         // MINI INTAKE COMPLETE

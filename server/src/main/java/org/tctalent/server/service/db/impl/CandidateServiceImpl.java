@@ -1350,6 +1350,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
         candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
+        candidate.setAcceptedPrivacyPolicyPartner(candidate.getUser().getPartner());
     }
 
     @Override

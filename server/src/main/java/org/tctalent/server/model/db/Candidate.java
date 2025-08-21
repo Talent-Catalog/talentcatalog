@@ -23,6 +23,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -80,7 +81,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      */
     private OffsetDateTime acceptedPrivacyPolicyDate;
 
-
+    /**
+     * Partner associated with the accepted privacy policy.
+     * Nullable because it may not be set initially.
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accepted_privacy_policy_partner_id")
+    private PartnerImpl acceptedPrivacyPolicyPartner;
 
     /**
      * True if candidate wants to receive all notifications.
@@ -905,6 +913,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setAcceptedPrivacyPolicyDate(OffsetDateTime acceptedPrivacyPolicyDate) {
         this.acceptedPrivacyPolicyDate = acceptedPrivacyPolicyDate;
+    }
+
+    public PartnerImpl getAcceptedPrivacyPolicyPartner() {
+        return acceptedPrivacyPolicyPartner;
+    }
+
+    public void setAcceptedPrivacyPolicyPartner(PartnerImpl acceptedPrivacyPolicyPartner) {
+        this.acceptedPrivacyPolicyPartner = acceptedPrivacyPolicyPartner;
     }
 
     public String getCandidateNumber() {
