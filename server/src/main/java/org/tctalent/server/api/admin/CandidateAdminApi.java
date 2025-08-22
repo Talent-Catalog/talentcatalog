@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -80,14 +80,13 @@ import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/candidate")
+@RequiredArgsConstructor
 @Slf4j
 public class CandidateAdminApi {
 
@@ -99,26 +98,6 @@ public class CandidateAdminApi {
     private final SavedSearchService savedSearchService;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
-
-
-    @Autowired
-    public CandidateAdminApi(CandidateService candidateService,
-        CandidateOpportunityService candidateOpportunityService,
-        CandidateSavedListService candidateSavedListService,
-        CandidateBuilderSelector candidateBuilderSelector,
-        CandidateIntakeDataBuilderSelector intakeDataBuilderSelector,
-        SavedListService savedListService,
-        SavedSearchService savedSearchService,
-        CandidateTokenProvider candidateTokenProvider) {
-      this.candidateService = candidateService;
-      this.candidateOpportunityService = candidateOpportunityService;
-      this.candidateSavedListService = candidateSavedListService;
-      this.builderSelector = candidateBuilderSelector;
-      this.intakeDataBuilderSelector = intakeDataBuilderSelector;
-      this.savedListService = savedListService;
-      this.savedSearchService = savedSearchService;
-      this.candidateTokenProvider = candidateTokenProvider;
-    }
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
