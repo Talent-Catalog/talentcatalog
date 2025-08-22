@@ -106,19 +106,18 @@ public class CandidateAdminApi {
         CandidateOpportunityService candidateOpportunityService,
         CandidateSavedListService candidateSavedListService,
         CandidateBuilderSelector candidateBuilderSelector,
-        CountryService countryService,
+        CandidateIntakeDataBuilderSelector intakeDataBuilderSelector,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
-        CandidateTokenProvider candidateTokenProvider,
-        OccupationService occupationService) {
-        this.candidateService = candidateService;
-        this.candidateOpportunityService = candidateOpportunityService;
-        this.candidateSavedListService = candidateSavedListService;
-        this.builderSelector = candidateBuilderSelector;
-        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(countryService, occupationService);
-        this.savedListService = savedListService;
-        this.savedSearchService = savedSearchService;
-        this.candidateTokenProvider = candidateTokenProvider;
+        CandidateTokenProvider candidateTokenProvider) {
+      this.candidateService = candidateService;
+      this.candidateOpportunityService = candidateOpportunityService;
+      this.candidateSavedListService = candidateSavedListService;
+      this.builderSelector = candidateBuilderSelector;
+      this.intakeDataBuilderSelector = intakeDataBuilderSelector;
+      this.savedListService = savedListService;
+      this.savedSearchService = savedSearchService;
+      this.candidateTokenProvider = candidateTokenProvider;
     }
 
     @PostMapping("search")
