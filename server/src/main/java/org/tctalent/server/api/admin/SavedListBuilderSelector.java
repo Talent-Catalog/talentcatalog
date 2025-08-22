@@ -18,6 +18,7 @@ package org.tctalent.server.api.admin;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -26,6 +27,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
  *
  * @author John Cameron
  */
+@Component
 public class SavedListBuilderSelector {
     private final ExportColumnsBuilderSelector exportColumnsBuilderSelector
         = new ExportColumnsBuilderSelector();
