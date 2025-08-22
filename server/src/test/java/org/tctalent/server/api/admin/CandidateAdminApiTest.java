@@ -94,6 +94,7 @@ import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Candidate Admin Api endpoints.
@@ -158,6 +159,8 @@ class CandidateAdminApiTest extends ApiTestBase {
     UserService userService;
     @MockBean
     CandidateTokenProvider candidateTokenProvider;
+    @MockBean
+    CandidateBuilderSelector candidateBuilderSelector;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -166,6 +169,17 @@ class CandidateAdminApiTest extends ApiTestBase {
     @BeforeEach
     void setUp() {
         configureAuthentication();
+
+        // Minimal builder for Candidate
+        DtoBuilder nationalityDto = new DtoBuilder()
+            .add("name");
+
+        DtoBuilder candidateDto = new DtoBuilder()
+            .add("id")
+            .add("nationality", nationalityDto);
+
+      given(candidateBuilderSelector.selectBuilder()).willReturn(candidateDto);
+      given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
     }
 
     @Test
