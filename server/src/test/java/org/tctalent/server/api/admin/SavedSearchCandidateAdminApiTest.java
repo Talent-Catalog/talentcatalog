@@ -49,12 +49,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -80,17 +76,9 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
       );
 
   @MockBean
-  CandidateOpportunityService candidateOpportunityService;
-  @MockBean
-  CountryService countryService;
-  @MockBean
-  OccupationService occupationService;
-  @MockBean
   SavedSearchService savedSearchService;
   @MockBean
   CandidateService candidateService;
-  @MockBean
-  UserService userService;
   @MockBean
   CandidateBuilderSelector candidateBuilderSelector;
 
