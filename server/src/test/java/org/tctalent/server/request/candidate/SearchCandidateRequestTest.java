@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Sort.Direction;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
@@ -47,10 +48,14 @@ class SearchCandidateRequestTest {
     private static final String WHERE = " where ";
     private static final String UNORDERED_SELECT = "select distinct candidate.id" + FROM_CANDIDATE;
     private static final String ORDERED_SELECT_PREFIX = "select distinct candidate.id";
+    private static final String EXCLUDE_PENDING_TERMS_CLAUSE =
+        "candidate.id not in (select candidate_id from candidate_saved_list where saved_list_id = ";
 
     @BeforeEach
     void setUp() {
         request = new SearchCandidateRequest();
+        request.setIncludePendingTermsCandidates(true);
+        SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID = 123L;
     }
 
     @Test
@@ -295,15 +300,19 @@ class SearchCandidateRequestTest {
     }
 
     @Test
-    @DisplayName("SQL generated from languages request")
-    void extractFetchSQLFromLanguagesRequest() {
+    @DisplayName("SQL generated from languages request and including pending terms")
+    void extractFetchSQLFromLanguagesRequestAndIncludingPendingTerms() {
         request.setEnglishMinSpokenLevel(2);
+        request.setIncludePendingTermsCandidates(false);
         String sql = request.extractFetchSQL();
         assertEquals(UNORDERED_SELECT +
             " left join candidate_language on candidate.id = candidate_language.candidate_id"
             + " left join language on candidate_language.language_id = language.id"
             + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
-            + " where lower(language.name) = 'english' and spoken_level.level >= 2", sql);
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " and lower(language.name) = 'english' and spoken_level.level >= 2", sql);
 
         request.setEnglishMinWrittenLevel(2);
         sql = request.extractFetchSQL();
@@ -312,7 +321,10 @@ class SearchCandidateRequestTest {
             + " left join language on candidate_language.language_id = language.id"
             + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
             + " left join language_level as written_level on candidate_language.written_level_id = written_level_id"
-            + " where lower(language.name) = 'english' and spoken_level.level >= 2"
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " and lower(language.name) = 'english' and spoken_level.level >= 2"
             + " and written_level.level >= 2", sql);
 
         request.setOtherLanguageId(344L);
@@ -323,7 +335,10 @@ class SearchCandidateRequestTest {
             + " left join language on candidate_language.language_id = language.id"
             + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
             + " left join language_level as written_level on candidate_language.written_level_id = written_level_id"
-            + " where lower(language.name) = 'english' and spoken_level.level >= 2"
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " and lower(language.name) = 'english' and spoken_level.level >= 2"
             + " and written_level.level >= 2"
             + " and candidate_language.language_id = 344 and spoken_level.level >= 3", sql);
 
@@ -368,7 +383,7 @@ class SearchCandidateRequestTest {
         excluded.add(candidate);
         String sql = request.extractFetchSQL(null, excluded, false);
         assertEquals(UNORDERED_SELECT +
-            " where not candidate.id in (123,456)", sql);
+            " where candidate.id not in (123,456)", sql);
     }
 
     @Test
