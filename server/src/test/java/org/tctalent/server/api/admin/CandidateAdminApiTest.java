@@ -148,10 +148,6 @@ class CandidateAdminApiTest extends ApiTestBase {
     @MockBean
     CandidateSavedListService candidateSavedListService;
     @MockBean
-    CountryService countryService;
-    @MockBean
-    OccupationService occupationService;
-    @MockBean
     SavedListService savedListService;
     @MockBean
     SavedSearchService savedSearchService;
