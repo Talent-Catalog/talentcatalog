@@ -156,8 +156,6 @@ class CandidateAdminApiTest extends ApiTestBase {
     @MockBean
     SavedSearchService savedSearchService;
     @MockBean
-    UserService userService;
-    @MockBean
     CandidateTokenProvider candidateTokenProvider;
     @MockBean
     CandidateBuilderSelector candidateBuilderSelector;
