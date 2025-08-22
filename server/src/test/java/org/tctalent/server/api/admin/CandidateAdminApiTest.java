@@ -159,6 +159,8 @@ class CandidateAdminApiTest extends ApiTestBase {
     CandidateTokenProvider candidateTokenProvider;
     @MockBean
     CandidateBuilderSelector candidateBuilderSelector;
+    @MockBean
+    CandidateIntakeDataBuilderSelector candidateIntakeDataBuilderSelector;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -176,8 +178,21 @@ class CandidateAdminApiTest extends ApiTestBase {
             .add("id")
             .add("nationality", nationalityDto);
 
-      given(candidateBuilderSelector.selectBuilder()).willReturn(candidateDto);
-      given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
+        given(candidateBuilderSelector.selectBuilder()).willReturn(candidateDto);
+        given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
+
+        // Minimal builder for Intake
+        DtoBuilder countryDto = new DtoBuilder()
+            .add("name");
+
+        DtoBuilder destinationDto = new DtoBuilder()
+            .add("country", countryDto);
+
+        DtoBuilder intakeDto = new DtoBuilder()
+            .add("id")
+            .add("candidateDestinations", destinationDto);
+
+        given(candidateIntakeDataBuilderSelector.selectBuilder()).willReturn(intakeDto);
     }
 
     @Test
@@ -291,7 +306,18 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .addMissingDestinations(any(Candidate.class)))
                 .willReturn(addMissingDestinations(candidate));
 
-        getIntakeDataAndVerifyResponse(GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)));
+//        getIntakeDataAndVerifyResponse(GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)));
+      mockMvc.perform(get(BASE_PATH + GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)))
+              .header("Authorization", "Bearer " + "jwt-token")
+              .accept(MediaType.APPLICATION_JSON))
+
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+          .andExpect(jsonPath("$.candidateDestinations").isArray())
+          .andExpect(jsonPath("$.candidateDestinations", hasSize(2)))
+          .andExpect(jsonPath("$.candidateDestinations[0].country.name", is("Canada")))
+          .andExpect(jsonPath("$.candidateDestinations[1].country.name", is("UK")));
 
         verify(candidateService).getCandidate(anyLong());
     }
