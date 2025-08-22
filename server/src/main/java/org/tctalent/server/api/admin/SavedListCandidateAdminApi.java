@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -49,14 +49,10 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.list.ContentUpdateType;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -78,7 +74,8 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * SavedList's (that it belongs to).
  *
  */
-@RestController()
+@RequiredArgsConstructor
+@RestController
 @RequestMapping("/api/admin/saved-list-candidate")
 public class SavedListCandidateAdminApi implements
     IManyToManyApi<SavedListGetRequest, UpdateExplicitSavedListContentsRequest> {
@@ -88,23 +85,7 @@ public class SavedListCandidateAdminApi implements
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final CandidateBuilderSelector candidateBuilderSelector;
-    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
-    @Autowired
-    public SavedListCandidateAdminApi(
-        CandidateService candidateService, CandidateOpportunityService candidateOpportunityService,
-        CandidateSavedListService candidateSavedListService,
-        CountryService countryService,
-        OccupationService occupationService,
-        SavedListService savedListService,
-        SavedSearchService savedSearchService,
-        UserService userService) {
-        this.candidateService = candidateService;
-        this.candidateSavedListService = candidateSavedListService;
-        this.savedListService = savedListService;
-        this.savedSearchService = savedSearchService;
-        candidateBuilderSelector = new CandidateBuilderSelector(
-            candidateOpportunityService, countryService, occupationService, userService);
-    }
+    private final SavedListBuilderSelector savedListBuilderSelector;
 
     @GetMapping(value = "{id}/is-empty")
     public boolean isEmpty(@PathVariable("id") long savedListId) throws NoSuchObjectException {
