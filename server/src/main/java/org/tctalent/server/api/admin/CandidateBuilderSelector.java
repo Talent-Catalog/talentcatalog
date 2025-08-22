@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
@@ -42,6 +43,7 @@ import org.tctalent.server.util.dto.DtoPropertyFilter;
  *
  * @author John Cameron
  */
+@Component
 public class CandidateBuilderSelector {
     private final CandidateOpportunityService candidateOpportunityService;
     private final CountryService countryService;
