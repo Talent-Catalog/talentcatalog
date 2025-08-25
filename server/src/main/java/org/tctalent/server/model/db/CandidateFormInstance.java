@@ -18,12 +18,11 @@ package org.tctalent.server.model.db;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,8 +46,7 @@ import org.springframework.lang.NonNull;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity
-@Table(name = "candidate_form_instance")
+@MappedSuperclass
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_form_instance_id_seq", allocationSize = 1)
 public class CandidateFormInstance {
 

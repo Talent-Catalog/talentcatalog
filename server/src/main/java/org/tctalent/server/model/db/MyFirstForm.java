@@ -17,6 +17,7 @@
 package org.tctalent.server.model.db;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * Very simple form
@@ -24,6 +25,7 @@ import jakarta.persistence.Entity;
  * @author John Cameron
  */
 @Entity
+@Table(name = "candidate_form_instance")
 public class MyFirstForm extends CandidateFormInstance {
     private static final String HAIR_COLOUR_PROPERTY_NAME = "hairColour";
 

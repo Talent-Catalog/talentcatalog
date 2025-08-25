@@ -58,7 +58,7 @@ public class MyFirstFormPortalApi
 
     private DtoBuilder myFirstFormDto() {
         return new DtoBuilder()
-            .add("candidateNumber")
+            .add("city")
             .add("hairColour");
     }
 

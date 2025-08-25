@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.Candidate;
@@ -62,6 +63,8 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
 
         //TODO JC Need to construct id. Is there a better place to do this? What if it exists?
         form.setId(new CandidateFormInstanceKey(candidateId, candidateForm.getId()));
+
+        form.setCreatedDate(OffsetDateTime.now());
 
         return candidateFormInstanceRepository.save(form);
     }
