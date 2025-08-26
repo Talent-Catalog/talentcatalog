@@ -266,7 +266,7 @@ public class LogBuilder {
   /**
    * Logs the constructed message with exception at the ERROR level.
    */
-  public void logError(Exception e) {
+  public void logError(Throwable e) {
     logger.error(buildLogMessage(), e);
   }
 

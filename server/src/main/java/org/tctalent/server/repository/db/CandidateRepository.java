@@ -201,11 +201,15 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
                                          Pageable pageable);
 
-    @Query(" select distinct c from Candidate c left join c.user u "
-        + " where lower(u.firstName) like lower(:candidateName)"
-        + " or lower(u.lastName) like lower(:candidateName)"
-        + excludeDeleted
-        + sourceCountryRestriction)
+    @Query("""
+      select distinct c 
+      from Candidate c 
+      left join c.user u 
+      where lower(u.firstName) like lower(:candidateName)
+         or lower(u.lastName) like lower(:candidateName) 
+         or lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)
+         or lower(concat(u.lastName, ' ', u.firstName)) like lower(:candidateName)
+      """ + excludeDeleted + sourceCountryRestriction)
     Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
         Pageable pageable);
@@ -921,6 +925,10 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
      * @return paged search result of candidates who match the criteria
      */
     Page<Candidate> findByIdIn(Collection<Long> candidateIds, Pageable pageable);
+
+    //TODO JC Doc
+    @Query(value = "select * from candidate where id in :idsSql", nativeQuery = true)
+    Page<Candidate> findByIdIn(@Param("idsSql") String idsSql, Pageable pageable);
 
     @Query(
         value =

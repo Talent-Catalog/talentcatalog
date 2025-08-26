@@ -74,7 +74,7 @@
         {{getError()}}
       </div>
 
-      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="checkSelectionsAndApply()" #formWrapper>
+      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="onSubmit()" #formWrapper>
         <ng-template #keywordSearchTip>
           <span class="search-tips-content">
             Search candidate CVs using these tips to create powerful queries:
@@ -335,6 +335,18 @@
                     bindLabel="name"
                     bindValue="level"
                     [formControlName]="'minEducationLevel'">
+                  </ng-select>
+                </div>
+
+                <div class="col-md-5">
+                  <label class="form-label">Education Level (maximum)</label>
+                  <ng-select
+                    id="maxEducationLevel"
+                    [items]="educationLevels"
+                    placeholder="Select or type..."
+                    bindLabel="name"
+                    bindValue="level"
+                    [formControlName]="'maxEducationLevel'">
                   </ng-select>
                 </div>
 
@@ -708,7 +720,14 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col text-center">
-              <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || searchForm.invalid || searchForm.pristine"><i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search</button>
+              <button type="submit" class="btn btn-success btn-lg"
+                      [disabled]="loading || searchForm.invalid || searchForm.pristine">
+                <i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search
+              </button>
+            </div>
+            <div class="col text-center">
+              <input type="checkbox" [checked]="pgOnlySqlSearch"
+                     (change)="pgOnlySqlSearch = !pgOnlySqlSearch"> Only SQL search
             </div>
           </div>
         </div>
@@ -720,6 +739,8 @@
   </div>
 
   <app-show-candidates *ngIf="!error && !loading"
+                       [pgOnlySqlSearch]="pgOnlySqlSearch"
+                       [showTextMatchRank]="!isEmptySearchTerms()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"
@@ -745,7 +766,7 @@
 </div>
 
 <!-- Modals -->
-<ng-template #downloadCsvErrorModal let-c="close" let-d="dismiss">
+<ng-template #downloadCsvErrorModal let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title">CSV download failed</h4>
 

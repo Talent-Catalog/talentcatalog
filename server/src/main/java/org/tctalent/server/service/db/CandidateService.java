@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
@@ -65,6 +66,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoReques
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
@@ -255,6 +257,16 @@ public interface CandidateService {
     Candidate updateOtherInfo(UpdateCandidateOtherInfoRequest request);
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
+    /**
+     * Updates the maximum education level of a candidate.
+     *
+     * @param id the ID of the candidate to update
+     * @param request the request object containing the new max education level
+     * @return the updated {@link Candidate} entity with the new education level
+     * @throws EntityNotFoundException if no candidate is found with the given ID
+     * @throws IllegalArgumentException if the request is invalid or incomplete
+     */
+    Candidate updateCandidateMaxEducationLevel(long id, UpdateCandidateMaxEducationLevelRequest request);
 
     /**
      * Submits a candidate's completed registration.
@@ -491,6 +503,13 @@ public interface CandidateService {
      * @return Candidate object as returned by {@link CandidateRepository#save}
      */
     Candidate save(Candidate candidate, boolean updateCandidateEs);
+
+    /**
+     * Allows for automatic updating of the candidate text before saving the candidate.
+     * @see #save(Candidate, boolean)
+     * @return Candidate object as returned by {@link CandidateRepository#save}
+     */
+    Candidate save(Candidate candidate, boolean updateCandidateEs, boolean updateCandidateText);
 
     /**
      * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.

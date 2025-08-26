@@ -8,8 +8,9 @@
 // Use these for normal text on light backgrounds
 @mixin text-color-body    { color: color(gray, 900); } //  Primary text on light backgrounds; best for body content and high readability.
 @mixin text-color-secondary   { color: color(gray, 500); } //  For secondary text like descriptions, hints, or helper text on light backgrounds. On dark backgrounds, use for small labels or subtle captions.
-@mixin text-color-caption { color: color(gray, 400); } //  For tertiary text like captions, timestamps and placeholders,. On dark backgrounds, can be used as muted text.
+@mixin text-color-caption { color: color(gray, 400); } //  For tertiary text like captions, timestamps and placeholders. On dark backgrounds, can be used as muted text.
 @mixin text-color-white   { color: color(core, white); } // Use on dark backgrounds for maximum legibility and contrast.
+@mixin text-color-primary  { color: color(primary, 500); } //  For primary text like highlighted text in nav tabs
 
 // --- Semantic Text Colors ---
 @mixin text-color-success  { color: color(green, 700); }
@@ -42,6 +43,7 @@
 
 
   // --- Semantic Border Colors ---
+  @mixin border-color-primary  { border-color: color(primary, 500); }
   @mixin border-color-success  { border-color: color(green, 500); }
   @mixin border-color-warning  { border-color: color(yellow, 500); }
   @mixin border-color-error    { border-color: color(red, 500); }

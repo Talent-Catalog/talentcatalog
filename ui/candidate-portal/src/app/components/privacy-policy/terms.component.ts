@@ -17,6 +17,9 @@ export class TermsComponent implements OnInit {
   partnerName: string;
   requestAcceptance: boolean;
   termsRead: boolean = false;
+  acceptedPrivacyPolicyDate: string | null = null;
+  acceptedPrivacyPolicyId: string | null = null;
+  acceptedPrivacyPolicyPartner: string | null = null;
 
   constructor(
     private candidateService: CandidateService,
@@ -24,6 +27,10 @@ export class TermsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadCandidate();
+  }
+
+  loadCandidate(){
     //Fetch the current candidate privacy policy and candidate info
     forkJoin({
       'currentPolicy': this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY),
@@ -42,6 +49,9 @@ export class TermsComponent implements OnInit {
 
     //Store the name of the candidate's partner
     this.partnerName = candidate?.user?.partner?.name;
+    this.acceptedPrivacyPolicyId = candidate?.acceptedPrivacyPolicyId;
+    this.acceptedPrivacyPolicyDate = candidate?.acceptedPrivacyPolicyDate;
+    this.acceptedPrivacyPolicyPartner = candidate?.acceptedPrivacyPolicyPartner?.name || this.partnerName;
 
     //Check if candidate has accepted the current policy. If not they need to accept it.
     this.setRequestAcceptance(currentPolicy.id != candidate.acceptedPrivacyPolicyId)
@@ -60,7 +70,10 @@ export class TermsComponent implements OnInit {
     //Mark candidate as having accepted these terms.
     this.candidateService.updateAcceptedPrivacyPolicy(this.currentPrivacyPolicy?.id).subscribe(
       {
-        next: () => {this.setRequestAcceptance(false)},
+        next: () => {
+          this.loadCandidate();
+          this.setRequestAcceptance(false);
+          },
         error: err => {this.error = err}
       }
     );
