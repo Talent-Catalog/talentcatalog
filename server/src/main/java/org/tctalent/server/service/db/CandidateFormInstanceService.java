@@ -16,16 +16,25 @@
 
 package org.tctalent.server.service.db;
 
+import org.springframework.lang.NonNull;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.MyFirstForm;
 import org.tctalent.server.request.form.MyFirstFormUpdateRequest;
 
 /**
- * TODO JC Doc
+ * Manages instances of forms
  *
  * @author John Cameron
  */
 public interface CandidateFormInstanceService {
 
-    //TODO JC Doc
-    MyFirstForm createMyFirstForm(long candidateId, MyFirstFormUpdateRequest request);
+    /**
+     * Creates a form instance, or updates any existing instance, for the given candidate.
+     * @param candidate Candidate accessing this form
+     * @param request Contains data used to populate form
+     * @return Updated form instance
+     */
+    @NonNull
+    MyFirstForm createOrUpdateMyFirstForm(
+        @NonNull Candidate candidate, @NonNull MyFirstFormUpdateRequest request);
 }

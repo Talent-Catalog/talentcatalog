@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateForm;
@@ -27,7 +28,6 @@ import org.tctalent.server.repository.db.MyFirstFormRepository;
 import org.tctalent.server.request.form.MyFirstFormUpdateRequest;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
 import org.tctalent.server.service.db.CandidateFormService;
-import org.tctalent.server.service.db.CandidateService;
 
 /**
  * TODO JC Doc
@@ -38,18 +38,19 @@ import org.tctalent.server.service.db.CandidateService;
 @RequiredArgsConstructor
 public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceService {
 
-    private final CandidateService candidateService;
     private final CandidateFormService candidateFormService;
     private final MyFirstFormRepository myFirstFormRepository;
 
     @Override
-    public MyFirstForm createMyFirstForm(long candidateId, MyFirstFormUpdateRequest request) {
+    public @NonNull MyFirstForm createOrUpdateMyFirstForm(
+        @NonNull Candidate candidate, @NonNull MyFirstFormUpdateRequest request) {
+
         //Get form template
         CandidateForm candidateForm = candidateFormService.getByName("MyFirstForm");
-        ////TODO JC Maybe Candidate should be passed in
-        Candidate candidate = candidateService.getCandidate(candidateId);
 
-        CandidateFormInstanceKey key = new CandidateFormInstanceKey(candidateId, candidateForm.getId());
+        //Construct the instance key
+        CandidateFormInstanceKey key =
+            new CandidateFormInstanceKey(candidate.getId(), candidateForm.getId());
 
         //Check if form instance exists and retrieve if it does.
         MyFirstForm form = myFirstFormRepository.findById(key).orElse(null);

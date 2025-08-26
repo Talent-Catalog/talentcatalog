@@ -12,7 +12,7 @@ export class CandidateFormService {
 
   constructor(private http: HttpClient) { }
 
-  createMyFirstForm(request: MyFirstFormUpdateRequest): Observable<MyFirstForm> {
+  createOrUpdateMyFirstForm(request: MyFirstFormUpdateRequest): Observable<MyFirstForm> {
     return this.http.post<MyFirstForm>(`${this.apiUrl}/my-first-form`, request);
   }
 

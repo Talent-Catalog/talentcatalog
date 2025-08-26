@@ -16,18 +16,21 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.api.admin.ITableApi;
-import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.MyFirstForm;
 import org.tctalent.server.request.form.MyFirstFormUpdateRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -38,22 +41,26 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RestController
 @RequestMapping("/api/portal/form/my-first-form")
 @RequiredArgsConstructor
-public class MyFirstFormPortalApi
-    implements ITableApi<MyFirstFormUpdateRequest, MyFirstFormUpdateRequest, MyFirstFormUpdateRequest> {
+public class MyFirstFormPortalApi {
 
     private final AuthService authService;
     private final CandidateFormInstanceService formService;
+    private final CandidateService candidateService;
 
-    @Override
-    public @NotNull Map<String, Object> create(MyFirstFormUpdateRequest request)
-        throws EntityExistsException {
+    @PostMapping
+    @NotNull
+    public Map<String, Object> createOrUpdate(@Valid @RequestBody MyFirstFormUpdateRequest request) {
+        Candidate candidate = getLoggedInCandidate();
+        MyFirstForm form = this.formService.createOrUpdateMyFirstForm(candidate, request);
+        return myFirstFormDto().build(form);
+    }
+
+    private Candidate getLoggedInCandidate() {
         Long loggedInCandidateId = authService.getLoggedInCandidateId();
         if (loggedInCandidateId == null) {
             throw new InvalidSessionException("Not logged in");
         }
-
-        MyFirstForm form = this.formService.createMyFirstForm(loggedInCandidateId, request);
-        return myFirstFormDto().build(form);
+        return candidateService.getCandidate(loggedInCandidateId);
     }
 
     private DtoBuilder myFirstFormDto() {
