@@ -24,8 +24,8 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.SequenceGenerator;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,14 +84,12 @@ public class CandidateFormInstance {
      * @return Value of property - null if not found
      */
     protected String getProperty(String propertyName) {
-        Set<CandidateProperty> properties = candidate.getCandidateProperties();
         String value = null;
+        Map<String,CandidateProperty> properties = candidate.getCandidateProperties();
         if (properties != null) {
-            for (CandidateProperty property : properties) {
-                if (property.getName().equals(propertyName)) {
-                    value = property.getValue();
-                    break;
-                }
+            CandidateProperty property = properties.get(propertyName);
+            if (property != null) {
+                value = property.getValue();
             }
         }
         return value;
@@ -103,18 +101,20 @@ public class CandidateFormInstance {
      * @param value New property value - may be null. Replaces any previous value.
      */
     protected void setProperty(String propertyName, String value) {
-        Set<CandidateProperty> properties = candidate.getCandidateProperties();
+        Map<String,CandidateProperty> properties = candidate.getCandidateProperties();
         if (properties == null) {
             //TODO JC Create properties
-            properties = new HashSet<>();
+            properties = new HashMap<>();
             candidate.setCandidateProperties(properties);
         }
-        CandidateProperty property = new CandidateProperty();
-        property.setName(propertyName);
-        property.setValue(value);
-        property.setCandidateId(candidate.getId());
-        properties.add(property);
+        CandidateProperty property = properties.get(propertyName);
+        if (property == null) {
+            property = new CandidateProperty();
+            properties.put(propertyName, property);
 
-        //TODO JC This fails unit test until CandidateProperties is converted to a Map
+            property.setName(propertyName);
+            property.setCandidateId(candidate.getId());
+        }
+        property.setValue(value);
     }
 }

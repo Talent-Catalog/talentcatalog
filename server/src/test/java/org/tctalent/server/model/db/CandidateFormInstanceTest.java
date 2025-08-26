@@ -87,8 +87,6 @@ class CandidateFormInstanceTest {
         colour = testForm.getHairColour();
         assertEquals("red", colour);
 
-        //TODO JC This test of replacing the value of an existing property will fail until
-        //Candidate.getCandidateProperties returns a Map<name, property)
         testForm.setHairColour("blue");
         colour = testForm.getHairColour();
         assertEquals("blue", colour);
