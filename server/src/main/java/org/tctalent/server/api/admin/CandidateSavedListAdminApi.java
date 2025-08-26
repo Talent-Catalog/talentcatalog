@@ -51,14 +51,14 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * Candidate's.
  *
  */
-@RestController()
+@RestController
 @RequestMapping("/api/admin/candidate-saved-list")
 @RequiredArgsConstructor
 public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedListRequest, HasSetOfSavedListsImpl> {
 
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
-    private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
+    private final SavedListBuilderSelector builderSelector;
 
     @Override
     public void replace(long candidateId, @Valid HasSetOfSavedListsImpl request)

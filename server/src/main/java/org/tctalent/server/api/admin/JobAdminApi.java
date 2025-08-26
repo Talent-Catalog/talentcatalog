@@ -23,6 +23,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,18 +50,13 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
 @RequestMapping("/api/admin/job")
+@RequiredArgsConstructor
 public class JobAdminApi implements
     ITableApi<SearchJobRequest, UpdateJobRequest, UpdateJobRequest> {
 
     private final CountryService countryService;
-    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
-
+    private final SavedListBuilderSelector savedListBuilderSelector;
     private final JobService jobService;
-
-    public JobAdminApi(CountryService countryService, JobService jobService) {
-        this.countryService = countryService;
-        this.jobService = jobService;
-    }
 
     @Override
     @PostMapping

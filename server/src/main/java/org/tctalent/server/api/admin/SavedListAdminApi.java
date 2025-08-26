@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,21 +56,14 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
 @RequestMapping("/api/admin/saved-list")
+@RequiredArgsConstructor
 public class SavedListAdminApi implements
         ITableApi<SearchSavedListRequest, UpdateSavedListInfoRequest, UpdateSavedListInfoRequest> {
 
     private final CandidateService candidateService;
     private final SavedListService savedListService;
     private final CandidateSavedListService candidateSavedListService;
-    private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
-
-    @Autowired
-    public SavedListAdminApi(SavedListService savedListService,
-        CandidateService candidateService, CandidateSavedListService candidateSavedListService) {
-        this.candidateService = candidateService;
-        this.savedListService = savedListService;
-        this.candidateSavedListService = candidateSavedListService;
-    }
+    private final SavedListBuilderSelector builderSelector;
 
     /*
         Standard ITableApi methods
