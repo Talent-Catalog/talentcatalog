@@ -17,6 +17,8 @@
 package org.tctalent.server.api.dto;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -25,12 +27,10 @@ import org.tctalent.server.util.dto.DtoBuilder;
  *
  * @author John Cameron
  */
+@Component
+@RequiredArgsConstructor
 public class JobIntakeDataBuilderSelector {
     private final CountryService countryService;
-
-    public JobIntakeDataBuilderSelector(CountryService countryService) {
-        this.countryService = countryService;
-    }
 
     public @NotNull DtoBuilder selectBuilder() {
         return joiDto();
