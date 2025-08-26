@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.dto;
 
+import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -197,6 +198,7 @@ class SavedListBuilderSelectorTest {
 
   // ---- Test-only POJOs with JavaBean getters ----
 
+  @Getter
   public static class SavedListStub {
     private Long id;
     private String publicId;
@@ -231,40 +233,6 @@ class SavedListBuilderSelectorTest {
     private List<ExportColumnStub> exportColumns; // can be null
     private SavedSearchSourceStub savedSearchSource;   // may be null
     private List<TaskStub> tasks;                      // may be null
-
-    public Long getId() { return id; }
-    public String getPublicId() { return publicId; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public String getStatus() { return status; }
-    public Boolean getFixed() { return fixed; }
-    public Boolean getGlobal() { return global; }
-    public String getDisplayedFieldsLong() { return displayedFieldsLong; }
-    public String getDisplayedFieldsShort() { return displayedFieldsShort; }
-    public JobOppStub getSfJobOpp() { return sfJobOpp; }
-    public String getFileJdLink() { return fileJdLink; }
-    public String getFileJdName() { return fileJdName; }
-    public String getFileJoiLink() { return fileJoiLink; }
-    public String getFileJoiName() { return fileJoiName; }
-    public String getFileInterviewGuidanceLink() { return fileInterviewGuidanceLink; }
-    public String getFileInterviewGuidanceName() { return fileInterviewGuidanceName; }
-    public String getFileMouLink() { return fileMouLink; }
-    public String getFileMouName() { return fileMouName; }
-    public String getFolderlink() { return folderlink; }
-    public String getFolderjdlink() { return folderjdlink; }
-    public String getPublishedDocLink() { return publishedDocLink; }
-    public String getRegisteredJob() { return registeredJob; }
-    public String getSfJobCountry() { return sfJobCountry; }
-    public String getSfJobStage() { return sfJobStage; }
-    public String getTcShortName() { return tcShortName; }
-    public UserStub getCreatedBy() { return createdBy; }
-    public OffsetDateTime getCreatedDate() { return createdDate; }
-    public UserStub getUpdatedBy() { return updatedBy; }
-    public OffsetDateTime getUpdatedDate() { return updatedDate; }
-    public List<UserStub> getUsers() { return users; }
-    public List<ExportColumnStub> getExportColumns() { return exportColumns; }
-    public SavedSearchSourceStub getSavedSearchSource() { return savedSearchSource; }
-    public List<TaskStub> getTasks() { return tasks; }
 
     public SavedListStub setId(Long id) { this.id = id; return this; }
     public SavedListStub setPublicId(String publicId) { this.publicId = publicId; return this; }
@@ -301,56 +269,56 @@ class SavedListBuilderSelectorTest {
     public SavedListStub setTasks(List<TaskStub> v) { this.tasks = v; return this; }
   }
 
+  @Getter
   public static class JobOppStub {
     private Long id;
     private String sfId;
-    public Long getId() { return id; }
-    public String getSfId() { return sfId; }
+
     public JobOppStub setId(Long id) { this.id = id; return this; }
     public JobOppStub setSfId(String sfId) { this.sfId = sfId; return this; }
   }
 
+  @Getter
   public static class UserStub {
     private Long id;
     private String firstName;
     private String lastName;
-    public Long getId() { return id; }
-    public String getFirstName() { return firstName; }
-    public String getLastName() { return lastName; }
+
     public UserStub setId(Long id) { this.id = id; return this; }
     public UserStub setFirstName(String firstName) { this.firstName = firstName; return this; }
     public UserStub setLastName(String lastName) { this.lastName = lastName; return this; }
   }
 
+  @Getter
   public static class ExportColumnStub {
     private String key;
     private List<PublishedDocColumnPropsStub> properties;
-    public String getKey() { return key; }
-    public List<PublishedDocColumnPropsStub> getProperties() { return properties; }
+
     public ExportColumnStub setKey(String key) { this.key = key; return this; }
     public ExportColumnStub setProperties(List<PublishedDocColumnPropsStub> properties) { this.properties = properties; return this; }
   }
 
+  @Getter
   public static class PublishedDocColumnPropsStub {
     private String header;
     private String constant;
-    public String getHeader() { return header; }
-    public String getConstant() { return constant; }
+
     public PublishedDocColumnPropsStub setHeader(String header) { this.header = header; return this; }
     public PublishedDocColumnPropsStub setConstant(String constant) { this.constant = constant; return this; }
   }
 
+  @Getter
   public static class SavedSearchSourceStub {
     private Long id;
-    public Long getId() { return id; }
+
     public SavedSearchSourceStub setId(Long id) { this.id = id; return this; }
   }
 
+  @Getter
   public static class TaskStub {
     private Long id;
     private String name;
-    public Long getId() { return id; }
-    public String getName() { return name; }
+
     public TaskStub setId(Long id) { this.id = id; return this; }
     public TaskStub setName(String name) { this.name = name; return this; }
   }
