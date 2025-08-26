@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 /**
  * @component BadgeComponent
@@ -13,10 +13,13 @@ import { Component, Input } from '@angular/core';
  * - Supports a set of predefined colors for consistent styling
  * - Emits click events when `type="button"` or `type="span"` with `onClick` handler
  * - Accepts projected content (`<ng-content>`) for the badge text or elements
+ * - Provides base `.badge` class and color-specific modifier classes (e.g. `.badge-blue`)
+ * - Safe default (`span`) ensures you can drop it into any layout
  *
  * **Inputs**
- * - `color: 'gray' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink'`
- *   Sets the badge color.
+ * - `color: BadgeColor`
+ *   Sets the badge color. Available values:
+ *   `'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'gray'`
  *
  * - `type: 'link' | 'button' | 'span'`
  *   Determines the element type:
@@ -29,10 +32,6 @@ import { Component, Input } from '@angular/core';
  *
  * - `onClick?: (event: MouseEvent) => void`
  *   Optional click handler for `type="button"` or `type="span"`.
- *
- * **Features**
- * - Provides base `.badge` class and color-specific modifier classes (e.g. `.badge-blue`)
- * - Safe default (`span`) ensures you can drop it into any layout
  *
  * @example
  * ```html
@@ -47,13 +46,15 @@ import { Component, Input } from '@angular/core';
  * ```
  */
 
+export type BadgeColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'gray';
+
 @Component({
   selector: 'tc-badge',
   templateUrl: './badge.component.html',
   styleUrls: ['./badge.component.scss']
 })
 export class BadgeComponent {
-  @Input() color: 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'gray'= 'gray';
+  @Input() color: BadgeColor = 'gray';
   @Input() href?: string;
   @Input() type: 'link' | 'button' | 'span' = 'span';
   @Input() onClick?: (e: MouseEvent) => void;
