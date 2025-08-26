@@ -16,7 +16,11 @@
 
 package org.tctalent.server.api.dto;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 import java.time.OffsetDateTime;
@@ -24,10 +28,23 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class SavedListBuilderSelectorTest {
 
-  private final SavedListBuilderSelector selector = new SavedListBuilderSelector();
+  @Mock ExportColumnsBuilderSelector exportColumnsBuilderSelector;
+
+  private SavedListBuilderSelector selector;
+
+  @BeforeEach
+  void setUp() {
+    selector = new SavedListBuilderSelector(exportColumnsBuilderSelector);
+  }
+
 
   @Test
   void selectBuilder_minimal_buildsExpectedShape() {
@@ -74,11 +91,25 @@ class SavedListBuilderSelectorTest {
     assertFalse(out.containsKey("status"));
     assertFalse(out.containsKey("users"));
     assertFalse(out.containsKey("exportColumns"));
+
+    // verify export columns selector not used
+    verify(exportColumnsBuilderSelector, never()).selectBuilder();
+
   }
 
   @Test
   void selectBuilder_full_buildsExpectedShape() {
     // given
+    // Minimal export-columns builder used by full SavedList DTO
+    when(exportColumnsBuilderSelector.selectBuilder())
+        .thenReturn(new DtoBuilder()
+            .add("key")
+            .add("properties", new DtoBuilder()
+                .add("header")
+                .add("constant")
+            )
+        );
+
     SavedListStub sl = new SavedListStub()
         .setId(2L)
         .setPublicId("pub-2")
@@ -146,6 +177,9 @@ class SavedListBuilderSelectorTest {
     // Note: exportColumns is only populated if the source has a non-null property.
     // We didn't set it on the stub, so absence is expected.
     assertFalse(out.containsKey("exportColumns"));
+
+    // export columns builder should be obtained once when creating the full DTO builder
+    verify(exportColumnsBuilderSelector, times(1)).selectBuilder();
   }
 
   @Test
