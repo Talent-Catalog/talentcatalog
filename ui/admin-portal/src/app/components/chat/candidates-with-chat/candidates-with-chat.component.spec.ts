@@ -22,7 +22,9 @@ import {ChatService} from "../../../services/chat.service";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {of} from "rxjs";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {ShowCandidatesWithChatComponent} from "../show-candidates-with-chat/show-candidates-with-chat.component";
+import {
+  ShowCandidatesWithChatComponent
+} from "../show-candidates-with-chat/show-candidates-with-chat.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
