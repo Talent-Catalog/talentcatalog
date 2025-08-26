@@ -17,6 +17,7 @@
 .text-color-warning  { @include text-color-warning; }
 .text-color-error    { @include text-color-error; }
 .text-color-info     { @include text-color-info; }
+.text-color-disabled     { @include text-color-disabled; }
 
 // --- Descriptive Text Colors ---
 .text-color-red      { @include text-color-red; }
@@ -78,6 +79,7 @@
 .background-color-warning  { @include background-color-warning; }
 .background-color-error    { @include background-color-error; }
 .background-color-info     { @include background-color-info; }
+.background-color-disabled     { @include background-color-disabled; }
 
 // --- Descriptive Background Colors ---
 .background-color-red      { @include background-color-red; }

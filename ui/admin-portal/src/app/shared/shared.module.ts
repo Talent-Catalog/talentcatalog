@@ -26,6 +26,12 @@ import {TcTabComponent} from './components/tabs/tab/tc-tab.component';
 import {TcTabHeaderComponent} from "./components/tabs/tab/header/tc-tab-header.component";
 import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-content.component';
 
+import {InputComponent} from './components/input/input.component';
+import {FieldsetComponent} from './components/fieldset/fieldset.component';
+import {FieldComponent} from './components/fieldset/field/field.component';
+import {LabelComponent} from './components/fieldset/label/label.component';
+import {DescriptionComponent} from './components/fieldset/description/description.component';
+import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +42,13 @@ import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-conten
     TcTabComponent,
     TcTabHeaderComponent,
     TcTabHeaderComponent,
-    TcTabContentComponent],
+    TcTabContentComponent,
+    InputComponent,
+    FieldsetComponent,
+    FieldComponent,
+    LabelComponent,
+    DescriptionComponent,
+    ErrorMessageComponent],
   imports: [
     CommonModule,
     NgbPaginationModule,
@@ -46,6 +58,12 @@ import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-conten
     ButtonComponent,
     TcTableComponent,
     TcPaginationComponent,
+    InputComponent,
+    FieldComponent,
+    FieldsetComponent,
+    LabelComponent,
+    DescriptionComponent,
+    ErrorMessageComponent,
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
