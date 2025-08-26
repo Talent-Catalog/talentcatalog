@@ -23,6 +23,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -78,7 +79,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      */
     private OffsetDateTime acceptedPrivacyPolicyDate;
 
-
+    /**
+     * Partner associated with the accepted privacy policy.
+     * Nullable because it may not be set initially.
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accepted_privacy_policy_partner_id")
+    private PartnerImpl acceptedPrivacyPolicyPartner;
 
     /**
      * True if candidate wants to receive all notifications.
@@ -139,6 +147,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      */
     @Nullable
     private String partnerRef;
+
+    /**
+     * This can be set to define an optional ranking associated with the candidate as a result
+     * of some kind of sorting logic.
+     */
+    @Transient
+    @Nullable
+    private Number rank;
 
     /**
      * If null the candidate registered themselves.
@@ -218,6 +234,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
+
+    /**
+     * Computed field of all searchable text associated with the candidate.
+     * <p/>
+     * Updated in {@link #updateText}
+     */
+    private String text;
 
     /**
      * ID of corresponding candidate record in Elasticsearch
@@ -888,6 +911,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setAcceptedPrivacyPolicyDate(OffsetDateTime acceptedPrivacyPolicyDate) {
         this.acceptedPrivacyPolicyDate = acceptedPrivacyPolicyDate;
+    }
+
+    public PartnerImpl getAcceptedPrivacyPolicyPartner() {
+        return acceptedPrivacyPolicyPartner;
+    }
+
+    public void setAcceptedPrivacyPolicyPartner(PartnerImpl acceptedPrivacyPolicyPartner) {
+        this.acceptedPrivacyPolicyPartner = acceptedPrivacyPolicyPartner;
     }
 
     public String getCandidateNumber() {
@@ -1962,6 +1993,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
 
+    public @Nullable Number getRank() {
+        return rank;
+    }
+
+    public void setRank(@Nullable Number rank) {
+        this.rank = rank;
+    }
+
     @Nullable
     public PartnerImpl getRegisteredBy() {
         return registeredBy;
@@ -2532,5 +2571,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setRelocatedCountry(Country relocatedCountry) {
         this.relocatedCountry = relocatedCountry;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void updateText() {
+        String combinedJobText = getCandidateJobExperiences().stream()
+            .map(CandidateJobExperience::getDescription)
+            .collect(Collectors.joining(" || "));
+        String combinedCvText = getCandidateAttachments().stream()
+            .filter(CandidateAttachment::isCv)
+            .map(CandidateAttachment::getTextExtract)
+            .collect(Collectors.joining(" || "));
+        this.text = combinedJobText + " || " + combinedCvText;
     }
 }

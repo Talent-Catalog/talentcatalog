@@ -1350,6 +1350,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
         candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
+        candidate.setAcceptedPrivacyPolicyPartner(candidate.getUser().getPartner());
     }
 
     @Override
@@ -2423,6 +2424,15 @@ public class CandidateServiceImpl implements CandidateService {
             candidate = updateElasticProxy(candidate);
         }
         return candidate;
+    }
+
+    @Override
+    public Candidate save(Candidate candidate, boolean updateCandidateEs,
+        boolean updateCandidateText) {
+        if (updateCandidateText) {
+            candidate.updateText();
+        }
+        return save(candidate, updateCandidateEs);
     }
 
     /**

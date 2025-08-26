@@ -43,6 +43,10 @@ public class PagedSearchRequest {
     private Integer pageSize;
     private Integer pageNumber;
     private Sort.Direction sortDirection;
+
+    /**
+     * Note that the TC only supports a single sort field even though this is an array.
+     */
     private String[] sortFields;
 
     public PagedSearchRequest(Sort.Direction sortDirection, String[] sortFields) {
