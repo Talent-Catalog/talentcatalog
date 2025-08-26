@@ -17,6 +17,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {UntypedFormGroup} from "@angular/forms";
 import {RegistrationService} from "../../../services/registration.service";
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-registration-upload-file',
@@ -28,6 +29,7 @@ export class RegistrationUploadFileComponent implements OnInit {
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
 
+  cvWarning!: string;
   @Output() onSave = new EventEmitter();
 
   form: UntypedFormGroup;
@@ -37,7 +39,7 @@ export class RegistrationUploadFileComponent implements OnInit {
   activeIds: string;
 
 
-  constructor(public registrationService: RegistrationService) {
+  constructor(public registrationService: RegistrationService, private translateService: TranslateService) {
   }
 
   ngOnInit() {
@@ -47,6 +49,10 @@ export class RegistrationUploadFileComponent implements OnInit {
     } else {
       this.activeIds = ''
     }
+
+    this.translateService.get('REGISTRATION.ATTACHMENTS.CV.WARNING').subscribe((translated: string) => {
+      this.cvWarning = translated;
+    });
   }
 
   // Methods during registration process.

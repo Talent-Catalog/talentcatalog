@@ -73,7 +73,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {CandidateSource, CandidateSourceType, SearchPartnerRequest} from '../../../model/base';
+import {CandidateSource, CandidateSourceType} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -81,7 +81,6 @@ import {enumKeysToEnumOptions, EnumOption, enumOptions, isEnumOption} from "../.
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
-import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -123,6 +122,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   error: any;
   loading: boolean;
+  pgOnlySqlSearch: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
@@ -146,6 +146,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   notElastic;
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
+  currentSearchTerms: string[] = [];
   genderOptions: EnumOption[] = enumOptions(Gender);
   selectedCandidate: Candidate;
   selectedCandidates: Candidate[];
@@ -174,7 +175,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private router: Router,
-              private savedListService: SavedListService,
               private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private searchQueryService: SearchQueryService
@@ -208,6 +208,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       minAge: [null],
       maxAge: [null],
       minEducationLevel: [],
+      maxEducationLevel: [],
       educationMajorIds: [[]],
       surveyTypeIds: [[]],
       miniIntakeCompleted: [null],
@@ -250,13 +251,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.loading = true;
     this.error = null;
 
+    this.searchQueryService.currentSearchTerms$.subscribe(searchTerms => {
+      this.currentSearchTerms = searchTerms;
+    })
+
     this.searchForm.get('simpleQueryString').valueChanges.pipe(
         first()
     ).subscribe(initialValue => {
       this.searchQueryService.changeSearchQuery(initialValue || '');
     });
 
-    const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
     forkJoin({
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
@@ -365,7 +369,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  checkSelectionsAndApply() {
+  onSubmit() {
+   //checkSelectionsAndApply
    // If there are candidates selected, run a check before applying search.
     if (this.selectedCandidates.length > 0) {
       this.confirmClearSelectionAndApply();
@@ -386,8 +391,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
 
+    request.pgOnlySqlSearch = this.pgOnlySqlSearch;
+
     //Note that just changing searchRequest triggers the display of the results
-    //See the html of this component, for which <app-show-candidates takes
+    //See the html of this component, for which app-show-candidates takes
     //searchRequest as an input.
     this.searchRequest = request;
 
@@ -614,7 +621,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       .then((result) => {
         if (result === true) {
           this.savedSearchService.delete(this.savedSearch.id).subscribe(
-            (found) => {
+            () => {
               this.router.navigate(['search']);
               this.loading = false;
             },
@@ -925,6 +932,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   public isEmployerPartner() {
     return this.authorizationService.isEmployerPartner();
+  }
+
+  public isEmptySearchTerms(): boolean {
+    return !(this.currentSearchTerms && this.currentSearchTerms.length > 0);
   }
 
   public readonly CandidateSourceType = CandidateSourceType;

@@ -42,6 +42,9 @@ export class AdminApiComponent implements OnInit {
 
   // List of general admin commands
   readonly adminCommands = [
+    { command: 'set_candidate_text/cpu-{percentage}', description: 'Update text of all candidates that are not deleted or withdrawn status limiting cpu percentage' },
+    { command: 'set_candidate_text/list-{listId}-cpu-{percentage}', description: 'Update text of all candidates in the specified list limiting cpu percentage' },
+    { command: 'set_candidate_text/search-{searchId}-cpu-{percentage}', description: 'Update text of all candidates in the specified search limiting cpu percentage' },
     { command: 'reassign-candidates/list-{listId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified list to the specified partner' },
     { command: 'reassign-candidates/search-{searchId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified search to the specified partner' },
     { command: 'move-candidate-drive/{number}', description: 'Move candidate to the current candidate data drive' },

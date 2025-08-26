@@ -40,7 +40,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -410,4 +412,29 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
         verify(savedListService).mergeSavedList(anyLong(),
             any(UpdateExplicitSavedListContentsRequest.class));
     }
+
+    @Test
+    void fetchPublicIds() throws Exception {
+        String publicListId = "abc123";
+        Set<String> candidatePublicIds = new LinkedHashSet<>(List.of("cand-001", "cand-002", "cand-003"));
+
+        given(savedListService.fetchCandidatePublicIds(publicListId))
+            .willReturn(candidatePublicIds);
+
+        mockMvc.perform(
+                get(BASE_PATH + "/public/" + publicListId + "/public-ids")
+                    .with(csrf())
+                    .header("Authorization", "Bearer jwt-token")
+                    .accept(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(3)))
+            .andExpect(jsonPath("$[0]", is("cand-001")))
+            .andExpect(jsonPath("$[1]", is("cand-002")))
+            .andExpect(jsonPath("$[2]", is("cand-003")));
+
+        verify(savedListService).fetchCandidatePublicIds(publicListId);
+    }
+
 }
