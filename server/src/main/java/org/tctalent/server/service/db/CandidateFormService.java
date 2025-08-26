@@ -36,4 +36,13 @@ public interface CandidateFormService {
     @NonNull
     CandidateForm get(long id) throws NoSuchObjectException;
 
+    /**
+     * Get the CandidateForm with the given name.
+     * @param name Name of CandidateForm
+     * @return CandidateForm
+     * @throws NoSuchObjectException if there is no CandidateForm with that name.
+     */
+    @NonNull
+    CandidateForm getByName(String name) throws NoSuchObjectException;
+
 }

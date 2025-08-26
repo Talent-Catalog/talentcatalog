@@ -23,7 +23,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
 import org.tctalent.server.model.db.MyFirstForm;
-import org.tctalent.server.repository.db.CandidateFormInstanceRepository;
+import org.tctalent.server.repository.db.MyFirstFormRepository;
 import org.tctalent.server.request.form.MyFirstFormUpdateRequest;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
 import org.tctalent.server.service.db.CandidateFormService;
@@ -40,32 +40,32 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
 
     private final CandidateService candidateService;
     private final CandidateFormService candidateFormService;
-    private final CandidateFormInstanceRepository candidateFormInstanceRepository;
+    private final MyFirstFormRepository myFirstFormRepository;
 
     @Override
     public MyFirstForm createMyFirstForm(long candidateId, MyFirstFormUpdateRequest request) {
-        MyFirstForm form = new MyFirstForm();
-
-        //TODO JC Debug - always assume form 1
-        CandidateForm candidateForm = candidateFormService.get(1L);
-        form.setCandidateForm(candidateForm);
-
+        //Get form template
+        CandidateForm candidateForm = candidateFormService.getByName("MyFirstForm");
         ////TODO JC Maybe Candidate should be passed in
         Candidate candidate = candidateService.getCandidate(candidateId);
-        form.setCandidate(candidate);
+
+        CandidateFormInstanceKey key = new CandidateFormInstanceKey(candidateId, candidateForm.getId());
+
+        //Check if form instance exists and retrieve if it does.
+        MyFirstForm form = myFirstFormRepository.findById(key).orElse(null);
+        if (form == null) {
+            form = new MyFirstForm();
+            form.setId(key);
+            form.setCandidateForm(candidateForm);
+            form.setCandidate(candidate);
+            form.setCreatedDate(OffsetDateTime.now());
+        } else {
+            form.setUpdatedDate(OffsetDateTime.now());
+        }
 
         form.setCity(request.getCity());
-
-        //TODO JC Do I need to call candidateRepository.save and candidatePropertyRepository.save
-        //TODO JC Look at CascadeAll in ChatGPT
-
         form.setHairColour(request.getHairColour());
 
-        //TODO JC Need to construct id. Is there a better place to do this? What if it exists?
-        form.setId(new CandidateFormInstanceKey(candidateId, candidateForm.getId()));
-
-        form.setCreatedDate(OffsetDateTime.now());
-
-        return candidateFormInstanceRepository.save(form);
+        return myFirstFormRepository.save(form);
     }
 }

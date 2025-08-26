@@ -24,11 +24,6 @@ import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.repository.db.CandidateFormRepository;
 import org.tctalent.server.service.db.CandidateFormService;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Service
 @RequiredArgsConstructor
 public class CandidateFormServiceImpl implements CandidateFormService {
@@ -39,5 +34,12 @@ public class CandidateFormServiceImpl implements CandidateFormService {
     public CandidateForm get(long id) throws NoSuchObjectException {
         return candidateFormRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(CandidateForm.class, id));
+    }
+
+    @NonNull
+    @Override
+    public CandidateForm getByName(String name) throws NoSuchObjectException {
+        return candidateFormRepository.findByName(name)
+            .orElseThrow(() -> new NoSuchObjectException(CandidateForm.class, name));
     }
 }

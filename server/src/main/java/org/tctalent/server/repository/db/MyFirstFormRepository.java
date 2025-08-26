@@ -17,7 +17,9 @@
 package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.tctalent.server.model.db.CandidateFormInstance;
+import org.tctalent.server.model.db.CandidateFormInstanceKey;
+import org.tctalent.server.model.db.MyFirstForm;
 
-public interface CandidateFormInstanceRepository extends JpaRepository<CandidateFormInstance, Long> {
+public interface MyFirstFormRepository extends
+    JpaRepository<MyFirstForm, CandidateFormInstanceKey> {
 }

@@ -16,8 +16,11 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.tctalent.server.model.db.CandidateForm;
 
 public interface CandidateFormRepository extends JpaRepository<CandidateForm, Long> {
+
+    Optional<CandidateForm> findByName(String name);
 }
