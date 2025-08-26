@@ -17,6 +17,7 @@
 package org.tctalent.server.api.dto;
 
 import jakarta.validation.constraints.NotNull;
+import org.springframework.stereotype.Component;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -24,6 +25,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
  *
  * @author John Cameron
  */
+@Component
 public class ExportColumnsBuilderSelector {
 
   public @NotNull DtoBuilder selectBuilder() {
