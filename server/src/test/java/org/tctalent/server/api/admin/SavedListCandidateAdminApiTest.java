@@ -58,6 +58,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.SavedListGetRequest;

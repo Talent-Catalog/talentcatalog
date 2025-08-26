@@ -14,13 +14,34 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.api.dto;
 
-public enum DtoType {
-  PUBLIC_ID_ONLY,
-  MINIMAL,
-  PREVIEW,
-  FULL,
-  EXTENDED,
-  API
+import jakarta.validation.constraints.NotNull;
+import org.tctalent.server.util.dto.DtoBuilder;
+
+/**
+ *  Utility for selecting a ExportColumns DTO builder
+ *
+ * @author John Cameron
+ */
+public class ExportColumnsBuilderSelector {
+
+  public @NotNull DtoBuilder selectBuilder() {
+    return exportColumnDto();
+  }
+
+  private DtoBuilder exportColumnDto() {
+    return new DtoBuilder()
+        .add("key")
+        .add("properties", publishedDocColumnPropsDto())
+        ;
+  }
+
+  private DtoBuilder publishedDocColumnPropsDto() {
+    return new DtoBuilder()
+        .add("header")
+        .add("constant")
+        ;
+  }
+
 }

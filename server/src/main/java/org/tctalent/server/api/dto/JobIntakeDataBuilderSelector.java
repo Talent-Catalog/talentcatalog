@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.api.dto;
 
 import jakarta.validation.constraints.NotNull;
 import org.tctalent.server.service.db.CountryService;

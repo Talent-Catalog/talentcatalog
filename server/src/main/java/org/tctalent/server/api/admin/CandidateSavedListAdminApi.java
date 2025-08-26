@@ -23,6 +23,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.HasSetOfSavedListsImpl;

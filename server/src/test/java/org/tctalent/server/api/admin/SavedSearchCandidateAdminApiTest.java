@@ -47,6 +47,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.service.db.CandidateService;
