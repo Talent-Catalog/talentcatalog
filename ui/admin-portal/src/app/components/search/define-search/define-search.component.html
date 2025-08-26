@@ -338,6 +338,18 @@
                   </ng-select>
                 </div>
 
+                <div class="col-md-5">
+                  <label class="form-label">Education Level (maximum)</label>
+                  <ng-select
+                    id="maxEducationLevel"
+                    [items]="educationLevels"
+                    placeholder="Select or type..."
+                    bindLabel="name"
+                    bindValue="level"
+                    [formControlName]="'maxEducationLevel'">
+                  </ng-select>
+                </div>
+
                 <!-- EDUCATION MAJOR -->
                 <div class="col-md-5">
                   <label class="form-label">Education major</label>
@@ -727,6 +739,8 @@
   </div>
 
   <app-show-candidates *ngIf="!error && !loading"
+                       [pgOnlySqlSearch]="pgOnlySqlSearch"
+                       [showTextMatchRank]="!isEmptySearchTerms()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"

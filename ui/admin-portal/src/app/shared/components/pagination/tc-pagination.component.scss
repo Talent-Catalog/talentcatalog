@@ -1,24 +1,32 @@
+@import "src/scss/color-mixins";
+
 // Apply desired font size (this may be able to be removed once we globally set the font size)
 .tc-pagination {
   font-size: 14px;
+  padding: 0 10px;
 }
 
-// Make the pagination span full width
 .custom-ngb-pagination {
   display: flex;
   width: 100%;
   ngb-pagination {
     width: 100%;
+    .pagination {
+      > .page-item {
+        &.disabled .page-link {
+          @include text-color-caption;
+        }
+        .page-link {
+          background-color: transparent;
+          @include text-color-secondary;
+        }
+      }
+    }
     .select-pages {
       display: flex;
       flex: 1 1 auto !important;
     }
   }
-}
-
-// Round the edges of the hover background
-.page-link:hover {
-  border-radius: 0.5rem;
 }
 
 // Align the results total to the center

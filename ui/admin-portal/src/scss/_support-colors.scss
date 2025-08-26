@@ -9,8 +9,8 @@ $colors: (
     200: #cce6f6,
     300: #aad7f0,
     400: #99ceed,
-    600: #339dda,
     500: #0084d1,  // Main color shade
+    600: #339dda,
     800: #006aa7,
     900: #004f7d
   ),
@@ -122,7 +122,6 @@ $colors: (
 );
 
 
-
 /*
   Helper function
   Example Usage of the `color()` Helper Function
@@ -136,7 +135,7 @@ body {
 }
 */
 
-@function color($category, $shade: main) {
+@function color($category, $shade: 500) {
   @return map-get(map-get($colors, $category), $shade);
 }
 

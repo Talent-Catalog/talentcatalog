@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 public enum DtoType {
+  PUBLIC_ID_ONLY,
   MINIMAL,
   PREVIEW,
   FULL,

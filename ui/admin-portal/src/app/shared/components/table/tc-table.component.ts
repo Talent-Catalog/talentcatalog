@@ -1,15 +1,45 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 
+/**
+ * @component TcTableComponent
+ * @description
+ * A reusable table wrapper component that contains both the table and pagination UI.
+ *
+ * **Features:**
+ * - Displays and styles a data table
+ * - Integrates pagination controls
+ * - Wraps the `<thead>` and `<tbody>` markup, allowing customization
+ *   (e.g., icons, popovers, chat read statuses)
+ *
+ * @selector tc-table
+ *
+ * @example
+ * ```html
+ * <tc-table
+ *   name="My Paged Search Results"
+ *   [totalElements]="results?.totalElements"
+ *   [pageSize]="pageSize"
+ *   [(pageNumber)]="pageNumber"
+ *   (pageChange)="search()">
+ * </tc-table>
+ * ```
+ */
 @Component({
-  selector: 'app-tc-table',
+  selector: 'tc-table',
   templateUrl: './tc-table.component.html',
-  styleUrls: ['./tc-table.component.scss']
+  styleUrls: ['./tc-table.component.scss'],
+  // Setting to None means the tc-table scss style only applies styles to <table> elements within the tc-table component,
+  // avoids styles bleeding out to the other <table> components not wrapped by <tc-table>. Also overrides any
+  // existing <table> styles from bootstrap.
+  encapsulation: ViewEncapsulation.None
 })
 export class TcTableComponent {
-
+  /** Table name (optional) */
   @Input() name: string;
+  /** Type of table styles (default is Basic) */
   @Input() type: 'Basic' | 'Striped' | 'Dropdown' = 'Basic';
-  // Variables for pagination
+
+  /** Variables for pagination (see {@link TcPaginationComponent} for doc) */
   @Input() totalElements: number;
   @Input() pageSize: number;
   @Input() pageNumber: number;

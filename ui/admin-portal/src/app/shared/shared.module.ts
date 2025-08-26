@@ -26,12 +26,24 @@ import {TcTabComponent} from './components/tabs/tab/tc-tab.component';
 import {TcTabHeaderComponent} from "./components/tabs/tab/header/tc-tab-header.component";
 import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-content.component';
 
+import {InputComponent} from './components/input/input.component';
+import {FieldsetComponent} from './components/fieldset/fieldset.component';
+import {FieldComponent} from './components/fieldset/field/field.component';
+import {LabelComponent} from './components/fieldset/label/label.component';
+import {DescriptionComponent} from './components/fieldset/description/description.component';
+import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
 
 @NgModule({
   declarations: [
     ButtonComponent,
     TcTableComponent,
     TcPaginationComponent,
+    InputComponent,
+    FieldsetComponent,
+    FieldComponent,
+    LabelComponent,
+    DescriptionComponent,
+    ErrorMessageComponent,
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
@@ -49,7 +61,13 @@ import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-conten
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
-    TcTabContentComponent
+    TcTabContentComponent,
+    InputComponent,
+    FieldComponent,
+    FieldsetComponent,
+    LabelComponent,
+    DescriptionComponent,
+    ErrorMessageComponent
   ]
 })
 export class SharedModule { }
