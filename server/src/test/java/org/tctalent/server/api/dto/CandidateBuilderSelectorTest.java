@@ -112,6 +112,71 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
+  void preview_omitsNonPreviewFields_andKeepsCore() {
+    var b = selector.selectBuilder(DtoType.PREVIEW);
+
+    // Provide source including fields that are ONLY added when !PREVIEW
+    Map<String, Object> src = Map.of(
+        "id", 77L,
+        "country", country("PK", "Pakistan"),
+        "candidateOpportunities", List.of(
+            Map.of(
+                "id", 1001L,
+                "name", "Senior Java",
+                "jobOpp", Map.of("id", 501L, "name", "Role", "country", country("CA","Canada")),
+                "stage", "applied",
+                "nextStep", "review",
+                "nextStepDueDate", "2024-01-01",
+                // these should be dropped in PREVIEW:
+                "closingComments", "secret",
+                "createdBy", Map.of("id", 1L),
+                "updatedBy", Map.of("id", 2L)
+            )
+        ),
+        // top-level fields that are added ONLY when !PREVIEW:
+        "contextNote", "should-not-appear",
+        "shareableNotes", "should-not-appear"
+    );
+
+    Map<String, Object> out = b.build(src);
+
+    // Core fields present
+    assertEquals(77L, out.get("id"));
+    assertMapEquals(country("PK", "Pakistan"), out.get("country"));
+
+    // candidateOpportunities: core present, PREVIEW-only extras absent
+    var opps = listOfMaps(out.get("candidateOpportunities"));
+    assertEquals(1, opps.size());
+    assertEquals(1001L, opps.get(0).get("id"));
+    assertEquals("Senior Java", opps.get(0).get("name"));
+    assertEquals("applied", opps.get(0).get("stage"));
+    assertEquals("review", opps.get(0).get("nextStep"));
+    assertEquals("2024-01-01", opps.get(0).get("nextStepDueDate"));
+    @SuppressWarnings("unchecked")
+    Map<String, Object> job = (Map<String, Object>) opps.get(0).get("jobOpp");
+    assertEquals(501L, job.get("id"));
+    assertEquals("Role", job.get("name"));
+    assertMapEquals(country("CA", "Canada"), job.get("country"));
+    assertFalse(opps.get(0).containsKey("closingComments"));
+    assertFalse(opps.get(0).containsKey("createdBy"));
+    assertFalse(opps.get(0).containsKey("updatedBy"));
+
+    // Top-level: fields added only when !PREVIEW should be absent
+    assertFalse(out.containsKey("contextNote"));
+    assertFalse(out.containsKey("shareableNotes"));
+    assertFalse(out.containsKey("candidateProperties"));
+    assertFalse(out.containsKey("shareableCv"));
+    assertFalse(out.containsKey("shareableDoc"));
+    assertFalse(out.containsKey("listShareableCv"));
+    assertFalse(out.containsKey("listShareableDoc"));
+    assertFalse(out.containsKey("miniIntakeCompletedBy"));
+    assertFalse(out.containsKey("fullIntakeCompletedBy"));
+
+    verify(countryService, atLeastOnce()).selectBuilder();
+    verifyNoInteractions(occupationService); // not used on PREVIEW path here
+  }
+
+  @Test
   void full_buildsCountryNationalityAndJobCountry_andWiresVisibilityDeps() {
     when(userService.getLoggedInUser()).thenReturn(null);
     when(candidateOpportunityService.findJobCreatorPartnerOpps(any())).thenReturn(List.of());
