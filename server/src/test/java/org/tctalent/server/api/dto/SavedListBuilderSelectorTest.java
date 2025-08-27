@@ -46,7 +46,6 @@ class SavedListBuilderSelectorTest {
     selector = new SavedListBuilderSelector(exportColumnsBuilderSelector);
   }
 
-
   @Test
   void selectBuilder_minimal_buildsExpectedShape() {
     // given
@@ -196,7 +195,7 @@ class SavedListBuilderSelectorTest {
     assertFalse(minimalOut.containsKey("description"));
   }
 
-  // ---- Test-only POJOs with JavaBean getters ----
+  // Minimal POJO stubs
 
   @Getter
   public static class SavedListStub {
