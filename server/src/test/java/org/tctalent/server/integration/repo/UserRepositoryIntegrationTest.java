@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
+import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
 import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.integration.helper.TestDataFactory;
 import org.tctalent.server.model.db.Role;
@@ -23,7 +23,7 @@ import org.tctalent.server.repository.db.UserRepository;
 /**
  * Integration tests for UserRepository, verifying user retrieval and search functionality.
  */
-public class UserRepositoryIntegrationTest extends BaseDBIntegrationTest {
+public class UserRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired
   private UserRepository userRepository;
