@@ -32,6 +32,7 @@ import {FieldComponent} from './components/fieldset/field/field.component';
 import {LabelComponent} from './components/fieldset/label/label.component';
 import {DescriptionComponent} from './components/fieldset/description/description.component';
 import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
+import {BadgeComponent} from './components/badge/badge.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,9 @@ import {ErrorMessageComponent} from './components/fieldset/error-message/error-m
     TcTabComponent,
     TcTabHeaderComponent,
     TcTabHeaderComponent,
-    TcTabContentComponent],
+    TcTabContentComponent,
+    BadgeComponent,
+  ],
   imports: [
     CommonModule,
     NgbPaginationModule,
@@ -67,7 +70,8 @@ import {ErrorMessageComponent} from './components/fieldset/error-message/error-m
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
-    TcTabContentComponent
+    TcTabContentComponent,
+    BadgeComponent,
   ]
 })
 export class SharedModule { }
