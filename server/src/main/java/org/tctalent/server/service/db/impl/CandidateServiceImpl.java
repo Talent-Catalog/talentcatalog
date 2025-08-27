@@ -1345,7 +1345,7 @@ public class CandidateServiceImpl implements CandidateService {
      * Factored out some common code
      */
     private static void updatePolicyId(String acceptedPrivacyPolicyId, Candidate candidate) {
-        if (acceptedPrivacyPolicyId == null) {
+        if (acceptedPrivacyPolicyId == null || "null".equalsIgnoreCase(acceptedPrivacyPolicyId)) {
             throw new InvalidRequestException("Privacy policy has not been accepted");
         }
         candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
