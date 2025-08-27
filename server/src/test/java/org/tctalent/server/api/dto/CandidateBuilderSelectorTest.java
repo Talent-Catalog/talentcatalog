@@ -57,7 +57,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
-  void publicIdOnly_buildsOnlyPublicId_andDoesNotTouchServices() {
+  void publicIdOnly_buildsExpectedUserShape_andDoesNotTouchServices() {
     var b = selector.selectBuilder(DtoType.PUBLIC_ID_ONLY);
 
     Map<String, Object> out = b.build(Map.of(
@@ -74,7 +74,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
-  void minimal_buildsExpectedUserShape_andDoesNotTouchServices() {
+  void minimalOnly_buildsExpectedUserShape_andDoesNotTouchServices() {
     var b = selector.selectBuilder(DtoType.MINIMAL);
 
     Map<String, Object> src = Map.of(
@@ -112,7 +112,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
-  void preview_omitsNonPreviewFields_andKeepsCore() {
+  void previewOnly_buildsExpectedUserShape_andDoesNotUseOccupationService() {
     var b = selector.selectBuilder(DtoType.PREVIEW);
 
     // Provide source including fields that are ONLY added when !PREVIEW
@@ -172,12 +172,14 @@ class CandidateBuilderSelectorTest {
     assertFalse(out.containsKey("miniIntakeCompletedBy"));
     assertFalse(out.containsKey("fullIntakeCompletedBy"));
 
+    verify(userService, atLeastOnce()).getLoggedInUser();
+    verify(candidateOpportunityService, atLeastOnce()).findJobCreatorPartnerOpps(any());
     verify(countryService, atLeastOnce()).selectBuilder();
     verifyNoInteractions(occupationService); // not used on PREVIEW path here
   }
 
   @Test
-  void full_buildsCountryNationalityAndJobCountry_andWiresVisibilityDeps() {
+  void full_buildsExpectedUserShape_andDoesNotUseOccupationService() {
     when(userService.getLoggedInUser()).thenReturn(null);
     when(candidateOpportunityService.findJobCreatorPartnerOpps(any())).thenReturn(List.of());
     when(countryService.selectBuilder()).thenReturn(new DtoBuilder().add("code").add("name"));
@@ -222,7 +224,60 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
-  void api_buildsExtendedCollectionsWithNestedCountryAndOccupation() {
+  void extended_buildsExpectedUserShape_andUsesAllServices() {
+    var b = selector.selectBuilder(DtoType.EXTENDED);
+
+    Map<String, Object> src = Map.of(
+        "candidateLanguages", List.of(
+            Map.of("id", 10L,
+                "language", Map.of("id", 1L, "name", "English"),
+                "writtenLevel", Map.of("id", 2L),
+                "spokenLevel", Map.of("id", 3L))
+        ),
+        "candidateDestinations", List.of(
+            Map.of("id", 11L, "country", country("DE", "Germany"), "notes", "pref")
+        ),
+        "candidateOccupations", List.of(
+            Map.of("id", 12L, "occupation", occupation(123L, "Software Engineer"))
+        ),
+        "candidateJobExperiences", List.of(
+            Map.of("id", 13L, "companyName", "Acme", "country", country("CA", "Canada"))
+        ),
+        "candidateSkills", List.of(Map.of("id", 14L, "timePeriod", "2y")),
+        "candidateEducations", List.of(
+            Map.of("id", 15L, "country", country("TR", "Türkiye"))
+        ),
+        "candidateCertifications", List.of(Map.of("id", 16L, "name", "AWS CCP"))
+        // Note: 'candidateNotes' and relocated* are NOT in public allowlist for limited role,
+        // so we don't assert them here.
+    );
+
+    Map<String, Object> out = b.build(src);
+
+    var langs = listOfMaps(out.get("candidateLanguages"));
+    assertEquals(1, langs.size());
+    @SuppressWarnings("unchecked")
+    Map<String,Object> lang = (Map<String, Object>) langs.get(0).get("language");
+    assertEquals(1L, lang.get("id"));
+    var dests = listOfMaps(out.get("candidateDestinations"));
+    assertMapEquals(country("DE", "Germany"), dests.get(0).get("country"));
+    var occs = listOfMaps(out.get("candidateOccupations"));
+    assertMapEquals(occupation(123L, "Software Engineer"), occs.get(0).get("occupation"));
+    var exps = listOfMaps(out.get("candidateJobExperiences"));
+    assertMapEquals(country("CA", "Canada"), exps.get(0).get("country"));
+    var edus = listOfMaps(out.get("candidateEducations"));
+    assertMapEquals(country("TR", "Türkiye"), edus.get(0).get("country"));
+    var certs = listOfMaps(out.get("candidateCertifications"));
+    assertEquals("AWS CCP", certs.get(0).get("name"));
+
+    verify(userService, times(1)).getLoggedInUser();
+    verify(candidateOpportunityService, times(1)).findJobCreatorPartnerOpps(any());
+    verify(countryService, atLeastOnce()).selectBuilder();
+    verify(occupationService, atLeastOnce()).selectBuilder();
+  }
+
+  @Test
+  void api_buildsExpectedUserShape_andUsesAllServices() {
     // Arrange visibility + nested builders
     var admin = mock(User.class);
     when(admin.getRole()).thenReturn(Role.systemadmin); // full visibility for API user
@@ -302,7 +357,9 @@ class CandidateBuilderSelectorTest {
 
     assertMapEquals(occupation(222L, "Architect"), out.get("partnerOccupation"));
 
-    // We don't assert exact call counts (fragile), just that both nested selectors are used.
+    // Assert that all nested selectors are used.
+    verify(userService, times(1)).getLoggedInUser();
+    verify(candidateOpportunityService, times(1)).findJobCreatorPartnerOpps(any());
     verify(countryService, atLeastOnce()).selectBuilder();
     verify(occupationService, atLeastOnce()).selectBuilder();
   }
