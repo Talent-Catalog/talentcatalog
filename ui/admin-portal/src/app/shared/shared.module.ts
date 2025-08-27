@@ -32,10 +32,16 @@ import {FieldComponent} from './components/fieldset/field/field.component';
 import {LabelComponent} from './components/fieldset/label/label.component';
 import {DescriptionComponent} from './components/fieldset/description/description.component';
 import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
+
 import {BadgeComponent} from './components/badge/badge.component';
-import { DescriptionListComponent } from './components/description-list/description-list.component';
-import { DescriptionDetailsComponent } from './components/description-list/description-details/description-details.component';
-import { DescriptionTermComponent } from './components/description-list/description-term/description-term.component';
+
+import {DescriptionListComponent} from './components/description-list/description-list.component';
+import {
+  DescriptionDetailsComponent
+} from './components/description-list/description-details/description-details.component';
+import {
+  DescriptionTermComponent
+} from './components/description-list/description-term/description-term.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +56,6 @@ import { DescriptionTermComponent } from './components/description-list/descript
     ErrorMessageComponent,
     TcTabsComponent,
     TcTabComponent,
-    TcTabHeaderComponent,
     TcTabHeaderComponent,
     TcTabContentComponent,
     BadgeComponent,
@@ -78,7 +83,6 @@ import { DescriptionTermComponent } from './components/description-list/descript
     TcTabHeaderComponent,
     TcTabContentComponent,
     BadgeComponent,
-    TcTabContentComponent,
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
