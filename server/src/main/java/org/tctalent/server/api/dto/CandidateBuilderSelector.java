@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.Candidate;
@@ -44,6 +45,7 @@ import org.tctalent.server.util.dto.DtoPropertyFilter;
  * @author John Cameron
  */
 @Component
+@RequiredArgsConstructor
 public class CandidateBuilderSelector {
     private final CandidateOpportunityService candidateOpportunityService;
     private final CountryService countryService;
@@ -109,15 +111,6 @@ public class CandidateBuilderSelector {
             "updatedDate",
             "partner"
         ));
-
-    public CandidateBuilderSelector(
-        CandidateOpportunityService candidateOpportunityService, CountryService countryService,
-        OccupationService occupationService, UserService userService) {
-        this.candidateOpportunityService = candidateOpportunityService;
-        this.countryService = countryService;
-        this.occupationService = occupationService;
-        this.userService = userService;
-    }
 
     @NonNull
     public DtoBuilder selectBuilder() {
