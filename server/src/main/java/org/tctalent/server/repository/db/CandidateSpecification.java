@@ -292,11 +292,18 @@ public class CandidateSpecification {
             }
 
             // EDUCATION LEVEL SEARCH
-            if (request.getMinEducationLevel() != null) {
+            if (request.getMinEducationLevel() != null || request.getMaxEducationLevel() != null) {
                 Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel");
-                conjunction = cb.and(conjunction,
+                if (request.getMinEducationLevel() != null) {
+                    conjunction = cb.and(conjunction,
                         cb.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
-                );
+                    );
+                }
+                if (request.getMaxEducationLevel() != null) {
+                    conjunction = cb.and(conjunction,
+                        cb.lessThanOrEqualTo(educationLevel.get("level"), request.getMaxEducationLevel())
+                    );
+                }
             }
 
             // MINI INTAKE COMPLETE

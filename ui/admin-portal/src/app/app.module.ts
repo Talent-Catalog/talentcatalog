@@ -576,10 +576,8 @@ import {
   EditMaxEducationLevelComponent
 } from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
 import {SharedModule} from "./shared/shared.module";
-import {
-  ChatMuteToggleButtonComponent
-} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
-
+import {ChatMuteToggleButtonComponent} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
+import {ViewPrivacyPolicyInfoComponent} from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
 
 @NgModule({
   declarations: [
@@ -916,7 +914,8 @@ import {
     OfferToAssistComponent,
     IntlPhoneInputComponent,
     EditMaxEducationLevelComponent,
-    ChatMuteToggleButtonComponent
+    ChatMuteToggleButtonComponent,
+    ViewPrivacyPolicyInfoComponent
   ],
   imports: [
     BrowserModule,

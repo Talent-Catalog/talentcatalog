@@ -17,35 +17,61 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {
-  NgbPagination,
-  NgbPaginationFirst,
-  NgbPaginationLast,
-  NgbPaginationNext,
-  NgbPaginationNumber,
-  NgbPaginationPages,
-  NgbPaginationPrevious
-} from "@ng-bootstrap/ng-bootstrap";
+import {NgbNavModule, NgbPaginationModule,} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
+import {TcTabsComponent} from './components/tabs/tc-tabs.component';
+import {TcTabComponent} from './components/tabs/tab/tc-tab.component';
 
+import {TcTabHeaderComponent} from "./components/tabs/tab/header/tc-tab-header.component";
+import {TcTabContentComponent} from './components/tabs/tab/content/tc-tab-content.component';
+
+import {InputComponent} from './components/input/input.component';
+import {FieldsetComponent} from './components/fieldset/fieldset.component';
+import {FieldComponent} from './components/fieldset/field/field.component';
+import {LabelComponent} from './components/fieldset/label/label.component';
+import {DescriptionComponent} from './components/fieldset/description/description.component';
+import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
+import {BadgeComponent} from './components/badge/badge.component';
 
 @NgModule({
-  declarations: [ButtonComponent, TcTableComponent, TcPaginationComponent],
+  declarations: [
+    ButtonComponent,
+    TcTableComponent,
+    TcPaginationComponent,
+    InputComponent,
+    FieldsetComponent,
+    FieldComponent,
+    LabelComponent,
+    DescriptionComponent,
+    ErrorMessageComponent,
+    TcTabsComponent,
+    TcTabComponent,
+    TcTabHeaderComponent,
+    TcTabHeaderComponent,
+    TcTabContentComponent,
+    BadgeComponent,
+  ],
   imports: [
     CommonModule,
-    NgbPagination,
-    NgbPaginationPrevious,
-    NgbPaginationNext,
-    NgbPaginationNumber,
-    NgbPaginationPages,
-    NgbPaginationFirst,
-    NgbPaginationLast
+    NgbPaginationModule,
+    NgbNavModule
   ],
   exports: [
     ButtonComponent,
     TcTableComponent,
-    TcPaginationComponent
+    TcPaginationComponent,
+    InputComponent,
+    FieldComponent,
+    FieldsetComponent,
+    LabelComponent,
+    DescriptionComponent,
+    ErrorMessageComponent,
+    TcTabsComponent,
+    TcTabComponent,
+    TcTabHeaderComponent,
+    TcTabContentComponent,
+    BadgeComponent,
   ]
 })
 export class SharedModule { }
