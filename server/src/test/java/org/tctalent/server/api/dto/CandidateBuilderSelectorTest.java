@@ -366,10 +366,9 @@ class CandidateBuilderSelectorTest {
 
   // Helper methods
 
-  @SuppressWarnings("unchecked")
   private static void assertMapEquals(Map<String, Object> expected, Object actual) {
     assertNotNull(actual);
-    assertEquals(expected, (Map<String, Object>) actual);
+    assertEquals(expected, actual);
   }
 
   @SuppressWarnings("unchecked")
