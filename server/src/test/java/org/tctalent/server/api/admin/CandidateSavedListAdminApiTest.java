@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,11 +38,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
@@ -52,7 +51,6 @@ import org.tctalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.SavedListService;
-import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Candidate Saved List Admin Api endpoints.
@@ -61,6 +59,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
  */
 @WebMvcTest(CandidateSavedListAdminApi.class)
 @AutoConfigureMockMvc
+@Import({SavedListBuilderSelector.class, ExportColumnsBuilderSelector.class})
 class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   private static final String BASE_PATH = "/api/admin/candidate-saved-list";
@@ -76,7 +75,6 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   @MockBean CandidateSavedListService candidateSavedListService;
   @MockBean SavedListService savedListService;
-  @MockBean SavedListBuilderSelector savedListBuilderSelector;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
@@ -95,11 +93,6 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("search succeeds")
   void searchSucceeds() throws Exception {
-    // stub the selector to return a concrete DtoBuilder
-    DtoBuilder savedListDto = savedListDtoBuilder();
-    given(savedListBuilderSelector.selectBuilder()).willReturn(savedListDto);
-    given(savedListBuilderSelector.selectBuilder(any())).willReturn(savedListDto);
-
     SearchSavedListRequest request = new SearchSavedListRequest();
 
     given(savedListService
@@ -254,41 +247,6 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.code", is("not_implemented")))
         .andExpect(jsonPath("$.message", is("Method 'searchPaged' of CandidateSavedListAdminApi is not implemented.")));
-  }
-
-  // helpers
-
-  private DtoBuilder savedListDtoBuilder() {
-    DtoBuilder exportProps = new DtoBuilder().add("header").add("constant");
-    DtoBuilder exportCol   = new DtoBuilder().add("key").add("properties", exportProps);
-    DtoBuilder userDto     = new DtoBuilder().add("firstName").add("lastName");
-    DtoBuilder savedSearch = new DtoBuilder().add("id");
-    DtoBuilder jobOpp      = new DtoBuilder().add("id").add("sfId");
-    DtoBuilder taskDto     = new DtoBuilder()
-        .add("id").add("docLink").add("taskType").add("displayName").add("name")
-        .add("description").add("optional").add("daysToComplete");
-
-    return new DtoBuilder()
-        .add("id")
-        .add("description")
-        .add("displayedFieldsLong")
-        .add("exportColumns", exportCol)
-        .add("status")
-        .add("name")
-        .add("fixed")
-        .add("global")
-        .add("savedSearchSource", savedSearch)
-        .add("sfJobOpp", jobOpp)
-        .add("fileJdLink").add("fileJdName")
-        .add("fileJoiLink").add("fileJoiName")
-        .add("folderlink").add("folderjdlink")
-        .add("publishedDocLink")
-        .add("registeredJob")
-        .add("tcShortName")
-        .add("createdBy", userDto).add("createdDate")
-        .add("updatedBy", userDto).add("updatedDate")
-        .add("users", userDto)
-        .add("tasks", taskDto);
   }
 
 }
