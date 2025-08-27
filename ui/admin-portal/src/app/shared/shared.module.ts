@@ -32,6 +32,7 @@ import {FieldComponent} from './components/fieldset/field/field.component';
 import {LabelComponent} from './components/fieldset/label/label.component';
 import {DescriptionComponent} from './components/fieldset/description/description.component';
 import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
+import {BadgeComponent} from './components/badge/badge.component';
 import { DescriptionListComponent } from './components/description-list/description-list.component';
 import { DescriptionDetailsComponent } from './components/description-list/description-details/description-details.component';
 import { DescriptionTermComponent } from './components/description-list/description-term/description-term.component';
@@ -52,9 +53,11 @@ import { DescriptionTermComponent } from './components/description-list/descript
     TcTabHeaderComponent,
     TcTabHeaderComponent,
     TcTabContentComponent,
+    BadgeComponent,
     DescriptionListComponent,
     DescriptionDetailsComponent,
-    DescriptionTermComponent],
+    DescriptionTermComponent
+  ],
   imports: [
     CommonModule,
     NgbPaginationModule,
@@ -73,6 +76,8 @@ import { DescriptionTermComponent } from './components/description-list/descript
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
+    TcTabContentComponent,
+    BadgeComponent,
     TcTabContentComponent,
     DescriptionListComponent,
     DescriptionDetailsComponent,
