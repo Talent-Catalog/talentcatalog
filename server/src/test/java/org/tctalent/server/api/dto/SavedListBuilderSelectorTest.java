@@ -16,7 +16,7 @@
 
 package org.tctalent.server.api.dto;
 
-import lombok.Getter;
+import java.util.LinkedHashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -48,18 +47,19 @@ class SavedListBuilderSelectorTest {
 
   @Test
   void selectBuilder_minimal_buildsExpectedShape() {
-    // given
-    SavedListStub sl = new SavedListStub()
-        .setId(1L)
-        .setPublicId("pub-1")
-        .setName("My List")
-        .setDisplayedFieldsLong("long")
-        .setDisplayedFieldsShort("short")
-        .setSfJobOpp(new JobOppStub().setId(101L).setSfId("SF-101"))
-        .setCreatedBy(new UserStub().setId(11L).setFirstName("Alice").setLastName("Smith"))
-        // fields that SHOULD NOT appear in MINIMAL
-        .setDescription("desc should not be present on minimal")
-        .setStatus("OPEN");
+    // given (source as a simple map)
+    Map<String, Object> sl = Map.of(
+        "id", 1L,
+        "publicId", "pub-1",
+        "name", "My List",
+        "displayedFieldsLong", "long",
+        "displayedFieldsShort", "short",
+        "sfJobOpp", jobOpp(101L, "SF-101"),
+        "createdBy", user(11L, "Alice", "Smith"),
+        // fields NOT included on MINIMAL and should be omitted
+        "description", "desc should not be present on minimal",
+        "status", "OPEN"
+    );
 
     DtoBuilder b = selector.selectBuilder(DtoType.MINIMAL);
 
@@ -94,7 +94,6 @@ class SavedListBuilderSelectorTest {
 
     // verify export columns selector not used
     verify(exportColumnsBuilderSelector, never()).selectBuilder();
-
   }
 
   @Test
@@ -110,25 +109,23 @@ class SavedListBuilderSelectorTest {
             )
         );
 
-    SavedListStub sl = new SavedListStub()
-        .setId(2L)
-        .setPublicId("pub-2")
-        .setName("Full List")
-        .setDescription("A long description")
-        .setStatus("ACTIVE")
-        .setFixed(true)
-        .setGlobal(true)
-        .setDisplayedFieldsLong("long")
-        .setDisplayedFieldsShort("short")
-        .setSfJobOpp(new JobOppStub().setId(202L).setSfId("SF-202"))
-        .setCreatedBy(new UserStub().setId(12L).setFirstName("Bob").setLastName("Jones"))
-        .setUpdatedBy(new UserStub().setId(13L).setFirstName("Carol").setLastName("Lee"))
-        .setCreatedDate(OffsetDateTime.parse("2024-01-01T00:00:00Z"))
-        .setUpdatedDate(OffsetDateTime.parse("2024-01-02T00:00:00Z"))
-        .setUsers(List.of(
-            new UserStub().setId(21L).setFirstName("U1").setLastName("A"),
-            new UserStub().setId(22L).setFirstName("U2").setLastName("B")
-        ));
+    Map<String, Object> sl = new LinkedHashMap<>();
+    sl.put("id", 2L);
+    sl.put("publicId", "pub-2");
+    sl.put("name", "Full List");
+    sl.put("description", "A long description");
+    sl.put("status", "ACTIVE");
+    sl.put("fixed", true);
+    sl.put("global", true);
+    sl.put("displayedFieldsLong", "long");
+    sl.put("displayedFieldsShort", "short");
+    sl.put("sfJobOpp", jobOpp(202L, "SF-202"));
+    sl.put("createdBy", user(12L, "Bob", "Jones"));
+    sl.put("updatedBy", user(13L, "Carol", "Lee"));
+    sl.put("users", List.of(
+        user(21L, "U1", "A"),
+        user(22L, "U2", "B")
+    ));
 
     DtoBuilder b = selector.selectBuilder(null); // full
 
@@ -184,9 +181,10 @@ class SavedListBuilderSelectorTest {
 
   @Test
   void selectBuilder_noArg_returnsFullBuilder() {
-    SavedListStub sl = new SavedListStub()
-        .setId(3L)
-        .setDescription("present only on full");
+    Map<String, Object> sl = Map.of(
+        "id", 3L,
+        "description", "present only on full"
+    );
 
     Map<String, Object> fullOut = selector.selectBuilder().build(sl);
     Map<String, Object> minimalOut = selector.selectBuilder(DtoType.MINIMAL).build(sl);
@@ -195,130 +193,13 @@ class SavedListBuilderSelectorTest {
     assertFalse(minimalOut.containsKey("description"));
   }
 
-  // Minimal POJO stubs
+  // helpers methods
 
-  @Getter
-  public static class SavedListStub {
-    private Long id;
-    private String publicId;
-    private String name;
-    private String description;
-    private String status;
-    private Boolean fixed;
-    private Boolean global;
-    private String displayedFieldsLong;
-    private String displayedFieldsShort;
-    private JobOppStub sfJobOpp;
-    private String fileJdLink;
-    private String fileJdName;
-    private String fileJoiLink;
-    private String fileJoiName;
-    private String fileInterviewGuidanceLink;
-    private String fileInterviewGuidanceName;
-    private String fileMouLink;
-    private String fileMouName;
-    private String folderlink;
-    private String folderjdlink;
-    private String publishedDocLink;
-    private String registeredJob;
-    private String sfJobCountry;
-    private String sfJobStage;
-    private String tcShortName;
-    private UserStub createdBy;
-    private OffsetDateTime createdDate;
-    private UserStub updatedBy;
-    private OffsetDateTime updatedDate;
-    private List<UserStub> users;
-    private List<ExportColumnStub> exportColumns; // can be null
-    private SavedSearchSourceStub savedSearchSource;   // may be null
-    private List<TaskStub> tasks;                      // may be null
-
-    public SavedListStub setId(Long id) { this.id = id; return this; }
-    public SavedListStub setPublicId(String publicId) { this.publicId = publicId; return this; }
-    public SavedListStub setName(String name) { this.name = name; return this; }
-    public SavedListStub setDescription(String description) { this.description = description; return this; }
-    public SavedListStub setStatus(String status) { this.status = status; return this; }
-    public SavedListStub setFixed(Boolean fixed) { this.fixed = fixed; return this; }
-    public SavedListStub setGlobal(Boolean global) { this.global = global; return this; }
-    public SavedListStub setDisplayedFieldsLong(String v) { this.displayedFieldsLong = v; return this; }
-    public SavedListStub setDisplayedFieldsShort(String v) { this.displayedFieldsShort = v; return this; }
-    public SavedListStub setSfJobOpp(JobOppStub sfJobOpp) { this.sfJobOpp = sfJobOpp; return this; }
-    public SavedListStub setFileJdLink(String s) { this.fileJdLink = s; return this; }
-    public SavedListStub setFileJdName(String s) { this.fileJdName = s; return this; }
-    public SavedListStub setFileJoiLink(String s) { this.fileJoiLink = s; return this; }
-    public SavedListStub setFileJoiName(String s) { this.fileJoiName = s; return this; }
-    public SavedListStub setFileInterviewGuidanceLink(String s) { this.fileInterviewGuidanceLink = s; return this; }
-    public SavedListStub setFileInterviewGuidanceName(String s) { this.fileInterviewGuidanceName = s; return this; }
-    public SavedListStub setFileMouLink(String s) { this.fileMouLink = s; return this; }
-    public SavedListStub setFileMouName(String s) { this.fileMouName = s; return this; }
-    public SavedListStub setFolderlink(String s) { this.folderlink = s; return this; }
-    public SavedListStub setFolderjdlink(String s) { this.folderjdlink = s; return this; }
-    public SavedListStub setPublishedDocLink(String s) { this.publishedDocLink = s; return this; }
-    public SavedListStub setRegisteredJob(String s) { this.registeredJob = s; return this; }
-    public SavedListStub setSfJobCountry(String s) { this.sfJobCountry = s; return this; }
-    public SavedListStub setSfJobStage(String s) { this.sfJobStage = s; return this; }
-    public SavedListStub setTcShortName(String s) { this.tcShortName = s; return this; }
-    public SavedListStub setCreatedBy(UserStub u) { this.createdBy = u; return this; }
-    public SavedListStub setCreatedDate(OffsetDateTime t) { this.createdDate = t; return this; }
-    public SavedListStub setUpdatedBy(UserStub u) { this.updatedBy = u; return this; }
-    public SavedListStub setUpdatedDate(OffsetDateTime t) { this.updatedDate = t; return this; }
-    public SavedListStub setUsers(List<UserStub> users) { this.users = users; return this; }
-    public SavedListStub setExportColumns(List<ExportColumnStub> exportColumns) { this.exportColumns = exportColumns; return this; }
-    public SavedListStub setSavedSearchSource(SavedSearchSourceStub v) { this.savedSearchSource = v; return this; }
-    public SavedListStub setTasks(List<TaskStub> v) { this.tasks = v; return this; }
+  private static Map<String, Object> jobOpp(long id, String sfId) {
+    return Map.of("id", id, "sfId", sfId);
   }
 
-  @Getter
-  public static class JobOppStub {
-    private Long id;
-    private String sfId;
-
-    public JobOppStub setId(Long id) { this.id = id; return this; }
-    public JobOppStub setSfId(String sfId) { this.sfId = sfId; return this; }
-  }
-
-  @Getter
-  public static class UserStub {
-    private Long id;
-    private String firstName;
-    private String lastName;
-
-    public UserStub setId(Long id) { this.id = id; return this; }
-    public UserStub setFirstName(String firstName) { this.firstName = firstName; return this; }
-    public UserStub setLastName(String lastName) { this.lastName = lastName; return this; }
-  }
-
-  @Getter
-  public static class ExportColumnStub {
-    private String key;
-    private List<PublishedDocColumnPropsStub> properties;
-
-    public ExportColumnStub setKey(String key) { this.key = key; return this; }
-    public ExportColumnStub setProperties(List<PublishedDocColumnPropsStub> properties) { this.properties = properties; return this; }
-  }
-
-  @Getter
-  public static class PublishedDocColumnPropsStub {
-    private String header;
-    private String constant;
-
-    public PublishedDocColumnPropsStub setHeader(String header) { this.header = header; return this; }
-    public PublishedDocColumnPropsStub setConstant(String constant) { this.constant = constant; return this; }
-  }
-
-  @Getter
-  public static class SavedSearchSourceStub {
-    private Long id;
-
-    public SavedSearchSourceStub setId(Long id) { this.id = id; return this; }
-  }
-
-  @Getter
-  public static class TaskStub {
-    private Long id;
-    private String name;
-
-    public TaskStub setId(Long id) { this.id = id; return this; }
-    public TaskStub setName(String name) { this.name = name; return this; }
+  private static Map<String, Object> user(long id, String first, String last) {
+    return Map.of("id", id, "firstName", first, "lastName", last);
   }
 }

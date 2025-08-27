@@ -373,9 +373,9 @@ class CandidateBuilderSelectorTest {
   }
 
   @SuppressWarnings("unchecked")
-  private static java.util.List<java.util.Map<String, Object>> listOfMaps(Object o) {
+  private static List<Map<String, Object>> listOfMaps(Object o) {
     assertNotNull(o);
-    return (java.util.List<java.util.Map<String, Object>>) o;
+    return (List<Map<String, Object>>) o;
   }
 
   private static Map<String, Object> country(String code, String name) {

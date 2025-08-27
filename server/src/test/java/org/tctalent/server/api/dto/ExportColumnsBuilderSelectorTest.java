@@ -16,9 +16,8 @@
 
 package org.tctalent.server.api.dto;
 
-import lombok.Getter;
+import java.util.LinkedHashMap;
 import org.junit.jupiter.api.Test;
-import org.tctalent.server.util.dto.DtoBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -31,89 +30,55 @@ class ExportColumnsBuilderSelectorTest {
 
   @Test
   void selectBuilder_buildsExportColumnShape() {
-    // given
-    ExportColumnStub col = new ExportColumnStub()
-        .setKey("id")
-        .setProperties(new PublishedDocPropsStub()
-            .setHeader("ID")
-            .setConstant("CONST"));
+    Map<String, Object> props = new LinkedHashMap<>();
+    props.put("header", "ID");
+    props.put("constant", "CONST");
 
-    // when
-    DtoBuilder b = selector.selectBuilder();
-    Map<String, Object> out = b.build(col);
+    Map<String, Object> col = new LinkedHashMap<>();
+    col.put("key", "id");
+    col.put("properties", props);
 
-    // then
+    Map<String, Object> out = selector.selectBuilder().build(col);
+
     assertEquals("id", out.get("key"));
-
     @SuppressWarnings("unchecked")
-    Map<String, Object> props = (Map<String, Object>) out.get("properties");
-    assertNotNull(props);
-    assertEquals("ID", props.get("header"));
-    assertEquals("CONST", props.get("constant"));
+    Map<String, Object> outProps = (Map<String, Object>) out.get("properties");
+    assertEquals("ID", outProps.get("header"));
+    assertEquals("CONST", outProps.get("constant"));
   }
 
   @Test
   void whenPropertiesNull_omitsPropertiesKey() {
-    // given
-    ExportColumnStub col = new ExportColumnStub()
-        .setKey("name")
-        .setProperties(null); // nested object absent
+    Map<String, Object> col = new LinkedHashMap<>();
+    col.put("key", "name");
+    col.put("properties", null); // ok with mutable map
 
-    // when
     Map<String, Object> out = selector.selectBuilder().build(col);
 
-    // then
     assertEquals("name", out.get("key"));
     assertFalse(out.containsKey("properties")); // DtoBuilder skips nulls
   }
 
   @Test
   void buildList_multipleColumns() {
-    // given
-    ExportColumnStub c1 = new ExportColumnStub()
-        .setKey("id")
-        .setProperties(new PublishedDocPropsStub().setHeader("ID"));
+    Map<String, Object> c1 = new LinkedHashMap<>();
+    c1.put("key", "id");
+    c1.put("properties", Map.of("header", "ID"));
 
-    ExportColumnStub c2 = new ExportColumnStub()
-        .setKey("country")
-        .setProperties(new PublishedDocPropsStub().setHeader("Country").setConstant(null)); // null constant
+    Map<String, Object> c2Props = new LinkedHashMap<>();
+    c2Props.put("header", "Country");
+    c2Props.put("constant", null); // omitted
 
-    // when
-    List<Map<String, Object>> out = selector.selectBuilder().buildList(List.of(c1, c2));
+    Map<String, Object> c2 = new LinkedHashMap<>();
+    c2.put("key", "country");
+    c2.put("properties", c2Props);
 
-    // then
+    List<Map<String,Object>> out = selector.selectBuilder().buildList(List.of(c1, c2));
+
     assertEquals(2, out.size());
-
     assertEquals("id", out.get(0).get("key"));
-    @SuppressWarnings("unchecked")
-    Map<String, Object> p1 = (Map<String, Object>) out.get(0).get("properties");
-    assertEquals("ID", p1.get("header"));
-    assertFalse(p1.containsKey("constant"));
-
-    assertEquals("country", out.get(1).get("key"));
-    @SuppressWarnings("unchecked")
-    Map<String, Object> p2 = (Map<String, Object>) out.get(1).get("properties");
-    assertEquals("Country", p2.get("header"));
-    assertFalse(p2.containsKey("constant")); // null is omitted
+    assertEquals("Country", ((Map<?,?>)out.get(1).get("properties")).get("header"));
+    assertFalse(((Map<?,?>)out.get(1).get("properties")).containsKey("constant"));
   }
 
-  // Minimal POJO stubs
-
-  @Getter
-  public static class ExportColumnStub {
-    private String key;
-    private PublishedDocPropsStub properties;
-
-    public ExportColumnStub setKey(String key) { this.key = key; return this; }
-    public ExportColumnStub setProperties(PublishedDocPropsStub properties) { this.properties = properties; return this; }
-  }
-
-  @Getter
-  public static class PublishedDocPropsStub {
-    private String header;
-    private String constant;
-
-    public PublishedDocPropsStub setHeader(String header) { this.header = header; return this; }
-    public PublishedDocPropsStub setConstant(String constant) { this.constant = constant; return this; }
-  }
 }

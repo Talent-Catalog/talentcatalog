@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.dto;
 
+import java.util.LinkedHashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -161,7 +162,8 @@ class CandidateIntakeDataBuilderSelectorTest {
   void build_omitsNullsAndMissingKeys() {
     DtoBuilder b = selector.selectBuilder();
 
-    Map<String, Object> src = new java.util.HashMap<>();
+    // Use a mutable map so we can include nulls (Map.of forbids null)
+    Map<String, Object> src = new LinkedHashMap<>();
     src.put("arrestImprison", false);
     src.put("birthCountry", null);            // explicitly null -> should be omitted
     src.put("candidateCitizenships", List.of()); // empty list -> stays empty
