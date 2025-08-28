@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,12 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.task;
+package org.tctalent.server.repository.db;
 
-/**
- * Task assignment associated with an Upload Task.
- *
- * @author John Cameron
- */
-public interface UploadTaskAssignment extends TaskAssignment {
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.tctalent.server.model.db.CandidateForm;
+
+public interface CandidateFormRepository extends JpaRepository<CandidateForm, Long> {
+
+    Optional<CandidateForm> findByName(String name);
 }
