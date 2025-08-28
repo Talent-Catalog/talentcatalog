@@ -1,0 +1,8 @@
+@import '../../../../../scss/support-colors';
+@import '../../../../../scss/typography-mixins';
+@import '../../../../../scss/color-mixins';
+
+.tc-description-term {
+  @include paragraph-sm;
+  @include text-color-secondary;
+}

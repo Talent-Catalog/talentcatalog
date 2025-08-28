@@ -17,7 +17,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {NgbNavModule, NgbPaginationModule,} from "@ng-bootstrap/ng-bootstrap";
+import {NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -32,6 +32,16 @@ import {FieldComponent} from './components/fieldset/field/field.component';
 import {LabelComponent} from './components/fieldset/label/label.component';
 import {DescriptionComponent} from './components/fieldset/description/description.component';
 import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
+import { TextareaComponent } from './components/textarea/textarea.component';
+import {BadgeComponent} from './components/badge/badge.component';
+
+import {DescriptionListComponent} from './components/description-list/description-list.component';
+import {
+  DescriptionDetailsComponent
+} from './components/description-list/description-details/description-details.component';
+import {
+  DescriptionTermComponent
+} from './components/description-list/description-term/description-term.component';
 
 @NgModule({
   declarations: [
@@ -44,11 +54,16 @@ import {ErrorMessageComponent} from './components/fieldset/error-message/error-m
     LabelComponent,
     DescriptionComponent,
     ErrorMessageComponent,
+    TextareaComponent,
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
-    TcTabHeaderComponent,
-    TcTabContentComponent],
+    TcTabContentComponent,
+    BadgeComponent,
+    DescriptionListComponent,
+    DescriptionDetailsComponent,
+    DescriptionTermComponent
+  ],
   imports: [
     CommonModule,
     NgbPaginationModule,
@@ -58,16 +73,21 @@ import {ErrorMessageComponent} from './components/fieldset/error-message/error-m
     ButtonComponent,
     TcTableComponent,
     TcPaginationComponent,
-    TcTabsComponent,
-    TcTabComponent,
-    TcTabHeaderComponent,
-    TcTabContentComponent,
     InputComponent,
     FieldComponent,
     FieldsetComponent,
     LabelComponent,
     DescriptionComponent,
-    ErrorMessageComponent
+    ErrorMessageComponent,
+    TextareaComponent,
+    TcTabsComponent,
+    TcTabComponent,
+    TcTabHeaderComponent,
+    TcTabContentComponent,
+    BadgeComponent,
+    DescriptionListComponent,
+    DescriptionDetailsComponent,
+    DescriptionTermComponent,
   ]
 })
 export class SharedModule { }
