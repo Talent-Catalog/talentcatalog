@@ -6,6 +6,10 @@ create table candidate_form
     html_component_name text
 );
 
+insert into candidate_form (name, description, html_component_name)
+    values ('MyFirstForm',
+            'Enter city where you live and the colour of your hair',
+            'my-first-form');
 
 create table candidate_form_instance
 (
