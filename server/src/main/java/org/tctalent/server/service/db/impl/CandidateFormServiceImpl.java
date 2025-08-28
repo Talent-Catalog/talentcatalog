@@ -58,7 +58,19 @@ public class CandidateFormServiceImpl implements CandidateFormService {
 
     @Override
     public List<CandidateForm> search(SearchCandidateFormRequest request) {
-        //TODO JC Implement search
+
+        //TODO JC Implement search - something like this code taken from
+        //CandidateSearchServiceImpl.searchCandidates
+        //Do we need native query?
+//        String sql = request.extractFetchSQL(user, excludedCandidates, true);
+//        //Create and execute the query to return the candidate ids
+//        Query query = entityManager.createNativeQuery(sql);
+//        query.setFirstResult((int) pageRequest.getOffset());
+//        query.setMaxResults(pageRequest.getPageSize());
+//
+//        //Get results
+//        final List<?> results = query.getResultList();
+
         throw new UnsupportedOperationException("search not implemented");
     }
 
