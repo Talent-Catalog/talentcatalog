@@ -19,9 +19,9 @@
 
     <!-- LOGO -->
     <a class="navbar-brand" [href]="websiteUrl" target="_blank">
-      <img id="logo" *ngIf="logo" class="logo" [src]="logo" alt="Logo">
-<!--      <div *ngIf="isStagingEnv()" class="px-3">PREVIEW</div>-->
-<!--      <div *ngIf="isLocalEnv()" class="px-3">LOCAL</div>-->
+      <img id="logo" *ngIf="logo && !isStagingEnv() && !isLocalEnv()" class="logo" [src]="logo" alt="Logo">
+      <div *ngIf="isStagingEnv()" class="px-3">PREVIEW</div>
+      <div *ngIf="isLocalEnv()" class="px-3">LOCAL</div>
     </a>
     <div class="navbar-divider"></div>
 
