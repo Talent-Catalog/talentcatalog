@@ -14,52 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import 'src/scss/color-mixins';
-@import 'src/scss/typography-mixins';
-@import 'src/scss/support-colors';
+@import "src/scss/variables";
 
 :host {
   display: block;
   width: 100%;
 }
-
-.navbar {
-  @include background-color-soft;
-  width: 100%;
-  height: 60px;
-  padding: 0 12px;
-
-  .logo {
-    max-height: 40px;
-    padding-right: 20px;
-  }
-
-  @media screen and (min-width: 768px) {
-    .navbar-collapse {
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-}
-
-.nav-link {
-  @include label-md;
-  margin-left: 12px;
-  color: color(gray, 800);
-  &.active {
-    @include background-color-primary;
-    @include text-color-white;
-  }
-}
-
-// Color of user icon for account information (logout, settings etc)
-i {
-  @include text-color-secondary;
-}
-
-// Remove the default down arrow after the dropdown icon
-.navbar-nav .nav-item > .nav-link[ngbDropdownToggle]::after {
-  display: none !important;
-}
-
 
