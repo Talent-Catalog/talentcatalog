@@ -75,9 +75,7 @@ export class JobHomeComponent extends HomeComponent {
 
   ngOnInit() {
     super.ngOnInit();
-    console.log('home init')
     this.loadChatReadStatuses();
-
   }
 
   private loadChatReadStatuses() {

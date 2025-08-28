@@ -10,7 +10,7 @@
 
 <div class="tab-content">
   <ng-container *ngFor="let tab of tabs">
-    <div [hidden]="tab.id !== activeTabId">
+    <div *ngIf="tab.id === activeTabId" class="tab-pane active">
       <ng-container *ngTemplateOutlet="tab.content"></ng-container>
     </div>
   </ng-container>

@@ -65,13 +65,6 @@ export class ChatService implements OnDestroy {
    */
   private chatByRequest$: Map<string, Observable<JobChat>> = new Map();
 
-  /**
-   * Tracks which chats are already loading, as we are using tabs there are multiple subscription points using
-   * getChatIsRead$ (tc-tab-header, tc-tab-content).
-   * @private
-   */
-  private chatsLoading = new Set<number>();
-
   constructor(
     private authenticationService: AuthenticationService,
     private http: HttpClient,
@@ -400,10 +393,7 @@ export class ChatService implements OnDestroy {
   getChatIsRead$(chat: JobChat): Observable<boolean> {
     const subject = this.getChatIsReadSubject(chat);
 
-    if (subject.value == null && !this.chatsLoading.has(chat.id)) {
-      console.log('Fetching read status for chat', chat.id);
-      this.chatsLoading.add(chat.id);
-
+    if (subject.value == null) {
       //If we don't know the status, we need to get it from the server.
       this.getJobChatUserInfo(chat).subscribe({
           next: info => {

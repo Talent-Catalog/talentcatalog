@@ -89,13 +89,13 @@
 
   <div class="row mt-3">
     <div class="col-sm-{{mainPanelColWidth}}">
+      <!-- TABS -->
+      <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-      <tc-tabs [activeTabId]="activeTabId" (tabChanged)="onTabChanged($event)">
-        <tc-tab id="General" description="">
-          <tc-tab-header>
-            General
-          </tc-tab-header>
-          <tc-tab-content>
+        <!-- GENERAL -->
+        <ng-container ngbNavItem="General">
+          <a ngbNavLink>General</a>
+          <ng-template ngbNavContent>
             <app-job-general-tab
               [job]="job"
               [editable]="isEditable()"
@@ -103,26 +103,29 @@
               (jobUpdated)="onJobUpdated($event)"
             >
             </app-job-general-tab>
-          </tc-tab-content>
-        </tc-tab>
+          </ng-template>
+        </ng-container>
 
-        <tc-tab id="Searches" description="Create a search to help partners find suitable candidates">
-          <tc-tab-header>
+        <!-- SEARCHES -->
+        <ng-container ngbNavItem="Searches">
+          <a ngbNavLink
+             ngbTooltip="Create a search to help partners find suitable candidates">
             Suggested search(es)
-          </tc-tab-header>
-          <tc-tab-content>
+          </a>
+          <ng-template ngbNavContent>
             <app-job-suggested-searches-tab
               [job]="job"
               [editable]="isEditable()"
               [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)">
             </app-job-suggested-searches-tab>
-          </tc-tab-content>
-        </tc-tab>
+          </ng-template>
+        </ng-container>
 
-        <tc-tab *ngIf="canSeeJobDetails()" id="Uploads">
-          <tc-tab-header>Job Uploads</tc-tab-header>
-          <tc-tab-content>
+        <!-- UPLOADS -->
+        <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Uploads">
+          <a ngbNavLink>Job Uploads</a>
+          <ng-template ngbNavContent>
             <app-job-upload-tab
               [job]="job"
               [editable]="isEditable()"
@@ -130,74 +133,73 @@
               (jobUpdated)="onJobUpdated($event)"
             >
             </app-job-upload-tab>
-          </tc-tab-content>
-        </tc-tab>
+          </ng-template>
+        </ng-container>
 
-        <tc-tab *ngIf="canSeeJobDetails()"
-                id="Intake"
-                description="Provides key info for source partners to liaise with candidates">
-          <tc-tab-header>Intake</tc-tab-header>
-          <tc-tab-content>
+        <!-- JOB INTAKE -->
+        <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Intake">
+          <a ngbNavLink
+             ngbTooltip="Provides key info for source partners to liaise with candidates">
+            Job Intake (JOI)
+          </a>
+          <ng-template ngbNavContent>
             <app-job-intake-tab
               [job]="job"
-              (intakeChanged)="onIntakeChanged($event)">
+              (intakeChanged)="onIntakeChanged($event)"
+            >
             </app-job-intake-tab>
-          </tc-tab-content>
-        </tc-tab>
+          </ng-template>
+        </ng-container>
 
-        <tc-tab *ngIf="canSeeJobDetails()"
-                id="Source"
-                description="View partner details & start a chat">
-          <tc-tab-header>
-            Partners/Chats
+        <!-- Source Partners -->
+        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Source">
+          <a ngbNavLink [ngbTooltip]="'View partner details & start a chat'">Partners/Chats
             <app-chat-read-status
               [chats]="partnerChats"
             ></app-chat-read-status>
-          </tc-tab-header>
-          <tc-tab-content>
+          </a>
+          <ng-template ngbNavContent>
             <app-job-source-contacts-tab
               [job]="job"
-              [fromUrl]="fromUrl">
+              [fromUrl]="fromUrl"
+            >
             </app-job-source-contacts-tab>
-          </tc-tab-content>
-        </tc-tab>
+          </ng-template>
+        </ng-container>
 
-        <tc-tab *ngIf="visible && canSeeJobDetails()"
-                id="GroupChats"
-                description="Chats that involve more than one partner or candidate/s">
-          <tc-tab-header>
+        <!-- Group chats -->
+        <ng-container ngbNavItem="GroupChats" *ngIf="visible && canSeeJobDetails()">
+          <a ngbNavLink [ngbTooltip]="'Chats that involve more than one partner or candidate/s'">
             Group Chats
             <app-chat-read-status
-              [chats]="partnerChats"
+              [chats]="groupChats"
             ></app-chat-read-status>
-          </tc-tab-header>
-          <tc-tab-content>
+          </a>
+          <ng-template ngbNavContent>
             <app-job-group-chats-tab
               [job]="job"
-              [fromUrl]="fromUrl">
+              [fromUrl]="fromUrl"
+            >
             </app-job-group-chats-tab>
-          </tc-tab-content>
-        </tc-tab>
+          </ng-template>
+        </ng-container>
 
-        <tc-tab *ngIf="canSeeJobDetails()"
-                id="Progress">
-          <tc-tab-header>
-            Progress
-          </tc-tab-header>
-          <tc-tab-content>
+        <!-- PROGRESS -->
+        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Progress">
+          <a ngbNavLink>Progress</a>
+          <ng-template ngbNavContent>
             <app-opportunity-stage-next-step
               [opp]="job"
-              (oppProgressUpdated)="onOppProgressUpdated($event)">
+              (oppProgressUpdated)="onOppProgressUpdated($event)"
+            >
             </app-opportunity-stage-next-step>
-          </tc-tab-content>
-        </tc-tab>
+          </ng-template>
+        </ng-container>
 
-        <tc-tab *ngIf="canSeeJobDetails()"
-                id="SubmissionList">
-          <tc-tab-header>
-            Submission List
-          </tc-tab-header>
-          <tc-tab-content>
+        <!-- Submission List -->
+        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Submission List">
+          <a ngbNavLink>Submission List</a>
+          <ng-template ngbNavContent>
             <div *ngIf= "job.submissionList">
               <div *ngIf="showBreadcrumb" class="fw-light my-3">
                 <span>Click to open submission list:
@@ -216,145 +218,11 @@
                 </app-candidate-source-results>
               </div>
             </div>
-          </tc-tab-content>
-        </tc-tab>
+          </ng-template>
+        </ng-container>
 
-      </tc-tabs>
-
-<!--      &lt;!&ndash; TABS &ndash;&gt;-->
-<!--      <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">-->
-
-<!--        &lt;!&ndash; GENERAL &ndash;&gt;-->
-<!--        <ng-container ngbNavItem="General">-->
-<!--          <a ngbNavLink>General</a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-general-tab-->
-<!--              [job]="job"-->
-<!--              [editable]="isEditable()"-->
-<!--              [highlightItem]="currentPrepItem"-->
-<!--              (jobUpdated)="onJobUpdated($event)"-->
-<!--            >-->
-<!--            </app-job-general-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
-
-<!--        &lt;!&ndash; SEARCHES &ndash;&gt;-->
-<!--        <ng-container ngbNavItem="Searches">-->
-<!--          <a ngbNavLink-->
-<!--             ngbTooltip="Create a search to help partners find suitable candidates">-->
-<!--            Suggested search(es)-->
-<!--          </a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-suggested-searches-tab-->
-<!--              [job]="job"-->
-<!--              [editable]="isEditable()"-->
-<!--              [highlightItem]="currentPrepItem"-->
-<!--              (jobUpdated)="onJobUpdated($event)">-->
-<!--            </app-job-suggested-searches-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
-
-<!--        &lt;!&ndash; UPLOADS &ndash;&gt;-->
-<!--        <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Uploads">-->
-<!--          <a ngbNavLink>Job Uploads</a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-upload-tab-->
-<!--              [job]="job"-->
-<!--              [editable]="isEditable()"-->
-<!--              [highlightItem]="currentPrepItem"-->
-<!--              (jobUpdated)="onJobUpdated($event)"-->
-<!--            >-->
-<!--            </app-job-upload-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
-
-<!--        &lt;!&ndash; JOB INTAKE &ndash;&gt;-->
-<!--        <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Intake">-->
-<!--          <a ngbNavLink-->
-<!--             ngbTooltip="Provides key info for source partners to liaise with candidates">-->
-<!--            Job Intake (JOI)-->
-<!--          </a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-intake-tab-->
-<!--              [job]="job"-->
-<!--              (intakeChanged)="onIntakeChanged($event)"-->
-<!--            >-->
-<!--            </app-job-intake-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
-
-<!--        &lt;!&ndash; Source Partners &ndash;&gt;-->
-<!--        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Source">-->
-<!--          <a ngbNavLink [ngbTooltip]="'View partner details & start a chat'">Partners/Chats-->
-<!--            <app-chat-read-status-->
-<!--              [chats]="partnerChats"-->
-<!--            ></app-chat-read-status>-->
-<!--          </a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-source-contacts-tab-->
-<!--              [job]="job"-->
-<!--              [fromUrl]="fromUrl"-->
-<!--            >-->
-<!--            </app-job-source-contacts-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
-
-<!--        &lt;!&ndash; Group chats &ndash;&gt;-->
-<!--        <ng-container ngbNavItem="GroupChats" *ngIf="visible && canSeeJobDetails()">-->
-<!--          <a ngbNavLink [ngbTooltip]="'Chats that involve more than one partner or candidate/s'">-->
-<!--            Group Chats-->
-<!--            <app-chat-read-status-->
-<!--              [chats]="groupChats"-->
-<!--            ></app-chat-read-status>-->
-<!--          </a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-job-group-chats-tab-->
-<!--              [job]="job"-->
-<!--              [fromUrl]="fromUrl"-->
-<!--            >-->
-<!--            </app-job-group-chats-tab>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
-
-<!--        &lt;!&ndash; PROGRESS &ndash;&gt;-->
-<!--        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Progress">-->
-<!--          <a ngbNavLink>Progress</a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <app-opportunity-stage-next-step-->
-<!--              [opp]="job"-->
-<!--              (oppProgressUpdated)="onOppProgressUpdated($event)"-->
-<!--            >-->
-<!--            </app-opportunity-stage-next-step>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
-
-<!--        &lt;!&ndash; Submission List &ndash;&gt;-->
-<!--        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Submission List">-->
-<!--          <a ngbNavLink>Submission List</a>-->
-<!--          <ng-template ngbNavContent>-->
-<!--            <div *ngIf= "job.submissionList">-->
-<!--              <div *ngIf="showBreadcrumb" class="fw-light my-3">-->
-<!--                <span>Click to open submission list:-->
-<!--                  <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>-->
-<!--                </span>-->
-<!--              </div>-->
-<!--              <div *ngIf="!showBreadcrumb">-->
-<!--                <div class="fw-light my-3">-->
-<!--                  Candidate opportunities ("cases") going for this job:-->
-<!--                  <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>-->
-<!--                </div>-->
-<!--                <app-candidate-source-results-->
-<!--                  [candidateSource]="job.submissionList"-->
-<!--                  [showSourceDetails]="false"-->
-<!--                >-->
-<!--                </app-candidate-source-results>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </ng-template>-->
-<!--        </ng-container>-->
-
-<!--      </nav>-->
-<!--      <div [ngbNavOutlet]="nav" class="mt-2"></div>-->
+      </nav>
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
     </div>
 

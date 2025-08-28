@@ -16,6 +16,34 @@
 
 import {Component, TemplateRef, ViewChild} from '@angular/core';
 
+/**
+ * @component TcTabHeaderComponent
+ * @description
+ * A wrapper component that contains the header content.
+ *
+ * **Features:**
+ * - Contains the content to be displayed in the tab nav
+ *
+ * @selector tc-tab-header
+ *
+ * @example
+ * ```html
+ * <tc-tabs [activeTabId]="activeTabId" (tabChanged)="setActiveTab($event)">
+ *   <tc-tab id="FirstTab" description="This is the first tab">
+ *     <tc-tab-header>First Tab</tc-tab-header>
+ *     <tc-tab-content>
+ *       <app-component></app-component>
+ *     </tc-tab-content>
+ *   </tc-tab>
+ *   <tc-tab id="SecondTab" description="This is the second tab">
+ *     <tc-tab-header>Second Tab</tc-tab-header>
+ *     <tc-tab-content>
+ *       This is some content that isn't in a component.
+ *     </tc-tab-content>
+ *   </tc-tab>
+ * </tc-tabs>
+ * ```
+ */
 @Component({
   selector: 'tc-tab-header',
   templateUrl: './tc-tab-header.component.html',
