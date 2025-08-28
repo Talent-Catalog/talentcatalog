@@ -14,14 +14,14 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav class="navbar navbar-expand-md fixed-top">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top">
   <div class="container-fluid">
 
     <!-- LOGO -->
     <a class="navbar-brand" [href]="websiteUrl" target="_blank">
-      <img id="logo" *ngIf="logo" class="logo" [src]="logo" alt="Logo">
-<!--      <div *ngIf="isStagingEnv()" class="px-3">PREVIEW</div>-->
-<!--      <div *ngIf="isLocalEnv()" class="px-3">LOCAL</div>-->
+      <img id="logo" *ngIf="logo && !isStagingEnv() && !isLocalEnv()" class="logo" [src]="logo" alt="Logo">
+      <div *ngIf="isStagingEnv()" class="px-3">PREVIEW</div>
+      <div *ngIf="isLocalEnv()" class="px-3">LOCAL</div>
     </a>
 
     <button class="navbar-toggler hidden-sm-up" type="button"
@@ -93,22 +93,22 @@
       <div class="me-3" *ngIf="!isEmployerPartner()">
         <app-candidate-name-num-search></app-candidate-name-num-search>
       </div>
-      <ul class="navbar-nav">
-        <li ngbDropdown class="nav-item">
-          <a href (click)="false" class="nav-link" ngbDropdownToggle>
-            <i class="fas fa-user fa-lg" [title]="loggedInUserInfo()"></i>
-          </a>
-          <div ngbDropdownMenu class="dropdown-menu-end">
-            <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
-            <div class="dropdown-divider"></div>
-            <div *ngIf="isAnAdmin()">
-              <a ngbDropdownItem [routerLink]="'/settings'">Settings</a>
-              <div class="dropdown-divider"></div>
-            </div>
-            <button ngbDropdownItem (click)="logout()">Logout</button>
-          </div>
-        </li>
-      </ul>
     </div>
+    <ul class="navbar-nav">
+      <li ngbDropdown class="nav-item">
+        <a href (click)="false" class="nav-link" ngbDropdownToggle>
+          <i class="fas fa-user" [title]="loggedInUserInfo()"></i>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu-end">
+          <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
+          <div class="dropdown-divider"></div>
+          <div *ngIf="isAnAdmin()">
+            <a ngbDropdownItem [routerLink]="'/settings'">Settings</a>
+            <div class="dropdown-divider"></div>
+          </div>
+          <button ngbDropdownItem (click)="logout()">Logout</button>
+        </div>
+      </li>
+    </ul>
   </div>
 </nav>
