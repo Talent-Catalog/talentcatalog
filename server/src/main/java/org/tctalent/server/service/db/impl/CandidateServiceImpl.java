@@ -142,6 +142,7 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.CreateCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
@@ -510,6 +511,31 @@ public class CandidateServiceImpl implements CandidateService {
 
             candidates = candidateRepository.searchCandidateExternalId(
                 s +'%', sourceCountries, request.getPageRequestWithoutSort());
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Search Candidates")
+                .message("Found " + candidates.getTotalElements() + " candidates in search")
+                .logInfo();
+
+            return candidates;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(CandidatePublicIdSearchRequest request) {
+        String publicId = request.getPublicId();
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
+            Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
+
+            candidates = candidateRepository.searchCandidatePublicId(
+                publicId+ '%', sourceCountries, request.getPageRequestWithoutSort());
 
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
