@@ -40,10 +40,10 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import './scss/typography-mixins';
 @import './scss/typography-classes';
 @import './scss/components/navbar';
+@import './scss/components/ng-select';
 
 body {
-  padding-top: 6rem;
-  background-color: $light;
+  padding-top: 5rem;
 }
 
 .nav-link {
