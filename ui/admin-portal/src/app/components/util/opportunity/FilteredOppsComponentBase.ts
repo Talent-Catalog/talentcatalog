@@ -36,6 +36,7 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {
   getOpportunityStageName,
+  getStageBadgeColor,
   Opportunity,
   OpportunityOwnershipType
 } from "../../../model/opportunity";
@@ -442,6 +443,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   get getCandidateOpportunityStageName() {
     return getOpportunityStageName;
+  }
+
+  get getBadgeColor() {
+    return getStageBadgeColor;
   }
 
   getChats(opp: Opportunity): JobChat[] {
