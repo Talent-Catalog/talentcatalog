@@ -16,18 +16,15 @@
 
 package org.tctalent.server.model.db.task;
 
-import org.tctalent.server.model.db.TaskImpl;
-
 /**
- * Different kind of tasks.
+ * Particular kind of task where the candidate needs to fill out a form.
  * <p/>
- * See {@link TaskImpl#getTaskType()} for explanation of the need for this enum.
+ * The name of the CandidateForm to be filled out is the name of the task.
  *
  * @author John Cameron
  */
-public enum TaskType {
-    Form,
-    Question,
-    Simple,
-    Upload
+public interface FormTask extends Task {
+    default TaskType getTaskType() {
+        return TaskType.Form;
+    }
 }
