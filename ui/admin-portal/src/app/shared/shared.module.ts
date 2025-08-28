@@ -35,6 +35,14 @@ import {ErrorMessageComponent} from './components/fieldset/error-message/error-m
 import { TextareaComponent } from './components/textarea/textarea.component';
 import {BadgeComponent} from './components/badge/badge.component';
 
+import {DescriptionListComponent} from './components/description-list/description-list.component';
+import {
+  DescriptionDetailsComponent
+} from './components/description-list/description-details/description-details.component';
+import {
+  DescriptionTermComponent
+} from './components/description-list/description-term/description-term.component';
+
 @NgModule({
   declarations: [
     ButtonComponent,
@@ -50,9 +58,11 @@ import {BadgeComponent} from './components/badge/badge.component';
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
-    TcTabHeaderComponent,
     TcTabContentComponent,
     BadgeComponent,
+    DescriptionListComponent,
+    DescriptionDetailsComponent,
+    DescriptionTermComponent
   ],
   imports: [
     CommonModule,
@@ -75,6 +85,9 @@ import {BadgeComponent} from './components/badge/badge.component';
     TcTabHeaderComponent,
     TcTabContentComponent,
     BadgeComponent,
+    DescriptionListComponent,
+    DescriptionDetailsComponent,
+    DescriptionTermComponent,
   ]
 })
 export class SharedModule { }
