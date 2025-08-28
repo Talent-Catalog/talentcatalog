@@ -17,7 +17,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {NgbNavModule, NgbPaginationModule,} from "@ng-bootstrap/ng-bootstrap";
+import {NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -32,6 +32,7 @@ import {FieldComponent} from './components/fieldset/field/field.component';
 import {LabelComponent} from './components/fieldset/label/label.component';
 import {DescriptionComponent} from './components/fieldset/description/description.component';
 import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
+import { TextareaComponent } from './components/textarea/textarea.component';
 import {BadgeComponent} from './components/badge/badge.component';
 
 @NgModule({
@@ -45,6 +46,7 @@ import {BadgeComponent} from './components/badge/badge.component';
     LabelComponent,
     DescriptionComponent,
     ErrorMessageComponent,
+    TextareaComponent,
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
@@ -67,6 +69,7 @@ import {BadgeComponent} from './components/badge/badge.component';
     LabelComponent,
     DescriptionComponent,
     ErrorMessageComponent,
+    TextareaComponent,
     TcTabsComponent,
     TcTabComponent,
     TcTabHeaderComponent,
