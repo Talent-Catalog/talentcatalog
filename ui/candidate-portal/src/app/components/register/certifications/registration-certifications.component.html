@@ -57,7 +57,7 @@
 </div>
 
 
-<app-registration-footer [nextDisabled]="loading || saving || (!form.valid && candidateCertifications.length === 0)"
+<app-registration-footer [nextDisabled]="loading || saving"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? finishEditing() : back() "
                          (nextClicked)="edit ? finishEditing() : next()">
