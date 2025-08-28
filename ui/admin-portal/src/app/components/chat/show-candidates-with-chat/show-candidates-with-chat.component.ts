@@ -84,7 +84,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   /**
    * Map of candidate id to chat
    */
-  protected candidateChats: Map<number, JobChat> = new Map<number, JobChat>();
+  protected candidateChats: Map<number, JobChat[]> = new Map<number, JobChat[]>();
 
   /**
    * Subscription to all visible candidate chats
@@ -205,7 +205,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   }
 
   public getCandidateChat(candidate: Candidate): JobChat[] {
-    return candidate ? [this.candidateChats.get(candidate.id)] : null;
+    return candidate ? this.candidateChats.get(candidate.id) : null;
   }
 
   /**
@@ -221,7 +221,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     for (let i = 0; i < this.candidates.length; i++) {
       const candidate = this.candidates[i];
       let chat = chatByCandidate[i];
-      this.candidateChats.set(candidate.id, chat);
+      this.candidateChats.set(candidate.id, [chat]);
       this.allChats.push(chat);
     }
 
