@@ -22,6 +22,7 @@ export const environment = {
   production: false,
   host: 'localhost:8080',
   publishUrl: 'http://localhost:8080/published',
+  candidateFormApiUrl: 'http://localhost:8080/api/admin',
   chatApiUrl: 'http://localhost:8080/api/admin',
   termsInfoApiUrl: 'http://localhost:8080/api/admin',
   apiUrl: 'http://localhost:8080/api/portal',

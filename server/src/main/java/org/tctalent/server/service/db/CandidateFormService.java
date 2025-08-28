@@ -16,16 +16,17 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateForm;
+import org.tctalent.server.request.form.SearchCandidateFormRequest;
+import org.tctalent.server.request.form.UpdateCandidateFormRequest;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 public interface CandidateFormService {
+
+    CandidateForm createCandidateForm(UpdateCandidateFormRequest request);
 
     /**
      * Get the CandidateForm with the given id.
@@ -45,4 +46,9 @@ public interface CandidateFormService {
     @NonNull
     CandidateForm getByName(String name) throws NoSuchObjectException;
 
+    List<CandidateForm> search(SearchCandidateFormRequest request);
+
+    Page<CandidateForm> searchPaged(SearchCandidateFormRequest request);
+
+    CandidateForm updateCandidateForm(long id, UpdateCandidateFormRequest request);
 }

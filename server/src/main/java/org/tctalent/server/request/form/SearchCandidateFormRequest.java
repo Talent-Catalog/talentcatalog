@@ -14,20 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-// This file replaces environment.ts during build by using the `fileReplacements` array.
-// `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+package org.tctalent.server.request.form;
 
-export const environment = {
-  production: true,
-  host: document.location.host,
-  publishUrl: document.location.origin + '/published',
-  candidateFormApiUrl: '/api/admin',
-  chatApiUrl: '/api/admin',
-  termsInfoApiUrl: '/api/admin',
-  apiUrl: '/api/portal',
-  systemApiUrl: '/api/system',
-  s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',
-  googleAnalyticsId: 'G-BPDYWB77Y3',
-  environmentName: 'prod'
-};
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.domain.Sort;
+import org.tctalent.server.request.PagedSearchRequest;
+
+@Getter
+@Setter
+public class SearchCandidateFormRequest extends PagedSearchRequest {
+
+    private String keyword;
+
+    public SearchCandidateFormRequest() {
+        super(Sort.Direction.ASC, new String[]{"name"});
+    }
+
+}
+
