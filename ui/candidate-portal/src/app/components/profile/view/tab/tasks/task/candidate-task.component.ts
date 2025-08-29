@@ -159,6 +159,10 @@ export class CandidateTaskComponent implements OnInit {
     }
   }
 
+  updateFormTask() {
+    //todo
+  }
+
   updateQuestionTask() {
     this.saving = true;
     const request: UpdateQuestionTaskAssignmentRequest = {

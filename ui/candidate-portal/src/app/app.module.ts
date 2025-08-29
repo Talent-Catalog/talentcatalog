@@ -22,12 +22,12 @@ import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
 import {
+  NgbCollapseModule,
   NgbDateAdapter,
   NgbDateParserFormatter,
   NgbDatepickerConfig,
   NgbDatepickerI18n,
-  NgbModule,
-  NgbCollapseModule
+  NgbModule
 } from '@ng-bootstrap/ng-bootstrap';
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
@@ -120,6 +120,8 @@ import {
   faChevronUp,
   faEdit,
   faEllipsisH,
+  faEnvelope,
+  faEnvelopeOpen,
   faExternalLinkAlt,
   faFaceSmile,
   faFileUpload,
@@ -133,11 +135,9 @@ import {
   faQuestion,
   faQuestionCircle,
   faTimes,
+  faTriangleExclamation,
   faUser,
-  faXmark,
-  faEnvelope,
-  faEnvelopeOpen,
-  faTriangleExclamation
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -224,13 +224,22 @@ import {
   DestinationComponent
 } from "./components/register/destinations/destination/destination.component";
 import {ServicesComponent} from './components/profile/view/tab/services/services.component';
-import { VerifyEmailComponent } from './components/account/verify-email/verify-email.component';
-import {DuolingoCouponComponent} from './components/profile/view/tab/services/duolingo/duolingo-coupon/duolingo-coupon.component';
-import { DuolingoComponent } from './components/profile/view/tab/services/duolingo/duolingo.component';
-import { CasiHeaderComponent } from './components/common/casi-header/casi-header.component';
-import { TermsComponent } from './components/privacy-policy/terms.component';
-import { RegistrationSubmitComponent } from './components/register/submit/registration-submit.component';
-import { ShowTermsComponent } from './components/util/accept-terms/show-terms.component';
+import {VerifyEmailComponent} from './components/account/verify-email/verify-email.component';
+import {
+  DuolingoCouponComponent
+} from './components/profile/view/tab/services/duolingo/duolingo-coupon/duolingo-coupon.component';
+import {
+  DuolingoComponent
+} from './components/profile/view/tab/services/duolingo/duolingo.component';
+import {CasiHeaderComponent} from './components/common/casi-header/casi-header.component';
+import {TermsComponent} from './components/privacy-policy/terms.component';
+import {
+  RegistrationSubmitComponent
+} from './components/register/submit/registration-submit.component';
+import {ShowTermsComponent} from './components/util/accept-terms/show-terms.component';
+import {
+  ViewFormTaskComponent
+} from './components/profile/view/tab/tasks/task/form/view-form-task.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -317,6 +326,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TermsComponent,
     RegistrationSubmitComponent,
     ShowTermsComponent,
+    ViewFormTaskComponent,
   ],
   imports: [
     BrowserModule,
