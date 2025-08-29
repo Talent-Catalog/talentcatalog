@@ -138,12 +138,20 @@ export class CandidateTaskComponent implements OnInit {
       this.updateTaskComment();
     } else {
       if (!this.abandonedTask) {
-        if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-          this.updateQuestionTask();
-        } else if (this.selectedTask.task.taskType === TaskType.Simple) {
-          this.updateSimpleTask();
-        } else {
-          this.updateUploadTask();
+        switch (this.selectedTask.task.taskType) {
+          case TaskType.Form:
+            this.updateFormTask();
+            break;
+          case TaskType.Question:
+          case TaskType.YesNoQuestion:
+            this.updateQuestionTask();
+            break;
+          case TaskType.Simple:
+            this.updateSimpleTask();
+            break;
+          case TaskType.Upload:
+            this.updateUploadTask();
+            break;
         }
       } else {
         this.updateAbandonedTask();

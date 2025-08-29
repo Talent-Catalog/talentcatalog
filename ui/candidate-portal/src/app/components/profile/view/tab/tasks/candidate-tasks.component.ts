@@ -64,18 +64,6 @@ export class CandidateTasksComponent implements OnInit {
     this.refresh.emit();
   }
 
-  displayTaskType(ta: TaskAssignment): string {
-    let taskType: string;
-    if (ta.task.taskType === 'Upload') {
-      taskType = "Upload";
-    } else if (ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion') {
-      taskType = "Question";
-    } else {
-      taskType = null;
-    }
-    return taskType;
-  }
-
   // todo jc Hack for testing candidate forms
   testForm() {
     let request: MyFirstFormUpdateRequest = {
