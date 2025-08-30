@@ -175,6 +175,7 @@ public class CandidateBuilderSelector {
             .add("rank")
             .add("status")
             .add("muted")
+            .add("pendingTerms")
             .add("candidateNumber")
             .add("publicId")
             .add("allNotifications")

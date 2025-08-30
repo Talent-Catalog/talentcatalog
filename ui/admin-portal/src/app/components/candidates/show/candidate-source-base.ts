@@ -56,7 +56,7 @@ export class CandidateSourceBaseComponent {
 
   @Input() candidateSource: CandidateSource;
   //Temporary - todo to be removed when we no longer use Elasticsearch or CandidateSpecifications
-  @Input() pgOnlySqlSearch: boolean;
+  @Input() useOldSearch: boolean;
 
   selectedFields: CandidateFieldInfo[] = [];
 
@@ -150,7 +150,7 @@ export class CandidateSourceBaseComponent {
     let defaultSortField = 'id';
     let defaultSortDirection = 'DESC';
     if (isSavedSearch(this.candidateSource)) {
-      if (this.pgOnlySqlSearch) {
+      if (this.useOldSearch == null || !this.useOldSearch) {
         if (!isNullOrEmpty(this.candidateSource.simpleQueryString)) {
           defaultSortField = 'text_match'
         }
