@@ -27,6 +27,12 @@
           <span class="form-control-plaintext">{{ candidate?.acceptedPrivacyPolicyPartner?.name || 'N/A'}}</span>
         </div>
       </div>
+      <div class="mb-3 col-sm-12 col-md-6">
+        <label class="col-form-label">Shown our terms but have not accepted them?</label>
+        <div>
+          <span class="form-control-plaintext">{{ candidate?.pendingTerms ? "Yes" : "No"}}</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
