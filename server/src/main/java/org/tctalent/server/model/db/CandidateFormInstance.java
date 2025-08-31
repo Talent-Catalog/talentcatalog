@@ -152,7 +152,6 @@ public class CandidateFormInstance {
     void populateCandidateFromPending() {
         if (pendingCandidate != null && candidate != null) {
             //TODO JC copy fields and properties from pendingCandidate to candidate
-            //TODO JC Not that new
             /*
             import org.mapstruct.Mapper;
             import org.mapstruct.factory.Mappers;
