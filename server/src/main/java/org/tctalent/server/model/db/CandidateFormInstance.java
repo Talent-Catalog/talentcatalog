@@ -137,9 +137,13 @@ public class CandidateFormInstance {
 
             property.setName(propertyName);
 
-            //Note that workingCandidate may not be a true entity. It will be replaced by the
-            //real Candidate entity once that entity is known.
-            //TODO JC Refer to where this is done.
+            //Note that workingCandidate may not be a true entity.
+            //It may be pendingCandidate. In that case it doesn't matter because in that
+            //case these properties are just temporary holders of the values.
+            //TODO JC Refer to where this is done. It will be in a BeforeSave event.
+            //At that point a real candidate entity will be fetched and set as the candidate.
+            //Then pendingCandidate and all its candidateProperties will be copied to the
+            //real candidate entity.
             property.setCandidate(workingCandidate);
         }
         property.setValue(value);
@@ -148,6 +152,7 @@ public class CandidateFormInstance {
     void populateCandidateFromPending() {
         if (pendingCandidate != null && candidate != null) {
             //TODO JC copy fields and properties from pendingCandidate to candidate
+            //TODO JC Not that new
             /*
             import org.mapstruct.Mapper;
             import org.mapstruct.factory.Mappers;
