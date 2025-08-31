@@ -23,6 +23,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Transient;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +51,14 @@ import org.springframework.lang.NonNull;
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_form_instance_id_seq", allocationSize = 1)
 public class CandidateFormInstance {
 
+    //This is autopopulated if there is no candidate property entity at the time that get or set
+    //methods are called on CandidateFormInstance subclasses.
+    //The idea is that the set methods can be stored in this pendingCandidate and then copied
+    //across to the candidate entity when it has been populated (for example when loaded from the
+    //database).
+    @Transient
+    private Candidate pendingCandidate;
+
     @EqualsAndHashCode.Include
     @EmbeddedId
     CandidateFormInstanceKey id;
@@ -58,7 +67,6 @@ public class CandidateFormInstance {
     @ManyToOne(cascade = CascadeType.ALL)
     @MapsId("candidateId")
     @JoinColumn(name = "candidate_id")
-    @NonNull
     private Candidate candidate;
 
     @NonNull
@@ -78,6 +86,20 @@ public class CandidateFormInstance {
      */
     private OffsetDateTime updatedDate;
 
+    @NonNull
+    protected Candidate getWorkingCandidate() {
+        Candidate workingCandidate;
+        if (candidate != null) {
+            workingCandidate = candidate;
+        } else {
+            if (pendingCandidate == null) {
+                pendingCandidate = new Candidate();
+            }
+            workingCandidate = pendingCandidate;
+        }
+        return workingCandidate;
+    }
+
     /**
      * Return value of given property name from candidate properties.
      * @param propertyName Name of property
@@ -85,7 +107,8 @@ public class CandidateFormInstance {
      */
     protected String getProperty(String propertyName) {
         String value = null;
-        Map<String,CandidateProperty> properties = candidate.getCandidateProperties();
+        Candidate workingCandidate = getWorkingCandidate();
+        Map<String,CandidateProperty> properties = workingCandidate.getCandidateProperties();
         if (properties != null) {
             CandidateProperty property = properties.get(propertyName);
             if (property != null) {
@@ -101,11 +124,11 @@ public class CandidateFormInstance {
      * @param value New property value - may be null. Replaces any previous value.
      */
     protected void setProperty(String propertyName, String value) {
-        Map<String,CandidateProperty> properties = candidate.getCandidateProperties();
+       Candidate workingCandidate = getWorkingCandidate();
+        Map<String,CandidateProperty> properties = workingCandidate.getCandidateProperties();
         if (properties == null) {
-            //TODO JC Create properties
             properties = new HashMap<>();
-            candidate.setCandidateProperties(properties);
+            workingCandidate.setCandidateProperties(properties);
         }
         CandidateProperty property = properties.get(propertyName);
         if (property == null) {
@@ -113,8 +136,28 @@ public class CandidateFormInstance {
             properties.put(propertyName, property);
 
             property.setName(propertyName);
-            property.setCandidateId(candidate.getId());
+            property.setCandidateId(workingCandidate.getId());
         }
         property.setValue(value);
+    }
+
+    void populateCandidateFromPending() {
+        if (pendingCandidate != null && candidate != null) {
+            //TODO JC copy fields and properties from pendingCandidate to candidate
+            /*
+            import org.mapstruct.Mapper;
+            import org.mapstruct.factory.Mappers;
+
+            @Mapper
+            public interface CandidateMapper {
+                CandidateMapper INSTANCE = Mappers.getMapper(CandidateMapper.class);
+
+                void updateCandidateFromSource(Candidate source, @MappingTarget Candidate candidate);
+            }
+
+             CandidateMapper.INSTANCE.updateCandidateFromSource(pendingCandidate, candidate);
+             */
+            pendingCandidate = null;
+        }
     }
 }

@@ -9,11 +9,16 @@ import {MyFirstForm, MyFirstFormUpdateRequest} from "../model/form";
 })
 export class CandidateFormService {
   apiUrl: string = environment.apiUrl + '/form';
+  halApiUrl: string = environment.halApiUrl;
 
   constructor(private http: HttpClient) { }
 
   createOrUpdateMyFirstForm(request: MyFirstFormUpdateRequest): Observable<MyFirstForm> {
     return this.http.post<MyFirstForm>(`${this.apiUrl}/my-first-form`, request);
+  }
+
+  createOrUpdateMySecondForm(request: MyFirstFormUpdateRequest): Observable<MyFirstForm> {
+    return this.http.post<MyFirstForm>(`${this.halApiUrl}/my-second-form`, request);
   }
 
 }

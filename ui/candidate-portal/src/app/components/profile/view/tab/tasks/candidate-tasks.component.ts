@@ -82,6 +82,10 @@ export class CandidateTasksComponent implements OnInit {
       city: "Beirut",
       hairColour: "blue"
     }
+    this.candidateFormService.createOrUpdateMySecondForm(request).subscribe({
+      next: () => {},
+      error: err => {}
+    })
     this.candidateFormService.createOrUpdateMyFirstForm(request).subscribe({
       next: () => {},
       error: err => {}

@@ -33,11 +33,11 @@ class CandidateFormInstanceTest {
         private static final String HAIR_COLOUR_PROPERTY_NAME = "hairColour";
 
         public String getCity() {
-            return getCandidate().getCity();
+            return getWorkingCandidate().getCity();
         }
 
         public void setCity(String city) {
-            getCandidate().setCity(city);
+            getWorkingCandidate().setCity(city);
         }
 
         //TODO JC Test linked Candidate tables - eg CandidateExam
@@ -65,6 +65,18 @@ class CandidateFormInstanceTest {
     @Test
     void testDelegation() {
         String city;
+        city = testForm.getCity();
+        assertNull(city);
+
+        testForm.setCity("Aman");
+        city = testForm.getCity();
+        assertEquals("Aman", city);
+
+        testForm.setCity(null);
+        city = testForm.getCity();
+        assertNull(city);
+
+        testForm.setCandidate(null);
         city = testForm.getCity();
         assertNull(city);
 
