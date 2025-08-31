@@ -136,7 +136,11 @@ public class CandidateFormInstance {
             properties.put(propertyName, property);
 
             property.setName(propertyName);
-            property.setCandidateId(workingCandidate.getId());
+
+            //Note that workingCandidate may not be a true entity. It will be replaced by the
+            //real Candidate entity once that entity is known.
+            //TODO JC Refer to where this is done.
+            property.setCandidate(workingCandidate);
         }
         property.setValue(value);
     }
