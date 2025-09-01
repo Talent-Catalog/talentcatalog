@@ -66,21 +66,19 @@ describe('AuthExpiryInterceptor', () => {
     req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
   });
 
-  it('does not redirect if already on login page (still logs out)', (done) => {
+  it('does not redirect if already on login page (still logs out)', () => {
     routerMock.url = '/login/reset-password';
 
     http.get('/api/test').subscribe({
-      next: () => fail('expected error'),
-      error: (err: HttpErrorResponse) => {
-        expect(err.status).toBe(401);
-        expect(authMock.logout).toHaveBeenCalled();
-        expect(routerMock.navigate).not.toHaveBeenCalled();
-        done();
-      }
+      next: () => fail('expected 401'),
+      error: () => { /* ignore */ }
     });
 
     const req = httpMock.expectOne('/api/test');
-    req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+    req.flush(null, { status: 401, statusText: 'Unauthorized' });
+
+    expect(authMock.logout).toHaveBeenCalledTimes(1);
+    expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
   it('does nothing on non-401 errors', (done) => {
