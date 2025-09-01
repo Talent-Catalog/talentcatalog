@@ -54,7 +54,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -65,6 +64,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
@@ -74,7 +74,6 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -113,12 +112,6 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     @Autowired
     SavedListCandidateAdminApi savedListCandidateAdminApi;
 
-    @SpyBean
-    CandidateBuilderSelector candidateBuilderSelector;
-    @MockBean
-    CandidateOpportunityService candidateOpportunityService;
-    @MockBean
-    CountryService countryService;
     @MockBean
     SavedListService savedListService;
     @MockBean
