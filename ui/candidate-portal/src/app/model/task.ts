@@ -24,6 +24,7 @@ class AllowedQuestionTaskAnswer {
 export interface Task extends Auditable {
   id: number;
   name: string;
+  candidateForm?: CandidateForm;
   daysToComplete: number;
   description: string;
   displayName: string;
@@ -36,6 +37,11 @@ export interface Task extends Auditable {
   candidateAnswerField: string;
   allowedAnswers?: AllowedQuestionTaskAnswer[];
 
+}
+
+export interface CandidateForm {
+  name: string;
+  description: string;
 }
 
 export enum TaskType {

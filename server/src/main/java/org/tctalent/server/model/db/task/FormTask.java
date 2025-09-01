@@ -18,8 +18,6 @@ package org.tctalent.server.model.db.task;
 
 /**
  * Particular kind of task where the candidate needs to fill out a form.
- * <p/>
- * The name of the CandidateForm to be filled out is the name of the task.
  *
  * @author John Cameron
  */

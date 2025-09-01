@@ -57,7 +57,7 @@ public class TaskDtoHelper {
 
             return ignore;
         }
-    };
+    }
 
     public static DtoBuilder getTaskAssignmentDto() {
         return getTaskAssignmentDto(DtoType.FULL);
@@ -84,6 +84,7 @@ public class TaskDtoHelper {
         final DtoBuilder builder = new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("name")
+            .add("candidateForm", getCandidateFormDto())
             .add("daysToComplete")
             .add("description")
             .add("displayName")
@@ -110,6 +111,13 @@ public class TaskDtoHelper {
         return new DtoBuilder()
             .add("name")
             .add("displayName")
+            ;
+    }
+
+    private static DtoBuilder getCandidateFormDto() {
+        return new DtoBuilder()
+            .add("name")
+            .add("description")
             ;
     }
 
