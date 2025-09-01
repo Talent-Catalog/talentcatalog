@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,12 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.task;
+export interface MyFirstForm {
+  id?: number;
+  city?: string;
+  hairColour?: string;
+}
 
-/**
- * Task assignment associated with an Upload Task.
- *
- * @author John Cameron
- */
-public interface UploadTaskAssignment extends TaskAssignment {
+export interface MyFirstFormUpdateRequest {
+  city?: string;
+  hairColour?: string;
 }
