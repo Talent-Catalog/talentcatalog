@@ -35,8 +35,21 @@ export interface Task extends Auditable {
   uploadableFileTypes: string;
   candidateAnswerField: string;
   allowedAnswers?: AllowedQuestionTaskAnswer[];
-
+  requiredMetadata?: MetadataField[];
 }
+
+export interface MetadataField {
+  name: string;
+  type: 'text' | 'date' | 'select';
+  label: string;
+  options?: string[] | MetadataOption[];
+}
+
+export interface MetadataOption {
+  value: string;
+  label: string;
+}
+
 
 export enum TaskType {
   Question = "Question",

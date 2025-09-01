@@ -18,6 +18,8 @@ package org.tctalent.server.model.db;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.task.UploadTaskAssignment;
@@ -32,4 +34,6 @@ import org.tctalent.server.model.db.task.UploadTaskAssignment;
 @Getter
 @Setter
 public class UploadTaskAssignmentImpl extends TaskAssignmentImpl implements UploadTaskAssignment {
+  @OneToMany(mappedBy = "relatedTaskAssignment")
+  private List<CandidateProperty> candidateProperties;
 }

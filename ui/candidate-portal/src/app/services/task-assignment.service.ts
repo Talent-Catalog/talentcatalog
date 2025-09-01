@@ -80,4 +80,8 @@ export class TaskAssignmentService {
     return this.http.put<TaskAssignment>(`${this.apiUrl}/${id}/comment`, request);
   }
 
+  completeUploadTask(id: number, formData: FormData): Observable<TaskAssignment> {
+    return this.http.post<TaskAssignment>(`${this.apiUrl}/${id}/complete-upload-task`, formData);
+  }
+
 }

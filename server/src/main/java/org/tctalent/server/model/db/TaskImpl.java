@@ -17,6 +17,8 @@
 package org.tctalent.server.model.db;
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -24,10 +26,13 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.util.List;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskType;
+import org.tctalent.server.response.MetadataFieldResponse;
 
 /**
  * Base implementation of all tasks.
@@ -48,7 +53,10 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
     private String displayName;
     private String name;
     private boolean optional;
-
+    @Nullable
+    @Convert(converter = MetadataFieldConverter.class)
+    @Column(name = "required_metadata", columnDefinition = "jsonb")
+    private List<MetadataFieldResponse> requiredMetadata;
     /*
       Note that this should not be necessary because the interface provides a default implementation
       but PropertyUtils does not find this taskType property if it is just provided by the default

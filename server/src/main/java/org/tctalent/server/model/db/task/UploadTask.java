@@ -20,6 +20,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import org.tctalent.server.response.MetadataFieldResponse;
 
 /**
  * Task where candidate is required to upload a file.
@@ -53,5 +54,7 @@ public interface UploadTask extends Task {
     default TaskType getTaskType() {
         return TaskType.Upload;
     }
-
+    @Nullable
+    List<MetadataFieldResponse> getRequiredMetadata();
+    void setRequiredMetadata(List<MetadataFieldResponse> requiredMetadata);
 }

@@ -1,0 +1,58 @@
+<section [formGroup]="form">
+  <div class="section-heading">
+    <h5>{{ 'TASKS.METADATA.HEADER' | translate }}</h5>
+  </div>
+  <div class="card">
+    <ng-container *ngIf="selectedTask.completedDate != null || selectedTask.abandonedDate != null; else editable">
+      <div *ngFor="let field of metadataFields">
+        <p class="mb-0">
+          <strong>{{ field.label | translate }}:</strong> {{ getDisplayValue(field) }}
+        </p>
+      </div>
+    </ng-container>
+
+    <ng-template #editable>
+      <div *ngFor="let field of metadataFields" class="mb-3">
+        <label class="fw-bold form-label" [for]="field.name">{{ field.label | translate }}</label>
+
+        <!-- Text Input -->
+        <input
+          *ngIf="field.type === 'text'"
+          [id]="field.name"
+          [formControlName]="field.name"
+          class="form-control"
+          [ngClass]="{'is-invalid': discrepantFields.has(field.name)}"
+          type="text"
+          [placeholder]="field.label | translate"
+        />
+
+        <!-- Date Input -->
+        <input
+          *ngIf="field.type === 'date'"
+          [id]="field.name"
+          [formControlName]="field.name"
+          class="form-control"
+          [ngClass]="{'is-invalid': discrepantFields.has(field.name)}"
+          type="date"
+        />
+
+        <!-- Select Input -->
+        <ng-select
+          *ngIf="field.type === 'select'"
+          [id]="field.name"
+          [formControlName]="field.name"
+          [clearable]="false"
+          [items]="field.options"
+          [bindValue]="'value'"
+          [bindLabel]="'label'"
+          [ngClass]="{'is-invalid': form.get(field.name)?.hasError('discrepancy')}"
+          [placeholder]="'Select ' + (field.label | translate)"
+        >
+          <ng-template ng-option-tmp let-item="item">
+            {{ item.label | translate }}
+          </ng-template>
+        </ng-select>
+      </div>
+    </ng-template>
+  </div>
+</section>

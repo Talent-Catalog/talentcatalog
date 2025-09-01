@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.Map;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
@@ -164,5 +165,24 @@ public interface TaskAssignmentService {
      * @return A list of matching TaskAssignmentImpl objects.
      */
     List<TaskAssignmentImpl> findByTaskIdAndCandidateIdAndStatus(Long taskId, Long candidateId, Status status);
+
+    /**
+     * Completes an upload task by attaching the provided files and metadata field answers
+     * to the specified task assignment.
+     * <p>
+     * This method is responsible for updating the task assignment with the uploaded files
+     * and any associated metadata provided by the candidate. It returns the updated
+     * {@link TaskAssignment} object after successful completion.
+     * </p>
+     *
+     * @param taskAssignmentId the ID of the task assignment to complete
+     * @param files an array of files to be uploaded and associated with the task
+     * @param fieldAnswers a map containing metadata field names and their corresponding values
+     * @return the updated {@link TaskAssignment} after completion
+     * @throws IOException if an I/O error occurs while handling the uploaded files
+     * @throws NoSuchObjectException if the task assignment with the given ID does not exist
+     */
+    TaskAssignment completeUploadTask(Long taskAssignmentId, MultipartFile[] files, Map<String, String> fieldAnswers)
+        throws IOException, NoSuchObjectException;
 
 }

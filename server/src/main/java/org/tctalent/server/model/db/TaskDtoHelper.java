@@ -47,13 +47,20 @@ public class TaskDtoHelper {
         private final Set<String> uploadOnlyProperties =
             new HashSet<>(Arrays.asList("uploadType", "uploadSubfolderName", "uploadableFileTypes"));
 
+        // These properties should only be extracted for candidateTravelDocumentUpload
+        private final Set<String> candidateTravelDocumentProperties =
+            new HashSet<>(Arrays.asList("candidateProperties"));
+
         public boolean ignoreProperty(Object o, String property) {
             //Ignore properties which do not exist on task class
             boolean ignore =
                 questionOnlyProperties.contains(property) &&
                     ! (o instanceof QuestionTask || o instanceof QuestionTaskAssignment) ||
                 uploadOnlyProperties.contains(property) &&
-                    ! (o instanceof UploadTask || o instanceof UploadTaskAssignment);
+                    ! (o instanceof UploadTask || o instanceof UploadTaskAssignment) ||
+                candidateTravelDocumentProperties.contains(property) &&
+                    !(o instanceof UploadTaskAssignment uta &&
+                        uta.getTask().getName().equals("candidateTravelDocumentUpload"));
 
             return ignore;
         }
@@ -73,9 +80,16 @@ public class TaskDtoHelper {
             .add("status")
             .add("task", getTaskDto(dtoType))
             .add("answer")
+            .add("candidateProperties", getCandidatePropertyDto())
             ;
     }
 
+    private static DtoBuilder getCandidatePropertyDto() {
+        return new DtoBuilder()
+            .add("name")
+            .add("value")
+            ;
+    }
     public static DtoBuilder getTaskDto() {
         return getTaskDto(DtoType.FULL);
     }
@@ -95,6 +109,7 @@ public class TaskDtoHelper {
             .add("uploadableFileTypes")
             .add("candidateAnswerField")
             .add("createdDate")
+            .add("requiredMetadata")
             ;
 
         if (!DtoType.PREVIEW.equals(dtoType)) {
