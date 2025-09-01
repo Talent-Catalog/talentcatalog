@@ -57,6 +57,7 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -160,6 +161,16 @@ public class CandidateAdminApi {
 
     @PostMapping("findbyexternalid")
     public Map<String, Object> findByCandidateExternalId(@RequestBody CandidateExternalIdSearchRequest request) {
+        Page<Candidate> candidates = candidateService.searchCandidates(request);
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
+        return builder.buildPage(candidates);
+    }
+
+    @PostMapping("findbypublicid")
+    public Map<String, Object> findByCandidatePublicId(@RequestBody CandidatePublicIdSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't

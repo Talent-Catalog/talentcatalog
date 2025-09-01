@@ -91,6 +91,21 @@
         </ng-template>
       </div>
 
+      <!-- New Public ID Search -->
+      <div class="me-3" *ngIf="canViewCandidateName() && !isEmployerPartner()">
+        <input id="quickPublicIdSearch"
+               type="text" class="form-control" #input
+               [ngbTypeahead]="doPublicIdSearch"
+               [resultTemplate]="rt"
+               [inputFormatter]="renderCandidateRow"
+               [editable]="false"
+               (selectItem)="selectSearchResult($event, input)"
+               placeholder="Public ID..."/>
+        <ng-template #rt let-r="result">
+          <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
+        </ng-template>
+      </div>
+
       <div class="me-3" *ngIf="!isEmployerPartner()">
         <app-candidate-name-num-search></app-candidate-name-num-search>
       </div>
