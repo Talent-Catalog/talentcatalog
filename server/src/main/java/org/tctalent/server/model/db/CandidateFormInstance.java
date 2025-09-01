@@ -144,6 +144,26 @@ public class CandidateFormInstance {
             //At that point a real candidate entity will be fetched and set as the candidate.
             //Then pendingCandidate and all its candidateProperties will be copied to the
             //real candidate entity.
+            /* todo Registering BeforeSave. Should be able to register CandidateFormInstance.class
+            which will cover all subclasses according to ChatGPT.
+
+@Component
+@RepositoryEventHandler(Base.class)  // <-- base class
+public class BaseEvents {
+
+  @HandleBeforeCreate
+  public void beforeCreate(Base aggregate) {
+    // runs for Base and (practically) its subclasses exposed by SDR
+  }
+
+  @HandleBeforeSave
+  public void beforeSave(Base aggregate) {  }
+
+        @HandleBeforeDelete
+        public void beforeDelete(Base aggregate) {  }
+    }
+
+             */
             property.setCandidate(workingCandidate);
         }
         property.setValue(value);
