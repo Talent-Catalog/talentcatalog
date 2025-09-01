@@ -48,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
@@ -186,6 +187,15 @@ public class SavedListServiceImpl implements SavedListService {
             final Boolean isSubmissionList = destinationList.getRegisteredJob();
             final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
             if (isSubmissionList && jobOpp != null ) {
+                if (candidate.isPendingTerms()) {
+                    //Candidates who have been shown our latest terms but have not accepted them
+                    //cannot be added to submission lists
+                    throw new InvalidRequestException("Candidate " + candidate.getCandidateNumber() 
+                        + " cannot be added to a submission list." 
+                        + " They have been shown the latest TC terms but have not accepted them." 
+                        + " Ask the candidate to log on to their TC account and accept the terms.");
+                }
+                
                 //With no params specified will not change any existing opp associated with this job,
                 //but will create a new opp if needed, with stage defaulting to "prospect"
                 candidateOpportunityService.createUpdateCandidateOpportunities(
