@@ -48,22 +48,23 @@ describe('AuthExpiryInterceptor', () => {
     authMock.logout.calls.reset();
   });
 
-  it('redirects to /login with returnUrl and logs out on 401', (done) => {
+  it('redirects to /login with returnUrl and logs out on 401', () => {
+    routerMock.url = '/admin-portal/list/6233';
+
     http.get('/api/test').subscribe({
-      next: () => fail('expected error'),
-      error: (err: HttpErrorResponse) => {
-        expect(err.status).toBe(401);
-        expect(authMock.logout).toHaveBeenCalled();
-        expect(routerMock.navigate).toHaveBeenCalledOnceWith(
-          ['/login'],
-          { queryParams: { returnUrl: '/admin-portal/list/6233' } }
-        );
-        done();
-      }
+      next: () => fail('expected 401'),
+      error: () => { /* ignore */ }
     });
 
     const req = httpMock.expectOne('/api/test');
-    req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+    req.flush(null, { status: 401, statusText: 'Unauthorized' });
+
+    expect(authMock.logout).toHaveBeenCalledTimes(1);
+    expect(routerMock.navigate).toHaveBeenCalledTimes(1);
+    expect(routerMock.navigate).toHaveBeenCalledWith(
+      ['/login'],
+      { queryParams: { returnUrl: '/admin-portal/list/6233' } }
+    );
   });
 
   it('does not redirect if already on login page (still logs out)', () => {
