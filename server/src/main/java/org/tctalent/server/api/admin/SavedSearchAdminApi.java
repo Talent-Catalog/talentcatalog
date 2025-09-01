@@ -428,6 +428,7 @@ public class SavedSearchAdminApi implements
                 .add("reviewable")
                 .add("global")
                 .add("defaultSearch")
+                .add("includePendingTermsCandidates")
                 .add("miniIntakeCompleted")
                 .add("fullIntakeCompleted")
                 .add("sfJobOpp", jobOppIdsDto())

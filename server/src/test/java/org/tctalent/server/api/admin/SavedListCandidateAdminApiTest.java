@@ -22,7 +22,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,8 +43,10 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,6 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -57,6 +62,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.api.dto.SavedListBuilderSelector;
@@ -68,6 +74,7 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -106,6 +113,12 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     @Autowired
     SavedListCandidateAdminApi savedListCandidateAdminApi;
 
+    @SpyBean
+    CandidateBuilderSelector candidateBuilderSelector;
+    @MockBean
+    CandidateOpportunityService candidateOpportunityService;
+    @MockBean
+    CountryService countryService;
     @MockBean
     SavedListService savedListService;
     @MockBean
@@ -451,6 +464,76 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$[2]", is("cand-003")));
 
         verify(savedListService).fetchCandidatePublicIds(publicListId);
+    }
+
+    @Test
+    void fetchPublicIdsPaged() throws Exception {
+        String publicListId = "abc123";
+
+        // set candidates publicIds
+        savedListCandidates.get(0).setPublicId("cand-001");
+        savedListCandidates.get(1).setPublicId("cand-002");
+        savedListCandidates.get(2).setPublicId("cand-003");
+
+        // request body
+        SavedListGetRequest request = new SavedListGetRequest();
+        request.setPageNumber(0);
+        request.setPageSize(10);
+
+        // given: saved list + paged candidates
+        given(savedListService.getByPublicId(publicListId))
+            .willReturn(savedList);
+        given(candidateService.getSavedListCandidates(eq(savedList), any(SavedListGetRequest.class)))
+            .willReturn(savedListCandidatesPage);
+
+        // given: DtoBuilder -> Map page with publicId-only content
+        DtoBuilder builder = mock(DtoBuilder.class);
+        given(candidateBuilderSelector.selectBuilder(DtoType.PUBLIC_ID_ONLY))
+            .willReturn(builder);
+
+        Map<String, Object> page = new LinkedHashMap<>();
+        page.put("number", 0);
+        page.put("size", 10);
+        page.put("numberOfElements", 3);
+        page.put("totalPages", 1);
+        page.put("hasPrevious", false);
+        page.put("hasNext", false);
+        page.put("totalElements", 3L);
+        page.put("content", List.of(
+            Map.of("publicId", "cand-001"),
+            Map.of("publicId", "cand-002"),
+            Map.of("publicId", "cand-003")
+        ));
+        given(builder.buildPage(savedListCandidatesPage)).willReturn(page);
+
+        // inject the candidateBuilderSelector into the savedListCandidateAdminApi
+        // so that it can be used to select the correct builder for the response
+        // This is necessary because the candidateBuilderSelector is not injected by Spring
+        // due to the way the SavedListCandidateAdminApi is set up.
+        ReflectionTestUtils
+            .setField(savedListCandidateAdminApi, "candidateBuilderSelector", candidateBuilderSelector);
+
+        // when / then
+        mockMvc.perform(
+                post(BASE_PATH + "/public/" + publicListId + "/public-ids-paged")
+                    .with(csrf())
+                    .header("Authorization", "Bearer jwt-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))
+                    .accept(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.number", is(0)))
+            .andExpect(jsonPath("$.size", is(10)))
+            .andExpect(jsonPath("$.totalElements", is(3)))
+            .andExpect(jsonPath("$.content", hasSize(3)))
+            .andExpect(jsonPath("$.content[0].publicId", is("cand-001")));
+
+        verify(savedListService).getByPublicId(publicListId);
+        verify(candidateService).getSavedListCandidates(any(SavedList.class), any(SavedListGetRequest.class));
+        verify(candidateBuilderSelector).selectBuilder(DtoType.PUBLIC_ID_ONLY);
+        verify(builder).buildPage(savedListCandidatesPage);
     }
 
 }
