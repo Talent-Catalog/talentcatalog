@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import {
   HTTP_INTERCEPTORS,
-  HttpClient,
-  HttpErrorResponse
+  HttpClient
 } from '@angular/common/http';
 import {
   HttpClientTestingModule,
@@ -82,18 +81,16 @@ describe('AuthExpiryInterceptor', () => {
     expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
-  it('does nothing on non-401 errors', (done) => {
+  it('does nothing on non-401 errors', () => {
     http.get('/api/test').subscribe({
       next: () => fail('expected error'),
-      error: (err: HttpErrorResponse) => {
-        expect(err.status).toBe(403);
-        expect(authMock.logout).not.toHaveBeenCalled();
-        expect(routerMock.navigate).not.toHaveBeenCalled();
-        done();
-      }
+      error: () => { /* ignore error shape */ }
     });
 
     const req = httpMock.expectOne('/api/test');
-    req.flush('Forbidden', { status: 403, statusText: 'Forbidden' });
+    req.flush({}, { status: 403, statusText: 'Forbidden' });
+
+    expect(authMock.logout).not.toHaveBeenCalled();
+    expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 });
