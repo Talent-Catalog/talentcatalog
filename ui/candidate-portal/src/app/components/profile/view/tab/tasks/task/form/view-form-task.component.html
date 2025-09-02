@@ -1,4 +1,8 @@
 <app-error [error]="error"></app-error>
-<ng-container *ngComponentOutlet="selectedForm">
+<ng-container *ngIf="selectedForm as cmp">
+  <ng-container
+    *ngComponentOutlet="cmp; injector: injector"
+    #outlet="ngComponentOutlet">
 
+  </ng-container>
 </ng-container>
