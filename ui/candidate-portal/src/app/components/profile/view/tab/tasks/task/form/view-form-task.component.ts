@@ -1,7 +1,9 @@
 import {
   Component,
+  EventEmitter,
   Input,
   OnChanges,
+  Output,
   SimpleChanges,
   Type,
   ViewChild,
@@ -26,6 +28,10 @@ export interface HasSubmitted<T = unknown> {
 })
 export class ViewFormTaskComponent implements OnChanges {
   @Input() selectedTask: TaskAssignment;
+
+  //Output event supplying the submitted data
+  @Output() taskCompleted = new EventEmitter<TaskAssignment>();
+
 
   //This refers to the #vc component in the template defined above in @Component
   @ViewChild('vc',{read: ViewContainerRef, static: true}) vc?: ViewContainerRef;
@@ -70,7 +76,6 @@ export class ViewFormTaskComponent implements OnChanges {
   }
 
   onSubmitted(data: any) {
-    console.log('ViewFormTaskComponent: submitted data: ' + JSON.stringify(data));
-    //todo This can complete the task - maybe emitting a task completed event
+    this.taskCompleted.emit(this.selectedTask);
   }
 }

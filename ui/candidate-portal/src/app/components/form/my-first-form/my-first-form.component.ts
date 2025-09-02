@@ -41,6 +41,14 @@ export class MyFirstFormComponent implements OnInit {
       city: ['', [Validators.required]],
       hairColour: ['', [Validators.required]]
     })
+
+    //Load the current form contents if any
+    this.error = null;
+    this.candidateFormService.createOrUpdateMyFirstForm({}).subscribe({
+      //this.form.reset is the best way to set form values in typed forms
+      next: myFirstFormData => this.form.reset(myFirstFormData),
+      error: err => this.error = err
+    })
   }
 
   //Check whether the form can be submitted - otherwise submit button can be disabled
