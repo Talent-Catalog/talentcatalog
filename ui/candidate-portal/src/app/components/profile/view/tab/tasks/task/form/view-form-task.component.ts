@@ -1,25 +1,35 @@
 import {
-  AfterViewInit,
   Component,
   Injector,
   Input,
   OnChanges,
   SimpleChanges,
-  ViewChild
+  Type,
+  ViewChild,
+  ViewContainerRef
 } from '@angular/core';
 import {TaskAssignment} from "../../../../../../../model/task-assignment";
 import {MyFirstFormComponent} from "../../../../../../form/my-first-form/my-first-form.component";
-import {NgComponentOutlet} from "@angular/common";
+
+/**
+ * Interface of any component which has an @Output() submitted EventEmitter
+ */
+export interface HasSubmitted<T = unknown> {
+  submitted: import("@angular/core").EventEmitter<T>;
+}
 
 @Component({
   selector: 'app-view-form-task',
-  templateUrl: './view-form-task.component.html',
+  template: `
+    <app-error [error]="error"></app-error>
+    <ng-template #vc></ng-template>`,
   styleUrls: ['./view-form-task.component.scss']
 })
-export class ViewFormTaskComponent implements AfterViewInit, OnChanges {
+export class ViewFormTaskComponent implements OnChanges {
   @Input() selectedTask: TaskAssignment;
 
-  @ViewChild('outlet',{read: NgComponentOutlet}) outlet?: NgComponentOutlet;
+  //This refers to the #vc component in the template defined above in @Component
+  @ViewChild('vc',{read: ViewContainerRef, static: true}) vc?: ViewContainerRef;
 
   error: string;
 
@@ -42,7 +52,8 @@ export class ViewFormTaskComponent implements AfterViewInit, OnChanges {
       let formName = task.candidateForm.name;
       let component =  this.componentMap[formName];
       if (component) {
-        this.error = null;
+        //If we have a valid component, add it into the html
+        this.load(component);
       } else {
         this.error = 'Angular ViewFormTaskComponent: No Component found matching Candidate Form '
           + formName + ', associated with Form Task ' + task.name
@@ -52,24 +63,13 @@ export class ViewFormTaskComponent implements AfterViewInit, OnChanges {
   }
 
   /**
-   * Returns the Angular component containing the form to be displayed.
-   * <p/>
-   * May return undefined/null in which case no component will be displayed.
+   * Loads a component which extends HasSubmitted into the template.
+   * @param cmp Component to be loaded into the html template.
    */
-  get selectedForm() {
-    let formName = this.selectedTask.task.candidateForm.name;
-    return this.componentMap[formName];
-  }
-
-  ngAfterViewInit(): void {
-    //todo - This is to subscribe to the submitted event of the form component
-    queueMicrotask( () => {
-        const ref = this.outlet?.componentRef;
-        const inst = ref?.instance as
-          {submitted?: import("@angular/core").EventEmitter<any>} | undefined;
-        inst?.submitted?.subscribe(v => this.onSubmitted(v));
-      }
-    )
+  load<C extends HasSubmitted>(cmp: Type<C>){
+    this.vc.clear();
+    const ref = this.vc.createComponent(cmp);
+    ref.instance.submitted.subscribe(v => this.onSubmitted(v));
   }
 
   onSubmitted(data: any) {
