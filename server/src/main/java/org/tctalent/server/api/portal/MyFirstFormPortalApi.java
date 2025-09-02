@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.MyFirstForm;
-import org.tctalent.server.request.form.MyFirstFormUpdateRequest;
+import org.tctalent.server.request.form.MyFirstFormData;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
 import org.tctalent.server.service.db.CandidateService;
@@ -49,7 +49,7 @@ public class MyFirstFormPortalApi {
 
     @PostMapping
     @NotNull
-    public Map<String, Object> createOrUpdate(@Valid @RequestBody MyFirstFormUpdateRequest request) {
+    public Map<String, Object> createOrUpdate(@Valid @RequestBody MyFirstFormData request) {
         Candidate candidate = getLoggedInCandidate();
         MyFirstForm form = this.formService.createOrUpdateMyFirstForm(candidate, request);
         return myFirstFormDto().build(form);

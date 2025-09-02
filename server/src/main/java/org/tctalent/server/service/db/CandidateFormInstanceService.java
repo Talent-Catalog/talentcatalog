@@ -19,7 +19,7 @@ package org.tctalent.server.service.db;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.MyFirstForm;
-import org.tctalent.server.request.form.MyFirstFormUpdateRequest;
+import org.tctalent.server.request.form.MyFirstFormData;
 
 /**
  * Manages instances of forms
@@ -36,5 +36,5 @@ public interface CandidateFormInstanceService {
      */
     @NonNull
     MyFirstForm createOrUpdateMyFirstForm(
-        @NonNull Candidate candidate, @NonNull MyFirstFormUpdateRequest request);
+        @NonNull Candidate candidate, @NonNull MyFirstFormData request);
 }

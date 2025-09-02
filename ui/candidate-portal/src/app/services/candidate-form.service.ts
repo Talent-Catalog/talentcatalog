@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {MyFirstForm, MyFirstFormUpdateRequest} from "../model/form";
+import {MyFirstFormData} from "../model/form";
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,8 @@ export class CandidateFormService {
 
   constructor(private http: HttpClient) { }
 
-  createOrUpdateMyFirstForm(request: MyFirstFormUpdateRequest): Observable<MyFirstForm> {
-    return this.http.post<MyFirstForm>(`${this.apiUrl}/my-first-form`, request);
+  createOrUpdateMyFirstForm(request: MyFirstFormData): Observable<MyFirstFormData> {
+    return this.http.post<MyFirstFormData>(`${this.apiUrl}/my-first-form`, request);
   }
 
 }

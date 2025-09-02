@@ -25,7 +25,7 @@ import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
 import org.tctalent.server.model.db.MyFirstForm;
 import org.tctalent.server.repository.db.MyFirstFormRepository;
-import org.tctalent.server.request.form.MyFirstFormUpdateRequest;
+import org.tctalent.server.request.form.MyFirstFormData;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
 import org.tctalent.server.service.db.CandidateFormService;
 
@@ -43,7 +43,7 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
 
     @Override
     public @NonNull MyFirstForm createOrUpdateMyFirstForm(
-        @NonNull Candidate candidate, @NonNull MyFirstFormUpdateRequest request) {
+        @NonNull Candidate candidate, @NonNull MyFirstFormData request) {
 
         //Get form template
         CandidateForm candidateForm = candidateFormService.getByName("MyFirstForm");
