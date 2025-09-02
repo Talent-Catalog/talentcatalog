@@ -1,6 +1,5 @@
 import {
   Component,
-  Injector,
   Input,
   OnChanges,
   SimpleChanges,
@@ -31,6 +30,7 @@ export class ViewFormTaskComponent implements OnChanges {
   //This refers to the #vc component in the template defined above in @Component
   @ViewChild('vc',{read: ViewContainerRef, static: true}) vc?: ViewContainerRef;
 
+  //Used to record errors in mapping the form name to an Angular component.
   error: string;
 
   /*
@@ -39,9 +39,6 @@ export class ViewFormTaskComponent implements OnChanges {
    */
   componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent
-  }
-
-  constructor(public injector: Injector) {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
