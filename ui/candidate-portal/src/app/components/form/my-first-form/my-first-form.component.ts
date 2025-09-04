@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CandidateFormService} from "../../../services/candidate-form.service";
 import {MyFirstFormData} from "../../../model/form";
@@ -13,6 +13,9 @@ MODEL: Best practice Angular form
   styleUrls: ['./my-first-form.component.scss']
 })
 export class MyFirstFormComponent implements OnInit {
+  //When present and true, the form can't be modified or submitted
+  @Input() readonly = false;
+
   //Output event supplying the submitted data
   @Output() submitted = new EventEmitter<MyFirstFormData>();
 
@@ -47,7 +50,7 @@ export class MyFirstFormComponent implements OnInit {
     this.candidateFormService.getMyFirstForm().subscribe({
       //this.form.reset is the best way to set form values in typed forms
       next: myFirstFormData => this.form.reset(myFirstFormData),
-      error: err => {
+      error: () => {
         //There will be an error if the form does not yet exist. The form can be blank.
         this.form.reset();
       }
@@ -57,7 +60,7 @@ export class MyFirstFormComponent implements OnInit {
   //Check whether the form can be submitted - otherwise submit button can be disabled
   canSubmit(): boolean {
     //Pending is true while validators are running
-    return this.form.valid && !this.form.pending && !this.submitting;
+    return this.form.valid && !this.form.pending && !this.submitting && !this.readonly;
   }
 
   /**
@@ -67,7 +70,7 @@ export class MyFirstFormComponent implements OnInit {
    */
   hasError(ctrlName: keyof MyFirstFormData, validationName: string): boolean {
     const c = this.form.get(ctrlName);
-    return !!c && c.touched && c.hasError(validationName);
+    return !this.readonly && !!c && c.touched && c.hasError(validationName);
   }
 
   onSubmit(): void {
