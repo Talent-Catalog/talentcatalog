@@ -826,7 +826,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   displayTextMatchRank(): boolean {
-    return this.isSavedSearch() && this.pgOnlySqlSearch && this.showTextMatchRank;
+    return this.isSavedSearch() && !this.useOldSearch && this.showTextMatchRank;
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
