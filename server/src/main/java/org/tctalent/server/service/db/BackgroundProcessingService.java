@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.PageContext;
 
@@ -25,16 +24,6 @@ import org.tctalent.server.util.background.PageContext;
  * Service for creating background processors
  */
 public interface BackgroundProcessingService {
-
-  /**
-   * Creates a back processor to handle TC -> SF sync of active candidates. Page processing is
-   * delegated to {@link CandidateService#processSfCandidateSyncPage(long, List)}, which enables
-   * creation of a user session with Spring's @Transactional annotation, which doesn't work if
-   * annotated method is called by another method in the same class.
-   */
-  BackProcessor<PageContext> createSfSyncBackProcessor(
-      List<CandidateStatus> statuses, long totalNoOfPages
-  );
 
   /**
    * Creates a back processor to handle processing of potential duplicate candidates.
