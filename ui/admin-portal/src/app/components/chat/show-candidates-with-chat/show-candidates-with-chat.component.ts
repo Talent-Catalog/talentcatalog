@@ -82,7 +82,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   protected allChats: JobChat[] = [];
 
   /**
-   * Map of candidate id to chat
+   * Map of candidate id to array of chat(s)
    */
   protected candidateChats: Map<number, JobChat[]> = new Map<number, JobChat[]>();
 
@@ -209,11 +209,23 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   }
 
   /**
-   * Stores each candidate chat in this.candidateChats, indexed by the candidate id.
-   * This can be accessed by {@link getCandidateChat}.
-   * <p/>
-   * It also puts chats for all candidates into this.allChats.
-   * @param chatByCandidate chat for each candidate
+   * Initialises the `candidateChats` map with one array of chat(s) per candidate, keyed by
+   * candidate ID.
+   *
+   * Currently this component only handles Candidate Prospect chats, of which there will only ever
+   * be one per candidate.
+   *
+   * The array wrapper is required by the read-status component, so that it can handle multiple
+   * chats when required.
+   *
+   * Arrays are created eagerly (instead of lazily on lookup) so their references remain stable.
+   * This allows downstream consumers to compare array identity and avoid unnecessary actions.
+   *
+   * The map is accessed by {@link getCandidateChat}.
+   *
+   * In addition, this method populates {@link allChats} with every chat across all candidates.
+   *
+   * @param chatByCandidate the list of chats, aligned by index with {@link candidates}
    */
   protected processCandidateChats(chatByCandidate: JobChat[]) {
     //Recalculate all chats for new candidates
