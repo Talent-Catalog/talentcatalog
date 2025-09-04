@@ -32,9 +32,11 @@ export class ViewFormTaskComponent implements OnChanges {
   //Output event supplying the submitted data
   @Output() taskCompleted = new EventEmitter<TaskAssignment>();
 
-
   //This refers to the #vc component in the template defined above in @Component
   @ViewChild('vc',{read: ViewContainerRef, static: true}) vc?: ViewContainerRef;
+
+  //Name of the currently loaded form. Used to avoid reloading a form that is already loaded.
+  currentlyLoadedFormName: string = null;
 
   //Used to record errors in mapping the form name to an Angular component.
   error: string;
@@ -54,9 +56,10 @@ export class ViewFormTaskComponent implements OnChanges {
       let task = this.selectedTask.task;
       let formName = task.candidateForm.name;
       let component =  this.componentMap[formName];
-      if (component) {
-        //If we have a valid component, add it into the html
+      if (component && formName != this.currentlyLoadedFormName) {
+        //If we have a valid component which is not already loaded into the html, add it to the html
         this.load(component);
+        this.currentlyLoadedFormName = formName;
       } else {
         this.error = 'Angular ViewFormTaskComponent: No Component found matching Candidate Form '
           + formName + ', associated with Form Task ' + task.name
@@ -75,7 +78,7 @@ export class ViewFormTaskComponent implements OnChanges {
     ref.instance.submitted.subscribe(v => this.onSubmitted(v));
   }
 
-  onSubmitted(data: any) {
+  onSubmitted() {
     this.taskCompleted.emit(this.selectedTask);
   }
 }
