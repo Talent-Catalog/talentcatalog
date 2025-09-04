@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.Optional;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.MyFirstForm;
@@ -37,4 +38,7 @@ public interface CandidateFormInstanceService {
     @NonNull
     MyFirstForm createOrUpdateMyFirstForm(
         @NonNull Candidate candidate, @NonNull MyFirstFormData request);
+
+    @NonNull
+    Optional<MyFirstForm> getMyFirstForm(@NonNull Candidate candidate);
 }

@@ -44,10 +44,13 @@ export class MyFirstFormComponent implements OnInit {
 
     //Load the current form contents if any
     this.error = null;
-    this.candidateFormService.createOrUpdateMyFirstForm({}).subscribe({
+    this.candidateFormService.getMyFirstForm().subscribe({
       //this.form.reset is the best way to set form values in typed forms
       next: myFirstFormData => this.form.reset(myFirstFormData),
-      error: err => this.error = err
+      error: err => {
+        //There will be an error if the form does not yet exist. The form can be blank.
+        this.form.reset();
+      }
     })
   }
 

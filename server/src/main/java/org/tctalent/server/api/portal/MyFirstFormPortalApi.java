@@ -20,11 +20,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.MyFirstForm;
 import org.tctalent.server.request.form.MyFirstFormData;
@@ -33,11 +35,6 @@ import org.tctalent.server.service.db.CandidateFormInstanceService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @RestController
 @RequestMapping("/api/portal/form/my-first-form")
 @RequiredArgsConstructor
@@ -51,7 +48,16 @@ public class MyFirstFormPortalApi {
     @NotNull
     public Map<String, Object> createOrUpdate(@Valid @RequestBody MyFirstFormData request) {
         Candidate candidate = getLoggedInCandidate();
-        MyFirstForm form = this.formService.createOrUpdateMyFirstForm(candidate, request);
+        MyFirstForm form = formService.createOrUpdateMyFirstForm(candidate, request);
+        return myFirstFormDto().build(form);
+    }
+
+    @GetMapping
+    @NotNull
+    public Map<String, Object> get() {
+        Candidate candidate = getLoggedInCandidate();
+        MyFirstForm form = formService.getMyFirstForm(candidate)
+            .orElseThrow(() -> new NoSuchObjectException("No MyFirstForm found"));
         return myFirstFormDto().build(form);
     }
 

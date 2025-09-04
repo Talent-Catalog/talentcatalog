@@ -16,4 +16,8 @@ export class CandidateFormService {
     return this.http.post<MyFirstFormData>(`${this.apiUrl}/my-first-form`, request);
   }
 
+  getMyFirstForm(): Observable<MyFirstFormData> {
+    return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
+  }
+
 }

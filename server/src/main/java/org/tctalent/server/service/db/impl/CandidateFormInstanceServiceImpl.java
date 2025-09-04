@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -45,19 +46,14 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
     public @NonNull MyFirstForm createOrUpdateMyFirstForm(
         @NonNull Candidate candidate, @NonNull MyFirstFormData request) {
 
-        //Get form template
-        CandidateForm candidateForm = candidateFormService.getByName("MyFirstForm");
-
-        //Construct the instance key
-        CandidateFormInstanceKey key =
-            new CandidateFormInstanceKey(candidate.getId(), candidateForm.getId());
+        final CandidateFormInstanceKey key = computeMyFirstFormKey(candidate);
 
         //Check if form instance exists and retrieve if it does.
         MyFirstForm form = myFirstFormRepository.findById(key).orElse(null);
         if (form == null) {
             form = new MyFirstForm();
             form.setId(key);
-            form.setCandidateForm(candidateForm);
+            form.setCandidateForm(getMyFirstForm());
             form.setCandidate(candidate);
             form.setCreatedDate(OffsetDateTime.now());
         } else {
@@ -68,5 +64,24 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
         form.setHairColour(request.getHairColour());
 
         return myFirstFormRepository.save(form);
+    }
+
+    @Override
+    @NonNull
+    public Optional<MyFirstForm> getMyFirstForm(@NonNull Candidate candidate) {
+        //Construct the instance key
+        CandidateFormInstanceKey key = computeMyFirstFormKey(candidate);
+
+        //Check if form instance exists and retrieve if it does.
+        return myFirstFormRepository.findById(key);
+    }
+
+    private CandidateForm getMyFirstForm() {
+        return candidateFormService.getByName("MyFirstForm");
+    }
+
+    private CandidateFormInstanceKey computeMyFirstFormKey(@NonNull Candidate candidate) {
+        CandidateForm candidateForm = getMyFirstForm();
+        return new CandidateFormInstanceKey(candidate.getId(), candidateForm.getId());
     }
 }
