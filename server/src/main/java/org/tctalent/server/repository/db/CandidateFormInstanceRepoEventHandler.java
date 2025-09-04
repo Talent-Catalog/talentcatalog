@@ -63,6 +63,9 @@ public class CandidateFormInstanceRepoEventHandler {
         //Add instance with the currently logged in candidate if the instance doesn't have a candidate
         if (candidateFormInstance.getCandidate() == null) {
             Candidate candidate = getLoggedInCandidate();
+
+            //TODO JC Copy any pendingCandidate contents across to the candidate
+
             candidateFormInstance.setCandidate(candidate);
         }
 

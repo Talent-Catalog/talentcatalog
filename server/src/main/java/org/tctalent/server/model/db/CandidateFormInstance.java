@@ -140,30 +140,10 @@ public class CandidateFormInstance {
             //Note that workingCandidate may not be a true entity.
             //It may be pendingCandidate. In that case it doesn't matter because in that
             //case these properties are just temporary holders of the values.
-            //TODO JC Refer to where this is done. It will be in a BeforeSave event.
+            //TODO JC Refer to CandidateFormInstanceRepoEventhandler where this is done. It is in the BeforeSave event.
             //At that point a real candidate entity will be fetched and set as the candidate.
             //Then pendingCandidate and all its candidateProperties will be copied to the
             //real candidate entity.
-            /* todo Registering BeforeSave. Should be able to register CandidateFormInstance.class
-            which will cover all subclasses according to ChatGPT.
-
-@Component
-@RepositoryEventHandler(Base.class)  // <-- base class
-public class BaseEvents {
-
-  @HandleBeforeCreate
-  public void beforeCreate(Base aggregate) {
-    // runs for Base and (practically) its subclasses exposed by SDR
-  }
-
-  @HandleBeforeSave
-  public void beforeSave(Base aggregate) {  }
-
-        @HandleBeforeDelete
-        public void beforeDelete(Base aggregate) {  }
-    }
-
-             */
             property.setCandidate(workingCandidate);
         }
         property.setValue(value);
