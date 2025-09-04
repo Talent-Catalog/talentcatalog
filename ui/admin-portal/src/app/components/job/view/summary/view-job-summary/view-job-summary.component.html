@@ -21,7 +21,7 @@
 
   <div class="mb-3 flex-fill" [appReadOnlyInputs]="!editable">
     <label class="form-label" for="jobSummary">
-    <span class="me-2 font-weight-normal" [ngClass]="{'alert alert-danger': highlight}">
+    <span class="paragraph-sm text-color-secondary" [ngClass]="{'alert alert-danger': highlight}">
       Job Summary
       <app-autosave-status
         [saving]="saving"

@@ -22,20 +22,57 @@
 </div>
 
 <div class="searches" *ngIf="searchBy">
+  <div class="position-relative">
+    <tc-button size="sm" type="outline" (click)="refresh($event)" class="position-absolute end-0">
+      Refresh
+      <i class="fas fa-sync" title="Refresh data"></i>
+    </tc-button>
+  </div>
+
   <form [formGroup]="searchForm" (ngSubmit)="search()">
-    <div class="row mb-3">
-      <div class="col-10">
-        <input #searchFilter type="text" class="form-control" placeholder="Search..."
-               aria-label="Search" formControlName="keyword"
-               id="keyword">
-      </div>
-      <div class="col-2">
-        <button class="btn btn-sm btn-accent-3" (click)="refresh($event)">
-          Refresh
-          <i class="fas fa-sync" title="Refresh data"></i>
-        </button>
-      </div>
-    </div>
+    <tc-fieldset>
+      <tc-field>
+        <tc-label for="keyword">
+          Job Search
+        </tc-label>
+        <tc-description>Search the list of available jobs for candidates</tc-description>
+        <tc-input #searchFilter id="keyword" placeholder="Job Name" ariaLabel="Search"></tc-input>
+      </tc-field>
+
+      <tc-field>
+        <tc-label for="stage">Stage</tc-label>
+        <tc-description>Select the step in the partner engagement process</tc-description>
+        <ng-select
+          id="stage"
+          class="tc-select"
+          [items]="stages"
+          [multiple]="true"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="stringValue"
+          bindValue="key"
+          placeholder="Select..."
+          formControlName="selectedStages">
+        </ng-select>
+      </tc-field>
+
+      <tc-field *ngIf="needsFilterByDestination()">
+        <tc-label for="destination">Destination Country</tc-label>
+        <ng-select
+          id="destinations"
+          class="tc-select"
+          [items]="destinations"
+          [multiple]="true"
+          [closeOnSelect]="true"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          bindValue="id"
+          formControlName="destinationIds">
+        </ng-select>
+      </tc-field>
+    </tc-fieldset>
+
 
     <div *ngIf="searchBy === SearchOppsBy.mineAsJobCreator ||
                 searchBy === SearchOppsBy.mineAsSourcePartner" class="my-2">
@@ -87,36 +124,6 @@
         <div class="col-md-5">
         </div>
       </div>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Stage</label>
-      <ng-select
-        id="stage"
-        [items]="stages"
-        [multiple]="true"
-        [closeOnSelect]="true"
-        [searchable]="false"
-        bindLabel="stringValue"
-        bindValue="key"
-        placeholder="Select..."
-        formControlName="selectedStages">
-      </ng-select>
-    </div>
-
-<div *ngIf="needsFilterByDestination()" class="mb-3">
-      <label class="form-label">Destination Country</label>
-      <ng-select
-        id="destinations"
-        [items]="destinations"
-        [multiple]="true"
-        [closeOnSelect]="true"
-        [searchable]="true"
-        placeholder="Select or type..."
-        bindLabel="name"
-        bindValue="id"
-        formControlName="destinationIds">
-      </ng-select>
     </div>
   </form>
 </div>
@@ -170,7 +177,9 @@
         </a>
       </td>
       <td title="{{getCandidateOpportunityStageName(opp)}}">
-        {{getCandidateOpportunityStageName(opp) | truncate: 15}}
+        <tc-badge [color]="getBadgeColor(opp)">
+          {{getCandidateOpportunityStageName(opp) | truncate: 15}}
+        </tc-badge>
       </td>
       <td title="Contact {{fullUserName(opp.contactUser)}}">
         {{opp.createdDate | date}}
