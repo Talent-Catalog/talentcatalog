@@ -16,14 +16,22 @@
 
 package org.tctalent.server.integration.repo;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveCandidate;
+import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveUser;
+import static org.tctalent.server.integration.helper.TestDataFactory.createCandidateCertification;
+
 import java.io.IOException;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
+import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
 import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
@@ -32,17 +40,10 @@ import org.tctalent.server.repository.db.CandidateCertificationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.UserRepository;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveCandidate;
-import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveUser;
-import static org.tctalent.server.integration.helper.TestDataFactory.createCandidateCertification;
-
 /**
  * Integration tests for CandidateCertificationRepository, verifying certification retrieval and association with candidates.
  */
-public class CandidateCertificationRepositoryIntegrationTest extends BaseDBIntegrationTest {
+public class CandidateCertificationRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired
   private CandidateCertificationRepository certificationRepository;

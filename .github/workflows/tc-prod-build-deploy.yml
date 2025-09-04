@@ -39,5 +39,9 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew server:build # We won't run the perf tests here
+        env:
+          GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
+          GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
+          SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
       - name: Deploy with Jib
         run: ./gradlew jib -Pprod-tc-system

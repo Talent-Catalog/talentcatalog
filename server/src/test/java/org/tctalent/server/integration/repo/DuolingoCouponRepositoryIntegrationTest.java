@@ -16,13 +16,24 @@
 
 package org.tctalent.server.integration.repo;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveAssignedDuolingoCoupon;
+import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveCandidate;
+import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveUnassignedDuolingoCoupon;
+import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveUser;
+
 import java.io.IOException;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
+import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
 import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
@@ -33,19 +44,10 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.repository.db.UserRepository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveAssignedDuolingoCoupon;
-import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveCandidate;
-import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveUnassignedDuolingoCoupon;
-import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveUser;
-
 /**
  * Integration tests for DuolingoCouponRepository, verifying coupon retrieval, existence, and counting functionality.
  */
-public class DuolingoCouponRepositoryIntegrationTest extends BaseDBIntegrationTest {
+public class DuolingoCouponRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired
   private DuolingoCouponRepository couponRepository;

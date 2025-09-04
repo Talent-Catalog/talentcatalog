@@ -41,7 +41,10 @@ jobs:
 
       - name: Build and Run tests
         run: ./gradlew server:build
-
+        env:
+          GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
+          GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
+          SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
       - name: Upload test report on failure
         if: failure()
         uses: actions/upload-artifact@v4

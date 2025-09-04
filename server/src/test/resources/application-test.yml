@@ -1,0 +1,23 @@
+spring:
+  cache:
+    type: none
+  data:
+    redis:
+      host: none
+      port: 0
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+jwt:
+  secret: RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==
+  # This equates to 24 hours in milliseconds
+  expirationInMs: 86400000
+
+google:
+  drive:
+    privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:}
+    privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:}
+
+salesforce:
+  privatekey: ${SF_PRIVATE_KEY:}
