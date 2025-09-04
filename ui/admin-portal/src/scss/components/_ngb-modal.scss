@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,30 +13,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import '../color-mixins';
 
-$white: #ffffff;
-$light:      #f3f0e6;
-$dark:       #151f2d;
-$primary: #1c4679;
-$secondary: #0e7688;
-$info: #9b6a0d;
-$accent1:    #383b48;
-$accent2:    #64656d;
-$accent3:    #b2b7bb;
-$success: #03864d;
-$warning: #b0a007;
-$highlight: #ffff00;
-$danger: #a91206;
+// Set opacity of modal background
+.modal-backdrop.show {
+  opacity: 0.9;
+  @include background-color-light;
+}
 
-// Bootstrap SCSS variable overrides
-// Accordion
-$accordion-button-bg: $accent3;
-$accordion-border-color: $light;
-$accordion-button-active-bg: $accent1;
-$accordion-button-active-color: $light;
-
-// Nav tabs
-$nav-link-padding-x: 0.75rem;
-
-$offcanvas-horizontal-width: 40vw;
-
+.modal-content {
+  border: 1px solid;
+  @include border-color-base;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%);
+}

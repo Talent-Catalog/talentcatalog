@@ -55,8 +55,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
   styleUrls: ['./tc-modal.component.scss']
 })
 export class TcModalComponent {
-  @Input() title: string = 'Heading of the Modal';
-  @Input() actionText: string = 'Action Button';
+  @Input() title: string;
+  @Input() actionText: string = 'Save';
   @Input() disableAction: boolean = false;
   @Input() showCancel: boolean = true;
   @Input() icon: string;

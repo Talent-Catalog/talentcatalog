@@ -22,6 +22,7 @@
 .tc-modal-title {
   @include text-color-body();
   @include paragraph-lg();
+  padding-bottom: 12px;
 }
 
 .tc-modal-body {
