@@ -47,14 +47,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Saved Search Candidate Admin Api endpoints
@@ -79,17 +77,11 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
       );
 
   @MockBean
-  CandidateOpportunityService candidateOpportunityService;
-  @MockBean
-  CountryService countryService;
-  @MockBean
-  OccupationService occupationService;
-  @MockBean
   SavedSearchService savedSearchService;
   @MockBean
   CandidateService candidateService;
   @MockBean
-  UserService userService;
+  CandidateBuilderSelector candidateBuilderSelector;
 
   @Autowired
   MockMvc mockMvc;
@@ -101,6 +93,14 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   @BeforeEach
   void setUp() {
     configureAuthentication();
+
+    // Minimal builder for Candidate
+    DtoBuilder candidateDto = new DtoBuilder()
+        .add("id")
+        .add("selected")
+        .add("status");
+
+    given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
   }
 
   @Test

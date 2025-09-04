@@ -23,6 +23,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.HasSetOfSavedListsImpl;
@@ -50,14 +51,14 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * Candidate's.
  *
  */
-@RestController()
+@RestController
 @RequestMapping("/api/admin/candidate-saved-list")
 @RequiredArgsConstructor
 public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedListRequest, HasSetOfSavedListsImpl> {
 
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
-    private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
+    private final SavedListBuilderSelector builderSelector;
 
     @Override
     public void replace(long candidateId, @Valid HasSetOfSavedListsImpl request)

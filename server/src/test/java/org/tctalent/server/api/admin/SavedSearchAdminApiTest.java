@@ -46,12 +46,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedList;
@@ -75,7 +78,6 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 
 /**
  * Unit tests for Saved Search Admin Api endpoints
@@ -85,6 +87,7 @@ import org.tctalent.server.service.db.UserService;
 
 @WebMvcTest(SavedSearchAdminApi.class)
 @AutoConfigureMockMvc
+@Import({SavedListBuilderSelector.class, ExportColumnsBuilderSelector.class})
 class SavedSearchAdminApiTest extends ApiTestBase {
 
   private static final long SAVED_SEARCH_ID = 123L;
@@ -127,12 +130,6 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   SavedListService savedListService;
   @MockBean
   SavedSearchService savedSearchService;
-  @MockBean
-  UserService userService;
-  @MockBean
-  SavedListBuilderSelector savedListBuilderSelector;
-  @MockBean
-  ExportColumnsBuilderSelector exportColumnsBuilderSelector;
 
   @Autowired
   MockMvc mockMvc;

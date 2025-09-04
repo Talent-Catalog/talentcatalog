@@ -14,21 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.api.dto;
 
-import org.tctalent.server.util.dto.DtoBuilder;
-
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
-public class SystemLanguageDtoBuilder extends DtoBuilder {
-
-    public SystemLanguageDtoBuilder() {
-        this.add("id")
-            .add("language")
-            .add("label")
-            .add("rtl");
-    }
+public enum DtoType {
+  PUBLIC_ID_ONLY,
+  MINIMAL,
+  PREVIEW,
+  FULL,
+  EXTENDED,
+  API
 }

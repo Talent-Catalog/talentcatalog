@@ -19,7 +19,7 @@ package org.tctalent.server.model.db;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.tctalent.server.api.admin.DtoType;
+import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.UploadTask;
