@@ -33,7 +33,11 @@ import {EnumOption} from "../../../util/enum";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
-import {getOpportunityStageName, Opportunity, OpportunityOwnershipType} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  Opportunity,
+  OpportunityOwnershipType
+} from "../../../model/opportunity";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
@@ -546,7 +550,9 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private subscribeToAllVisibleChats() {
     this.unsubscribe();
     //Construct a single observable for all visible chat's read statuses, and subscribe to it
-    const chatReadStatus$ = this.chatService.combineChatReadStatuses(this.allChats);
+    const chatReadStatus$ =
+      this.chatService.combineChatReadStatuses(this.allChats)
+      .pipe(distinctUntilChanged());
     console.log("Subscribed to chats " + this.allChats.map( chat => chat.id).join(','));
     this.subscription = chatReadStatus$.subscribe(
       {
