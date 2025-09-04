@@ -13,11 +13,17 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-// todo remove from code
-// todo maybe see how hiba has done ng-select and create _modal.scss global file where I can overwrite the modal css (background, box shadow etc) without using sass variables.
-<tc-modal title="Add Language"
-          [disableAction]="candidateForm.invalid || loading || saving"
-          (onAction)="onSave()">
+
+<div class="modal-header">
+
+  <h4 class="modal-title">Add Language</h4>
+
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
+
+</div>
+
+<div class="modal-body">
+
   <div *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
   </div>
@@ -49,61 +55,16 @@
         <ng-select id="writtenLevelId" name="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels"
                    [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSave()"
+                [disabled]="candidateForm.invalid || loading || saving">
+          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+          Save
+        </button>
+      </div>
     </form>
+
   </div>
-</tc-modal>
-
-<!--<div class="modal-header">-->
-
-<!--  <h4 class="modal-title">Add Language</h4>-->
-
-<!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>-->
-
-<!--</div>-->
-
-<!--<div class="modal-body">-->
-
-<!--  <div *ngIf="loading">-->
-<!--    <i class="fas fa-spinner fa-spin"></i>-->
-<!--  </div>-->
-
-<!--  <div *ngIf="!loading">-->
-<!--    <div class="alert alert-danger" *ngIf="error">-->
-<!--      {{error}}-->
-<!--    </div>-->
-
-<!--    <form [formGroup]="candidateForm">-->
-
-<!--      &lt;!&ndash; LANGUAGE TYPE &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="languageId">Language:</label>-->
-<!--        <ng-select id="languageId" name="languageId" [formControlName]="'languageId'" [items]="languages"-->
-<!--                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; SPOKEN LEVEL &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="spokenLevelId">Speaking:</label>-->
-<!--        <ng-select id="spokenLevelId" name="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels"-->
-<!--                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; SPOKEN LEVEL &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="writtenLevelId">Reading and Writing:</label>-->
-<!--        <ng-select id="writtenLevelId" name="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels"-->
-<!--                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>-->
-<!--      </div>-->
-
-
-<!--      <div class="modal-footer">-->
-<!--        <button type="button" class="btn btn-primary" (click)="onSave()"-->
-<!--                [disabled]="candidateForm.invalid || loading || saving">-->
-<!--          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>-->
-<!--          Save-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </form>-->
-
-<!--  </div>-->
-<!--</div>-->
+</div>
