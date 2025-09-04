@@ -1,0 +1,38 @@
+@import "../../../../scss/color-mixins";
+@import "../../../../scss/typography-mixins";
+
+.tc-modal {
+  margin: 25px;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  &.has-icon {
+    text-align: center;
+    i {
+      @include text-color-primary();
+    }
+  }
+  &.no-icon {
+    .tc-modal-footer {
+      text-align: end;
+    }
+  }
+}
+
+.tc-modal-title {
+  @include text-color-body();
+  @include paragraph-lg();
+  padding-bottom: 12px;
+}
+
+.tc-modal-body {
+  @include paragraph-md();
+  @include text-color-secondary();
+}
+
+.tc-modal-footer {
+  margin-top: 24px;
+  > tc-button:first-child {
+    margin-right: 12px;
+  }
+}

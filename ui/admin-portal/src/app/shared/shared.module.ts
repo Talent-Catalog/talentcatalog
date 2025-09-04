@@ -42,6 +42,7 @@ import {
 import {
   DescriptionTermComponent
 } from './components/description-list/description-term/description-term.component';
+import {TcModalComponent} from './components/modal/tc-modal.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import {
     BadgeComponent,
     DescriptionListComponent,
     DescriptionDetailsComponent,
-    DescriptionTermComponent
+    DescriptionTermComponent,
+    TcModalComponent
   ],
   imports: [
     CommonModule,
@@ -88,6 +90,7 @@ import {
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    TcModalComponent
   ]
 })
 export class SharedModule { }
