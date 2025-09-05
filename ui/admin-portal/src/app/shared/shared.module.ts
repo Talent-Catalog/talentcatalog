@@ -32,16 +32,13 @@ import {FieldComponent} from './components/fieldset/field/field.component';
 import {LabelComponent} from './components/fieldset/label/label.component';
 import {DescriptionComponent} from './components/fieldset/description/description.component';
 import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
-import { TextareaComponent } from './components/textarea/textarea.component';
+import {TextareaComponent} from './components/textarea/textarea.component';
 import {BadgeComponent} from './components/badge/badge.component';
 
 import {DescriptionListComponent} from './components/description-list/description-list.component';
 import {
-  DescriptionDetailsComponent
-} from './components/description-list/description-details/description-details.component';
-import {
-  DescriptionTermComponent
-} from './components/description-list/description-term/description-term.component';
+  DescriptionItemComponent
+} from './components/description-list/description-item/description-item.component';
 
 @NgModule({
   declarations: [
@@ -61,33 +58,31 @@ import {
     TcTabContentComponent,
     BadgeComponent,
     DescriptionListComponent,
-    DescriptionDetailsComponent,
-    DescriptionTermComponent
+    DescriptionItemComponent
   ],
   imports: [
     CommonModule,
     NgbPaginationModule,
     NgbNavModule
   ],
-  exports: [
-    ButtonComponent,
-    TcTableComponent,
-    TcPaginationComponent,
-    InputComponent,
-    FieldComponent,
-    FieldsetComponent,
-    LabelComponent,
-    DescriptionComponent,
-    ErrorMessageComponent,
-    TextareaComponent,
-    TcTabsComponent,
-    TcTabComponent,
-    TcTabHeaderComponent,
-    TcTabContentComponent,
-    BadgeComponent,
-    DescriptionListComponent,
-    DescriptionDetailsComponent,
-    DescriptionTermComponent,
-  ]
+    exports: [
+        ButtonComponent,
+        TcTableComponent,
+        TcPaginationComponent,
+        InputComponent,
+        FieldComponent,
+        FieldsetComponent,
+        LabelComponent,
+        DescriptionComponent,
+        ErrorMessageComponent,
+        TextareaComponent,
+        TcTabsComponent,
+        TcTabComponent,
+        TcTabHeaderComponent,
+        TcTabContentComponent,
+        BadgeComponent,
+        DescriptionListComponent,
+        DescriptionItemComponent,
+    ]
 })
 export class SharedModule { }
