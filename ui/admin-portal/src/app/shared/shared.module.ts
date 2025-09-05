@@ -17,7 +17,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {NgbInputDatepicker, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbInputDatepicker,NgbAlert, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -42,6 +42,7 @@ import {
 import {
   DescriptionTermComponent
 } from './components/description-list/description-term/description-term.component';
+import {AlertComponent} from './components/alert/alert.component';
 import {
   TcDateRangePickerComponent
 } from './components/date-range-picker/tc-date-range-picker.component'
@@ -66,14 +67,14 @@ import {
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    AlertComponent,
     TcDateRangePickerComponent
   ],
   imports: [
     CommonModule,
     NgbPaginationModule,
     NgbNavModule,
-    NgbInputDatepicker,
-    NgbInputDatepicker,
+    NgbAlert,
     NgbInputDatepicker
   ],
   exports: [
@@ -95,6 +96,7 @@ import {
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    AlertComponent,
     TcDateRangePickerComponent
   ]
 })
