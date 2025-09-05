@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,20 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.task;
-
-import org.tctalent.server.model.db.TaskImpl;
-
-/**
- * Different kind of tasks.
- * <p/>
- * See {@link TaskImpl#getTaskType()} for explanation of the need for this enum.
- *
- * @author John Cameron
- */
-public enum TaskType {
-    Form,
-    Question,
-    Simple,
-    Upload
+export interface MyFirstFormData {
+  city?: string;
+  hairColour?: string;
 }
