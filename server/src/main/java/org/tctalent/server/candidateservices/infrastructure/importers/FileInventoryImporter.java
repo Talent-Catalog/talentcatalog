@@ -20,5 +20,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
 
 public interface FileInventoryImporter {
+
+  /**
+   * Imports service resources e.g. Duolingo coupons from a file.
+   * <p/>
+   * This method processes a file containing service resource data (e.g. coupon codes)
+   * and adds the resources to the database. It is useful for bulk importing coupons.
+   *
+   * @param file the MultipartFile representing the file to import.
+   */
   void importFile(MultipartFile file) throws ImportFailedException;
 }
