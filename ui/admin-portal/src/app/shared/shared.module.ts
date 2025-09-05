@@ -37,12 +37,6 @@ import {BadgeComponent} from './components/badge/badge.component';
 
 import {DescriptionListComponent} from './components/description-list/description-list.component';
 import {
-  DescriptionDetailsComponent
-} from './components/description-list/description-details/description-details.component';
-import {
-  DescriptionTermComponent
-} from './components/description-list/description-term/description-term.component';
-import {
   DescriptionItemComponent
 } from './components/description-list/description-item/description-item.component';
 
@@ -64,8 +58,6 @@ import {
     TcTabContentComponent,
     BadgeComponent,
     DescriptionListComponent,
-    DescriptionDetailsComponent,
-    DescriptionTermComponent,
     DescriptionItemComponent
   ],
   imports: [
@@ -90,8 +82,6 @@ import {
         TcTabContentComponent,
         BadgeComponent,
         DescriptionListComponent,
-        DescriptionDetailsComponent,
-        DescriptionTermComponent,
         DescriptionItemComponent,
     ]
 })
