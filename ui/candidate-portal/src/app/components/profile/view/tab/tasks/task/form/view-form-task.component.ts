@@ -59,7 +59,11 @@ export class ViewFormTaskComponent implements OnChanges {
       if (component) {
         if (formName != this.currentlyLoadedFormName) {
           //We have a valid component which is not already loaded into the html. Add it.
-          this.load(component);
+
+          //If the task is completed or abandoned, then the component should be read only.
+          let readOnly = this.selectedTask.completedDate != null
+            || this.selectedTask.abandonedDate != null;
+          this.load(component, {readonly: readOnly});
           this.currentlyLoadedFormName = formName;
         }
       } else {
@@ -73,11 +77,21 @@ export class ViewFormTaskComponent implements OnChanges {
   /**
    * Loads a component which extends HasSubmitted into the template.
    * @param cmp Component to be loaded into the html template.
+   * @param opts The component should have a readOnly Input.
    */
-  load<C extends HasSubmitted>(cmp: Type<C>){
+  load<C extends HasSubmitted>(cmp: Type<C>, opts: {readonly?: boolean}){
     this.vc.clear();
     const ref = this.vc.createComponent(cmp);
+
+    //Set the readonly input
+    if (opts.readonly !== undefined) {
+      ref.setInput('readonly', opts.readonly);
+    }
+
+    //Subscribe for submitted events
     ref.instance.submitted.subscribe(() => this.onSubmitted());
+
+
   }
 
   onSubmitted() {
