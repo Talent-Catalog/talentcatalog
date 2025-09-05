@@ -14,12 +14,12 @@ MODEL: Best practice Angular form
 })
 export class MyFirstFormComponent implements OnInit {
   //When present and true, the form can't be modified or submitted
-  @Input() readonly = false;
+  @Input() readOnly = false;
 
   //Output event supplying the submitted data
   @Output() submitted = new EventEmitter<MyFirstFormData>();
 
-  //Note use of FormGroup instead of UntypedFormGroup
+  //Note the use of FormGroup instead of UntypedFormGroup
   form: FormGroup;
 
   //Used to display any errors on submission
@@ -57,10 +57,10 @@ export class MyFirstFormComponent implements OnInit {
     })
   }
 
-  //Check whether the form can be submitted - otherwise submit button can be disabled
+  //Check whether the form can be submitted - otherwise the submit button can be disabled
   canSubmit(): boolean {
     //Pending is true while validators are running
-    return this.form.valid && !this.form.pending && !this.submitting && !this.readonly;
+    return this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
   }
 
   /**
@@ -70,7 +70,7 @@ export class MyFirstFormComponent implements OnInit {
    */
   hasError(ctrlName: keyof MyFirstFormData, validationName: string): boolean {
     const c = this.form.get(ctrlName);
-    return !this.readonly && !!c && c.touched && c.hasError(validationName);
+    return !this.readOnly && !!c && c.touched && c.hasError(validationName);
   }
 
   onSubmit(): void {

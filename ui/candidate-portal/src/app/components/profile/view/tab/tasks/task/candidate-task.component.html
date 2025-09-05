@@ -63,7 +63,7 @@
 
 <ng-container *ngIf="selectedTask.task.taskType === 'Form'">
   <app-view-form-task
-    [selectedTask]="selectedTask"
+    [taskAssignment]="selectedTask"
     (taskCompleted)="completedFormTask($event)"
   >
   </app-view-form-task>
