@@ -56,10 +56,12 @@ export class ViewFormTaskComponent implements OnChanges {
       let task = this.selectedTask.task;
       let formName = task.candidateForm.name;
       let component =  this.componentMap[formName];
-      if (component && formName != this.currentlyLoadedFormName) {
-        //If we have a valid component which is not already loaded into the html, add it to the html
-        this.load(component);
-        this.currentlyLoadedFormName = formName;
+      if (component) {
+        if (formName != this.currentlyLoadedFormName) {
+          //We have a valid component which is not already loaded into the html. Add it.
+          this.load(component);
+          this.currentlyLoadedFormName = formName;
+        }
       } else {
         this.error = 'Angular ViewFormTaskComponent: No Component found matching Candidate Form '
           + formName + ', associated with Form Task ' + task.name
@@ -75,7 +77,7 @@ export class ViewFormTaskComponent implements OnChanges {
   load<C extends HasSubmitted>(cmp: Type<C>){
     this.vc.clear();
     const ref = this.vc.createComponent(cmp);
-    ref.instance.submitted.subscribe(v => this.onSubmitted(v));
+    ref.instance.submitted.subscribe(() => this.onSubmitted());
   }
 
   onSubmitted() {
