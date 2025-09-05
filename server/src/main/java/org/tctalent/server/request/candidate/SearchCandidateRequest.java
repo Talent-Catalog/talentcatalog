@@ -108,6 +108,9 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private LocalDate fromDate;
     private List<SearchJoinRequest> searchJoinRequests;
 
+    private String regoUtmCampaign;
+    private String regoUtmSource;
+    private String regoUtmMedium;
     /**
      * If specified, requests display of candidates whose candidate opportunities (if any) match
      * the filter.
@@ -306,6 +309,27 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             getRegoReferrerParam() == null ? null : getRegoReferrerParam().trim().toLowerCase();
         if (referrerParam != null && !referrerParam.isEmpty()) {
             ands.add("lower(candidate.rego_referrer_param) like '" + referrerParam + "'");
+        }
+
+        // UTM: Campaign
+        final String utmCampaigns =
+            getRegoUtmCampaign() == null ? null : getRegoUtmCampaign().trim().toLowerCase();
+        if (utmCampaigns != null && !utmCampaigns.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_campaign) like '" + utmCampaigns + "'");
+        }
+
+        // UTM: Sources
+        final String regoUtmSources =
+            getRegoUtmSource() == null ? null : getRegoUtmSource().trim().toLowerCase();
+        if (regoUtmSources != null && !regoUtmSources.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_source) like '" + regoUtmSources + "'");
+        }
+
+        // UTM: MEDIUM
+        final String regoUtmMedium =
+            getRegoUtmMedium() == null ? null : getRegoUtmMedium().trim().toLowerCase();
+        if (regoUtmMedium != null && !regoUtmMedium.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_medium) like '" + regoUtmMedium + "'");
         }
 
         // GENDER SEARCH

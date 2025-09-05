@@ -612,7 +612,7 @@ public class JobServiceImpl implements JobService {
             //Current stage is before CandidateSearch so update it
 
             //New stage will depend on skipCandidateSearch
-            JobOpportunityStage nextStage =
+            final JobOpportunityStage nextStage =
                 job.isSkipCandidateSearch() ? JobOpportunityStage.visaEligibility :
                     JobOpportunityStage.candidateSearch;
             job.setStage(nextStage);
@@ -628,7 +628,7 @@ public class JobServiceImpl implements JobService {
             job.setNextStep(processedNextStep);
 
             salesforceService.updateEmployerOpportunityStage(
-                job, JobOpportunityStage.candidateSearch, processedNextStep, submissionDueDate
+                job, nextStage, processedNextStep, submissionDueDate
             );
         }
 
