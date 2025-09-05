@@ -12,13 +12,7 @@ import {
 } from '@angular/core';
 import {TaskAssignment} from "../../../../../../../model/task-assignment";
 import {CandidateFormService} from "../../../../../../../services/candidate-form.service";
-
-/**
- * Interface of any component which has an @Output() submitted EventEmitter
- */
-export interface HasSubmitted<T = unknown> {
-  submitted: import("@angular/core").EventEmitter<T>;
-}
+import {ICandidateFormComponent} from "../../../../../../../model/candidate-form";
 
 /**
  * This component loads and displays the form associated with the input task assignment.
@@ -84,11 +78,11 @@ export class ViewFormTaskComponent implements OnChanges {
   }
 
   /**
-   * Loads a component which extends HasSubmitted into the template.
+   * Loads a component which looks like ICandidateFormComponent into the template.
    * @param cmp Component to be loaded into the HTML template.
    * @return A reference to the loaded component
    */
-  load<C extends HasSubmitted>(cmp: Type<C>){
+  load<C extends ICandidateFormComponent>(cmp: Type<C>){
     this.vc.clear();
     const ref = this.vc.createComponent(cmp);
 

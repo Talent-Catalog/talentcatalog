@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CandidateFormService} from "../../../services/candidate-form.service";
 import {MyFirstFormData} from "../../../model/form";
+import {ICandidateFormComponent} from "../../../model/candidate-form";
 
 /*
 MODEL: Best practice Angular form
@@ -12,7 +13,7 @@ MODEL: Best practice Angular form
   templateUrl: './my-first-form.component.html',
   styleUrls: ['./my-first-form.component.scss']
 })
-export class MyFirstFormComponent implements OnInit {
+export class MyFirstFormComponent implements OnInit, ICandidateFormComponent<MyFirstFormData> {
   //When present and true, the form can't be modified or submitted
   @Input() readOnly = false;
 
