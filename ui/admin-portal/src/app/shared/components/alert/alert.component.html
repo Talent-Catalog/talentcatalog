@@ -1,0 +1,35 @@
+<ngb-alert
+  class="tc-alert"
+  *ngIf="show"
+  [type]="type"
+  [dismissible]="IsDismissible"
+  [animation]="animation"
+  (closed)="onClose()">
+
+  <div class="alert-content">
+    <span *ngIf="showIcon"
+          [class]="defaultIcon + ' alert-icon'"
+          [attr.aria-label]="ariaLabelValue">
+
+    <!-- Success -->
+    <i *ngIf="type==='success'" class="fa-solid fa-circle-check" aria-hidden="true"></i>
+
+      <!-- Info -->
+    <i
+      *ngIf="type==='info' || type==='primary' || type==='secondary' || type==='light' || type==='dark'"
+      class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+      <!-- Warning -->
+    <i *ngIf="type==='warning'" class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+
+      <!-- Danger -->
+    <i *ngIf="type==='danger'" class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+
+    </span>
+
+
+    <div class="alert-message">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</ngb-alert>
