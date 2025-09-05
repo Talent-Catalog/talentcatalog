@@ -308,7 +308,6 @@ public class CandidateBuilderSelector {
                     .add("militaryWanted")
                     .add("militaryStart")
                     .add("militaryEnd")
-                    .add("monitoringEvaluationConsent")
                     .add("partnerRegistered")
                     .add("partnerEnglish")
                     .add("partnerIelts")

@@ -159,7 +159,6 @@ public class CandidateIntakeDataUpdate {
 
     private MaritalStatus maritalStatus;
     private String maritalStatusNotes;
-    private YesNo monitoringEvaluationConsent;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;

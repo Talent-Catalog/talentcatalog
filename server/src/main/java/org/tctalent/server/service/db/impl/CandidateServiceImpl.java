@@ -3008,9 +3008,6 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getMaritalStatusNotes() != null) {
             candidate.setMaritalStatusNotes(data.getMaritalStatusNotes());
         }
-        if (data.getMonitoringEvaluationConsent() != null) {
-            candidate.setMonitoringEvaluationConsent(data.getMonitoringEvaluationConsent());
-        }
         if (data.getPartnerRegistered() != null) {
             candidate.setPartnerRegistered(data.getPartnerRegistered());
         }
