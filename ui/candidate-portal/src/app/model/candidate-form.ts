@@ -22,6 +22,18 @@
  *
  * It should also have an <code>@Output submitted = new EventEmitter<form data> </code> which
  * emits an event containing the form's data when it is submitted.
+ *
+ * So typically a component that is being used as a candidate form should look something
+ * like this...
+ * ```
+ * export class MyFirstFormComponent
+ *                    implements ICandidateFormComponent<MyFirstFormData>, ... {
+ *   //When present and true, the form can't be modified or submitted
+ *   @Input() readOnly = false;
+ *
+ *   //Output event supplying the submitted data
+ *   @Output() submitted = new EventEmitter<MyFirstFormData>();
+ * ```
  */
 export interface ICandidateFormComponent<T = unknown> {
   readOnly: boolean;
