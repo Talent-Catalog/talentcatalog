@@ -11,7 +11,7 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {TaskAssignment} from "../../../../../../../model/task-assignment";
-import {MyFirstFormComponent} from "../../../../../../form/my-first-form/my-first-form.component";
+import {CandidateFormService} from "../../../../../../../services/candidate-form.service";
 
 /**
  * Interface of any component which has an @Output() submitted EventEmitter
@@ -50,16 +50,11 @@ export class ViewFormTaskComponent implements OnChanges {
   //Used to record errors in mapping the form name to an Angular component.
   error: string;
 
-  /*
-      You need to add an entry to this map for each form that can be displayed in a FormTask.
-      The mapping is from the name of the form to an Angular component.
-   */
-  componentMap: Record<string, any> = {
-    'MyFirstForm': MyFirstFormComponent
+  constructor(private candidateFormService: CandidateFormService) {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.selectedTask) {
+    if (changes.taskAssignment) {
       //Check that we have an Angular component mapped to the name of the form associated with
       //the selected task.
       let task = this.taskAssignment.task;
@@ -68,7 +63,7 @@ export class ViewFormTaskComponent implements OnChanges {
         this.error = 'Angular ViewFormTaskComponent: Task ' + task.name + ' is not a FormTask.';
         return;
       }
-      let component =  this.componentMap[formName];
+      let component =  this.candidateFormService.getFormComponentByName(formName);
       if (component) {
         if (formName != this.currentlyLoadedFormName) {
           //We have a valid component which is not already loaded into the HTML. Add it.
@@ -83,7 +78,7 @@ export class ViewFormTaskComponent implements OnChanges {
       } else {
         this.error = 'Angular ViewFormTaskComponent: No Component found matching Candidate Form '
           + formName + ', associated with Form Task ' + task.name
-          + '. Add a mapping to the componentMap in ViewFormTaskComponent.ts.';
+          + '. Add a mapping to the componentMap in CandidateFormService.ts.';
       }
     }
   }

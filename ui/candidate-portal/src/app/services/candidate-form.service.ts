@@ -3,12 +3,21 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {MyFirstFormData} from "../model/form";
+import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CandidateFormService {
   apiUrl: string = environment.apiUrl + '/form';
+
+  /*
+      You need to add an entry to this map for each form that can be displayed in a FormTask.
+      The mapping is from the name of the form to an Angular component.
+   */
+  private componentMap: Record<string, any> = {
+    'MyFirstForm': MyFirstFormComponent
+  }
 
   constructor(private http: HttpClient) { }
 
@@ -20,4 +29,7 @@ export class CandidateFormService {
     return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
   }
 
+  getFormComponentByName(formName: string): any {
+    return this.componentMap[formName];
+  }
 }
