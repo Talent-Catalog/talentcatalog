@@ -23,7 +23,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -654,10 +653,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     @Nullable
     private String maritalStatusNotes;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private YesNo monitoringEvaluationConsent;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -2118,13 +2113,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public String getMaritalStatusNotes() { return maritalStatusNotes; }
 
     public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
-
-    @Nullable
-    public YesNo getMonitoringEvaluationConsent() {return monitoringEvaluationConsent;}
-
-    public void setMonitoringEvaluationConsent(@Nullable YesNo monitoringEvaluationConsent) {
-        this.monitoringEvaluationConsent = monitoringEvaluationConsent;
-    }
 
     @Nullable
     public String getPartnerRef() {
