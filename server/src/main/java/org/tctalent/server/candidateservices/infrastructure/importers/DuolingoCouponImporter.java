@@ -45,16 +45,16 @@ import org.tctalent.server.repository.db.DuolingoCouponRepository;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DuolingoCouponImportParser {
+public class DuolingoCouponImporter implements FileInventoryImporter {
 
   private final DuolingoCouponRepository couponRepository;
 
   private static final DateTimeFormatter FORMATTER1 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
   private static final DateTimeFormatter FORMATTER2 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
-//  @Override
+  @Override
   @Transactional
-  public void parse(MultipartFile file) throws ImportFailedException {
+  public void importFile(MultipartFile file) throws ImportFailedException {
     List<DuolingoCoupon> newCoupons = new ArrayList<>();
     // Set to track coupon codes that have already been processed (avoids duplicates)
     Set<String> seenCouponCodes = new HashSet<>();
