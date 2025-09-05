@@ -17,8 +17,15 @@
 /**
  * Defines what a Candidate Form component should look like.
  *
- * It should have an <code>@Input readOnly: boolean</code> which makes the form read only and
- * disables submitting the form
+ * MyFirstFormComponent is an example of a candidate form component. If you look at that code,
+ * you will see how it works. In particular note the onSubmit method which calls a form-specific
+ * method in the CandidateFormService which will be processed on the server by a form-specific API:
+ * MyFirstFormPortalApi.java. That API updates a form-specific entity: MyFirstForm.java.
+ * That entity defines the data the form should gather and how it is stored. Each field is
+ * stored either in a Candidate-related table or in Candidate.candidateProperties.
+ *
+ * Every candidate form component should have aa <code>@Input readOnly: boolean</code> which makes
+ * the form read-only and disables submitting the form.
  *
  * It should also have an <code>@Output submitted = new EventEmitter<form data> </code> which
  * emits an event containing the form's data when it is submitted.
@@ -34,6 +41,41 @@
  *   //Output event supplying the submitted data
  *   @Output() submitted = new EventEmitter<MyFirstFormData>();
  * ```
+ * The form component also needs to be added to the componentMap of CandidateFormService.
+ * See the beginning of CandidateFormService...
+ * ```
+ * export class CandidateFormService {
+ *
+ *   // You need to add an entry to this map for each form that can be
+ *   // displayed in a FormTask.
+ *   // The mapping is from the name of the form to an Angular component.
+ *   private componentMap: Record<string, any> = {
+ *     'MyFirstForm': MyFirstFormComponent
+ *   }
+ * ```
+ *
+ * A candidate form can be related to a FormTask. This relation is stored with the
+ * task definition.
+ *
+ * Candidate Forms and Candidate Form Tasks are currently defined directly in the database using
+ * Flyways.
+ *
+ * Here is the definition of a CandidateForm:
+ * ```
+ * insert into candidate_form (name, description) values (
+ *   'MyFirstForm',
+ *   'Enter city where you live and the colour of your hair');
+ * ```
+ * Note that the form is just a name and a description. The data in a form is defined in the
+ * entity named after the form: <code>MyFirstForm.java</code> for the above form.
+ *
+ *  Here is the definition of CandidateFormTask:
+ *  ```
+ * insert into task (name, display_name, task_type, description, ..., candidate_form_id)
+ * values ('myFirstFormTask','Fill out my first form',
+ *         'FormTask', 'This form asks you for some pretty useless information.',
+ *         ..., (select id from candidate_form where name = 'MyFirstForm'));
+ *  ```
  */
 export interface ICandidateFormComponent<T = unknown> {
   readOnly: boolean;

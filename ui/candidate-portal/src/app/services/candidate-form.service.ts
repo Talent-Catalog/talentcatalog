@@ -9,15 +9,14 @@ import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-fo
   providedIn: 'root'
 })
 export class CandidateFormService {
-  apiUrl: string = environment.apiUrl + '/form';
 
-  /*
-      You need to add an entry to this map for each form that can be displayed in a FormTask.
-      The mapping is from the name of the form to an Angular component.
-   */
+  // You need to add an entry to this map for each form that can be displayed in a FormTask.
+  // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent
   }
+
+  apiUrl: string = environment.apiUrl + '/form';
 
   constructor(private http: HttpClient) { }
 
