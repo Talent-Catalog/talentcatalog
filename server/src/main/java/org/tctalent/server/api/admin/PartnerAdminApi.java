@@ -148,4 +148,21 @@ public class PartnerAdminApi implements
         return employer;
     }
 
+    @PutMapping("{id}/accept-dpa")
+    public Map<String, Object> acceptDpa(@PathVariable("id") String id) {
+        Partner partner = partnerService.updateAcceptedDpa(id);
+        return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    @PutMapping("/dpa-seen")
+    public Map<String, Object> setFirstDpaSeen() {
+        PartnerImpl partner = partnerService.setFirstDpaSeen();
+        return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    @GetMapping("/requires-dpa")
+    public boolean requiresDpaAcceptance() {
+        return partnerService.requiresDpaAcceptance();
+    }
+
 }
