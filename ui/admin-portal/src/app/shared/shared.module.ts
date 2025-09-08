@@ -17,7 +17,12 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {NgbDropdownModule ,NgbAlert, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbAlert,
+  NgbDropdownModule,
+  NgbNavModule,
+  NgbPaginationModule
+} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -56,6 +61,7 @@ import {
 import {
   TcDropdownDividerComponent
 } from './components/dropdown/dropdown-divider/tc-dropdown-divider.component';
+import {RouterLink} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -89,7 +95,8 @@ import {
     NgbPaginationModule,
     NgbNavModule,
     NgbAlert,
-    NgbDropdownModule
+    NgbDropdownModule,
+    RouterLink
   ],
   exports: [
     ButtonComponent,

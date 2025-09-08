@@ -1,16 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {DropdownMenuComponent} from './tc-dropdown-menu.component';
+import {TcDropdownMenuComponent} from './tc-dropdown-menu.component';
 
-describe('DropdownMenuComponent', () => {
-  let component: DropdownMenuComponent;
-  let fixture: ComponentFixture<DropdownMenuComponent>;
+describe('TcDropdownMenuComponent', () => {
+  let component: TcDropdownMenuComponent;
+  let fixture: ComponentFixture<TcDropdownMenuComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DropdownMenuComponent]
+      declarations: [TcDropdownMenuComponent]
     });
-    fixture = TestBed.createComponent(DropdownMenuComponent);
+    fixture = TestBed.createComponent(TcDropdownMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
