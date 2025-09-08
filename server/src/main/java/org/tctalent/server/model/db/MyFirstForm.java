@@ -29,6 +29,11 @@ import jakarta.persistence.Table;
 public class MyFirstForm extends CandidateFormInstance {
     private static final String HAIR_COLOUR_PROPERTY_NAME = "hairColour";
 
+    @Override
+    public String getFormName() {
+        return "MyFirstForm";
+    }
+
     public String getCity() {
         return getWorkingCandidate().getCity();
     }

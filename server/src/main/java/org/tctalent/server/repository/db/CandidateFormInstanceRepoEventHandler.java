@@ -6,6 +6,7 @@ package org.tctalent.server.repository.db;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstance;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateFormService;
 import org.tctalent.server.service.db.CandidateService;
 
 /**
@@ -45,7 +47,23 @@ import org.tctalent.server.service.db.CandidateService;
 public class CandidateFormInstanceRepoEventHandler {
     private final AuthService authService;
     private final CandidateService candidateService;
+    private final CandidateFormService candidateFormService;
     private final CandidateFormInstanceRepository candidateFormInstanceRepository;
+
+    @HandleBeforeCreate
+    public void beforeCreate(CandidateFormInstance candidateFormInstance) {
+        if (candidateFormInstance.getCandidate() == null) {
+            Candidate candidate = getLoggedInCandidate();
+
+            //TODO JC Copy any pendingCandidate contents across to the candidate
+
+            String formName = candidateFormInstance.getFormName();
+            CandidateForm candidateForm = candidateFormService.getByName(formName);
+            candidateFormInstance.setCandidateForm(candidateForm);
+
+            candidateFormInstance.setCandidate(candidate);
+        }
+    }
 
     /**
      * <p>

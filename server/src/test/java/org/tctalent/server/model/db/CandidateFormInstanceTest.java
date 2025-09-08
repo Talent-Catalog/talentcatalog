@@ -32,6 +32,11 @@ class CandidateFormInstanceTest {
     static private class TestForm extends CandidateFormInstance {
         private static final String HAIR_COLOUR_PROPERTY_NAME = "hairColour";
 
+        @Override
+        public String getFormName() {
+            return "TestForm";
+        }
+
         public String getCity() {
             return getWorkingCandidate().getCity();
         }

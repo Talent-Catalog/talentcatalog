@@ -49,7 +49,7 @@ import org.springframework.lang.NonNull;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @MappedSuperclass
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_form_instance_id_seq", allocationSize = 1)
-public class CandidateFormInstance {
+public abstract class CandidateFormInstance {
 
     //This is autopopulated if there is no candidate property entity at the time that get or set
     //methods are called on CandidateFormInstance subclasses.
@@ -85,6 +85,12 @@ public class CandidateFormInstance {
      * Note that forms can be updated after they were initially completed.
      */
     private OffsetDateTime updatedDate;
+
+    /**
+     * Subclasses must implement this to return the form name.
+     * @return Name of form
+     */
+    public abstract String getFormName();
 
     @NonNull
     protected Candidate getWorkingCandidate() {
