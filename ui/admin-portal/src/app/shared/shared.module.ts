@@ -17,7 +17,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {NgbDropdownModule, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDropdownModule ,NgbAlert, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -42,6 +42,7 @@ import {
 import {
   DescriptionTermComponent
 } from './components/description-list/description-term/description-term.component';
+import {AlertComponent} from './components/alert/alert.component';
 import {TcDropdownComponent} from './components/dropdown/tc-dropdown.component';
 import {
   TcDropdownButtonComponent
@@ -76,6 +77,7 @@ import {
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    AlertComponent,
     TcDropdownComponent,
     TcDropdownButtonComponent,
     TcDropdownItemComponent,
@@ -86,6 +88,7 @@ import {
     CommonModule,
     NgbPaginationModule,
     NgbNavModule,
+    NgbAlert,
     NgbDropdownModule
   ],
   exports: [
@@ -107,6 +110,7 @@ import {
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    AlertComponent,
     TcDropdownComponent,
     TcDropdownButtonComponent,
     TcDropdownItemComponent,

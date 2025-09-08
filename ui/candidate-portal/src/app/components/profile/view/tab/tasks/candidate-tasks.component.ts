@@ -18,6 +18,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {TaskAssignment, taskAssignmentSort} from "../../../../../model/task-assignment";
 import {Status} from "../../../../../model/base";
+import {CandidateFormService} from "../../../../../services/candidate-form.service";
+import {MyFirstFormUpdateRequest} from "../../../../../model/form";
 
 @Component({
   selector: 'app-candidate-tasks',
@@ -32,7 +34,7 @@ export class CandidateTasksComponent implements OnInit {
   @Output() refresh = new EventEmitter();
   selectedTask: TaskAssignment;
 
-  constructor() { }
+  constructor(private candidateFormService: CandidateFormService) { }
 
   ngOnInit(): void {
   }
@@ -72,5 +74,17 @@ export class CandidateTasksComponent implements OnInit {
       taskType = null;
     }
     return taskType;
+  }
+
+  // todo jc Hack for testing candidate forms
+  testForm() {
+    let request: MyFirstFormUpdateRequest = {
+      city: "Beirut",
+      hairColour: "blue"
+    }
+    this.candidateFormService.createOrUpdateMyFirstForm(request).subscribe({
+      next: () => {},
+      error: err => {}
+    })
   }
 }

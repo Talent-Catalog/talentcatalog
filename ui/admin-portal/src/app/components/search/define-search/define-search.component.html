@@ -713,6 +713,77 @@
               ></app-find-candidate-source>
             </div>
           </div>
+
+        </div>
+        <hr class="w-100">
+        <div class="container-fluid">
+          <div class="row">
+             <!-- UTM: Campaign -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="campaignFilter">
+                <label class="form-label" for="campaignFilter">Campaign</label>
+                <button class="tool-tip-button"
+                        [ngbTooltip]="campaignTooltip"
+                        triggers="click"
+                        tooltipClass="search-tips"
+                        placement="bottom top"
+                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                </button>
+                <ng-template #campaignTooltip>
+                  <span class="search-tips-content">
+                    Search ignores upper or lower case so don't worry about case.
+                    Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                    campaigns beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                    with <code>irc</code> appearing anywhere in the name.
+                  </span>
+                </ng-template>
+                <input id="campaign" class="form-control"
+                       name="campaign" [formControlName]="'regoUtmCampaign'" appLowercase>
+              </div>
+
+              <!-- UTM: Source -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="sourceFilter">
+                <label class="form-label" for="sourceFilter">Source</label>
+                <button class="tool-tip-button"
+                        [ngbTooltip]="campaignTooltip"
+                        triggers="click"
+                        tooltipClass="search-tips"
+                        placement="bottom top"
+                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                </button>
+                <ng-template #campaignTooltip>
+                  <span class="search-tips-content">
+                    Search ignores upper or lower case so don't worry about case.
+                    Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                    sources beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                    with <code>irc</code> appearing anywhere in the name.
+                  </span>
+                </ng-template>
+                <input id="source" class="form-control"
+                       name="source" [formControlName]="'regoUtmSource'" appLowercase>
+              </div>
+
+              <!-- UTM: Medium -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="mediumFilter">
+                <label class="form-label" for="mediumFilter">Medium</label>
+                <button class="tool-tip-button"
+                        [ngbTooltip]="mediumTooltip"
+                        triggers="click"
+                        tooltipClass="search-tips"
+                        placement="bottom top"
+                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                </button>
+                <ng-template #mediumTooltip>
+                <span class="search-tips-content">
+                  Search ignores upper or lower case so don't worry about case.
+                  Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                  mediums beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                  with <code>irc</code> appearing anywhere in the name.
+                </span>
+                </ng-template>
+                <input id="medium" class="form-control"
+                       name="medium" [formControlName]="'regoUtmMedium'" appLowercase>
+              </div>
+            </div>
         </div>
 
         <hr class="w-100">
