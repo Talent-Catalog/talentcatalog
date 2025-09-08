@@ -89,3 +89,14 @@
   @mixin background-color-blue     { background-color: color(blue, 100); }
   @mixin background-color-purple   { background-color: color(purple, 100); }
   @mixin background-color-pink     { background-color: color(pink, 100); }
+
+
+// ==========================
+// SHADOW COLOR MIXINS
+// ==========================
+
+@mixin shadow-lg {
+  box-shadow:
+    0 4px 6px -4px rgba(0, 0, 0, 0.1),
+    0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
