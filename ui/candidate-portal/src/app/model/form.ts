@@ -18,3 +18,8 @@ export interface MyFirstFormData {
   city?: string;
   hairColour?: string;
 }
+
+export interface MySecondFormData {
+  city?: string;
+  hairColour?: string;
+}
