@@ -1,7 +1,3 @@
-insert into candidate_form (name, description) values (
-      'MyFirstForm',
-  'Enter city where you live and the colour of your hair');
-
 alter table task add column candidate_form_id bigint references candidate_form;
 
 insert into task (name, display_name, task_type, description, days_to_complete,
