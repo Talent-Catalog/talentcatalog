@@ -22,5 +22,6 @@ package org.tctalent.server.model.db;
  * @author John Cameron
  */
 public enum TermsType {
-    CANDIDATE_PRIVACY_POLICY
+    CANDIDATE_PRIVACY_POLICY,
+    DATA_PROCESSING_AGREEMENT
 }
