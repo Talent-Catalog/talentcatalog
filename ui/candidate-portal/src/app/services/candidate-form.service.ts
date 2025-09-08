@@ -32,8 +32,4 @@ export class CandidateFormService {
   getFormComponentByName(formName: string): any {
     return this.componentMap[formName];
   }
-  createOrUpdateMySecondForm(request: MyFirstFormUpdateRequest): Observable<MyFirstForm> {
-    return this.http.post<MyFirstForm>(`${this.halApiUrl}/my-second-form`, request);
-  }
-
 }
