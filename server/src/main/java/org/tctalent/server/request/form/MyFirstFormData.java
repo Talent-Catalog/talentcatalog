@@ -20,13 +20,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * TODO JC Doc
+ * Data contained in MyFirstForm
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-public class MyFirstFormUpdateRequest {
+public class MyFirstFormData {
     String city;
     String hairColour;
 }

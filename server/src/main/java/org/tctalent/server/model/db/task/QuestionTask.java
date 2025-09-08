@@ -35,7 +35,6 @@ public interface QuestionTask extends Task {
     @Nullable
     List<String> getExplicitAllowedAnswers();
 
-    //TODO JC This has been replaced by the above - why?
     /**
      * Get allowed answers to this question, or null if there are no restrictions on the answers.
      * @return Allowable answers

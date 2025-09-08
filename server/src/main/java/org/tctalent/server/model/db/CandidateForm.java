@@ -46,12 +46,4 @@ public class CandidateForm extends AbstractDomainObject<Long> {
      * form.
      */
     private String description;
-
-    /**
-     * This is the html name of the Angular component that displays and accepts input from the form.
-     * It corresponds to the selector property of the Angular @Component defined in the Typescript
-     * of the Angular component.
-     */
-    private String htmlComponentName;
-
 }
