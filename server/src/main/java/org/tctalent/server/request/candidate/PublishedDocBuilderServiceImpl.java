@@ -18,8 +18,7 @@ package org.tctalent.server.request.candidate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -126,16 +125,13 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
       }
     } else if (propertyName != null) {
       //Check for the specific candidate property with the property name provided
-      Optional<CandidateProperty> propO = Optional.empty();
-      Set<CandidateProperty> properties = candidate.getCandidateProperties();
+      Map<String,CandidateProperty> properties = candidate.getCandidateProperties();
       if (properties != null) {
-        propO = properties.stream().filter(p -> p.getName().equals(propertyName)).findFirst();
-      }
-      //Fetch the value
-      CandidateProperty property;
-      if (propO.isPresent()) {
-        property = propO.get();
-        val = property.getValue();
+        //Fetch the value
+        CandidateProperty property = properties.get(propertyName);
+        if (property != null) {
+          val = property.getValue();
+        }
       }
     } else {
       val = valueSource.getConstant();
