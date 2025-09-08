@@ -94,7 +94,7 @@ describe('PartnerDpaComponent', () => {
 
     expect(mockPartnerService.setFirstDpaSeen).toHaveBeenCalled();
   }));
-  
+
   it('onScroll should set termsRead when near bottom', () => {
     const mockEvent = {
       target: {scrollHeight: 1000, scrollTop: 950, clientHeight: 60}
