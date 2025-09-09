@@ -17,10 +17,8 @@
 package org.tctalent.server.integration.helper;
 
 import java.io.IOException;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -31,9 +29,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * ensuring consistent database state and improved performance.
  * To use, simply extend this class—no additional setup is required in your test classes.
  */
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
+@ActiveProfiles("test")
 public abstract class BaseDBIntegrationTest {
 
 
