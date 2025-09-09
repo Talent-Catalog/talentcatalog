@@ -14,7 +14,7 @@ import org.tctalent.server.service.db.CandidateFormService;
 import org.tctalent.server.service.db.CandidateService;
 
 /**
- * Converts the string key sent to API into a composite key needed to access CandidateFormInstance's.
+ * Converts the string key sent to the API into a composite key needed to access CandidateFormInstance's.
  *
  * @author John Cameron
  */
