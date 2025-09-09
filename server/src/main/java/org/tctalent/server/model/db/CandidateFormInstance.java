@@ -16,6 +16,7 @@
 
 package org.tctalent.server.model.db;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -57,19 +58,23 @@ public class CandidateFormInstance {
     //The idea is that the set methods can be stored in this pendingCandidate and then copied
     //across to the candidate entity when it has been populated (for example when loaded from the
     //database).
+    @JsonIgnore
     @Transient
     private Candidate pendingCandidate;
 
+    @JsonIgnore
     @EqualsAndHashCode.Include
     @EmbeddedId
     CandidateFormInstanceKey id;
 
+    @JsonIgnore
     //We want any changes made to associated candidate to be updated.
     @ManyToOne(cascade = CascadeType.ALL)
     @MapsId("candidateId")
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
+    @JsonIgnore
     @NonNull
     @ManyToOne
     @MapsId("formId")
