@@ -23,7 +23,6 @@ export class AuthExpiryInterceptor implements HttpInterceptor {
           this.auth.logout();
           // Avoid infinite loop by checking if we're already on the login page
           if (!currentUrl.startsWith('/login')) {
-            console.log('Navigating to login page with returnUrl:', currentUrl);
             this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
           }
         }
