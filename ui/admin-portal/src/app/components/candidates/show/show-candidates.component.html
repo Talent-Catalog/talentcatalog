@@ -193,53 +193,6 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
-      <!--      Icons -->  <!-- Todo remove these in a separate commit -->
-<!--      <div class="d-flex flex-grow-1 space-evenly">-->
-<!--                <button class="btn btn-link" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">-->
-<!--                  <i class="fas fa-link" title="Copy shareable link"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" (click)="doToggleStarred()">-->
-<!--                  <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>-->
-<!--                  <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="isSavedList()" (click)="doCopySource()">-->
-<!--                  <i class="fas fa-clone" title="Copy"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="hasSavedSearchSource()" (click)="doShowSearch()">-->
-<!--                  <i class="fas fa-search" title="Show Search"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="isEditable() && !isDefaultSavedSearch()" (click)="doEditSource()">-->
-<!--                  <i class="fas fa-edit" title="Rename"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="isEditable()" (click)="onSelectColumns()">-->
-<!--                  <i class="fas fa-columns" title="Select columns to display"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="canAssignTasks()" (click)="assignTasks()">-->
-<!--                  <i class="fas fa-tasks" title="Assign/show tasks"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">-->
-<!--                  <i class="fas fa-chart-bar" title="Run stats"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="candidateSource?.sfJobOpp"-->
-<!--                   [routerLink]="['/job',candidateSource.sfJobOpp.id]">-->
-<!--                  <i class="fa-solid fa-briefcase" title="Associated Job"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link"-->
-<!--                        *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()"-->
-<!--                        (click)="doShowSalesforceLink()">-->
-<!--                    <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="isSavedList()" (click)="doShowListFolder()">-->
-<!--                  <i class="fab fa-google-drive" title="Create/show Google folder"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">-->
-<!--                  <i class="fas fa-globe" title="Show published sheet"></i>-->
-<!--                </button>-->
-<!--                <button class="btn btn-link" *ngIf="timestamp" (click)="doSearch(true)">-->
-<!--                  <i class="fas fa-sync" title="Refresh data"></i>-->
-<!--                </button>-->
-<!--      </div>-->
-
       <!--    Results summary-->
       <div class="d-flex flex-grow-1 justify-content-end">
         <div class="text-end">
