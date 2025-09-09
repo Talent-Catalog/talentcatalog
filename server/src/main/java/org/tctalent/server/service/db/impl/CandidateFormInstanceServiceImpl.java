@@ -84,4 +84,25 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
         CandidateForm candidateForm = getMyFirstForm();
         return new CandidateFormInstanceKey(candidate.getId(), candidateForm.getId());
     }
+
+    private void populateCandidateFromPending(Candidate pendingCandidate, Candidate candidate) {
+        if (pendingCandidate != null && candidate != null) {
+            //TODO JC copy fields and properties from pendingCandidate to candidate
+            /*
+            import org.mapstruct.Mapper;
+            import org.mapstruct.factory.Mappers;
+
+            @Mapper
+            public interface CandidateMapper {
+                CandidateMapper INSTANCE = Mappers.getMapper(CandidateMapper.class);
+
+                void updateCandidateFromSource(Candidate source, @MappingTarget Candidate candidate);
+            }
+
+             CandidateMapper.INSTANCE.updateCandidateFromSource(pendingCandidate, candidate);
+             */
+            pendingCandidate = null;
+        }
+    }
 }
+
