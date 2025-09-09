@@ -11,6 +11,8 @@ import {MySecondFormComponent} from "../components/form/my-second-form/my-second
 })
 export class CandidateFormService {
 
+  //todo Way of using a constant for repeated use of 'MySecondForm'
+
   // You need to add an entry to this map for each form that can be displayed in a FormTask.
   // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {
@@ -31,12 +33,12 @@ export class CandidateFormService {
     return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
   }
 
-  createOrUpdateMySecondForm(candidateNumber: string, request: MySecondFormData): Observable<MySecondFormData> {
-    return this.http.put<MySecondFormData>(`${this.halApiUrl}/my-second-form/${candidateNumber}`, request);
+  createOrUpdateMySecondForm(request: MySecondFormData): Observable<MySecondFormData> {
+    return this.http.put<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`, request);
   }
 
-  getMySecondForm(candidateNumber: string): Observable<MySecondFormData> {
-    return this.http.get<MySecondFormData>(`${this.halApiUrl}/my-second-form/${candidateNumber}`);
+  getMySecondForm(): Observable<MySecondFormData> {
+    return this.http.get<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`);
   }
 
   getFormComponentByName(formName: string): any {
