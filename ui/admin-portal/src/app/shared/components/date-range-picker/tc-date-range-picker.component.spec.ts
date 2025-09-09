@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NgbDatepickerModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {TcDateRangePickerComponent} from './tc-date-range-picker.component';
 
@@ -8,7 +9,8 @@ describe('TcDateRangePickerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcDateRangePickerComponent]
+      declarations: [TcDateRangePickerComponent],
+      imports: [NgbDatepickerModule]
     });
     fixture = TestBed.createComponent(TcDateRangePickerComponent);
     component = fixture.componentInstance;
