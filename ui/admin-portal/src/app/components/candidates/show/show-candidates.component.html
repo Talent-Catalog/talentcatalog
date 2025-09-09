@@ -182,16 +182,6 @@
     </div>
 
     <div class="d-flex text-muted align-items-baseline flex-wrap-reverse justify-content-sm-start py-3">
-      <ngb-pagination *ngIf="!searching"
-                      [boundaryLinks]="true"
-                      [pageSize]="pageSize"
-                      [collectionSize]="results?.totalElements"
-                      [(page)]="pageNumber"
-                      [maxSize]="5"
-                      [ellipses]="true"
-                      [rotate]="true"
-                      (pageChange)="doSearch(true)">
-      </ngb-pagination>
 
       <!--    Results summary-->
       <div class="d-flex flex-grow-1 justify-content-end">
@@ -342,11 +332,14 @@
     <div class="split-view">
 
 <!--     Table of list contents -->
-      <div class="table-wrapper">
-        <table class="table table-hover">
+      <tc-table
+        [totalElements]="results?.totalElements"
+        [pageSize]="pageSize"
+        [(pageNumber)]="pageNumber"
+        (pageChange)="doSearch(true)">
 
 <!--          Header-->
-          <thead class="table-primary">
+        <thead>
           <tr>
             <th></th>
             <th *ngIf="displayTextMatchRank()">
@@ -384,154 +377,153 @@
               </ng-template>
             </th>
           </tr>
-          </thead>
+        </thead>
 
-          <tbody>
-            <!--  Loading icon while loading  -->
-            <tr *ngIf="searching">
-              <td colspan="42">
-                <i class="fas fa-spinner fa-spin"></i> Loading...
-              </td>
-            </tr>
+        <tbody>
+          <!--  Loading icon while loading  -->
+          <tr *ngIf="searching">
+            <td colspan="42">
+              <i class="fas fa-spinner fa-spin"></i> Loading...
+            </td>
+          </tr>
 
-            <!-- Special display for no results-->
-            <tr *ngIf="!searching && !results?.totalElements">
-              <td colspan="42">
-                <span class="text-muted">(no matching candidates)</span>
-              </td>
-            </tr>
+          <!-- Special display for no results-->
+          <tr *ngIf="!searching && !results?.totalElements">
+            <td colspan="42">
+              <span class="text-muted">(no matching candidates)</span>
+            </td>
+          </tr>
 
 <!--        Candidate records    -->
-            <!-- MODEL: Highlighting current table record. See also scss file. -->
-            <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)"
-                [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
-              <td>
-                <div ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
-                  <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
-                    <i class="fas fa-ellipsis-h"></i>
-                  </button>
-                  <ul ngbDropdownMenu id="candidate-dropdown">
-                    <span *ngIf="isReviewable()">
-                      <li ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
-                      <li class="dropdown-divider"></li>
-                    </span>
-                    <span *ngIf="isCvDropDownAvailable()">
-                      <li ngbDropdownItem (click)="downloadGeneratedCV(candidate)"
-                          title="Opens/DLs CV generated from candidate profile"
-                      >
-                        Download CV
-                      </li>
-                      <li class="dropdown-divider"></li>
-                    </span>
-                    <li ngbDropdownItem>
-                      <a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">
-                        Open in new tab
-                      </a>
+          <!-- MODEL: Highlighting current table record. See also scss file. -->
+          <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)"
+              [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
+            <td>
+              <div ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
+                <tc-button [type]="'plain'" ngbDropdownToggle>
+                  <i class="fas fa-ellipsis-h"></i>
+                </tc-button>
+                <ul ngbDropdownMenu id="candidate-dropdown">
+                  <span *ngIf="isReviewable()">
+                    <li ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
+                    <li class="dropdown-divider"></li>
+                  </span>
+                  <span *ngIf="isCvDropDownAvailable()">
+                    <li ngbDropdownItem (click)="downloadGeneratedCV(candidate)"
+                        title="Opens/DLs CV generated from candidate profile"
+                    >
+                      Download CV
                     </li>
-                    <li class="dropdown-divider"
-                        *ngIf="(!isSubmissionList() && isContentModifiable()) || (isSubmissionList() && isSalesforceUpdatable())"
-                    ></li>
-                    <li *ngIf="!isSubmissionList() && isContentModifiable()" ngbDropdownItem
-                        (click)="removeCandidateFromList(candidate)">
-                      Remove from list
-                    </li>
-                    <li *ngIf="isSubmissionList() && isSalesforceUpdatable()" ngbDropdownItem (click)="closeOpportunity(candidate)">
-                      Close opportunity for this job
-                    </li>
-                  </ul>
-                </div>
-              </td>
-              <td *ngIf="displayTextMatchRank()">
-                {{candidate.rank}}
-              </td>
-              <td *ngIf="isReviewable()">
-                <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
-                     (click)="review(candidate)">
-                  <i *ngSwitchCase="ReviewStatus.verified" class="fa-solid fa-circle-check"></i>
-                  <i *ngSwitchCase="ReviewStatus.rejected" class="fa-solid fa-circle-xmark"></i>
-                  <i *ngSwitchCase="ReviewStatus.unverified" class="fa-solid fa-circle-question"></i>
-                </div>
-              </td>
-              <td>
-                <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
-                  {{candidate.candidateNumber}}
-                </a>
-                <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
-                  <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
-                </a>
-                <a [routerLink]="['/candidate',candidate.candidateNumber]">
-                  <i class="fas fa-user" title="Candidate"></i>
-                </a>
-                <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
-                  <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
-                </a>
-                <a *ngIf="isShowStage()" [routerLink]="['/job',this.candidateSource.sfJobOpp.id]">
-                  <i class="fa-solid fa-briefcase" title="Job"></i>
-                </a>
-                <a target="_blank" [href]="candidate.user.partner.websiteUrl">
-                  <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
-                </a>
-                <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
-                  <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
-                </a>
-                <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
-                   [href]="candidate.folderlink"
-                   target="_blank">
-                  <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
-                </a>
-                <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
-                  <i class="fas fa-video" title="Show candidate's one way video"></i>
-                </a>
-                <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
-                  <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
-                </a>
-                <app-cv-icon
-                  *ngIf="isCandidateNameViewable()"
-                  [candidate]="candidate">
-                </app-cv-icon>
-                <app-tasks-monitor
-                  *ngIf="hasTaskAssignments(candidate)"
-                  [candidate]="candidate"
-                  [completedTasks]="getCompletedMonitoredTasks(candidate)"
-                  [totalTasks]="getTotalMonitoredTasks(candidate)">
-                </app-tasks-monitor>
-                <app-potential-duplicate-icon
-                  [candidate]="candidate"
-                  (refresh)="doSearch(true)"
-                ></app-potential-duplicate-icon>
-              </td>
-              <td *ngIf="isShowStage()">
-                <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"
-                   title="Stage that this candidate is at - linking to their candidate opportunity" class="text-secondary">
-                  {{getStage(candidate)}}
-                </a>
-              </td>
-              <td>
-                <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"
-                       (ngModelChange)="onSelectionChange(candidate, $event)"
-                       [ngModel]="isSelected(candidate)"
-                       [checked]="isSelected(candidate)">
-              </td>
-              <td *ngFor="let field of selectedFields">
+                    <li class="dropdown-divider"></li>
+                  </span>
+                  <li ngbDropdownItem>
+                    <a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">
+                      Open in new tab
+                    </a>
+                  </li>
+                  <li class="dropdown-divider"
+                      *ngIf="(!isSubmissionList() && isContentModifiable()) || (isSubmissionList() && isSalesforceUpdatable())"
+                  ></li>
+                  <li *ngIf="!isSubmissionList() && isContentModifiable()" ngbDropdownItem
+                      (click)="removeCandidateFromList(candidate)">
+                    Remove from list
+                  </li>
+                  <li *ngIf="isSubmissionList() && isSalesforceUpdatable()" ngbDropdownItem (click)="closeOpportunity(candidate)">
+                    Close opportunity for this job
+                  </li>
+                </ul>
+              </div>
+            </td>
+            <td *ngIf="displayTextMatchRank()">
+              {{candidate.rank}}
+            </td>
+            <td *ngIf="isReviewable()">
+              <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
+                   (click)="review(candidate)">
+                <i *ngSwitchCase="ReviewStatus.verified" class="fa-solid fa-circle-check"></i>
+                <i *ngSwitchCase="ReviewStatus.rejected" class="fa-solid fa-circle-xmark"></i>
+                <i *ngSwitchCase="ReviewStatus.unverified" class="fa-solid fa-circle-question"></i>
+              </div>
+            </td>
+            <td>
+              <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
+                {{candidate.candidateNumber}}
+              </a>
+              <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+                <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+              </a>
+              <a [routerLink]="['/candidate',candidate.candidateNumber]">
+                <i class="fas fa-user" title="Candidate"></i>
+              </a>
+              <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
+                <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+              </a>
+              <a *ngIf="isShowStage()" [routerLink]="['/job',this.candidateSource.sfJobOpp.id]">
+                <i class="fa-solid fa-briefcase" title="Job"></i>
+              </a>
+              <a target="_blank" [href]="candidate.user.partner.websiteUrl">
+                <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
+              </a>
+              <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
+                <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
+              </a>
+              <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
+                 [href]="candidate.folderlink"
+                 target="_blank">
+                <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
+              </a>
+              <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
+                <i class="fas fa-video" title="Show candidate's one way video"></i>
+              </a>
+              <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+                <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
+              </a>
+              <app-cv-icon
+                *ngIf="isCandidateNameViewable()"
+                [candidate]="candidate">
+              </app-cv-icon>
+              <app-tasks-monitor
+                *ngIf="hasTaskAssignments(candidate)"
+                [candidate]="candidate"
+                [completedTasks]="getCompletedMonitoredTasks(candidate)"
+                [totalTasks]="getTotalMonitoredTasks(candidate)">
+              </app-tasks-monitor>
+              <app-potential-duplicate-icon
+                [candidate]="candidate"
+                (refresh)="doSearch(true)"
+              ></app-potential-duplicate-icon>
+            </td>
+            <td *ngIf="isShowStage()">
+              <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"
+                 title="Stage that this candidate is at - linking to their candidate opportunity" class="text-secondary">
+                {{getStage(candidate)}}
+              </a>
+            </td>
+            <td>
+              <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"
+                     (ngModelChange)="onSelectionChange(candidate, $event)"
+                     [ngModel]="isSelected(candidate)"
+                     [checked]="isSelected(candidate)">
+            </td>
+            <td *ngFor="let field of selectedFields">
 
-                <span [ngbTooltip]="field.getTooltip(candidate, candidateSource)"  [ngClass]="{
-                'text-danger': field.getValue(candidate, candidateSource) === 'Overdue',
-                'text-success' : field.getValue(candidate, candidateSource) == 'Completed',
-                'text-warning' : field.getValue(candidate, candidateSource) == 'Abandoned'}">
+              <span [ngbTooltip]="field.getTooltip(candidate, candidateSource)"  [ngClass]="{
+              'text-danger': field.getValue(candidate, candidateSource) === 'Overdue',
+              'text-success' : field.getValue(candidate, candidateSource) == 'Completed',
+              'text-warning' : field.getValue(candidate, candidateSource) == 'Abandoned'}">
 <!--                  todo Have switch on display of arrays vs non arrays.
 Non arrays or single value arrays, just display value
 
 arrays with more than one value display in drop down
 -->
-                  {{field.getValue(candidate, candidateSource)}}
-                </span>
-              </td>
-            </tr>
+                {{field.getValue(candidate, candidateSource)}}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </tc-table>
 
-          </tbody>
-
-        </table>
-      </div>
+    </div>
 
 <!--      Data on selected candidate-->
       <app-candidate-search-card class="profile"
@@ -549,7 +541,6 @@ arrays with more than one value display in drop down
     </div>
   </div>
 
-</div>
 
 <!-- Modals -->
 <ng-template #downloadCsvErrorModal let-c="close" let-d="dismiss">
