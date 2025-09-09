@@ -51,7 +51,7 @@ import org.springframework.lang.NonNull;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @MappedSuperclass
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_form_instance_id_seq", allocationSize = 1)
-public class CandidateFormInstance {
+public abstract class CandidateFormInstance {
 
     //This is autopopulated if there is no candidate property entity at the time that get or set
     //methods are called on CandidateFormInstance subclasses.
@@ -96,10 +96,7 @@ public class CandidateFormInstance {
      * Subclasses must implement this to return the form name.
      * @return Name of form
      */
-    public String getFormName() {
-        //TODO JC Better way of doing this
-        return null;
-    }
+    public abstract String getFormName();
 
     @NonNull
     protected Candidate getWorkingCandidate() {
@@ -153,34 +150,16 @@ public class CandidateFormInstance {
             property.setName(propertyName);
 
             //Note that workingCandidate may not be a true entity.
-            //It may be pendingCandidate. In that case it doesn't matter because in that
+            //It may be the pendingCandidate field. In that case it doesn't matter because in that
             //case these properties are just temporary holders of the values.
-            //TODO JC Refer to CandidateFormInstanceRepoEventhandler where this is done. It is in the BeforeSave event.
+            //
+            //See CandidateFormInstanceRepoEventhandler where this is done.
+            //It is in the BeforeCreate event.
             //At that point a real candidate entity will be fetched and set as the candidate.
             //Then pendingCandidate and all its candidateProperties will be copied to the
             //real candidate entity.
             property.setCandidate(workingCandidate);
         }
         property.setValue(value);
-    }
-
-    void populateCandidateFromPending() {
-        if (pendingCandidate != null && candidate != null) {
-            //TODO JC copy fields and properties from pendingCandidate to candidate
-            /*
-            import org.mapstruct.Mapper;
-            import org.mapstruct.factory.Mappers;
-
-            @Mapper
-            public interface CandidateMapper {
-                CandidateMapper INSTANCE = Mappers.getMapper(CandidateMapper.class);
-
-                void updateCandidateFromSource(Candidate source, @MappingTarget Candidate candidate);
-            }
-
-             CandidateMapper.INSTANCE.updateCandidateFromSource(pendingCandidate, candidate);
-             */
-            pendingCandidate = null;
-        }
     }
 }
