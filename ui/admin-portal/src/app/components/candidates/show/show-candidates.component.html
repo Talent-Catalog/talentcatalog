@@ -494,10 +494,14 @@
               ></app-potential-duplicate-icon>
             </td>
             <td *ngIf="isShowStage()">
-              <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"
-                 title="Stage that this candidate is at - linking to their candidate opportunity" class="text-secondary">
-                {{getStage(candidate)}}
-              </a>
+              <tc-badge>
+<!--                todo uncomment and add line below to opening tag once CC branch merged -->
+<!--                [color]="getStageBadgeColor(getCandidateOppForThisJob(candidate))">-->
+                <a [routerLink]="getCandidateOpportunityLink(candidate)"
+                   title="Click to navigate to Case">
+                  {{getStage(candidate)}}
+                </a>
+              </tc-badge>
             </td>
             <td>
               <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"
