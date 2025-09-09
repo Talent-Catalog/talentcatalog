@@ -75,7 +75,6 @@ public class CandidateFormInstance {
     private Candidate candidate;
 
     @JsonIgnore
-    @NonNull
     @ManyToOne
     @MapsId("formId")
     @JoinColumn(name = "form_id")
