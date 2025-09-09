@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,12 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.task;
+package org.tctalent.server.integration.helper;
+
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 /**
- * Task assignment associated with an Upload Task.
- *
- * @author John Cameron
+ * Base class for JPA/repository integration tests.
+ * Extends BaseDBIntegrationTest to reuse the PostgreSQL Testcontainer setup.
  */
-public interface UploadTaskAssignment extends TaskAssignment {
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public abstract class BaseJpaIntegrationTest extends BaseDBIntegrationTest {
 }

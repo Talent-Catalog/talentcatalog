@@ -77,6 +77,10 @@ export class CandidateService implements IntakeService {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyexternalid`, request);
   }
 
+  findByPublicId(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbypublicid`, request);
+  }
+
   getByNumber(number: string): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/number/${number}`);
   }

@@ -14,12 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.task;
+package org.tctalent.server.request.candidate;
 
-/**
- * Task assignment associated with an Upload Task.
- *
- * @author John Cameron
- */
-public interface UploadTaskAssignment extends TaskAssignment {
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.request.PagedSearchRequest;
+@Getter
+@Setter
+public class CandidatePublicIdSearchRequest extends PagedSearchRequest {
+    private String publicId;
 }
