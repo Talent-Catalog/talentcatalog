@@ -1,16 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {DateRangePickerComponent} from './tc-date-range-picker.component';
+import {TcDateRangePickerComponent} from './tc-date-range-picker.component';
 
-describe('DateRangePickerComponent', () => {
-  let component: DateRangePickerComponent;
-  let fixture: ComponentFixture<DateRangePickerComponent>;
+describe('TcDateRangePickerComponent', () => {
+  let component: TcDateRangePickerComponent;
+  let fixture: ComponentFixture<TcDateRangePickerComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DateRangePickerComponent]
+      declarations: [TcDateRangePickerComponent]
     });
-    fixture = TestBed.createComponent(DateRangePickerComponent);
+    fixture = TestBed.createComponent(TcDateRangePickerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
