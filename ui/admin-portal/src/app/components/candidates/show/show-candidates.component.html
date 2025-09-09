@@ -92,9 +92,9 @@
     </h2>
   </div>
 
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <!--Toggle description -->
   <div class="mb-3">
