@@ -17,6 +17,7 @@
 package org.tctalent.server.model.db;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -49,7 +50,7 @@ import org.springframework.lang.NonNull;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @MappedSuperclass
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_form_instance_id_seq", allocationSize = 1)
-public abstract class CandidateFormInstance {
+public class CandidateFormInstance {
 
     //This is autopopulated if there is no candidate property entity at the time that get or set
     //methods are called on CandidateFormInstance subclasses.
@@ -78,6 +79,7 @@ public abstract class CandidateFormInstance {
     /**
      * Time that the form was first filled out.
      */
+    @Column(updatable = false)    // JPA: don’t include in SQL UPDATE
     private OffsetDateTime createdDate;
 
     /**
@@ -90,7 +92,10 @@ public abstract class CandidateFormInstance {
      * Subclasses must implement this to return the form name.
      * @return Name of form
      */
-    public abstract String getFormName();
+    public String getFormName() {
+        //TODO JC Better way of doing this
+        return null;
+    }
 
     @NonNull
     protected Candidate getWorkingCandidate() {

@@ -31,12 +31,12 @@ export class CandidateFormService {
     return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
   }
 
-  createOrUpdateMySecondForm(request: MySecondFormData): Observable<MySecondFormData> {
-    return this.http.post<MySecondFormData>(`${this.halApiUrl}/my-second-form`, request);
+  createOrUpdateMySecondForm(candidateNumber: string, request: MySecondFormData): Observable<MySecondFormData> {
+    return this.http.put<MySecondFormData>(`${this.halApiUrl}/my-second-form/${candidateNumber}`, request);
   }
 
-  getMySecondForm(): Observable<MySecondFormData> {
-    return this.http.get<MySecondFormData>(`${this.halApiUrl}/my-second-form`);
+  getMySecondForm(candidateNumber: string): Observable<MySecondFormData> {
+    return this.http.get<MySecondFormData>(`${this.halApiUrl}/my-second-form/${candidateNumber}`);
   }
 
   getFormComponentByName(formName: string): any {

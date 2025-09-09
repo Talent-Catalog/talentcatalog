@@ -3,6 +3,7 @@ import {MySecondFormData} from "../../../model/form";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CandidateFormService} from "../../../services/candidate-form.service";
 import {ICandidateFormComponent} from "../../../model/candidate-form";
+import {CandidateService} from "../../../services/candidate.service";
 
 /**
  * This is effectively a duplicate of MyFirstFormComponent
@@ -33,6 +34,7 @@ export class MySecondFormComponent implements OnInit, ICandidateFormComponent<My
   //They help Angular to optimize rendering updates - but add complexity so not used here.
 
   constructor(
+    private candidateService: CandidateService,
     private candidateFormService: CandidateFormService,
     //Note that UntypedFormBuilder is not used.
     private fb: FormBuilder
@@ -47,7 +49,8 @@ export class MySecondFormComponent implements OnInit, ICandidateFormComponent<My
 
     //Load the current form contents if any
     this.error = null;
-    this.candidateFormService.getMySecondForm().subscribe({
+    let candidateNumber = this.candidateService.getCandNumberStorage();
+    this.candidateFormService.getMySecondForm(candidateNumber).subscribe({
       //this.form.reset is the best way to set form values in typed forms
       next: data => this.form.reset(data),
       error: () => {
@@ -91,8 +94,9 @@ export class MySecondFormComponent implements OnInit, ICandidateFormComponent<My
     //where user input is disabled. This usually is what you want.
     const formData: MySecondFormData = this.form.getRawValue();
 
+    let candidateNumber = this.candidateService.getCandNumberStorage();
     //Note that subscribe is called with an object {} containing the next and error fields
-    this.candidateFormService.createOrUpdateMySecondForm(formData).subscribe({
+    this.candidateFormService.createOrUpdateMySecondForm(candidateNumber, formData).subscribe({
       next: value => {
         this.submitted.emit(value);
 

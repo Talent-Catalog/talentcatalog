@@ -4,7 +4,7 @@
 
 package org.tctalent.server.repository.db;
 
-import java.util.Optional;
+import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.HandleBeforeSave;
@@ -14,7 +14,6 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstance;
-import org.tctalent.server.model.db.CandidateFormInstanceKey;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateFormService;
 import org.tctalent.server.service.db.CandidateService;
@@ -62,6 +61,7 @@ public class CandidateFormInstanceRepoEventHandler {
             candidateFormInstance.setCandidateForm(candidateForm);
 
             candidateFormInstance.setCandidate(candidate);
+            candidateFormInstance.setCreatedDate(OffsetDateTime.now());
         }
     }
 
@@ -78,31 +78,18 @@ public class CandidateFormInstanceRepoEventHandler {
      */
     @HandleBeforeSave
     public void beforeSavePreCreateInstanceIfNeeded(CandidateFormInstance candidateFormInstance) {
-        //Add instance with the currently logged in candidate if the instance doesn't have a candidate
+        //Populate the Candidate Form
+        String formName = candidateFormInstance.getFormName();
+        CandidateForm candidateForm = candidateFormService.getByName(formName);
+        candidateFormInstance.setCandidateForm(candidateForm);
+
+        //Set currently logged in candidate if the instance doesn't have a candidate
         if (candidateFormInstance.getCandidate() == null) {
             Candidate candidate = getLoggedInCandidate();
 
             //TODO JC Copy any pendingCandidate contents across to the candidate
 
             candidateFormInstance.setCandidate(candidate);
-        }
-
-        //Create an instance on the database if one doesn't already exist.
-        final CandidateForm candidateForm = candidateFormInstance.getCandidateForm();
-        final Candidate candidate = candidateFormInstance.getCandidate();
-
-        //Compute the key
-        CandidateFormInstanceKey key =
-            new CandidateFormInstanceKey(candidate.getId(), candidateForm.getId());
-
-        //Check whether an instance already exists.
-        final Optional<CandidateFormInstance> optInstance =
-            candidateFormInstanceRepository.findById(key);
-
-        //If not create one
-        if (optInstance.isEmpty()) {
-            //No instance exists, add one.
-            candidateFormInstanceRepository.save(candidateFormInstance);
         }
     }
 
