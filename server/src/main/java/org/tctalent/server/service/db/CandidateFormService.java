@@ -20,11 +20,6 @@ import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateForm;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 public interface CandidateFormService {
 
     /**
