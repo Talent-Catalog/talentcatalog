@@ -1481,7 +1481,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     }
 
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
-        candidateVisaChecks.sort(null);
+        if (candidateVisaChecks != null) {
+            candidateVisaChecks.sort(null);
+        }
         return candidateVisaChecks;
     }
 
