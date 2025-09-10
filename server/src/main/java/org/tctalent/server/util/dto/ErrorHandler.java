@@ -137,7 +137,9 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ErrorDTO processSpringDataRestResourceNotFoundException(ResourceNotFoundException ex) {
-        //Don't need exception traceback - this is probably just robots probing the site
+        //Don't need exception traceback - this is just Spring Data Rest trying to fetch
+        //an entity that doesn't exist on the DB. Throwing an exception in that case is normal
+        //and expected behaviour.
         LogBuilder.builder(log)
             .action("SpringDataRest.ResourceNotFoundException")
             .message("Processing : ResourceNotFoundException: " + ex)
