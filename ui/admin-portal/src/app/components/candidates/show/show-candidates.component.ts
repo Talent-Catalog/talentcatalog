@@ -791,7 +791,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     const sourceType = getCandidateSourceType(candidateSource);
     let sourcePrefix = isSubmissionList(candidateSource) ? "Submission" : "";
     return candidateSource != null ?
-      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name) : sourceType;
+      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')')
+      : sourceType;
   }
 
   onReviewStatusFilterChange() {
@@ -830,7 +831,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
-
     //Record change
     candidate.selected = selected;
     //Update cache

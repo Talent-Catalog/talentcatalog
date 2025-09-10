@@ -37,7 +37,6 @@
       </ng-template>
 
       {{getBreadcrumb()}} <!-- Todo : Rename this? We simply want the list name or search name -->
-      <span *ngIf="!isDefaultSavedSearch()">({{candidateSource.id}})</span>
       <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doToggleStarred()" class="link-info">
         <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
         <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
@@ -311,7 +310,7 @@
       </div>
 
       <!-- Second Group of Buttons (Shifted Right) -->
-      <div class="col d-flex justify-content-end">
+      <div class="col d-flex justify-content-end pb-2">
         <div class="d-flex flex-wrap buttons-spacing align-content-between">
           <tc-button [type]="'secondary'"
                      *ngIf="isImportable()"
@@ -352,11 +351,13 @@
 
         </div>
       </div>
-      <small class="text-muted py-1">Total selections: {{numberSelections}}</small>
+      <small *ngIf="numberSelections > 0" class="text-muted">
+        {{numberSelections}} candidate(s) selected
+      </small>
     </div>
 
 <!--    Table of list contents - plus candidate details of selected candidate-->
-    <div>
+    <div class="pt-2">
 
 <!--     Table of list contents -->
       <tc-table
@@ -533,6 +534,7 @@
             <td>
               <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"
                      (ngModelChange)="onSelectionChange(candidate, $event)"
+                     (click)="$event.stopPropagation()"
                      [ngModel]="isSelected(candidate)"
                      [checked]="isSelected(candidate)">
             </td>
