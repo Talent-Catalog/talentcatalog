@@ -24,7 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.DtoType;
+import org.tctalent.server.api.dto.DtoType;
 
 /**
  * Request that may include paging and sorting fields.
