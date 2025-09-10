@@ -578,6 +578,7 @@ import {
 import {SharedModule} from "./shared/shared.module";
 import {ChatMuteToggleButtonComponent} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 import {ViewPrivacyPolicyInfoComponent} from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
+import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
 
 @NgModule({
   declarations: [
@@ -944,6 +945,7 @@ import {ViewPrivacyPolicyInfoComponent} from './components/candidates/view/priva
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {
