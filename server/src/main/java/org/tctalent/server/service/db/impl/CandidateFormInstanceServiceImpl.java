@@ -28,6 +28,7 @@ import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.MyFirstForm;
+import org.tctalent.server.model.db.mapper.CandidateMapper;
 import org.tctalent.server.repository.db.MyFirstFormRepository;
 import org.tctalent.server.request.form.MyFirstFormData;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
@@ -39,6 +40,7 @@ import org.tctalent.server.service.db.CandidatePropertyService;
 public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceService {
 
     private final CandidateFormService candidateFormService;
+    private final CandidateMapper candidateMapper;
     private final CandidatePropertyService candidatePropertyService;
     private final MyFirstFormRepository myFirstFormRepository;
 
@@ -79,10 +81,9 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
     @Override
     public void populateCandidateFromPending(
         @NonNull Candidate pendingCandidate, @NonNull Candidate candidate) {
-            //TODO JC copy fields and properties from pendingCandidate to candidate
 
-            //TODO JC What about other stuff - need Mapper
-            candidate.setCity( pendingCandidate.getCity() );
+            //This copies across non-null fields - except for Candidate Properties
+            candidateMapper.updateCandidateFromSource(pendingCandidate, candidate);
 
             //Copy across properties
             //Note that we can't just simply transfer properties directly from one candidate
@@ -95,20 +96,6 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
                         candidate, entry.getKey(), entry.getValue().getValue(), null);
                 }
             }
-
-            /*
-            import org.mapstruct.Mapper;
-            import org.mapstruct.factory.Mappers;
-
-            @Mapper
-            public interface CandidateMapper {
-                CandidateMapper INSTANCE = Mappers.getMapper(CandidateMapper.class);
-
-                void updateCandidateFromSource(Candidate source, @MappingTarget Candidate candidate);
-            }
-
-             CandidateMapper.INSTANCE.updateCandidateFromSource(pendingCandidate, candidate);
-             */
     }
 
     private CandidateForm getMyFirstForm() {
