@@ -250,6 +250,13 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         @Param("userSourceCountries") Set<Country> userSourceCountries,
         Pageable pageable);
 
+    @Query(" select distinct c from Candidate c "
+        + " where lower(c.publicId) like lower(:publicId) "
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidatePublicId(@Param("publicId") String publicId,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
     @Query(" select c from Candidate c "
             + " join c.user u "
             + " where c.id = :id "

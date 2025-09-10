@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.request.form;
 
-public enum DtoType {
-  PUBLIC_ID_ONLY,
-  MINIMAL,
-  PREVIEW,
-  FULL,
-  EXTENDED,
-  API
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * TODO JC Doc
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+public class MyFirstFormUpdateRequest {
+    String city;
+    String hairColour;
 }
