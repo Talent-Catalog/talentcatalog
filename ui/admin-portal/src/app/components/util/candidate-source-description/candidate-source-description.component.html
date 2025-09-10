@@ -14,21 +14,18 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
 <form [formGroup]="form">
 
-  <div class="mb-3 flex-fill">
-    <label class="h6 form-label" for="description">
-      <span class="me-2 font-weight-normal">Description</span>
-      <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
-    </label>
-
-    <textarea id="description" class="md-textarea-auto form-control" rows="2"
-              [readOnly]="!isEditable()"
-              placeholder="Describe the purpose of this {{ isSubmissionList() ? 'submission' : ''}} {{ isSavedList() ? 'list' : 'search'}}..."
-              [formControlName]="'description'"></textarea>
+  <div class="flex-fill">
+    <tc-textarea [disabled]="!isEditable()"
+                 placeholder="Purpose of this {{ isSubmissionList() ? 'submission' : ''}} {{ isSavedList() ? 'list' : 'search'}}..."
+                 [formControlName]="'description'">
+    </tc-textarea>
+    <app-autosave-status class="ms-1" [saving]="saving" [typing]="typing"></app-autosave-status>
   </div>
 
 </form>
