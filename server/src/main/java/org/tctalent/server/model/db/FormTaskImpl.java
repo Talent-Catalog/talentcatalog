@@ -16,48 +16,23 @@
 
 package org.tctalent.server.model.db;
 
-
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.task.Task;
+import org.tctalent.server.model.db.task.FormTask;
 import org.tctalent.server.model.db.task.TaskType;
 
 /**
- * Base implementation of all tasks.
+ * Default Implementation
+ *
+ * @author John Cameron
  */
-@Entity(name="Task")
-@Table(name = "task")
-@SequenceGenerator(name = "seq_gen", sequenceName = "task_id_seq", allocationSize = 1)
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "task_type")
-@DiscriminatorValue("Task")
+@Entity(name="FormTask")
+@DiscriminatorValue("FormTask")
 @Getter
 @Setter
-public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Task {
-    private boolean admin;
-
-    //Form tasks only
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_form_id")
-    private CandidateForm candidateForm;
-
-    private Integer daysToComplete;
-    private String description;
-    private String docLink;
-    private String displayName;
-    private String name;
-    private boolean optional;
-
+public class FormTaskImpl extends TaskImpl implements FormTask {
     /*
       Note that this should not be necessary because the interface provides a default implementation
       but PropertyUtils does not find this taskType property if it is just provided by the default
@@ -66,6 +41,6 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
      */
     @Override
     public TaskType getTaskType() {
-        return Task.super.getTaskType();
+        return FormTask.super.getTaskType();
     }
 }
