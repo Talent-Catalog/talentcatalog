@@ -140,7 +140,6 @@
       </div>
     </div>
 
-
     <!-- Review status -->
     <div *ngIf="isReviewable()">
       <label class="form-label" for="reviewStatuses">Don't show candidates reviewed as: </label>
@@ -173,16 +172,17 @@
       </ng-select>
     </div>
 
-    <div class="d-flex text-muted small align-items-baseline flex-wrap-reverse justify-content-sm-start pb-3">
+<!--    Delete if not keeping, uncomment otherwise -->
+<!--    <div class="d-flex text-muted small align-items-baseline flex-wrap-reverse justify-content-sm-start pb-3">-->
 
-      <!--    Results summary-->
-      <div class="d-flex flex-grow-1 justify-content-end">
-        <div class="text-end">
-          <span>{{results?.totalElements}} candidates returned</span><br/>
-          <span class="small">Timestamp {{timestamp | date: 'customDateTime'}}</span>
-        </div>
-      </div>
-    </div>
+<!--      &lt;!&ndash;    Results summary&ndash;&gt;-->
+<!--      <div class="d-flex flex-grow-1 justify-content-end">-->
+<!--        <div class="text-end">-->
+<!--          <span>{{results?.totalElements}} candidates returned</span><br/>-->
+<!--          <span class="small">Timestamp {{timestamp | date: 'customDateTime'}}</span>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
 
     <div class="row">
       <!-- First Group of Buttons (Left-aligned) -->
@@ -352,7 +352,7 @@
     </div>
 
 <!--    Table of list contents - plus candidate details of selected candidate-->
-    <div class="split-view">
+    <div>
 
 <!--     Table of list contents -->
       <tc-table
