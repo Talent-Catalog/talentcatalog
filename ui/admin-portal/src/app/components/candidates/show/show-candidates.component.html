@@ -24,6 +24,7 @@
   <div class="d-flex flex-column">
 
     <h2 class="heading-sm mb-2 d-inline-flex align-items-center gap-2">
+
       <!-- Submission list / list / search icon-->
       <ng-container *ngIf="isSubmissionList(); else savedListOrSearch">
         <i class="fas fa-rectangle-list"></i>
@@ -45,47 +46,47 @@
         <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
         <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
       </a>
-    </h2>
 
-    <div class="d-inline-flex mb-2 flex-wrap align-items-center gap-2 text-muted">
       <!-- Icons -->
       <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()" class="link-info">
-        <i class="fas fa-link fa-lg" title="Copy shareable link"></i>
+        <i class="fas fa-link" title="Copy shareable link"></i>
       </a>
       <a target="_blank" *ngIf="isSavedList()" (click)="doCopySource()" class="link-info">
-        <i class="fas fa-clone fa-lg" title="Copy"></i>
+        <i class="fas fa-clone" title="Copy"></i>
       </a>
       <a target="_blank" *ngIf="hasSavedSearchSource()" (click)="doShowSearch()" class="link-info">
-        <i class="fas fa-search fa-lg" title="Show Search"></i>
+        <i class="fas fa-search" title="Show Search"></i>
       </a>
       <a target="_blank" *ngIf="isEditable() && !isDefaultSavedSearch()" (click)="doEditSource()" class="link-info">
-        <i class="fas fa-edit fa-lg" title="Rename"></i>
+        <i class="fas fa-edit" title="Rename"></i>
       </a>
       <a target="_blank" *ngIf="isEditable()" (click)="onSelectColumns()" class="link-info">
-        <i class="fas fa-columns fa-lg" title="Select columns to display"></i>
+        <i class="fas fa-columns" title="Select columns to display"></i>
       </a>
       <a target="_blank" *ngIf="canAssignTasks() && !isDefaultSavedSearch()" (click)="assignTasks()" class="link-info">
-        <i class="fas fa-tasks fa-lg" title="Assign/show tasks"></i>
+        <i class="fas fa-tasks" title="Assign/show tasks"></i>
       </a>
       <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()" class="link-info">
-        <i class="fas fa-chart-bar fa-lg" title="Run stats"></i>
+        <i class="fas fa-chart-bar" title="Run stats"></i>
       </a>
       <a target="_blank" *ngIf="candidateSource?.sfJobOpp" [routerLink]="['/job',candidateSource.sfJobOpp.id]" class="link-info">
-        <i class="fa-solid fa-briefcase fa-lg" title="Associated Job"></i>
+        <i class="fa-solid fa-briefcase" title="Associated Job"></i>
       </a>
       <a target="_blank" *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()" (click)="doShowSalesforceLink()" class="link-info">
-        <i class="fab fa-salesforce fa-lg" title="Associated Job Opportunity on Salesforce"></i>
+        <i class="fab fa-salesforce" title="Associated Job Opportunity on Salesforce"></i>
       </a>
       <a target="_blank" *ngIf="isSavedList() && !isReadOnly()" (click)="doShowListFolder()" class="link-info">
-        <i class="fab fa-google-drive fa-lg" title="Create/show Google folder"></i>
+        <i class="fab fa-google-drive" title="Create/show Google folder"></i>
       </a>
       <a target="_blank" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()" class="link-info">
-        <i class="fas fa-globe fa-lg" title="Show published sheet"></i>
+        <i class="fas fa-globe" title="Show published sheet"></i>
       </a>
       <a target="_blank" *ngIf="timestamp" (click)="doSearch(true)" class="link-info">
-        <i class="fas fa-sync fa-lg" title="Refresh data"></i>
+        <i class="fas fa-sync" title="Refresh data"></i>
       </a>
-    </div>
+
+    </h2>
+
   </div>
 
   <tc-alert type="danger" *ngIf="error">
@@ -107,6 +108,39 @@
        class="mt-2">
     <app-candidate-source-description [candidateSource]="candidateSource">
     </app-candidate-source-description>
+  </div>
+
+  <!-- Inputs -->
+  <div *ngIf="isSavedList()" class="row row-cols-auto my-2">
+    <div *ngIf="isContentModifiable() && !isEmployerPartner()" class="col">
+      <input id="quickNumberOrNameSearch"
+             type="text" class="form-control" #input
+             [ngbTypeahead]="doNumberOrNameSearch"
+             [resultTemplate]="rt"
+             [inputFormatter]="renderCandidateRow"
+             [editable]="false"
+             (selectItem)="selectCandidateToAdd($event, input)"
+             placeholder="Add (name or #)..."/>
+      <ng-template #rt let-r="result" let-t="term">
+        <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+      </ng-template>
+      <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
+    </div>
+    <div *ngIf="isSavedList()" class="col">
+      <form [formGroup]="searchInResultsForm">
+        <div class="d-flex align-items-center">
+          <div>
+            <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
+                   id="keyword" autofocus>
+          </div>
+          <div *ngIf="isJobList()" class="ms-4 form-check-reverse form-check-inline align-items-center">
+            <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
+            <tc-label [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</tc-label>
+          </div>
+        </div>
+
+      </form>
+    </div>
   </div>
 
   <div class="results-area">
@@ -172,7 +206,7 @@
       </ng-select>
     </div>
 
-<!--    Delete if not keeping, uncomment otherwise -->
+<!--    todo Delete if not keeping, uncomment otherwise -->
 <!--    <div class="d-flex text-muted small align-items-baseline flex-wrap-reverse justify-content-sm-start pb-3">-->
 
 <!--      &lt;!&ndash;    Results summary&ndash;&gt;-->
@@ -188,7 +222,7 @@
       <!-- First Group of Buttons (Left-aligned) -->
       <div class="col-auto d-flex justify-content-start flex-wrap">
         <div class="d-flex flex-wrap buttons-spacing align-content-between gap-2">
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      [disabled]="!isSelection()"
                      (click)="saveSelection()"
                      class="me-2"
@@ -198,7 +232,7 @@
             <i class="fas fa-list"></i>
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      *ngIf="isSavedList()"
                      [disabled]="!isSelection()"
                      (click)="copyEmails()"
@@ -208,7 +242,7 @@
             <i class="fa fa-envelope"></i>
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      *ngIf="canUpdateStatuses()"
                      [disabled]="!isSelection()"
                      (click)="updateStatusOfSelection()"
@@ -219,7 +253,7 @@
             Status change
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      *ngIf="canResolveTasks()"
                      [disabled]="!isSelection()"
                      (click)="resolveTaskAssignments()"
@@ -229,7 +263,7 @@
             <i class="fas fa-user-check"></i> Resolve tasks
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                      (click)="createUpdateSalesforce()"
                      class="me-2"
@@ -238,7 +272,7 @@
             <i class="fas fa-user-check"></i> Update Case/s <i class="fa-solid fa-address-book"></i>
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      *ngIf="!isSubmissionList() && isContentModifiable()"
                      [disabled]="!isSelection()"
                      (click)="removeSelectedCandidatesFromList()"
@@ -247,7 +281,7 @@
             <i class="fas fa-user-check"></i> Remove
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                      [disabled]="!isSelection()"
                      (click)="closeSelectedOpportunities()"
@@ -257,7 +291,7 @@
             <i class="fas fa-user-check"></i> Remove (Close)
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      [disabled]="!isSelection()"
                      (click)="clearSelectionAndDoSearch()"
                      class="me-2"
@@ -265,7 +299,7 @@
             Clear <i class="fas fa-user-check"></i>
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'primary'"
                      *ngIf="isSwapSelectionSupported()"
                      (click)="swapSelection()"
                      class="me-2"
@@ -300,55 +334,25 @@
           <tc-button [type]="'secondary'"
                      *ngIf="isPublishable()"
                      (click)="modifyExportColumns()"
+                     class="me-2"
                      title="Publish candidates to be shared externally - eg with employers">
             <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>
             Publish <i class="fas fa-globe"></i>
           </tc-button>
 
-          <button  *ngIf= "hasPublishedDoc() && isContentModifiable()
-                      && salesforceService.joblink(candidateSource)"
-                   class="me-2" (click)="importEmployerFeedback()"
-                   title="Import employer feedback from published list">
+          <tc-button [type]="'secondary'"
+                     *ngIf= "hasPublishedDoc() && isContentModifiable()
+                     && salesforceService.joblink(candidateSource)"
+                     class="me-2"
+                     (click)="importEmployerFeedback()"
+                     title="Import employer feedback from published list">
             <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
             Feedback <i class="fas fa-globe"></i>
-          </button>
+          </tc-button>
 
         </div>
       </div>
-      <small class="text-muted pb-1">Total selections: {{numberSelections}}</small>
-    </div>
-
-    <!-- Third Group of Inputs (Right-aligned) -->
-    <div *ngIf="isSavedList()" class="row row-cols-auto justify-content-end mb-2">
-      <div *ngIf="isContentModifiable() && !isEmployerPartner()" class="col">
-        <input id="quickNumberOrNameSearch"
-               type="text" class="form-control" #input
-               [ngbTypeahead]="doNumberOrNameSearch"
-               [resultTemplate]="rt"
-               [inputFormatter]="renderCandidateRow"
-               [editable]="false"
-               (selectItem)="selectCandidateToAdd($event, input)"
-               placeholder="Add (name or #)..."/>
-        <ng-template #rt let-r="result" let-t="term">
-          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
-        </ng-template>
-        <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
-      </div>
-      <div *ngIf="isSavedList()" class="col">
-        <form [formGroup]="searchInResultsForm">
-          <div class="d-flex align-items-center">
-            <div>
-              <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
-                     id="keyword" autofocus>
-            </div>
-            <div *ngIf="isJobList()" class="ms-2 form-check-reverse form-check-inline align-items-center me-2">
-              <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
-              <label class="form-check-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
-            </div>
-          </div>
-
-        </form>
-      </div>
+      <small class="text-muted py-1">Total selections: {{numberSelections}}</small>
     </div>
 
 <!--    Table of list contents - plus candidate details of selected candidate-->
