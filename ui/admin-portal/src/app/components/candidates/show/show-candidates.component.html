@@ -312,7 +312,7 @@
       <!-- Second Group of Buttons (Shifted Right) -->
       <div class="col d-flex justify-content-end pb-2">
         <div class="d-flex flex-wrap buttons-spacing align-content-between">
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'outline'"
                      *ngIf="isImportable()"
                      (click)="importCandidates()"
                      class="me-2"
@@ -321,7 +321,7 @@
             Import <i class="fas fa-file-excel"></i>
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'outline'"
                      *ngIf="!isSavedList() && isExportable()"
                      (click)="exportCandidates()"
                      class="me-2"
@@ -330,7 +330,7 @@
             Export <i class="fas fa-file-excel"></i>
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'outline'"
                      *ngIf="isPublishable()"
                      (click)="modifyExportColumns()"
                      class="me-2"
@@ -339,7 +339,7 @@
             Publish <i class="fas fa-globe"></i>
           </tc-button>
 
-          <tc-button [type]="'secondary'"
+          <tc-button [type]="'outline'"
                      *ngIf= "hasPublishedDoc() && isContentModifiable()
                      && salesforceService.joblink(candidateSource)"
                      class="me-2"
