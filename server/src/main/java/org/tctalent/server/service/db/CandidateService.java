@@ -58,6 +58,7 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
@@ -140,6 +141,8 @@ public interface CandidateService {
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
+
+    Page<Candidate> searchCandidates(CandidatePublicIdSearchRequest request);
 
     /**
      * Returns a set of the ids of all candidates resulting from the given SQL query.

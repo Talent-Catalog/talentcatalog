@@ -14,34 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.api.dto;
 
-import jakarta.validation.constraints.NotNull;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
- *  Utility for selecting a ExportColumns DTO builder
+ * TODO JC Doc
  *
  * @author John Cameron
  */
-public class ExportColumnsBuilderSelector {
+public class SystemLanguageDtoBuilder extends DtoBuilder {
 
-  public @NotNull DtoBuilder selectBuilder() {
-    return exportColumnDto();
-  }
-
-  private DtoBuilder exportColumnDto() {
-    return new DtoBuilder()
-        .add("key")
-        .add("properties", publishedDocColumnPropsDto())
-        ;
-  }
-
-  private DtoBuilder publishedDocColumnPropsDto() {
-    return new DtoBuilder()
-        .add("header")
-        .add("constant")
-        ;
-  }
-
+    public SystemLanguageDtoBuilder() {
+        this.add("id")
+            .add("language")
+            .add("label")
+            .add("rtl");
+    }
 }

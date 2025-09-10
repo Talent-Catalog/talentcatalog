@@ -42,6 +42,7 @@ import {
 import {
   DescriptionTermComponent
 } from './components/description-list/description-term/description-term.component';
+import {TcModalComponent} from './components/modal/tc-modal.component';
 import {AlertComponent} from './components/alert/alert.component';
 
 @NgModule({
@@ -64,6 +65,7 @@ import {AlertComponent} from './components/alert/alert.component';
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    TcModalComponent,
     AlertComponent
   ],
   imports: [
@@ -91,6 +93,7 @@ import {AlertComponent} from './components/alert/alert.component';
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    TcModalComponent,
     AlertComponent
   ]
 })

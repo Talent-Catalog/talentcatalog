@@ -14,32 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request;
+package org.tctalent.server.api.dto;
 
-import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.api.dto.DtoType;
-
-/**
- * Fetching data by ids
- *
- * @author John Cameron
- */
-@Getter
-@Setter
-@ToString
-public class IdsRequest {
-    /**
-     * If non-null Specifies the type of DTO data to be returned for each search result.
-     */
-    @Nullable
-    private DtoType dtoType;
-
-    /**
-     * Ids of data requested
-     */
-    Set<Long> ids;
+public enum DtoType {
+  PUBLIC_ID_ONLY,
+  MINIMAL,
+  PREVIEW,
+  FULL,
+  EXTENDED,
+  API
 }
