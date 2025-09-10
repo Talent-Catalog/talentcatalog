@@ -7,6 +7,7 @@ package org.tctalent.server.repository.db;
 import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
+import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.exception.InvalidSessionException;
@@ -77,6 +78,12 @@ public class CandidateFormInstanceRepoEventHandler {
 
         //Set the created date
         candidateFormInstance.setCreatedDate(OffsetDateTime.now());
+    }
+
+    @HandleBeforeSave
+    public void beforeSave(CandidateFormInstance candidateFormInstance) {
+        //Set the updated date
+        candidateFormInstance.setUpdatedDate(OffsetDateTime.now());
     }
 
     private Candidate getLoggedInCandidate() {
