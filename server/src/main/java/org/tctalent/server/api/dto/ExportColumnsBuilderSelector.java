@@ -14,32 +14,36 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request;
+package org.tctalent.server.api.dto;
 
-import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.api.dto.DtoType;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.stereotype.Component;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
- * Fetching data by ids
+ *  Utility for selecting a ExportColumns DTO builder
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-@ToString
-public class IdsRequest {
-    /**
-     * If non-null Specifies the type of DTO data to be returned for each search result.
-     */
-    @Nullable
-    private DtoType dtoType;
+@Component
+public class ExportColumnsBuilderSelector {
 
-    /**
-     * Ids of data requested
-     */
-    Set<Long> ids;
+  public @NotNull DtoBuilder selectBuilder() {
+    return exportColumnDto();
+  }
+
+  private DtoBuilder exportColumnDto() {
+    return new DtoBuilder()
+        .add("key")
+        .add("properties", publishedDocColumnPropsDto())
+        ;
+  }
+
+  private DtoBuilder publishedDocColumnPropsDto() {
+    return new DtoBuilder()
+        .add("header")
+        .add("constant")
+        ;
+  }
+
 }

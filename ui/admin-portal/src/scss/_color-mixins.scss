@@ -18,6 +18,7 @@
 @mixin text-color-error    { color: color(red, 700); }
 @mixin text-color-info     { color: color(blue, 700); }
 @mixin text-color-disabled   { color: color(gray, 500); }
+@mixin text-color-primary   { color: color(primary, 500); }
 
 // --- Descriptive Text Colors ---
 @mixin text-color-red      { color: color(red, 700); }

@@ -832,14 +832,15 @@ import {
   EditMaxEducationLevelComponent
 } from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
 import {SharedModule} from "./shared/shared.module";
+import {PartnerDpaComponent} from './components/util/partner-dpa/partner-dpa.component';
+import {SafeHtmlPipe} from './pipes/safehtml.pipe';
 import {
   ChatMuteToggleButtonComponent
 } from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
 import {
   ViewPrivacyPolicyInfoComponent
 } from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
-import {PartnerDpaComponent} from './components/util/partner-dpa/partner-dpa.component';
-import {SafeHtmlPipe} from './pipes/safehtml.pipe';
+import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
 
 @NgModule({
   declarations: [
@@ -1208,6 +1209,7 @@ import {SafeHtmlPipe} from './pipes/safehtml.pipe';
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {
