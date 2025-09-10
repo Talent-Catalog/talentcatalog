@@ -5,8 +5,6 @@
 package org.tctalent.server.repository.db;
 
 import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
@@ -15,10 +13,9 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstance;
-import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateFormInstanceService;
 import org.tctalent.server.service.db.CandidateFormService;
-import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 
 /**
@@ -53,42 +50,32 @@ public class CandidateFormInstanceRepoEventHandler {
     private final AuthService authService;
     private final CandidateService candidateService;
     private final CandidateFormService candidateFormService;
-    private final CandidatePropertyService candidatePropertyService;
+    private final CandidateFormInstanceService candidateFormInstanceService;
 
     @HandleBeforeCreate
     public void beforeCreate(CandidateFormInstance candidateFormInstance) {
 
+        //Populate candidateFormInstance with CandidateForm if needed
         if (candidateFormInstance.getCandidateForm() == null) {
             String formName = candidateFormInstance.getFormName();
             CandidateForm candidateForm = candidateFormService.getByName(formName);
             candidateFormInstance.setCandidateForm(candidateForm);
         }
 
+        //Populate candidateFormInstance with Candidate if needed - and populate fields
         if (candidateFormInstance.getCandidate() == null) {
             Candidate candidate = getLoggedInCandidate();
 
             //Copy any pendingCandidate contents across to the candidate
             Candidate pendingCandidate = candidateFormInstance.getPendingCandidate();
             if (pendingCandidate != null) {
-                //TODO JC What about other stuff - need Mapper
-                candidate.setCity( pendingCandidate.getCity() );
-
-                //Copy across properties
-                //Note that we can't just simply transfer properties directly from one candidate
-                //object to another because each property is associated with a particular candidate.
-                //We have to use the CandidatePropertyService.
-                Map<String, CandidateProperty> pendingProperties = pendingCandidate.getCandidateProperties();
-                if (pendingProperties != null) {
-                    for (Entry<String, CandidateProperty> entry : pendingProperties.entrySet()) {
-                        candidatePropertyService.createOrUpdateProperty(
-                            candidate, entry.getKey(), entry.getValue().getValue(), null);
-                    }
-                }
+                candidateFormInstanceService.populateCandidateFromPending(pendingCandidate, candidate);
             }
 
             candidateFormInstance.setCandidate(candidate);
         }
 
+        //Set the created date
         candidateFormInstance.setCreatedDate(OffsetDateTime.now());
     }
 

@@ -41,4 +41,16 @@ public interface CandidateFormInstanceService {
 
     @NonNull
     Optional<MyFirstForm> getMyFirstForm(@NonNull Candidate candidate);
+
+    /**
+     * Copies non-null fields in the given pendingCandidate to the given candidate.
+     * <p/>
+     * This includes CandidateProperties and other linked candidate entities.
+     * @param pendingCandidate Temporary candidate entity containing values set on a
+     *                         Candidate form subclass of CandidateFormInstance
+     * @param candidate Target candidate (typically a live entity) which is populated
+     */
+    void populateCandidateFromPending(
+        @NonNull Candidate pendingCandidate, @NonNull Candidate candidate);
+
 }
