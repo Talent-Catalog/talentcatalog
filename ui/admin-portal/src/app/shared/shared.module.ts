@@ -18,6 +18,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
 import {
+  NgbInputDatepicker,
   NgbAlert,
   NgbDropdownModule,
   NgbNavModule,
@@ -63,6 +64,9 @@ import {
   TcDropdownDividerComponent
 } from './components/dropdown/dropdown-divider/tc-dropdown-divider.component';
 import {RouterLink} from "@angular/router";
+import {
+  TcDateRangePickerComponent
+} from './components/date-range-picker/tc-date-range-picker.component'
 
 @NgModule({
   declarations: [
@@ -90,7 +94,8 @@ import {RouterLink} from "@angular/router";
     TcDropdownButtonComponent,
     TcDropdownItemComponent,
     TcDropdownMenuComponent,
-    TcDropdownDividerComponent
+    TcDropdownDividerComponent,
+    TcDateRangePickerComponent
   ],
   imports: [
     CommonModule,
@@ -98,7 +103,8 @@ import {RouterLink} from "@angular/router";
     NgbNavModule,
     NgbAlert,
     NgbDropdownModule,
-    RouterLink
+    RouterLink,
+    NgbInputDatepicker
   ],
   exports: [
     ButtonComponent,
@@ -125,7 +131,8 @@ import {RouterLink} from "@angular/router";
     TcDropdownButtonComponent,
     TcDropdownItemComponent,
     TcDropdownMenuComponent,
-    TcDropdownDividerComponent
+    TcDropdownDividerComponent,
+    TcDateRangePickerComponent
   ]
 })
 export class SharedModule { }
