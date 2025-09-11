@@ -113,7 +113,6 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("maritalStatus")
                 .add("maritalStatusNotes")
-                .add("monitoringEvaluationConsent")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", educationLevelDto())

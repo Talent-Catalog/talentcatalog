@@ -14,13 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface MyFirstForm {
-  id?: number;
-  city?: string;
-  hairColour?: string;
-}
-
-export interface MyFirstFormUpdateRequest {
+export interface MyFirstFormData {
   city?: string;
   hairColour?: string;
 }

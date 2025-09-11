@@ -1,0 +1,37 @@
+<ng-template #content>
+  <ng-content></ng-content>
+</ng-template>
+
+<ng-container [ngSwitch]="href ? 'href' : (routerLink ? 'routerLink' : 'button')">
+
+  <!-- RouterLink -->
+  <a *ngSwitchCase="'routerLink'"
+     ngbDropdownItem
+     [routerLink]="routerLink"
+     [ngClass]="itemClass"
+     [disabled]="disabled ? true : null"
+     (click)="emit($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </a>
+
+  <!-- Href -->
+  <a *ngSwitchCase="'href'"
+     ngbDropdownItem
+     [attr.href]="href"
+     [ngClass]="itemClass"
+     [disabled]="disabled ? true : null"
+     (click)="emit($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </a>
+
+  <!-- Button -->
+  <button *ngSwitchDefault
+          type="button"
+          ngbDropdownItem
+          [disabled]="disabled"
+          [ngClass]="itemClass"
+          (click)="emit($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </button>
+
+</ng-container>

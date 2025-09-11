@@ -737,9 +737,6 @@ import {
 import {
   LanguageThresholdComponent
 } from './components/candidates/visa/visa-job-assessments/language-threshold/language-threshold.component';
-import {
-  MonitoringEvaluationConsentComponent
-} from './components/candidates/intake/monitoring-evaluation-consent/monitoring-evaluation-consent.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {
   UserChangePasswordComponent
@@ -1137,7 +1134,6 @@ import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
     ChatReadStatusComponent,
     ListHomeComponent,
     LanguageThresholdComponent,
-    MonitoringEvaluationConsentComponent,
     ResetPasswordComponent,
     UserChangePasswordComponent,
     NclcScoreValidationComponent,
