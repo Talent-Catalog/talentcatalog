@@ -43,6 +43,7 @@ import {
   DescriptionTermComponent
 } from './components/description-list/description-term/description-term.component';
 import {AlertComponent} from './components/alert/alert.component';
+import {TcIconComponent} from './components/icon-component/tc-icon.component';
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import {AlertComponent} from './components/alert/alert.component';
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
-    AlertComponent
+    AlertComponent,
+    TcIconComponent
   ],
   imports: [
     CommonModule,
@@ -91,7 +93,8 @@ import {AlertComponent} from './components/alert/alert.component';
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
-    AlertComponent
+    AlertComponent,
+    TcIconComponent
   ]
 })
 export class SharedModule { }
