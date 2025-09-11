@@ -19,6 +19,7 @@ package org.tctalent.server.model.db.task;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.Auditable;
+import org.tctalent.server.model.db.CandidateForm;
 
 /**
  * Describes a task which can be assigned to candidates.
@@ -34,6 +35,10 @@ public interface Task extends Auditable {
      * candidate.
      */
     boolean isAdmin();
+
+    //Form tasks only
+    CandidateForm getCandidateForm();
+    void setCandidateForm(CandidateForm form);
 
     /**
      * Number of days estimated needed to complete this task.

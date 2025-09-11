@@ -20,8 +20,11 @@ package org.tctalent.server.model.db;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -42,6 +45,12 @@ import org.tctalent.server.model.db.task.TaskType;
 @Setter
 public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Task {
     private boolean admin;
+
+    //Form tasks only
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_form_id")
+    private CandidateForm candidateForm;
+
     private Integer daysToComplete;
     private String description;
     private String docLink;

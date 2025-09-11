@@ -1,0 +1,28 @@
+/*!
+ * Copyright (c) 2025 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+@import '../color-mixins';
+
+// Set opacity of modal background
+.modal-backdrop.show {
+  opacity: 0.9;
+  @include background-color-light;
+}
+
+.modal-content {
+  border: 1px solid;
+  @include border-color-base;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%);
+}

@@ -1,0 +1,46 @@
+@import '../../../../../scss/support-colors';
+@import '../../../../../scss/typography-mixins';
+@import '../../../../../scss/color-mixins';
+
+.tc-description-item {
+  display: grid;
+}
+
+.tc-description-term {
+  @include paragraph-sm;
+  @include text-color-secondary;
+}
+
+.tc-description-details {
+  @include paragraph-sm;
+  @include text-color-body;
+}
+
+:host-context(.tc-description-list.grid-column) {
+
+    .tc-description-item {
+      grid-template-columns: 1fr; // dt stacked above dd
+
+    .tc-description-term {
+      padding-bottom: 0.5rem; // space between term and details
+      padding-right: 0;
+    }
+  }
+
+}
+
+:host-context(.tc-description-list.grid-row) {
+  .tc-description-item {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+  }
+
+  .tc-description-term {
+    white-space: nowrap;
+    padding-right: 0.5rem;
+  }
+
+  .tc-description-details {
+    overflow-wrap: break-word;
+  }
+}
