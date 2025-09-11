@@ -61,6 +61,14 @@
   </app-view-upload-task>
 </ng-container>
 
+<ng-container *ngIf="selectedTask.task.taskType === 'Form'">
+  <app-view-form-task
+    [taskAssignment]="selectedTask"
+    (taskCompleted)="completedFormTask($event)"
+  >
+  </app-view-form-task>
+</ng-container>
+
 <form [formGroup]="form" (submit)="submitTask()">
   <!-- OTHER ACTIONS -->
   <!-- Only show these containers if the task is NOT abandoned. If the task is abandoned we want to hide these containers until the task is un-abandoned. -->

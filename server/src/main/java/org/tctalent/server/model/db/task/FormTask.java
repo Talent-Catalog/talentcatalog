@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,19 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.form;
-
-import lombok.Getter;
-import lombok.Setter;
+package org.tctalent.server.model.db.task;
 
 /**
- * TODO JC Doc
+ * Particular kind of task where the candidate needs to fill out a form.
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-public class MyFirstFormUpdateRequest {
-    String city;
-    String hairColour;
+public interface FormTask extends Task {
+    default TaskType getTaskType() {
+        return TaskType.Form;
+    }
 }

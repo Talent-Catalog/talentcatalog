@@ -26,6 +26,7 @@ import org.tctalent.server.model.db.TaskImpl;
  * @author John Cameron
  */
 public enum TaskType {
+    Form,
     Question,
     Simple,
     Upload
