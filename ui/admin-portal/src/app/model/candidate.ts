@@ -49,6 +49,7 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   rank?: number;
+  pendingTerms?: boolean;
   candidateNumber: string;
   publicId?: string;
   status: string;
@@ -235,7 +236,6 @@ export interface CandidateIntakeData {
   militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   maritalStatusNotes?: string;
-  monitoringEvaluationConsent?: YesNo;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;

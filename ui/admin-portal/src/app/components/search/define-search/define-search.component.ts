@@ -122,7 +122,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   error: any;
   loading: boolean;
-  pgOnlySqlSearch: boolean;
+  useOldSearch: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
@@ -222,6 +222,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       educationMajors: [[]],
       nationalities: [[]],
       regoReferrerParam: [null],
+      regoUtmCampaign: [null],
+      regoUtmSource: [null],
+      regoUtmMedium: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],
@@ -230,7 +233,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       listAllIds: [[]],
       listAllSearchType: [null],
       unhcrStatusesDisplay: [[]],
-      includeUploadedFiles: [false],
+      includePendingTermsCandidates: [false],
       potentialDuplicate: [null]
     }, {validator: this.validateDuplicateSearches('savedSearchId')});
 
@@ -391,7 +394,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
 
-    request.pgOnlySqlSearch = this.pgOnlySqlSearch;
+    request.useOldSearch = this.useOldSearch;
 
     //Note that just changing searchRequest triggers the display of the results
     //See the html of this component, for which app-show-candidates takes

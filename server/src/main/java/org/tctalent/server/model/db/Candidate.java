@@ -23,9 +23,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,6 +56,7 @@ import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
 import org.tctalent.server.api.admin.SystemAdminApi;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.BackgroundProcessingService;
@@ -99,7 +102,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private Long contextSavedListId;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateId", cascade = CascadeType.MERGE)
-    private Set<CandidateProperty> candidateProperties;
+    @MapKey(name="name")
+    private Map<String, CandidateProperty> candidateProperties;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("activatedDate DESC")
@@ -652,10 +656,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     @Nullable
     private String maritalStatusNotes;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private YesNo monitoringEvaluationConsent;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -1355,11 +1355,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateProperty> getCandidateProperties() {
+    public Map<String,CandidateProperty> getCandidateProperties() {
         return candidateProperties;
     }
 
-    public void setCandidateProperties(Set<CandidateProperty> properties) {
+    public void setCandidateProperties(Map<String,CandidateProperty> properties) {
         this.candidateProperties = properties;
     }
 
@@ -2118,13 +2118,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
 
     @Nullable
-    public YesNo getMonitoringEvaluationConsent() {return monitoringEvaluationConsent;}
-
-    public void setMonitoringEvaluationConsent(@Nullable YesNo monitoringEvaluationConsent) {
-        this.monitoringEvaluationConsent = monitoringEvaluationConsent;
-    }
-
-    @Nullable
     public String getPartnerRef() {
         return partnerRef;
     }
@@ -2520,6 +2513,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
             savedLists.add(candidateSavedList.getSavedList());
         }
         return savedLists;
+    }
+
+    /**
+     * True if this candidate has been presented with our terms but has not yet accepted them.
+     * <p/>
+     * This is equivalent to the candidate being in the PendingTermsAcceptance list.
+     * @return True if the candidate has not accepted our terms.
+     */
+    public boolean isPendingTerms() {
+        return isTagged(SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID);
+    }
+
+    /**
+     * True if this is a test candidate.
+     * <p/>
+     * This is equivalent to the candidate being in the TestCandidates list.
+     * @return True if the candidate is a test candidate.
+     */
+    public boolean isTestCandidate() {
+        return isTagged(SystemAdminConfiguration.TEST_CANDIDATE_LIST_ID);
+    }
+
+    /**
+     * True if this candidate is in (ie tagged by) the given list
+     * @param savedListId Saved list id
+     * @return True if in list (ie tagged by that list)
+     */
+    public boolean isTagged(long savedListId) {
+        Optional<CandidateSavedList> optional = candidateSavedLists.stream()
+            .filter(sl -> sl.getSavedList().getId() == savedListId)
+            .findAny();
+        return optional.isPresent();
     }
 
     public void addSavedLists(Set<SavedList> savedLists) {

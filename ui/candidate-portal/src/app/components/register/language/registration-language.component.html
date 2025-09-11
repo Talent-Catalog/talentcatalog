@@ -86,7 +86,7 @@
 
 </div>
 
-<app-registration-footer [nextDisabled]="loading || saving"
+<app-registration-footer [nextDisabled]="loading || saving || (!form.valid && candidateLanguages.length === 0)"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? cancel() : back() "
                          (nextClicked)="next()">

@@ -560,7 +560,9 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private subscribeToAllVisibleChats() {
     this.unsubscribe();
     //Construct a single observable for all visible chat's read statuses, and subscribe to it
-    const chatReadStatus$ = this.chatService.combineChatReadStatuses(this.allChats);
+    const chatReadStatus$ =
+      this.chatService.combineChatReadStatuses(this.allChats)
+      .pipe(distinctUntilChanged());
     console.log("Subscribed to chats " + this.allChats.map( chat => chat.id).join(','));
     this.subscription = chatReadStatus$.subscribe(
       {

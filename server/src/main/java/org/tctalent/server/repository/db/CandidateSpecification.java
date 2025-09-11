@@ -250,13 +250,39 @@ public class CandidateSpecification {
                 );
             }
 
+            // UTM: Campaign
+            if (request.getRegoUtmCampaign() != null &&
+                !request.getRegoUtmCampaign().trim().isEmpty()) {
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(candidate.get("regoUtmCampaign")),
+                        request.getRegoUtmCampaign().toLowerCase())
+                );
+            }
+
+            // UTM: Sources
+            if (request.getRegoUtmSource() != null &&
+                !request.getRegoUtmSource().trim().isEmpty()) {
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(candidate.get("regoUtmSource")),
+                        request.getRegoUtmSource().toLowerCase())
+                );
+            }
+
+            // UTM: Medium
+            if (request.getRegoUtmMedium() != null &&
+                !request.getRegoUtmMedium().trim().isEmpty()) {
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(candidate.get("regoUtmMedium")),
+                        request.getRegoUtmMedium().toLowerCase())
+                );
+            }
+
             // GENDER SEARCH
             if (request.getGender() != null) {
                 conjunction = cb.and(conjunction,
                         cb.equal(candidate.get("gender"), request.getGender())
                 );
             }
-
 
             //Modified From
             if (request.getLastModifiedFrom() != null) {
