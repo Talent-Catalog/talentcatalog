@@ -44,8 +44,24 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import './scss/components/ng-select';
 
 body {
-  padding-top: 6rem;
-  background-color: $light;
+  padding-top: 5rem;
+  font-family: 'Lato', sans-serif;
+}
+
+h1 {
+  @include heading-lg;
+}
+
+h2 {
+  @include heading-md;
+}
+
+h3 {
+  @include heading-sm;
+}
+
+h4 {
+  @include heading-xs;
 }
 
 .nav-link {
