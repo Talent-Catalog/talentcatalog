@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +56,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.request.job.JobIntakeData;
@@ -71,6 +74,7 @@ import org.tctalent.server.service.db.JobService;
  */
 @WebMvcTest(JobAdminApi.class)
 @AutoConfigureMockMvc
+@Import({SavedListBuilderSelector.class, ExportColumnsBuilderSelector.class})
 class JobAdminApiTest extends ApiTestBase {
 
     private static final long JOB_ID = 99L;

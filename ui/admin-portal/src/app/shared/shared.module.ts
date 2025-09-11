@@ -17,7 +17,13 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {NgbInputDatepicker,NgbAlert, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbInputDatepicker,
+  NgbAlert,
+  NgbDropdownModule,
+  NgbNavModule,
+  NgbPaginationModule
+} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -42,7 +48,22 @@ import {
 import {
   DescriptionTermComponent
 } from './components/description-list/description-term/description-term.component';
+import {TcModalComponent} from './components/modal/tc-modal.component';
 import {AlertComponent} from './components/alert/alert.component';
+import {TcDropdownComponent} from './components/dropdown/tc-dropdown.component';
+import {
+  TcDropdownButtonComponent
+} from './components/dropdown/dropdown-button/tc-dropdown-button.component';
+import {
+  TcDropdownItemComponent
+} from './components/dropdown/dropdown-item/tc-dropdown-item.component';
+import {
+  TcDropdownMenuComponent
+} from './components/dropdown/dropdown-menu/tc-dropdown-menu.component';
+import {
+  TcDropdownDividerComponent
+} from './components/dropdown/dropdown-divider/tc-dropdown-divider.component';
+import {RouterLink} from "@angular/router";
 import {
   TcDateRangePickerComponent
 } from './components/date-range-picker/tc-date-range-picker.component'
@@ -67,7 +88,13 @@ import {
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    TcModalComponent,
     AlertComponent,
+    TcDropdownComponent,
+    TcDropdownButtonComponent,
+    TcDropdownItemComponent,
+    TcDropdownMenuComponent,
+    TcDropdownDividerComponent,
     TcDateRangePickerComponent
   ],
   imports: [
@@ -75,6 +102,8 @@ import {
     NgbPaginationModule,
     NgbNavModule,
     NgbAlert,
+    NgbDropdownModule,
+    RouterLink,
     NgbInputDatepicker
   ],
   exports: [
@@ -96,7 +125,13 @@ import {
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    TcModalComponent,
     AlertComponent,
+    TcDropdownComponent,
+    TcDropdownButtonComponent,
+    TcDropdownItemComponent,
+    TcDropdownMenuComponent,
+    TcDropdownDividerComponent,
     TcDateRangePickerComponent
   ]
 })

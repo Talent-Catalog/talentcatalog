@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,3 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+package org.tctalent.server.api.dto;
+
+import org.tctalent.server.util.dto.DtoBuilder;
+
+/**
+ * TODO JC Doc
+ *
+ * @author John Cameron
+ */
+public class SystemLanguageDtoBuilder extends DtoBuilder {
+
+    public SystemLanguageDtoBuilder() {
+        this.add("id")
+            .add("language")
+            .add("label")
+            .add("rtl");
+    }
+}

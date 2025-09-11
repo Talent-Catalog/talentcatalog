@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -13,20 +13,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import '../color-mixins';
 
-package org.tctalent.server.request.form;
+// Set opacity of modal background
+.modal-backdrop.show {
+  opacity: 0.9;
+  @include background-color-light;
+}
 
-import lombok.Getter;
-import lombok.Setter;
-
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
-@Getter
-@Setter
-public class MyFirstFormUpdateRequest {
-    String city;
-    String hairColour;
+.modal-content {
+  border: 1px solid;
+  @include border-color-base;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%);
 }

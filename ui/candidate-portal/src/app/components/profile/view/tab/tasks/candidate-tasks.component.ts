@@ -18,8 +18,6 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {TaskAssignment, taskAssignmentSort} from "../../../../../model/task-assignment";
 import {Status} from "../../../../../model/base";
-import {CandidateFormService} from "../../../../../services/candidate-form.service";
-import {MyFirstFormUpdateRequest} from "../../../../../model/form";
 
 @Component({
   selector: 'app-candidate-tasks',
@@ -34,7 +32,7 @@ export class CandidateTasksComponent implements OnInit {
   @Output() refresh = new EventEmitter();
   selectedTask: TaskAssignment;
 
-  constructor(private candidateFormService: CandidateFormService) { }
+  constructor() { }
 
   ngOnInit(): void {
   }
@@ -62,29 +60,5 @@ export class CandidateTasksComponent implements OnInit {
   unSelectTask() {
     this.selectedTask = null;
     this.refresh.emit();
-  }
-
-  displayTaskType(ta: TaskAssignment): string {
-    let taskType: string;
-    if (ta.task.taskType === 'Upload') {
-      taskType = "Upload";
-    } else if (ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion') {
-      taskType = "Question";
-    } else {
-      taskType = null;
-    }
-    return taskType;
-  }
-
-  // todo jc Hack for testing candidate forms
-  testForm() {
-    let request: MyFirstFormUpdateRequest = {
-      city: "Beirut",
-      hairColour: "blue"
-    }
-    this.candidateFormService.createOrUpdateMyFirstForm(request).subscribe({
-      next: () => {},
-      error: err => {}
-    })
   }
 }

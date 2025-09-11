@@ -14,34 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.request.candidate;
 
-import jakarta.validation.constraints.NotNull;
-import org.tctalent.server.util.dto.DtoBuilder;
-
-/**
- *  Utility for selecting a ExportColumns DTO builder
- *
- * @author John Cameron
- */
-public class ExportColumnsBuilderSelector {
-
-  public @NotNull DtoBuilder selectBuilder() {
-    return exportColumnDto();
-  }
-
-  private DtoBuilder exportColumnDto() {
-    return new DtoBuilder()
-        .add("key")
-        .add("properties", publishedDocColumnPropsDto())
-        ;
-  }
-
-  private DtoBuilder publishedDocColumnPropsDto() {
-    return new DtoBuilder()
-        .add("header")
-        .add("constant")
-        ;
-  }
-
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.request.PagedSearchRequest;
+@Getter
+@Setter
+public class CandidatePublicIdSearchRequest extends PagedSearchRequest {
+    private String publicId;
 }

@@ -14,9 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.api.dto;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -27,14 +29,11 @@ import org.tctalent.server.util.dto.DtoBuilder;
  *
  * @author John Cameron
  */
+@Component
+@RequiredArgsConstructor
 public class CandidateIntakeDataBuilderSelector {
     private final CountryService countryService;
     private final OccupationService occupationService;
-
-    public CandidateIntakeDataBuilderSelector(CountryService countryService, OccupationService occupationService) {
-        this.countryService = countryService;
-        this.occupationService = occupationService;
-    }
 
     public @NotNull DtoBuilder selectBuilder() {
         return candidateIntakeDto();
@@ -114,7 +113,6 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("maritalStatus")
                 .add("maritalStatusNotes")
-                .add("monitoringEvaluationConsent")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", educationLevelDto())
