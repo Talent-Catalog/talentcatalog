@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,19 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.form;
+package org.tctalent.server.request.candidate;
 
 import lombok.Getter;
 import lombok.Setter;
-
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
+import org.tctalent.server.request.PagedSearchRequest;
 @Getter
 @Setter
-public class MyFirstFormUpdateRequest {
-    String city;
-    String hairColour;
+public class CandidatePublicIdSearchRequest extends PagedSearchRequest {
+    private String publicId;
 }

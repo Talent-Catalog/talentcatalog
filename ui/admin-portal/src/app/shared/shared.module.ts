@@ -47,6 +47,7 @@ import {
 import {
   DescriptionTermComponent
 } from './components/description-list/description-term/description-term.component';
+import {TcModalComponent} from './components/modal/tc-modal.component';
 import {AlertComponent} from './components/alert/alert.component';
 import {TcDropdownComponent} from './components/dropdown/tc-dropdown.component';
 import {
@@ -83,6 +84,7 @@ import {RouterLink} from "@angular/router";
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    TcModalComponent,
     AlertComponent,
     TcDropdownComponent,
     TcDropdownButtonComponent,
@@ -117,6 +119,7 @@ import {RouterLink} from "@angular/router";
     DescriptionListComponent,
     DescriptionDetailsComponent,
     DescriptionTermComponent,
+    TcModalComponent,
     AlertComponent,
     TcDropdownComponent,
     TcDropdownButtonComponent,

@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -53,7 +54,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -63,18 +63,17 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.api.dto.DtoType;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -113,12 +112,6 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     @Autowired
     SavedListCandidateAdminApi savedListCandidateAdminApi;
 
-    @SpyBean
-    CandidateBuilderSelector candidateBuilderSelector;
-    @MockBean
-    CandidateOpportunityService candidateOpportunityService;
-    @MockBean
-    CountryService countryService;
     @MockBean
     SavedListService savedListService;
     @MockBean
@@ -128,14 +121,34 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     @MockBean
     CandidateService candidateService;
     @MockBean
-    UserService userService;
+    CandidateBuilderSelector candidateBuilderSelector;
     @MockBean
-    OccupationService occupationService;
+    SavedListBuilderSelector savedListBuilderSelector;
 
 
     @BeforeEach
     void setUp() {
         configureAuthentication();
+
+        // Minimal builder for SavedList
+        DtoBuilder savedListDto = new DtoBuilder()
+            .add("id");
+
+        // Minimal builder for Candidate
+        DtoBuilder nationalityDto = new DtoBuilder()
+            .add("name");
+
+        DtoBuilder candidateDto = new DtoBuilder()
+            .add("id")
+            .add("nationality", nationalityDto);
+
+        given(savedListBuilderSelector.selectBuilder()).willReturn(savedListDto);
+        given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
+    }
+
+    @Test
+    public void testWebOnlyContextLoads() {
+      assertThat(savedListCandidateAdminApi).isNotNull();
     }
 
     @Test
