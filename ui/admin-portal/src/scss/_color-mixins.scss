@@ -18,6 +18,7 @@
 @mixin text-color-error    { color: color(red, 700); }
 @mixin text-color-info     { color: color(blue, 700); }
 @mixin text-color-disabled   { color: color(gray, 500); }
+@mixin text-color-primary   { color: color(primary, 500); }
 
 // --- Descriptive Text Colors ---
 @mixin text-color-red      { color: color(red, 700); }
@@ -69,6 +70,7 @@
   @mixin background-color-white      { background-color: color(core, white); }                // Page or section backgrounds
   @mixin background-color-light      { background-color: color(gray, 200); }                          // Slightly gray bg
   @mixin background-color-soft       { background-color: color(gray, 100); }                   // Soft background (cards)
+  @mixin background-color-primary-light    { background-color: color(primary, 100); }
 
   @mixin background-color-dark        { background-color: color(gray, 900); }         // Full dark background (almost black)
   @mixin background-color-light-dark  { background-color: color(gray, 600); }          // For less contrast on dark bg
@@ -89,3 +91,14 @@
   @mixin background-color-blue     { background-color: color(blue, 100); }
   @mixin background-color-purple   { background-color: color(purple, 100); }
   @mixin background-color-pink     { background-color: color(pink, 100); }
+
+
+// ==========================
+// SHADOW COLOR MIXINS
+// ==========================
+
+@mixin shadow-lg {
+  box-shadow:
+    0 4px 6px -4px rgba(0, 0, 0, 0.1),
+    0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

@@ -21,8 +21,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,17 +31,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -50,8 +47,9 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * For actually modifying candidate details - see {@link CandidateAdminApi},
  * or for modifying saved search details see {@link SavedSearchAdminApi}.
  */
-@RestController()
+@RestController
 @RequestMapping("/api/admin/saved-search-candidate")
+@RequiredArgsConstructor
 @Slf4j
 public class SavedSearchCandidateAdminApi implements
     IManyToManyApi<SavedSearchGetRequest, UpdateSavedListContentsRequest> {
@@ -59,20 +57,6 @@ public class SavedSearchCandidateAdminApi implements
     private final SavedSearchService savedSearchService;
     private final CandidateService candidateService;
     private final CandidateBuilderSelector builderSelector;
-
-    @Autowired
-    public SavedSearchCandidateAdminApi(
-            CandidateOpportunityService candidateOpportunityService,
-            CountryService countryService,
-            OccupationService occupationService,
-            SavedSearchService savedSearchService,
-            UserService userService,
-            CandidateService candidateService) {
-        this.savedSearchService = savedSearchService;
-        this.candidateService = candidateService;
-        builderSelector = new CandidateBuilderSelector(
-            candidateOpportunityService, countryService, occupationService, userService);
-    }
 
     @Override
     public @NotNull Map<String, Object> searchPaged(

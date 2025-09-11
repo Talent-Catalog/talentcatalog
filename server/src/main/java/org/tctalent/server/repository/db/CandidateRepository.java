@@ -151,22 +151,6 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
             + " where c.status in (:statuses)")
     List<Candidate> findByStatuses(@Param("statuses") List<CandidateStatus> statuses);
 
-    /**
-     * Gets candidates for the nightly TC-SF candidate sync: we only really need active candidates
-     * on SF — but adding the sfLink condition ensures that active-inactive status changes are
-     * reflected on SF while still bypassing candidates in draft stage or who were inactive at time
-     * of implementation. SF reports will need to filter for active/desired stages.
-     * @param statuses provided by the CandidateStatus enum — 'active' defined here as incl active,
-     *                pending, incomplete
-     * @return candidate list
-     */
-    @Query(" select c from Candidate c "
-            + " where c.status in (:statuses)"
-            + " or c.sflink is not null")
-    Page<Candidate> findByStatusesOrSfLinkIsNotNull(
-        @Param("statuses") List<CandidateStatus> statuses, Pageable pageable);
-
-
     @Query("select c from Candidate c "
         + "join CandidateReviewStatusItem cri "
         + "on c.id = cri.candidate.id "
@@ -247,6 +231,13 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         + " where lower(c.externalId) like lower(:externalId) "
         + sourceCountryRestriction)
     Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+        + " where lower(c.publicId) like lower(:publicId) "
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidatePublicId(@Param("publicId") String publicId,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
         Pageable pageable);
 

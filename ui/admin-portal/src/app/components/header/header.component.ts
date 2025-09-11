@@ -37,6 +37,7 @@ export class HeaderComponent implements OnInit {
   doEmailPhoneOrWhatsappSearch;
   doNumberOrNameSearch;
   doExternalIdSearch;
+  doPublicIdSearch;
   searchFailed: boolean;
   searching: boolean;
   error;
@@ -101,6 +102,27 @@ export class HeaderComponent implements OnInit {
               this.searchFailed = true;
               return of([]);
             }))
+        ),
+        tap(() => this.searching = false)
+      );
+
+    this.doPublicIdSearch = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => {
+          this.searching = true;
+          this.error = null;
+        }),
+        switchMap(publicId =>
+          this.candidateService.findByPublicId({ publicId: publicId, pageSize: 10 }).pipe(
+            tap(() => this.searchFailed = false),
+            map(result => result.content),
+            catchError(() => {
+              this.searchFailed = true;
+              return of([]);
+            })
+          )
         ),
         tap(() => this.searching = false)
       );
