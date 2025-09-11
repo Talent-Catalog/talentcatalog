@@ -112,6 +112,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {TcModalComponent} from "../../../shared/components/modal/tc-modal.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -622,13 +623,16 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         const _this = this;
         reader.addEventListener('loadend', function () {
           if (typeof reader.result === 'string') {
-            _this.error = JSON.parse(reader.result);
-            const modalRef = _this.modalService.open(_this.downloadCsvErrorModal);
-            modalRef.result
-              .then(() => {
-              })
-              .catch(() => {
-              });
+            const errorObj = JSON.parse(reader.result);
+            const modalRef = _this.modalService.open(TcModalComponent, {});
+            modalRef.componentInstance.title = 'Export Failed';
+            modalRef.componentInstance.icon = 'fas fa-triangle-exclamation';
+            modalRef.componentInstance.actionText = 'Retry';
+            modalRef.componentInstance.message = "CSV download error: " + "'" + errorObj.message + "'";
+            modalRef.componentInstance.onAction.subscribe(() => {
+              _this.exportCandidates();
+              modalRef.close();
+            });
           }
         });
         reader.readAsText(err.error);

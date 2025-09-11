@@ -33,6 +33,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
  *  modalRef.componentInstance.icon = 'fas fa-triangle-exclamation';
  *  modalRef.componentInstance.actionText = 'Retry';
  *  modalRef.componentInstance.message = this.error.message;
+ *  modalRef.componentInstance.onAction.subscribe(() => {
+ *    this.retruMethod();
+ *    modalRef.close();
+ *  });
  *  ```
  *
  * **With Icon**
