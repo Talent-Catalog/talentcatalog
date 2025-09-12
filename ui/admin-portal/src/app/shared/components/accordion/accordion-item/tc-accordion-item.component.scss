@@ -28,7 +28,7 @@
   }
 }
 
-/* 🔥 Remove border on the last accordion item */
+/* Remove border on the last accordion item */
 :host:last-of-type {
   .tc-accordion-item {
     border-bottom: none;
