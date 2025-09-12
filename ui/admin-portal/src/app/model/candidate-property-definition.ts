@@ -14,19 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.repository.db;
+export interface CandidatePropertyDefinition {
+  name: string;
+  label: string;
+  definition: string;
+  type: string;
+}
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.tctalent.server.model.db.CandidatePropertyDefinition;
-
-/**
- * Expose a Spring Data Rest API for CandidatePropertyDefinition.
- *
- * @author John Cameron
- */
-@RepositoryRestResource(path="candidate-property-definitions")
-public interface CandidatePropertyDefinitionRepository
-    extends JpaRepository<CandidatePropertyDefinition, Long> {
-
+export interface SpringDataCandidatePropertyDefinitionsPage {
+  _embedded: {
+    candidatePropertyDefinitions: CandidatePropertyDefinition[];
+  };
+  page: {
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    number: number;
+  };
 }

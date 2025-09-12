@@ -26,6 +26,7 @@ import {
   PublishedDocValueSource
 } from "../model/saved-list";
 import {PublishedDocColumnType, PublishedDocColumnWidth} from "../model/base";
+import {CandidatePropertyDefinitionService} from "./candidate-property-definition.service";
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,7 @@ export class PublishedDocColumnService {
 
   private allColumnInfosMap = new Map<string, PublishedDocColumnDef>();
 
-  constructor() {
+  constructor(private candidatePropertyDefinitionService: CandidatePropertyDefinitionService) {
     //Keep empty column first, so we know the index and can sort at the end.
     this.addColumn("emptyColumn", "Empty Column", null);
 
@@ -224,6 +225,16 @@ export class PublishedDocColumnService {
       new PublishedDocConstantSource("folder"),
       new PublishedDocFieldSource("folderlinkRegistration"))
     .width = PublishedDocColumnWidth.Narrow;
+
+    this.loadDynamicProperties();
+  }
+
+  private loadDynamicProperties() {
+    let pageNumber = 0;
+    this.candidatePropertyDefinitionService.get(pageNumber).subscribe({
+      next: (page) => {/*todo*/},
+      error: (error) => {/*todo*/}
+    })
   }
 
   getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {
