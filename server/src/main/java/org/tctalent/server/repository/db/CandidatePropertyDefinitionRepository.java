@@ -16,8 +16,11 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.CandidatePropertyDefinition;
 
 /**
@@ -28,5 +31,20 @@ import org.tctalent.server.model.db.CandidatePropertyDefinition;
 @RepositoryRestResource(path="candidate-property-definitions")
 public interface CandidatePropertyDefinitionRepository
     extends JpaRepository<CandidatePropertyDefinition, Long> {
+
+    //This is a read-only repo. Don't expose any of the write methods on the API.
+
+    @Override @RestResource(exported = false) @NonNull
+    <S extends CandidatePropertyDefinition> S save(@NonNull S e);
+    @Override @RestResource(exported = false) @NonNull
+    <S extends CandidatePropertyDefinition> List<S> saveAll(@NonNull Iterable<S> entities);
+    @Override @RestResource(exported = false)
+    void deleteById(@NonNull Long id);
+    @Override @RestResource(exported = false)
+    void delete(@NonNull CandidatePropertyDefinition e);
+    @Override @RestResource(exported = false)
+    void deleteAll(@NonNull Iterable<? extends CandidatePropertyDefinition> es);
+    @Override @RestResource(exported = false)
+    void deleteAll();
 
 }
