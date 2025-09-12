@@ -11,4 +11,9 @@
   (input)="handleInput($event)"
   (blur)="handleBlur()"
   [disabled]="disabled"
+  [ngbTypeahead]="ngbTypeahead"
+  [resultTemplate]="resultTemplate"
+  [inputFormatter]="inputFormatter"
+  [editable]="editable"
+  (selectItem)="selectItem.emit($event)"
 />

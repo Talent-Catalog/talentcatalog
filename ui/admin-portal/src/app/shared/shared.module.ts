@@ -18,11 +18,12 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
 import {
-  NgbInputDatepicker,
   NgbAlert,
   NgbDropdownModule,
+  NgbInputDatepicker,
   NgbNavModule,
-  NgbPaginationModule
+  NgbPaginationModule,
+  NgbTypeahead
 } from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
@@ -100,7 +101,8 @@ import {
     NgbAlert,
     NgbDropdownModule,
     RouterLink,
-    NgbInputDatepicker
+    NgbInputDatepicker,
+    NgbTypeahead
   ],
   exports: [
     ButtonComponent,

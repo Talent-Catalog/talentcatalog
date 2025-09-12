@@ -1,5 +1,15 @@
-import { Component, Input, Output, EventEmitter, forwardRef, OnInit } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef
+} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Observable} from "rxjs";
+import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
 /**
  * @component InputComponent
@@ -63,8 +73,14 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() disabled = false;
   @Input() invalid: boolean = false;
   @Input() defaultValue: string = '';
+  @Input() ngbTypeahead!: (text$: Observable<string>) => Observable<any[]>;
+  @Input() resultTemplate?: TemplateRef<any>;
+  @Input() inputFormatter?: (value: any) => string;
+  @Input() editable: boolean;
 
   @Output() valueChange = new EventEmitter<string>();
+  @Output() selectItem =
+    new EventEmitter<NgbTypeaheadSelectItemEvent<any>>();
 
   private _value: string = '';
 

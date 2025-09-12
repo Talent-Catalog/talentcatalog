@@ -109,35 +109,49 @@
     </app-candidate-source-description>
   </div>
 
-  <!-- Inputs -->
+  <!-- List Inputs -->
   <div *ngIf="isSavedList()" class="row row-cols-auto my-2">
+    <!-- Add candidate -->
     <div *ngIf="isContentModifiable() && !isEmployerPartner()" class="col">
-      <input id="quickNumberOrNameSearch"
-             type="text" class="form-control" #input
-             [ngbTypeahead]="doNumberOrNameSearch"
-             [resultTemplate]="rt"
-             [inputFormatter]="renderCandidateRow"
-             [editable]="false"
-             (selectItem)="selectCandidateToAdd($event, input)"
-             placeholder="Add (name or #)..."/>
+      <tc-field>
+        <tc-input id="quickNumberOrNameSearch"
+                  type="text" #input
+                  [ngbTypeahead]="doNumberOrNameSearch"
+                  [resultTemplate]="rt"
+                  [inputFormatter]="renderCandidateRow"
+                  [editable]="false"
+                  (selectItem)="selectCandidateToAdd($event, input)"
+                  [placeholder]="'Add (name or #)...'">
+        </tc-input>
+      </tc-field>
       <ng-template #rt let-r="result" let-t="term">
         <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
       </ng-template>
       <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
     </div>
+    <!-- Within results -->
     <div *ngIf="isSavedList()" class="col">
       <form [formGroup]="searchInResultsForm">
         <div class="d-flex align-items-center">
-          <div>
-            <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
-                   id="keyword" autofocus>
-          </div>
-          <div *ngIf="isJobList()" class="ms-4 form-check-reverse form-check-inline align-items-center">
-            <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
-            <tc-label [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</tc-label>
-          </div>
+          <!-- Search -->
+          <tc-field>
+            <div>
+              <tc-input [type]="'text'"
+                        [placeholder]="'Search (name or #)...'"
+                        [ariaLabel]="'Search (name/number)...'"
+                        formControlName="keyword"
+                        id="keyword" autofocus>
+              </tc-input>
+            </div>
+          </tc-field>
+          <!-- Show closed cases -->
+          <tc-field>
+              <div *ngIf="isJobList()" class="ms-4 form-check-reverse form-check-inline align-items-center">
+                <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
+                <tc-label [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</tc-label>
+              </div>
+          </tc-field>
         </div>
-
       </form>
     </div>
   </div>
