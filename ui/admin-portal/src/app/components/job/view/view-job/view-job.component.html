@@ -42,30 +42,45 @@
           <i class="fas fa-angle-down"></i>
         </tc-dropdown-button>
         <tc-dropdown-menu>
-          <tc-dropdown-item *ngIf="!showBreadcrumb">
-            <a [routerLink]="['/job',job.id]">
-              <i class="fas fa-expand" title="Open"></i> Open
-            </a>
+          <tc-dropdown-item *ngIf="!showBreadcrumb"
+                            [routerLink]="['/job',job.id]"
+                            title="Open">
+            <tc-icon color="primary" size="md">
+              <i class="fas fa-expand"></i>
+            </tc-icon>
+            Open Job
           </tc-dropdown-item>
-          <tc-dropdown-item *ngIf="!showBreadcrumb">
-            <a [routerLink]="['/job',job.id]">
-              <i class="fa-solid fa-briefcase" title="Job (Same as Open)"></i> Job (same as Open)
-            </a>
+          <tc-dropdown-item *ngIf="!showBreadcrumb"
+                            [routerLink]="['/job',job.id]"
+                            title="Job (Same as Open)">
+            <tc-icon size="md">
+              <i class="fa-solid fa-briefcase"></i>
+            </tc-icon>
+            View Job (same as Open)
           </tc-dropdown-item>
-          <tc-dropdown-item *ngIf="job.submissionList && canSeeJobDetails()">
-            <a  [routerLink]="['/list',job.submissionList.id]">
-              <i class="fas fa-rectangle-list" title="Submission list"></i> Submission list
-            </a>
+          <tc-dropdown-item *ngIf="job.submissionList && canSeeJobDetails()"
+                            [routerLink]="['/list',job.submissionList.id]"
+                            title="Submission list">
+            <tc-icon size="md">
+              <i class="fas fa-rectangle-list"></i>
+            </tc-icon>
+            Submission list
           </tc-dropdown-item>
-          <tc-dropdown-item *ngIf="job.sfId && canAccessSalesforce()">
-            <a [href]="getSalesforceJobLink(job.sfId)" target="_blank">
-              <i class="fab fa-salesforce" title="Show job in Salesforce"></i> View job in Salesforce
-            </a>
+          <tc-dropdown-item *ngIf="job.sfId && canAccessSalesforce()"
+                            [href]="getSalesforceJobLink(job.sfId)"
+                            title="Show job in Salesforce">
+            <tc-icon size="md">
+              <i class="fab fa-salesforce"></i>
+            </tc-icon>
+            View job in Salesforce
           </tc-dropdown-item>
-          <tc-dropdown-item *ngIf="job.submissionList?.folderjdlink && canSeeJobDetails()">
-            <a [href]="job.submissionList.folderjdlink" target="_blank">
-              <i class="fab fa-google-drive" title="Show job's Google Doc folder"></i> View Google Doc folder
-            </a>
+          <tc-dropdown-item *ngIf="job.submissionList?.folderjdlink && canSeeJobDetails()"
+                            [href]="job.submissionList.folderjdlink"
+                            title="Show job's Google Doc folder">
+            <tc-icon size="md">
+              <i class="fab fa-google-drive"></i>
+            </tc-icon>
+            View Google Doc folder
           </tc-dropdown-item>
         </tc-dropdown-menu>
       </tc-dropdown>
