@@ -41,7 +41,6 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateSubfolderType;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
@@ -58,6 +57,7 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
@@ -140,6 +140,8 @@ public interface CandidateService {
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
+
+    Page<Candidate> searchCandidates(CandidatePublicIdSearchRequest request);
 
     /**
      * Returns a set of the ids of all candidates resulting from the given SQL query.
@@ -662,17 +664,6 @@ public interface CandidateService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
-
-    /**
-     * Processes a single page for the TC-SF candidate sync.
-     * @param startPage page to process (zero-based index)
-     * @param statuses types of {@link CandidateStatus} to filter for in search
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    void processSfCandidateSyncPage(
-        long startPage, List<CandidateStatus> statuses
-    ) throws SalesforceException, WebClientException;
 
     /**
      * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in

@@ -1688,6 +1688,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
                     getListAsString(request.getEducationMajorIds()));
+            savedSearch.setIncludePendingTermsCandidates(request.getIncludePendingTermsCandidates());
             savedSearch.setMiniIntakeCompleted(request.getMiniIntakeCompleted());
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
             savedSearch.setPotentialDuplicate(request.getPotentialDuplicate());
@@ -1766,6 +1767,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxAge(search.getMaxAge());
         searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
+        searchCandidateRequest.setIncludePendingTermsCandidates(search.getIncludePendingTermsCandidates());
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
         searchCandidateRequest.setPotentialDuplicate(search.getPotentialDuplicate());
@@ -1839,8 +1841,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         String simpleQueryString = searchRequest.getSimpleQueryString();
         boolean haveSimpleQueryString = simpleQueryString != null && !simpleQueryString.isEmpty();
 
-        boolean pgOnlySqlSearch = searchRequest.isPgOnlySqlSearch();
-        if (pgOnlySqlSearch) {
+        boolean useOldSearch = searchRequest.isUseOldSearch();
+        if (!useOldSearch) {
+            //New search is Postgres SQL only - no elastic search and no CandidateSepecification
             candidates = candidateSearchService.searchCandidates(searchRequest, excludedCandidates);
         } else if (haveSimpleQueryString || hasBaseSearch) {
             //TODO JC Reconsider this logic of forcing all searches based on other searches to be

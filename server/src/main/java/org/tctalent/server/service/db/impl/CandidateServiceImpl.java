@@ -58,9 +58,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -142,6 +140,7 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.CreateCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
@@ -510,6 +509,31 @@ public class CandidateServiceImpl implements CandidateService {
 
             candidates = candidateRepository.searchCandidateExternalId(
                 s +'%', sourceCountries, request.getPageRequestWithoutSort());
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Search Candidates")
+                .message("Found " + candidates.getTotalElements() + " candidates in search")
+                .logInfo();
+
+            return candidates;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(CandidatePublicIdSearchRequest request) {
+        String publicId = request.getPublicId();
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
+            Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
+
+            candidates = candidateRepository.searchCandidatePublicId(
+                publicId+ '%', sourceCountries, request.getPageRequestWithoutSort());
 
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
@@ -1345,7 +1369,7 @@ public class CandidateServiceImpl implements CandidateService {
      * Factored out some common code
      */
     private static void updatePolicyId(String acceptedPrivacyPolicyId, Candidate candidate) {
-        if (acceptedPrivacyPolicyId == null) {
+        if (acceptedPrivacyPolicyId == null || "null".equalsIgnoreCase(acceptedPrivacyPolicyId)) {
             throw new InvalidRequestException("Privacy policy has not been accepted");
         }
         candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
@@ -3008,9 +3032,6 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getMaritalStatusNotes() != null) {
             candidate.setMaritalStatusNotes(data.getMaritalStatusNotes());
         }
-        if (data.getMonitoringEvaluationConsent() != null) {
-            candidate.setMonitoringEvaluationConsent(data.getMonitoringEvaluationConsent());
-        }
         if (data.getPartnerRegistered() != null) {
             candidate.setPartnerRegistered(data.getPartnerRegistered());
         }
@@ -3299,21 +3320,6 @@ public class CandidateServiceImpl implements CandidateService {
                     contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
-    }
-
-    @Transactional
-    @Override
-    public void processSfCandidateSyncPage(
-        long startPage, List<CandidateStatus> statuses
-    ) throws SalesforceException, WebClientException {
-        // Obtain and process new page
-        Pageable newPageable =
-            PageRequest.of((int) startPage, 200, Sort.by("id").ascending());
-        Page<Candidate> newCandidatePage = candidateRepository
-            .findByStatusesOrSfLinkIsNotNull(statuses, newPageable);
-        List<Candidate> candidateList = newCandidatePage.getContent();
-
-        upsertCandidatesToSf(candidateList);
     }
 
     @Override

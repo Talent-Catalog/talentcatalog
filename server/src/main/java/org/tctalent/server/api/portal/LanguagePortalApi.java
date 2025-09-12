@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.api.admin.SystemLanguageDtoBuilder;
+import org.tctalent.server.api.dto.SystemLanguageDtoBuilder;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.SystemLanguage;
 import org.tctalent.server.response.DatePickerNames;

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,17 +53,23 @@ public class TranslationServiceImpl implements TranslationService {
     private final TranslationRepository translationRepository;
     private final S3ResourceHelper s3ResourceHelper;
     private final AuthService authService;
+    private final Environment environment;
 
     private Map<String, Object> englishS3Translations;
 
     @Autowired
     public TranslationServiceImpl(TranslationRepository translationRepository,
                                   S3ResourceHelper s3ResourceHelper,
+                                  Environment environment,
                                   AuthService authService) {
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
+        this.environment = environment;
         this.translationRepository = translationRepository;
-        englishS3Translations = getTranslationFile("en");
+        // Skip S3 call in test profile
+        if (!List.of(environment.getActiveProfiles()).contains("test")) {
+            englishS3Translations = getTranslationFile("en");
+        }
     }
 
     public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> entities,

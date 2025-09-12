@@ -1,0 +1,11 @@
+<div ngbDropdown class="tc-dropdown" [placement]="placement">
+  <div ngbDropdownToggle>
+    <ng-content select="tc-dropdown-button"></ng-content>
+  </div>
+
+  <div ngbDropdownMenu class="tc-dropdown__menu" [ngClass]="menuClass"   [class.dropdown-menu-end]="align === 'end'"
+       [class.dropdown-menu-start]="align === 'start'">
+    <ng-content select="tc-dropdown-menu" ></ng-content>
+    <ng-content select="tc-dropdown-item, tc-dropdown-divider"></ng-content>
+  </div>
+</div>
