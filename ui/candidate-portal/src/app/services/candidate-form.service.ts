@@ -2,21 +2,26 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {MyFirstFormData} from "../model/form";
+import {MyFirstFormData, MySecondFormData} from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
+import {MySecondFormComponent} from "../components/form/my-second-form/my-second-form.component";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CandidateFormService {
 
+  //todo Way of using a constant for repeated use of 'MySecondForm'
+
   // You need to add an entry to this map for each form that can be displayed in a FormTask.
   // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {
-    'MyFirstForm': MyFirstFormComponent
+    'MyFirstForm': MyFirstFormComponent,
+    'MySecondForm': MySecondFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
+  halApiUrl: string = environment.halApiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -26,6 +31,14 @@ export class CandidateFormService {
 
   getMyFirstForm(): Observable<MyFirstFormData> {
     return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
+  }
+
+  createOrUpdateMySecondForm(request: MySecondFormData): Observable<MySecondFormData> {
+    return this.http.put<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`, request);
+  }
+
+  getMySecondForm(): Observable<MySecondFormData> {
+    return this.http.get<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`);
   }
 
   getFormComponentByName(formName: string): any {

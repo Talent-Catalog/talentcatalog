@@ -20,6 +20,7 @@ import javax.security.auth.login.AccountLockedException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -130,6 +131,21 @@ public class ErrorHandler {
             .logError();
 
         return new ErrorDTO("handler_not_found", ex.getMessage());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorDTO processSpringDataRestResourceNotFoundException(ResourceNotFoundException ex) {
+        //Don't need exception traceback - this is just Spring Data Rest trying to fetch
+        //an entity that doesn't exist on the DB. Throwing an exception in that case is normal
+        //and expected behaviour.
+        LogBuilder.builder(log)
+            .action("SpringDataRest.ResourceNotFoundException")
+            .message("Processing : ResourceNotFoundException: " + ex)
+            .logInfo();
+
+        return new ErrorDTO("resource_not_found", ex.getMessage());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
