@@ -17,13 +17,19 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
-import {LoginRequest} from "../../model/base";
+import {DtoType, LoginRequest} from "../../model/base";
 import {User} from "../../model/user";
 import {EncodedQrImage} from "../../util/qr";
 import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthenticationService} from "../../services/authentication.service";
 import {environment} from "../../../environments/environment";
+import {Partner} from "../../model/partner";
+import {TermsInfoDto, TermsType} from "../../model/terms-info-dto";
+import {forkJoin} from "rxjs";
+import {TermsInfoService} from "../../services/terms-info.service";
+import {PartnerService} from "../../services/partner.service";
+import {AuthorizationService} from "../../services/authorization.service";
 
 @Component({
   selector: 'app-login',
@@ -42,8 +48,11 @@ export class LoginComponent implements OnInit {
 
   constructor(private builder: UntypedFormBuilder,
               private authenticationService: AuthenticationService,
+              private authorizationService: AuthorizationService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
+              private partnerService: PartnerService,
+              private termsInfoService: TermsInfoService,
               private router: Router) {
   }
 
@@ -100,14 +109,14 @@ export class LoginComponent implements OnInit {
     req.reCaptchaV3Token = token;
 
     this.authenticationService.login(req)
-      .subscribe(() => {
-        this.loading = false;
-        this.checkMfaSetup();
-      }, error => {
-        // console.log(error);
-        this.error = error;
-        this.loading = false;
-      });
+    .subscribe(() => {
+      this.loading = false;
+      this.checkMfaAndDpa();
+    }, error => {
+      // console.log(error);
+      this.error = error;
+      this.loading = false;
+    });
 
   }
 
@@ -137,6 +146,40 @@ export class LoginComponent implements OnInit {
     .catch(() => {
       this.router.navigateByUrl(this.returnUrl);
     });
+  }
+
+  private checkMfaAndDpa() {
+    const user: User = this.authenticationService.getLoggedInUser();
+    // Check if user is a source partner (based on role or partner association)
+    if (this.authorizationService.isSourcePartner()) {
+      // Fetch current DPA and partner info
+      forkJoin({
+        'currentDpa': this.termsInfoService.getCurrentByType(TermsType.DATA_PROCESSING_AGREEMENT),
+        'partner': this.partnerService.getPartner(user.partner.id, DtoType.MINIMAL)
+      }).subscribe(
+        results => {
+          this.checkDpaStatus(results.partner, results.currentDpa);
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      );
+    } else {
+      // Non-partner users skip DPA check and proceed to MFA
+      this.checkMfaSetup();
+    }
+  }
+
+  private checkDpaStatus(partner: Partner, currentDpa: TermsInfoDto) {
+    // Check if partner has accepted the latest DPA
+    if (partner.sourcePartner && !partner.acceptedDataProcessingAgreementId) {
+      // Redirect to DPA acceptance page, ignoring returnUrl
+      this.router.navigateByUrl('/dpa');
+    } else {
+      // Proceed to MFA check if DPA is accepted
+      this.checkMfaSetup();
+    }
   }
 }
 

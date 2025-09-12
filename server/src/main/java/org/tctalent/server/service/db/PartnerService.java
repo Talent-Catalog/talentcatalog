@@ -160,4 +160,26 @@ public interface PartnerService {
      * Update the given user contact for the given partner and job
      */
     void updateJobContact(Partner partner, SalesforceJobOpp job, User contactUser);
+
+    /**
+     * Marks the current partner as having accepted the DPA (Data Processing Agreement).
+     *
+     * @param acceptedDpaId the ID of the accepted DPA
+     * @return the updated {@link PartnerImpl} after acceptance
+     */
+    PartnerImpl updateAcceptedDpa(String acceptedDpaId);
+
+    /**
+     * Records that the current partner has seen the DPA for the first time.
+     *
+     * @return the updated {@link PartnerImpl} with first DPA seen timestamp
+     */
+    PartnerImpl setFirstDpaSeen();
+
+    /**
+     * Checks whether the DPA acceptance is required for the current partner.
+     *
+     * @return true if DPA acceptance is required, false otherwise
+     */
+    boolean requiresDpaAcceptance();
 }

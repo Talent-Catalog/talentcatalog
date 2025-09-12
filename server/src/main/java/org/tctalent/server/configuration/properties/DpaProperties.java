@@ -14,14 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.configuration.properties;
 
-/**
- * Type of terms - for example a privacy policy.
- *
- * @author John Cameron
- */
-public enum TermsType {
-    CANDIDATE_PRIVACY_POLICY,
-    DATA_PROCESSING_AGREEMENT
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConfigurationProperties(prefix = "dpa")
+@Data
+public class DpaProperties {
+  private Long dpaVisibilityDelayDays;
 }
