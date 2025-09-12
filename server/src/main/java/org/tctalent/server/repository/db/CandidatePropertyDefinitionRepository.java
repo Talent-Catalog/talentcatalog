@@ -17,13 +17,15 @@
 package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.tctalent.server.model.db.CandidatePropertyDefinition;
 
 /**
- * TODO JC Doc
+ * Expose a Spring Data Rest API for CandidatePropertyDefinition.
  *
  * @author John Cameron
  */
+@RepositoryRestResource(path="candidate-property-definition")
 public interface CandidatePropertyDefinitionRepository
     extends JpaRepository<CandidatePropertyDefinition, Long> {
 
