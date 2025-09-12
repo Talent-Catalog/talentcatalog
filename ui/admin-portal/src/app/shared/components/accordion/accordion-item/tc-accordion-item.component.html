@@ -1,6 +1,10 @@
 <div class="tc-accordion-item">
   <a class="tc-accordion-header" (click)="toggle()">
-    {{ title }}
+    <!-- If exists custom header projected using attribute selector -->
+    <ng-content select="[custom-header]"></ng-content>
+
+    <span>{{ header }}</span>
+
     <tc-icon size="sm" color="gray">
       <i *ngIf="!isOpen" class="fa-solid fa-chevron-down"></i>
       <i *ngIf="isOpen" class="fa-solid fa-chevron-up"></i>

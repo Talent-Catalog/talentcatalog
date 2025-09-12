@@ -21,10 +21,10 @@ import {TcAccordionItemComponent} from "./accordion-item/tc-accordion-item.compo
  * @example
  * <!-- All panels closed (default) -->
  * <tc-accordion>
- *   <tc-accordion-item title="First">
+ *   <tc-accordion-item header="First">
  *     <p>First content</p>
  *   </tc-accordion-item>
- *   <tc-accordion-item title="Second">
+ *   <tc-accordion-item header="Second">
  *     <p>Second content</p>
  *   </tc-accordion-item>
  * </tc-accordion>
@@ -32,10 +32,10 @@ import {TcAccordionItemComponent} from "./accordion-item/tc-accordion-item.compo
  * @example
  * <!-- Only first panel open initially -->
  * <tc-accordion [firstOpen]="true">
- *   <tc-accordion-item title="First">
+ *   <tc-accordion-item header="First">
  *     <p>First content</p>
  *   </tc-accordion-item>
- *   <tc-accordion-item title="Second">
+ *   <tc-accordion-item header="Second">
  *     <p>Second content</p>
  *   </tc-accordion-item>
  * </tc-accordion>
@@ -43,10 +43,10 @@ import {TcAccordionItemComponent} from "./accordion-item/tc-accordion-item.compo
  * @example
  * <!-- All panels open initially -->
  * <tc-accordion [allOpen]="true">
- *   <tc-accordion-item title="First">
+ *   <tc-accordion-item header="First">
  *     <p>First content</p>
  *   </tc-accordion-item>
- *   <tc-accordion-item title="Second">
+ *   <tc-accordion-item header="Second">
  *     <p>Second content</p>
  *   </tc-accordion-item>
  * </tc-accordion>
