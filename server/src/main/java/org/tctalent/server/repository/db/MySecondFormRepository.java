@@ -21,7 +21,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
 import org.tctalent.server.model.db.MySecondForm;
 
-@RepositoryRestResource(path = "my-second-form", collectionResourceRel = "my-second-form")
+@RepositoryRestResource(path = "my-second-form")
 public interface MySecondFormRepository extends
     JpaRepository<MySecondForm, CandidateFormInstanceKey> {
 }
