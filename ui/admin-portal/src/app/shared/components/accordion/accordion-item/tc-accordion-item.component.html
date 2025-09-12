@@ -1,0 +1,13 @@
+<div class="tc-accordion-item">
+  <a class="tc-accordion-header" (click)="toggle()">
+    {{ title }}
+    <tc-icon size="sm" color="gray">
+      <i *ngIf="!isOpen" class="fa-solid fa-chevron-down"></i>
+      <i *ngIf="isOpen" class="fa-solid fa-chevron-up"></i>
+    </tc-icon>
+  </a>
+
+  <div class="tc-accordion-body" *ngIf="isOpen">
+    <ng-content></ng-content>
+  </div>
+</div>

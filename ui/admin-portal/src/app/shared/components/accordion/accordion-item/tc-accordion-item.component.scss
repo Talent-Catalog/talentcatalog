@@ -1,0 +1,36 @@
+@import 'src/scss/typography-mixins';
+@import 'src/scss/color-mixins';
+
+.tc-accordion-item {
+  border: none;
+  border-bottom: 1px solid;
+  @include border-color-base;
+
+  .tc-accordion-header {
+    @include label-lg;
+    @include text-color-body;
+    width: 100%;
+    padding: 20px 0;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:hover {
+      @include text-color-primary;
+    }
+  }
+
+  .tc-accordion-body {
+    @include paragraph-md;
+    padding-bottom: 16px;
+  }
+}
+
+/* 🔥 Remove border on the last accordion item */
+:host:last-of-type {
+  .tc-accordion-item {
+    border-bottom: none;
+  }
+}
