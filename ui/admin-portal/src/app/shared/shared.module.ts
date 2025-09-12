@@ -17,7 +17,13 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {NgbAlert, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbInputDatepicker,
+  NgbAlert,
+  NgbDropdownModule,
+  NgbNavModule,
+  NgbPaginationModule
+} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -37,13 +43,28 @@ import {BadgeComponent} from './components/badge/badge.component';
 
 import {DescriptionListComponent} from './components/description-list/description-list.component';
 import {
-  DescriptionDetailsComponent
-} from './components/description-list/description-details/description-details.component';
-import {
-  DescriptionTermComponent
-} from './components/description-list/description-term/description-term.component';
+  DescriptionItemComponent
+} from './components/description-list/description-item/description-item.component';
 import {TcModalComponent} from './components/modal/tc-modal.component';
 import {AlertComponent} from './components/alert/alert.component';
+import {TcDropdownComponent} from './components/dropdown/tc-dropdown.component';
+import {
+  TcDropdownButtonComponent
+} from './components/dropdown/dropdown-button/tc-dropdown-button.component';
+import {
+  TcDropdownItemComponent
+} from './components/dropdown/dropdown-item/tc-dropdown-item.component';
+import {
+  TcDropdownMenuComponent
+} from './components/dropdown/dropdown-menu/tc-dropdown-menu.component';
+import {
+  TcDropdownDividerComponent
+} from './components/dropdown/dropdown-divider/tc-dropdown-divider.component';
+import {RouterLink} from "@angular/router";
+import {
+  TcDateRangePickerComponent
+} from './components/date-range-picker/tc-date-range-picker.component'
+import {TcIconComponent} from './components/icon-component/tc-icon.component';
 
 @NgModule({
   declarations: [
@@ -63,16 +84,25 @@ import {AlertComponent} from './components/alert/alert.component';
     TcTabContentComponent,
     BadgeComponent,
     DescriptionListComponent,
-    DescriptionDetailsComponent,
-    DescriptionTermComponent,
+    DescriptionItemComponent,
     TcModalComponent,
-    AlertComponent
+    AlertComponent,
+    TcDropdownComponent,
+    TcDropdownButtonComponent,
+    TcDropdownItemComponent,
+    TcDropdownMenuComponent,
+    TcDropdownDividerComponent,
+    TcDateRangePickerComponent,
+    TcIconComponent
   ],
   imports: [
     CommonModule,
     NgbPaginationModule,
     NgbNavModule,
-    NgbAlert
+    NgbAlert,
+    NgbDropdownModule,
+    RouterLink,
+    NgbInputDatepicker
   ],
   exports: [
     ButtonComponent,
@@ -91,10 +121,16 @@ import {AlertComponent} from './components/alert/alert.component';
     TcTabContentComponent,
     BadgeComponent,
     DescriptionListComponent,
-    DescriptionDetailsComponent,
-    DescriptionTermComponent,
+    DescriptionItemComponent,
     TcModalComponent,
-    AlertComponent
+    AlertComponent,
+    TcDropdownComponent,
+    TcDropdownButtonComponent,
+    TcDropdownItemComponent,
+    TcDropdownMenuComponent,
+    TcDropdownDividerComponent,
+    TcDateRangePickerComponent,
+    TcIconComponent
   ]
 })
 export class SharedModule { }
