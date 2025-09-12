@@ -239,9 +239,7 @@ export class PublishedDocColumnService {
     this.candidatePropertyDefinitionService.get(0,100000).subscribe({
       next: page =>
           this.processDynamicProperties(page._embedded?.candidatePropertyDefinitions),
-      error: err => {
-        console.log("Error getting dynamic properties: " + err);
-      }
+      error: err => console.log("Error getting dynamic properties: " + err)
     })
   }
 
