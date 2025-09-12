@@ -175,11 +175,13 @@
 
     <!-- Review status -->
     <div *ngIf="isReviewable()">
-      <label class="form-label" for="reviewStatuses">Don't show candidates reviewed as: </label>
-      <form id="reviewStatuses" class="filter-form" [formGroup]="searchInResultsForm">
+      <form id="reviewStatuses" [formGroup]="searchInResultsForm">
 
         <!-- REVIEW STATUS FILTER -->
-        <div *ngIf="isReviewable()" class="mb-3 col-12">
+        <tc-field>
+          <tc-label for="reviewStatuses">
+            Don't show candidates reviewed as:
+          </tc-label>
           <ng-select
             id="reviewStatus"
             [items]="statuses"
@@ -191,7 +193,8 @@
             bindLabel="name"
             formControlName="statusesDisplay">
           </ng-select>
-        </div>
+        </tc-field>
+
       </form>
     </div>
 
@@ -426,39 +429,50 @@
           <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)"
               [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
             <td>
-              <div ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
-                <tc-button [type]="'plain'" ngbDropdownToggle>
-                  <i class="fas fa-ellipsis-h"></i>
-                </tc-button>
-                <ul ngbDropdownMenu id="candidate-dropdown">
-                  <span *ngIf="isReviewable()">
-                    <li ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
-                    <li class="dropdown-divider"></li>
-                  </span>
-                  <span *ngIf="isCvDropDownAvailable()">
-                    <li ngbDropdownItem (click)="downloadGeneratedCV(candidate)"
-                        title="Opens/DLs CV generated from candidate profile"
+              <div (click)="$event.stopPropagation();">
+                <tc-dropdown>
+                  <tc-dropdown-button [type]="'plain'"
+                                      [ariaLabel]="'Open actions menu for candidate'">
+                    <i class="fas fa-ellipsis-h"></i>
+                  </tc-dropdown-button>
+                  <tc-dropdown-menu>
+                    <span *ngIf="isReviewable()">
+                      <tc-dropdown-item (click)="review(candidate)">
+                        Change reviewed status
+                      </tc-dropdown-item>
+                      <tc-dropdown-divider></tc-dropdown-divider>
+                    </span>
+                    <span *ngIf="isCvDropDownAvailable()">
+                      <tc-dropdown-item (click)="downloadGeneratedCV(candidate)"
+                            title="Opens/DLs CV generated from candidate profile">
+                        Download CV
+                      </tc-dropdown-item>
+                      <tc-dropdown-divider></tc-dropdown-divider>
+                    </span>
+                    <tc-dropdown-item>
+                      <a target="_blank"
+                         class="no-link"
+                         [routerLink]="['/candidate', candidate.candidateNumber]"
+                      >
+                        Open in new tab
+                      </a>
+                    </tc-dropdown-item>
+                    <tc-dropdown-divider *ngIf="(!isSubmissionList() && isContentModifiable())
+                      || (isSubmissionList() && isSalesforceUpdatable())"
                     >
-                      Download CV
-                    </li>
-                    <li class="dropdown-divider"></li>
-                  </span>
-                  <li ngbDropdownItem>
-                    <a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">
-                      Open in new tab
-                    </a>
-                  </li>
-                  <li class="dropdown-divider"
-                      *ngIf="(!isSubmissionList() && isContentModifiable()) || (isSubmissionList() && isSalesforceUpdatable())"
-                  ></li>
-                  <li *ngIf="!isSubmissionList() && isContentModifiable()" ngbDropdownItem
-                      (click)="removeCandidateFromList(candidate)">
-                    Remove from list
-                  </li>
-                  <li *ngIf="isSubmissionList() && isSalesforceUpdatable()" ngbDropdownItem (click)="closeOpportunity(candidate)">
-                    Close opportunity for this job
-                  </li>
-                </ul>
+                    </tc-dropdown-divider>
+                    <tc-dropdown-item *ngIf="!isSubmissionList() && isContentModifiable()"
+                                      (click)="removeCandidateFromList(candidate)"
+                    >
+                      Remove from list
+                    </tc-dropdown-item>
+                    <tc-dropdown-item *ngIf="isSubmissionList() && isSalesforceUpdatable()"
+                                      (click)="closeOpportunity(candidate)"
+                    >
+                        Close opportunity for this job
+                    </tc-dropdown-item>
+                  </tc-dropdown-menu>
+                </tc-dropdown>
               </div>
             </td>
             <td *ngIf="displayTextMatchRank()">
