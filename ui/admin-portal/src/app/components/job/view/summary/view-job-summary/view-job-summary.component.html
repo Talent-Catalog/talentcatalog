@@ -20,18 +20,28 @@
 <form [formGroup]="form">
 
   <div class="mb-3 flex-fill" [appReadOnlyInputs]="!editable">
-    <label for="jobSummary">
-    <span class="paragraph-sm text-color-secondary" [ngClass]="{'alert alert-danger': highlight}">
-      Job Summary
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </span>
-    </label>
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <span class="paragraph-sm text-color-secondary" [ngClass]="{'alert alert-danger': highlight}">
+        Job Summary
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </span>
 
-    <tc-input type="textarea" id="jobSummary" rows="{{nRows}}"
-              placeholder="Enter short summary of job..."
-              [formControlName]="'jobSummary'">{{job.jobSummary}}</tc-input>
+      <tc-button type="plain" size="sm" (click)="toggleEdit()">Edit</tc-button>
+    </div>
+
+    <ng-container *ngIf="isEditing; else viewMode">
+      <tc-input type="textarea" id="jobSummary"
+                placeholder="Enter short summary of job..."
+                [formControlName]="'jobSummary'"></tc-input>
+    </ng-container>
+
+    <ng-template #viewMode>
+      <p class="paragraph-sm">{{job.jobSummary}}</p>
+    </ng-template>
+
+
   </div>
 </form>

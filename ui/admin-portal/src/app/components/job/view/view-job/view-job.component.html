@@ -16,13 +16,7 @@
 
 <div *ngIf="job">
 
-  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
-    <ol class="breadcrumb align-items-center">
-      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="job.name" class="breadcrumb-item active" aria-current="page">Job / {{job.name}}</li>
-    </ol>
-
-  </nav>
+  <!-- Removed breadcrumb - can add back but don't think it's needed -->
 
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
@@ -33,31 +27,48 @@
       <p [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6' : !showBreadcrumb}" class="label-md text-color-secondary">
         Job opportunity #{{job.id}}
       </p>
-      <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}" class="heading-xs">{{job.name}}
+      <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}
       </h1>
     </div>
-    <div>
-      <span class="ms-2">
-          <a *ngIf="!showBreadcrumb" [routerLink]="['/job',job.id]">
-            <i class="fas fa-expand link-info" title="Open"></i>
-          </a>
-          <a *ngIf="!showBreadcrumb" [routerLink]="['/job',job.id]">
-            <i class="fa-solid fa-briefcase link-info" title="Job (Same as Open)"></i>
-          </a>
-          <a *ngIf="job.submissionList && canSeeJobDetails()" [routerLink]="['/list',job.submissionList.id]">
-            <i class="fas fa-rectangle-list link-info" title="Submission list"></i>
-          </a>
-          <a *ngIf="job.sfId && canAccessSalesforce()" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
-            <i class="fab fa-salesforce link-info" title="Show job in Salesforce"></i>
-          </a>
-          <a *ngIf="job.submissionList?.folderjdlink && canSeeJobDetails()" [href]="job.submissionList.folderjdlink" target="_blank">
-            <i class="fab fa-google-drive link-info" title="Show job's Google Doc folder"></i>
-          </a>
-          <tc-button size="lg" type="plain" (click)="doToggleStarred()">
-            <i *ngIf="isStarred()" class="fas fa-star starred text-warning fa-lg" title="Unstar"></i>
-            <i *ngIf="!isStarred()" class="far fa-star notstarred fa-lg" title="Star"></i>
-          </tc-button>
-        </span>
+
+    <div class="d-flex align-items-center gap-2">
+      <tc-button type="outline" (click)="doToggleStarred()">
+        <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
+        <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
+      </tc-button>
+
+      <tc-dropdown placement="bottom-end">
+        <tc-dropdown-button type="primary">
+          <i class="fas fa-angle-down"></i>
+        </tc-dropdown-button>
+        <tc-dropdown-menu>
+          <tc-dropdown-item *ngIf="!showBreadcrumb">
+            <a [routerLink]="['/job',job.id]">
+              <i class="fas fa-expand" title="Open"></i> Open
+            </a>
+          </tc-dropdown-item>
+          <tc-dropdown-item *ngIf="!showBreadcrumb">
+            <a [routerLink]="['/job',job.id]">
+              <i class="fa-solid fa-briefcase" title="Job (Same as Open)"></i> Job (same as Open)
+            </a>
+          </tc-dropdown-item>
+          <tc-dropdown-item *ngIf="job.submissionList && canSeeJobDetails()">
+            <a  [routerLink]="['/list',job.submissionList.id]">
+              <i class="fas fa-rectangle-list" title="Submission list"></i> Submission list
+            </a>
+          </tc-dropdown-item>
+          <tc-dropdown-item *ngIf="job.sfId && canAccessSalesforce()">
+            <a [href]="getSalesforceJobLink(job.sfId)" target="_blank">
+              <i class="fab fa-salesforce" title="Show job in Salesforce"></i> View job in Salesforce
+            </a>
+          </tc-dropdown-item>
+          <tc-dropdown-item *ngIf="job.submissionList?.folderjdlink && canSeeJobDetails()">
+            <a [href]="job.submissionList.folderjdlink" target="_blank">
+              <i class="fab fa-google-drive" title="Show job's Google Doc folder"></i> View Google Doc folder
+            </a>
+          </tc-dropdown-item>
+        </tc-dropdown-menu>
+      </tc-dropdown>
     </div>
 
 

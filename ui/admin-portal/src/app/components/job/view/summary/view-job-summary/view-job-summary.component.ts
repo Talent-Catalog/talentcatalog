@@ -30,6 +30,7 @@ export class ViewJobSummaryComponent extends AutoSaveComponentBase implements On
   @Input() editable: boolean;
   @Input() nRows: number = 3;
   @Input() highlight: boolean;
+  isEditing = false;
 
   constructor(private fb: UntypedFormBuilder,
               private jobService: JobService) {
@@ -75,5 +76,9 @@ export class ViewJobSummaryComponent extends AutoSaveComponentBase implements On
   onSuccessfulSave() {
     this.jobSummaryControl.markAsPristine();
     this.saving = false;
+  }
+
+  toggleEdit() {
+    this.isEditing = !this.isEditing;
   }
 }
