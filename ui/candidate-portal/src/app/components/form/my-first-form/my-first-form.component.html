@@ -1,0 +1,17 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <label>
+    What city do you live in?
+    <input type="text" [readonly]="readOnly" formControlName="city">
+  </label>
+  <small class="error" *ngIf="hasError('city', 'required')">
+    City is required</small>
+
+  <label>
+    What colour is your hair?
+    <input type="text" [readonly]="readOnly" formControlName="hairColour">
+  </label>
+  <small class="error" *ngIf="hasError('hairColour', 'required')">
+    Hair colour is required</small>
+
+  <button type="submit" [disabled]="!canSubmit()">Submit</button>
+</form>
