@@ -35,27 +35,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
+import org.tctalent.server.candidateservices.domain.model.ServiceCode;
+import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceEntity;
+import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.DuolingoCoupon;
-import org.tctalent.server.model.db.DuolingoCouponStatus;
-import org.tctalent.server.model.db.DuolingoTestType;
-import org.tctalent.server.repository.db.DuolingoCouponRepository;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class DuolingoCouponImporter implements FileInventoryImporter {
 
-  private final DuolingoCouponRepository couponRepository;
+  private final ServiceResourceRepository serviceResourceRepository;
+
+  private static final String PROVIDER = "DUOLINGO";
 
   private static final DateTimeFormatter FORMATTER1 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
   private static final DateTimeFormatter FORMATTER2 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
   @Override
   @Transactional
-  public void importFile(MultipartFile file) throws ImportFailedException {
-    List<DuolingoCoupon> newCoupons = new ArrayList<>();
+  public void importFile(MultipartFile file, String serviceCode) throws ImportFailedException {
+    List<ServiceResourceEntity> newCoupons = new ArrayList<>();
     // Set to track coupon codes that have already been processed (avoids duplicates)
     Set<String> seenCouponCodes = new HashSet<>();
 
@@ -129,7 +131,8 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
    * @param seenCouponCodes a set to track processed coupon codes
    * @param newCoupons the list where valid coupons will be added
    */
-  private void processCouponLine(String[] line, String[] headers, Map<String, Integer> columnIndex, Set<String> seenCouponCodes, List<DuolingoCoupon> newCoupons) {
+  private void processCouponLine(String[] line, String[] headers, Map<String, Integer> columnIndex,
+      Set<String> seenCouponCodes, List<ServiceResourceEntity> newCoupons) {
     // Ensure the line has enough columns to process
     if (line.length >= headers.length) {
       // Extract the coupon code from the current line
@@ -140,22 +143,40 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
         seenCouponCodes.add(couponCode); // Mark this coupon code as processed
 
         // If the coupon code does not exist in the database, create a new coupon
-        if (!couponRepository.existsByCouponCode(couponCode)) {
-          DuolingoCoupon coupon = new DuolingoCoupon();
-          coupon.setCouponCode(couponCode);
-          coupon.setExpirationDate(parseDate(line[columnIndex.get("expiration date")], FORMATTER1, FORMATTER2));
-          coupon.setDateSent(parseDate(line[columnIndex.get("date sent")], FORMATTER1, FORMATTER2));
-          coupon.setCouponStatus(DuolingoCouponStatus.valueOf(getNullableValue(line[columnIndex.get("coupon status")]).toUpperCase()));
+        if (!serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, couponCode)) {
+          ServiceResourceEntity coupon = new ServiceResourceEntity();
+          coupon.setProvider(PROVIDER);
+          coupon.setResourceCode(couponCode);
+          coupon.setExpiresAt(parseDate(line[columnIndex.get("expiration date")], FORMATTER1, FORMATTER2));
+          coupon.setSentAt(parseDate(line[columnIndex.get("date sent")], FORMATTER1, FORMATTER2));
+
+          String rawStatus = getNullableValue(line[columnIndex.get("coupon status")]);
+          coupon.setStatus(mapDuolingoStatusToResource(rawStatus));
+
           // Set test type based on coupon code prefix
           if (couponCode.startsWith("ACCNONPROC") || couponCode.startsWith("NONP")) {
-            coupon.setTestType(DuolingoTestType.NON_PROCTORED);
+            coupon.setServiceCode(ServiceCode.DUOLINGO_TEST_NON_PROCTORED);
           } else if (couponCode.startsWith("ACC") || couponCode.startsWith("PROC")) {
-            coupon.setTestType(DuolingoTestType.PROCTORED);
+            coupon.setServiceCode(ServiceCode.DUOLINGO_TEST_PROCTORED);
           }
           newCoupons.add(coupon);
         }
       }
     }
+  }
+
+  private ResourceStatus mapDuolingoStatusToResource(String s) {
+    if (s == null || s.isBlank()) {
+      return ResourceStatus.AVAILABLE; // TODO -- SM -- or an UNKNOWN status here?
+    }
+    return switch (s.trim().toUpperCase()) {
+      case "AVAILABLE" -> ResourceStatus.AVAILABLE;
+      case "ASSIGNED" -> ResourceStatus.RESERVED;   // allocated but not sent
+      case "SENT" -> ResourceStatus.SENT;
+      case "REDEEMED" -> ResourceStatus.REDEEMED;
+      case "EXPIRED" -> ResourceStatus.EXPIRED;
+      default -> ResourceStatus.AVAILABLE;
+    };
   }
 
   /**
@@ -188,9 +209,9 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
   }
 
   // Saves the new coupons to the database if any valid coupons exist.
-  private void saveCoupons(List<DuolingoCoupon> newCoupons) {
+  private void saveCoupons(List<ServiceResourceEntity> newCoupons) {
     if (!newCoupons.isEmpty()) {
-      couponRepository.saveAll(newCoupons);
+      serviceResourceRepository.saveAll(newCoupons);
     }
   }
 
