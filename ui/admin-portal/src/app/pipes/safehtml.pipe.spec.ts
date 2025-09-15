@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,15 +13,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {DomSanitizer} from '@angular/platform-browser';
+import {SafeHtmlPipe} from "./safehtml.pipe";
 
-package org.tctalent.server.model.db;
+describe('SafeHtmlPipe', () => {
+  let pipe: SafeHtmlPipe;
+  let sanitizer: DomSanitizer;
 
-/**
- * Type of terms - for example a privacy policy.
- *
- * @author John Cameron
- */
-public enum TermsType {
-    CANDIDATE_PRIVACY_POLICY,
-    DATA_PROCESSING_AGREEMENT
-}
+  beforeEach(() => {
+    sanitizer = jasmine.createSpyObj('DomSanitizer', ['bypassSecurityTrustHtml']);
+    pipe = new SafeHtmlPipe(sanitizer);
+  });
+
+  it('should create an instance', () => {
+    expect(pipe).toBeTruthy();
+  });
+
+});

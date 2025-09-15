@@ -64,6 +64,7 @@ import {RouterLink} from "@angular/router";
 import {
   TcDateRangePickerComponent
 } from './components/date-range-picker/tc-date-range-picker.component'
+import {TcIconComponent} from './components/icon-component/tc-icon.component';
 
 @NgModule({
   declarations: [
@@ -91,7 +92,8 @@ import {
     TcDropdownItemComponent,
     TcDropdownMenuComponent,
     TcDropdownDividerComponent,
-    TcDateRangePickerComponent
+    TcDateRangePickerComponent,
+    TcIconComponent
   ],
   imports: [
     CommonModule,
@@ -127,7 +129,8 @@ import {
     TcDropdownItemComponent,
     TcDropdownMenuComponent,
     TcDropdownDividerComponent,
-    TcDateRangePickerComponent
+    TcDateRangePickerComponent,
+    TcIconComponent
   ]
 })
 export class SharedModule { }

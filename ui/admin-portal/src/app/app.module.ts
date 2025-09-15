@@ -829,6 +829,8 @@ import {
   EditMaxEducationLevelComponent
 } from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
 import {SharedModule} from "./shared/shared.module";
+import {PartnerDpaComponent} from './components/util/partner-dpa/partner-dpa.component';
+import {SafeHtmlPipe} from './pipes/safehtml.pipe';
 import {
   ChatMuteToggleButtonComponent
 } from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
@@ -1172,7 +1174,9 @@ import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
     IntlPhoneInputComponent,
     EditMaxEducationLevelComponent,
     ChatMuteToggleButtonComponent,
-    ViewPrivacyPolicyInfoComponent
+    ViewPrivacyPolicyInfoComponent,
+    PartnerDpaComponent,
+    SafeHtmlPipe
   ],
   imports: [
     BrowserModule,

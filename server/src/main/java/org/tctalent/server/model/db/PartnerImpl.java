@@ -30,6 +30,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
@@ -155,6 +156,24 @@ public class PartnerImpl extends AbstractDomainObject<Long>
 
     @Nullable
     private String websiteUrl;
+
+    /**
+     * Data Processing Agreement that partner has accepted
+     */
+    @Nullable
+    private String acceptedDataProcessingAgreementId;
+
+    /**
+     * Date time when partner accepted data processing agreement
+     */
+    @Nullable
+    private OffsetDateTime acceptedDataProcessingAgreementDate;
+
+    /**
+     * First date of Data Processing Agreement that partner has been seen
+     */
+    @Nullable
+    private OffsetDateTime firstDpaSeenDate;
 
     public User getJobContact() {
         //User partner contact as default contact.
