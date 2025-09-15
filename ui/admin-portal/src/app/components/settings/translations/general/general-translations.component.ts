@@ -912,5 +912,46 @@ const ALL_FIELDS = {
         "CANDIDATE_RECRUITING": null,
         "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
       }
+  },
+  "TRAVELDOC": {
+    "MISMATCH": {
+      "TITLE": null,
+      "DESCRIPTION": null,
+      "INSTRUCTION": null
+    },
+    "BUTTON": {
+      "UPDATEPROFILE": null,
+      "SUBMIT": null
+    },
+    "LABEL": {
+      "FIRSTNAME": null,
+      "LASTNAME": null,
+      "DOB": null,
+      "GENDER": null,
+      "BIRTHCOUNTRY": null,
+      "PLACEOFBIRTH": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "DOCISSUEDBY": null,
+      "ISSUEDATE": null,
+      "EXPIRYDATE": null
+    },
+    "ERROR": {
+      "FIRSTNAME_REQUIRED": null,
+      "LASTNAME_REQUIRED": null,
+      "DOB_REQUIRED": null,
+      "GENDER_REQUIRED": null,
+      "BIRTHCOUNTRY_REQUIRED": null,
+      "DOCTYPE_REQUIRED": null
+    },
+    "OPTION": {
+      "MALE": null,
+      "FEMALE": null,
+      "OTHER": null,
+      "SELECTCOUNTRY": null,
+      "PASSPORT": null,
+      "NATIONALID": null,
+      "REFUGEE": null
+    }
   }
 }
