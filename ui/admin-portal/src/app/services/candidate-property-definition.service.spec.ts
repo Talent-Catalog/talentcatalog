@@ -29,8 +29,8 @@ describe('CandidatePropertyDefinitionService', () => {
       },
       page: {
         size: 20,
-        totalElements: 1,
-        totalPages: 1,
+        totalElements: 0,
+        totalPages: 0,
         number: 0
       }
     };
@@ -42,6 +42,7 @@ describe('CandidatePropertyDefinitionService', () => {
 
     const req = httpMock.expectOne(`${apiUrl}?page=0&size=20`);
     expect(req.request.method).toBe('GET');
+    //Simulate returned data
     req.flush(mockDefinitions);
 
   })
