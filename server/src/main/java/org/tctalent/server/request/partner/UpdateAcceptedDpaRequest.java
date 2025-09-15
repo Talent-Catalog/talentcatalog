@@ -14,14 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.request.partner;
 
-/**
- * Type of terms - for example a privacy policy.
- *
- * @author John Cameron
- */
-public enum TermsType {
-    CANDIDATE_PRIVACY_POLICY,
-    DATA_PROCESSING_AGREEMENT
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class UpdateAcceptedDpaRequest {
+  private String acceptedDpaId;
 }
