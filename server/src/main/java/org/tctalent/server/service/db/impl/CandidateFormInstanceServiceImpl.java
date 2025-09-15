@@ -21,25 +21,21 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
 import org.tctalent.server.model.db.MyFirstForm;
+import org.tctalent.server.repository.db.CandidateFormRepository;
 import org.tctalent.server.repository.db.MyFirstFormRepository;
 import org.tctalent.server.request.form.MyFirstFormData;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
-import org.tctalent.server.service.db.CandidateFormService;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Service
 @RequiredArgsConstructor
 public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceService {
 
-    private final CandidateFormService candidateFormService;
+    private final CandidateFormRepository candidateFormRepository;
     private final MyFirstFormRepository myFirstFormRepository;
 
     @Override
@@ -77,7 +73,8 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
     }
 
     private CandidateForm getMyFirstForm() {
-        return candidateFormService.getByName("MyFirstForm");
+        return candidateFormRepository.findByName("MyFirstForm")
+            .orElseThrow(() -> new NoSuchObjectException(CandidateForm.class, "MyFirstForm"));
     }
 
     private CandidateFormInstanceKey computeMyFirstFormKey(@NonNull Candidate candidate) {
