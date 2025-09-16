@@ -143,7 +143,7 @@ public class DuolingoService implements CandidateService {
         .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + resourceCode + " not found"));
   }
 
-//  @Override
+  @Override
   public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException{
     return serviceRepository
         .findTopByProviderAndServiceAndResource(PD.provider(), PD.serviceCode().name(), resourceCode)
@@ -151,7 +151,7 @@ public class DuolingoService implements CandidateService {
         .orElse(null);
   }
 
-  //  @Override
+  @Override
   @Transactional
   public void updateAResourceStatus(String resourceCode, ResourceStatus status) {
     resourceRepository
@@ -162,7 +162,17 @@ public class DuolingoService implements CandidateService {
         });
   }
 
-//  @Override
+  @Override
+  public long countAvailableForProvider() {
+    return resourceRepository.countAvailableByProvider(PD.provider());
+  }
+
+  @Override
+  public long countAvailableForProviderAndService() {
+    return resourceRepository.countAvailableByProviderAndService(PD.provider(), PD.serviceCode());
+  }
+
+  //  @Override // TODO -- SM -- put in base class or resource expiry scheduler class?
   @Transactional
   @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
   @SchedulerLock(name = "ResourceSchedulerTask_markResourcesAsExpired", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
@@ -178,16 +188,6 @@ public class DuolingoService implements CandidateService {
       expiredCoupons.forEach(resource -> resource.setStatus(ResourceStatus.EXPIRED));
       resourceRepository.saveAll(expiredCoupons);
     }
-  }
-
-  @Override
-  public long countAvailableForProvider() {
-    return resourceRepository.countAvailableByProvider(PD.provider());
-  }
-
-//  @Override
-  public long countAvailableForProviderAndService() {
-    return resourceRepository.countAvailableByProviderAndService(PD.provider(), PD.serviceCode());
   }
 
 }
