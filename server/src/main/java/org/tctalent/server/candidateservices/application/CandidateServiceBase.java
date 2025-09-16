@@ -23,23 +23,35 @@ import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.model.db.User;
 
-/**
- * Management interface for candidate services (e.g., coupon / resource / licence providers).
- *
- * @author sadatmalik
- */
-public interface CandidateService {
+public abstract class CandidateServiceBase implements CandidateService {
 
-  // CREATE
-  void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException;
-  ServiceAssignment assignToCandidate(Long candidateId, User actor, String serviceCode);
-  List<ServiceAssignment> assignToList(Long listId, String serviceCode, User actor);
+  @Override
+  public ServiceAssignment assignToCandidate(Long candidateId, User actor, String serviceCode) {
+    return null;
+  }
 
-  // READ
-  List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode);
-  List<ServiceResource> getAvailableResources();
-  long countAvailableForProvider();
+  @Override
+  public List<ServiceAssignment> assignToList(Long listId, String serviceCode, User actor) {
+    return List.of();
+  }
 
-  // UPDATE
+  @Override
+  public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode) {
+    return List.of();
+  }
 
+  @Override
+  public List<ServiceResource> getAvailableResources() {
+    return List.of();
+  }
+
+  @Override
+  public void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException {
+
+  }
+
+  @Override
+  public long countAvailableForProvider() {
+    return 0;
+  }
 }
