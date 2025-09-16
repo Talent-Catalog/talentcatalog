@@ -14,19 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.api.dto;
+package org.tctalent.server.candidateservices.application;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-import lombok.Builder;
-import lombok.Getter;
+import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 
-@Getter
-@Builder
-public class ServiceAssignment {
-  private final Long candidateId;
-  private final String provider;  // e.g., "DUOLINGO"
-  private final String resourceId; // e.g., coupon code
-  private final LocalDateTime assignedAt;
-  private final Map<String, Object> attributes; // e.g., { "testType":"PROCTORED" }
+// TODO -- SM -- which is best package for this?
+public record ProviderDescriptor (
+    String provider,
+    ServiceCode serviceCode) {
+
 }
