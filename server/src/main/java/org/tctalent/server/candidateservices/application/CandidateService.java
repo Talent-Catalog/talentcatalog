@@ -18,9 +18,11 @@ package org.tctalent.server.candidateservices.application;
 
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 
 /**
@@ -38,8 +40,13 @@ public interface CandidateService {
   // READ
   List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode);
   List<ServiceResource> getAvailableResources();
+  ServiceResource getResourceForResourceCode(String resourceCode);
+  Candidate getCandidateForResourceCode(String resourceCode);
+
+  // COUNT
   long countAvailableForProvider();
+  long countAvailableForProviderAndService();
 
   // UPDATE
-
+  void updateAResourceStatus(String resourceCode, ResourceStatus status);
 }
