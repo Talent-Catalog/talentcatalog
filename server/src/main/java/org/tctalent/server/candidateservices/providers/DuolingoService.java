@@ -134,7 +134,7 @@ public class DuolingoService implements CandidateService {
         .toList();
   }
 
-//  @Override
+  @Override
   @Transactional(readOnly = true)
   public ServiceResource getResourceForResourceCode(String resourceCode) throws NoSuchObjectException {
     return resourceRepository
@@ -155,7 +155,7 @@ public class DuolingoService implements CandidateService {
   @Transactional
   public void updateAResourceStatus(String resourceCode, ResourceStatus status) {
     resourceRepository
-        .findByProviderAndResourceCode(PD.provider(), status.name())
+        .findByProviderAndResourceCode(PD.provider(), resourceCode)
         .ifPresent(resource -> {
           resource.setStatus(status);
           resourceRepository.save(resource);
