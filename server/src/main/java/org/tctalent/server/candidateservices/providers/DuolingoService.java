@@ -79,18 +79,6 @@ public class DuolingoService extends AbstractCandidateService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode) {
-    List<ServiceAssignmentEntity> assignments = assignmentRepository
-        .findByCandidateAndProviderAndService(candidateId, PD.provider(), serviceCode);
-    List<ServiceAssignment> models = new ArrayList<>();
-    for (ServiceAssignmentEntity a : assignments) {
-      models.add(ServiceAssignment.from(a));
-    }
-    return models;
-  }
-
-  @Override
-  @Transactional(readOnly = true)
   public List<ServiceResource> getAvailableResources() {
     return resourceRepository
         .findByProviderAndServiceCodeAndStatus(PD.provider(), PD.serviceCode(), ResourceStatus.AVAILABLE)

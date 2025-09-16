@@ -26,6 +26,7 @@ import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
+import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentEntity;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentRepository;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
 import org.tctalent.server.exception.EntityExistsException;
@@ -106,8 +107,15 @@ public abstract class AbstractCandidateService implements CandidateService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode) {
-    return List.of();
+    List<ServiceAssignmentEntity> assignments = assignmentRepository
+        .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode);
+    List<ServiceAssignment> models = new ArrayList<>();
+    for (ServiceAssignmentEntity a : assignments) {
+      models.add(ServiceAssignment.from(a));
+    }
+    return models;
   }
 
   @Override

@@ -38,7 +38,7 @@ public interface CandidateService {
   List<ServiceAssignment> assignToList(Long listId, String serviceCode, User actor);
 
   // READ
-  List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode);
+  List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode); // TODO - SM - would get resources be more natural?
   List<ServiceResource> getAvailableResources();
   ServiceResource getResourceForResourceCode(String resourceCode);
   Candidate getCandidateForResourceCode(String resourceCode);
