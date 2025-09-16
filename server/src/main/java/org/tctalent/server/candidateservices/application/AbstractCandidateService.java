@@ -17,13 +17,42 @@
 package org.tctalent.server.candidateservices.application;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
+import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
+import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentRepository;
+import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.service.db.SavedListService;
 
+@RequiredArgsConstructor
 public abstract class AbstractCandidateService implements CandidateService {
+
+  protected final ServiceAssignmentRepository assignmentRepository;
+  protected final ServiceResourceRepository resourceRepository;
+  protected final AssignmentEngine assignmentEngine;
+  protected final SavedListService savedListService;
+
+  // provider-specific hooks
+  protected abstract String provider();                        // e.g. "DUOLINGO"
+  protected abstract ResourceAllocator allocator(String serviceCode);
+  protected FileInventoryImporter importer() { return null; }  // Optional
+
+  // default implementations
+  @Override
+  @Transactional
+  public void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException {
+    var importer = importer();
+    if (importer == null) {
+      throw new ImportFailedException("Import not supported for " + provider());
+    }
+    importer.importFile(file, serviceCode);
+  }
 
   @Override
   public ServiceAssignment assignToCandidate(Long candidateId, User actor, String serviceCode) {
@@ -45,10 +74,6 @@ public abstract class AbstractCandidateService implements CandidateService {
     return List.of();
   }
 
-  @Override
-  public void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException {
-
-  }
 
   @Override
   public long countAvailableForProvider() {

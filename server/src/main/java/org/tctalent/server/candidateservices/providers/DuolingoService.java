@@ -26,9 +26,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.candidateservices.application.AssignmentEngine;
-import org.tctalent.server.candidateservices.application.CandidateService;
+import org.tctalent.server.candidateservices.application.AbstractCandidateService;
 import org.tctalent.server.candidateservices.application.ProviderDescriptor;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
 import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
@@ -38,51 +36,24 @@ import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.infrastructure.importers.DuolingoCouponImporter;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentEntity;
-import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentRepository;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceEntity;
-import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
-import org.tctalent.server.exception.EntityExistsException;
-import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.service.db.SavedListService;
+
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class DuolingoService implements CandidateService {
+public class DuolingoService extends AbstractCandidateService {
 
-  private final ServiceAssignmentRepository serviceRepository;
-  private final ServiceResourceRepository resourceRepository;
-  private final AssignmentEngine assignmentEngine;
   private final ResourceAllocator duolingoAllocator;
   private final DuolingoCouponImporter importer;
-  private final SavedListService savedListService;
 
   private static final ProviderDescriptor PD =
       new ProviderDescriptor("DUOLINGO", ServiceCode.DUOLINGO_TEST_PROCTORED);
 
-  @Override
-  @Transactional
-  public void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException {
-    importer.importFile(file, serviceCode);
-  }
-
-  @Override
-  @Transactional
-  public ServiceAssignment assignToCandidate(Long candidateId, User user, String serviceCode) {
-    List<ServiceAssignment> assignments = getAssignmentsForCandidate(candidateId, serviceCode);
-
-    for (ServiceAssignment a : assignments) {
-      if (a.getStatus().equals(AssignmentStatus.ASSIGNED)) {
-        throw new EntityExistsException("coupon", "for this candidate");
-      }
-    }
-
-    return assignmentEngine.assign(duolingoAllocator, candidateId, user);
-  }
 
   @Override
   @Transactional
@@ -100,7 +71,7 @@ public class DuolingoService implements CandidateService {
 
     List<ServiceAssignment> done = new ArrayList<>();
     for (Candidate candidate : candidates) {
-      boolean hasSentCoupon = serviceRepository
+      boolean hasSentCoupon = assignmentRepository
           .findByCandidateAndProviderAndService(candidate.getId(), PD.provider(), serviceCode)
           .stream()
           .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
@@ -115,7 +86,7 @@ public class DuolingoService implements CandidateService {
   @Override
   @Transactional(readOnly = true)
   public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode) {
-    List<ServiceAssignmentEntity> assignments = serviceRepository
+    List<ServiceAssignmentEntity> assignments = assignmentRepository
         .findByCandidateAndProviderAndService(candidateId, PD.provider(), serviceCode);
     List<ServiceAssignment> models = new ArrayList<>();
     for (ServiceAssignmentEntity a : assignments) {
@@ -145,7 +116,7 @@ public class DuolingoService implements CandidateService {
 
   @Override
   public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException{
-    return serviceRepository
+    return assignmentRepository
         .findTopByProviderAndServiceAndResource(PD.provider(), PD.serviceCode().name(), resourceCode)
         .map(ServiceAssignmentEntity::getCandidate)
         .orElse(null);
