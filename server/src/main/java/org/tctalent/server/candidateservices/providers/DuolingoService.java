@@ -30,7 +30,6 @@ import org.tctalent.server.candidateservices.application.AssignmentEngine;
 import org.tctalent.server.candidateservices.application.ProviderDescriptor;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
 import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
-import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
@@ -48,43 +47,40 @@ import org.tctalent.server.service.db.SavedListService;
 public class DuolingoService extends AbstractCandidateService {
 
   private final FileInventoryImporter duolingoImporter;
-  private final ResourceAllocator duolingoProctoredAllocator;
-  private final ResourceAllocator duolingoNonProctoredAllocator;
+  private final ResourceAllocator duolingoAllocator;
 
   private static final ProviderDescriptor PD =
-      new ProviderDescriptor("DUOLINGO", ServiceCode.DUOLINGO_TEST_PROCTORED);
+      new ProviderDescriptor("DUOLINGO", ServiceCode.DUOLINGO_TEST_PROCTORED); // TODO -- SM -- maybe don't need this
 
   public DuolingoService(ServiceAssignmentRepository assignmentRepo,
       ServiceResourceRepository resourceRepo,
       AssignmentEngine assignmentEngine,
       SavedListService savedListService,
       FileInventoryImporter duolingoCouponImporter,
-      @Qualifier("duolingoProctoredAllocator") ResourceAllocator duolingoProctoredAllocator,
-      @Qualifier("duolingoNonProctoredAllocator") ResourceAllocator duolingoNonProctoredAllocator) {
+      @Qualifier("duolingoProctoredAllocator") ResourceAllocator duolingoProctoredAllocator) {
     super(assignmentRepo, resourceRepo, assignmentEngine, savedListService);
     this.duolingoImporter = duolingoCouponImporter;
-    this.duolingoProctoredAllocator = duolingoProctoredAllocator;
-    this.duolingoNonProctoredAllocator = duolingoNonProctoredAllocator;
+    this.duolingoAllocator = duolingoProctoredAllocator;
   }
 
   @Override
   protected String provider() {
-    return "";
+    return ""; // TODO
   }
 
   @Override
-  protected ResourceAllocator allocator(String serviceCode) {
-    return null;
+  protected ServiceCode serviceCode() {
+    return ServiceCode.DUOLINGO_TEST_PROCTORED;
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public List<ServiceResource> getAvailableResources() {
-    return resourceRepository
-        .findByProviderAndServiceCodeAndStatus(PD.provider(), PD.serviceCode(), ResourceStatus.AVAILABLE)
-        .stream()
-        .map(ServiceResource::from)
-        .toList();
+  protected ResourceAllocator allocator() {
+    return duolingoAllocator;
+  }
+
+  @Override
+  protected FileInventoryImporter importer() {
+    return duolingoImporter;
   }
 
   @Override

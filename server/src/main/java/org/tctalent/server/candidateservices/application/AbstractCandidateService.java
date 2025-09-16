@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
 import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
+import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
+import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentEntity;
@@ -46,7 +48,8 @@ public abstract class AbstractCandidateService implements CandidateService {
 
   // provider-specific hooks
   protected abstract String provider();                        // e.g. "DUOLINGO"
-  protected abstract ResourceAllocator allocator(String serviceCode);
+  protected abstract ServiceCode serviceCode();                // e.g. "DUOLINGO_TEST_PROCTORED"
+  protected abstract ResourceAllocator allocator();
   protected FileInventoryImporter importer() { return null; }  // Optional
 
   // default implementations
@@ -71,11 +74,7 @@ public abstract class AbstractCandidateService implements CandidateService {
       }
     }
 
-    var allocator = allocator(serviceCode);
-    if (allocator == null) {
-      throw new IllegalArgumentException("No allocator for service code " + serviceCode);
-    }
-    return assignmentEngine.assign(allocator, candidateId, user);
+    return assignmentEngine.assign(allocator(), candidateId, user);
   }
 
   @Override
@@ -119,8 +118,13 @@ public abstract class AbstractCandidateService implements CandidateService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<ServiceResource> getAvailableResources() {
-    return List.of();
+    return resourceRepository
+        .findByProviderAndServiceCodeAndStatus(provider(), serviceCode(), ResourceStatus.AVAILABLE)
+        .stream()
+        .map(ServiceResource::from)
+        .toList();
   }
 
 
