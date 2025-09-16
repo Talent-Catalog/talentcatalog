@@ -20,13 +20,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.candidateservices.application.AbstractCandidateService;
+import org.tctalent.server.candidateservices.application.AssignmentEngine;
 import org.tctalent.server.candidateservices.application.ProviderDescriptor;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
 import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
@@ -34,26 +35,51 @@ import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
-import org.tctalent.server.candidateservices.infrastructure.importers.DuolingoCouponImporter;
+import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentEntity;
+import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentRepository;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceEntity;
+import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.service.db.SavedListService;
 
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class DuolingoService extends AbstractCandidateService {
 
-  private final ResourceAllocator duolingoAllocator;
-  private final DuolingoCouponImporter importer;
+  private final FileInventoryImporter duolingoImporter;
+  private final ResourceAllocator duolingoProctoredAllocator;
+  private final ResourceAllocator duolingoNonProctoredAllocator;
 
   private static final ProviderDescriptor PD =
       new ProviderDescriptor("DUOLINGO", ServiceCode.DUOLINGO_TEST_PROCTORED);
 
+  public DuolingoService(ServiceAssignmentRepository assignmentRepo,
+      ServiceResourceRepository resourceRepo,
+      AssignmentEngine assignmentEngine,
+      SavedListService savedListService,
+      FileInventoryImporter duolingoCouponImporter,
+      @Qualifier("duolingoProctoredAllocator") ResourceAllocator duolingoProctoredAllocator,
+      @Qualifier("duolingoNonProctoredAllocator") ResourceAllocator duolingoNonProctoredAllocator) {
+    super(assignmentRepo, resourceRepo, assignmentEngine, savedListService);
+    this.duolingoImporter = duolingoCouponImporter;
+    this.duolingoProctoredAllocator = duolingoProctoredAllocator;
+    this.duolingoNonProctoredAllocator = duolingoNonProctoredAllocator;
+  }
+
+  @Override
+  protected String provider() {
+    return "";
+  }
+
+  @Override
+  protected ResourceAllocator allocator(String serviceCode) {
+    return null;
+  }
 
   @Override
   @Transactional

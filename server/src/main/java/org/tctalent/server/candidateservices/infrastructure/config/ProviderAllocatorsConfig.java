@@ -26,9 +26,14 @@ import org.tctalent.server.candidateservices.infrastructure.persistence.resource
 @Configuration
 public class ProviderAllocatorsConfig {
 
-  @Bean("duolingoAllocator")
-  public ResourceAllocator duolingoAllocator(ServiceResourceRepository repo) {
+  @Bean("duolingoNonProctoredAllocator")
+  public ResourceAllocator duolingoNonProctoredAllocator(ServiceResourceRepository repo) {
     return new InventoryAllocator(repo, "DUOLINGO", ServiceCode.DUOLINGO_TEST_NON_PROCTORED.name()); // TODO -- SM -- pass ServiceCode enum type
+  }
+
+  @Bean("duolingoProctoredAllocator")
+  public ResourceAllocator duolingoProctoredAllocator(ServiceResourceRepository repo) {
+    return new InventoryAllocator(repo, "DUOLINGO", ServiceCode.DUOLINGO_TEST_PROCTORED.name()); // TODO -- SM -- pass ServiceCode enum type
   }
 
   // Add more providers by instantiating InventoryAllocator or other implementation of ResourceAllocator
