@@ -23,7 +23,7 @@ import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.model.db.User;
 
-public abstract class CandidateServiceBase implements CandidateService {
+public abstract class AbstractCandidateService implements CandidateService {
 
   @Override
   public ServiceAssignment assignToCandidate(Long candidateId, User actor, String serviceCode) {
