@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -562,7 +561,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         Set<Long> candidateIds = new HashSet<>();
 
-        //Extract candidate numbers from file, look up the id and add to candidateIds
+        //Extract candidate numbers or PublicIds from file, look up the id and add to candidateIds
         //We need candidateIds to pass to other methods.
         CSVReader reader = new CSVReader(new InputStreamReader(is));
         String [] tokens;
@@ -573,22 +572,28 @@ public class SavedListServiceImpl implements SavedListService {
                 //Ignore empty tokens
                 if (tokens.length > 0 && !tokens[0].isEmpty()) {
                     //A bit of logic to skip any header. Only checks once.
-                    boolean skip = possibleHeader && !StringUtils.isNumeric(tokens[0]);
+                    boolean skip = possibleHeader &&
+                        !isCandidateNumber(tokens[0]) && !isPublicId(tokens[0]);
                     possibleHeader = false;
 
                     if (!skip) {
-                        long candidateNumber = Long.parseLong(tokens[0]);
-                        Candidate candidate =
-                            candidateRepository.findByCandidateNumber(Long.toString(candidateNumber));
+                        Candidate candidate = null;
+                        if (isPublicId(tokens[0])) {
+                            String publicId = tokens[0];
+                            candidate = candidateRepository
+                                .findByPublicId(publicId).orElse(null);
+                        } else if (isCandidateNumber(tokens[0])) {
+                            long candidateNumber = Long.parseLong(tokens[0]);
+                            candidate = candidateRepository
+                                .findByCandidateNumber(Long.toString(candidateNumber));
+                        }
                         if (candidate == null) {
-                            throw new NoSuchObjectException(Candidate.class, candidateNumber);
+                            throw new NoSuchObjectException(Candidate.class, tokens[0]);
                         }
                         candidateIds.add(candidate.getId());
                     }
                 }
             }
-        } catch (NumberFormatException ex) {
-            throw new NoSuchObjectException("Non numeric candidate number " + ex.getMessage());
         } catch (CsvValidationException ex) {
             throw new IOException("Bad file format: " + ex.getMessage());
         }
@@ -597,6 +602,19 @@ public class SavedListServiceImpl implements SavedListService {
         request.setCandidateIds(candidateIds);
         request.setUpdateType(ContentUpdateType.add);
         mergeSavedList(savedListId, request);
+    }
+
+    private boolean isCandidateNumber(String s) {
+        try {
+            Long.parseLong(s);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
+    private boolean isPublicId(String s) {
+        return s.length() == 22;
     }
 
     @Override

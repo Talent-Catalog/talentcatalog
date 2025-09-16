@@ -302,11 +302,12 @@ public interface SavedListService {
 
     /**
      * Merge the contents of the SavedList with the given id with the
-     * candidates whose candidate numbers (NOT ids) appear in the given input stream.
-     * @param savedListId ID of saved list to be updated
-     * @param is Input stream containing candidate numbers, one to a line
-     * @throws NoSuchObjectException if there is no saved list with this id
-     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * candidates whose candidate numbers (NOT ids) or publicIds appear in the given input stream.
+     * @param savedListId ID of the saved list to be updated
+     * @param is Input stream containing candidate numbers or publicIds, one to a line
+     * @throws NoSuchObjectException if there is no saved list with this id,
+     * or if any of the candidate numbers are not numeric, or is not a publicId or does not
+     * correspond to a candidate.
      * @throws IOException If there is a problem reading the input stream
      */
     void mergeSavedListFromInputStream(long savedListId, InputStream is)
