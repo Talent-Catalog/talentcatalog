@@ -108,13 +108,11 @@ public abstract class AbstractCandidateService implements CandidateService {
   @Override
   @Transactional(readOnly = true)
   public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode) {
-    List<ServiceAssignmentEntity> assignments = assignmentRepository
-        .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode);
-    List<ServiceAssignment> models = new ArrayList<>();
-    for (ServiceAssignmentEntity a : assignments) {
-      models.add(ServiceAssignment.from(a));
-    }
-    return models;
+    return assignmentRepository
+        .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode)
+        .stream()
+        .map(ServiceAssignment::from)
+        .toList();
   }
 
   @Override
