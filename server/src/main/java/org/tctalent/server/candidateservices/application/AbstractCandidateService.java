@@ -16,6 +16,7 @@
 
 package org.tctalent.server.candidateservices.application;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,8 @@ import org.tctalent.server.candidateservices.infrastructure.persistence.assignme
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.SavedListService;
 
@@ -75,8 +78,31 @@ public abstract class AbstractCandidateService implements CandidateService {
   }
 
   @Override
-  public List<ServiceAssignment> assignToList(Long listId, String serviceCode, User actor) {
-    return List.of();
+  @Transactional
+  public List<ServiceAssignment> assignToList(Long listId, String serviceCode, User user) {
+    var savedList = savedListService.get(listId);
+    var candidates = savedList.getCandidates();
+
+    // Confirm available resources
+    List<ServiceResource> availableResources = getAvailableResources();
+
+    if (availableResources.isEmpty() || candidates.size() > availableResources.size()) {
+      throw new NoSuchObjectException(
+          "There are not enough available coupons to assign to all candidates in the list. Please import more coupons from the settings page.");
+    }
+
+    List<ServiceAssignment> done = new ArrayList<>();
+    for (Candidate candidate : candidates) {
+      boolean hasSentCoupon = assignmentRepository
+          .findByCandidateAndProviderAndService(candidate.getId(), provider(), serviceCode)
+          .stream()
+          .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
+
+      if (!hasSentCoupon) {
+        done.add(assignToCandidate(candidate.getId(), user, serviceCode));
+      }
+    }
+    return done;
   }
 
   @Override
