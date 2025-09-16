@@ -21,11 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
+import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentRepository;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
+import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.SavedListService;
@@ -55,8 +57,21 @@ public abstract class AbstractCandidateService implements CandidateService {
   }
 
   @Override
-  public ServiceAssignment assignToCandidate(Long candidateId, User actor, String serviceCode) {
-    return null;
+  @Transactional
+  public ServiceAssignment assignToCandidate(Long candidateId, User user, String serviceCode) {
+    List<ServiceAssignment> assignments = getAssignmentsForCandidate(candidateId, serviceCode);
+
+    for (ServiceAssignment a : assignments) {
+      if (a.getStatus().equals(AssignmentStatus.ASSIGNED)) {
+        throw new EntityExistsException("coupon", "for this candidate");
+      }
+    }
+
+    var allocator = allocator(serviceCode);
+    if (allocator == null) {
+      throw new IllegalArgumentException("No allocator for service code " + serviceCode);
+    }
+    return assignmentEngine.assign(allocator, candidateId, user);
   }
 
   @Override
