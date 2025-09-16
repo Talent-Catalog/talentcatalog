@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2025 Talent Catalog.
  *
@@ -14,14 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+export enum TermsType {
+  CANDIDATE_PRIVACY_POLICY,
+  DATA_PROCESSING_AGREEMENT
+}
 
-/**
- * Type of terms - for example a privacy policy.
- *
- * @author John Cameron
- */
-public enum TermsType {
-    CANDIDATE_PRIVACY_POLICY,
-    DATA_PROCESSING_AGREEMENT
+export interface TermsInfoDto {
+
+  /**
+   * Unique id (maps to enum on server)
+   */
+  id: string;
+
+  /**
+   * HTML content
+   */
+  content: string;
 }

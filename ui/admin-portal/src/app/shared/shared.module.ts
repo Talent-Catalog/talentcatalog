@@ -18,9 +18,9 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
 import {
-  NgbInputDatepicker,
   NgbAlert,
   NgbDropdownModule,
+  NgbInputDatepicker,
   NgbNavModule,
   NgbPaginationModule
 } from "@ng-bootstrap/ng-bootstrap";
@@ -65,6 +65,10 @@ import {
   TcDateRangePickerComponent
 } from './components/date-range-picker/tc-date-range-picker.component'
 import {TcIconComponent} from './components/icon-component/tc-icon.component';
+import {TcAccordionComponent} from './components/accordion/tc-accordion.component';
+import {
+  TcAccordionItemComponent
+} from './components/accordion/accordion-item/tc-accordion-item.component';
 
 @NgModule({
   declarations: [
@@ -93,7 +97,9 @@ import {TcIconComponent} from './components/icon-component/tc-icon.component';
     TcDropdownMenuComponent,
     TcDropdownDividerComponent,
     TcDateRangePickerComponent,
-    TcIconComponent
+    TcIconComponent,
+    TcAccordionComponent,
+    TcAccordionItemComponent
   ],
   imports: [
     CommonModule,
@@ -130,7 +136,9 @@ import {TcIconComponent} from './components/icon-component/tc-icon.component';
     TcDropdownMenuComponent,
     TcDropdownDividerComponent,
     TcDateRangePickerComponent,
-    TcIconComponent
+    TcIconComponent,
+    TcAccordionComponent,
+    TcAccordionItemComponent
   ]
 })
 export class SharedModule { }

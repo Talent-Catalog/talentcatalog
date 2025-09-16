@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.partner;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -79,4 +80,9 @@ public class UpdatePartnerRequest {
 
     private Long redirectPartnerId;
 
+    private String acceptedDataProcessingAgreementId;
+
+    private OffsetDateTime acceptedDataProcessingAgreementDate;
+
+    private OffsetDateTime firstDpaSeenDate;
 }
