@@ -28,40 +28,26 @@
 
   <tc-accordion [allOpen]="true">
     <tc-accordion-item [header]="'Employer Details: ' + job.employerEntity?.name">
-      <div *ngIf="canViewEmployerDetails()">
-        <div class="row cols-3 mb-2">
-          <div class="col">
-            <label>Destination: </label>
-            <span>{{job.country?.name}}</span>
-          </div>
-          <div class="col">
-            <label>Company website: </label>
-            <span><a [href]="job.employerEntity?.website" target="_blank">{{job.employerEntity.website}}</a></span>
-          </div>
-          <div class="col">
-            <label>Opportunity Score: </label>
-            <span>{{job.opportunityScore}}</span>
-          </div>
-        </div>
-        <div class="row cols-3 mb-2">
-          <div class="col">
-            <label>Hiring commitment: </label>
-            <span>{{job.hiringCommitment}}</span>
-          </div>
-          <div class="col">
-            <label>Have they hired from abroad before? </label>
-            <span>{{job.employerEntity?.hasHiredInternationally}}</span>
-          </div>
-          <div class="col"></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <label>Employer description:</label>
-            <span>{{job.employerEntity?.description}}</span>
-          </div>
-        </div>
-        <hr>
-      </div>
+      <tc-description-list *ngIf="canViewEmployerDetails()" direction="column">
+        <tc-description-item label="Destination">
+          {{job.country?.name}}
+        </tc-description-item>
+        <tc-description-item label="Company website">
+          <a [href]="job.employerEntity?.website" target="_blank">{{job.employerEntity.website}}</a>
+        </tc-description-item>
+        <tc-description-item label="Opportunity Score">
+          {{job.opportunityScore}}
+        </tc-description-item>
+        <tc-description-item label="Hiring commitment">
+          {{job.hiringCommitment}}
+        </tc-description-item>
+        <tc-description-item label="Have they hired from abroad before?">
+          {{job.employerEntity?.hasHiredInternationally}}
+        </tc-description-item>
+        <tc-description-item label="Employer description">
+          {{job.employerEntity?.description}}
+        </tc-description-item>
+      </tc-description-list>
       <app-joi-component
         [entity]="job"
         [jobIntakeData]="jobIntakeData"
