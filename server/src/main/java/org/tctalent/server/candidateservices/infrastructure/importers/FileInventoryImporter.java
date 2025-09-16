@@ -29,5 +29,5 @@ public interface FileInventoryImporter {
    *
    * @param file the MultipartFile representing the file to import.
    */
-  void importFile(MultipartFile file) throws ImportFailedException;
+  void importFile(MultipartFile file, String serviceCode) throws ImportFailedException;
 }
