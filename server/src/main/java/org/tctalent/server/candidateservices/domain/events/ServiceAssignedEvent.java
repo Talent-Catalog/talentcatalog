@@ -16,7 +16,7 @@
 
 package org.tctalent.server.candidateservices.domain.events;
 
-import org.tctalent.server.candidateservices.api.dto.ServiceAssignment;
+import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 
 public record ServiceAssignedEvent(ServiceAssignment assignment) {
 }
