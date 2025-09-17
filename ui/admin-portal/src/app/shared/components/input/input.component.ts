@@ -22,6 +22,7 @@ import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
  * - Standard HTML `<input>` under the hood with sane defaults
  * - Works with `formControlName` / `ngModel`
  * - Emits `valueChange` when the value updates
+ * - For checkbox styling pass [checkbox]="true" to the parent tc-field component
  *
  * @example
  * ### Reactive Forms
