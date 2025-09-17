@@ -40,19 +40,29 @@
       &.table-hover > tbody > tr:hover {
         @include background-color-soft;
         cursor: pointer;
+        background-color: color(primary, 50) !important;
       }
 
       tr.current {
-        background-color: color(gray, 400);
+        background-color: color(primary, 100) !important;
       }
 
       tr.selected {
-        @include background-color-soft;
+        background-color: color(primary, 100) !important;
       }
 
       tr.clickable:hover {
         cursor: pointer;
       }
     }
+  }
+
+  .table-hover tbody tr:hover {
+    --bs-table-hover-bg:  color(primary, 50) !important;
+  }
+
+  .alert-warning {
+    background-color: color(yellow, 50) !important;
+    --bs-alert-bg:  color(yellow, 50);
   }
 }

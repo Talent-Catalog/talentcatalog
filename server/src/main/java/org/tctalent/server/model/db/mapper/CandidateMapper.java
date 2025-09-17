@@ -16,8 +16,11 @@
 
 package org.tctalent.server.model.db.mapper;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.model.db.Candidate;
 
@@ -41,5 +44,15 @@ public interface CandidateMapper {
     //Take account of one changed field name
     @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
     Candidate candidateMapAllFields(CandidateRegistration registrationInfo);
+
+    /**
+     * Copies non null values in source to candidate
+     * @param source Source candidate
+     * @param candidate Target candidate
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "candidateProperties", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateCandidateFromSource(Candidate source, @MappingTarget Candidate candidate);
 
 }

@@ -26,12 +26,12 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "candidate_form_instance")
-public class MyFirstForm extends CandidateFormInstance {
+public class MySecondForm extends CandidateFormInstance {
     private static final String HAIR_COLOUR_PROPERTY_NAME = "hairColour";
 
     @Override
     public String getFormName() {
-        return "MyFirstForm";
+        return "MySecondForm" ;
     }
 
     public String getCity() {
