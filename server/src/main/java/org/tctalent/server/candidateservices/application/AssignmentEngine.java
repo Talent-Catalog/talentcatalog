@@ -64,14 +64,8 @@ public class AssignmentEngine {
     e.setAssignedAt(LocalDateTime.now());
     ledger.save(e);
 
-    // Event + model // todo -- use the mapper
-    ServiceAssignment model = ServiceAssignment.builder()
-        .resource(res)
-        .candidateId(c.getId())
-        .actorId(actor.getId())
-        .status(AssignmentStatus.ASSIGNED)
-        .assignedAt(e.getAssignedAt())
-        .build();
+    // Event + model
+    ServiceAssignment model = ServiceAssignment.from(e);
 
     emailHelper.sendDuolingoCouponEmail(c.getUser()); // TODO -- SM -- keep for now; later move to NotificationListener
     events.publishEvent(new ServiceAssignedEvent(model));
