@@ -98,9 +98,11 @@
     }
   }
 
-  .ng-value {
-    background: color(primary, 100) !important;
-    border-radius: 0.3rem !important;
+  &.ng-select-multiple {
+    .ng-value {
+      background: color(primary, 100) !important;
+      border-radius: 0.3rem !important;
+    }
   }
 
   .ng-value-icon:hover {
