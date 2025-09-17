@@ -135,6 +135,14 @@ public abstract class AbstractCandidateService implements CandidateService {
   }
 
   @Override
+  public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException{
+    return assignmentRepository
+        .findTopByProviderAndServiceAndResource(provider(), serviceCode().name(), resourceCode)
+        .map(ServiceAssignmentEntity::getCandidate)
+        .orElse(null);
+  }
+
+  @Override
   public long countAvailableForProvider() {
     return 0;
   }

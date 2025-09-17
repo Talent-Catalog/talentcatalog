@@ -84,14 +84,6 @@ public class DuolingoService extends AbstractCandidateService {
   }
 
   @Override
-  public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException{
-    return assignmentRepository
-        .findTopByProviderAndServiceAndResource(PD.provider(), PD.serviceCode().name(), resourceCode)
-        .map(ServiceAssignmentEntity::getCandidate)
-        .orElse(null);
-  }
-
-  @Override
   @Transactional
   public void updateAResourceStatus(String resourceCode, ResourceStatus status) {
     resourceRepository
