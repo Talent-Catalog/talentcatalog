@@ -1,0 +1,157 @@
+@import '../color-classes';
+@import '../color-mixins';
+@import '../support-colors';
+@import '../typography-mixins';
+@import '../typography-classes';
+
+.tc-date-picker {
+  @include text-color-body;
+
+  #date-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    @include background-color-soft;
+
+    border: 1px solid;
+    border-radius: 8px;
+    padding: 4px 6px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .05);
+    @include border-color-base;
+
+    &:focus-within {
+      @include border-color-info;
+      box-shadow: 0 0 0 1px color(blue, 500);
+    }
+
+    .calendar {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0 6px;
+      height: 28px;
+      min-width: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+
+      &:hover {
+        @include background-color-light;
+      }
+    }
+
+    .btn.btn-primary.calendar {
+
+      .fas {
+        color: color(primary, 500);
+      }
+    }
+
+    .btn.btn-accent-1.calendar {
+      .fas {
+        @include text-color-secondary;
+      }
+
+      &:hover {
+        background: color(primary, 500);
+
+        .fas {
+          color: color(core, white);
+        }
+      }
+    }
+
+    .form-control {
+      @include paragraph-sm;
+      flex: 1 1 auto;
+      width: 100%;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 6px;
+      @include text-color-body;
+
+      &::placeholder {
+        @include text-color-caption;
+      }
+
+      &:focus {
+        outline: none;
+        border: 0;
+        box-shadow: none;
+      }
+
+      &:disabled {
+        @include text-color-disabled;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // ==================================================
+  // NG-BOOTSTRAP DATEPICKER OVERRIDES
+  // ==================================================
+  ngb-datepicker.dropdown-menu.show {
+    @include background-color-white;
+    border-radius: 1rem;
+    @include border-color-base;
+    padding: 1rem 1rem 0 1rem;
+    @include shadow-lg;
+
+    .ngb-dp-header {
+      @include background-color-white;
+      border-radius: 1rem 1rem 0 0;
+      @include border-color-base;
+    }
+
+    .ngb-dp-month {
+      padding-top: 1rem;
+    }
+
+    .ngb-dp-month-name {
+      @include background-color-white;
+    }
+
+    .ngb-dp-navigation-select {
+      gap: 1rem;
+    }
+
+    .ngb-dp-weekdays {
+      @include background-color-white;
+      margin-bottom: 1rem;
+    }
+
+    .ngb-dp-weekday.small {
+      @include text-color-primary;
+    }
+  }
+
+  .custom-day {
+    text-align: center;
+    padding: 0.185rem 0.25rem;
+    display: inline-block;
+    height: 2rem;
+    width: 2rem;
+  }
+
+  span.custom-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .custom-day.range,
+  .custom-day:hover {
+    @include background-color-primary;
+    @include text-color-white;
+    border-radius: 0.25rem;
+  }
+
+  .custom-day.faded {
+    @include background-color-primary-light;
+    border-radius: 0;
+    @include text-color-primary;
+  }
+}
