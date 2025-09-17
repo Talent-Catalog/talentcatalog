@@ -63,6 +63,13 @@ export class TcDatePickerComponent implements OnInit {
     this.control.patchValue(this.dateString);
   }
 
+  /**
+   * This method allows us to style the selected date in the custom date picker template.
+   * The NgbDatepicker only accepts NgbDate values, not strings, so the selected date string needs to be
+   * converted to a date value so it can be passed into the template and then styled.
+   * @param s date string
+   * @private
+   */
   private stringToNgbDate(s: string): NgbDate | null {
     let year: number;
     let month: number;
