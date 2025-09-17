@@ -26,6 +26,7 @@ export const environment = {
   apiUrl: 'http://localhost:8080/api/admin',
   halApiUrl: 'http://localhost:8080/api/hal',
   systemApiUrl: 'http://localhost:8080/api/system',
+  termsInfoApiUrl: 'http://localhost:8080/api/admin',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org',
   assetBaseUrl: '',
   environmentName: 'local',

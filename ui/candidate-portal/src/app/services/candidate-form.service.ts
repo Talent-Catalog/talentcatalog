@@ -11,8 +11,6 @@ import {MySecondFormComponent} from "../components/form/my-second-form/my-second
 })
 export class CandidateFormService {
 
-  //todo Way of using a constant for repeated use of 'MySecondForm'
-
   // You need to add an entry to this map for each form that can be displayed in a FormTask.
   // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {

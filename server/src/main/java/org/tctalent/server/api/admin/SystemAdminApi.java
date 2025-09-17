@@ -80,6 +80,7 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
@@ -94,6 +95,7 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.repository.db.JobChatUserRepository;
+import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
@@ -163,6 +165,7 @@ public class SystemAdminApi {
     private final JobChatRepository jobChatRepository;
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
+    private final PartnerRepository partnerRepository;
     private final S3ResourceHelper s3ResourceHelper;
     private final CacheService cacheService;
 
@@ -210,6 +213,7 @@ public class SystemAdminApi {
             DataSharingService dataSharingService,
             AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
+            PartnerRepository partnerRepository,
         CandidateBatchJobFactory candidateBatchJobFactory,
             CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
@@ -263,11 +267,28 @@ public class SystemAdminApi {
         this.batchJobService = batchJobService;
         this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
+      this.partnerRepository = partnerRepository;
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
       this.duolingoCouponService = duolingoCouponService;
       this.tcApiService = tcApiService;
+    }
+
+    /**
+     * Clears the firstDpaSeenDate field for the partner with the given ID.
+     * @param partnerId The ID of the partner
+     */
+    @GetMapping("partner/clear-first-dpa-seen/{partnerId}")
+    public void clearFirstDpaSeen(@PathVariable("partnerId") Long partnerId) {
+        // Fetch the partner by ID
+        PartnerImpl partner = (PartnerImpl) partnerService.getPartner(partnerId);
+
+        // Clear the firstDpaSeenDate field
+        partner.setFirstDpaSeenDate(null);
+
+        // Save the updated partner back to the repository
+        partnerRepository.save(partner);
     }
 
     @GetMapping("set_candidate_text/cpu-{cpu}")
