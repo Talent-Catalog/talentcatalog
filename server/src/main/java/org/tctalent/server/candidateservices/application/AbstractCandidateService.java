@@ -125,6 +125,14 @@ public abstract class AbstractCandidateService implements CandidateService {
         .toList();
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public ServiceResource getResourceForResourceCode(String resourceCode) throws NoSuchObjectException {
+    return resourceRepository
+        .findByProviderAndResourceCode(provider(), resourceCode)
+        .map(ServiceResource::from)
+        .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + resourceCode + " not found"));
+  }
 
   @Override
   public long countAvailableForProvider() {
