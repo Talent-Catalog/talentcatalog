@@ -155,6 +155,11 @@ public abstract class AbstractCandidateService implements CandidateService {
 
   @Override
   public long countAvailableForProvider() {
-    return 0;
+    return resourceRepository.countAvailableByProvider(provider());
+  }
+
+  @Override
+  public long countAvailableForProviderAndService() {
+    return resourceRepository.countAvailableByProviderAndService(provider(), serviceCode());
   }
 }

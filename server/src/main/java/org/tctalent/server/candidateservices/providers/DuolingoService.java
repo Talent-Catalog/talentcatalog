@@ -83,16 +83,6 @@ public class DuolingoService extends AbstractCandidateService {
     return duolingoImporter;
   }
 
-  @Override
-  public long countAvailableForProvider() {
-    return resourceRepository.countAvailableByProvider(PD.provider());
-  }
-
-  @Override
-  public long countAvailableForProviderAndService() {
-    return resourceRepository.countAvailableByProviderAndService(PD.provider(), PD.serviceCode());
-  }
-
   //  @Override // TODO -- SM -- put in base class or resource expiry scheduler class?
   @Transactional
   @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
