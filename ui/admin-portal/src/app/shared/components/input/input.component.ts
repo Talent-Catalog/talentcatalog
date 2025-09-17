@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, forwardRef, OnInit } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {Component, EventEmitter, forwardRef, Input, OnInit, Output} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 /**
  * @component InputComponent
@@ -60,9 +60,28 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() name?: string;
   @Input() type: string = 'text';
   @Input() placeholder: string = '';
-  @Input() disabled = false;
   @Input() invalid: boolean = false;
   @Input() defaultValue: string = '';
+
+  /** Disabled state coming from an input e.g. [disabled]="loading" */
+  @Input() set disabled(val: boolean) {
+    this._disabledInput = val;
+    this.updateDisabledState();
+  }
+
+  get disabled(): boolean {
+    return this._disabledFinal;
+  }
+
+  /** The input can be disabled in two ways:
+   * - input: _disabledInput eg. <tc-input formControlName="email" disabled="true">
+   * - form control: _disabledFromForm eg. this.form.get('email').disable();
+   * Both disabled states need to be tracked and if both are applied we need one to take precedence,
+   * so use disabledFinal for the final disabled state.
+   * */
+  private _disabledInput = false;
+  private _disabledFromForm = false;
+  private _disabledFinal = false;
 
   @Output() valueChange = new EventEmitter<string>();
 
@@ -88,6 +107,7 @@ export class InputComponent implements ControlValueAccessor, OnInit {
     if (this.defaultValue && !this._value) {
       this.value = this.defaultValue;
     }
+    this.updateDisabledState();
   }
 
   // ControlValueAccessor implementation
@@ -103,8 +123,15 @@ export class InputComponent implements ControlValueAccessor, OnInit {
     this.onTouched = fn;
   }
 
+  /** This method is called when the angular form control .disable() method is used */
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this._disabledFromForm = isDisabled;
+    this.updateDisabledState();
+  }
+
+  /** Form control disabled state takes precedence */
+  private updateDisabledState() {
+    this._disabledFinal = this._disabledFromForm || this._disabledInput;
   }
 
   handleInput(event: Event) {
