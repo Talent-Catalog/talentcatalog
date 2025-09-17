@@ -924,10 +924,6 @@ const ALL_FIELDS = {
       "SUBMIT": null
     },
     "LABEL": {
-      "FIRSTNAME": null,
-      "LASTNAME": null,
-      "DOB": null,
-      "GENDER": null,
       "BIRTHCOUNTRY": null,
       "PLACEOFBIRTH": null,
       "DOCTYPE": null,
@@ -936,18 +932,7 @@ const ALL_FIELDS = {
       "ISSUEDATE": null,
       "EXPIRYDATE": null
     },
-    "ERROR": {
-      "FIRSTNAME_REQUIRED": null,
-      "LASTNAME_REQUIRED": null,
-      "DOB_REQUIRED": null,
-      "GENDER_REQUIRED": null,
-      "BIRTHCOUNTRY_REQUIRED": null,
-      "DOCTYPE_REQUIRED": null
-    },
     "OPTION": {
-      "MALE": null,
-      "FEMALE": null,
-      "OTHER": null,
       "SELECTCOUNTRY": null,
       "PASSPORT": null,
       "NATIONALID": null,
