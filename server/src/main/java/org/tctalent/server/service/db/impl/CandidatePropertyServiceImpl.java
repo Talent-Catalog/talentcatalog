@@ -60,7 +60,7 @@ public class CandidatePropertyServiceImpl implements CandidatePropertyService {
             property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
         } else {
             property = new CandidateProperty();
-            property.setCandidateId(candidate.getId());
+            property.setCandidate(candidate);
             property.setName(name);
             property.setValue(value);
             property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);

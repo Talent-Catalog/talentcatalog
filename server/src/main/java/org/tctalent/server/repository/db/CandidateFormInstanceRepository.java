@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface MyFirstFormData {
-  city?: string;
-  hairColour?: string;
-}
+package org.tctalent.server.repository.db;
 
-export interface MySecondFormData {
-  city?: string;
-  hairColour?: string;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.tctalent.server.model.db.CandidateFormInstance;
+import org.tctalent.server.model.db.CandidateFormInstanceKey;
+
+public interface CandidateFormInstanceRepository extends
+    JpaRepository<CandidateFormInstance, CandidateFormInstanceKey> {
 }
