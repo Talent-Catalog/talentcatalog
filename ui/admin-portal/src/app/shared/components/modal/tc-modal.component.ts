@@ -57,6 +57,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class TcModalComponent {
   @Input() header: string;
   @Input() actionText: string = 'Save';
+  /** Disable the action button e.g. on saving/loading status */
   @Input() disableAction: boolean = false;
   @Input() showCancel: boolean = true;
   @Input() icon: string;
