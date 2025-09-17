@@ -9,7 +9,7 @@ import {Component} from "@angular/core";
 @Component({
   template: `
     <tc-modal
-      [title]="title"
+      [header]="header"
       [actionText]="actionText"
       [disableAction]="disableAction"
       [showCancel]="showCancel"
@@ -21,7 +21,7 @@ import {Component} from "@angular/core";
   `
 })
 class TestHostComponent {
-  title = 'Test Modal';
+  header = 'Test Modal';
   actionText = 'Confirm';
   disableAction = false;
   showCancel = true;
