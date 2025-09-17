@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.candidateservices.application.AbstractCandidateService;
 import org.tctalent.server.candidateservices.application.AssignmentEngine;
-import org.tctalent.server.candidateservices.application.ProviderDescriptor;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
 import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
@@ -37,9 +36,6 @@ public class DuolingoService extends AbstractCandidateService {
   private final FileInventoryImporter duolingoImporter;
   private final ResourceAllocator duolingoAllocator;
 
-  private static final ProviderDescriptor PD =
-      new ProviderDescriptor("DUOLINGO", ServiceCode.DUOLINGO_TEST_PROCTORED); // TODO -- SM -- maybe don't need this
-
   public DuolingoService(ServiceAssignmentRepository assignmentRepo,
       ServiceResourceRepository resourceRepo,
       AssignmentEngine assignmentEngine,
@@ -53,7 +49,7 @@ public class DuolingoService extends AbstractCandidateService {
 
   @Override
   protected String provider() {
-    return ""; // TODO
+    return "DUOLINGO";
   }
 
   @Override
