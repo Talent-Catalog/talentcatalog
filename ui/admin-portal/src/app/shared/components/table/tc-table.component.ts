@@ -36,8 +36,9 @@ import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angula
 export class TcTableComponent {
   /** Table name (optional) */
   @Input() name: string;
-  /** Type of table styles (default is Basic) */
-  @Input() type: 'Basic' | 'Striped' | 'Dropdown' = 'Basic';
+  /** Types of table styles */
+  @Input() striped: boolean = false;
+  @Input() hover: boolean = true;
 
   /** Variables for pagination (see {@link TcPaginationComponent} for doc) */
   @Input() totalElements: number;
@@ -45,6 +46,13 @@ export class TcTableComponent {
   @Input() pageNumber: number;
   @Output() pageNumberChange = new EventEmitter<number>();
   @Output() pageChange = new EventEmitter();
+
+  get classList() {
+    return {
+      'table-striped': this.striped,
+      'table-hover': this.hover,
+    };
+  }
 
   onPageChange(newPageNumber: number) {
     this.pageNumber = newPageNumber;
