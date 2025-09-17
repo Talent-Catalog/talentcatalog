@@ -21,8 +21,5 @@ import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.model.db.Candidate;
 
 public interface ResourceAllocator {
-
   ServiceResource allocateFor(Candidate candidate);
-
-  List<ServiceResource> getAvailableResources();
 }

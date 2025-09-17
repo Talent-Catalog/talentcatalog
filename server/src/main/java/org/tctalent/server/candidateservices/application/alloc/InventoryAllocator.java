@@ -16,21 +16,15 @@
 
 package org.tctalent.server.candidateservices.application.alloc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
-import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceEntity;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceMapper;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.service.db.SavedListService;
 
 @RequiredArgsConstructor
 public class InventoryAllocator implements ResourceAllocator {
@@ -53,11 +47,6 @@ public class InventoryAllocator implements ResourceAllocator {
     resources.save(e);
 
     return ServiceResourceMapper.toDomain(e);
-  }
-
-  @Override
-  public List<ServiceResource> getAvailableResources() {
-    return List.of(); // TODO implementation
   }
 
 }
