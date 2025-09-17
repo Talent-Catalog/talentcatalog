@@ -37,6 +37,10 @@
         }
       }
 
+      tr {
+        vertical-align: middle;
+      }
+
       &.table-hover > tbody > tr:hover {
         @include background-color-soft;
         cursor: pointer;
