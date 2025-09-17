@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {AbstractControl} from "@angular/forms";
-import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDate, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'tc-date-picker',
@@ -16,16 +16,18 @@ export class TcDatePickerComponent implements OnInit {
   // If don't want to allow selection of a past date, set to true.
   @Input() allowPast: boolean = true;
 
-  date: string;
+  dateString: string;
   today: Date;
   maxDate: NgbDateStruct;
   minDate: NgbDateStruct;
   error: string;
+  date: NgbDate;
 
   constructor() { }
 
   ngOnInit(): void {
-    this.date = this.control.value;
+    this.dateString = this.control.value;
+    this.date = this.stringToNgbDate(this.dateString);
     this.today = new Date();
 
     // If allow future is not true, leave as default max date. Otherwise set to today.
@@ -47,16 +49,37 @@ export class TcDatePickerComponent implements OnInit {
   update() {
     const customDatePattern = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
     // Only send the string to the component form if date is null or matches the correct format
-    if (this.date == null || this.date.match(customDatePattern) ) {
+    if (this.dateString == null || this.dateString.match(customDatePattern) ) {
       this.error = null;
-      this.control.patchValue(this.date);
+      this.control.patchValue(this.dateString);
     } else {
       this.error = 'Incorrect date format, please type date in yyyy-mm-dd';
     }
+    this.date = this.stringToNgbDate(this.dateString);
   }
 
   clear() {
-    this.date = null;
-    this.control.patchValue(this.date);
+    this.dateString = null;
+    this.control.patchValue(this.dateString);
+  }
+
+  private stringToNgbDate(s: string): NgbDate | null {
+    let year: number;
+    let month: number;
+    let day: number;
+
+    if (s != null && s.length !== 0) {
+      const [yearStr, monthStr, dayStr] = s.split('-')
+      year = Number(yearStr);
+      month = Number(monthStr);
+      day = Number(dayStr);
+      if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+        return new NgbDate(year, month, day);
+      } else {
+        return null;
+      }
+    } else {
+      return null
+    }
   }
 }

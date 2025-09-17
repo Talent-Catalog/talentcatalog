@@ -127,7 +127,6 @@
       @include text-color-primary;
     }
   }
-
   .custom-day {
     text-align: center;
     padding: 0.185rem 0.25rem;
@@ -140,18 +139,5 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .custom-day.range,
-  .custom-day:hover {
-    @include background-color-primary;
-    @include text-color-white;
-    border-radius: 0.25rem;
-  }
-
-  .custom-day.faded {
-    @include background-color-primary-light;
-    border-radius: 0;
-    @include text-color-primary;
   }
 }

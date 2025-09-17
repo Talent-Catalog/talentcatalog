@@ -22,7 +22,8 @@
   <input (click)="picker.toggle()" class="form-control" placeholder="yyyy-mm-dd"
          name="dp" ngbDatepicker
          #picker="ngbDatepicker"
-         [(ngModel)]="date"
+         [dayTemplate]="t"
+         [(ngModel)]="dateString"
          (ngModelChange)="update()"
          (dateSelect)="control.markAsDirty()"
          [autoClose]="true"
@@ -35,6 +36,12 @@
     </button>
   </div>
 </div>
+<ng-template #t let-d="date">
+  <span class="custom-day"
+        [class.selected]="d.equals(date)">
+    {{ d.day }}
+  </span>
+</ng-template>
 <small class="text-muted">
   If exact day or month unknown, use '01' to approximate, e.g., '2020-07-<b>01</b>'.
 </small>
