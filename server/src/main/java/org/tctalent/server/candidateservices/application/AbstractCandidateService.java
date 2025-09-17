@@ -66,7 +66,7 @@ public abstract class AbstractCandidateService implements CandidateService {
   @Override
   @Transactional
   public ServiceAssignment assignToCandidate(Long candidateId, User user, String serviceCode) {
-    List<ServiceAssignment> assignments = getAssignmentsForCandidate(candidateId, serviceCode);
+    var assignments = getAssignmentsForCandidate(candidateId, serviceCode);
 
     for (ServiceAssignment a : assignments) {
       if (a.getStatus().equals(AssignmentStatus.ASSIGNED)) {
@@ -135,9 +135,14 @@ public abstract class AbstractCandidateService implements CandidateService {
   }
 
   @Override
-  public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException{
+  public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException {
+    var resource = resourceRepository
+        .findByProviderAndResourceCode(provider(), resourceCode)
+        .map(ServiceResource::from)
+        .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + resourceCode + " not found"));
+
     return assignmentRepository
-        .findTopByProviderAndServiceAndResource(provider(), serviceCode().name(), resourceCode)
+        .findTopByProviderAndServiceAndResource(provider(), serviceCode().name(), resource.getId())
         .map(ServiceAssignmentEntity::getCandidate)
         .orElse(null);
   }

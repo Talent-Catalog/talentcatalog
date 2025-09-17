@@ -86,7 +86,7 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
   Optional<ServiceAssignmentEntity> findTopByProviderAndServiceAndResource(
       @Param("provider") String provider,
       @Param("serviceCode") String serviceCode,
-      @Param("resourceId") String resourceId);
+      @Param("resourceId") Long resourceId);
 
 
   @Query("""
