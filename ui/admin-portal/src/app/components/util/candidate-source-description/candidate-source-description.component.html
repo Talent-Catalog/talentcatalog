@@ -22,7 +22,7 @@
 
   <div class="flex-fill">
     <tc-textarea [disabled]="!isEditable()"
-                 placeholder="Purpose of this {{ isSubmissionList() ? 'submission' : ''}}{{ isSavedList() ? 'list' : 'search'}}..."
+                 placeholder="Purpose of this {{ isSubmissionList() ? 'submission ' : ''}}{{ isSavedList() ? 'list' : 'search'}}..."
                  [formControlName]="'description'">
     </tc-textarea>
     <app-autosave-status class="ms-1" [saving]="saving" [typing]="typing"></app-autosave-status>
