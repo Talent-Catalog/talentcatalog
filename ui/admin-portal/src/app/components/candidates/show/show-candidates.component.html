@@ -219,30 +219,48 @@
   <div class="results-area">
 
     <!--  List operation log - eg Save/Replace again, or Copied to list  -->
-    <div class="text-muted pt-0 mb-3" *ngIf="!searching">
-      <div *ngIf="haveTargetList() && savedSelection" class="d-flex pt-1 align-items-center">
-        <button class="btn btn-sm btn-outline-secondary me-2"
-                (click)="saveSelectionAgain()">
-          <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
-          {{(targetListReplace ? "Replace" : "Save")}} Again
-        </button>
-        <div>
-          <i class="fas fa-user-check"></i> to
-          <a [routerLink]="['/list',targetListId]" title="Show list">
-            {{targetListName}}
+    <div class="text-muted mt-2 mb-1" *ngIf="!searching">
+      <!-- Replace / Save Again to List -->
+      <div *ngIf="haveTargetList() && savedSelection"
+           class="d-flex align-items-center gap-2">
+        <tc-button [type]="'outline'"
+                   (click)="saveSelectionAgain()">
+          <i class="fas fa-spinner fa-spin" *ngIf="savingSelection"></i>
+          {{ targetListReplace ? 'Replace' : 'Save' }} Again
+        </tc-button>
+        <span class="d-flex align-items-center gap-sm-1">
+          <span>to</span>
+          <a [routerLink]="['/list', targetListId]" title="Show list">
+            {{ targetListName }}
           </a>
-          <a target="_blank" [routerLink]="['/list',targetListId]">
-            <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+          <a target="_blank" [routerLink]="['/list', targetListId]">
+            <tc-icon [size]="'sm'"
+                     [color]="'gray'"
+                     [ariaLabel]="'Show list in new tab'">
+              <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+            </tc-icon>
           </a>
-        </div>
+        </span>
       </div>
-      <div *ngIf="haveTargetList() && !savedSelection">
-        Copied <i class="fas fa-copy"></i> to
-        <a [routerLink]="['/list',targetListId]" title="Show list">
-          {{targetListName}}
-        </a>
-        <a target="_blank" [routerLink]="['/list',targetListId]">
-          <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+      <!-- Copied to List -->
+      <div *ngIf="haveTargetList() && !savedSelection"
+           class="d-flex align-items-center">
+        <tc-icon [size]="'sm'"
+                 [color]="'gray'">
+          <i class="fas fa-copy"></i>
+        </tc-icon>
+        <span class="gap-sm-1">
+          <span>Copied to </span>
+          <a [routerLink]="['/list', targetListId]" title="Show list">
+            {{ targetListName }}
+          </a>
+        </span>
+        <a target="_blank" [routerLink]="['/list', targetListId]">
+          <tc-icon size="sm"
+                   color="gray"
+                   ariaLabel="Show list in new tab">
+            <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+          </tc-icon>
         </a>
       </div>
     </div>
@@ -295,12 +313,11 @@
 
     <div class="row">
       <!-- First Group of Buttons (Left-aligned) -->
-      <div class="col-auto d-flex justify-content-start flex-wrap">
-        <div class="d-flex flex-wrap buttons-spacing align-content-between gap-2">
+      <div class="col d-flex justify-content-start flex-wrap">
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
           <tc-button [type]="'primary'"
                      [disabled]="!isSelection()"
                      (click)="saveSelection()"
-                     class="me-2"
                      title="Save selected candidates to a list">
             <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
             <i class="fas fa-user-check"></i> to
@@ -311,7 +328,6 @@
                      *ngIf="isSavedList()"
                      [disabled]="!isSelection()"
                      (click)="copyEmails()"
-                     class="me-2"
                      title="Copy emails of selected candidates">
             <i class="fas fa-user-check"></i> to
             <i class="fa fa-envelope"></i>
@@ -321,7 +337,6 @@
                      *ngIf="canUpdateStatuses()"
                      [disabled]="!isSelection()"
                      (click)="updateStatusOfSelection()"
-                     class="me-2"
                      title="Update statuses of selected candidates">
             <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
             <i class="fas fa-user-check"></i>
@@ -332,7 +347,6 @@
                      *ngIf="canResolveTasks()"
                      [disabled]="!isSelection()"
                      (click)="resolveTaskAssignments()"
-                     class="me-2"
                      title="Resolve any outstanding tasks">
             <i class="fas fa-spinner fa-spin" *ngIf=updatingTasks></i>
             <i class="fas fa-user-check"></i> Resolve tasks
@@ -341,7 +355,6 @@
           <tc-button [type]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                      (click)="createUpdateSalesforce()"
-                     class="me-2"
                      title="Create or update selected candidate cases">
             <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
             <i class="fas fa-user-check"></i> Update Case/s <i class="fa-solid fa-address-book"></i>
@@ -351,7 +364,6 @@
                      *ngIf="!isSubmissionList() && isContentModifiable()"
                      [disabled]="!isSelection()"
                      (click)="removeSelectedCandidatesFromList()"
-                     class="me-2"
                      title="Remove selected candidates from list">
             <i class="fas fa-user-check"></i> Remove
           </tc-button>
@@ -360,7 +372,6 @@
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                      [disabled]="!isSelection()"
                      (click)="closeSelectedOpportunities()"
-                     class="me-2"
                      title="Close selected candidate cases. Not removed from list but hidden unless 'Show closed cases' checkbox is checked.">
             <i class="fas fa-spinner fa-spin" *ngIf=closing></i>
             <i class="fas fa-user-check"></i> Remove (Close)
@@ -369,7 +380,6 @@
           <tc-button [type]="'primary'"
                      [disabled]="!isSelection()"
                      (click)="clearSelectionAndDoSearch()"
-                     class="me-2"
                      title="Clear selected candidates">
             Clear <i class="fas fa-user-check"></i>
           </tc-button>
@@ -377,7 +387,6 @@
           <tc-button [type]="'primary'"
                      *ngIf="isSwapSelectionSupported()"
                      (click)="swapSelection()"
-                     class="me-2"
                      title="Swap selected candidates. Selected becomes unselected and vice versa.">
             <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
           </tc-button>
@@ -386,12 +395,11 @@
       </div>
 
       <!-- Second Group of Buttons (Shifted Right) -->
-      <div class="col d-flex justify-content-end pb-2">
-        <div class="d-flex flex-wrap buttons-spacing align-content-between">
+      <div class="col d-flex justify-content-end flex-wrap">
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
           <tc-button [type]="'outline'"
                      *ngIf="isImportable()"
                      (click)="importCandidates()"
-                     class="me-2"
                      title="Import candidates">
             <i class="fas fa-spinner fa-spin" *ngIf=importing></i>
             Import <i class="fas fa-file-excel"></i>
@@ -400,7 +408,6 @@
           <tc-button [type]="'outline'"
                      *ngIf="!isSavedList() && isExportable()"
                      (click)="exportCandidates()"
-                     class="me-2"
                      title="Export candidates">
             <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
             Export <i class="fas fa-file-excel"></i>
@@ -409,7 +416,6 @@
           <tc-button [type]="'outline'"
                      *ngIf="isPublishable()"
                      (click)="modifyExportColumns()"
-                     class="me-2"
                      title="Publish candidates to be shared externally - eg with employers">
             <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>
             Publish <i class="fas fa-globe"></i>
@@ -418,15 +424,14 @@
           <tc-button [type]="'outline'"
                      *ngIf= "hasPublishedDoc() && isContentModifiable()
                      && salesforceService.joblink(candidateSource)"
-                     class="me-2"
                      (click)="importEmployerFeedback()"
                      title="Import employer feedback from published list">
             <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
             Feedback <i class="fas fa-globe"></i>
           </tc-button>
-
         </div>
       </div>
+
       <small *ngIf="numberSelections > 0" class="text-muted">
         {{numberSelections}} candidate(s) selected
       </small>
