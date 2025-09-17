@@ -101,7 +101,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @Transient
     private Long contextSavedListId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateId", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @MapKey(name="name")
     private Map<String, CandidateProperty> candidateProperties;
 
@@ -1477,7 +1477,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     }
 
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
-        candidateVisaChecks.sort(null);
+        if (candidateVisaChecks != null) {
+            candidateVisaChecks.sort(null);
+        }
         return candidateVisaChecks;
     }
 
