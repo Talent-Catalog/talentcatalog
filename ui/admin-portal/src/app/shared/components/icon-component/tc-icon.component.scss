@@ -1,0 +1,57 @@
+@import "../../../../scss/color-mixins";
+
+.tc-icon {
+
+  &.icon-sm, &.icon-sm::ng-deep > i {
+    font-size: 0.75rem;
+    margin: 0.3rem;
+  }
+
+  &.icon-md, &.icon-md::ng-deep > i {
+    font-size: 1rem;
+    margin: 0.3rem;
+  }
+
+  &.icon-lg, &.icon-lg::ng-deep > i {
+    font-size: 1.25rem;
+    margin: 0.3rem;
+  }
+
+  &.icon-xl, &.icon-lg::ng-deep > i {
+    font-size: 1.5rem;
+    margin: 0.3rem;
+  }
+
+  // Color variations
+  &.icon-primary {
+    @include text-color-primary;
+  }
+
+  &.icon-secondary {
+    color: color(secondary, 500);
+  }
+
+  &.icon-white {
+    @include text-color-white;
+  }
+
+  &.icon-gray {
+    @include text-color-secondary;
+  }
+
+  &.icon-error {
+    color: color(red, 500);
+  }
+
+  &.icon-info {
+    color: color(blue, 500);
+  }
+
+  &.icon-success {
+    color: color(green, 500);
+  }
+
+  &.icon-warning {
+    color: color(yellow, 500);
+  }
+}
