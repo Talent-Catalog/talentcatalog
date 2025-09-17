@@ -16,23 +16,16 @@
 
 package org.tctalent.server.candidateservices.providers;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.candidateservices.application.AbstractCandidateService;
 import org.tctalent.server.candidateservices.application.AssignmentEngine;
 import org.tctalent.server.candidateservices.application.ProviderDescriptor;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
-import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentRepository;
-import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceEntity;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
 import org.tctalent.server.service.db.SavedListService;
 
@@ -76,24 +69,6 @@ public class DuolingoService extends AbstractCandidateService {
   @Override
   protected FileInventoryImporter importer() {
     return duolingoImporter;
-  }
-
-  //  @Override // TODO -- SM -- put in base class or resource expiry scheduler class?
-  @Transactional
-  @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
-  @SchedulerLock(name = "ResourceSchedulerTask_markResourcesAsExpired", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
-  public void markResourcesAsExpired() {
-    // Exclude EXPIRED, REDEEMED and DISABLED statuses
-    List<ServiceResourceEntity> expiredCoupons = resourceRepository
-        .findExpirable(
-            LocalDateTime.now(),
-            List.of(ResourceStatus.EXPIRED, ResourceStatus.REDEEMED, ResourceStatus.DISABLED)
-    );
-
-    if (!expiredCoupons.isEmpty()) {
-      expiredCoupons.forEach(resource -> resource.setStatus(ResourceStatus.EXPIRED));
-      resourceRepository.saveAll(expiredCoupons);
-    }
   }
 
 }
