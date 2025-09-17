@@ -62,6 +62,7 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() placeholder: string = '';
   @Input() invalid: boolean = false;
   @Input() defaultValue: string = '';
+  @Input() readonly: boolean = false;
 
   /** Disabled state coming from an input e.g. [disabled]="loading" */
   @Input() set disabled(val: boolean) {
