@@ -69,6 +69,7 @@ import {TcAccordionComponent} from './components/accordion/tc-accordion.componen
 import {
   TcAccordionItemComponent
 } from './components/accordion/accordion-item/tc-accordion-item.component';
+import {TcLoadingComponent} from './components/loading/tc-loading.component';
 
 @NgModule({
   declarations: [
@@ -99,7 +100,8 @@ import {
     TcDateRangePickerComponent,
     TcIconComponent,
     TcAccordionComponent,
-    TcAccordionItemComponent
+    TcAccordionItemComponent,
+    TcLoadingComponent
   ],
   imports: [
     CommonModule,
@@ -138,7 +140,8 @@ import {
     TcDateRangePickerComponent,
     TcIconComponent,
     TcAccordionComponent,
-    TcAccordionItemComponent
+    TcAccordionItemComponent,
+    TcLoadingComponent
   ]
 })
 export class SharedModule { }
