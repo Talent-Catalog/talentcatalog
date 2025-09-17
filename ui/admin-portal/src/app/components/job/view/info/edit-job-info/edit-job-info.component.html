@@ -14,15 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Edit Job</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
+<tc-modal title="Edit Job" (onAction)="onSave()" actionText="Save">
 
   <div *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
@@ -34,75 +26,87 @@
     </div>
 
     <form [formGroup]="jobForm">
-      <div class="mb-3">
-        <label class="form-label"
-               for="name"
-               [ngbTooltip]="!canChangeJobName() ? nameTip : null">
-          Name
-        </label>
-        <input type="text"
-               class="form-control"
-               formControlName="name"
-               id="name"
-               [ngbTooltip]= "!canChangeJobName() ? nameTip : null"
-               [readOnly]="!canChangeJobName()">
-      </div>
+      <tc-fieldset>
+        <tc-field>
+          <tc-label for="name" [ngbTooltip]="!canChangeJobName() ? nameTip : null">
+            Name
+          </tc-label>
+          <tc-input type="text"
+                    formControlName="name"
+                    id="name"
+                    [ngbTooltip]= "!canChangeJobName() ? nameTip : null"
+                    [disabled]="!canChangeJobName()"></tc-input>
+        </tc-field>
 
-      <div class="form-check mb-3">
-        <span [ngbTooltip]="evergreenTip">
-          <input type="checkbox" formControlName="evergreen" id="evergreen" class="form-check-input">
-          <label class="form-check-label" for="evergreen">
+        <tc-field>
+          <tc-label for="evergreen" [ngbTooltip]="evergreenTip">
             Evergreen job?
-          </label>
-        </span>
-      </div>
-
-      <div class="form-check mb-3">
-        <span [ngbTooltip]="skipCandidateSearchTip">
-          <input type="checkbox"
-                 formControlName="skipCandidateSearch"
-                 id="skipCandidateSearch"
-                 class="form-check-input">
-          <label class="form-check-label" for="skipCandidateSearch">
+          </tc-label>
+          <tc-input type="checkbox"
+                    formControlName="evergreen"
+                    id="evergreen"></tc-input>
+        </tc-field>
+        <tc-field [ngbTooltip]="skipCandidateSearchTip">
+          <tc-label for="skipCandidateSearch">
             Skip candidate search?
-          </label>
-        </span>
-      </div>
+          </tc-label>
+          <tc-input type="checkbox"
+                    formControlName="skipCandidateSearch"
+                    id="skipCandidateSearch"></tc-input>
+        </tc-field>
 
-      <!-- SUBMISSION DUE DATE -->
-      <div class="mb-3">
-        <label class="form-label" for="submissionDueDate" [ngbTooltip]="submissionDueDateTip">
-          Submission Due Date
-        </label>
-        <app-date-picker id="submissionDueDate"
-                         [control]="jobForm.controls.submissionDueDate"
-                         [ngbTooltip]="submissionDueDateTip">
-        </app-date-picker>
-      </div>
+        <tc-field>
+          <tc-label for="submissionDueDate" [ngbTooltip]="submissionDueDateTip">
+            Submission Due Date
+          </tc-label>
+          <app-date-picker id="submissionDueDate"
+                           [control]="jobForm.controls.submissionDueDate"
+                           [ngbTooltip]="submissionDueDateTip">
+          </app-date-picker>
+        </tc-field>
+        <tc-field>
+          <tc-label for="contactUser">
+            Contact User
+          </tc-label>
+          <ng-select
+            id="contactUser"
+            [items]="users"
+            [multiple]="false"
+            [closeOnSelect]="true"
+            placeholder="Select or type..."
+            bindLabel="name"
+            bindValue="id"
+            formControlName="contactUser">
+          </ng-select>
+        </tc-field>
+      </tc-fieldset>
 
-      <!-- Contact user -->
-      <div class="mb-3">
-        <label class="form-label" for="contactUser">Contact User</label>
-        <ng-select
-          id="contactUser"
-          [items]="users"
-          [multiple]="false"
-          [closeOnSelect]="true"
-          placeholder="Select or type..."
-          bindLabel="name"
-          bindValue="id"
-          formControlName="contactUser">
-        </ng-select>
-      </div>
+<!--      &lt;!&ndash; SUBMISSION DUE DATE &ndash;&gt;-->
+<!--      <div class="mb-3">-->
+<!--        <label class="form-label" for="submissionDueDate" [ngbTooltip]="submissionDueDateTip">-->
+<!--          Submission Due Date-->
+<!--        </label>-->
+<!--        <app-date-picker id="submissionDueDate"-->
+<!--                         [control]="jobForm.controls.submissionDueDate"-->
+<!--                         [ngbTooltip]="submissionDueDateTip">-->
+<!--        </app-date-picker>-->
+<!--      </div>-->
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="jobForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
+<!--      &lt;!&ndash; Contact user &ndash;&gt;-->
+<!--      <div class="mb-3">-->
+<!--        <label class="form-label" for="contactUser">Contact User</label>-->
+<!--        <ng-select-->
+<!--          id="contactUser"-->
+<!--          [items]="users"-->
+<!--          [multiple]="false"-->
+<!--          [closeOnSelect]="true"-->
+<!--          placeholder="Select or type..."-->
+<!--          bindLabel="name"-->
+<!--          bindValue="id"-->
+<!--          formControlName="contactUser">-->
+<!--        </ng-select>-->
+<!--      </div>-->
     </form>
 
   </div>
-</div>
+</tc-modal>
