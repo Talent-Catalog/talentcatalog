@@ -17,7 +17,6 @@
 package org.tctalent.server.candidateservices.providers;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -31,14 +30,10 @@ import org.tctalent.server.candidateservices.application.ProviderDescriptor;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
 import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceCode;
-import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.infrastructure.importers.FileInventoryImporter;
-import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentEntity;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentRepository;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceEntity;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.service.db.SavedListService;
 
 
