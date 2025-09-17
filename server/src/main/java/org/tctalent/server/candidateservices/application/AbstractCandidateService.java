@@ -49,7 +49,7 @@ public abstract class AbstractCandidateService implements CandidateService {
   // provider-specific hooks
   protected abstract String provider();                        // e.g. "DUOLINGO"
   protected abstract ServiceCode serviceCode();                // e.g. "DUOLINGO_TEST_PROCTORED"
-  protected abstract ResourceAllocator allocator();
+  protected abstract ResourceAllocator allocator(); // TODO -- SM -- have a default allocator that assigns a single resource to multiple candidates?
   protected FileInventoryImporter importer() { return null; }  // Optional
 
   // default implementations
