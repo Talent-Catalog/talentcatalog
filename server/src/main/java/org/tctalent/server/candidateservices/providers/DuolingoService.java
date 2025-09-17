@@ -84,17 +84,6 @@ public class DuolingoService extends AbstractCandidateService {
   }
 
   @Override
-  @Transactional
-  public void updateAResourceStatus(String resourceCode, ResourceStatus status) {
-    resourceRepository
-        .findByProviderAndResourceCode(PD.provider(), resourceCode)
-        .ifPresent(resource -> {
-          resource.setStatus(status);
-          resourceRepository.save(resource);
-        });
-  }
-
-  @Override
   public long countAvailableForProvider() {
     return resourceRepository.countAvailableByProvider(PD.provider());
   }
