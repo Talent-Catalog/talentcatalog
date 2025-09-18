@@ -291,29 +291,29 @@
     </div>
 
     <!--  Task selection - select just one task to focus on  -->
-    <div *ngIf="hasTasksAssigned()" class="mb-3">
+    <tc-field *ngIf="hasTasksAssigned()" class="mb-3">
       <ng-select [items]="tasksAssignedToList"
                  bindLabel="displayName"
                  [(ngModel)]="monitoredTask"
                  (ngModelChange)="doSearch(true)"
                   placeholder="Tasks Monitor: Select a task that has been assigned to the list to monitor... (note: default task monitor will monitor all required tasks)">
       </ng-select>
-    </div>
+    </tc-field>
 
-  <!-- Results summary for searches -->
+    <!-- Results summary for searches -->
     <div *ngIf="!isSavedList()"
          class="d-flex text-muted small align-items-baseline flex-wrap-reverse justify-content-sm-start pb-3">
       <div class="d-flex flex-grow-1 justify-content-end">
         <div class="text-end">
           <span>{{results?.totalElements}} candidates returned</span><br/>
-          <span class="small">Timestamp {{timestamp | date: 'customDateTime'}}</span>
+          <span class="small">{{timestamp | date: 'customDateTime'}}</span>
         </div>
       </div>
     </div>
 
-    <div class="row">
+    <div class="row align-items-start">
       <!-- First Group of Buttons (Left-aligned) -->
-      <div class="col d-flex justify-content-start flex-wrap">
+      <div class="col-9 d-flex justify-content-start">
         <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
           <tc-button [type]="'primary'"
                      [disabled]="!isSelection()"
@@ -395,7 +395,7 @@
       </div>
 
       <!-- Second Group of Buttons (Shifted Right) -->
-      <div class="col d-flex justify-content-end flex-wrap">
+      <div class="col-3 d-flex justify-content-end">
         <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
           <tc-button [type]="'outline'"
                      *ngIf="isImportable()"
@@ -437,17 +437,17 @@
       </small>
     </div>
 
-<!--    Table of list contents - plus candidate details of selected candidate-->
-    <div class="pt-2">
+    <!-- Table of list contents - plus candidate details of selected candidate -->
+    <div class="py-2">
 
-<!--     Table of list contents -->
+      <!-- Table of list contents -->
       <tc-table
         [totalElements]="results?.totalElements"
         [pageSize]="pageSize"
         [(pageNumber)]="pageNumber"
         (pageChange)="doSearch(true)">
 
-<!--          Header-->
+        <!-- Header -->
         <thead>
           <tr>
             <th></th>
@@ -489,7 +489,7 @@
         </thead>
 
         <tbody>
-          <!--  Loading icon while loading  -->
+          <!-- Loading icon while loading  -->
           <tr *ngIf="searching">
             <td colspan="42">
               <i class="fas fa-spinner fa-spin"></i> Loading...
@@ -503,7 +503,7 @@
             </td>
           </tr>
 
-<!--        Candidate records    -->
+          <!-- Candidate records -->
           <!-- MODEL: Highlighting current table record. See also scss file. -->
           <tr *ngFor="let candidate of results?.content" (click)="selectCandidate(candidate)"
               [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
@@ -548,7 +548,7 @@
                     <tc-dropdown-item *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                                       (click)="closeOpportunity(candidate)"
                     >
-                        Close opportunity for this job
+                      Close opportunity for this job
                     </tc-dropdown-item>
                   </tc-dropdown-menu>
                 </tc-dropdown>
@@ -566,52 +566,99 @@
               </div>
             </td>
             <td>
-              <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
-                {{candidate.candidateNumber}}
-              </a>
+              <a class="me-1" [routerLink]="['/candidate',candidate.candidateNumber]">{{candidate.candidateNumber}}</a>
               <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
-                <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Show candidate in new tab'"
+                         [noMargin]="true">
+                  <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
+                </tc-icon>
               </a>
               <a [routerLink]="['/candidate',candidate.candidateNumber]">
-                <i class="fas fa-user" title="Candidate"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Candidate'"
+                         [noMargin]="true">
+                  <i class="fas fa-user" title="Candidate"></i>
+                </tc-icon>
               </a>
               <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
-                <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Case (candidate opportunity)'"
+                         [noMargin]="true">
+                  <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+                </tc-icon>
               </a>
               <a *ngIf="isShowStage()" [routerLink]="['/job',this.candidateSource.sfJobOpp.id]">
-                <i class="fa-solid fa-briefcase" title="Job"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Job'"
+                         [noMargin]="true">
+                  <i class="fa-solid fa-briefcase" title="Job"></i>
+                </tc-icon>
               </a>
               <a target="_blank" [href]="candidate.user.partner.websiteUrl">
-                <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Partner: ' + candidate.user.partner.name"
+                         [noMargin]="true">
+                  <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
+                </tc-icon>
               </a>
               <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
-                <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Show candidate in Salesforce'"
+                         [noMargin]="true">
+                  <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
+                </tc-icon>
               </a>
               <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
                  [href]="candidate.folderlink"
                  target="_blank">
-                <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Show candidate Google Doc folder'"
+                         [noMargin]="true">
+                  <i class="fab fa-google-drive" title="Show candidate Google Doc folder"></i>
+                </tc-icon>
               </a>
               <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
-                <i class="fas fa-video" title="Show candidate's one way video"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Show candidate one-way video'"
+                         [noMargin]="true">
+                  <i class="fas fa-video" title="Show candidate one-way video"></i>
+                </tc-icon>
               </a>
               <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
-                <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Show candidate LinkedIn page'"
+                         [noMargin]="true">
+                  <i class="fab fa-linkedin" title="Show candidate LinkedIn page"></i>
+                </tc-icon>
               </a>
               <app-cv-icon
                 *ngIf="isCandidateNameViewable()"
-                [candidate]="candidate">
+                [candidate]="candidate"
+                [size]="'sm'"
+                [color]="'primary'">
               </app-cv-icon>
               <app-tasks-monitor
                 *ngIf="hasTaskAssignments(candidate)"
                 [candidate]="candidate"
                 [completedTasks]="getCompletedMonitoredTasks(candidate)"
-                [totalTasks]="getTotalMonitoredTasks(candidate)">
+                [totalTasks]="getTotalMonitoredTasks(candidate)"
+                [size]="'sm'">
               </app-tasks-monitor>
               <app-potential-duplicate-icon
                 [candidate]="candidate"
                 (refresh)="doSearch(true)"
-              ></app-potential-duplicate-icon>
+                [size]="'sm'">
+              </app-potential-duplicate-icon>
             </td>
             <td *ngIf="isShowStage()">
               <tc-badge>

@@ -49,11 +49,15 @@ export class TcIconComponent {
   @Input() size: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
   @Input() color?: 'primary' | 'secondary' | 'white' | 'gray' | 'success' | 'info' | 'warning' | 'error' = 'primary';
   @Input() ariaLabel?: string;
+  @Input() noMargin?: boolean = false; // Pass true to set margin at parent level
 
   get classList(): string[] {
     const classes = [`icon-${this.size}`];
     if (this.color) {
       classes.push(`icon-${this.color}`);
+    }
+    if (this.noMargin) {
+      classes.push('no-margin');
     }
     return classes;
   }

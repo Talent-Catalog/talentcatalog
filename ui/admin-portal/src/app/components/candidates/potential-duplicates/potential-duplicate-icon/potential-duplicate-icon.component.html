@@ -22,9 +22,13 @@
     <i class="fa fa-spinner fa-spin"></i>
   </span>
   <ng-template #icon>
-    <i class="fa-solid fa-person-circle-exclamation link-warning"
-       title="Potential duplicate profile - click for details"
-       (click)="openDuplicateDetailModal()"
-    ></i>
+    <tc-icon [size]="size"
+             [color]="'warning'"
+             [ariaLabel]="'Potential duplicate profile - click for details'">
+      <i class="fa-solid fa-person-circle-exclamation"
+         title="Potential duplicate profile - click for details"
+         (click)="openDuplicateDetailModal()">
+      </i>
+    </tc-icon>
   </ng-template>
 </span>

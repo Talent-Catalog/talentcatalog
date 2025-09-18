@@ -22,6 +22,10 @@
     margin: 0.3rem;
   }
 
+  &.no-margin::ng-deep > i {
+    margin: 0 !important;
+  }
+
   // Color variations
   &.icon-primary {
     @include text-color-primary;

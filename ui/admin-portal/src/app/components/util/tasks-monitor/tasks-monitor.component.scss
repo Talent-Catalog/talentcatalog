@@ -14,3 +14,43 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+.task-fraction-sm {
+  font-size: 0.75rem;
+  line-height: 1;
+  margin: 0.3rem;
+  sup, sub {
+    font-size: 0.75em;
+    line-height: 0;
+    vertical-align: baseline;
+  }
+}
+
+.task-fraction-md {
+  font-size: 1rem;
+  line-height: 1;
+  sup, sub {
+    font-size: 0.75em;
+    line-height: 0;
+    vertical-align: baseline;
+  }
+}
+
+.task-fraction-lg {
+  font-size: 1.25rem;
+  line-height: 1;
+  sup, sub {
+    font-size: 0.75em;
+    line-height: 0;
+    vertical-align: baseline;
+  }
+}
+
+.task-fraction-xl {
+  font-size: 1.5rem;
+  line-height: 1;
+  sup, sub {
+    font-size: 0.75em;
+    line-height: 0;
+    vertical-align: baseline;
+  }
+}

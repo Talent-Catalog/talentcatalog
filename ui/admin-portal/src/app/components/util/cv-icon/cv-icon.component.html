@@ -15,7 +15,11 @@
   -->
 
 <a *ngIf="canOpen()" target="_blank" (click)="openCVs()" class="link-info">
-  <i class="fas fa-address-card" title="Opens/DLs uploaded CV(s)"></i>
+  <tc-icon [color]="color"
+           [size]="size"
+           [ariaLabel]="'Opens/DLs uploaded CV(s)'">
+    <i class="fas fa-address-card" title="Opens/DLs uploaded CV(s)"></i>
+  </tc-icon>
 </a>
 <span *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
