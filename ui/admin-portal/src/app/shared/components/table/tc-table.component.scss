@@ -58,6 +58,10 @@
       tr.clickable:hover {
         cursor: pointer;
       }
+
+      tr a {
+        @include paragraph-sm;
+      }
     }
   }
 
