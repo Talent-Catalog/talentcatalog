@@ -72,7 +72,7 @@ public abstract class AbstractCandidateService implements CandidateService {
 
     for (ServiceAssignment a : assignments) {
       if (a.getStatus().equals(AssignmentStatus.ASSIGNED)) {
-        throw new EntityExistsException("coupon", "for this candidate");
+        throw new EntityExistsException(serviceCode + " resources", "for this candidate");
       }
     }
 
@@ -98,7 +98,8 @@ public abstract class AbstractCandidateService implements CandidateService {
 
     if (availableResources.isEmpty() || candidates.size() > availableResources.size()) {
       throw new NoSuchObjectException(
-          "There are not enough available coupons to assign to all candidates in the list. Please import more coupons from the settings page.");
+          "There are not enough available " + serviceCode + " resources to assign to all candidates "
+              + "in the list. Please import more from the settings page.");
     }
 
     List<ServiceAssignment> done = new ArrayList<>();
