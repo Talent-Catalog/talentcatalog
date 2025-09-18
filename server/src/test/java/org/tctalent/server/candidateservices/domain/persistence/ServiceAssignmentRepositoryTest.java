@@ -14,23 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.domain.policy;
+package org.tctalent.server.candidateservices.domain.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.tctalent.server.candidateservices.application.policy.TaskPolicyRegistry;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@SpringBootTest
-class TaskPolicyRegistryTest {
+@DataJpaTest
+class ServiceAssignmentRepositoryTest {
 
   @Autowired
-  TaskPolicyRegistry registry;
+  ServiceAssignmentRepository repo;
 
   @Test
-  void loadsDuolingo() {
-    assertNotNull(registry.forProvider("DUOLINGO"));
+  void loads() {
+    assertNotNull(repo);
   }
 }

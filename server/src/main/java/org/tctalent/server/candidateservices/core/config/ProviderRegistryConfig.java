@@ -14,23 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.domain.policy;
+package org.tctalent.server.candidateservices.core.config;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.tctalent.server.candidateservices.application.CandidateService;
+import org.tctalent.server.candidateservices.application.providers.duolingo.DuolingoService;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.tctalent.server.candidateservices.application.policy.TaskPolicyRegistry;
 
-@SpringBootTest
-class TaskPolicyRegistryTest {
+@Configuration
+public class ProviderRegistryConfig {
 
-  @Autowired
-  TaskPolicyRegistry registry;
-
-  @Test
-  void loadsDuolingo() {
-    assertNotNull(registry.forProvider("DUOLINGO"));
+  @Bean(name = "DUOLINGO") // TODO -- SM -- use enum ?? not sure if can here ?
+  CandidateService duolingoService(DuolingoService impl) {
+    return impl;
   }
+
+  // Add more providers similarly
+
 }

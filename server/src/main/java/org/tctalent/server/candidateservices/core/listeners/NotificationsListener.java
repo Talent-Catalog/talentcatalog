@@ -14,23 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.domain.policy;
+package org.tctalent.server.candidateservices.core.listeners;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
+import org.tctalent.server.candidateservices.domain.events.ServiceAssignedEvent;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.tctalent.server.candidateservices.application.policy.TaskPolicyRegistry;
 
-@SpringBootTest
-class TaskPolicyRegistryTest {
+@Component
+public class NotificationsListener {
 
-  @Autowired
-  TaskPolicyRegistry registry;
-
-  @Test
-  void loadsDuolingo() {
-    assertNotNull(registry.forProvider("DUOLINGO"));
+  @Async
+  @TransactionalEventListener
+  public void onAssigned(ServiceAssignedEvent e) {
+    // TODO e.g. send email
   }
+
 }

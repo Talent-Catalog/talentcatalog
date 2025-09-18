@@ -14,34 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.domain.model;
+package org.tctalent.server.candidateservices.domain.mappers;
 
-import java.time.LocalDateTime;
-import lombok.Builder;
-import lombok.Value;
+import org.springframework.stereotype.Component;
+import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceEntity;
 
 
-@Value
-@Builder
-public class ServiceResource {
-  Long id;
-  String provider;
-  ServiceCode serviceCode;
-  String resourceCode;
-  ResourceStatus status;
-  LocalDateTime sentAt;
-  LocalDateTime expiresAt;
+@Component
+public class ServiceResourceMapper {
+  public static ServiceResource toDomain(ServiceResourceEntity e) {
+    if (e == null) {
+      return null;
+    }
 
-  public static ServiceResource from(ServiceResourceEntity re) {
     return ServiceResource.builder()
-        .id(re.getId())
-        .provider(re.getProvider())
-        .serviceCode(re.getServiceCode())
-        .resourceCode(re.getResourceCode())
-        .status(re.getStatus())
-        .sentAt(re.getSentAt())
-        .expiresAt(re.getExpiresAt())
+        .id(e.getId())
+        .provider(e.getProvider())
+        .serviceCode(e.getServiceCode())
+        .resourceCode(e.getResourceCode())
+        .status(e.getStatus())
+        .expiresAt(e.getExpiresAt())
         .build();
   }
 }

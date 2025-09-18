@@ -14,23 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.domain.policy;
+package org.tctalent.server.candidateservices.core.allocators;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.tctalent.server.candidateservices.domain.model.ServiceResource;
+import org.tctalent.server.model.db.Candidate;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.tctalent.server.candidateservices.application.policy.TaskPolicyRegistry;
-
-@SpringBootTest
-class TaskPolicyRegistryTest {
-
-  @Autowired
-  TaskPolicyRegistry registry;
-
-  @Test
-  void loadsDuolingo() {
-    assertNotNull(registry.forProvider("DUOLINGO"));
-  }
+public interface ResourceAllocator {
+  ServiceResource allocateFor(Candidate candidate);
+  String getProvider();
+  String getServiceCode();
 }

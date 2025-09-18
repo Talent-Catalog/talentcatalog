@@ -14,23 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.domain.policy;
+package org.tctalent.server.candidateservices.core.importers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.ImportFailedException;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.tctalent.server.candidateservices.application.policy.TaskPolicyRegistry;
+public interface FileInventoryImporter {
 
-@SpringBootTest
-class TaskPolicyRegistryTest {
-
-  @Autowired
-  TaskPolicyRegistry registry;
-
-  @Test
-  void loadsDuolingo() {
-    assertNotNull(registry.forProvider("DUOLINGO"));
-  }
+  /**
+   * Imports service resources e.g. Duolingo coupons from a file.
+   * <p/>
+   * This method processes a file containing service resource data (e.g. coupon codes)
+   * and adds the resources to the database. It is useful for bulk importing coupons.
+   *
+   * @param file the MultipartFile representing the file to import.
+   */
+  void importFile(MultipartFile file, String serviceCode) throws ImportFailedException;
 }
