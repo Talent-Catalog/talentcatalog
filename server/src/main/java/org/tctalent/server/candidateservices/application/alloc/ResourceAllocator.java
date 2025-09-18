@@ -16,10 +16,11 @@
 
 package org.tctalent.server.candidateservices.application.alloc;
 
-import java.util.List;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.model.db.Candidate;
 
 public interface ResourceAllocator {
   ServiceResource allocateFor(Candidate candidate);
+  String getProvider();
+  String getServiceCode();
 }

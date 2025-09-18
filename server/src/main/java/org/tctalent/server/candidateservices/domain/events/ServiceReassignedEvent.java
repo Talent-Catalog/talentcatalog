@@ -14,12 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.domain.model;
+package org.tctalent.server.candidateservices.domain.events;
 
-public enum AssignmentStatus {
-  ASSIGNED,   // assigned to candidate
-  REDEEMED,   // used by candidate
-  EXPIRED,    // no longer valid
-  DISABLED,   // manually disabled/blocked
-  REASSIGNED  // a new assignment has been made replacing this one
+import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
+
+public record ServiceReassignedEvent(ServiceAssignment assignment) {
 }

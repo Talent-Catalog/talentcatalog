@@ -49,4 +49,13 @@ public class InventoryAllocator implements ResourceAllocator {
     return ServiceResourceMapper.toDomain(e);
   }
 
+  @Override
+  public String getProvider() {
+    return provider;
+  }
+
+  @Override
+  public String getServiceCode() {
+    return serviceCode;
+  }
 }

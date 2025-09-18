@@ -17,19 +17,25 @@
 package org.tctalent.server.candidateservices.application;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.candidateservices.application.alloc.ResourceAllocator;
 import org.tctalent.server.candidateservices.domain.events.ServiceAssignedEvent;
+import org.tctalent.server.candidateservices.domain.events.ServiceReassignedEvent;
 import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
+import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentEntity;
 import org.tctalent.server.candidateservices.infrastructure.persistence.assignment.ServiceAssignmentRepository;
+import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceEntity;
 import org.tctalent.server.candidateservices.infrastructure.persistence.resource.ServiceResourceRepository;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -37,6 +43,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AssignmentEngine {
 
   private final CandidateRepository candidates;
@@ -70,6 +77,46 @@ public class AssignmentEngine {
     emailHelper.sendDuolingoCouponEmail(c.getUser()); // TODO -- SM -- keep for now; later move to NotificationListener
     events.publishEvent(new ServiceAssignedEvent(model));
     return model;
+  }
+
+  @Transactional
+  public ServiceAssignment reassign(ResourceAllocator allocator, String candidateNumber, User actor) {
+
+    Candidate candidate = candidates.findByCandidateNumber(candidateNumber);
+    if (candidate == null) {
+      throw new NoSuchObjectException("Candidate with Number " + candidateNumber + " not found");
+    }
+
+    updatePreviousAssignments(allocator, candidate);
+
+    // Make a new assignment for the candidate
+    var assignment = assign(allocator, candidate.getId(), actor);
+
+    // Log the reassignment
+    LogBuilder.builder(log)
+        .user(Optional.ofNullable(actor))
+        .action("Reassigned: " + assignment.getProvider() + " " + assignment.getServiceCode())
+        .message("Reassigned new coupon " + assignment.getResource().getResourceCode() + " to candidate " + candidate.getId())
+        .logInfo();
+
+    return assignment;
+  }
+
+  private void updatePreviousAssignments(ResourceAllocator allocator, Candidate candidate) {
+
+    // Find and mark all existing assignments and resources for the candidate as reassigned/disabled
+    ledger.findByCandidateAndProviderAndService(
+        candidate.getId(), allocator.getProvider(), allocator.getServiceCode())
+        .forEach(assignment -> {
+          assignment.setStatus(AssignmentStatus.REASSIGNED);
+          ledger.save(assignment);
+
+          ServiceResourceEntity r = assignment.getResource();
+          r.setStatus(ResourceStatus.DISABLED);
+          resourceRepo.save(r);
+
+          events.publishEvent(new ServiceReassignedEvent(ServiceAssignment.from(assignment)));
+        });
   }
 
 }
