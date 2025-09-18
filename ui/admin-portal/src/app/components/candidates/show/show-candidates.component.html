@@ -709,26 +709,3 @@ arrays with more than one value display in drop down
 
     </div>
   </div>
-
-
-<!-- Modals -->
-<ng-template #downloadCsvErrorModal let-c="close" let-d="dismiss">
-  <div class="modal-header">
-    <h4 class="modal-title">CSV download failed</h4>
-
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="d(false)"></button>
-  </div>
-  <div class="modal-body">
-    <p><strong>Oops! Something went wrong</strong></p>
-
-    <p>
-      It looks like an error occurred while we were trying to export your spend:
-      <strong>{{error.message}}.</strong>
-    </p>
-
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="d(false)">Close</button>
-  </div>
-</ng-template>
-
