@@ -664,10 +664,7 @@
               <tc-badge>
 <!--                todo uncomment and add line below to opening tag once CC branch merged -->
 <!--                [color]="getStageBadgeColor(getCandidateOppForThisJob(candidate))">-->
-                <a [routerLink]="getCandidateOpportunityLink(candidate)"
-                   title="Click to navigate to Case">
-                  {{getStage(candidate)}}
-                </a>
+                {{getStage(candidate) | truncate: 15}}
               </tc-badge>
             </td>
             <td>
