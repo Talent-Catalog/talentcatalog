@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.application;
+package org.tctalent.server.candidateservices.core.services;
 
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;

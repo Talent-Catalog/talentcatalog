@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.application;
+package org.tctalent.server.candidateservices.core.services;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.candidateservices.api.dto.ServiceAssignmentDto;
-import org.tctalent.server.candidateservices.application.CandidateService;
+import org.tctalent.server.candidateservices.core.services.CandidateService;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.candidateservices.core.services.CandidateServicesQueryService;
 import org.tctalent.server.exception.NoSuchObjectException;

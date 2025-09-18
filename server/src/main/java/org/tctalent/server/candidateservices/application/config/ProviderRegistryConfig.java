@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.candidateservices.core.config;
+package org.tctalent.server.candidateservices.application.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.tctalent.server.candidateservices.application.CandidateService;
+import org.tctalent.server.candidateservices.core.services.CandidateService;
 import org.tctalent.server.candidateservices.application.providers.duolingo.DuolingoService;
 
 

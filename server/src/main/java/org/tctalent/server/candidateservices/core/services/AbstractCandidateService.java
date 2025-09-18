@@ -21,8 +21,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.candidateservices.application.AssignmentEngine;
-import org.tctalent.server.candidateservices.application.CandidateService;
 import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
 import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;

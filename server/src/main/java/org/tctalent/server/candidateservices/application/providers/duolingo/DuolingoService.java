@@ -23,7 +23,7 @@ import org.tctalent.server.candidateservices.domain.persistence.ServiceAssignmen
 import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.candidateservices.core.allocators.ResourceAllocator;
 import org.tctalent.server.candidateservices.core.services.AbstractCandidateService;
-import org.tctalent.server.candidateservices.application.AssignmentEngine;
+import org.tctalent.server.candidateservices.core.services.AssignmentEngine;
 import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 import org.tctalent.server.candidateservices.core.importers.FileInventoryImporter;
 import org.tctalent.server.service.db.SavedListService;
