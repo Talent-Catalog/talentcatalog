@@ -83,6 +83,7 @@ export class TcModalComponent {
   @Input() disableAction: boolean = false;
   @Input() showCancel: boolean = true;
   @Input() icon: string;
+  @Input() isError: boolean = false;
   @Input() message?: string;
 
   @Output() onAction = new EventEmitter();

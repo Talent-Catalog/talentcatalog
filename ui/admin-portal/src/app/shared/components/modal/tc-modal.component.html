@@ -1,8 +1,10 @@
 <div class="tc-modal" [ngClass]="icon ? 'has-icon' : 'no-icon'">
-  <div *ngIf="icon">
+  <tc-icon *ngIf="icon" [color]="isError ? 'error' : 'primary'">
     <i [class]="icon"></i>
+  </tc-icon>
+  <div class="tc-modal-title" [ngClass]="{'text-danger': isError}">
+    {{title}}
   </div>
-  <div class="tc-modal-title">{{title}}</div>
 
   <div class="tc-modal-body">
     <span *ngIf="message">{{ message }}</span>
@@ -10,10 +12,10 @@
   </div>
 
   <div class="tc-modal-footer">
-    <tc-button *ngIf="showCancel" type="outline" size="lg" (click)="dismiss()">
+    <tc-button *ngIf="showCancel" [type]="'outline'" [size]="'lg'" (click)="dismiss()">
       Cancel
     </tc-button>
-    <tc-button type="primary" size="lg" (click)="action()" [disabled]="disableAction">
+    <tc-button [type]="'primary'" [size]="'lg'" (click)="action()" [disabled]="disableAction">
       {{actionText}}
     </tc-button>
   </div>

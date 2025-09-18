@@ -629,6 +629,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
             modalRef.componentInstance.icon = 'fas fa-triangle-exclamation';
             modalRef.componentInstance.actionText = 'Retry';
             modalRef.componentInstance.message = "CSV download error: " + "'" + errorObj.message + "'";
+            modalRef.componentInstance.isError = true;
             modalRef.componentInstance.onAction.subscribe(() => {
               _this.exportCandidates();
               modalRef.close();
