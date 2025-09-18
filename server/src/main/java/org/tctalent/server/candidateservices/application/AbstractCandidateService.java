@@ -79,6 +79,14 @@ public abstract class AbstractCandidateService implements CandidateService {
 
   @Override
   @Transactional
+  public ServiceAssignment reassignForCandidate(String candidateNumber, String serviceCode, User user)
+      throws NoSuchObjectException {
+
+    return assignmentEngine.reassign(allocator(), candidateNumber, user);
+  }
+
+  @Override
+  @Transactional
   public List<ServiceAssignment> assignToList(Long listId, String serviceCode, User user) {
     var savedList = savedListService.get(listId);
     var candidates = savedList.getCandidates();

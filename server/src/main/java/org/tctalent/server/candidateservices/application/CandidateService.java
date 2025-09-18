@@ -36,6 +36,7 @@ public interface CandidateService {
   void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException;
   ServiceAssignment assignToCandidate(Long candidateId, User actor, String serviceCode);
   List<ServiceAssignment> assignToList(Long listId, String serviceCode, User actor);
+  ServiceAssignment reassignForCandidate(String candidateNumber, String serviceCode, User user);
 
   // READ
   List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode); // TODO - SM - would get resources be more natural?
