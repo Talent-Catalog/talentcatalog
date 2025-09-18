@@ -19,6 +19,7 @@ package org.tctalent.server.candidateservices.domain.policy;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.candidateservices.domain.events.ServiceAssignedEvent;
+import org.tctalent.server.candidateservices.domain.events.ServiceReassignedEvent;
 import org.tctalent.server.candidateservices.domain.events.ServiceRedeemedEvent;
 
 @Component
@@ -26,16 +27,22 @@ public class DuolingoTaskPolicy implements TaskPolicy {
 
   @Override
   public String provider() {
-    return "DUOLINGO"; // TODO -- SM -- use enum? (PD)
+    return "DUOLINGO"; // TODO -- SM -- use enum or constant
   }
 
   @Override
   public List<String> tasksOnAssigned(ServiceAssignedEvent e) {
-    return List.of("claimCouponButton", "duolingoTest"); // or just the first if you prefer
+    return List.of("claimCouponButton");
   }
 
   @Override
-  public void handleOnRedeemed(ServiceRedeemedEvent e) {
-    // mark duolingoTest done / advance
+  public List<String> tasksOnRedeemed(ServiceRedeemedEvent e) {
+    return List.of("duolingoTest");
   }
+
+  @Override
+  public List<String> tasksOnReassigned(ServiceReassignedEvent e) {
+    return List.of("duolingoTest");
+  }
+
 }

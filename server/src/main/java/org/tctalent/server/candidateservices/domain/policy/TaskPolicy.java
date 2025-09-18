@@ -19,15 +19,18 @@ package org.tctalent.server.candidateservices.domain.policy;
 import java.util.List;
 import org.tctalent.server.candidateservices.domain.events.ServiceAssignedEvent;
 import org.tctalent.server.candidateservices.domain.events.ServiceExpiredEvent;
+import org.tctalent.server.candidateservices.domain.events.ServiceReassignedEvent;
 import org.tctalent.server.candidateservices.domain.events.ServiceRedeemedEvent;
 
 public interface TaskPolicy {
 
-  String provider(); // todo - use PD
+  String provider();
 
   List<String> tasksOnAssigned(ServiceAssignedEvent e);
 
-  default void handleOnRedeemed(ServiceRedeemedEvent e) {}
+  default List<String> tasksOnRedeemed(ServiceRedeemedEvent e) { return List.of(); }
+
+  default List<String> tasksOnReassigned(ServiceReassignedEvent e) { return List.of(); }
 
   default void handleOnExpired(ServiceExpiredEvent e) {}
 
