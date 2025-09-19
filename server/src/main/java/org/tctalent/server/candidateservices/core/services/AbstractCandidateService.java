@@ -18,6 +18,7 @@ package org.tctalent.server.candidateservices.core.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,6 +56,12 @@ public abstract class AbstractCandidateService implements CandidateService {
   protected FileInventoryImporter importer() { return null; }  // Optional
 
   // default implementations
+  @Override
+  public String providerKey() {
+    return provider().trim().toUpperCase(Locale.ROOT) + "::"
+        + serviceCode().name().trim().toUpperCase(Locale.ROOT);
+  }
+
   @Override
   @Transactional
   public void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException {

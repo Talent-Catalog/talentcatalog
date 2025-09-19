@@ -30,9 +30,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.candidateservices.api.dto.ServiceAssignmentDto;
+import org.tctalent.server.candidateservices.api.dto.ServiceResourceDto;
 import org.tctalent.server.candidateservices.core.services.CandidateService;
+import org.tctalent.server.candidateservices.core.services.CandidateServiceRegistry;
 import org.tctalent.server.candidateservices.domain.mappers.ServiceAssignmentMapper;
-import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.candidateservices.core.services.CandidateServicesQueryService;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
@@ -45,12 +46,11 @@ import org.tctalent.server.security.AuthService;
 @Slf4j
 public class ServicesAdminController {
 
-  private final Map<String, CandidateService> services;              // bean names: "duolingo", "credly", ...
   private final AuthService authService;
-  private final ServiceResourceRepository resourceRepo;              // generic inventory
-  private final CandidateServicesQueryService queryService;          // consolidated view
+  private final CandidateServiceRegistry services;
+  private final CandidateServicesQueryService queryService; // consolidated view
 
-  // Endpoint to import inventory from file data
+  // Endpoint to import service resources from a file -- e.g. coupons from CSV data
   @PostMapping(
       path = "/{provider}/{serviceCode}/import",
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -59,22 +59,22 @@ public class ServicesAdminController {
       @RequestParam("file") MultipartFile file) {
     try {
       // Call the service to import coupons
-      service(provider).importInventory(file, serviceCode);
+      serviceFor(provider, serviceCode).importInventory(file, serviceCode);
 
       // Log success message
       LogBuilder.builder(log)
-          .action("importCouponsFromCsv")
-          .message("Coupons imported successfully from CSV")
+          .action("importInventory")
+          .message(provider + "::" + serviceCode + " - resources imported successfully from file")
           .logInfo();
 
-      return Map.of("status", "success", "message", "Coupons imported successfully.");
+      return Map.of("status", "success", "message", "Service resources imported successfully.");
     } catch (RuntimeException e) {
       LogBuilder.builder(log)
-          .action("importCouponsFromCsv")
-          .message("Failed to import coupons from CSV")
+          .action("importInventory")
+          .message("Failed to import coupons from file")
           .logError();
       // Return error response
-      return Map.of("status", "failure", "message", "Failed to import coupons from CSV file.");
+      return Map.of("status", "failure", "message", "Failed to import service resources from file.");
     }
   }
 
@@ -85,14 +85,17 @@ public class ServicesAdminController {
         .map(ServiceAssignmentMapper::toDto).toList();
   }
 
-//  // Generic list of resources for a candidate (any provider)
-//  @GetMapping("/{provider}/resources/candidate/{candidateId}")
-//  public List<ServiceResourceDto> listProviderResourcesForCandidate(@PathVariable String provider,
-//      @PathVariable Long candidateId) {
-//    return resourceRepo
-//        .findAllByProviderAndCandidateIdOrderByAssignedAtDesc(provider.toUpperCase(), candidateId)
-//        .stream().map(ServiceResourceDto::from).toList();
-//  }
+  // Endpoint to retrieve all resources assigned to a candidate
+  @GetMapping("/{provider}/{serviceCode}/resources/candidate/{candidateId}")
+  public List<ServiceResourceDto> listProviderResourcesForCandidate(@PathVariable String provider,
+      @PathVariable String serviceCode,
+      @PathVariable("candidateId") Long candidateId) {
+    return serviceFor(provider, serviceCode)
+        .getAssignmentsForCandidate(candidateId, serviceCode)
+        .stream().map(ServiceResourceDto::from)
+        .toList();
+  }
+
 //
 //
 //
@@ -171,10 +174,11 @@ public class ServicesAdminController {
 //    return queryService.listForCandidate(candidateId);
 //  }
 //
-  private CandidateService service(String provider) {
-    CandidateService svc = services.get(provider.toLowerCase());
+  private CandidateService serviceFor(String provider, String serviceCode) {
+    CandidateService svc = services.forProviderAndServiceCode(provider, serviceCode);
     if (svc == null) {
-      throw new NoSuchObjectException("Unknown provider: " + provider);
+      throw new NoSuchObjectException("Unknown candidate service for provider: " + provider +
+          ", serviceCode: " + serviceCode);
     }
     return svc;
   }
