@@ -19,7 +19,6 @@ package org.tctalent.server.candidateservices.domain.model;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceEntity;
 
 
 @Value
@@ -32,16 +31,4 @@ public class ServiceResource {
   ResourceStatus status;
   LocalDateTime sentAt;
   LocalDateTime expiresAt;
-
-  public static ServiceResource from(ServiceResourceEntity re) {
-    return ServiceResource.builder()
-        .id(re.getId())
-        .provider(re.getProvider())
-        .serviceCode(re.getServiceCode())
-        .resourceCode(re.getResourceCode())
-        .status(re.getStatus())
-        .sentAt(re.getSentAt())
-        .expiresAt(re.getExpiresAt())
-        .build();
-  }
 }

@@ -46,7 +46,7 @@ public class InventoryAllocator implements ResourceAllocator {
     e.setStatus(ResourceStatus.RESERVED);
     resources.save(e);
 
-    return ServiceResourceMapper.toDomain(e);
+    return ServiceResourceMapper.toModel(e);
   }
 
   @Override

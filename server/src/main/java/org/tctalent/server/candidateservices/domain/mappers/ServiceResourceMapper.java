@@ -17,13 +17,14 @@
 package org.tctalent.server.candidateservices.domain.mappers;
 
 import org.springframework.stereotype.Component;
+import org.tctalent.server.candidateservices.api.dto.ServiceResourceDto;
 import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceEntity;
 
 
 @Component
 public class ServiceResourceMapper {
-  public static ServiceResource toDomain(ServiceResourceEntity e) {
+  public static ServiceResource toModel(ServiceResourceEntity e) {
     if (e == null) {
       return null;
     }
@@ -34,7 +35,41 @@ public class ServiceResourceMapper {
         .serviceCode(e.getServiceCode())
         .resourceCode(e.getResourceCode())
         .status(e.getStatus())
+        .sentAt(e.getSentAt())
         .expiresAt(e.getExpiresAt())
         .build();
   }
+
+  public static ServiceResource toModel(ServiceResourceDto dto) {
+    if (dto == null) {
+      return null;
+    }
+
+    return ServiceResource.builder()
+        .id(dto.getId())
+        .provider(dto.getProvider())
+        .serviceCode(dto.getServiceCode())
+        .resourceCode(dto.getResourceCode())
+        .status(dto.getStatus())
+        .sentAt(dto.getSentAt())
+        .expiresAt(dto.getExpiresAt())
+        .build();
+  }
+
+  public static ServiceResourceDto toDto(ServiceResource model) {
+    if (model == null) {
+      return null;
+    }
+
+    return ServiceResourceDto.builder()
+        .id(model.getId())
+        .provider(model.getProvider())
+        .serviceCode(model.getServiceCode())
+        .resourceCode(model.getResourceCode())
+        .status(model.getStatus())
+        .sentAt(model.getSentAt())
+        .expiresAt(model.getExpiresAt())
+        .build();
+  }
+
 }

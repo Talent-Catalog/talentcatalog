@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.candidateservices.domain.events.ServiceAssignedEvent;
 import org.tctalent.server.candidateservices.domain.events.ServiceReassignedEvent;
+import org.tctalent.server.candidateservices.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
 import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
@@ -70,7 +71,7 @@ public class AssignmentEngine {
     ledger.save(e);
 
     // Event + model
-    ServiceAssignment model = ServiceAssignment.from(e);
+    ServiceAssignment model = ServiceAssignmentMapper.toModel(e);
 
     events.publishEvent(new ServiceAssignedEvent(model));
     return model;
@@ -112,7 +113,7 @@ public class AssignmentEngine {
           r.setStatus(ResourceStatus.DISABLED);
           resourceRepo.save(r);
 
-          events.publishEvent(new ServiceReassignedEvent(ServiceAssignment.from(assignment)));
+          events.publishEvent(new ServiceReassignedEvent(ServiceAssignmentMapper.toModel(assignment)));
         });
   }
 

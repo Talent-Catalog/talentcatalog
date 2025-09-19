@@ -34,7 +34,7 @@ public class CandidateServicesQueryService {
   @Transactional(readOnly = true)
   public List<ServiceAssignment> listForCandidate(Long candidateId) {
     return repo.findByCandidateIdOrderByAssignedAtDesc(candidateId).stream()
-        .map(ServiceAssignmentMapper::toDomain)
+        .map(ServiceAssignmentMapper::toModel)
         .toList();
   }
 

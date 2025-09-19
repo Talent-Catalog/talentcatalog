@@ -26,7 +26,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -71,16 +70,5 @@ public class ServiceAssignmentEntity extends AbstractDomainObject<Long> {
 
   @Column(name="created_at", nullable=false, updatable=false)
   private Instant createdAt = Instant.now();
-
-  // convenience accessors
-  @Transient
-  public String getProvider() {
-    return resource.getProvider();
-  }
-
-  @Transient
-  public ServiceCode getServiceCode() {
-    return resource.getServiceCode();
-  }
 
 }

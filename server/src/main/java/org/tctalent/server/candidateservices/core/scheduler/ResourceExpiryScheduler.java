@@ -26,8 +26,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.candidateservices.domain.events.ServiceExpiredEvent;
+import org.tctalent.server.candidateservices.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
-import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceRepository;
@@ -67,7 +67,7 @@ public class ResourceExpiryScheduler {
               resource.getServiceCode().name(),
               resource.getId())
           .ifPresent(assignment ->
-              events.publishEvent(new ServiceExpiredEvent(ServiceAssignment.from(assignment))));
+              events.publishEvent(new ServiceExpiredEvent(ServiceAssignmentMapper.toModel(assignment))));
 
     });
     resources.saveAll(expirable);

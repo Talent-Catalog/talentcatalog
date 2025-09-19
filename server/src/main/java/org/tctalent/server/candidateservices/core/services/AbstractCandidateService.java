@@ -21,6 +21,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.candidateservices.domain.mappers.ServiceAssignmentMapper;
+import org.tctalent.server.candidateservices.domain.mappers.ServiceResourceMapper;
 import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
 import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
@@ -120,7 +122,7 @@ public abstract class AbstractCandidateService implements CandidateService {
     return assignmentRepository
         .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode)
         .stream()
-        .map(ServiceAssignment::from)
+        .map(ServiceAssignmentMapper::toModel)
         .toList();
   }
 
@@ -130,7 +132,7 @@ public abstract class AbstractCandidateService implements CandidateService {
     return resourceRepository
         .findByProviderAndServiceCodeAndStatus(provider(), serviceCode(), ResourceStatus.AVAILABLE)
         .stream()
-        .map(ServiceResource::from)
+        .map(ServiceResourceMapper::toModel)
         .toList();
   }
 
@@ -139,7 +141,7 @@ public abstract class AbstractCandidateService implements CandidateService {
   public ServiceResource getResourceForResourceCode(String resourceCode) throws NoSuchObjectException {
     return resourceRepository
         .findByProviderAndResourceCode(provider(), resourceCode)
-        .map(ServiceResource::from)
+        .map(ServiceResourceMapper::toModel)
         .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + resourceCode + " not found"));
   }
 
@@ -147,7 +149,7 @@ public abstract class AbstractCandidateService implements CandidateService {
   public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException {
     var resource = resourceRepository
         .findByProviderAndResourceCode(provider(), resourceCode)
-        .map(ServiceResource::from)
+        .map(ServiceResourceMapper::toModel)
         .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + resourceCode + " not found"));
 
     return assignmentRepository

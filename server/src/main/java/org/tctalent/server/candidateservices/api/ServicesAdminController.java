@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.candidateservices.api.dto.ServiceAssignmentDto;
 import org.tctalent.server.candidateservices.core.services.CandidateService;
+import org.tctalent.server.candidateservices.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.candidateservices.core.services.CandidateServicesQueryService;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -81,7 +82,7 @@ public class ServicesAdminController {
   @GetMapping("/assignments/candidate/{candidateId}")
   public List<ServiceAssignmentDto> getAssignments(@PathVariable Long candidateId) {
     return queryService.listForCandidate(candidateId).stream()
-        .map(ServiceAssignmentDto::from).toList();
+        .map(ServiceAssignmentMapper::toDto).toList();
   }
 
 //  // Generic list of resources for a candidate (any provider)

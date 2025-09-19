@@ -20,26 +20,17 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import org.tctalent.server.candidateservices.domain.model.AssignmentStatus;
-import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
-import org.tctalent.server.candidateservices.domain.model.ServiceResource;
+import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 
 @Getter
 @Builder
 public class ServiceAssignmentDto {
+  private Long id;
+  private String provider;
+  private ServiceCode serviceCode;
   private final ServiceResourceDto resource; // e.g., coupon code
   private final Long candidateId;
   private final Long actorId; // who assigned it
   private final AssignmentStatus status; // ASSIGNED, REDEEMED, EXPIRED, REASSIGNED
   private final LocalDateTime assignedAt;
-
-  public static ServiceAssignmentDto from(ServiceAssignment a) {
-    ServiceResource r = a.getResource();
-    return ServiceAssignmentDto.builder()
-        .resource(ServiceResourceDto.from(r))
-        .candidateId(a.getCandidateId())
-        .actorId(a.getActorId())
-        .status(a.getStatus())
-        .assignedAt(a.getAssignedAt())
-        .build();
-  }
 }

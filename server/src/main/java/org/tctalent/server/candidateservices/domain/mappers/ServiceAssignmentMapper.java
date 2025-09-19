@@ -17,23 +17,71 @@
 package org.tctalent.server.candidateservices.domain.mappers;
 
 import org.springframework.stereotype.Component;
+import org.tctalent.server.candidateservices.api.dto.ServiceAssignmentDto;
+import org.tctalent.server.candidateservices.api.dto.ServiceResourceDto;
 import org.tctalent.server.candidateservices.domain.model.ServiceAssignment;
+import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceAssignmentEntity;
+import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceEntity;
 
 
 @Component
 public class ServiceAssignmentMapper {
-  public static ServiceAssignment toDomain(ServiceAssignmentEntity e) {
+  public static ServiceAssignment toModel(ServiceAssignmentEntity e) {
     if (e == null) {
       return null;
     }
 
+    ServiceResourceEntity re = e.getResource();
+
     return ServiceAssignment.builder()
-        .resource(ServiceResourceMapper.toDomain(e.getResource()))
+        .id(e.getId())
+        .provider(e.getProvider())
+        .serviceCode(e.getServiceCode())
+        .resource(ServiceResourceMapper.toModel(re))
         .candidateId(e.getCandidate().getId())
         .actorId(e.getActor().getId())
         .status(e.getStatus())
         .assignedAt(e.getAssignedAt())
         .build();
   }
+
+  public static ServiceAssignment toModel(ServiceAssignmentDto dto) {
+    if (dto == null) {
+      return null;
+    }
+
+    ServiceResourceDto rd = dto.getResource();
+
+    return ServiceAssignment.builder()
+        .id(dto.getId())
+        .provider(dto.getProvider())
+        .serviceCode(dto.getServiceCode())
+        .resource(ServiceResourceMapper.toModel(rd))
+        .candidateId(dto.getCandidateId())
+        .actorId(dto.getActorId())
+        .status(dto.getStatus())
+        .assignedAt(dto.getAssignedAt())
+        .build();
+  }
+
+  public static ServiceAssignmentDto toDto(ServiceAssignment model) {
+    if (model == null) {
+      return null;
+    }
+
+    ServiceResource r = model.getResource();
+
+    return ServiceAssignmentDto.builder()
+        .id(model.getId())
+        .provider(model.getProvider())
+        .serviceCode(model.getServiceCode())
+        .resource(ServiceResourceMapper.toDto(r))
+        .candidateId(model.getCandidateId())
+        .actorId(model.getActorId())
+        .status(model.getStatus())
+        .assignedAt(model.getAssignedAt())
+        .build();
+  }
+
 }

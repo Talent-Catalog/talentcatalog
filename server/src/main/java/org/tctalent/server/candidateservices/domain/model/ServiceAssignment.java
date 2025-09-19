@@ -19,31 +19,16 @@ package org.tctalent.server.candidateservices.domain.model;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-import org.tctalent.server.candidateservices.domain.persistence.ServiceAssignmentEntity;
-import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceEntity;
 
 @Value
 @Builder
 public class ServiceAssignment {
+  Long id;
   String provider;
-  String serviceCode;
+  ServiceCode serviceCode;
   ServiceResource resource; // e.g., coupon code
   Long candidateId;
   Long actorId; // who assigned it
   AssignmentStatus status; // ASSIGNED, REDEEMED, EXPIRED, REASSIGNED
   LocalDateTime assignedAt;
-
-  public static ServiceAssignment from(ServiceAssignmentEntity e) {
-    ServiceResourceEntity r = e.getResource();
-    return ServiceAssignment.builder()
-        .provider(e.getProvider())
-        .serviceCode(e.getServiceCode().name())
-        .resource(ServiceResource.from(r))
-        .candidateId(e.getCandidate().getId())
-        .actorId(e.getActor().getId())
-        .status(e.getStatus())
-        .assignedAt(e.getAssignedAt())
-        .build();
-  }
-
 }

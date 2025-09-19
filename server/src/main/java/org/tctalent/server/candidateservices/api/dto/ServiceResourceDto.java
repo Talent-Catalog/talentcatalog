@@ -21,7 +21,6 @@ import lombok.Builder;
 import lombok.Getter;
 import org.tctalent.server.candidateservices.domain.model.ResourceStatus;
 import org.tctalent.server.candidateservices.domain.model.ServiceCode;
-import org.tctalent.server.candidateservices.domain.model.ServiceResource;
 
 @Getter
 @Builder
@@ -33,15 +32,4 @@ public class ServiceResourceDto {
   private ResourceStatus status;
   private LocalDateTime sentAt;
   private LocalDateTime expiresAt;
-
-  public static ServiceResourceDto from(ServiceResource r) {
-    return ServiceResourceDto.builder()
-        .id(r.getId())
-        .provider(r.getProvider())
-        .serviceCode(r.getServiceCode())
-        .resourceCode(r.getResourceCode())
-        .status(r.getStatus())
-        .expiresAt(r.getExpiresAt())
-        .build();
-  }
 }
