@@ -11,7 +11,6 @@ import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.NonNull;
 
 /**
  * Form for personal travel document data entry + upload verification.
@@ -36,7 +35,7 @@ public class CandidateTravelDocForm extends CandidateFormInstance {
   }
 
   // Existing TC fields (direct access - update candidate if needed)
-  public @NonNull String getFirstName() {
+  public String getFirstName() {
     return getWorkingCandidate().getUser().getFirstName();
   }
 
@@ -44,7 +43,7 @@ public class CandidateTravelDocForm extends CandidateFormInstance {
     getWorkingCandidate().getUser().setFirstName(firstName);
   }
 
-  public @NonNull String getLastName() {
+  public String getLastName() {
     return getWorkingCandidate().getUser().getLastName();
   }
 
@@ -60,8 +59,7 @@ public class CandidateTravelDocForm extends CandidateFormInstance {
     getWorkingCandidate().setDob(dob);
   }
 
-  public @NonNull Gender getGender() {
-    assert getWorkingCandidate().getGender() != null;
+  public Gender getGender() {
     return getWorkingCandidate().getGender();
   }
 
