@@ -17,18 +17,19 @@
 package org.tctalent.server.candidateservices.core.listeners;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.tctalent.server.candidateservices.domain.events.ServiceAssignedEvent;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationsListener {
 
   private final CandidateRepository candidates;
@@ -36,13 +37,47 @@ public class NotificationsListener {
 
   @Async
   @TransactionalEventListener
-  public void onAssigned(ServiceAssignedEvent e) {
-    var cid = e.assignment().getCandidateId();
+  public void onAssigned(ServiceAssignedEvent event) {
+    var a = event.assignment();
+    if (!"DUOLINGO".equalsIgnoreCase(a.getProvider())) {
+      return;
+    }
 
-    Candidate c = candidates.findById(cid)
-        .orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + cid + " not found"));
+    Long cid = a.getCandidateId();
+    if (cid == null) {
+      LogBuilder.builder(log)
+          // todo -- pass the user (and candidate) in the entity
+//          .user(Optional.ofNullable(event.assignment().getActorId()))
+          .action("Duolingo:onAssigned: " + a.getProvider() + " " + a.getServiceCode())
+          .message("Duolingo coupon assignment " + a.getResource().getResourceCode() +
+              " with no candidateId " + cid)
+          .logWarn();
+      return;
+    }
 
-    emailHelper.sendDuolingoCouponEmail(c.getUser());
+    var optional = candidates.findById(cid);
+    if (optional.isEmpty()) {
+      LogBuilder.builder(log)
+          // todo -- pass the user (and candidate) in the entity
+//           .user(Optional.ofNullable(event.assignment().getActorId()))
+          .action("Duolingo:onAssigned: " + a.getProvider() + " " + a.getServiceCode())
+          .message("Candidate not found for Duolingo assignment  " +
+              a.getResource().getResourceCode() + " to candidate " + cid)
+          .logWarn();
+      return;
+    }
+
+    var c = optional.get();
+    try {
+      emailHelper.sendDuolingoCouponEmail(c.getUser()); // send email with coupon code
+    } catch (Exception ex) {
+        LogBuilder.builder(log)
+            // todo -- pass the user (and candidate) in the entity
+//            .user(Optional.ofNullable(event.assignment().getActorId()))
+            .action("Duolingo:onAssigned: " + a.getProvider() + " " + a.getServiceCode())
+            .message("Failed sending Duolingo coupon email for " + a.getResource().getResourceCode()
+                + " to candidate " + cid)
+            .logWarn(ex);
+    }
   }
-
 }
