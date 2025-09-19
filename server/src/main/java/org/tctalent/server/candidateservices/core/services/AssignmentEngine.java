@@ -39,7 +39,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
-import org.tctalent.server.service.db.email.EmailHelper;
+
 
 @Component
 @RequiredArgsConstructor
@@ -50,8 +50,6 @@ public class AssignmentEngine {
   private final ServiceAssignmentRepository ledger;
   private final ServiceResourceRepository resourceRepo;
   private final ApplicationEventPublisher events;
-
-  private final EmailHelper emailHelper; // TODO -- SM -- replace with NotificationListener later
 
   @Transactional
   public ServiceAssignment assign(ResourceAllocator allocator, Long candidateId, User actor) {
@@ -74,7 +72,6 @@ public class AssignmentEngine {
     // Event + model
     ServiceAssignment model = ServiceAssignment.from(e);
 
-    emailHelper.sendDuolingoCouponEmail(c.getUser()); // TODO -- SM -- keep for now; later move to NotificationListener
     events.publishEvent(new ServiceAssignedEvent(model));
     return model;
   }

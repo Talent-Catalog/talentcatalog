@@ -16,19 +16,33 @@
 
 package org.tctalent.server.candidateservices.core.listeners;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.tctalent.server.candidateservices.domain.events.ServiceAssignedEvent;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.service.db.email.EmailHelper;
 
 
 @Component
+@RequiredArgsConstructor
 public class NotificationsListener {
+
+  private final CandidateRepository candidates;
+  private final EmailHelper emailHelper;
 
   @Async
   @TransactionalEventListener
   public void onAssigned(ServiceAssignedEvent e) {
-    // TODO e.g. send email
+    var cid = e.assignment().getCandidateId();
+
+    Candidate c = candidates.findById(cid)
+        .orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + cid + " not found"));
+
+    emailHelper.sendDuolingoCouponEmail(c.getUser());
   }
 
 }
