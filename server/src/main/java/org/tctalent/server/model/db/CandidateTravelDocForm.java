@@ -30,48 +30,53 @@ public class CandidateTravelDocForm extends CandidateFormInstance {
   private static final String DOC_ISSUE_DATE_PROP = "travelDocIssueDate";
   private static final String DOC_EXPIRY_DATE_PROP = "travelDocExpiryDate";
 
+  @Override
+  public String getFormName() {
+    return "CandidateTravelDocForm";
+  }
+
   // Existing TC fields (direct access - update candidate if needed)
   public @NonNull String getFirstName() {
-    return getCandidate().getUser().getFirstName();
+    return getWorkingCandidate().getUser().getFirstName();
   }
 
   public void setFirstName(String firstName) {
-    getCandidate().getUser().setFirstName(firstName);
+    getWorkingCandidate().getUser().setFirstName(firstName);
   }
 
   public @NonNull String getLastName() {
-    return getCandidate().getUser().getLastName();
+    return getWorkingCandidate().getUser().getLastName();
   }
 
   public void setLastName(String lastName) {
-    getCandidate().getUser().setLastName(lastName);
+    getWorkingCandidate().getUser().setLastName(lastName);
   }
 
   public LocalDate getDateOfBirth() {
-    return getCandidate().getDob();
+    return getWorkingCandidate().getDob();
   }
 
   public void setDateOfBirth(LocalDate dob) {
-    getCandidate().setDob(dob);
+    getWorkingCandidate().setDob(dob);
   }
 
   public @NonNull Gender getGender() {
-    assert getCandidate().getGender() != null;
-    return getCandidate().getGender();
+    assert getWorkingCandidate().getGender() != null;
+    return getWorkingCandidate().getGender();
   }
 
   public void setGender(Gender gender) {
-    getCandidate().setGender(gender);
+    getWorkingCandidate().setGender(gender);
   }
 
   @Transient
   public Country getBirthCountry() {
-    return getCandidate().getBirthCountry();
+    return getWorkingCandidate().getBirthCountry();
   }
 
 
   public void setBirthCountry(Country country) {
-    getCandidate().setBirthCountry(country);
+    getWorkingCandidate().setBirthCountry(country);
   }
 
   public String getPlaceOfBirth() {
