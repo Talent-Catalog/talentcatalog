@@ -30,7 +30,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class NotificationsListener {
+public class EmailNotificationListener {
 
   private final CandidateRepository candidates;
   private final EmailHelper emailHelper;
@@ -39,17 +39,15 @@ public class NotificationsListener {
   @TransactionalEventListener
   public void onAssigned(ServiceAssignedEvent event) {
     var a = event.assignment();
-    if (!"DUOLINGO".equalsIgnoreCase(a.getProvider())) {
-      return;
-    }
+    String action = "EmailNotificationListener:onAssigned: " + a.getProvider() + " " + a.getServiceCode();
 
     Long cid = a.getCandidateId();
     if (cid == null) {
       LogBuilder.builder(log)
           // todo -- pass the user (and candidate) in the entity
 //          .user(Optional.ofNullable(event.assignment().getActorId()))
-          .action("Duolingo:onAssigned: " + a.getProvider() + " " + a.getServiceCode())
-          .message("Duolingo coupon assignment " + a.getResource().getResourceCode() +
+          .action(action)
+          .message("Resource assignment " + a.getResource().getResourceCode() +
               " with no candidateId " + cid)
           .logWarn();
       return;
@@ -60,23 +58,28 @@ public class NotificationsListener {
       LogBuilder.builder(log)
           // todo -- pass the user (and candidate) in the entity
 //           .user(Optional.ofNullable(event.assignment().getActorId()))
-          .action("Duolingo:onAssigned: " + a.getProvider() + " " + a.getServiceCode())
-          .message("Candidate not found for Duolingo assignment  " +
+          .action(action)
+          .message("Candidate not found for resource assignment  " +
               a.getResource().getResourceCode() + " to candidate " + cid)
           .logWarn();
       return;
     }
 
-    var c = optional.get();
+    var candidate = optional.get();
     try {
-      emailHelper.sendDuolingoCouponEmail(c.getUser()); // send email with coupon code
+      if (a.getProvider().equals("DUOLINGO")) {
+        emailHelper.sendDuolingoCouponEmail(candidate.getUser());
+      }
+
+      // add other providers here
+
     } catch (Exception ex) {
         LogBuilder.builder(log)
             // todo -- pass the user (and candidate) in the entity
 //            .user(Optional.ofNullable(event.assignment().getActorId()))
-            .action("Duolingo:onAssigned: " + a.getProvider() + " " + a.getServiceCode())
-            .message("Failed sending Duolingo coupon email for " + a.getResource().getResourceCode()
-                + " to candidate " + cid)
+            .action(action)
+            .message("Failed sending resource assignment email for "
+                + a.getResource().getResourceCode() + " to candidate " + cid)
             .logWarn(ex);
     }
   }
