@@ -22,8 +22,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from '@angular/core';
 
 import {
@@ -127,8 +126,6 @@ interface CachedTargetList {
   styleUrls: ['./show-candidates.component.scss']
 })
 export class ShowCandidatesComponent extends CandidateSourceBaseComponent implements OnInit, OnChanges, OnDestroy {
-
-  @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
@@ -624,15 +621,16 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         reader.addEventListener('loadend', function () {
           if (typeof reader.result === 'string') {
             const errorObj = JSON.parse(reader.result);
-            const modalRef = _this.modalService.open(TcModalComponent, {});
-            modalRef.componentInstance.title = 'Export Failed';
-            modalRef.componentInstance.icon = 'fas fa-triangle-exclamation';
-            modalRef.componentInstance.actionText = 'Retry';
-            modalRef.componentInstance.message = "CSV download error: " + "'" + errorObj.message + "'";
-            modalRef.componentInstance.isError = true;
-            modalRef.componentInstance.onAction.subscribe(() => {
+            const csvExportErrorModal = _this.modalService.open(TcModalComponent, {});
+            csvExportErrorModal.componentInstance.title = 'Export Failed';
+            csvExportErrorModal.componentInstance.icon = 'fas fa-triangle-exclamation';
+            csvExportErrorModal.componentInstance.actionText = 'Retry';
+            csvExportErrorModal.componentInstance.message =
+              "CSV download error: " + "'" + errorObj.message + "'";
+            csvExportErrorModal.componentInstance.isError = true;
+            csvExportErrorModal.componentInstance.onAction.subscribe(() => {
               _this.exportCandidates();
-              modalRef.close();
+              csvExportErrorModal.close();
             });
           }
         });
