@@ -135,6 +135,15 @@ public abstract class AbstractCandidateService implements CandidateService {
 
   @Override
   @Transactional(readOnly = true)
+  public List<ServiceResource> getResourcesForCandidate(Long candidateId, String serviceCode) {
+    var assignments = getAssignmentsForCandidate(candidateId, serviceCode);
+    return assignments.stream()
+        .map(ServiceAssignment::getResource)
+        .toList();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public List<ServiceResource> getAvailableResources() {
     return resourceRepository
         .findByProviderAndServiceCodeAndStatus(provider(), serviceCode(), ResourceStatus.AVAILABLE)

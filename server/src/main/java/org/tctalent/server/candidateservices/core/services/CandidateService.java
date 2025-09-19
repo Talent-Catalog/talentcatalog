@@ -35,13 +35,14 @@ public interface CandidateService {
 
   // CREATE
   void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException;
-  ServiceAssignment assignToCandidate(Long candidateId, User actor, String serviceCode);
+  ServiceAssignment assignToCandidate(Long candidateId, String serviceCode, User actor);
   List<ServiceAssignment> assignToList(Long listId, String serviceCode, User actor);
-  ServiceAssignment reassignForCandidate(String candidateNumber, String serviceCode, User user);
+  ServiceAssignment reassignForCandidate(String candidateNumber, String serviceCode, User actor);
 
   // READ
-  List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode); // TODO - SM - would get resources be more natural?
+  List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode);
   List<ServiceResource> getAvailableResources();
+  List<ServiceResource> getResourcesForCandidate(Long candidateId, String serviceCode);
   ServiceResource getResourceForResourceCode(String resourceCode);
   Candidate getCandidateForResourceCode(String resourceCode);
 

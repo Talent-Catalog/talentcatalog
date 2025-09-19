@@ -35,6 +35,7 @@ import org.tctalent.server.candidateservices.core.services.CandidateService;
 import org.tctalent.server.candidateservices.core.services.CandidateServiceRegistry;
 import org.tctalent.server.candidateservices.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.candidateservices.core.services.CandidateServicesQueryService;
+import org.tctalent.server.candidateservices.domain.mappers.ServiceResourceMapper;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.security.AuthService;
@@ -91,8 +92,8 @@ public class ServicesAdminController {
       @PathVariable String serviceCode,
       @PathVariable("candidateId") Long candidateId) {
     return serviceFor(provider, serviceCode)
-        .getAssignmentsForCandidate(candidateId, serviceCode)
-        .stream().map(ServiceResourceDto::from)
+        .getResourcesForCandidate(candidateId, serviceCode)
+        .stream().map(ServiceResourceMapper::toDto)
         .toList();
   }
 
