@@ -49,5 +49,5 @@ public interface CandidateService {
   long countAvailableForProviderAndService();
 
   // UPDATE
-  void updateAResourceStatus(String resourceCode, ResourceStatus status);
+  void updateResourceStatus(String resourceCode, ResourceStatus status);
 }

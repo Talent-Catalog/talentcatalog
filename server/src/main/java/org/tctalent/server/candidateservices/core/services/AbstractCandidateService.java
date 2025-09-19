@@ -160,7 +160,7 @@ public abstract class AbstractCandidateService implements CandidateService {
 
   @Override
   @Transactional
-  public void updateAResourceStatus(String resourceCode, ResourceStatus status) {
+  public void updateResourceStatus(String resourceCode, ResourceStatus status) {
     resourceRepository
         .findByProviderAndResourceCode(provider(), resourceCode)
         .ifPresent(resource -> {
