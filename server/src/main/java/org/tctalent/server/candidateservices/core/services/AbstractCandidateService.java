@@ -74,7 +74,7 @@ public abstract class AbstractCandidateService implements CandidateService {
 
   @Override
   @Transactional
-  public ServiceAssignment assignToCandidate(Long candidateId, User user, String serviceCode) {
+  public ServiceAssignment assignToCandidate(Long candidateId, String serviceCode, User user) {
     var assignments = getAssignmentsForCandidate(candidateId, serviceCode);
 
     for (ServiceAssignment a : assignments) {
@@ -117,7 +117,7 @@ public abstract class AbstractCandidateService implements CandidateService {
           .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
 
       if (!hasSentCoupon) {
-        done.add(assignToCandidate(candidate.getId(), user, serviceCode));
+        done.add(assignToCandidate(candidate.getId(), serviceCode, user));
       }
     }
     return done;
