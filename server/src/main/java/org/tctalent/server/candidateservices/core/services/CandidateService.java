@@ -31,6 +31,7 @@ import org.tctalent.server.model.db.User;
  * @author sadatmalik
  */
 public interface CandidateService {
+  String providerKey(); // e.g., "DUOLINGO::PROCTORED_TEST"
 
   // CREATE
   void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException;
