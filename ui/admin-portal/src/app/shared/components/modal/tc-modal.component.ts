@@ -7,7 +7,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
  * @description
  * A reusable modal wrapper component that includes the NgbModal header and footer.
  * It can be opened either declaratively in a template using <tc-modal>,
- *  or programmatically via the NgbModal service.
+ * or programmatically via the NgbModal service.
  *
  * **Features:**
  * - Displays custom modal content with 'ng-content'
@@ -84,6 +84,9 @@ export class TcModalComponent {
   @Input() showCancel: boolean = true;
   @Input() icon: string;
   @Input() isError: boolean = false;
+  /** Primarily intended for use when declaring modal programmatically via NgbModal service, when
+   * ng-content projection not possible since there's no corresponding template element.
+   */
   @Input() message?: string;
 
   @Output() onAction = new EventEmitter();
