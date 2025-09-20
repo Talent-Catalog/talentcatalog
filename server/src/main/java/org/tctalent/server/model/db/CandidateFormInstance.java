@@ -94,6 +94,9 @@ public abstract class CandidateFormInstance {
 
     /**
      * Subclasses must implement this to return the form name.
+     * <p>
+     * This name is the unique key of the form in the database.
+     *
      * @return Name of form
      */
     public abstract String getFormName();
@@ -106,6 +109,7 @@ public abstract class CandidateFormInstance {
         } else {
             if (pendingCandidate == null) {
                 pendingCandidate = new Candidate();
+                pendingCandidate.setUser(new User());
             }
             workingCandidate = pendingCandidate;
         }

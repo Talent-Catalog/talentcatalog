@@ -23,6 +23,8 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.User;
 
 /**
  * Candidate related mappings.
@@ -37,7 +39,8 @@ import org.tctalent.server.model.db.Candidate;
     LanguageMapper.class,
     OccupationMapper.class,
     PartnerMapper.class,
-    SurveyTypeMapper.class
+    SurveyTypeMapper.class,
+    UserMapper.class,
 })
 public interface CandidateMapper {
 
@@ -54,5 +57,22 @@ public interface CandidateMapper {
     @Mapping(target = "candidateProperties", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateCandidateFromSource(Candidate source, @MappingTarget Candidate candidate);
+
+    /**
+     * Copies non null values in source to user
+     * @param source Source user
+     * @param user Target user
+     */
+    @Mapping(target = "id", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUserFromSource(User source, @MappingTarget User user);
+
+    /**
+     * Copies non-null values in source to country
+     * @param source Source country
+     * @param country Target country
+     */
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateCountryFromSource(Country source, @MappingTarget Country country);
 
 }

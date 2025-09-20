@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CandidateFormService} from "../../../services/candidate-form.service";
 import {ICandidateFormComponent} from "../../../model/candidate-form";
 import {CandidateService} from "../../../services/candidate.service";
+import {Candidate} from "../../../model/candidate";
 
 /**
  * This is effectively a duplicate of MyFirstFormComponent
@@ -14,6 +15,9 @@ import {CandidateService} from "../../../services/candidate.service";
   styleUrls: ['./my-second-form.component.scss']
 })
 export class MySecondFormComponent implements OnInit, ICandidateFormComponent<MySecondFormData> {
+  //Candidate entering form
+  @Input() candidate: Candidate;
+
   //When present and true, the form can't be modified or submitted
   @Input() readOnly = false;
 

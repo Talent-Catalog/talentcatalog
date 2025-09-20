@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,37 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.api.dto;
 
-import jakarta.persistence.Embeddable;
-import java.io.Serializable;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tctalent.server.model.db.Status;
 
 /**
- * Primary key for {@link CandidateFormInstance}.
- * See doc for that class.
+ * TODO JC Doc
  *
  * @author John Cameron
  */
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
-@Embeddable
-public class CandidateFormInstanceKey implements Serializable {
-
-    private Long candidateId;
-
-    private Long formId;
-
-    public CandidateFormInstanceKey() {
-    }
-
-    public CandidateFormInstanceKey(Long candidateId, Long formId) {
-        this.candidateId = candidateId;
-        this.formId = formId;
-    }
+public class CountryDto {
+    long id;
+    String isoCode;
+    String name;
+    Status status;
 }

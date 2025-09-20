@@ -11,6 +11,7 @@ import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.api.dto.CountryDto;
 
 /**
  * Form for personal travel document data entry + upload verification.
@@ -31,7 +32,7 @@ public class CandidateTravelDocForm extends CandidateFormInstance {
 
   @Override
   public String getFormName() {
-    return "CandidateTravelDocForm";
+    return "ItalyCandidateTravelDocumentForm";
   }
 
   // Existing TC fields (direct access - update candidate if needed)
@@ -68,13 +69,26 @@ public class CandidateTravelDocForm extends CandidateFormInstance {
   }
 
   @Transient
-  public Country getBirthCountry() {
-    return getWorkingCandidate().getBirthCountry();
+  public CountryDto getBirthCountry() {
+       Country country = getWorkingCandidate().getBirthCountry();
+       if (country != null) {
+          CountryDto dto = new CountryDto();
+          dto.setIsoCode(country.getIsoCode());
+          dto.setName(country.getName());
+          dto.setStatus(country.getStatus());
+          return dto;
+       }
+       return null;
   }
 
 
   public void setBirthCountry(Country country) {
-    getWorkingCandidate().setBirthCountry(country);
+    //TODO JC This needs to effectively just look up country from a possible new id.
+    //TODO JC The problem is that we need a service to look up a country and we don't have
+    //todo jc access to that from within an entity.
+
+    //todo Look into having partial controller
+//    getWorkingCandidate().setBirthCountry(country);
   }
 
   public String getPlaceOfBirth() {

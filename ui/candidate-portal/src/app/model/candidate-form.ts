@@ -14,6 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {Candidate} from "./candidate";
+
 /**
  * Defines what a Candidate Form component should look like.
  *
@@ -78,7 +80,19 @@
  *  ```
  */
 export interface ICandidateFormComponent<T = unknown> {
+  //Candidate entering form.
+  //Exposed in component as
+  //   @Input() candidate: Candidate
+  candidate: Candidate;
+
+  //When present and true, the form can't be modified or submitted.
+  //Exposed in component as
+  //   @Input() readOnly: boolean;
   readOnly: boolean;
+
+  //Output event supplying the submitted data.
+  //Exposed in component as
+  //   @Output() submitted = new EventEmitter<[data class]>();
   submitted: import("@angular/core").EventEmitter<T>;
 }
 

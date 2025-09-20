@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {MyFirstFormData, MySecondFormData} from "../model/form";
-import {ItalyCandidateTravelDocFormData} from "../model/form";
+import {ItalyCandidateTravelDocFormData, MyFirstFormData, MySecondFormData} from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
 import {MySecondFormComponent} from "../components/form/my-second-form/my-second-form.component";
 import {
@@ -45,11 +44,13 @@ export class CandidateFormService {
   }
 
   createOrUpdateTravelDocumentForm(request: ItalyCandidateTravelDocFormData): Observable<ItalyCandidateTravelDocFormData> {
-    return this.http.post<ItalyCandidateTravelDocFormData>(`${this.apiUrl}/travel-doc-form`, request);
+    return this.http.put<ItalyCandidateTravelDocFormData>(
+      `${this.halApiUrl}/travel-doc-form/ItalyCandidateTravelDocumentForm`, request);
   }
 
   getTravelDocumentForm(): Observable<ItalyCandidateTravelDocFormData> {
-    return this.http.get<ItalyCandidateTravelDocFormData>(`${this.apiUrl}/travel-doc-form`);
+    return this.http.get<ItalyCandidateTravelDocFormData>(
+      `${this.halApiUrl}/travel-doc-form/ItalyCandidateTravelDocumentForm`);
   }
 
   getFormComponentByName(formName: string): any {
