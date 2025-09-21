@@ -241,10 +241,10 @@ import {
   ViewFormTaskComponent
 } from './components/profile/view/tab/tasks/task/form/view-form-task.component';
 import {MyFirstFormComponent} from './components/form/my-first-form/my-first-form.component';
-import { MySecondFormComponent } from './components/form/my-second-form/my-second-form.component';
+import {MySecondFormComponent} from './components/form/my-second-form/my-second-form.component';
 import {
-  ItalyCandidateTravelDocumentFormComponent
-} from './components/form/italy-travel-document-form/italy-candidate-travel-document-form.component';
+  TravelDocFormComponent
+} from './components/form/italy-travel-document-form/travel-doc-form.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -334,7 +334,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ViewFormTaskComponent,
     MyFirstFormComponent,
     MySecondFormComponent,
-    ItalyCandidateTravelDocumentFormComponent,
+    TravelDocFormComponent,
   ],
   imports: [
     BrowserModule,
