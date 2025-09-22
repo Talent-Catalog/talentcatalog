@@ -191,10 +191,10 @@ service via the `CandidateServiceRegistry`.
 
 The generic admin controller already supports your provider/service endpoints:
 
-- POST /api/admin/services/PEARSON/PEARSON_PTE_VOUCHER/import 
-- POST /api/admin/services/PEARSON/PEARSON_PTE_VOUCHER/assign/candidate/{candidateId} 
-- POST /api/admin/services/PEARSON/PEARSON_PTE_VOUCHER/assign/list/{listId} 
-- GET /api/admin/services/PEARSON/PEARSON_PTE_VOUCHER/available/count 
+- POST /api/admin/services/UDEMY/UDEMY_COURSE/import 
+- POST /api/admin/services/UDEMY/UDEMY_COURSE/assign/candidate/{candidateId} 
+- POST /api/admin/services/UDEMY/UDEMY_COURSE/assign/list/{listId} 
+- GET /api/admin/services/UDEMY/UDEMY_COURSE/available/count 
 - etc.
 
 ## Assignment life cycle (what happens on assign/redeem/reassign/expire):
