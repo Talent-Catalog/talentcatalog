@@ -1,5 +1,5 @@
 insert into candidate_form (name, description)
-values ('TravelDocForm', 'Check and enter your travel document information so it matches your official document.');
+values ('ItalyCandidateTravelDocumentForm', 'Check and enter your travel document information so it matches your official document.');
 
 insert into task (
     name,
@@ -13,13 +13,13 @@ insert into task (
     created_date
 )
 values (
-           'travelDocFormTask',
+           'italyCandidateTravelDocumentTask',
            'Review and confirm your travel document details.',
            'Check and enter your travel document information so it matches your official document.',
            7,
            false,
            'FormTask',
-           (select id from candidate_form where name = 'TravelDocForm'),
+           (select id from candidate_form where name = 'ItalyCandidateTravelDocumentForm'),
            (select id from users where username = 'SystemAdmin'),
            now()
        );
