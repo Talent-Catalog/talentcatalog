@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.SavedList;
 
@@ -35,6 +36,17 @@ public class PublishListRequest {
    * Defines the columns of data to be displayed in the doc for each candidate in a list.
    */
   private List<PublishedDocColumnConfig> columns;
+
+  /**
+   * If not null, this specifies a {@link PublishedDocColumnDef} which can supply a second dimension
+   * to the candidate data to be published.
+   * This could mean that a single candidate could generate more than one row in the published doc.
+   * <p>
+   * An example is a column related to a candidate's dependants. If a candidate has dependants, then
+   * we can publish a row for each dependant in addition to the row for the candidate themselves.
+   */
+  @Nullable
+  private PublishedDocColumnDef expandingColumnDef;
 
   /**
    * If not null, indicates that this list is associated with a job (eg a submission list), and

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
@@ -62,6 +63,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
   public List<Object> buildRow(Candidate candidate, List<PublishedDocColumnDef> columnInfos) {
     List<Object> candidateData = new ArrayList<>();
     for (PublishedDocColumnDef columnInfo : columnInfos) {
+      //TODO JC Second loop through dependants
       Object obj = buildCell(candidate, columnInfo);
       candidateData.add(obj);
     }
@@ -76,6 +78,20 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
     return title;
   }
 
+  @Override
+  public int computeNumberOfRowsByCandidate(@NonNull Candidate candidate,
+      @NonNull PublishedDocColumnDef expandingColumnDef) {
+
+    //Always one row for the candidate
+    int nRows = 1;
+
+    final PublishedDocValueSource value = expandingColumnDef.getContent().getValue();
+    Object obj = value == null ? null : fetchData(candidate, value);
+    if (obj != null) {
+      //TODO JC Figure out what it is and if it contributes extra rows
+    }
+    return nRows;
+  }
 
   /**
    * Retrieves the data that is the value of this value source corresponding to the given candidate.
@@ -83,7 +99,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
    * @return the value
    */
   @Nullable
-  private Object fetchData(Candidate candidate, PublishedDocValueSource valueSource) {
+  private Object fetchData(Candidate candidate, @NonNull PublishedDocValueSource valueSource) {
     Object val = null;
     final String fieldName = valueSource.getFieldName();
     final String propertyName = valueSource.getPropertyName();
