@@ -16,7 +16,6 @@
 
 package org.tctalent.server.candidateservices.application.providers.duolingo;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceAssignmentRepository;
@@ -30,7 +29,6 @@ import org.tctalent.server.service.db.SavedListService;
 
 
 @Service
-@Slf4j
 public class DuolingoService extends AbstractCandidateService {
 
   private final FileInventoryImporter duolingoImporter;
