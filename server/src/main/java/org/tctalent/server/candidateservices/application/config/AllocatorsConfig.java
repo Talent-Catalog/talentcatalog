@@ -25,7 +25,7 @@ import org.tctalent.server.candidateservices.core.allocators.ResourceAllocator;
 
 
 @Configuration
-public class ProviderAllocatorsConfig {
+public class AllocatorsConfig {
 
   @Bean("duolingoNonProctoredAllocator")
   public ResourceAllocator duolingoNonProctoredAllocator(ServiceResourceRepository repo) {

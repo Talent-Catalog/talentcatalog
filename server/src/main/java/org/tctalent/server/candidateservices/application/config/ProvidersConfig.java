@@ -23,9 +23,9 @@ import org.tctalent.server.candidateservices.application.providers.duolingo.Duol
 
 
 @Configuration
-public class ProviderRegistryConfig {
+public class ProvidersConfig {
 
-  @Bean(name = "DUOLINGO") // TODO -- SM -- use enum ?? not sure if can here ?
+  @Bean(name = "DUOLINGO")
   CandidateService duolingoService(DuolingoService impl) {
     return impl;
   }
