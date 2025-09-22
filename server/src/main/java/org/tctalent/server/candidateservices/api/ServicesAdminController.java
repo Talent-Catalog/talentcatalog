@@ -25,19 +25,25 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.candidateservices.api.dto.ServiceAssignmentDto;
 import org.tctalent.server.candidateservices.api.dto.ServiceResourceDto;
+import org.tctalent.server.candidateservices.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.candidateservices.core.services.CandidateService;
 import org.tctalent.server.candidateservices.core.services.CandidateServiceRegistry;
 import org.tctalent.server.candidateservices.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.candidateservices.core.services.CandidateServicesQueryService;
 import org.tctalent.server.candidateservices.domain.mappers.ServiceResourceMapper;
+import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.security.AuthService;
 
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -97,84 +103,81 @@ public class ServicesAdminController {
         .toList();
   }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//  // --- Assign to a single candidate (generic response) ---
-//  @PostMapping("/{provider}/{serviceCode}/assign/candidate/{candidateId}")
-//  public ServiceAssignment assignToCandidate(@PathVariable String provider,
-//      @PathVariable String serviceCode,
-//      @PathVariable Long candidateId) {
-//    User actor = authService.getLoggedInUser()
-//        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-//    return service(provider).assignToCandidate(candidateId, serviceCode, actor);
-//  }
-//
-//  // --- Assign to a list of candidates ---
-//  @PostMapping("/{provider}/{serviceCode}/assign/list/{listId}")
-//  public List<ServiceAssignment> assignToList(@PathVariable String provider,
-//      @PathVariable String serviceCode,
-//      @PathVariable Long listId) {
-//    User actor = authService.getLoggedInUser()
-//        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-//    return service(provider).assignToList(listId, serviceCode, actor);
-//  }
-//
-//  // --- Count available inventory for a service ---
-//  @GetMapping("/{provider}/{serviceCode}/available/count")
-//  public Map<String, Object> countAvailable(@PathVariable String provider,
-//      @PathVariable String serviceCode) {
-//    int count = resourceRepo.countByProviderAndServiceCodeAndStatus(
-//        provider.toUpperCase(), serviceCode, ResourceStatus.AVAILABLE);
-//    return Map.of("status", "success", "count", count);
-//  }
-//
-//  // --- List available inventory (lightweight DTO) ---
-//  @GetMapping("/{provider}/{serviceCode}/available")
-//  public List<ServiceResourceDto> listAvailable(@PathVariable String provider,
-//      @PathVariable String serviceCode) {
-//    return resourceRepo.findTop200ByProviderAndServiceCodeAndStatusOrderByIdAsc(
-//            provider.toUpperCase(), serviceCode, ResourceStatus.AVAILABLE)
-//        .stream().map(ServiceResourceDto::from).toList();
-//  }
-//
-//  // --- Update resource status (generic) ---
-//  @PutMapping("/{provider}/resource/{resourceCode}/status")
-//  public void updateResourceStatus(@PathVariable String provider,
-//      @PathVariable String resourceCode,
-//      @RequestBody @Valid UpdateResourceStatusRequest req) {
-//    ServiceResourceEntity r = resourceRepo
-//        .findByProviderAndResourceCode(provider.toUpperCase(), resourceCode)
-//        .orElseThrow(() -> new NoSuchObjectException("Resource not found"));
-//    r.setStatus(req.status());
-//    resourceRepo.save(r);
-//  }
-//
-//  // --- Find one resource by code (generic) ---
-//  @GetMapping("/{provider}/resource/{resourceCode}")
-//  public ServiceResourceDto getResource(@PathVariable String provider,
-//      @PathVariable String resourceCode) {
-//    ServiceResourceEntity r = resourceRepo
-//        .findByProviderAndResourceCode(provider.toUpperCase(), resourceCode)
-//        .orElseThrow(() -> new NoSuchObjectException("Resource not found"));
-//    return ServiceResourceDto.from(r);
-//  }
-//
-//  // --- Consolidated “what services does this candidate have?” ---
-//  @GetMapping("/assignments/candidate/{candidateId}")
-//  public List<ServiceAssignment> getAssignmentsForCandidate(@PathVariable Long candidateId) {
-//    return queryService.listForCandidate(candidateId);
-//  }
-//
+  // Endpoint to update the status of a specific coupon
+  @PutMapping("/{provider}/{serviceCode}/resources/status")
+  public void updateResourceStatus(@PathVariable String provider,
+      @PathVariable String serviceCode,
+      @RequestBody UpdateServiceResourceStatusRequest request) {
+    serviceFor(provider, serviceCode)
+        .updateResourceStatus(request.getResourceCode(), request.getStatus());
+  }
+
+  // Endpoint to list all available coupons for a specific service
+  @GetMapping("/{provider}/{serviceCode}/available")
+  public List<ServiceResourceDto> listAvailable(@PathVariable String provider,
+      @PathVariable String serviceCode) {
+    return serviceFor(provider, serviceCode)
+        .getAvailableResources()
+        .stream().map(ServiceResourceMapper::toDto)
+        .toList();
+  }
+
+  // Endpoint to get a single resource by its code for a specific service
+  @GetMapping("/{provider}/{serviceCode}/resource/{resourceCode}")
+  public ServiceResourceDto getResource(@PathVariable String provider,
+      @PathVariable String serviceCode,
+      @PathVariable String resourceCode) {
+
+    var r = serviceFor(provider, serviceCode)
+        .getResourceForResourceCode(resourceCode);
+
+    return ServiceResourceMapper.toDto(r);
+  }
+
+  // Assign to a single candidate
+  @PostMapping("/{provider}/{serviceCode}/assign/candidate/{candidateId}")
+  public ServiceAssignmentDto assignToCandidate(@PathVariable String provider,
+      @PathVariable String serviceCode,
+      @PathVariable("candidateId") Long candidateId)
+      throws InvalidSessionException, NoSuchObjectException, EntityExistsException {
+
+    User user = authService.getLoggedInUser()
+        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+    var a = serviceFor(provider, serviceCode)
+        .assignToCandidate(candidateId, serviceCode, user);
+
+    return ServiceAssignmentMapper.toDto(a);
+  }
+
+  @PostMapping("/{provider}/{serviceCode}/assign/list/{listId}")
+  public List<ServiceAssignmentDto> assignToList(@PathVariable String provider,
+      @PathVariable String serviceCode,
+      @PathVariable Long listId) throws NoSuchObjectException, InvalidSessionException {
+
+    User user = authService.getLoggedInUser()
+        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+    return serviceFor(provider, serviceCode)
+        .assignToList(listId, serviceCode, user)
+        .stream().map(ServiceAssignmentMapper::toDto)
+        .toList();
+  }
+
+  // Endpoint to count the available inventory for a provider and service
+  @GetMapping("/{provider}/{serviceCode}/available/count")
+  public Map<String, Object> countAvailable(@PathVariable String provider,
+      @PathVariable String serviceCode) {
+    try {
+      long count = serviceFor(provider, serviceCode)
+          .countAvailableForProviderAndService();
+      return Map.of("status", "success", "count", count);
+    } catch (RuntimeException e) {
+      return Map.of("status", "failure", "message", "Failed to count available coupons.");
+    }
+  }
+
+
   private CandidateService serviceFor(String provider, String serviceCode) {
     CandidateService svc = services.forProviderAndServiceCode(provider, serviceCode);
     if (svc == null) {
