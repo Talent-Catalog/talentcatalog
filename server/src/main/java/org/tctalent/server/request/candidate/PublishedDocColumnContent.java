@@ -33,16 +33,16 @@ import org.springframework.lang.Nullable;
 @Setter
 public class PublishedDocColumnContent {
 
-  @Nullable
   /**
    * If not null, indicates the source of the data which will serve as a link (url) followed
    * when someone clicks on the column's displayed value.
    */
+  @Nullable
   private PublishedDocValueSource link;
 
-  @Nullable
   /**
    * If not null, indicates the source of the data which is displayed in the column.
    */
+  @Nullable
   private PublishedDocValueSource value;
 }
