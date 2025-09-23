@@ -34,7 +34,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
     and service_code = :serviceCode
     and status = 'AVAILABLE'
     order by id
-    for update skip locked -- TODO -- SM -- confirm syntax works
+    for update skip locked
     limit 1
     """, nativeQuery = true)
   ServiceResourceEntity lockNextAvailable(@Param("provider") String provider,
