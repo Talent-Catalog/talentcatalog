@@ -14,13 +14,13 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="card">
+<tc-card>
 
-  <div class="card-header">
+  <tc-card-header>
     Job related uploads <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
+  <div>
     <div class="alert alert-danger" *ngIf="error">
       {{error}}
     </div>
@@ -43,12 +43,12 @@
         </div>
       </div>
       <div class="col-2 col-sm-auto" *ngIf="editable">
-          <button title="Enter/change a link to the document" class="btn btn-sm btn-secondary me-2" (click)="editJDLink()">
+          <tc-button title="Enter/change a link to the document" class="me-2" type="secondary" (click)="editJDLink()">
             Add/edit link <i class="fa-solid fa-link"></i>
-          </button>
-          <button title="Upload the document from your computer" class="btn btn-sm btn-primary" (click)="uploadJD()">
+          </tc-button>
+          <tc-button title="Upload the document from your computer" type="primary" (click)="uploadJD()">
             Upload file <i class="fa-solid fa-upload"></i>
-          </button>
+          </tc-button>
         </div>
     </div>
 
@@ -72,12 +72,12 @@
         </div>
       </div>
       <div class="col-2 col-sm-auto" *ngIf="editable">
-        <button title="Enter/change a link to the document" class="btn btn-sm btn-secondary me-2" (click)="editInterviewGuidanceLink()">
+        <tc-button title="Enter/change a link to the document" class="me-2" type="secondary" (click)="editInterviewGuidanceLink()">
           Add/edit link <i class="fa-solid fa-link"></i>
-        </button>
-        <button title="Upload the document from your computer" class="btn btn-sm btn-primary" (click)="uploadInterviewGuidance()">
+        </tc-button>
+        <tc-button title="Upload the document from your computer" type="primary" (click)="uploadInterviewGuidance()">
           Upload file <i class="fa-solid fa-upload"></i>
-        </button>
+        </tc-button>
       </div>
     </div>
 
@@ -101,14 +101,14 @@
         </div>
       </div>
       <div class="col-2 col-sm-auto" *ngIf="editable">
-        <button title="Enter/change a link to the document" class="btn btn-sm btn-secondary me-2" (click)="editMouLink()">
+        <tc-button title="Enter/change a link to the document" class="me-2" type="secondary" (click)="editMouLink()">
           Add/edit link <i class="fa-solid fa-link"></i>
-        </button>
-        <button title="Upload the document from your computer" class="btn btn-sm btn-primary" (click)="uploadMou()">
+        </tc-button>
+        <tc-button title="Upload the document from your computer" type="primary" (click)="uploadMou()">
           Upload file <i class="fa-solid fa-upload"></i>
-        </button>
+        </tc-button>
       </div>
     </div>
   </div>
 
-</div>
+</tc-card>

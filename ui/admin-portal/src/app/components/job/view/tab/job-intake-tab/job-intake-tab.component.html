@@ -21,10 +21,10 @@
 <div *ngIf="error" class="error-message">
   {{error}}
 </div>
-<div *ngIf="!loading">
-  <div class="d-flex justify-content-between">
-    <h5 class="mb-4">Job Opportunity Intake (JOI)</h5>
-  </div>
+<tc-card *ngIf="!loading">
+  <tc-card-header>
+    Job Opportunity Intake (JOI)
+  </tc-card-header>
 
   <tc-accordion [allOpen]="true">
     <tc-accordion-item [header]="'Employer Details: ' + job.employerEntity?.name">
@@ -157,4 +157,4 @@
       </app-joi-component>
     </tc-accordion-item>
   </tc-accordion>
-</div>
+</tc-card>
