@@ -15,9 +15,9 @@
   -->
 
 <span *ngIf="candidate.potentialDuplicate && canViewCandidateName()">
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
   <span *ngIf="loading; else icon">
     <i class="fa fa-spinner fa-spin"></i>
   </span>
