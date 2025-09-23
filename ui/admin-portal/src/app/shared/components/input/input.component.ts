@@ -69,7 +69,6 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() id?: string;
   @Input() ariaLabel?: string;
   @Input() name?: string;
-  @Input() type: string = 'text';
   @Input() placeholder: string = '';
   @Input() invalid: boolean = false;
   @Input() defaultValue: string = '';
@@ -78,6 +77,29 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() inputFormatter?: (value: any) => string;
   @Input() editable: boolean;
   @Input() readonly: boolean = false;
+  @Input() type:
+    | 'text'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'url'
+    | 'email'
+    | 'number'
+    | 'range'
+    | 'color'
+    | 'date'
+    | 'month'
+    | 'week'
+    | 'time'
+    | 'datetime-local'
+    | 'checkbox'
+    | 'radio'
+    | 'file'
+    | 'button'
+    | 'submit'
+    | 'reset'
+    | 'hidden'
+    | 'image' = 'text';
 
   /** Disabled state coming from an input e.g. [disabled]="loading" */
   @Input() set disabled(val: boolean) {
@@ -153,8 +175,9 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   }
 
   handleInput(event: Event) {
-    const newValue = (event.target as HTMLInputElement).value;
-    this.value = newValue;
+    this.value = this.type === 'checkbox'
+      ? (event.target as HTMLInputElement).checked.toString()
+      : (event.target as HTMLInputElement).value;
   }
 
   handleBlur() {
