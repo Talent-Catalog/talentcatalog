@@ -1829,4 +1829,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return this.authorizationService.isReadOnly();
   }
 
+  openCandidateInNewTab(candidateNumber: string): void {
+    window.open(`/candidate/${candidateNumber}`, '_blank');
+  }
+
 }

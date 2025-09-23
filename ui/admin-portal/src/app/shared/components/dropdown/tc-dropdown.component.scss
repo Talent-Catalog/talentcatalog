@@ -9,5 +9,7 @@
     display: none;
   }
 
-  @include dropdown-styles;
+  ::ng-deep{
+    @include dropdown-styles;
+  }
 }

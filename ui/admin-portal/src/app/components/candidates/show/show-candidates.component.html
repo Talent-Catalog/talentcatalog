@@ -515,26 +515,19 @@
                     <i class="fas fa-ellipsis-h"></i>
                   </tc-dropdown-button>
                   <tc-dropdown-menu>
-                    <span *ngIf="isReviewable()">
-                      <tc-dropdown-item (click)="review(candidate)">
-                        Change reviewed status
-                      </tc-dropdown-item>
-                      <tc-dropdown-divider></tc-dropdown-divider>
-                    </span>
-                    <span *ngIf="isCvDropDownAvailable()">
-                      <tc-dropdown-item (click)="downloadGeneratedCV(candidate)"
-                            title="Opens/DLs CV generated from candidate profile">
-                        Download CV
-                      </tc-dropdown-item>
-                      <tc-dropdown-divider></tc-dropdown-divider>
-                    </span>
-                    <tc-dropdown-item>
-                      <a target="_blank"
-                         class="no-link"
-                         [routerLink]="['/candidate', candidate.candidateNumber]"
-                      >
-                        Open in new tab
-                      </a>
+                    <tc-dropdown-item *ngIf="isReviewable()"
+                                      (click)="review(candidate)">
+                      Change reviewed status
+                    </tc-dropdown-item>
+                    <tc-dropdown-divider *ngIf="isReviewable()"></tc-dropdown-divider>
+                    <tc-dropdown-item *ngIf="isCvDropDownAvailable()"
+                                      (click)="downloadGeneratedCV(candidate)"
+                                      title="Opens/DLs CV generated from candidate profile">
+                      Download CV
+                    </tc-dropdown-item>
+                    <tc-dropdown-divider *ngIf="isCvDropDownAvailable()"></tc-dropdown-divider>
+                    <tc-dropdown-item (click)="openCandidateInNewTab(candidate.candidateNumber)">
+                      Open in new tab
                     </tc-dropdown-item>
                     <tc-dropdown-divider *ngIf="(!isSubmissionList() && isContentModifiable())
                       || (isSubmissionList() && isSalesforceUpdatable())"
