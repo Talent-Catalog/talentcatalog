@@ -23,8 +23,8 @@ import org.springframework.lang.Nullable;
 /**
  * Represents the data behind the content of a column in a published Google Sheet document.
  * <p/>
- * Each column will either display a single value, or else it will display a link will be
- * constructed of two values: one which is the visible value and the other is the link that you
+ * Each column will either display a single value, or else it will display a link constructed of
+ * two values: one which is the visible value and the other is the link that you
  * go to when you click on that value.
  *
  * @author John Cameron
