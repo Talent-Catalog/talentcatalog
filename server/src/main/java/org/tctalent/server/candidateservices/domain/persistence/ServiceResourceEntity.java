@@ -35,7 +35,7 @@ import org.tctalent.server.model.db.AbstractDomainObject;
 @SequenceGenerator(name = "seq_gen", sequenceName = "service_resource_id_seq", allocationSize = 1)
 @Getter
 @Setter
-public class ServiceResourceEntity extends AbstractDomainObject<Long> { // TODO -- SM -- extend TC persistence base entity
+public class ServiceResourceEntity extends AbstractDomainObject<Long> {
 
   @Column(nullable=false)
   private String provider; // e.g. "DUOLINGO" // TODO -- SM -- make enum? Provider.DUOLINGO
