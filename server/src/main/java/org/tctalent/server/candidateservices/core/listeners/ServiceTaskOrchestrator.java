@@ -91,7 +91,7 @@ public class ServiceTaskOrchestrator {
         LogBuilder.builder(log)
             .user(Optional.of(user(event.assignment())))
             .action("Reassigned: " + event.assignment().getProvider() + " " + event.assignment().getServiceCode())
-            .message("Marked task assignment ID " + ta.getId() + " as inactive for candidate " + ta.getId() + " due to reassignment.")
+            .message("Marked task assignment ID " + ta.getId() + " as inactive for candidate " + ta.getCandidate().getId() + " due to reassignment.")
             .logInfo();
       });
     }
