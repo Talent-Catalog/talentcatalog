@@ -152,12 +152,17 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         //gives alpha sort - eg 100 before 20
         candidates.sort(Comparator.comparing(Candidate::getId));
 
-        //TODO JC Could be more than one row per candidate if dependants are being displayed
+        final PublishedDocColumnDef expandingColumnDef = request.getExpandingColumnDef();
         //Add row for each candidate
         for (Candidate candidate : candidates) {
-            List<Object> candidateData = publishedDocBuilderService.buildRow(candidate,
-                columnInfos);
-            publishedData.add(candidateData);
+            //Could be more than one row per candidate if, for example, dependants are being displayed
+            int nRows = publishedDocBuilderService.computeNumberOfRowsByCandidate(
+                candidate, expandingColumnDef);
+            for (int expandingCount = 0; expandingCount < nRows; expandingCount++) {
+                List<Object> candidateData = publishedDocBuilderService.buildRow(
+                    candidate, expandingColumnDef, expandingCount, columnInfos);
+                publishedData.add(candidateData);
+            }
         }
         writeCandidateDataToDoc(publishedDocLink, publishedSheetDataRangeName, publishedData);
     }
@@ -212,15 +217,10 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
      */
     private int computeNumberOfRows(
         @NonNull List<Candidate> candidates, @Nullable PublishedDocColumnDef expandingColumnDef) {
-        int nRows;
-        if (expandingColumnDef == null) {
-            nRows = candidates.size();
-        } else {
-            nRows = 0;
-            for (Candidate candidate : candidates) {
-                nRows += publishedDocBuilderService.computeNumberOfRowsByCandidate(
-                    candidate, expandingColumnDef);
-            }
+        int nRows = 0;
+        for (Candidate candidate : candidates) {
+            nRows += publishedDocBuilderService.computeNumberOfRowsByCandidate(
+                candidate, expandingColumnDef);
         }
         return nRows;
     }

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateProperty;
+import org.tctalent.server.model.db.HasMultipleValues;
 import org.tctalent.server.security.CandidateTokenProvider;
 
 /**
@@ -43,13 +44,33 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
     this.candidateTokenProvider = candidateTokenProvider;
   }
 
-  public Object buildCell(Candidate candidate, PublishedDocColumnDef columnInfo) {
-    PublishedDocColumnContent columnContent = columnInfo.getContent();
-    final PublishedDocValueSource contentValue = columnContent.getValue();
-    Object value = contentValue == null ? null : fetchData(candidate, contentValue);
-    final PublishedDocValueSource linkSource = columnContent.getLink();
+  public Object buildCell(Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef,
+    int expandingCount, PublishedDocColumnDef columnInfo) {
 
-    String link = linkSource == null ? null : (String) fetchData(candidate, linkSource);
+    if (expandingCount > 0 && expandingColumnDef == null) {
+      //TODO JC Bug
+      throw new RuntimeException(); //TODO JC
+    }
+
+    HasMultipleValues expandedData = null;//TODO JC
+
+    Object value;
+    String link;
+
+    if (expandingCount == 0) {
+      PublishedDocColumnContent columnContent = columnInfo.getContent();
+      final PublishedDocValueSource contentValue = columnContent.getValue();
+      value = contentValue == null ? null : fetchData(candidate, contentValue);
+      final PublishedDocValueSource linkSource = columnContent.getLink();
+      link = linkSource == null ? null : (String) fetchData(candidate, linkSource);
+    } else {
+
+      PublishedDocColumnContent columnContent = columnInfo.getContent();
+      final PublishedDocValueSource contentValue = columnContent.getValue();
+      value = contentValue == null ? null : fetchExpandData(expandedData, expandingCount, contentValue);
+      final PublishedDocValueSource linkSource = columnContent.getLink();
+      link = linkSource == null ? null : (String) fetchExpandData(expandedData, expandingCount, linkSource);
+    }
 
     if (link == null || value == null) {
       return value == null ? "" : value;
@@ -60,11 +81,12 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
     }
   }
 
-  public List<Object> buildRow(Candidate candidate, List<PublishedDocColumnDef> columnInfos) {
+  public List<Object> buildRow(
+      Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef,
+      int expandingCount, List<PublishedDocColumnDef> columnInfos) {
     List<Object> candidateData = new ArrayList<>();
     for (PublishedDocColumnDef columnInfo : columnInfos) {
-      //TODO JC Second loop through dependants
-      Object obj = buildCell(candidate, columnInfo);
+      Object obj = buildCell(candidate, expandingColumnDef, expandingCount, columnInfo);
       candidateData.add(obj);
     }
     return candidateData;
@@ -80,15 +102,19 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
 
   @Override
   public int computeNumberOfRowsByCandidate(@NonNull Candidate candidate,
-      @NonNull PublishedDocColumnDef expandingColumnDef) {
+      @Nullable PublishedDocColumnDef expandingColumnDef) {
 
     //Always one row for the candidate
     int nRows = 1;
 
-    final PublishedDocValueSource value = expandingColumnDef.getContent().getValue();
-    Object obj = value == null ? null : fetchData(candidate, value);
-    if (obj != null) {
-      //TODO JC Figure out what it is and if it contributes extra rows
+    //Look at value to check if it has multiple values
+    if (expandingColumnDef != null) {
+      final PublishedDocValueSource value = expandingColumnDef.getContent().getValue();
+      //TODO JC Check for HasMultipleValues?
+      HasMultipleValues obj = value == null ? null : (HasMultipleValues) fetchData(candidate, value);
+      if (obj != null) {
+        nRows += obj.nValues();
+      }
     }
     return nRows;
   }
@@ -96,6 +122,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
   /**
    * Retrieves the data that is the value of this value source corresponding to the given candidate.
    * @param candidate Candidate - only used for field value sources
+   * @param valueSource Source of the data
    * @return the value
    */
   @Nullable

@@ -18,6 +18,7 @@ package org.tctalent.server.request.candidate;
 
 import java.util.List;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.Candidate;
 
 /**
@@ -28,11 +29,13 @@ import org.tctalent.server.model.db.Candidate;
 public interface PublishedDocBuilderService {
 
     //TODO JC This could build more than one row if candidate has multi row data - eg dependents
-    List<Object> buildRow(Candidate candidate, List<PublishedDocColumnDef> columnInfos);
+    List<Object> buildRow(
+        Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef,
+        int expandingCount, List<PublishedDocColumnDef> columnInfos);
 
     List<Object> buildTitle(List<PublishedDocColumnDef> columnInfos);
 
     int computeNumberOfRowsByCandidate(
-        @NonNull Candidate candidate, @NonNull PublishedDocColumnDef expandingColumnDef);
+        @NonNull Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef);
 
 }
