@@ -19,15 +19,15 @@ package org.tctalent.server.service.db;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.MyFirstForm;
-import org.tctalent.server.request.form.MyFirstFormData;
+import org.tctalent.server.model.db.CandidateTravelDocForm;
+import org.tctalent.server.request.form.TravelDocFormData;
 
 /**
  * Manages instances of forms
  *
  * @author John Cameron
  */
-public interface CandidateFormInstanceService {
+public interface TravelDocFormInstanceService {
 
     /**
      * Creates a form instance, or updates any existing instance, for the given candidate.
@@ -36,21 +36,9 @@ public interface CandidateFormInstanceService {
      * @return Updated form instance
      */
     @NonNull
-    MyFirstForm createOrUpdateMyFirstForm(
-        @NonNull Candidate candidate, @NonNull MyFirstFormData request);
+    CandidateTravelDocForm createOrUpdateTravelDocForm(
+        @NonNull Candidate candidate, @NonNull TravelDocFormData request);
 
     @NonNull
-    Optional<MyFirstForm> getMyFirstForm(@NonNull Candidate candidate);
-
-    /**
-     * Copies non-null fields in the given pendingCandidate to the given candidate.
-     * <p/>
-     * This includes CandidateProperties and other linked candidate entities.
-     * @param pendingCandidate Temporary candidate entity containing values set on a
-     *                         Candidate form subclass of CandidateFormInstance
-     * @param candidate Target candidate (typically a live entity) which is populated
-     */
-    void populateCandidateFromPending(
-        @NonNull Candidate pendingCandidate, @NonNull Candidate candidate);
-
+    Optional<CandidateTravelDocForm> getTravelDocForm(@NonNull Candidate candidate);
 }
