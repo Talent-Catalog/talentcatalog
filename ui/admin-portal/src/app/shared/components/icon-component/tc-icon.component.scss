@@ -4,26 +4,18 @@
 
   &.icon-sm, &.icon-sm::ng-deep > i {
     font-size: 0.75rem;
-    margin: 0.3rem;
   }
 
   &.icon-md, &.icon-md::ng-deep > i {
     font-size: 1rem;
-    margin: 0.3rem;
   }
 
   &.icon-lg, &.icon-lg::ng-deep > i {
     font-size: 1.25rem;
-    margin: 0.3rem;
   }
 
   &.icon-xl, &.icon-lg::ng-deep > i {
     font-size: 1.5rem;
-    margin: 0.3rem;
-  }
-
-  &.no-margin::ng-deep > i {
-    margin: 0 !important;
   }
 
   // Color variations

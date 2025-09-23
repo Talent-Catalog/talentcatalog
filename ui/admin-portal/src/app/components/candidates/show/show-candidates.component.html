@@ -259,9 +259,9 @@
           </a>
         </span>
         <a target="_blank" [routerLink]="['/list', targetListId]">
-          <tc-icon size="sm"
-                   color="gray"
-                   ariaLabel="Show list in new tab">
+          <tc-icon [size]="'sm'"
+                   [color]="'gray'"
+                   [ariaLabel]="'Show list in new tab'">
             <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
           </tc-icon>
         </a>
@@ -464,7 +464,11 @@
               </ng-container>
             </th>
             <th *ngIf="isReviewable()">
-              <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
+              <tc-icon [size]="'sm'"
+                       [color]="'gray'"
+                       [ariaLabel]="'Review status'">
+                <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
+              </tc-icon>
             </th>
             <th class="candidate-number-row sortable-column-header" (click)="toggleSort('id')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
@@ -556,9 +560,21 @@
             <td *ngIf="isReviewable()">
               <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
                    (click)="review(candidate)">
-                <i *ngSwitchCase="ReviewStatus.verified" class="fa-solid fa-circle-check"></i>
-                <i *ngSwitchCase="ReviewStatus.rejected" class="fa-solid fa-circle-xmark"></i>
-                <i *ngSwitchCase="ReviewStatus.unverified" class="fa-solid fa-circle-question"></i>
+                <tc-icon [size]="'sm'"
+                         [color]="'success'"
+                         [ariaLabel]="'Verified'">
+                  <i *ngSwitchCase="ReviewStatus.verified" class="fa-solid fa-circle-check"></i>
+                </tc-icon>
+                <tc-icon [size]="'sm'"
+                         [color]="'error'"
+                         [ariaLabel]="'Rejected'">
+                  <i *ngSwitchCase="ReviewStatus.rejected" class="fa-solid fa-circle-xmark"></i>
+                </tc-icon>
+                <tc-icon [size]="'sm'"
+                         [color]="'warning'"
+                         [ariaLabel]="'Unverified'">
+                  <i *ngSwitchCase="ReviewStatus.unverified" class="fa-solid fa-circle-question"></i>
+                </tc-icon>
               </div>
             </td>
             <td>
@@ -566,48 +582,42 @@
               <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Show candidate in new tab'"
-                         [noMargin]="true">
+                         [ariaLabel]="'Show candidate in new tab'">
                   <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
                 </tc-icon>
               </a>
               <a [routerLink]="['/candidate',candidate.candidateNumber]">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Candidate'"
-                         [noMargin]="true">
+                         [ariaLabel]="'Candidate'">
                   <i class="fas fa-user" title="Candidate"></i>
                 </tc-icon>
               </a>
               <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Case (candidate opportunity)'"
-                         [noMargin]="true">
+                         [ariaLabel]="'Case (candidate opportunity)'">
                   <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
                 </tc-icon>
               </a>
               <a *ngIf="isShowStage()" [routerLink]="['/job',this.candidateSource.sfJobOpp.id]">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Job'"
-                         [noMargin]="true">
+                         [ariaLabel]="'Job'">
                   <i class="fa-solid fa-briefcase" title="Job"></i>
                 </tc-icon>
               </a>
               <a target="_blank" [href]="candidate.user.partner.websiteUrl">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Partner: ' + candidate.user.partner.name"
-                         [noMargin]="true">
+                         [ariaLabel]="'Partner: ' + candidate.user.partner.name">
                   <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
                 </tc-icon>
               </a>
               <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Show candidate in Salesforce'"
-                         [noMargin]="true">
+                         [ariaLabel]="'Show candidate in Salesforce'">
                   <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
                 </tc-icon>
               </a>
@@ -616,24 +626,21 @@
                  target="_blank">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Show candidate Google Doc folder'"
-                         [noMargin]="true">
+                         [ariaLabel]="'Show candidate Google Doc folder'">
                   <i class="fab fa-google-drive" title="Show candidate Google Doc folder"></i>
                 </tc-icon>
               </a>
               <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Show candidate one-way video'"
-                         [noMargin]="true">
+                         [ariaLabel]="'Show candidate one-way video'">
                   <i class="fas fa-video" title="Show candidate one-way video"></i>
                 </tc-icon>
               </a>
               <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
                 <tc-icon [size]="'sm'"
                          [color]="'primary'"
-                         [ariaLabel]="'Show candidate LinkedIn page'"
-                         [noMargin]="true">
+                         [ariaLabel]="'Show candidate LinkedIn page'">
                   <i class="fab fa-linkedin" title="Show candidate LinkedIn page"></i>
                 </tc-icon>
               </a>
