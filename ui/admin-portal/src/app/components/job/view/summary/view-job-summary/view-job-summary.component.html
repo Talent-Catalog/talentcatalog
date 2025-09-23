@@ -17,11 +17,11 @@
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>
-<form class="d-flex align-items-center" [formGroup]="form">
+<form class="d-flex align-items-center" [formGroup]="form" [ngClass]="{'background-color-red': highlight}">
 
   <div class="flex-fill" [appReadOnlyInputs]="!editable">
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <span class="paragraph-sm text-color-secondary" [ngClass]="{'alert alert-danger': highlight}">
+      <span class="paragraph-sm text-color-secondary">
         Job Summary
         <app-autosave-status
           [saving]="saving"
