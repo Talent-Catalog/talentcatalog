@@ -42,27 +42,6 @@
       }
     }
 
-    .btn.btn-primary.calendar {
-
-      .fas {
-        color: color(primary, 500);
-      }
-    }
-
-    .btn.btn-accent-1.calendar {
-      .fas {
-        @include text-color-secondary;
-      }
-
-      &:hover {
-        background: color(primary, 500);
-
-        .fas {
-          color: color(core, white);
-        }
-      }
-    }
-
     .form-control {
       @include paragraph-sm;
       flex: 1 1 auto;
