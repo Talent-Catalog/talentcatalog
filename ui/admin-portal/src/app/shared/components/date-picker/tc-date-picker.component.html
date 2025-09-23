@@ -16,7 +16,7 @@
 
 <div class="tc-date-picker">
   <div id="date-container">
-    <tc-button type="plain" (click)="picker.toggle()">
+    <tc-button class="calendar-btn" type="plain" (click)="picker.toggle()">
       <tc-icon color="primary" size="md">
         <i class="fas fa-calendar"></i>
       </tc-icon>
@@ -33,7 +33,7 @@
          [minDate]="minDate"
          [maxDate]="maxDate"
          [disabled]="control.disabled">
-    <tc-button type="plain" (click)="clear()">
+    <tc-button class="clear-btn" type="plain" (click)="clear()">
       <tc-icon color="gray" size="md">
         <i class="fas fa-times"></i>
       </tc-icon>
