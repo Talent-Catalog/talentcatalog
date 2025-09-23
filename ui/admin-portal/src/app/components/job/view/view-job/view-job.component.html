@@ -22,13 +22,23 @@
     {{error}}
   </div>
 
-  <div class="d-flex justify-content-between align-items-center">
-    <div>
+  <div class="d-flex justify-content-between align-items-center gap-3">
+    <div class="flex-fill">
       <p [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6' : !showBreadcrumb}" class="label-md text-color-secondary">
         Job opportunity #{{job.id}}
       </p>
-      <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}
+      <h1>{{job.name}}
       </h1>
+    </div>
+
+    <div *ngIf="canSeeJobDetails() && fromUrl" class="w-50 job-summary-container">
+      <app-view-job-summary
+        [job]="job"
+        [editable]="isEditable()"
+        [nRows]=2
+        [highlight]="currentPrepItemIsSummary()"
+      >
+      </app-view-job-summary>
     </div>
 
     <div class="d-flex align-items-center gap-2">
@@ -101,7 +111,7 @@
 
   <div class="tc-divider"></div>
 
-  <div *ngIf="canSeeJobDetails()">
+  <div *ngIf="canSeeJobDetails() && !fromUrl">
     <app-view-job-summary
       [job]="job"
       [editable]="isEditable()"
