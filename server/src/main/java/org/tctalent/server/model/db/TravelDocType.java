@@ -14,33 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Country} from "./country";
+package org.tctalent.server.model.db;
 
-export interface MyFirstFormData {
-  city?: string;
-  hairColour?: string;
-}
-
-export interface MySecondFormData {
-  city?: string;
-  hairColour?: string;
-}
-
-export enum ItalyCandidateTravelDocType {
-  Passport = 'PASSPORT',
-  NationalId = 'NATIONAL_ID',
-  RefugeeCertificate = 'REFUGEE_CERTIFICATE',
-}
-export interface ItalyCandidateTravelDocFormData {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  gender: string;
-  birthCountry: Country | null;
-  placeOfBirth: string;
-  travelDocType: ItalyCandidateTravelDocType;
-  travelDocNumber: string;
-  travelDocIssuedBy: string;
-  travelDocIssueDate: string;
-  travelDocExpiryDate: string;
+public enum TravelDocType {
+  PASSPORT,
+  NATIONAL_ID,
+  REFUGEE_CERTIFICATE
 }

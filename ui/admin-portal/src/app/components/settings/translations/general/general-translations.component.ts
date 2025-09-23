@@ -912,5 +912,31 @@ const ALL_FIELDS = {
         "CANDIDATE_RECRUITING": null,
         "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
       }
+  },
+  "TRAVELDOC": {
+    "MISMATCH": {
+      "TITLE": null,
+      "DESCRIPTION": null,
+      "INSTRUCTION": null
+    },
+    "BUTTON": {
+      "UPDATEPROFILE": null,
+      "SUBMIT": null
+    },
+    "LABEL": {
+      "BIRTHCOUNTRY": null,
+      "PLACEOFBIRTH": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "DOCISSUEDBY": null,
+      "ISSUEDATE": null,
+      "EXPIRYDATE": null
+    },
+    "OPTION": {
+      "SELECTCOUNTRY": null,
+      "PASSPORT": null,
+      "NATIONALID": null,
+      "REFUGEE": null
+    }
   }
 }
