@@ -182,7 +182,10 @@
         <ng-template #rt let-r="result" let-t="term">
           <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
         </ng-template>
-        <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
+        <div *ngIf=adding class="small">
+          <i class="fas fa-spinner fa-spin me-1" ></i>
+          Adding candidate to list
+        </div>
       </div>
 
       <!-- Search within results -->
