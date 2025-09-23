@@ -69,6 +69,8 @@ import {TcAccordionComponent} from './components/accordion/tc-accordion.componen
 import {
   TcAccordionItemComponent
 } from './components/accordion/accordion-item/tc-accordion-item.component';
+import {TcCardComponent} from './components/card/tc-card.component';
+import {TcCardHeaderComponent} from './components/card/card-header/tc-card-header.component';
 import {TcLoadingComponent} from './components/loading/tc-loading.component';
 
 @NgModule({
@@ -101,6 +103,8 @@ import {TcLoadingComponent} from './components/loading/tc-loading.component';
     TcIconComponent,
     TcAccordionComponent,
     TcAccordionItemComponent,
+    TcCardComponent,
+    TcCardHeaderComponent,
     TcLoadingComponent
   ],
   imports: [
@@ -141,6 +145,8 @@ import {TcLoadingComponent} from './components/loading/tc-loading.component';
     TcIconComponent,
     TcAccordionComponent,
     TcAccordionItemComponent,
+    TcCardComponent,
+    TcCardHeaderComponent,
     TcLoadingComponent
   ]
 })

@@ -13,6 +13,7 @@ import {
 import {TaskAssignment} from "../../../../../../../model/task-assignment";
 import {CandidateFormService} from "../../../../../../../services/candidate-form.service";
 import {ICandidateFormComponent} from "../../../../../../../model/candidate-form";
+import {Candidate} from "../../../../../../../model/candidate";
 
 /**
  * This component loads and displays the form associated with the input task assignment.
@@ -30,6 +31,7 @@ import {ICandidateFormComponent} from "../../../../../../../model/candidate-form
 })
 export class ViewFormTaskComponent implements OnChanges {
   @Input() taskAssignment: TaskAssignment;
+  @Input() candidate: Candidate;
 
   //Output event supplying the submitted data
   @Output() taskCompleted = new EventEmitter<TaskAssignment>();
@@ -85,7 +87,7 @@ export class ViewFormTaskComponent implements OnChanges {
   load<C extends ICandidateFormComponent>(cmp: Type<C>){
     this.vc.clear();
     const ref = this.vc.createComponent(cmp);
-
+    ref.setInput('candidate', this.candidate);
     //Subscribe to submitted events
     ref.instance.submitted.subscribe(() => this.onSubmitted());
 
