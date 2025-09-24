@@ -14,38 +14,23 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
+<tc-modal [title]="title" (onAction)="close()"
+          [disableAction]="form.pristine || form.invalid"
+          [showCancel]="showCancel">
 
   <div *ngIf="instructions">{{instructions}}</div>
 
-</div>
-
-<div class="modal-body">
   <form [formGroup]="form">
-    <div class="mb-3">
-      <label class="form-label" for="name">Name of link</label>
-      <input id="name" type="text" class="form-control" formControlName="name" required>
-    </div>
-    <div class="mb-3">
-      <label class="form-label" for="url">URL of link</label>
-      <input id="url" type="text" class="form-control" formControlName="url" required>
-    </div>
+    <tc-fieldset>
+      <tc-field>
+        <tc-label for="name">Name of link</tc-label>
+        <tc-input id="name" type="text" formControlName="name" required></tc-input>
+      </tc-field>
+      <tc-field>
+        <tc-label for="url">URL of link</tc-label>
+        <tc-input id="url" type="text" formControlName="url" required></tc-input>
+      </tc-field>
+    </tc-fieldset>
   </form>
-</div>
 
-<div class="modal-footer">
-  <button *ngIf="showCancel" type="button" class="btn btn-accent-2" (click)="dismiss()">
-    Cancel
-  </button>
-  <button type="button"
-          class="btn btn-primary"
-          (click)="close()"
-          [disabled]="form.pristine || form.invalid"
-  >
-    Save
-  </button>
-</div>
+</tc-modal>
