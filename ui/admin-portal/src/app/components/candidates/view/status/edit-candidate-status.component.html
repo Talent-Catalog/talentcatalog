@@ -14,11 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-  <h4 class="modal-title">Edit Candidate Status</h4>
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
-</div>
-<div class="modal-body">
+<tc-modal [title]="'Edit Candidate Status'"
+          [actionText]="'Save'"
+          (onAction)="onSave()"
+          [showCancel]="true">
 
   <div *ngIf="text">
     {{text}}
@@ -30,10 +29,5 @@
     >
     </app-candidate-status-selector>
   </div>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-success"
-          (click)="onSave()">Save</button>
-  <button type="button" class="btn btn-secondary"
-          (click)="cancel()">Cancel</button>
-</div>
+
+</tc-modal>
