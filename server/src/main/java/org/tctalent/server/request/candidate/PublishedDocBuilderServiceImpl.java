@@ -16,6 +16,9 @@
 
 package org.tctalent.server.request.candidate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.HasMultipleRows;
+import org.tctalent.server.model.db.JsonRows;
 import org.tctalent.server.security.CandidateTokenProvider;
 
 /**
@@ -60,9 +64,10 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
         } else {
             HasMultipleRows expandData = getExpandingData(candidate, expandingColumnDef);
             if (expandData != null) {
-                value = valueSource == null ? null : expandData.get(expandingCount, valueSource);
+                int dataIndex = expandingCount - 1;
+                value = valueSource == null ? null : expandData.get(dataIndex, valueSource.getFieldName());
                 link =
-                    linkSource == null ? null : (String) expandData.get(expandingCount, linkSource);
+                    linkSource == null ? null : (String) expandData.get(dataIndex, linkSource.getFieldName());
             }
         }
 
@@ -194,8 +199,16 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
             final PublishedDocValueSource value = columnDef.getContent().getValue();
             if (value != null) {
                 final Object o = fetchData(candidate, value);
-                if (o instanceof HasMultipleRows) {
-                    obj = (HasMultipleRows) o;
+                if (o instanceof String stringVal) {
+
+                    //TODO JC Get shared mapper
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        JsonNode jsonNode = mapper.readTree(stringVal);
+                        obj = new JsonRows(jsonNode);
+                    } catch (JsonProcessingException e) {
+                        //Not JSON
+                    }
                 }
             }
         }

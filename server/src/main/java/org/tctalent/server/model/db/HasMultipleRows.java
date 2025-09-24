@@ -16,7 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.request.candidate.PublishedDocValueSource;
 
@@ -36,13 +35,13 @@ public interface HasMultipleRows {
     int nRows();
 
     /**
-     * Gets the value specified by source from the n'th row (base 0)
+     * Gets the value specified by name from the n'th row (base 0)
      * @param n Index
-     * @param source Specifies which element of the row to fetch
+     * @param name Specifies which element of the row to fetch
      *
-     * @return Data - can be null if there is no such data or if the index or source is not
+     * @return Data - can be null if there is no such data or if the index or name is not
      * recognized.
      */
     @Nullable
-    Object get(int n, @NonNull PublishedDocValueSource source);
+    Object get(int n, String name);
 }

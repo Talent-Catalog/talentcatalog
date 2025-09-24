@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2025 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+package org.tctalent.server.model.db;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class JsonRowsTest {
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonRows jsonRows;
+
+    @BeforeEach
+    void setUp() throws JsonProcessingException {
+        String json = "[{\"name\":\"John\"},{\"name\":\"Jane\"},{\"name\":\"Jill\"}]";
+
+        JsonNode jsonNode = objectMapper.readTree(json);
+
+        jsonRows = new JsonRows(jsonNode);
+    }
+
+    @Test
+    void nRows() {
+        assertEquals(3, jsonRows.nRows());
+    }
+
+    @Test
+    void get() {
+        final Object o = jsonRows.get(1, "name");
+        Assertions.assertInstanceOf(TextNode.class, o);
+        TextNode textNode = (TextNode) o;
+        assertEquals("Jane", textNode.asText() );
+
+    }
+}
