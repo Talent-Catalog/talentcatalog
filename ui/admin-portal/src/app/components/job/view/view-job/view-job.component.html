@@ -46,55 +46,53 @@
       </app-view-job-summary>
     </div>
 
-    <div class="d-flex align-items-center gap-3">
-      <tc-dropdown placement="bottom-end">
-        <tc-dropdown-button type="primary">
-          <i class="fas fa-angle-down"></i>
-        </tc-dropdown-button>
-        <tc-dropdown-menu>
-          <tc-dropdown-item *ngIf="!showBreadcrumb"
-                            [routerLink]="['/job',job.id]"
-                            title="Open">
-            <tc-icon color="primary" size="md">
-              <i class="fas fa-expand"></i>
-            </tc-icon>
-            Open Job
-          </tc-dropdown-item>
-          <tc-dropdown-item *ngIf="!showBreadcrumb"
-                            [routerLink]="['/job',job.id]"
-                            title="Job (Same as Open)">
-            <tc-icon size="md">
-              <i class="fa-solid fa-briefcase"></i>
-            </tc-icon>
-            View Job (same as Open)
-          </tc-dropdown-item>
-          <tc-dropdown-item *ngIf="job.submissionList && canSeeJobDetails()"
-                            [routerLink]="['/list',job.submissionList.id]"
-                            title="Submission list">
-            <tc-icon size="md">
-              <i class="fas fa-rectangle-list"></i>
-            </tc-icon>
-            Submission list
-          </tc-dropdown-item>
-          <tc-dropdown-item *ngIf="job.sfId && canAccessSalesforce()"
-                            [href]="getSalesforceJobLink(job.sfId)"
-                            title="Show job in Salesforce">
-            <tc-icon size="md">
-              <i class="fab fa-salesforce"></i>
-            </tc-icon>
-            View job in Salesforce
-          </tc-dropdown-item>
-          <tc-dropdown-item *ngIf="job.submissionList?.folderjdlink && canSeeJobDetails()"
-                            [href]="job.submissionList.folderjdlink"
-                            title="Show job's Google Doc folder">
-            <tc-icon size="md">
-              <i class="fab fa-google-drive"></i>
-            </tc-icon>
-            View Google Doc folder
-          </tc-dropdown-item>
-        </tc-dropdown-menu>
-      </tc-dropdown>
-    </div>
+    <tc-dropdown placement="bottom-end">
+      <tc-dropdown-button type="primary">
+        <i class="fas fa-angle-down"></i>
+      </tc-dropdown-button>
+      <tc-dropdown-menu>
+        <tc-dropdown-item *ngIf="!showBreadcrumb"
+                          [routerLink]="['/job',job.id]"
+                          title="Open">
+          <tc-icon color="primary" size="md">
+            <i class="fas fa-expand"></i>
+          </tc-icon>
+          Open Job
+        </tc-dropdown-item>
+        <tc-dropdown-item *ngIf="!showBreadcrumb"
+                          [routerLink]="['/job',job.id]"
+                          title="Job (Same as Open)">
+          <tc-icon size="md">
+            <i class="fa-solid fa-briefcase"></i>
+          </tc-icon>
+          View Job (same as Open)
+        </tc-dropdown-item>
+        <tc-dropdown-item *ngIf="job.submissionList && canSeeJobDetails()"
+                          [routerLink]="['/list',job.submissionList.id]"
+                          title="Submission list">
+          <tc-icon size="md">
+            <i class="fas fa-rectangle-list"></i>
+          </tc-icon>
+          Submission list
+        </tc-dropdown-item>
+        <tc-dropdown-item *ngIf="job.sfId && canAccessSalesforce()"
+                          [href]="getSalesforceJobLink(job.sfId)"
+                          title="Show job in Salesforce">
+          <tc-icon size="md">
+            <i class="fab fa-salesforce"></i>
+          </tc-icon>
+          View job in Salesforce
+        </tc-dropdown-item>
+        <tc-dropdown-item *ngIf="job.submissionList?.folderjdlink && canSeeJobDetails()"
+                          [href]="job.submissionList.folderjdlink"
+                          title="Show job's Google Doc folder">
+          <tc-icon size="md">
+            <i class="fab fa-google-drive"></i>
+          </tc-icon>
+          View Google Doc folder
+        </tc-dropdown-item>
+      </tc-dropdown-menu>
+    </tc-dropdown>
   </div>
 
   <div class="tc-divider"></div>
