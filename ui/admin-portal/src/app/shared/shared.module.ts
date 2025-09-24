@@ -72,6 +72,7 @@ import {
 } from './components/accordion/accordion-item/tc-accordion-item.component';
 import {TcCardComponent} from './components/card/tc-card.component';
 import {TcCardHeaderComponent} from './components/card/card-header/tc-card-header.component';
+import {TcLoadingComponent} from './components/loading/tc-loading.component';
 
 @NgModule({
   declarations: [
@@ -104,7 +105,8 @@ import {TcCardHeaderComponent} from './components/card/card-header/tc-card-heade
     TcAccordionComponent,
     TcAccordionItemComponent,
     TcCardComponent,
-    TcCardHeaderComponent
+    TcCardHeaderComponent,
+    TcLoadingComponent
   ],
   imports: [
     CommonModule,
@@ -146,7 +148,8 @@ import {TcCardHeaderComponent} from './components/card/card-header/tc-card-heade
     TcAccordionComponent,
     TcAccordionItemComponent,
     TcCardComponent,
-    TcCardHeaderComponent
+    TcCardHeaderComponent,
+    TcLoadingComponent
   ]
 })
 export class SharedModule { }
