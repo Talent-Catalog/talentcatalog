@@ -65,7 +65,7 @@ public class ServicesAdminController {
       @RequestParam("file") MultipartFile file) {
     try {
       // Call the service to import coupons
-      serviceFor(provider, serviceCode).importInventory(file, serviceCode);
+      serviceFor(provider, serviceCode).importInventory(file);
 
       // Log success message
       LogBuilder.builder(log)
@@ -97,7 +97,7 @@ public class ServicesAdminController {
       @PathVariable String serviceCode,
       @PathVariable("candidateId") Long candidateId) {
     return serviceFor(provider, serviceCode)
-        .getResourcesForCandidate(candidateId, serviceCode)
+        .getResourcesForCandidate(candidateId)
         .stream().map(ServiceResourceMapper::toDto)
         .toList();
   }
@@ -144,7 +144,7 @@ public class ServicesAdminController {
         .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
     var a = serviceFor(provider, serviceCode)
-        .assignToCandidate(candidateId, serviceCode, user);
+        .assignToCandidate(candidateId, user);
 
     return ServiceAssignmentMapper.toDto(a);
   }
@@ -158,7 +158,7 @@ public class ServicesAdminController {
         .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
     return serviceFor(provider, serviceCode)
-        .assignToList(listId, serviceCode, user)
+        .assignToList(listId, user)
         .stream().map(ServiceAssignmentMapper::toDto)
         .toList();
   }

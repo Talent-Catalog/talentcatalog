@@ -43,47 +43,42 @@ public interface CandidateAssistanceService {
   /**
    * Import inventory from a file. The file format is provider-specific.
    * @param file the file to import
-   * @param serviceCode the service code (e.g., "PROCTORED_TEST")
    * @throws ImportFailedException if the import fails
    */
-  void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException;
+  void importInventory(MultipartFile file) throws ImportFailedException;
 
   /**
-   * Assign a service to a candidate.
+   * Assign a service to a candidate by candidate ID.
    * @param candidateId the candidate ID
-   * @param serviceCode the service code (e.g., "PROCTORED_TEST")
    * @param actor the user performing the assignment
    * @return the service assignment
    */
-  ServiceAssignment assignToCandidate(Long candidateId, String serviceCode, User actor);
+  ServiceAssignment assignToCandidate(Long candidateId, User actor);
 
   /**
    * Assign a service to all candidates in a saved list.
    * @param listId the saved list ID
-   * @param serviceCode the service code (e.g., "PROCTORED_TEST")
    * @param actor the user performing the assignment
    * @return the list of service assignments
    */
-  List<ServiceAssignment> assignToList(Long listId, String serviceCode, User actor);
+  List<ServiceAssignment> assignToList(Long listId, User actor);
 
   /**
    * Reassign a service for a candidate, e.g., if the original resource was invalid or expired.
    * @param candidateNumber the candidate number
-   * @param serviceCode the service code (e.g., "PROCTORED_TEST")
    * @param actor the user performing the reassignment
    * @return the new service assignment
    */
-  ServiceAssignment reassignForCandidate(String candidateNumber, String serviceCode, User actor);
+  ServiceAssignment reassignForCandidate(String candidateNumber, User actor);
 
   // READ
 
   /**
    * Get all assignments for a candidate and service code.
    * @param candidateId the candidate ID
-   * @param serviceCode the service code (e.g., "PROCTORED_TEST")
    * @return the list of service assignments
    */
-  List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode);
+  List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId);
 
   /**
    * Get all available (unassigned) resources for this provider and service.
@@ -94,10 +89,9 @@ public interface CandidateAssistanceService {
   /**
    * Get all resources assigned to a candidate for a specific service.
    * @param candidateId the candidate ID
-   * @param serviceCode the service code (e.g., "PROCTORED_TEST")
    * @return the list of service resources assigned to the candidate
    */
-  List<ServiceResource> getResourcesForCandidate(Long candidateId, String serviceCode);
+  List<ServiceResource> getResourcesForCandidate(Long candidateId);
 
   /**
    * Get a specific resource by its unique resource code.
@@ -116,7 +110,7 @@ public interface CandidateAssistanceService {
   // COUNT
 
   /**
-   * Count of all resources for this provider and service.
+   * Count of all resources for this provider.
    * @return the total count of resources
    */
   long countAvailableForProvider();

@@ -64,22 +64,22 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
   @Override
   @Transactional
-  public void importInventory(MultipartFile file, String serviceCode) throws ImportFailedException {
+  public void importInventory(MultipartFile file) throws ImportFailedException {
     var importer = importer();
     if (importer == null) {
       throw new ImportFailedException("Import not supported for " + provider());
     }
-    importer.importFile(file, serviceCode);
+    importer.importFile(file, serviceCode().name());
   }
 
   @Override
   @Transactional
-  public ServiceAssignment assignToCandidate(Long candidateId, String serviceCode, User user) {
-    var assignments = getAssignmentsForCandidate(candidateId, serviceCode);
+  public ServiceAssignment assignToCandidate(Long candidateId, User user) {
+    var assignments = getAssignmentsForCandidate(candidateId);
 
     for (ServiceAssignment a : assignments) {
       if (a.getStatus().equals(AssignmentStatus.ASSIGNED)) {
-        throw new EntityExistsException(serviceCode + " resources", "for this candidate");
+        throw new EntityExistsException(serviceCode() + " resources", "for this candidate");
       }
     }
 
@@ -88,7 +88,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
   @Override
   @Transactional
-  public ServiceAssignment reassignForCandidate(String candidateNumber, String serviceCode, User user)
+  public ServiceAssignment reassignForCandidate(String candidateNumber, User user)
       throws NoSuchObjectException {
 
     return assignmentEngine.reassign(allocator(), candidateNumber, user);
@@ -96,7 +96,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
   @Override
   @Transactional
-  public List<ServiceAssignment> assignToList(Long listId, String serviceCode, User user) {
+  public List<ServiceAssignment> assignToList(Long listId, User user) {
     var savedList = savedListService.get(listId);
     var candidates = savedList.getCandidates();
 
@@ -105,19 +105,19 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
     if (availableResources.isEmpty() || candidates.size() > availableResources.size()) {
       throw new NoSuchObjectException(
-          "There are not enough available " + serviceCode + " resources to assign to all candidates "
+          "There are not enough available " + serviceCode() + " resources to assign to all candidates "
               + "in the list. Please import more from the settings page.");
     }
 
     List<ServiceAssignment> done = new ArrayList<>();
     for (Candidate candidate : candidates) {
       boolean hasSentCoupon = assignmentRepository
-          .findByCandidateAndProviderAndService(candidate.getId(), provider(), serviceCode)
+          .findByCandidateAndProviderAndService(candidate.getId(), provider(), serviceCode().name())
           .stream()
           .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
 
       if (!hasSentCoupon) {
-        done.add(assignToCandidate(candidate.getId(), serviceCode, user));
+        done.add(assignToCandidate(candidate.getId(), user));
       }
     }
     return done;
@@ -125,9 +125,9 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
   @Override
   @Transactional(readOnly = true)
-  public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId, String serviceCode) {
+  public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId) {
     return assignmentRepository
-        .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode)
+        .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode().name())
         .stream()
         .map(ServiceAssignmentMapper::toModel)
         .toList();
@@ -135,8 +135,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
   @Override
   @Transactional(readOnly = true)
-  public List<ServiceResource> getResourcesForCandidate(Long candidateId, String serviceCode) {
-    var assignments = getAssignmentsForCandidate(candidateId, serviceCode);
+  public List<ServiceResource> getResourcesForCandidate(Long candidateId) {
+    var assignments = getAssignmentsForCandidate(candidateId);
     return assignments.stream()
         .map(ServiceAssignment::getResource)
         .toList();
