@@ -41,11 +41,11 @@
       </app-view-job-summary>
     </div>
 
-    <div class="d-flex align-items-center gap-2">
-      <tc-button type="outline" (click)="doToggleStarred()">
-        <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
-        <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
-      </tc-button>
+    <div class="d-flex align-items-center gap-3">
+      <tc-icon type="button" color="warning" (click)="doToggleStarred()">
+        <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
+        <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
+      </tc-icon>
 
       <tc-dropdown placement="bottom-end">
         <tc-dropdown-button type="primary">

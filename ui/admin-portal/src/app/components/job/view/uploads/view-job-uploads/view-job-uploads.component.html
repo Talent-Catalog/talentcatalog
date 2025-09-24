@@ -34,19 +34,21 @@
         <p class="small fst-italic">If applicable upload or link to a job description document.</p>
         <div class="file-link">
           <div *ngIf="!job.submissionList?.fileJdLink" class="form-control-plaintext">
-            <p class="text-accent-3 mb-0 fw-bolder">No File Uploaded</p>
+            <p class="text-color-caption mb-0 fw-bolder">No File Uploaded</p>
           </div>
           <div *ngIf="job.submissionList?.fileJdLink" class="form-control-plaintext">
-            <a class="link-info" target="_blank" [href]="job.submissionList.fileJdLink">
+            <a target="_blank" [href]="job.submissionList.fileJdLink">
               {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
           </div>
         </div>
       </div>
       <div class="col-2 col-sm-auto" *ngIf="editable">
-          <tc-button title="Enter/change a link to the document" class="me-2" type="secondary" (click)="editJDLink()">
+          <tc-button title="Enter/change a link to the document" class="me-2"
+                     type="secondary" (click)="editJDLink()" size="sm">
             Add/edit link <i class="fa-solid fa-link"></i>
           </tc-button>
-          <tc-button title="Upload the document from your computer" type="primary" (click)="uploadJD()">
+          <tc-button title="Upload the document from your computer"
+                     type="primary" (click)="uploadJD()" size="sm">
             Upload file <i class="fa-solid fa-upload"></i>
           </tc-button>
         </div>
@@ -63,19 +65,21 @@
         <p class="small fst-italic">If applicable upload or link to an interview guidance document. A link to this document will appear on the candidate's portal on the relevant opportunity page.</p>
         <div class="file-link">
           <div *ngIf="!job.submissionList?.fileInterviewGuidanceLink" class="form-control-plaintext">
-            <p class="text-accent-3 mb-0 fw-bolder">No File Uploaded</p>
+            <p class="text-color-caption mb-0 fw-bolder">No File Uploaded</p>
           </div>
           <div *ngIf="job.submissionList?.fileInterviewGuidanceLink" class="form-control-plaintext">
-            <a class="link-info" target="_blank" [href]="job.submissionList.fileInterviewGuidanceLink">
+            <a target="_blank" [href]="job.submissionList.fileInterviewGuidanceLink">
               {{job.submissionList.fileInterviewGuidanceName ? job.submissionList.fileInterviewGuidanceName : job.submissionList.fileInterviewGuidanceLink}}</a>
           </div>
         </div>
       </div>
       <div class="col-2 col-sm-auto" *ngIf="editable">
-        <tc-button title="Enter/change a link to the document" class="me-2" type="secondary" (click)="editInterviewGuidanceLink()">
+        <tc-button title="Enter/change a link to the document" class="me-2"
+                   type="secondary" (click)="editInterviewGuidanceLink()" size="sm">
           Add/edit link <i class="fa-solid fa-link"></i>
         </tc-button>
-        <tc-button title="Upload the document from your computer" type="primary" (click)="uploadInterviewGuidance()">
+        <tc-button title="Upload the document from your computer"
+                   type="primary" (click)="uploadInterviewGuidance()" size="sm">
           Upload file <i class="fa-solid fa-upload"></i>
         </tc-button>
       </div>
@@ -92,19 +96,21 @@
         <p class="small fst-italic">If applicable upload or link to an signed MOU pdf.</p>
         <div class="file-link">
           <div *ngIf="!job.submissionList?.fileMouLink" class="form-control-plaintext">
-            <p class="text-accent-3 mb-0 fw-bolder">No File Uploaded</p>
+            <p class="text-color-caption mb-0 fw-bolder">No File Uploaded</p>
           </div>
           <div *ngIf="job.submissionList?.fileMouLink" class="form-control-plaintext">
-            <a class="link-info" target="_blank" [href]="job.submissionList.fileMouLink">
+            <a target="_blank" [href]="job.submissionList.fileMouLink">
               {{job.submissionList.fileMouName ? job.submissionList.fileMouName : job.submissionList.fileMouLink}}</a>
           </div>
         </div>
       </div>
       <div class="col-2 col-sm-auto" *ngIf="editable">
-        <tc-button title="Enter/change a link to the document" class="me-2" type="secondary" (click)="editMouLink()">
+        <tc-button title="Enter/change a link to the document" class="me-2"
+                   type="secondary" (click)="editMouLink()" size="sm">
           Add/edit link <i class="fa-solid fa-link"></i>
         </tc-button>
-        <tc-button title="Upload the document from your computer" type="primary" (click)="uploadMou()">
+        <tc-button title="Upload the document from your computer"
+                   type="primary" (click)="uploadMou()" size="sm">
           Upload file <i class="fa-solid fa-upload"></i>
         </tc-button>
       </div>
