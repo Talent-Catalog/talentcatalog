@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 /**
  * @component DescriptionListComponent
@@ -7,8 +7,8 @@ import { Component, Input } from '@angular/core';
  * direction - Layout direction: "row" (side by side) or "column" (stacked)
  * @description
  * A reusable wrapper for semantic HTML `<dl>` elements, providing a consistent layout
- * for displaying pairs of terms (`tc-description-term`) and details (`tc-description-details`).
- * Works as the parent container in the description list system.
+ * for pairs of terms (`<dt>`) and details (`<dd>`).
+ * Works as the parent container for the `tc-description-item` components.
  *
  * **Inputs**
  *  - `direction: 'row' | 'column'` — Layout direction of the list:
@@ -17,30 +17,30 @@ import { Component, Input } from '@angular/core';
  *
  * **Features**
  * - Wraps the native `<dl>` for semantic, accessible description lists
- * - Works together with:
- *   - `tc-description-term` (for `<dt>`)
- *   - `tc-description-details` (for `<dd>`)
+ * - Works with: `tc-description-item` (containing `<dt>` & `<dd>`)
  * - Provides consistent styling through `.tc-description-list`
 
  *
  * @example
  * ```html
- * <!-- Column layout (default) -->
+ * <!-- Column layout -->
  * <tc-description-list direction="column">
- *   <tc-description-term>Email</tc-description-term>
- *   <tc-description-details>user@example.com</tc-description-details>
- *
- *   <tc-description-term>Username</tc-description-term>
- *   <tc-description-details>my-username</tc-description-details>
+ *   <tc-description-item label="Email">
+ *     test@gmail.com
+ *   </tc-description-item>
+ *  <tc-description-item label="Address">
+ *     123 Sesame Street
+ *   </tc-description-item>
  * </tc-description-list>
  *
- * <!-- Row layout with custom class -->
+ * <!-- Row layout (default) with icons -->
  * <tc-description-list direction="row">
- *   <tc-description-term>Country</tc-description-term>
- *   <tc-description-details>Australia</tc-description-details>
- *
- *   <tc-description-term>Employer</tc-description-term>
- *   <tc-description-details><u>Blue Mountains Highway Motel</u></tc-description-details>
+ *   <tc-description-item label="Country" icon="fas fa-globe">
+ *     Australia
+*     </tc-description-item>
+ *   <tc-description-item label="Employer" icon="fa-solid fa-building">
+ *     Google
+*     </tc-description-item>
  * </tc-description-list>
  * ```
  */
