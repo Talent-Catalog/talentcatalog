@@ -73,6 +73,8 @@ import {
 import {TcCardComponent} from './components/card/tc-card.component';
 import {TcCardHeaderComponent} from './components/card/card-header/tc-card-header.component';
 import {TcLoadingComponent} from './components/loading/tc-loading.component';
+import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -106,7 +108,8 @@ import {TcLoadingComponent} from './components/loading/tc-loading.component';
     TcAccordionItemComponent,
     TcCardComponent,
     TcCardHeaderComponent,
-    TcLoadingComponent
+    TcLoadingComponent,
+    TcDatePickerComponent
   ],
   imports: [
     CommonModule,
@@ -115,6 +118,9 @@ import {TcLoadingComponent} from './components/loading/tc-loading.component';
     NgbAlert,
     NgbDropdownModule,
     RouterLink,
+    NgbInputDatepicker,
+    ReactiveFormsModule,
+    FormsModule,
     NgbInputDatepicker,
     NgbTypeahead
   ],
@@ -149,7 +155,8 @@ import {TcLoadingComponent} from './components/loading/tc-loading.component';
     TcAccordionItemComponent,
     TcCardComponent,
     TcCardHeaderComponent,
-    TcLoadingComponent
+    TcLoadingComponent,
+    TcDatePickerComponent
   ]
 })
 export class SharedModule { }
