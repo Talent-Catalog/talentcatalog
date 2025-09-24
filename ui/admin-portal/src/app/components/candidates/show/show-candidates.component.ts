@@ -1259,7 +1259,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     showReport.componentInstance.showCancel = false;
     showReport.componentInstance.message = "Paste the link where you want";
     showReport.componentInstance.message = "Paste the link (" + text + ") where you want";
-
   }
 
   addCandidateToList(candidate: Candidate) {
