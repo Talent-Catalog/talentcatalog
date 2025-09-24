@@ -83,7 +83,7 @@ public class DatabaseConfiguration {
                 .packages(
                         "org.tctalent.server.service.db",
                         "org.tctalent.server.model.db",
-                        "org.tctalent.server.candidateservices.domain.persistence"
+                        "org.tctalent.server.casi.domain.persistence"
                 )
                 .properties(jpaProperties)
                 .build();
