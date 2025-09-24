@@ -16,6 +16,7 @@ import {TcAccordionItemComponent} from "./accordion-item/tc-accordion-item.compo
  * **Inputs**
  * - allOpen: if true initializes accordion with all panels opened, defaults to false.
  * - firstOpen: if true initializes accordion with first panel opened, defaults to false.
+ * - showOpenCloseAll: if true displays a button which toggles all panels to open/close.
  *
  *
  * @example
@@ -61,6 +62,8 @@ export class TcAccordionComponent implements AfterContentInit {
   @Input() allOpen = false;
   /** Initialise with first panel opened - default false */
   @Input() firstOpen = false;
+  /** Display the open all and close all panel buttons - default true */
+  @Input() showOpenCloseAll: boolean = true;
 
   openIndexes: Set<number> = new Set();
 
@@ -86,5 +89,21 @@ export class TcAccordionComponent implements AfterContentInit {
 
   isOpen(index: number): boolean {
     return this.openIndexes.has(index);
+  }
+
+  toggleAll() {
+    if (this.openIndexes.size === this.items.length) {
+      this.closeAll();
+    } else {
+      this.openAll();
+    }
+  }
+
+  openAll() {
+    this.items.forEach((item) => this.openIndexes.add(item.index));
+  }
+
+  closeAll() {
+    this.openIndexes.clear();
   }
 }
