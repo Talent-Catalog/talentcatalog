@@ -127,7 +127,7 @@ Create `UdemyCandidateService.java` in `application/providers/udemy/` that exten
 and override provider(), serviceCode(), allocator(), and optionally importer().
 
 ```java
-// application/providers/pearson/PearsonService.java
+// application/providers/udemy/UdemyService.java
 @Service
 public class UdemyService extends AbstractCandidateService {
   private final ResourceAllocator udemyAllocator;
@@ -140,8 +140,8 @@ public class UdemyService extends AbstractCandidateService {
                       @Qualifier("udemyCouponImporter") FileInventoryImporter importer,
                       @Qualifier("udemyCourseAllocator") ResourceAllocator allocator) {
     super(aRepo, rRepo, engine, lists);
-    this.pearsonImporter = importer;
-    this.pearsonAllocator = allocator;
+    this.udemyImporter = importer;
+    this.udemyAllocator = allocator;
   }
 
   @Override protected String provider() { return "UDEMY"; }
