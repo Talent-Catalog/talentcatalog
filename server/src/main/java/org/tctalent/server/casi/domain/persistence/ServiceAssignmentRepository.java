@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
+import org.tctalent.server.casi.domain.model.ServiceCode;
 
 public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssignmentEntity, Long> {
 
@@ -56,7 +57,7 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
   List<ServiceAssignmentEntity> findByCandidateAndProviderAndService(
       @Param("candidateId") Long candidateId,
       @Param("provider") String provider,
-      @Param("serviceCode") String serviceCode);
+      @Param("serviceCode") ServiceCode serviceCode);
 
 
   @Query("""

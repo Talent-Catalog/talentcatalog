@@ -38,7 +38,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
     limit 1
     """, nativeQuery = true)
   ServiceResourceEntity lockNextAvailable(@Param("provider") String provider,
-      @Param("serviceCode") String serviceCode);
+      @Param("serviceCode") ServiceCode serviceCode);
 
   List<ServiceResourceEntity> findByProviderAndServiceCodeAndStatus(
       String provider, ServiceCode serviceCode, ResourceStatus status);

@@ -19,6 +19,7 @@ package org.tctalent.server.casi.core.allocators;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
+import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
@@ -31,7 +32,7 @@ public class InventoryAllocator implements ResourceAllocator {
 
   private final ServiceResourceRepository resources;
   private final String provider;
-  private final String serviceCode;
+  private final ServiceCode serviceCode;
 
   @Override
   @Transactional
@@ -55,7 +56,7 @@ public class InventoryAllocator implements ResourceAllocator {
   }
 
   @Override
-  public String getServiceCode() {
+  public ServiceCode getServiceCode() {
     return serviceCode;
   }
 }

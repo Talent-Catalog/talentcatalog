@@ -16,11 +16,12 @@
 
 package org.tctalent.server.casi.core.allocators;
 
+import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.model.db.Candidate;
 
 public interface ResourceAllocator {
   ServiceResource allocateFor(Candidate candidate);
   String getProvider();
-  String getServiceCode();
+  ServiceCode getServiceCode();
 }

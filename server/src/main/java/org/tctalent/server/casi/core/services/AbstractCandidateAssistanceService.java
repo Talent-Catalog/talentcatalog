@@ -112,7 +112,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     List<ServiceAssignment> done = new ArrayList<>();
     for (Candidate candidate : candidates) {
       boolean hasSentCoupon = assignmentRepository
-          .findByCandidateAndProviderAndService(candidate.getId(), provider(), serviceCode().name())
+          .findByCandidateAndProviderAndService(candidate.getId(), provider(), serviceCode())
           .stream()
           .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
 
@@ -127,7 +127,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   @Transactional(readOnly = true)
   public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId) {
     return assignmentRepository
-        .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode().name())
+        .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode())
         .stream()
         .map(ServiceAssignmentMapper::toModel)
         .toList();

@@ -29,12 +29,12 @@ public class AllocatorsConfig {
 
   @Bean("duolingoNonProctoredAllocator")
   public ResourceAllocator duolingoNonProctoredAllocator(ServiceResourceRepository repo) {
-    return new InventoryAllocator(repo, "DUOLINGO", ServiceCode.TEST_NON_PROCTORED.name()); // TODO -- SM -- pass ServiceCode enum type
+    return new InventoryAllocator(repo, "DUOLINGO", ServiceCode.TEST_NON_PROCTORED);
   }
 
   @Bean("duolingoProctoredAllocator")
   public ResourceAllocator duolingoProctoredAllocator(ServiceResourceRepository repo) {
-    return new InventoryAllocator(repo, "DUOLINGO", ServiceCode.TEST_PROCTORED.name()); // TODO -- SM -- pass ServiceCode enum type
+    return new InventoryAllocator(repo, "DUOLINGO", ServiceCode.TEST_PROCTORED);
   }
 
   // Add more providers by instantiating InventoryAllocator or other implementation of ResourceAllocator
