@@ -69,7 +69,7 @@ To add a new candidate service provider, follow these steps:
 
 Below: example for Udemy Courses
 
-0) Add a new enum to `ServiceProvider` in `domain/model/ServiceProvider.java`:
+1) Add a new enum to `ServiceProvider` in `domain/model/ServiceProvider.java`:
 
 ```java
 public enum ServiceProvider {
@@ -79,17 +79,17 @@ public enum ServiceProvider {
 }
 ```
 
-1) Add a new enum to `ServiceCode` in `domain/model/ServiceCode.java`:
+2) Add a new enum to `ServiceCode` in `domain/model/ServiceCode.java`:
 
 ```java
 public enum ServiceCode {
-  DUOLINGO_TEST_PROCTORED,
+  TEST_PROCTORED,
   // ...
-  UDEMY_COURSE  // <-- new
+  COURSE  // <-- new
 }
 ```
 
-1) Create a new package for the provider under `application/providers/`:
+3) Create a new package for the provider under `application/providers/`:
 
 ```text
 candidateservices
@@ -100,7 +100,7 @@ candidateservices
          └─ UdemyCouponImporter.java // if needed
 ```
 
-2) Allocator (choose one):
+4) Allocator (choose one):
 
 Inventory-backed (recommended if you will import a number of resources upfront and assign them over 
 time):
@@ -115,13 +115,13 @@ public ResourceAllocator udemyCourseAllocator(ServiceResourceRepository repo) {
 
 If you need a custom allocation strategy, create a new class in `core/allocators/`.
 
-3) Importer (optional):
+5) Importer (optional):
 
 If you get resources from a CSV or other format, create a new parser/importer in 
 `application/providers/udemy` (e.g., `UdemyCouponImporter.java`) that implements an interface in
 `core/importers/`.
 
-4) Concrete service:
+6) Concrete service:
 
 Create `UdemyCandidateService.java` in `application/providers/udemy/` that extends `AbstractCandidateService` 
 and override provider(), serviceCode(), allocator(), and optionally importer().
@@ -151,7 +151,7 @@ public class UdemyService extends AbstractCandidateService {
 }
 ```
 
-4) Task Policy:
+7) Task Policy:
 
 Create `UdemyTaskPolicy.java` in `application/policy/` that implements `TaskPolicy` and define
 tasks to assign/close for each event.
@@ -179,12 +179,12 @@ public class UdemyTaskPolicy implements TaskPolicy {
 }
 ```
 
-5) Email listener (optional):
+8) Email listener (optional):
 
 If you want to send emails on events, update the onAssigned method on `EmailNotificationListener.java` 
 in `core/listeners/`.
 
-6) Controller - zero new code:
+9) Controller - zero new code:
 
 No new code is needed here. The existing `ServicesAdminController` can route requests to the new
 service via the `CandidateServiceRegistry`.
