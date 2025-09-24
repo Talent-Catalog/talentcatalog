@@ -27,12 +27,16 @@
     <span *ngIf="searching">
       <i class="fas fa-spinner fa-spin"></i> Searching...
     </span>
-    <input (selectItem)="selectSearchResult($event)"
-           [editable]="false" [inputFormatter]="renderJobRow" [ngbTypeahead]="doJobSearch"
-           [resultFormatter]="renderJobRow"
-           class="form-control"
-           id="jobSearch"
-           placeholder="Search job name..."
-           type="text"/>
+    <tc-field>
+      <tc-input (selectItem)="selectSearchResult($event)"
+                [editable]="false"
+                [inputFormatter]="renderJobRow"
+                [resultFormatter]="renderJobRow"
+                [ngbTypeahead]="doJobSearch"
+                [id]="'jobSearch'"
+                [placeholder]="'Search job name...'"
+                [type]="'text'">
+      </tc-input>
+    </tc-field>
   </div>
 </div>

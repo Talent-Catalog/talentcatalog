@@ -75,6 +75,7 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() ngbTypeahead!: (text$: Observable<string>) => Observable<any[]>;
   @Input() resultTemplate?: TemplateRef<any>;
   @Input() inputFormatter?: (value: any) => string;
+  @Input() resultFormatter?: (value: any) => string;
   @Input() editable: boolean;
   @Input() readonly: boolean = false;
   @Input() type:
