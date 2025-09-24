@@ -1,15 +1,14 @@
-# Candidate Services — Developer Guide
+# CASI (Candidate Assistance Services Interface) — Developer Guide
 
-This document provides an overview of the Candidate Services module in our application. It outlines 
-the architecture, folder layout and fastest path for developers working with this module to add a 
-new CandidateService (e.g. Udemy).
+This document provides an overview of the CASI module. It outlines the architecture, folder layout 
+and fastest path for developers to add a new CandidateAssistanceService (e.g. Udemy).
 
 ## Layout (what lives where)
 
-The Candidate Services module is organized into several key packages:
+The CASIS module is organized into several key packages:
 
 ```text
-candidateservices
+casi
 ├─ api/                            // inbound HTTP
 │  ├─ dto/                         // API response models
 │  ├─ request/                     // request DTOs
@@ -27,10 +26,10 @@ candidateservices
 │  ├─ listeners/                   // event listeners (email, tasks)
 │  ├─ scheduler/                   // expiry cron
 │  └─ services/                    // AssignmentEngine + base/port
-│     ├─ AbstractCandidateService  // base
+│     ├─ AbstractCandidateAssistanceService  // base
 │     ├─ AssignmentEngine          
-│     ├─ CandidateService          // interface (port)
-│     └─ CandidateServiceRegistry  // service locator
+│     ├─ CandidateAssistanceService          // interface (port)
+│     └─ CandidateServiceRegistry            // service locator
 |
 ├─ domain/                         // domain objects
 │  ├─ events/                      // ServiceAssigned/Redeemed/Expired/Reassigned
@@ -41,7 +40,7 @@ candidateservices
 
 ## Core Concepts
 
-The Candidate Services module is built around several core concepts:
+The CASI module is built around several core concepts:
 
 - **ServiceResourceEntity**: generic inventory (provider, serviceCode, resourceCode, status, 
   candidate, assignedAt, expiresAt).
@@ -56,20 +55,23 @@ The Candidate Services module is built around several core concepts:
 - **Policies**: TaskPolicy declares which tasks to assign/close for each event
 - **Scheduler**: ResourceExpiryScheduler marks expired resources and emits ServiceExpiredEvent.
 - **Controller**: ServicesAdminController calls a service via CandidateServiceRegistry.
-- **CandidateService**: The main interface that all candidate services must implement. It defines 
-  methods for assigning, redeeming, and expiring services.
-- **AbstractCandidateService**: A base class that provides common functionality for all candidate 
-  services. It implements the CandidateService interface and can be extended by specific service 
-  implementations (e.g., DuolingoCandidateService).
+- **CandidateAssistanceService**: The main interface that all candidate assistance services must 
+  implement. It defines methods for assigning, redeeming, and expiring services.
+- **AbstractCandidateAssistanceService**: A base class that provides common functionality for all 
+  candidate assistance services. It implements the CandidateAssistanceService interface and can be 
+  extended by specific service implementations (e.g., DuolingoCandidateService).
 
 
 ## Add a new provider (step-by-step)
 
-To add a new candidate service provider, follow these steps:
+To add a new candidate assistance service provider, follow these steps:
 
 Below: example for Udemy Courses
 
-1) Add a new enum to `ServiceProvider` in `domain/model/ServiceProvider.java`:
+1) Add a new enum to `ServiceProvider`  in `domain/model/ServiceProvider.java` if needed -- a new 
+   assistance service could be for an existing provider, e.g. Duolingo, simply with a new service 
+   code, e.g. TEST_NON_PROCTORED, in addition to an existing Duolingo service, e.g. TEST_PROCTORED 
+   already offered):
 
 ```java
 public enum ServiceProvider {
@@ -79,7 +81,7 @@ public enum ServiceProvider {
 }
 ```
 
-2) Add a new enum to `ServiceCode` in `domain/model/ServiceCode.java`:
+2) Add a new enum to `ServiceCode` if needed in `domain/model/ServiceCode.java`:
 
 ```java
 public enum ServiceCode {
