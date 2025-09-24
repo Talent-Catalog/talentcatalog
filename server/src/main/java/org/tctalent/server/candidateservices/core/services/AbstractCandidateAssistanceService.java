@@ -42,7 +42,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.SavedListService;
 
 @RequiredArgsConstructor
-public abstract class AbstractCandidateService implements CandidateService {
+public abstract class AbstractCandidateAssistanceService implements CandidateAssistanceService {
 
   protected final ServiceAssignmentRepository assignmentRepository;
   protected final ServiceResourceRepository resourceRepository;

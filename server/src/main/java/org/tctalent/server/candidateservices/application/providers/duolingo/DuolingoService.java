@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.candidateservices.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.candidateservices.core.allocators.ResourceAllocator;
-import org.tctalent.server.candidateservices.core.services.AbstractCandidateService;
+import org.tctalent.server.candidateservices.core.services.AbstractCandidateAssistanceService;
 import org.tctalent.server.candidateservices.core.services.AssignmentEngine;
 import org.tctalent.server.candidateservices.domain.model.ServiceCode;
 import org.tctalent.server.candidateservices.core.importers.FileInventoryImporter;
@@ -29,7 +29,7 @@ import org.tctalent.server.service.db.SavedListService;
 
 
 @Service
-public class DuolingoService extends AbstractCandidateService {
+public class DuolingoService extends AbstractCandidateAssistanceService {
 
   private final FileInventoryImporter duolingoImporter;
   private final ResourceAllocator duolingoAllocator;

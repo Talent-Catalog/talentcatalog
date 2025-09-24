@@ -26,22 +26,22 @@ import org.springframework.stereotype.Component;
 public class CandidateServiceRegistry {
 
   private static final String SEP = "::";
-  private final Map<String, CandidateService> services; // provider -> service
+  private final Map<String, CandidateAssistanceService> services; // provider -> service
 
-  public CandidateServiceRegistry(List<CandidateService> serviceBeans) {
-    Map<String, CandidateService> map = new HashMap<>();
-    for (CandidateService s : serviceBeans) {
+  public CandidateServiceRegistry(List<CandidateAssistanceService> serviceBeans) {
+    Map<String, CandidateAssistanceService> map = new HashMap<>();
+    for (CandidateAssistanceService s : serviceBeans) {
       String key = normalise(s.providerKey());
       if (map.putIfAbsent(key, s) != null) {
-        throw new IllegalStateException("Duplicate CandidateService for provider=" + key);
+        throw new IllegalStateException("Duplicate CandidateAssistanceService for provider=" + key);
       }
     }
     this.services = Map.copyOf(map);
   }
 
-  public CandidateService forProviderAndServiceCode(String provider, String serviceCode) {
+  public CandidateAssistanceService forProviderAndServiceCode(String provider, String serviceCode) {
     String key = (normalise(provider) + SEP + normalise(serviceCode));
-    CandidateService svc = services.get(key);
+    CandidateAssistanceService svc = services.get(key);
     if (svc == null) {
       throw new IllegalStateException("No service for " + key);
     }

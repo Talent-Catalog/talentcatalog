@@ -21,7 +21,6 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.candidateservices.api.dto.ServiceAssignmentDto;
 import org.tctalent.server.candidateservices.api.dto.ServiceResourceDto;
 import org.tctalent.server.candidateservices.api.request.UpdateServiceResourceStatusRequest;
-import org.tctalent.server.candidateservices.core.services.CandidateService;
+import org.tctalent.server.candidateservices.core.services.CandidateAssistanceService;
 import org.tctalent.server.candidateservices.core.services.CandidateServiceRegistry;
 import org.tctalent.server.candidateservices.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.candidateservices.core.services.CandidateServicesQueryService;
@@ -46,7 +45,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.security.AuthService;
 
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//@PreAuthorize("hasAuthority('ROLE_ADMIN')") todo -- SM
 @RestController
 @RequestMapping("/api/admin/services")
 @RequiredArgsConstructor
@@ -178,8 +177,8 @@ public class ServicesAdminController {
   }
 
 
-  private CandidateService serviceFor(String provider, String serviceCode) {
-    CandidateService svc = services.forProviderAndServiceCode(provider, serviceCode);
+  private CandidateAssistanceService serviceFor(String provider, String serviceCode) {
+    CandidateAssistanceService svc = services.forProviderAndServiceCode(provider, serviceCode);
     if (svc == null) {
       throw new NoSuchObjectException("Unknown candidate service for provider: " + provider +
           ", serviceCode: " + serviceCode);
