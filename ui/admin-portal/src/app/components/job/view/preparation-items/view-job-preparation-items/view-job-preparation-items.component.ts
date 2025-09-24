@@ -24,6 +24,7 @@ import {JobPrepItem} from "../../../../../model/job-prep-item";
 })
 export class ViewJobPreparationItemsComponent implements OnInit {
   @Input() jobPrepItems: JobPrepItem[];
+  @Input() editable: boolean;
   @Output() itemSelected = new EventEmitter();
 
   selectedItem: JobPrepItem;
