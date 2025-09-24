@@ -13,7 +13,7 @@
 
   <div class="tc-modal-footer">
     <tc-button *ngIf="showCancel" [type]="'outline'" [size]="'lg'" (click)="dismiss()">
-      Cancel
+      {{cancelText}}
     </tc-button>
     <tc-button [type]="'primary'" [size]="'lg'" (click)="action()" [disabled]="disableAction">
       {{actionText}}

@@ -14,82 +14,96 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-  <h4 class="modal-title">Associate Task with List</h4>
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
-</div>
-<div class="modal-body">
+<tc-modal [title]="'Associate Task with List'"
+          [disableAction]="assignForm.invalid || loading"
+          (onAction)="onSave()"
+          [showCancel]="true"
+          [cancelText]="'Close'">
+
   <div *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
   </div>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
-      <form [formGroup]="assignForm">
 
-        <!-- TASKS -->
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
+
+    <form [formGroup]="assignForm">
+
+      <!-- TASKS -->
+      <div class="mb-3">
+        <tc-field>
+          <tc-label [for]="'task'">
+            Task to assign
+          </tc-label>
+          <ng-select id="task"
+                     class="tc-select tc-select--no-val-highlight"
+                     appendTo=".modal-content"
+                     [formControlName]="'task'"
+                     [items]="allTasks"
+                     [groupBy]="'taskType'"
+                     [searchFn]="searchTypeOrName"
+                     [clearable]="false"
+                     placeholder="Select or type to search..."
+                     bindLabel="displayName">
+          </ng-select>
+        </tc-field>
+      </div>
+
+      <!-- DAYS TO COMPLETE -->
+      <div *ngIf="selectedTask" class="paragraph-sm">
         <div class="mb-3">
-          <label class="form-label" for="task">Task to assign</label>
-          <ng-select id="task" appendTo=".modal-content" [formControlName]="'task'" [items]="allTasks"
-                     [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
-                     placeholder="Select or type to search..." bindLabel="displayName"></ng-select>
+          <strong>Description: </strong>
+          <span [innerHtml]="selectedTask.description"></span>
         </div>
-
-        <!-- DAYS TO COMPLETE -->
-        <div *ngIf="selectedTask">
-          <div class="mb-3">
-            <div>Description:
-              <span class="fw-light" [innerHtml]="selectedTask.description"></span>
-            </div>
-          </div>
-          <div class="mb-3">
-            <div>Estimated Due Date:
-              <span class="fw-light">{{estimatedDueDate | date}}</span>
-            </div>
-            <small class="text-muted">{{selectedTask?.daysToComplete}} days to complete.</small>
-          </div>
+        <div class="mb-3">
+          <strong>Estimated Due Date: </strong>
+          {{estimatedDueDate | date}} ({{selectedTask?.daysToComplete}} days to complete)
         </div>
+      </div>
 
-      </form>
+    </form>
   </div>
-</div>
-<div class="modal-header">
-  <h4 class="modal-title">Current Task Associations</h4>
-</div>
-<div class="modal-body">
-  <input type="text" class="form-control mb-3" placeholder="Search..." aria-label="Search" (keyup)="search($event.target)"
-         id="keyword">
-  <div *ngFor="let t of filteredTaskAssociations;">
-    <div class="container card mt-2 grey-bg" [ngClass]="{'required-task-bg': !t.optional, 'optional-task-bg': t.optional}">
-      <div class="row align-items-center">
-        <div class="col">
-          <p class="small fw-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
-        </div>
-        <div class="col-auto">
-          <app-tasks-monitor-list
-            [task]="t"
-            [list]="savedList">
-          </app-tasks-monitor-list>
-        </div>
-        <div class="col-auto">
-          <div class="btn-group float-end">
-            <button type="button" class="btn" aria-label="Close" (click)="monitorTask(t)">
-              <i class="fas fa-search-plus"></i>
-            </button>
-            <button type="button" class="btn" aria-label="Close" (click)="removeTask(t)">
-              <i class="far fa-trash-alt"></i>
-            </button>
+
+  <div class="d-block pt-lg-4">
+    <div class="paragraph-lg mb-3">Current Task Associations</div>
+    <tc-field>
+      <tc-input [type]="'text'"
+                class="mb-3"
+                [placeholder]="'Search within...'"
+                [ariaLabel]="'Search'"
+                (keyup)="search($event.target)"
+                [id]="'keyword'">
+      </tc-input>
+    </tc-field>
+
+    <div *ngFor="let t of filteredTaskAssociations;">
+      <div class="container card grey-bg" [ngClass]="{'required-task-bg': !t.optional, 'optional-task-bg': t.optional}">
+        <div class="row align-items-center">
+          <div class="col">
+            <p class="small fw-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
+          </div>
+          <div class="col-auto">
+            <app-tasks-monitor-list
+              [task]="t"
+              [list]="savedList">
+            </app-tasks-monitor-list>
+          </div>
+          <div class="col-auto">
+            <div class="btn-group float-end">
+              <button type="button" class="btn" aria-label="Close" (click)="monitorTask(t)">
+                <i class="fas fa-search-plus"></i>
+              </button>
+              <button type="button" class="btn" aria-label="Close" (click)="removeTask(t)">
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-success" [disabled]="assignForm.invalid || loading"
-          (click)="onSave()">Save</button>
-  <button type="button" class="btn btn-secondary"
-          (click)="close()">Close</button>
-</div>
+
+</tc-modal>

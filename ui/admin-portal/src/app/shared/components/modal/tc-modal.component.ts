@@ -84,6 +84,7 @@ export class TcModalComponent {
   @Input() showCancel: boolean = true;
   @Input() icon: string;
   @Input() isError: boolean = false;
+  @Input() cancelText: string = 'Cancel';
   /** Primarily intended for use when declaring modal programmatically via NgbModal service, when
    * ng-content projection not possible since there's no corresponding template element.
    */

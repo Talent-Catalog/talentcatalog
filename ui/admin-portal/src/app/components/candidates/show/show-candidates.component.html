@@ -295,11 +295,12 @@
 
     <!--  Task selection - select just one task to focus on  -->
     <tc-field *ngIf="hasTasksAssigned()" class="mb-3">
-      <ng-select [items]="tasksAssignedToList"
+      <ng-select class="tc-select tc-select--no-val-highlight"
+                 [items]="tasksAssignedToList"
                  bindLabel="displayName"
                  [(ngModel)]="monitoredTask"
                  (ngModelChange)="doSearch(true)"
-                  placeholder="Tasks Monitor: Select a task that has been assigned to the list to monitor... (note: default task monitor will monitor all required tasks)">
+                 placeholder="Tasks Monitor: Select a task that has been assigned to the list to monitor... (note: default task monitor will monitor all required tasks)">
       </ng-select>
     </tc-field>
 
