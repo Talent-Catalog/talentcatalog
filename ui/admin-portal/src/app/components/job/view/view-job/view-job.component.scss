@@ -19,5 +19,17 @@
   background-color: color(gray, 100);
   padding: 1rem;
   border-radius: 5px;
-  width: 100%;
+  width: 50%;
+}
+
+.job-header-container {
+  flex: 1 1 auto;
+  align-self: start;
+  .job-name-container {
+    display: flex;
+    align-items: center;
+    h1 {
+      padding-right: 14px;
+    }
+  }
 }

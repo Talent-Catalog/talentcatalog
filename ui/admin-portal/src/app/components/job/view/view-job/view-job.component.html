@@ -23,15 +23,20 @@
   </div>
 
   <div class="d-flex justify-content-between align-items-center gap-3">
-    <div class="flex-fill">
+    <div class="job-header-container">
       <p [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6' : !showBreadcrumb}" class="label-md text-color-secondary">
         Job opportunity #{{job.id}}
       </p>
-      <h1>{{job.name}}
-      </h1>
+      <div class="job-name-container">
+        <h1>{{job.name}}</h1>
+        <tc-icon type="button" color="warning" (click)="doToggleStarred()">
+          <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
+          <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
+        </tc-icon>
+      </div>
     </div>
 
-    <div *ngIf="canSeeJobDetails() && fromUrl" class="w-50 job-summary-container">
+    <div *ngIf="canSeeJobDetails() && fromUrl" class="job-summary-container">
       <app-view-job-summary
         [job]="job"
         [editable]="isEditable()"
@@ -42,11 +47,6 @@
     </div>
 
     <div class="d-flex align-items-center gap-3">
-      <tc-icon type="button" color="warning" (click)="doToggleStarred()">
-        <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
-        <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
-      </tc-icon>
-
       <tc-dropdown placement="bottom-end">
         <tc-dropdown-button type="primary">
           <i class="fas fa-angle-down"></i>
@@ -122,6 +122,7 @@
   </div>
 
   <app-view-job-preparation-items *ngIf="!job.publishedDate"
+
     [jobPrepItems]="jobPrepItems"
     (itemSelected)="onPrepItemSelected($event)"
   >
