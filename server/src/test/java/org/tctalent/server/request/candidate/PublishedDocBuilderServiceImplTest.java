@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -85,22 +85,22 @@ class PublishedDocBuilderServiceImplTest {
   void buildCell() {
     Object obj;
 
-    obj = builder.buildCell(candidate, infoId);
+    obj = builder.buildCell(candidate, null, 0, infoId);
     assertNotNull(obj);
     assertEquals(1234L, obj);
 
-    obj = builder.buildCell(candidate, infoCN);
+    obj = builder.buildCell(candidate, null, 0, infoCN);
     assertNotNull(obj);
     assertEquals("=HYPERLINK(\"https://candidateCVLink\",1234)", obj);
 
-    obj = builder.buildCell(candidate, infoCV);
+    obj = builder.buildCell(candidate, null, 0, infoCV);
     assertNotNull(obj);
     assertEquals("=HYPERLINK(\"https://candidateCVLink\",\"cv\")", obj);
   }
 
   @Test
   void buildRow() {
-    List<Object> row = builder.buildRow(candidate, columnInfos);
+    List<Object> row = builder.buildRow(candidate, null, 0, columnInfos);
     assertEquals(columnInfos.size(), row.size());
   }
 
