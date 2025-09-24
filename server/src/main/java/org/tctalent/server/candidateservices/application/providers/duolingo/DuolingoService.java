@@ -52,7 +52,7 @@ public class DuolingoService extends AbstractCandidateAssistanceService {
 
   @Override
   protected ServiceCode serviceCode() {
-    return ServiceCode.DUOLINGO_TEST_PROCTORED;
+    return ServiceCode.TEST_PROCTORED;
   }
 
   @Override

@@ -17,6 +17,6 @@
 package org.tctalent.server.candidateservices.domain.model;
 
 public enum ServiceCode {
-  DUOLINGO_TEST_PROCTORED,
-  DUOLINGO_TEST_NON_PROCTORED
+  TEST_PROCTORED,
+  TEST_NON_PROCTORED
 }

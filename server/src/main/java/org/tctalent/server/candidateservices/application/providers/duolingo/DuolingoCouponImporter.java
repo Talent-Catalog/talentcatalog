@@ -156,9 +156,9 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
 
           // Set test type based on coupon code prefix
           if (couponCode.startsWith("ACCNONPROC") || couponCode.startsWith("NONP")) {
-            coupon.setServiceCode(ServiceCode.DUOLINGO_TEST_NON_PROCTORED);
+            coupon.setServiceCode(ServiceCode.TEST_NON_PROCTORED);
           } else if (couponCode.startsWith("ACC") || couponCode.startsWith("PROC")) {
-            coupon.setServiceCode(ServiceCode.DUOLINGO_TEST_PROCTORED);
+            coupon.setServiceCode(ServiceCode.TEST_PROCTORED);
           }
           newCoupons.add(coupon);
         }
