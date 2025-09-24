@@ -1,6 +1,13 @@
 .tc-accordion {
-  padding: 16px;
+  padding: 0 16px;
   border-radius: 6px;
   overflow: hidden;
   background-color: #ffffff;
+  .toggle-all-panels {
+    display: flex;
+    gap: 16px;
+    justify-content: end;
+    margin-bottom: -10px;
+    padding-top: 5px;
+  }
 }
