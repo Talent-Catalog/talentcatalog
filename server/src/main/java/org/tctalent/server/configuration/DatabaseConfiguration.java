@@ -43,7 +43,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @EnableJpaRepositories(
         basePackages = {
             "org.tctalent.server.repository.db",
-            "org.tctalent.server.candidateservices.domain.persistence"
+            "org.tctalent.server.casi.domain.persistence"
         },
         entityManagerFactoryRef = "dbEntityManagerFactory",
         transactionManagerRef= "dbTransactionManager"
