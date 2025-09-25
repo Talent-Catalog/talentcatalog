@@ -14,47 +14,36 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [title]="title"
+          [showCancel]="true"
+          [actionText]="'Save'"
+          (onAction)="save()"
+          [disableAction]="form?.invalid || saving">
 
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" [disabled]="saving" (click)="cancel()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <form [formGroup]="form">
     <div class="mb-3">
-      <label class="form-label" for="name">Name *</label>
-      <input type="text" class="form-control" id="name" formControlName="name" required>
-      <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"
-           class="alert alert-danger">
-        <div *ngIf="nameControl.errors.required">
-          Name is required.
+      <tc-field>
+        <tc-label [for]="'name'">Name *</tc-label>
+        <tc-input [type]="'text'" [id]="'name'" formControlName="name" required></tc-input>
+        <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)">
+          <tc-alert [type]="'warning'" *ngIf="nameControl.errors.required">
+            Name is required.
+          </tc-alert>
         </div>
-      </div>
+      </tc-field>
     </div>
     <div>
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="reviewable"
-               [value]="false" formControlName="reviewable">
-        <label class="form-check-label small" for="reviewable">
+      <tc-field [checkbox]="true">
+        <tc-input [type]="'checkbox'" id="reviewable" formControlName="reviewable"></tc-input>
+        <tc-label [for]="'reviewable'">
           Should result of searches be reviewable?
-        </label>
-      </div>
+        </tc-label>
+      </tc-field>
     </div>
   </form>
-</div>
 
-<div class="modal-footer">
-  <button type="button" class="btn btn-success" (click)="save()"
-          [disabled]="form?.invalid || saving">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    Save
-  </button>
-</div>
+</tc-modal>
