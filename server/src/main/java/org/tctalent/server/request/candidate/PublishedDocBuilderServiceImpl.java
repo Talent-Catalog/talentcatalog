@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -39,15 +40,12 @@ import org.tctalent.server.security.CandidateTokenProvider;
  * @author John Cameron
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderService {
 
     private final CandidateTokenProvider candidateTokenProvider;
-
-    public PublishedDocBuilderServiceImpl(
-        CandidateTokenProvider candidateTokenProvider) {
-        this.candidateTokenProvider = candidateTokenProvider;
-    }
+    private final ObjectMapper jsonObjectMapper;
 
     public Object buildCell(Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef,
         int expandingCount, PublishedDocColumnDef columnInfo) {
@@ -200,11 +198,8 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
             if (value != null) {
                 final Object o = fetchData(candidate, value);
                 if (o instanceof String stringVal) {
-
-                    //TODO JC Get shared mapper
-                    ObjectMapper mapper = new ObjectMapper();
                     try {
-                        JsonNode jsonNode = mapper.readTree(stringVal);
+                        JsonNode jsonNode = jsonObjectMapper.readTree(stringVal);
                         obj = new JsonRows(jsonNode);
                     } catch (JsonProcessingException e) {
                         //Not JSON
