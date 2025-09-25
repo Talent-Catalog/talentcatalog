@@ -2,13 +2,12 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {MyFirstFormData, MySecondFormData} from "../model/form";
-import {ItalyCandidateTravelDocFormData} from "../model/form";
+import {MyFirstFormData, MySecondFormData, TravelDocFormData} from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
 import {MySecondFormComponent} from "../components/form/my-second-form/my-second-form.component";
 import {
-  ItalyCandidateTravelDocumentFormComponent
-} from "../components/form/italy-travel-document-form/italy-candidate-travel-document-form.component";
+  TravelDocFormComponent
+} from "../components/form/italy-travel-document-form/travel-doc-form.component";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +19,7 @@ export class CandidateFormService {
   private componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent,
     'MySecondForm': MySecondFormComponent,
-    'ItalyCandidateTravelDocumentForm': ItalyCandidateTravelDocumentFormComponent
+    'TravelDocForm': TravelDocFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
@@ -44,12 +43,12 @@ export class CandidateFormService {
     return this.http.get<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`);
   }
 
-  createOrUpdateTravelDocumentForm(request: ItalyCandidateTravelDocFormData): Observable<ItalyCandidateTravelDocFormData> {
-    return this.http.post<ItalyCandidateTravelDocFormData>(`${this.apiUrl}/travel-doc-form`, request);
+  createOrUpdateTravelDocumentForm(request: TravelDocFormData): Observable<TravelDocFormData> {
+    return this.http.post<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`, request);
   }
 
-  getTravelDocumentForm(): Observable<ItalyCandidateTravelDocFormData> {
-    return this.http.get<ItalyCandidateTravelDocFormData>(`${this.apiUrl}/travel-doc-form`);
+  getTravelDocumentForm(): Observable<TravelDocFormData> {
+    return this.http.get<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`);
   }
 
   getFormComponentByName(formName: string): any {
