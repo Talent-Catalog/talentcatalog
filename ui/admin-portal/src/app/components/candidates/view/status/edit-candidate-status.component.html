@@ -19,8 +19,8 @@
           (onAction)="onSave()"
           [showCancel]="true">
 
-  <div *ngIf="text">
-    {{text}}
+  <div *ngIf="warningText">
+    <tc-alert>{{warningText}}</tc-alert>
   </div>
   <div>
     <app-candidate-status-selector

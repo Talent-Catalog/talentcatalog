@@ -1506,7 +1506,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   private requestNewStatusInfo(nSelections: number) {
     const modal = this.modalService.open(EditCandidateStatusComponent);
     if (nSelections > 1) {
-      modal.componentInstance.text = "WARNING: You are about to set the status of " +
+      modal.componentInstance.warningText = "You are about to set the status of " +
         nSelections + " candidates. This can only be undone manually, one by one.";
     }
     modal.result
