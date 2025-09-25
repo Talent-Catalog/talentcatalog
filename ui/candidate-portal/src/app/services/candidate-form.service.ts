@@ -2,13 +2,18 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {MyFirstFormData, MySecondFormData} from "../model/form";
-import {ItalyCandidateTravelDocFormData} from "../model/form";
+import {
+  FamilyDocFormData,
+  ItalyCandidateTravelDocFormData,
+  MyFirstFormData,
+  MySecondFormData
+} from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
 import {MySecondFormComponent} from "../components/form/my-second-form/my-second-form.component";
 import {
   ItalyCandidateTravelDocumentFormComponent
 } from "../components/form/italy-travel-document-form/italy-candidate-travel-document-form.component";
+import {FamilyDocFormComponent} from "../components/form/family-doc-form/family-doc-form.component";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +25,8 @@ export class CandidateFormService {
   private componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent,
     'MySecondForm': MySecondFormComponent,
-    'ItalyCandidateTravelDocumentForm': ItalyCandidateTravelDocumentFormComponent
+    'ItalyCandidateTravelDocumentForm': ItalyCandidateTravelDocumentFormComponent,
+    'FamilyDocForm': FamilyDocFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
@@ -54,5 +60,12 @@ export class CandidateFormService {
 
   getFormComponentByName(formName: string): any {
     return this.componentMap[formName];
+  }
+  createOrUpdateFamilyDocsForm(request: FamilyDocFormData) {
+    return this.http.put<FamilyDocFormData>(`${this.halApiUrl}/family-doc-form/FamilyDocForm`, request);
+  }
+
+  getFamilyDocsForm() {
+    return this.http.get<FamilyDocFormData>(`${this.halApiUrl}/family-doc-form/FamilyDocForm`);
   }
 }

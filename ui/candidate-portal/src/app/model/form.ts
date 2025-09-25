@@ -15,6 +15,7 @@
  */
 
 import {Country} from "./country";
+import {DependantRelations} from "./candidate";
 
 export interface MyFirstFormData {
   city?: string;
@@ -43,4 +44,42 @@ export interface ItalyCandidateTravelDocFormData {
   travelDocIssuedBy: string;
   travelDocIssueDate: string;
   travelDocExpiryDate: string;
+}
+export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
+export type TravelDocType = 'PASSPORT' | 'NATIONAL_ID' | 'REFUGEE_CERTIFICATE';
+
+export interface FamilyMemberDoc {
+  docType: TravelDocType;
+  docNumber: string;
+  issuer: string;
+  issuedOn: string;
+  expiresOn: string;
+}
+
+export interface RelocatingFamilyMember {
+  relationship: DependantRelations;
+  dependantRelationOther?: string;
+
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: Gender;
+  countryOfBirth: string;
+  placeOfBirth?: string;
+
+  dependantHealthConcerns?: 'Yes' | 'No' | null;
+  dependantHealthNotes?: string;
+  dependantRegistered?: 'Yes' | 'No' | null;
+  dependantRegisteredNumber?: string;
+  dependantRegisteredNotes?: string;
+
+  travelDoc: FamilyMemberDoc;
+}
+
+export interface FamilyDocFormData {
+  // Stored as candidate properties on the server
+  noEligibleFamilyMembers: boolean;
+  noEligibleNotes?: string;
+  // I persist the members array as a JSON string (keeps backend simple like MySecondForm)
+  familyMembersJson: string; // JSON.stringify(RelocatingFamilyMember[])
 }
