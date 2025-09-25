@@ -27,19 +27,19 @@ export interface MySecondFormData {
   hairColour?: string;
 }
 
-export enum ItalyCandidateTravelDocType {
+export enum TravelDocType {
   Passport = 'PASSPORT',
   NationalId = 'NATIONAL_ID',
   RefugeeCertificate = 'REFUGEE_CERTIFICATE',
 }
-export interface ItalyCandidateTravelDocFormData {
+export interface TravelDocFormData {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
   gender: string;
   birthCountry: Country | null;
   placeOfBirth: string;
-  travelDocType: ItalyCandidateTravelDocType;
+  travelDocType: TravelDocType;
   travelDocNumber: string;
   travelDocIssuedBy: string;
   travelDocIssueDate: string;

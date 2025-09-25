@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateTravelDocForm;
+import org.tctalent.server.model.db.TravelDocForm;
 import org.tctalent.server.request.form.TravelDocFormData;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
@@ -49,7 +49,7 @@ public class TravelDocFormPortalApi {
   @NotNull
   public Map<String, Object> createOrUpdate(@Valid @RequestBody TravelDocFormData request) {
     Candidate candidate = getLoggedInCandidate();
-    CandidateTravelDocForm form = formService.createOrUpdateTravelDocForm(candidate, request);
+    TravelDocForm form = formService.createOrUpdateTravelDocForm(candidate, request);
     return travelDocFormDto().build(form);
   }
 
@@ -57,7 +57,7 @@ public class TravelDocFormPortalApi {
   @NotNull
   public Map<String, Object> get() {
     Candidate candidate = getLoggedInCandidate();
-    CandidateTravelDocForm form = formService.getTravelDocForm(candidate)
+    TravelDocForm form = formService.getTravelDocForm(candidate)
         .orElse(null);
     return travelDocFormDto().build(form);
   }
