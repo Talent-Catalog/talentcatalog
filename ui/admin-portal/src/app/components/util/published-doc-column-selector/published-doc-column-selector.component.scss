@@ -25,6 +25,7 @@
   margin-bottom: 0.5em;
   border-radius: 8px;
   text-align: center;
+  cursor: pointer;
   &:active,&:focus {
     @include background-color-soft
   }
@@ -32,10 +33,6 @@
 
 .container:not(:last-child) {
   margin-right: 4em;
-}
-
-.gu-mirror {
-  @include background-color-soft
 }
 
 .edit-btn {
@@ -50,10 +47,6 @@
 
 label {
   font-weight: 300;
-}
-
-.dragula-container {
-  height: 100%;
 }
 
 .modal-body {

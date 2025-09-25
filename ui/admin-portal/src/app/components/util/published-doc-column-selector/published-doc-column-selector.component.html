@@ -54,12 +54,12 @@
         <div *ngIf="!selectedColumns.length" class="text-center small mt-3">No Columns Selected</div>
         <div *ngFor="let field of selectedColumns; let i = index">
           <div ngbDropdown container="body" #dropdown=ngbDropdown class="d-flex">
-            <button id="dropdownForm" class="btn field width-100" ngbDropdownToggle>
+            <div id="dropdownForm" class="dragula-field width-100" ngbDropdownToggle>
               <span *ngIf="field.columnProps.header != null; else defaultHeader">{{field.columnProps.header}}</span>
               <ng-template #defaultHeader>
                 <span>{{field.columnDef.header}}</span>
               </ng-template>
-            </button>
+            </div>
             <div ngbDropdownMenu aria-labelledby="dropdownForm">
               <div class="px-4 py-3">
                 <h6 class="py-1">{{field.columnDef.header}}</h6>
