@@ -15,7 +15,7 @@
  */
 
 import {Country} from "./country";
-import {DependantRelations} from "./candidate";
+import {DependantRelations, Gender} from "./candidate";
 
 export interface MyFirstFormData {
   city?: string;
@@ -45,8 +45,6 @@ export interface TravelDocFormData {
   travelDocIssueDate: string;
   travelDocExpiryDate: string;
 }
-export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
-export type TravelDocType = 'PASSPORT' | 'NATIONAL_ID' | 'REFUGEE_CERTIFICATE';
 
 export interface FamilyMemberDoc {
   docType: TravelDocType;
