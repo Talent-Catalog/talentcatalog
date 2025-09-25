@@ -14,8 +14,8 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {
   FamilyDocFormData,
   FamilyMemberDoc,
-  ItalyCandidateTravelDocType,
-  RelocatingFamilyMember
+  RelocatingFamilyMember,
+  TravelDocType
 } from '../../../model/form';
 import {Candidate, DependantRelations} from "../../../model/candidate";
 import {CandidateFormService} from '../../../services/candidate-form.service';
@@ -82,7 +82,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
 
   private newDocGroup(value?: Partial<FamilyMemberDoc>) {
     return this.fb.nonNullable.group({
-      docType: [value?.docType ?? ItalyCandidateTravelDocType.Passport, [Validators.required]],
+      docType: [value?.docType ?? TravelDocType.Passport, [Validators.required]],
       docNumber: [value?.docNumber ?? '', [Validators.required, Validators.maxLength(64)]],
       issuer: [value?.issuer ?? '', [Validators.required, Validators.maxLength(128)]],
       issuedOn: [value?.issuedOn ?? '', [Validators.required]],
@@ -244,5 +244,5 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
     });
   }
 
-  protected readonly ItalyCandidateTravelDocType = ItalyCandidateTravelDocType;
+  protected readonly TravelDocType = TravelDocType;
 }
