@@ -14,21 +14,14 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-  <h4 class="modal-title">Potential Duplicate Candidate</h4>
-  <button type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-          (click)="closeModal()"
-  ></button>
-</div>
+<tc-modal [title]="'Potential Duplicate Candidate'"
+          [showCancel]="true"
+          [actionText]="'Refresh'"
+          (onAction)="refresh()">
 
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <p>
     You have selected the following candidate:
@@ -37,8 +30,9 @@
        [routerLink]="['/candidate', selectedCandidate.candidateNumber]"
        title="Show candidate in new tab"
     >
-      {{selectedCandidate.candidateNumber}}
-      <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+      <!-- All on one line to avoid anchor-styled trailing whitespace -->
+      {{selectedCandidate.candidateNumber}}<tc-icon [size]="'md'"><i class="fas fa-external-link-alt is-link ms-1 me-2" title="Show candidate in new tab"></i></tc-icon>
+
     </a>
   </p>
   <span *ngIf="potentialDuplicates.length > 0; else noDuplicates">
@@ -52,8 +46,8 @@
          [routerLink]="['/candidate', candidate.candidateNumber]"
          title="Show candidate in new tab"
       >
-        {{candidate.candidateNumber}}
-        <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+        <!-- All on one line to avoid anchor-styled trailing whitespace -->
+        {{candidate.candidateNumber}}<tc-icon [size]="'md'"><i class="fas fa-external-link-alt is-link ms-1 me-2" title="Show candidate in new tab"></i></tc-icon>
       </a>
     </li>
   </ul>
@@ -70,18 +64,4 @@
     </p>
   </ng-template>
 
-</div>
-
-<div class="modal-footer">
-
-  <button type="button" class="btn btn-primary" (click)="refresh()">
-    Refresh
-    <span *ngIf="loading; else regularIcon">
-      <i class="fas fa-spinner fa-spin"></i>
-    </span>
-    <ng-template #regularIcon>
-      <i class="fas fa-sync" title="Refresh data"></i>
-    </ng-template>
-  </button>
-
-</div>
+</tc-modal>
