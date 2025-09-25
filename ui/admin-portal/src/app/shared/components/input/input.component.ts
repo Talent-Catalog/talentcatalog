@@ -122,21 +122,22 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   private _disabledFromForm = false;
   private _disabledFinal = false;
 
-  @Output() valueChange = new EventEmitter<string>();
+  @Output() valueChange = new EventEmitter<string | boolean>();
+
   @Output() selectItem =
     new EventEmitter<NgbTypeaheadSelectItemEvent<any>>();
 
-  private _value: string = '';
+  protected _value: string | boolean = '';
 
-  get value(): string {
+  get value(): string | boolean {
     return this._value;
   }
 
-  set value(val: string) {
+  set value(val: string | boolean) {
     if (val !== this._value) {
       this._value = val;
       this.onChange(val);
-      this.valueChange.emit(val);
+      this.valueChange.emit(this.type === 'checkbox' ? val as boolean : val as string);
     }
   }
 
@@ -153,7 +154,11 @@ export class InputComponent implements ControlValueAccessor, OnInit {
 
   // ControlValueAccessor implementation
   writeValue(val: any): void {
-    this._value = val ?? '';
+    if (this.type === 'checkbox') {
+      this._value = Boolean(val);
+    } else {
+      this._value = val ?? '';
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -176,9 +181,8 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   }
 
   handleInput(event: Event) {
-    this.value = this.type === 'checkbox'
-      ? (event.target as HTMLInputElement).checked.toString()
-      : (event.target as HTMLInputElement).value;
+    const target = event.target as HTMLInputElement;
+    this.value = this.type === 'checkbox' ? target.checked : target.value;
   }
 
   handleBlur() {

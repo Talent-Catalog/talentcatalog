@@ -81,8 +81,8 @@
                   [readonly]="loading"
                   [id]="'name'">
         </tc-input>
-        <tc-alert type="danger" *ngIf="form.errors?.invalidName">
-          <div><strong>{{form.errors.invalidName}}</strong></div>
+        <tc-alert type="warning" *ngIf="form.errors?.invalidName">
+          <div>{{form.errors.invalidName}}</div>
         </tc-alert>
       </tc-field>
 
