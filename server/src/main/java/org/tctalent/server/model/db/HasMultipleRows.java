@@ -17,12 +17,11 @@
 package org.tctalent.server.model.db;
 
 import org.springframework.lang.Nullable;
-import org.tctalent.server.request.candidate.PublishedDocValueSource;
 
 /**
- * Object which supports multiple values organized into a number of rows.
+ * Object which supports multiple String values organized into a number of rows.
  * <p>
- * Data from within a row is identified using a {@link PublishedDocValueSource}.
+ * Data from within a row is identified using a String nsme.
  *
  * @author John Cameron
  */
@@ -43,5 +42,5 @@ public interface HasMultipleRows {
      * recognized.
      */
     @Nullable
-    Object get(int n, String name);
+    String get(int n, String name);
 }

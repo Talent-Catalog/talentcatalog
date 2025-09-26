@@ -42,11 +42,17 @@ public class JsonRows implements HasMultipleRows {
     }
 
     @Override
-    public Object get(int n, String name) {
-        Object o = null;
+    public String get(int n, String name) {
+        String s = null;
         if (jsonNode.isArray()) {
-            o = jsonNode.get(n).get(name);
+            final JsonNode element = jsonNode.get(n);
+            if (element != null) {
+                JsonNode node = element.get(name);
+                if (node != null) {
+                    s = node.asText();
+                }
+            }
         }
-        return o;
+        return s;
     }
 }
