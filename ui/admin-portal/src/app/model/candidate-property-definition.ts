@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,22 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {TestBed} from '@angular/core/testing';
+export interface CandidatePropertyDefinition {
+  name: string;
+  label: string;
+  definition: string;
+  type: string;
+}
 
-import {PublishedDocColumnService} from './published-doc-column.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-
-describe('PublishedDocColumnService', () => {
-  let service: PublishedDocColumnService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-    });
-    service = TestBed.inject(PublishedDocColumnService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
+export interface SpringDataCandidatePropertyDefinitionsPage {
+  _embedded: {
+    candidatePropertyDefinitions: CandidatePropertyDefinition[];
+  };
+  page: {
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    number: number;
+  };
+}
