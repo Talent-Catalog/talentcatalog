@@ -57,7 +57,7 @@ class PublishedDocBuilderServiceImplTest {
     user.setLastName("nurk with \n in the middle");
     CandidateProperty property = new CandidateProperty();
     property.setName("dependants");
-    property.setValue("[{\"user\":\"John\"},{\"user\":\"Jane\"},{\"user\":\"Jill\"}]");
+    property.setValue("[{\"user\":\"John\"},{\"user\":\"Jane\",\"candidateNumber\":\"87654\"},{\"user\":\"Jill\"}]");
     property.setCandidate(candidate);
     Map<String, CandidateProperty> candidateProperties = new HashMap<>();
     candidateProperties.put(property.getName(), property);
@@ -123,19 +123,23 @@ class PublishedDocBuilderServiceImplTest {
 
     row = builder.buildRow(candidate, infoDependants, 1, columnInfos);
     assertEquals(columnInfos.size(), row.size());
+    assertEquals("", row.get(1));
     assertEquals("John", row.get(2));
 
     row = builder.buildRow(candidate, infoDependants, 2, columnInfos);
     assertEquals(columnInfos.size(), row.size());
+    assertEquals("87654", row.get(1));
     assertEquals("Jane", row.get(2));
 
     row = builder.buildRow(candidate, infoDependants, 3, columnInfos);
     assertEquals(columnInfos.size(), row.size());
+    assertEquals("", row.get(1));
     assertEquals("Jill", row.get(2));
 
     //Getting non existing count returns empty string
     row = builder.buildRow(candidate, infoDependants, 4, columnInfos);
     assertEquals(columnInfos.size(), row.size());
+    assertEquals("", row.get(1));
     assertEquals("", row.get(2));
   }
 
