@@ -118,6 +118,8 @@ class PublishedDocBuilderServiceImplTest {
   void buildRowWithExpandingColumn() {
     List<Object> row = builder.buildRow(candidate, infoDependants, 0, columnInfos);
     assertEquals(columnInfos.size(), row.size());
+    //Test that infoDependents unexpanded value is not shown
+    assertEquals("...", row.get(4));
 
     row = builder.buildRow(candidate, infoDependants, 1, columnInfos);
     assertEquals(columnInfos.size(), row.size());
