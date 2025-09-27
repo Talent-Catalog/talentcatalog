@@ -39,6 +39,7 @@ class PublishedDocBuilderServiceImplTest {
   PublishedDocColumnDef infoId;
   PublishedDocColumnDef infoCN;
   PublishedDocColumnDef infoCV;
+  PublishedDocColumnDef infoEmail;
   PublishedDocColumnDef infoUser;
   List<PublishedDocColumnDef> columnInfos;
 
@@ -55,9 +56,17 @@ class PublishedDocBuilderServiceImplTest {
     candidate.setUser(user);
     user.setFirstName("fred");
     user.setLastName("nurk with \n in the middle");
+    user.setEmail("fred@gmail.com");
     CandidateProperty property = new CandidateProperty();
     property.setName("dependants");
-    property.setValue("[{\"user\":\"John\"},{\"user\":\"Jane\",\"candidateNumber\":\"87654\"},{\"user\":\"Jill\"}]");
+    String json = """
+        [
+        {"user":"John","user.email":"john@gmail.com"},
+        {"user":"Jane","candidateNumber":"87654","user.email":"jane@gmail.com"},
+        {"user":"Jill","user.email":"jill@gmail.com"}
+        ]
+        """;
+    property.setValue(json);
     property.setCandidate(candidate);
     Map<String, CandidateProperty> candidateProperties = new HashMap<>();
     candidateProperties.put(property.getName(), property);
@@ -72,6 +81,8 @@ class PublishedDocBuilderServiceImplTest {
         new PublishedDocFieldSource("shareableCv.location"));
 
     infoUser = addColumn("name", "Name", new PublishedDocFieldSource("user"));
+
+    infoEmail = addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
 
     infoCV = addColumn("cv", "CV",
         new PublishedDocConstantSource("cv"),
@@ -119,22 +130,25 @@ class PublishedDocBuilderServiceImplTest {
     List<Object> row = builder.buildRow(candidate, infoDependants, 0, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     //Test that infoDependents unexpanded value is not shown
-    assertEquals("...", row.get(4));
+    assertEquals("...", row.get(5));
 
     row = builder.buildRow(candidate, infoDependants, 1, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     assertEquals("", row.get(1));
     assertEquals("John", row.get(2));
+    assertEquals("john@gmail.com", row.get(3));
 
     row = builder.buildRow(candidate, infoDependants, 2, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     assertEquals("87654", row.get(1));
     assertEquals("Jane", row.get(2));
+    assertEquals("jane@gmail.com", row.get(3));
 
     row = builder.buildRow(candidate, infoDependants, 3, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     assertEquals("", row.get(1));
     assertEquals("Jill", row.get(2));
+    assertEquals("jill@gmail.com", row.get(3));
 
     //Getting non existing count returns empty string
     row = builder.buildRow(candidate, infoDependants, 4, columnInfos);
@@ -152,7 +166,7 @@ class PublishedDocBuilderServiceImplTest {
   @Test
   void computeNumberOfRowsByCandidate() {
     assertEquals(1, builder.computeNumberOfRowsByCandidate(candidate, null));
-    assertEquals(4, builder.computeNumberOfRowsByCandidate(candidate, infoDependants));
+    assertEquals(5, builder.computeNumberOfRowsByCandidate(candidate, infoDependants));
   }
 
   private PublishedDocColumnDef addColumn(String key, String header,
