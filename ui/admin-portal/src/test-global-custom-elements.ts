@@ -18,6 +18,7 @@ class GenericStubBase {
   constructor(outputs: readonly string[]) {
     outputs.forEach(o => (this as any)[o] = new EventEmitter<any>());
   }
+
   protected emitOutput<T>(name: string, value?: T): void {
     (this as any)[name]?.emit(value);
   }
@@ -25,27 +26,34 @@ class GenericStubBase {
 
 class ValueAccessorStubBase extends GenericStubBase implements ControlValueAccessor {
   value: any;
-  private changeFn = (_: any) => {};
-  private touchedFn = () => {};
+  private changeFn = (_: any) => {
+  };
+  private touchedFn = () => {
+  };
   protected isDisabled = false;
 
   writeValue(v: any): void {
     this.value = v;
   }
+
   registerOnChange(fn: any): void {
     this.changeFn = fn;
   }
+
   registerOnTouched(fn: any): void {
     this.touchedFn = fn;
   }
+
   setDisabledState?(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
   }
+
   updateValue(v: any): void {
     this.value = v;
     this.changeFn(v);
     this.emitOutput('valueChange', v);
   }
+
   protected markTouched(): void {
     this.touchedFn();
   }
@@ -56,7 +64,7 @@ class ValueAccessorStubBase extends GenericStubBase implements ControlValueAcces
 // -------------------------------
 interface StubConfig {
   selector: string;
-  template?: string;
+  template: string; // ✅ always required
   inputs?: string[];
   outputs?: string[];
   valueAccessor?: boolean;
@@ -71,17 +79,18 @@ function createStub(config: StubConfig): Type<any> {
 
   @Component({
     selector: config.selector,
-    template: config.template ?? '<ng-content></ng-content>',
+    template: config.template, // ✅ literal string only
     inputs: config.inputs,
     outputs,
     providers: config.valueAccessor
-      ? [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => StubClass) }]
+      ? [{provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => StubClass)}]
       : [],
   })
   class Stub extends (config.valueAccessor ? ValueAccessorStubBase : GenericStubBase) {
     constructor() {
       super(outputs);
     }
+
     handleInput(event: Event): void {
       if (config.valueAccessor && typeof (this as any).updateValue === 'function') {
         const input = event.target as HTMLInputElement | HTMLTextAreaElement | null;
@@ -100,15 +109,19 @@ function createStub(config: StubConfig): Type<any> {
 }
 
 // -------------------------------
-// Configs → Stubs
+// Configs
 // -------------------------------
-const STUBS = [
+const STUB_CONFIGS: StubConfig[] = [
   {
     selector: 'tc-alert',
     inputs: ['type', 'dismissible'],
     outputs: ['closed'],
     template: `<div class="alert" [ngClass]="'alert-' + type"><ng-content></ng-content></div>`,
-    methods: { onClose(this: GenericStubBase) { this.emitOutput('closed'); } },
+    methods: {
+      onClose(this: GenericStubBase) {
+        this.emitOutput('closed');
+      },
+    },
   },
   {
     selector: 'tc-button',
@@ -126,8 +139,8 @@ const STUBS = [
   },
   {
     selector: 'tc-modal',
-    inputs: ['title','actionText','disableAction','showCancel','icon','isError','cancelText','message'],
-    outputs: ['onAction','onCancel'],
+    inputs: ['title', 'actionText', 'disableAction', 'showCancel', 'icon', 'isError', 'cancelText', 'message'],
+    outputs: ['onAction', 'onCancel'],
     template: `
       <div class="modal-header"><h5 class="modal-title">{{ title }}</h5></div>
       <div class="modal-body"><ng-content></ng-content></div>
@@ -142,7 +155,7 @@ const STUBS = [
   },
   {
     selector: 'tc-input',
-    inputs: ['id','ariaLabel','name','placeholder','invalid','editable','type','disabled'],
+    inputs: ['id', 'ariaLabel', 'name', 'placeholder', 'invalid', 'editable', 'type', 'disabled'],
     valueAccessor: true,
     template: `
       <input class="form-control"
@@ -152,7 +165,7 @@ const STUBS = [
   },
   {
     selector: 'tc-textarea',
-    inputs: ['id','name','placeholder','ariaLabel','disabled','invalid','defaultValue'],
+    inputs: ['id', 'name', 'placeholder', 'ariaLabel', 'disabled', 'invalid', 'defaultValue'],
     valueAccessor: true,
     template: `
       <textarea class="form-control"
@@ -162,23 +175,66 @@ const STUBS = [
         {{ value ?? defaultValue ?? '' }}
       </textarea>`,
   },
-  { selector: 'tc-icon, tc-field, tc-label, tc-tab, tc-tab-header, tc-tab-content' },
-  { selector: 'tc-tabs', inputs: ['activeTabId'], outputs: ['tabChanged'], methods: {
-      selectTab(this: GenericStubBase, id: string) { this.emitOutput('tabChanged', id); }
-    }},
-  { selector: 'tc-table', inputs: ['name','striped','hover','totalElements','pageSize','pageNumber'],
-    outputs: ['pageNumberChange','pageChange'], methods: {
+  {
+    selector: 'tc-icon, tc-field, tc-label, tc-tab, tc-tab-header, tc-tab-content',
+    template: '<ng-content></ng-content>'
+  },
+  {
+    selector: 'tc-tabs',
+    inputs: ['activeTabId'],
+    outputs: ['tabChanged'],
+    template: '<ng-content></ng-content>',
+    methods: {
+      selectTab(this: GenericStubBase, id: string) {
+        this.emitOutput('tabChanged', id);
+      },
+    },
+  },
+  {
+    selector: 'tc-table',
+    inputs: ['name', 'striped', 'hover', 'totalElements', 'pageSize', 'pageNumber'],
+    outputs: ['pageNumberChange', 'pageChange'],
+    template: '<ng-content></ng-content>',
+    methods: {
       triggerPageChange(this: GenericStubBase, n: number) {
         this.emitOutput('pageNumberChange', n);
         this.emitOutput('pageChange');
-      }
-    }},
-  { selector: 'tc-link', inputs: ['href','target','title'], outputs: ['click'],
+      },
+    },
+  },
+  {
+    selector: 'tc-link',
+    inputs: ['href', 'target', 'title'],
+    outputs: ['click'],
     template: `<a class="link" [attr.href]="href" [attr.target]="target" [attr.title]="title"
-                  (click)="emitOutput('click', $event)"><ng-content></ng-content></a>` },
+                  (click)="emitOutput('click', $event)"><ng-content></ng-content></a>`,
+  },
 ];
 
-const STUB_DECLARATIONS = STUBS.map(createStub);
+// -------------------------------
+// Generate Stubs (static)
+// -------------------------------
+const TcAlertStub = createStub(STUB_CONFIGS[0]);
+const TcButtonStub = createStub(STUB_CONFIGS[1]);
+const TcModalStub = createStub(STUB_CONFIGS[2]);
+const TcInputStub = createStub(STUB_CONFIGS[3]);
+const TcTextareaStub = createStub(STUB_CONFIGS[4]);
+const PassThroughStub = createStub(STUB_CONFIGS[5]);
+const TcTabsStub = createStub(STUB_CONFIGS[6]);
+const TcTableStub = createStub(STUB_CONFIGS[7]);
+const TcLinkStub = createStub(STUB_CONFIGS[8]);
+
+const STUB_DECLARATIONS = [
+  TcAlertStub,
+  TcButtonStub,
+  TcModalStub,
+  TcInputStub,
+  TcTextareaStub,
+  PassThroughStub,
+  TcTabsStub,
+  TcTableStub,
+  TcLinkStub,
+];
 
 // -------------------------------
 // Module + TestBed patch
@@ -188,10 +244,11 @@ const STUB_DECLARATIONS = STUBS.map(createStub);
   exports: STUB_DECLARATIONS,
   imports: [CommonModule],
 })
-class GlobalCustomStubsModule {}
+class GlobalCustomStubsModule {
+}
 
 const REAL_COMPONENTS = new Set([
-  'TcModalComponent','TcTabsComponent','TcTabComponent','TcTabHeaderComponent','TcTabContentComponent',
+  'TcModalComponent', 'TcTabsComponent', 'TcTabComponent', 'TcTabHeaderComponent', 'TcTabContentComponent',
 ]);
 
 const originalConfigure = TestBed.configureTestingModule.bind(TestBed);
