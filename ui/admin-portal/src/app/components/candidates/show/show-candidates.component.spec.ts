@@ -309,6 +309,7 @@ describe('ShowCandidatesComponent', () => {
 
   it('should toggle description visibility when link is clicked', () => {
     fixture.detectChanges();
+
     const toggleLink = fixture.debugElement.query(By.css('.link'));
     expect(component.showDescription).toBeFalse();
 
@@ -316,8 +317,11 @@ describe('ShowCandidatesComponent', () => {
     fixture.detectChanges();
 
     expect(component.showDescription).toBeTrue();
-    expect(toggleLink.nativeElement.textContent).toContain('Hide description');
+
+    const icon = toggleLink.query(By.css('i'));
+    expect(icon.nativeElement.classList).toContain('fa-chevron-down');
   });
+
 
   it('should call importCandidates when import button is clicked', () => {
     component.candidateSource = new MockCandidateSource();
