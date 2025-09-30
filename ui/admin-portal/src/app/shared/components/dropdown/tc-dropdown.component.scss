@@ -17,8 +17,12 @@
   ::ng-deep a.dropdown-item,   ::ng-deep button.dropdown-item{
     border-radius: 0.5rem;
     cursor:pointer;
-    padding-top:0.3rem;
-    padding-bottom:0.3rem;
+    padding-top:0.5rem;
+    padding-bottom:0.5rem;
+
+    i {
+      padding-right: 0.3rem;
+    }
 
     &:hover {
       background: color(primary, 100);
