@@ -19,7 +19,6 @@ package org.tctalent.server.service.db.impl;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -29,9 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClientException;
-import org.tctalent.server.exception.SalesforceException;
-import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -55,6 +51,7 @@ import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.background.PageContextBackRunner;
+import org.tctalent.server.util.listener.BatchListeningLogger;
 
 /**
  * Service for background processing methods
@@ -69,43 +66,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   private final SavedListService savedListService;
   private final SavedSearchService savedSearchService;
   private final TaskScheduler taskScheduler;
-
-  public BackProcessor<PageContext> createSfSyncBackProcessor(
-      List<CandidateStatus> statuses, long totalNoOfPages
-  ) {
-    BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
-      @Override
-      public boolean process(PageContext ctx) throws SalesforceException, WebClientException {
-        int page =
-            ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
-
-        // Delegate page processing to the service, which will open a transaction
-        candidateService.processSfCandidateSyncPage(page, statuses);
-
-        // Log completed page
-        LogBuilder.builder(log)
-            .action("processSfCandidateSyncPage")
-            .message("Processed page " + (page + 1) + " of " + totalNoOfPages)
-            .logInfo();
-
-        // Set last processed page
-        ctx.setLastProcessedPage(page);
-
-        // Log if processing complete
-        if (page + 1 >= totalNoOfPages) {
-          LogBuilder.builder(log)
-              .action("Sync Candidates to Salesforce")
-              .message("SF candidate sync complete!")
-              .logInfo();
-        }
-
-        // Return true if complete - ends processing
-        return page + 1 >= totalNoOfPages;
-      }
-    };
-
-    return backProcessor;
-  }
+  private final BatchListeningLogger batchListeningLogger;
 
   public BackProcessor<PageContext> createPotentialDuplicatesBackProcessor(
       List<Long> candidateIds
@@ -157,9 +118,15 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     // Schedule background processing
     BackRunner<PageContext> backRunner = new BackRunner<>();
+    backRunner.addListener(batchListeningLogger);
 
-    ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-        new PageContext(null), 20);
+    backRunner.start(
+        taskScheduler,
+        backProcessor,
+        new PageContext(null),
+        20,
+        "Potential duplicate candidate processing"
+    );
   }
 
   @Override
@@ -188,7 +155,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 20);
+    runner.start(taskScheduler, backProcessor, 20, "Set candidate public IDs");
   }
 
   @Override
@@ -214,7 +181,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 20);
+    runner.start(taskScheduler, backProcessor, 20, "Set partner public IDs");
   }
 
   @Override
@@ -240,7 +207,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 20);
+    runner.start(taskScheduler, backProcessor, 20, "Set saved list public IDs");
   }
 
   @Override
@@ -265,6 +232,6 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Start the processing - only consuming 20% of the CPU
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 20);
+    runner.start(taskScheduler, backProcessor, 20, "Set saved search public IDs");
   }
 }

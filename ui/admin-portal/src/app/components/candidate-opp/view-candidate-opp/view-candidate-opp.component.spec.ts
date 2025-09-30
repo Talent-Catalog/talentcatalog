@@ -21,7 +21,7 @@ import {FileSelectorComponent} from "../../util/file-selector/file-selector.comp
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {ChatService} from "../../../services/chat.service";
-import {of} from "rxjs";
+import {of, throwError} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
@@ -139,4 +139,34 @@ describe('ViewCandidateOppComponent', () => {
     // Expectations
     expect(component.activeTabId).toBe(mockNavChangeEvent.nextId);
   });
+
+  it('should not upload offer if modal is dismissed', fakeAsync(() => {
+    const modalRef = {
+      componentInstance: { maxFiles: 1 },
+      result: Promise.reject('Modal dismissed')
+    };
+    mockModalService.open.and.returnValue(modalRef);
+
+    component.uploadOffer();
+    tick();
+
+    expect(mockCandidateOpportunityService.uploadOffer).not.toHaveBeenCalled();
+    expect(component.saving).toBe(undefined);
+  }));
+
+
+  it('should not crash if opp is null in ngOnChanges', fakeAsync(() => {
+    component.opp = null!;
+    component.ngOnChanges({
+      opp: {
+        currentValue: null,
+        previousValue: mockCandidateOpportunity,
+        firstChange: false,
+        isFirstChange: () => false
+      }
+    });
+    tick();
+    expect(component.loading).toBeFalse();
+  }));
+
 });

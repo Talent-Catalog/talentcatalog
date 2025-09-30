@@ -58,7 +58,7 @@ class SavedSearchServiceImplTest {
         request.setGender(Gender.male);
         final Page<Candidate> candidatesByCriteriaAPI = savedSearchService.searchCandidates(request);
 
-        String sql = request.extractSQL(true);
+        String sql = request.extractFetchSQL();
         Set<Long> candidatesBySQL = candidateService.searchCandidatesUsingSql(sql);
 
         assertEquals(candidatesByCriteriaAPI.getTotalElements(), candidatesBySQL.size());
@@ -81,7 +81,7 @@ class SavedSearchServiceImplTest {
         };
 
         PageContextBackRunner runner = new PageContextBackRunner();
-        runner.start(taskScheduler, backProcessor, 20);
+        runner.start(taskScheduler, backProcessor, 20, "Test");
 
     }
 

@@ -35,6 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
@@ -57,6 +59,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.api.dto.CandidateIntakeDataBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateVisaCheck;
@@ -87,11 +91,9 @@ import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Candidate Admin Api endpoints.
@@ -131,12 +133,12 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private final Page<Candidate> candidates =
             new PageImpl<>(
-                    AdminApiTestUtil.listOfCandidates(),
+                    getListOfCandidates(),
                     PageRequest.of(0,10, Sort.unsorted()),
-                    AdminApiTestUtil.listOfCandidates().size()
+                    getListOfCandidates().size()
             );
 
-    private final Candidate candidate = AdminApiTestUtil.getCandidate();
+    private final Candidate candidate = getCandidate();
 
     @MockBean
     CandidateService candidateService;
@@ -145,17 +147,15 @@ class CandidateAdminApiTest extends ApiTestBase {
     @MockBean
     CandidateSavedListService candidateSavedListService;
     @MockBean
-    CountryService countryService;
-    @MockBean
-    OccupationService occupationService;
-    @MockBean
     SavedListService savedListService;
     @MockBean
     SavedSearchService savedSearchService;
     @MockBean
-    UserService userService;
-    @MockBean
     CandidateTokenProvider candidateTokenProvider;
+    @MockBean
+    CandidateBuilderSelector candidateBuilderSelector;
+    @MockBean
+    CandidateIntakeDataBuilderSelector candidateIntakeDataBuilderSelector;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -164,6 +164,30 @@ class CandidateAdminApiTest extends ApiTestBase {
     @BeforeEach
     void setUp() {
         configureAuthentication();
+
+        // Minimal builder for Candidate
+        DtoBuilder nationalityDto = new DtoBuilder()
+            .add("name");
+
+        DtoBuilder candidateDto = new DtoBuilder()
+            .add("id")
+            .add("nationality", nationalityDto);
+
+        given(candidateBuilderSelector.selectBuilder()).willReturn(candidateDto);
+        given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
+
+        // Minimal builder for Intake
+        DtoBuilder countryDto = new DtoBuilder()
+            .add("name");
+
+        DtoBuilder destinationDto = new DtoBuilder()
+            .add("country", countryDto);
+
+        DtoBuilder intakeDto = new DtoBuilder()
+            .add("id")
+            .add("candidateDestinations", destinationDto);
+
+        given(candidateIntakeDataBuilderSelector.selectBuilder()).willReturn(intakeDto);
     }
 
     @Test
@@ -277,7 +301,18 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .addMissingDestinations(any(Candidate.class)))
                 .willReturn(addMissingDestinations(candidate));
 
-        getIntakeDataAndVerifyResponse(GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)));
+//        getIntakeDataAndVerifyResponse(GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)));
+      mockMvc.perform(get(BASE_PATH + GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)))
+              .header("Authorization", "Bearer " + "jwt-token")
+              .accept(MediaType.APPLICATION_JSON))
+
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+          .andExpect(jsonPath("$.candidateDestinations").isArray())
+          .andExpect(jsonPath("$.candidateDestinations", hasSize(2)))
+          .andExpect(jsonPath("$.candidateDestinations[0].country.name", is("Canada")))
+          .andExpect(jsonPath("$.candidateDestinations[1].country.name", is("UK")));
 
         verify(candidateService).getCandidate(anyLong());
     }
@@ -615,7 +650,7 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements", Matchers.is(
-                    AdminApiTestUtil.listOfCandidates().size())))
+                    getListOfCandidates().size())))
                 .andExpect(jsonPath("$.totalPages", is(1)))
                 .andExpect(jsonPath("$.number", is(0)))
                 .andExpect(jsonPath("$.hasNext", is(false)))

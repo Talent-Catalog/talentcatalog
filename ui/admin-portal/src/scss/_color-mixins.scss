@@ -1,0 +1,104 @@
+@import './support-colors';
+
+// ==========================
+// TEXT COLOR MIXINS
+// ==========================
+
+// --- Base Text Colors ---
+// Use these for normal text on light backgrounds
+@mixin text-color-body    { color: color(gray, 900); } //  Primary text on light backgrounds; best for body content and high readability.
+@mixin text-color-secondary   { color: color(gray, 500); } //  For secondary text like descriptions, hints, or helper text on light backgrounds. On dark backgrounds, use for small labels or subtle captions.
+@mixin text-color-caption { color: color(gray, 400); } //  For tertiary text like captions, timestamps and placeholders. On dark backgrounds, can be used as muted text.
+@mixin text-color-white   { color: color(core, white); } // Use on dark backgrounds for maximum legibility and contrast.
+@mixin text-color-primary  { color: color(primary, 500); } //  For primary text like highlighted text in nav tabs
+
+// --- Semantic Text Colors ---
+@mixin text-color-success  { color: color(green, 700); }
+@mixin text-color-warning  { color: color(yellow, 700); }
+@mixin text-color-error    { color: color(red, 700); }
+@mixin text-color-info     { color: color(blue, 700); }
+@mixin text-color-disabled   { color: color(gray, 500); }
+@mixin text-color-primary   { color: color(primary, 500); }
+
+// --- Descriptive Text Colors ---
+@mixin text-color-red      { color: color(red, 700); }
+@mixin text-color-orange   { color: color(orange, 700); }
+@mixin text-color-yellow   { color: color(yellow, 700); }
+@mixin text-color-green    { color: color(green, 700); }
+@mixin text-color-blue     { color: color(blue, 700); }
+@mixin text-color-purple   { color: color(purple, 700); }
+@mixin text-color-pink     { color: color(pink, 700); }
+
+// ==========================
+  // BORDER COLOR MIXINS
+  // ==========================
+
+  // --- Base Border Colors ---
+  @mixin border-color-base      { border-color: color(gray, 300); }    // Standard subtle border
+  @mixin  border-color-light     { border-color: color(gray, 100); }  // Softer, for nested containers
+  @mixin  border-color-soft      { border-color: color(gray, 50); }         // Very light, for subtle outlines
+
+  @mixin  border-color-base-dark  { border-color: color(gray, 700); }      // Default border on dark bg
+  @mixin  border-color-light-dark { border-color: color(gray, 800); }   // Standard subtle border on dark bg
+  @mixin  border-color-soft-dark  { border-color: color(gray, 900); }       // Very light, for subtle outlines on dark bg
+
+
+  // --- Semantic Border Colors ---
+  @mixin border-color-primary  { border-color: color(primary, 500); }
+  @mixin border-color-success  { border-color: color(green, 500); }
+  @mixin border-color-warning  { border-color: color(yellow, 500); }
+  @mixin border-color-error    { border-color: color(red, 500); }
+  @mixin border-color-info     { border-color: color(blue, 500); }
+
+  // --- Descriptive Border Colors ---
+  @mixin border-color-red      { border-color: color(red, 500); }
+  @mixin border-color-orange   { border-color: color(orange, 500); }
+  @mixin border-color-yellow   { border-color: color(yellow, 500); }
+  @mixin border-color-green    { border-color: color(green, 500); }
+  @mixin border-color-blue     { border-color: color(blue, 500); }
+  @mixin border-color-purple   { border-color: color(purple, 500); }
+  @mixin border-color-pink     { border-color: color(pink, 500); }
+
+
+  // ==========================
+  // BACKGROUND COLOR MIXINS
+  // ==========================
+
+  // --- Base Background Colors ---
+  @mixin background-color-primary    { background-color: color(primary, 500); }            // Primary blue color
+  @mixin background-color-secondary  { background-color: color(secondary, 500); }       // Secondary teal color
+  @mixin background-color-white      { background-color: color(core, white); }                // Page or section backgrounds
+  @mixin background-color-light      { background-color: color(gray, 200); }                          // Slightly gray bg
+  @mixin background-color-soft       { background-color: color(gray, 100); }                   // Soft background (cards)
+  @mixin background-color-primary-light    { background-color: color(primary, 100); }
+
+  @mixin background-color-dark        { background-color: color(gray, 900); }         // Full dark background (almost black)
+  @mixin background-color-light-dark  { background-color: color(gray, 600); }          // For less contrast on dark bg
+  @mixin background-color-soft-dark   { background-color: color(gray, 800); }      // Slightly lighter than primary
+
+  // --- Semantic Background Colors ---
+  @mixin background-color-success  { background-color: color(green, 100); }
+  @mixin background-color-warning  { background-color: color(yellow, 100); }
+  @mixin background-color-error    { background-color: color(red, 100); }
+  @mixin background-color-info     { background-color: color(blue, 100); }
+  @mixin background-color-disabled   { background-color: color(gray, 100); }
+
+  // --- Descriptive Background Colors ---
+  @mixin background-color-red      { background-color: color(red, 100); }
+  @mixin background-color-orange   { background-color: color(orange, 100); }
+  @mixin background-color-yellow   { background-color: color(yellow, 100); }
+  @mixin background-color-green    { background-color: color(green, 100); }
+  @mixin background-color-blue     { background-color: color(blue, 100); }
+  @mixin background-color-purple   { background-color: color(purple, 100); }
+  @mixin background-color-pink     { background-color: color(pink, 100); }
+
+
+// ==========================
+// SHADOW COLOR MIXINS
+// ==========================
+
+@mixin shadow-lg {
+  box-shadow:
+    0 4px 6px -4px rgba(0, 0, 0, 0.1),
+    0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

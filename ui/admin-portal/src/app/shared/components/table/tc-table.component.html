@@ -1,0 +1,11 @@
+<div class="tc-table">
+  <p class="table-name" *ngIf="name">{{name}}</p>
+  <div class="table-responsive">
+    <table class="table" [ngClass]="classList">
+      <ng-content></ng-content>
+    </table>
+  </div>
+  <tc-pagination *ngIf="totalElements > 0" [totalElements]="totalElements" [pageSize]="pageSize"
+                     [pageNumber]="pageNumber" (pageChange)="onPageChange($event)">
+  </tc-pagination>
+</div>

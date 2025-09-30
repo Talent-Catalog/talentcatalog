@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -74,9 +73,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
-
-    @Value("${aws.s3.bucketName}")
-    String s3Bucket;
 
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
@@ -222,7 +218,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // Update candidate audit fields
         candidate.setAuditFields(user);
-        candidateService.save(candidate, true);
+        boolean updateCandidateText = request.getCv() != null ? request.getCv() : false;
+        candidateService.save(candidate, true, updateCandidateText);
 
         return candidateAttachmentRepository.save(attachment);
     }
@@ -438,17 +435,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         UploadType uploadType) throws IOException, NoSuchObjectException {
 
         //Save to a temporary file
-        InputStream is = file.getInputStream();
-        File tempFile = File.createTempFile("tbb", ".tmp");
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-            int read;
-            byte[] bytes = new byte[1024];
-
-            while ((read = is.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
+        File tempFile = File.createTempFile("talent", ".tmp");
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+            InputStream inputStream = file.getInputStream()) {
+            inputStream.transferTo(outputStream);
         }
-
 
         //Get link to candidate folder, creating one (plus subfolders) if needed.
         candidate = candidateService.createCandidateFolder(candidate.getId());

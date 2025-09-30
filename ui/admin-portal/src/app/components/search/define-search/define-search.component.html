@@ -74,7 +74,7 @@
         {{getError()}}
       </div>
 
-      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="checkSelectionsAndApply()" #formWrapper>
+      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="onSubmit()" #formWrapper>
         <ng-template #keywordSearchTip>
           <span class="search-tips-content">
             Search candidate CVs using these tips to create powerful queries:
@@ -338,6 +338,18 @@
                   </ng-select>
                 </div>
 
+                <div class="col-md-5">
+                  <label class="form-label">Education Level (maximum)</label>
+                  <ng-select
+                    id="maxEducationLevel"
+                    [items]="educationLevels"
+                    placeholder="Select or type..."
+                    bindLabel="name"
+                    bindValue="level"
+                    [formControlName]="'maxEducationLevel'">
+                  </ng-select>
+                </div>
+
                 <!-- EDUCATION MAJOR -->
                 <div class="col-md-5">
                   <label class="form-label">Education major</label>
@@ -597,6 +609,17 @@
               </ng-select>
             </div>
 
+            <!-- SHOW CANDIDATES WHO HAVE NOT ACCEPTED TERMS -->
+            <div class="col-md-2">
+              <label class="form-label" for="includePendingTermsCandidates">Show even if terms not accepted?</label>
+              <ng-select id="includePendingTermsCandidates"
+                         placeholder="Select"
+                         formControlName="includePendingTermsCandidates"
+              >
+                <ng-option [value]="true">Yes</ng-option>
+                <ng-option [value]="false">No</ng-option>
+              </ng-select>
+            </div>
           </div>
         </div>
 
@@ -690,6 +713,77 @@
               ></app-find-candidate-source>
             </div>
           </div>
+
+        </div>
+        <hr class="w-100">
+        <div class="container-fluid">
+          <div class="row">
+             <!-- UTM: Campaign -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="campaignFilter">
+                <label class="form-label" for="campaignFilter">Campaign</label>
+                <button class="tool-tip-button"
+                        [ngbTooltip]="campaignTooltip"
+                        triggers="click"
+                        tooltipClass="search-tips"
+                        placement="bottom top"
+                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                </button>
+                <ng-template #campaignTooltip>
+                  <span class="search-tips-content">
+                    Search ignores upper or lower case so don't worry about case.
+                    Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                    campaigns beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                    with <code>irc</code> appearing anywhere in the name.
+                  </span>
+                </ng-template>
+                <input id="campaign" class="form-control"
+                       name="campaign" [formControlName]="'regoUtmCampaign'" appLowercase>
+              </div>
+
+              <!-- UTM: Source -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="sourceFilter">
+                <label class="form-label" for="sourceFilter">Source</label>
+                <button class="tool-tip-button"
+                        [ngbTooltip]="campaignTooltip"
+                        triggers="click"
+                        tooltipClass="search-tips"
+                        placement="bottom top"
+                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                </button>
+                <ng-template #campaignTooltip>
+                  <span class="search-tips-content">
+                    Search ignores upper or lower case so don't worry about case.
+                    Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                    sources beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                    with <code>irc</code> appearing anywhere in the name.
+                  </span>
+                </ng-template>
+                <input id="source" class="form-control"
+                       name="source" [formControlName]="'regoUtmSource'" appLowercase>
+              </div>
+
+              <!-- UTM: Medium -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="mediumFilter">
+                <label class="form-label" for="mediumFilter">Medium</label>
+                <button class="tool-tip-button"
+                        [ngbTooltip]="mediumTooltip"
+                        triggers="click"
+                        tooltipClass="search-tips"
+                        placement="bottom top"
+                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                </button>
+                <ng-template #mediumTooltip>
+                <span class="search-tips-content">
+                  Search ignores upper or lower case so don't worry about case.
+                  Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                  mediums beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                  with <code>irc</code> appearing anywhere in the name.
+                </span>
+                </ng-template>
+                <input id="medium" class="form-control"
+                       name="medium" [formControlName]="'regoUtmMedium'" appLowercase>
+              </div>
+            </div>
         </div>
 
         <hr class="w-100">
@@ -708,7 +802,14 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col text-center">
-              <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || searchForm.invalid || searchForm.pristine"><i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search</button>
+              <button type="submit" class="btn btn-success btn-lg"
+                      [disabled]="loading || searchForm.invalid || searchForm.pristine">
+                <i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search
+              </button>
+            </div>
+            <div class="col text-center">
+              <input type="checkbox" [checked]="useOldSearch"
+                     (change)="useOldSearch = !useOldSearch"> Use old way of searching
             </div>
           </div>
         </div>
@@ -720,6 +821,8 @@
   </div>
 
   <app-show-candidates *ngIf="!error && !loading"
+                       [useOldSearch]="useOldSearch"
+                       [showTextMatchRank]="!isEmptySearchTerms()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"
@@ -745,7 +848,7 @@
 </div>
 
 <!-- Modals -->
-<ng-template #downloadCsvErrorModal let-c="close" let-d="dismiss">
+<ng-template #downloadCsvErrorModal let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title">CSV download failed</h4>
 

@@ -82,7 +82,6 @@ public class CandidateOccupationAdminApi {
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("migrationOccupation")
                 .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
                 .add("createdBy", userDto())

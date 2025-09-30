@@ -34,10 +34,43 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "@ng-select/ng-select/themes/default.theme.css";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
+@import './scss/color-classes';
+@import './scss/color-mixins';
+@import './scss/support-colors';
+@import './scss/typography-mixins';
+@import './scss/typography-classes';
+@import './scss/components/navbar';
+@import './scss/components/ngb-modal';
+@import './scss/components/ng-select';
+@import './scss/components/ngb-datepicker';
 
 body {
-  padding-top: 6rem;
-  background-color: $light;
+  padding-top: 5rem;
+  margin:0 0.8rem 0 0.8rem;
+  font-family: 'Lato', sans-serif;
+  @include text-color-body;
+}
+
+h1 {
+  @include heading-lg;
+}
+
+h2 {
+  @include heading-md;
+}
+
+h3 {
+  @include heading-sm;
+}
+
+h4 {
+  @include heading-xs;
+}
+
+a {
+  @include label-md;
+  color: inherit;
+  text-decoration: underline;
 }
 
 .nav-link {
@@ -95,17 +128,17 @@ h1 {
 
 //Table row highlighting
 highlighting.table-hover> tbody> tr:hover{
-  background-color: $accent3
+  //background-color: $accent3
 }
 
 //Current item - the one whose detailed data is displayed
 tr.current {
-  background-color: fade-out($accent1, 0.7)
+  //background-color: fade-out($accent1, 0.7)
 }
 
 //Selected item(s)- item is one of the selected ones (those with checked selection checkbox)
 tr.selected {
-  background-color: fade-out($accent1, 0.7)
+  //background-color: fade-out($accent1, 0.7)
 }
 //end - Table row highlighting
 

@@ -21,8 +21,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +31,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.api.dto.DtoType;
+import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -65,6 +68,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RestController
 @RequestMapping("/api/admin/saved-search")
 @Slf4j
+@RequiredArgsConstructor
 public class SavedSearchAdminApi implements
         ITableApi<SearchSavedSearchRequest,
             UpdateSavedSearchRequest, UpdateSavedSearchRequest> {
@@ -73,21 +77,8 @@ public class SavedSearchAdminApi implements
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
-    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
-    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector
-        = new ExportColumnsBuilderSelector();
-
-
-    @Autowired
-    public SavedSearchAdminApi(SavedSearchService savedSearchService,
-        SavedListService savedListService,
-        CandidateService candidateService,
-        CandidateSavedListService candidateSavedListService) {
-        this.candidateService = candidateService;
-        this.savedListService = savedListService;
-        this.savedSearchService = savedSearchService;
-        this.candidateSavedListService = candidateSavedListService;
-    }
+    private final SavedListBuilderSelector savedListBuilderSelector;
+    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector;
 
     /*
         Standard ITableApi methods
@@ -437,6 +428,7 @@ public class SavedSearchAdminApi implements
                 .add("reviewable")
                 .add("global")
                 .add("defaultSearch")
+                .add("includePendingTermsCandidates")
                 .add("miniIntakeCompleted")
                 .add("fullIntakeCompleted")
                 .add("sfJobOpp", jobOppIdsDto())

@@ -45,8 +45,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.ApiTestBase;
+import org.tctalent.server.data.JobChatTestData;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
@@ -77,10 +77,10 @@ class ChatAdminApiTest extends ApiTestBase {
     private static final String READ = "/read";
     private static final String USER = "/user";
 
-    private static final JobChat chat = AdminApiTestUtil.getChat();
-    private static final List<JobChat> chatList = AdminApiTestUtil.getListOfChats();
-    private static final ChatPost post = AdminApiTestUtil.getChatPost();
-    private static final JobChatUserInfo info = AdminApiTestUtil.getJobChatUserInfo();
+    private static final JobChat chat = JobChatTestData.getChat();
+    private static final List<JobChat> chatList = JobChatTestData.getListOfChats();
+    private static final ChatPost post = JobChatTestData.getChatPost();
+    private static final JobChatUserInfo info = JobChatTestData.getJobChatUserInfo();
 
 
     @Autowired

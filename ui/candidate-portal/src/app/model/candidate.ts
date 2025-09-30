@@ -36,6 +36,7 @@ import {getExternalHref} from "../util/url";
 import {CandidateReviewStatusItem} from "./candidate-review-status-item";
 import {TaskAssignment} from "./task-assignment";
 import {Job} from "./job";
+import {Partner} from "./partner";
 
 export interface ShortCandidate {
   id: number;
@@ -46,6 +47,9 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: Partner;
   publicId: string;
   status: string;
   allNotifications: boolean;
@@ -430,6 +434,10 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   utmTerm?: string;
   contactConsentRegistration?: string;
   contactConsentPartners?: string;
+}
+
+export class SubmitRegistrationRequest {
+  acceptedPrivacyPolicyId?: string;
 }
 
 export interface UpdateCandidateOppsRequest {

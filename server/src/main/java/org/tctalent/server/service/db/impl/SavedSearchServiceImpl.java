@@ -121,6 +121,7 @@ import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.CandidateSearchService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.EducationMajorService;
@@ -147,6 +148,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CandidateService candidateService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
+    private final CandidateSearchService candidateSearchService;
     private final CountryService countryService;
     private final PartnerService partnerService;
     private final ElasticsearchService esService;
@@ -1686,6 +1688,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
                     getListAsString(request.getEducationMajorIds()));
+            savedSearch.setIncludePendingTermsCandidates(request.getIncludePendingTermsCandidates());
             savedSearch.setMiniIntakeCompleted(request.getMiniIntakeCompleted());
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
             savedSearch.setPotentialDuplicate(request.getPotentialDuplicate());
@@ -1764,6 +1767,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxAge(search.getMaxAge());
         searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
+        searchCandidateRequest.setIncludePendingTermsCandidates(search.getIncludePendingTermsCandidates());
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
         searchCandidateRequest.setPotentialDuplicate(search.getPotentialDuplicate());
@@ -1835,10 +1839,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 !searchRequest.getSearchJoinRequests().isEmpty();
 
         String simpleQueryString = searchRequest.getSimpleQueryString();
+        boolean haveSimpleQueryString = simpleQueryString != null && !simpleQueryString.isEmpty();
 
-        //TODO JC Reconsider this logic of forcing all searches based on other searches to be
-        //elastic searches.
-        if ((simpleQueryString != null && !simpleQueryString.isEmpty()) || hasBaseSearch) {
+        boolean useOldSearch = searchRequest.isUseOldSearch();
+        if (!useOldSearch) {
+            //New search is Postgres SQL only - no elastic search and no CandidateSepecification
+            candidates = candidateSearchService.searchCandidates(searchRequest, excludedCandidates);
+        } else if (haveSimpleQueryString || hasBaseSearch) {
+            //TODO JC Reconsider this logic of forcing all searches based on other searches to be
+            //elastic searches.
             // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
@@ -1879,6 +1888,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         } else {
             //Compute the non-elastic query
             Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
+
+            //The above query generates the sorting so it does not need to be passed in here.
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
         }
         LogBuilder.builder(log)

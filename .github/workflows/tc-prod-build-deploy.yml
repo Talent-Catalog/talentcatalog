@@ -8,12 +8,6 @@ on:
   push:
     branches: [ master ]
 
-#This should correspond to the AWS IAM user prod-tbb-deploy
-#The matching secret key is stored as a GitHub secret and is accessible
-#as ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-env:
-  AWS_ACCESS_KEY_ID: AKIA6C7ESOA6BS5PUOWH
-
 jobs:
   build:
 
@@ -30,13 +24,24 @@ jobs:
         run: sudo apt update && sudo apt install amazon-ecr-credential-helper
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Download DB dump from S3
+        run: |
+          mkdir -p server/src/test/resources
+          aws s3 cp s3://tctalent-prod-db-dumps/dump.sql server/src/test/resources/dump.sql
+
       - name: Build with Gradle
         run: ./gradlew server:build # We won't run the perf tests here
+        env:
+          GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
+          GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
+          SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
       - name: Deploy with Jib
         run: ./gradlew jib -Pprod-tc-system
-
-        # These env variables will be used by the jib stage of the gradle
-        # build which is configured to use the ecr credential helper.
-        env:
-          AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

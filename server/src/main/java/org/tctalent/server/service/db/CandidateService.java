@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
@@ -40,7 +41,6 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateSubfolderType;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
@@ -57,13 +57,16 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
@@ -137,6 +140,8 @@ public interface CandidateService {
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
+
+    Page<Candidate> searchCandidates(CandidatePublicIdSearchRequest request);
 
     /**
      * Returns a set of the ids of all candidates resulting from the given SQL query.
@@ -238,6 +243,13 @@ public interface CandidateService {
      */
     Candidate registerByPartner(RegisterCandidateByPartnerRequest request);
 
+    /**
+     * Updates the privacy policy that the candidate has accepted.
+     * @param acceptedPrivacyPolicyId ID of policy that candidate has accepted
+     * @return The updated candidate
+     */
+    Candidate updateAcceptedPrivacyPolicy(String acceptedPrivacyPolicyId);
+
     Candidate updateContact(UpdateCandidateContactRequest request);
 
     Candidate updatePersonal(UpdateCandidatePersonalRequest request);
@@ -247,12 +259,23 @@ public interface CandidateService {
     Candidate updateOtherInfo(UpdateCandidateOtherInfoRequest request);
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
+    /**
+     * Updates the maximum education level of a candidate.
+     *
+     * @param id the ID of the candidate to update
+     * @param request the request object containing the new max education level
+     * @return the updated {@link Candidate} entity with the new education level
+     * @throws EntityNotFoundException if no candidate is found with the given ID
+     * @throws IllegalArgumentException if the request is invalid or incomplete
+     */
+    Candidate updateCandidateMaxEducationLevel(long id, UpdateCandidateMaxEducationLevelRequest request);
 
     /**
-     * Returns a candidate once they have completed their registration
+     * Submits a candidate's completed registration.
      * <p/>
+     * Returns a candidate once they have completed their registration
      */
-    Candidate submitRegistration();
+    Candidate submitRegistration(SubmitRegistrationRequest submitRegistrationRequest);
 
     /**
      * Returns the currently logged in candidate entity preloaded with
@@ -484,6 +507,13 @@ public interface CandidateService {
     Candidate save(Candidate candidate, boolean updateCandidateEs);
 
     /**
+     * Allows for automatic updating of the candidate text before saving the candidate.
+     * @see #save(Candidate, boolean)
+     * @return Candidate object as returned by {@link CandidateRepository#save}
+     */
+    Candidate save(Candidate candidate, boolean updateCandidateEs, boolean updateCandidateText);
+
+    /**
      * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.
      * <p/>
      * If a link to the folder or subfolders are already recorded for the candidate, does nothing.
@@ -634,17 +664,6 @@ public interface CandidateService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
-
-    /**
-     * Processes a single page for the TC-SF candidate sync.
-     * @param startPage page to process (zero-based index)
-     * @param statuses types of {@link CandidateStatus} to filter for in search
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    void processSfCandidateSyncPage(
-        long startPage, List<CandidateStatus> statuses
-    ) throws SalesforceException, WebClientException;
 
     /**
      * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in

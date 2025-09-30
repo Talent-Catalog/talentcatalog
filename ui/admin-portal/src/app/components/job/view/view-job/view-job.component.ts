@@ -14,7 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
@@ -35,7 +43,9 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
+import {
+  CandidateSourceCandidateService
+} from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
 import {forkJoin, Observable} from "rxjs";
@@ -311,7 +321,8 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     showReport.componentInstance.title = "Published job: " + this.job.name;
     showReport.componentInstance.showCancel = false;
     let mess =
-      "Job has been updated to 'Candidate Search' if it wasn't already at that stage or later.";
+      "Job has been set to 'Candidate Search' or 'Visa Eligibility' (if 'Skip candidate search' " +
+      "was selected) if it was previously at an earlier stage.";
 
     if (this.authorizationService.isDefaultJobCreator()) {
       mess += " Also posted to Slack."

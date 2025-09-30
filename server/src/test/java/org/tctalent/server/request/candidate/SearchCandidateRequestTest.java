@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -26,193 +26,353 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort.Direction;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
+import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.util.CandidateSearchUtils;
 
 class SearchCandidateRequestTest {
 
     private SearchCandidateRequest request;
 
+    private static final String FROM_CANDIDATE = " from candidate";
+    private static final String JOIN = " left join ";
+    private static final String ID_SORT = "candidate.id DESC";
+    private static final String ORDER_BY = " order by ";
+    private static final String WHERE = " where ";
+    private static final String UNORDERED_SELECT = "select distinct candidate.id" + FROM_CANDIDATE;
+    private static final String ORDERED_SELECT_PREFIX = "select distinct candidate.id";
+    private static final String EXCLUDE_PENDING_TERMS_CLAUSE =
+        "candidate.id not in (select candidate_id from candidate_saved_list where saved_list_id = ";
+
     @BeforeEach
     void setUp() {
         request = new SearchCandidateRequest();
+        request.setIncludePendingTermsCandidates(true);
+        SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID = 123L;
     }
 
     @Test
     @DisplayName("SQL generated from empty request")
-    void extractSQLFromEmptyRequest() {
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate", sql);
+    void extractFetchSQLFromEmptyRequest() {
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from empty ordered request")
+    void extractFetchSQLFromEmptyOrderedRequest() {
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + FROM_CANDIDATE + ORDER_BY + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request")
+    void extractFetchSQLFromOrderedRequest() {
+        request.setSortFields(new String[] {"gender"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",candidate.gender" + FROM_CANDIDATE +
+            ORDER_BY + "candidate.gender " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request requiring join")
+    void extractFetchSQLFromOrderedRequestRequiringJoin() {
+        request.setSortFields(new String[] {"user.firstName"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",users.first_name" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+            ORDER_BY + "users.first_name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request requiring join which filter has already joined")
+    void extractFetchSQLFromOrderedRequestRequiringJoinWithFilter() {
+        request.setPartnerIds(List.of(123L));
+        request.setSortFields(new String[] {"user.lastName"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",users.last_name" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+            WHERE + "users.partner_id in (123)" +
+            ORDER_BY + "users.last_name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request requiring joins from filter and order")
+    void extractFetchSQLFromOrderedRequestRequiringJoinsFromFilterAndOrder() {
+        request.setPartnerIds(List.of(123L));
+        request.setSortFields(new String[] {"nationality.name"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",nationality.name" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+                JOIN + CandidateSearchUtils.getTableJoin("nationality") +
+            WHERE + "users.partner_id in (123)" +
+            ORDER_BY + "nationality.name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request on country")
+    void extractFetchSQLFromOrderedRequestOnCountry() {
+        request.setPartnerIds(List.of(1L));
+        request.setSortFields(new String[] {"country.name"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",country.name" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+                JOIN + CandidateSearchUtils.getTableJoin("country") +
+            WHERE + "users.partner_id in (1)" +
+            ORDER_BY + "country.name " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request on partner abbreviation")
+    void extractFetchSQLFromOrderedRequestOnPartnerAbbreviation() {
+        request.setPartnerIds(List.of(1L));
+        request.setSortFields(new String[] {"user.partner.abbreviation"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",partner.abbreviation" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+                JOIN + CandidateSearchUtils.getTableJoin("partner") +
+            WHERE + "users.partner_id in (1)" +
+            ORDER_BY + "partner.abbreviation " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from ordered request on partner abbreviation when user join is not needed")
+    void extractFetchSQLFromOrderedRequestOnPartnerAbbreviationWithoutUserJoin() {
+        request.setSortFields(new String[] {"user.partner.abbreviation"});
+        request.setSortDirection(Direction.ASC);
+        String sql = request.extractFetchSQL(null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + ",partner.abbreviation" + FROM_CANDIDATE +
+                JOIN + CandidateSearchUtils.getTableJoin("users") +
+                JOIN + CandidateSearchUtils.getTableJoin("partner") +
+            ORDER_BY + "partner.abbreviation " + Direction.ASC + "," + ID_SORT, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from local enumeration")
+    void extractFetchSQLFromLocalEnumerationRequest() {
+        Gender gender = Gender.male;
+        request.setGender(gender);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " where candidate.gender = '" + gender.name() + "'", sql);
     }
 
     @Test
     @DisplayName("SQL generated from request needing join")
-    void extractSQLFromRequestNeedingJoin() {
+    void extractFetchSQLFromRequestNeedingJoin() {
         List<Long> partnerIds = new ArrayList<>();
         partnerIds.add(123L);
         partnerIds.add(456L);
         request.setPartnerIds(partnerIds);
-        String sql = request.extractSQL(true);
-        assertEquals(
-            "select distinct candidate.id from candidate "
-                + "left join users on candidate.user_id = users.id "
-                + "where users.partner_id in (123,456)", sql);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT + " left join users on candidate.user_id = users.id"
+                + " where users.partner_id in (123,456)", sql);
     }
 
     @Test
     @DisplayName("SQL generated from request needing multiple joins")
-    void extractSQLFromRequestNeedingJoins() {
+    void extractFetchSQLFromRequestNeedingJoins() {
         List<Long> partnerIds = new ArrayList<>();
         partnerIds.add(123L);
         partnerIds.add(456L);
         request.setPartnerIds(partnerIds);
         request.setMinEducationLevel(1);
-        String sql = request.extractSQL(true);
-        assertEquals(
-            "select distinct candidate.id from candidate "
-                + "left join users on candidate.user_id = users.id "
-                + "left join education_level on candidate.max_education_level_id = education_level.id "
-                + "where users.partner_id in (123,456) and education_level.level >= 1"
+        String sql = request.extractFetchSQL();
+        assertEquals( UNORDERED_SELECT +
+                " left join users on candidate.user_id = users.id"
+                + " left join education_level on candidate.max_education_level_id = education_level.id"
+                + " where users.partner_id in (123,456) and education_level.level >= 1"
                 , sql);
     }
 
     @Test
     @DisplayName("SQL generated from major education request")
-    void extractSQLFromMajorEducationRequest() {
+    void extractFetchSQLFromMajorEducationRequest() {
         List<Long> majorIds = new ArrayList<>();
         majorIds.add(123L);
         request.setEducationMajorIds(majorIds);
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-                + "left join candidate_education on candidate.id = candidate_education.candidate_id "
-                + "where (major_id in (123) or migration_education_major_id in (123))"
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " left join candidate_education on candidate.id = candidate_education.candidate_id"
+                + " where (major_id in (123) or migration_education_major_id in (123))"
                 , sql);
     }
 
     @Test
-    @DisplayName("SQL generated from local enumeration")
-    void extractSQLFromLocalEnumerationRequest() {
-        Gender gender = Gender.male;
-        request.setGender(gender);
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "where candidate.gender = '" + gender.name() + "'", sql);
+    @DisplayName("SQL generated from list any request")
+    void extractFetchSQLFromListAnyRequest() {
+        List<Long> listAnyIds = List.of(123L, 456L);
+        request.setListAnyIds(listAnyIds);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id in (123,456))"
+                , sql);
+
+        request.setListAnySearchType(SearchType.not);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where not (candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id in (123,456)))"
+                , sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from list all request")
+    void extractFetchSQLFromListAllRequest() {
+        List<Long> listAllIds = List.of(123L, 456L);
+        request.setListAllIds(listAllIds);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 123)"
+                + " and candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 456)"
+                , sql);
+
+        request.setListAllSearchType(SearchType.not);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where not (candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 123)"
+                + " and candidate.id in (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = 456))"
+            , sql);
     }
 
     @Test
     @DisplayName("SQL generated from local nullable")
-    void extractSQLFromLocalNullableRequest() {
+    void extractFetchSQLFromLocalNullableRequest() {
         request.setMiniIntakeCompleted(true);
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "where mini_intake_completed_date is not null", sql);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " where mini_intake_completed_date is not null", sql);
 
         request.setMiniIntakeCompleted(false);
-        sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "where mini_intake_completed_date is null", sql);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " where mini_intake_completed_date is null", sql);
 
         request.setFullIntakeCompleted(false);
-        sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "where mini_intake_completed_date is null and full_intake_completed_date is null", sql);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " where mini_intake_completed_date is null and full_intake_completed_date is null", sql);
     }
 
     @Test
     @DisplayName("SQL generated from occupations")
-    void extractSQLFromOccupationsRequest() {
+    void extractFetchSQLFromOccupationsRequest() {
         List<Long> occupationIds = new ArrayList<>();
         occupationIds.add(9426L);
         request.setOccupationIds(occupationIds);
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "left join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
-            + "where candidate_occupation.occupation_id in (9426)", sql);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " left join candidate_occupation on candidate.id = candidate_occupation.candidate_id"
+            + " where candidate_occupation.occupation_id in (9426)", sql);
 
         request.setMinYrs(1);
-        sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "left join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
-            + "where candidate_occupation.occupation_id in (9426) "
-            + "and candidate_occupation.years_experience >= 1", sql);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " left join candidate_occupation on candidate.id = candidate_occupation.candidate_id"
+            + " where candidate_occupation.occupation_id in (9426)"
+            + " and candidate_occupation.years_experience >= 1", sql);
 
         request.setMaxYrs(5);
-        sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "left join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
-            + "where candidate_occupation.occupation_id in (9426) "
-            + "and candidate_occupation.years_experience >= 1 "
-            + "and candidate_occupation.years_experience <= 5", sql);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " left join candidate_occupation on candidate.id = candidate_occupation.candidate_id"
+            + " where candidate_occupation.occupation_id in (9426)"
+            + " and candidate_occupation.years_experience >= 1"
+            + " and candidate_occupation.years_experience <= 5", sql);
     }
 
     @Test
-    @DisplayName("SQL generated from languages request")
-    void extractSQLFromLanguagesRequest() {
+    @DisplayName("SQL generated from languages request and including pending terms")
+    void extractFetchSQLFromLanguagesRequestAndIncludingPendingTerms() {
         request.setEnglishMinSpokenLevel(2);
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "left join candidate_language on candidate.id = candidate_language.candidate_id "
-            + "left join language on candidate_language.language_id = language.id "
-            + "left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
-            + "where lower(language.name) = 'english' and spoken_level.level >= 2", sql);
+        request.setIncludePendingTermsCandidates(false);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " left join candidate_language on candidate.id = candidate_language.candidate_id"
+            + " left join language on candidate_language.language_id = language.id"
+            + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " and lower(language.name) = 'english' and spoken_level.level >= 2", sql);
 
         request.setEnglishMinWrittenLevel(2);
-        sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "left join candidate_language on candidate.id = candidate_language.candidate_id "
-            + "left join language on candidate_language.language_id = language.id "
-            + "left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
-            + "left join language_level as written_level on candidate_language.written_level_id = written_level_id "
-            + "where lower(language.name) = 'english' and spoken_level.level >= 2 "
-            + "and written_level.level >= 2", sql);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " left join candidate_language on candidate.id = candidate_language.candidate_id"
+            + " left join language on candidate_language.language_id = language.id"
+            + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
+            + " left join language_level as written_level on candidate_language.written_level_id = written_level_id"
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " and lower(language.name) = 'english' and spoken_level.level >= 2"
+            + " and written_level.level >= 2", sql);
 
         request.setOtherLanguageId(344L);
         request.setOtherMinSpokenLevel(3);
-        sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "left join candidate_language on candidate.id = candidate_language.candidate_id "
-            + "left join language on candidate_language.language_id = language.id "
-            + "left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
-            + "left join language_level as written_level on candidate_language.written_level_id = written_level_id "
-            + "where lower(language.name) = 'english' and spoken_level.level >= 2 "
-            + "and written_level.level >= 2 "
-            + "and candidate_language.language_id = 344 and spoken_level.level >= 3", sql);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " left join candidate_language on candidate.id = candidate_language.candidate_id"
+            + " left join language on candidate_language.language_id = language.id"
+            + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
+            + " left join language_level as written_level on candidate_language.written_level_id = written_level_id"
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " and lower(language.name) = 'english' and spoken_level.level >= 2"
+            + " and written_level.level >= 2"
+            + " and candidate_language.language_id = 344 and spoken_level.level >= 3", sql);
 
     }
 
     @Test
     @DisplayName("SQL generated from local collection")
-    void extractSQLFromLocalCollectionRequest() {
+    void extractFetchSQLFromLocalCollectionRequest() {
         List<CandidateStatus> statuses = new ArrayList<>();
         statuses.add(CandidateStatus.active);
         statuses.add(CandidateStatus.pending);
 
         request.setStatuses(statuses);
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "where candidate.status in ('active','pending')", sql);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " where candidate.status in ('active','pending')", sql);
     }
 
     @Test
     @DisplayName("SQL generated from local unhcr status collection")
-    void extractSQLFromLocalCollectionUnhcrStatusRequest() {
+    void extractFetchSQLFromLocalCollectionUnhcrStatusRequest() {
         List<UnhcrStatus> statuses = new ArrayList<>();
         statuses.add(UnhcrStatus.NoResponse);
         statuses.add(UnhcrStatus.MandateRefugee);
 
         request.setUnhcrStatuses(statuses);
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-            + "where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+            " where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
     }
 
     @Test
     @DisplayName("SQL generated from excluded candidates")
-    void extractSQLFromExcludedCandidates() {
+    void extractFetchSQLFromExcludedCandidates() {
         List<Candidate> excluded = new ArrayList<>();
         Candidate candidate;
         candidate = new Candidate();
@@ -221,14 +381,14 @@ class SearchCandidateRequestTest {
         candidate = new Candidate();
         candidate.setId(456L);
         excluded.add(candidate);
-        String sql = request.extractSQL(true, null, excluded);
-        assertEquals("select distinct candidate.id from candidate "
-            + "where not candidate.id in (123,456)", sql);
+        String sql = request.extractFetchSQL(null, excluded, false);
+        assertEquals(UNORDERED_SELECT +
+            " where candidate.id not in (123,456)", sql);
     }
 
     @Test
     @DisplayName("SQL generated from user source countries")
-    void extractSQLFromUserSourceCountries() {
+    void extractFetchSQLFromUserSourceCountries() {
         User user = new User();
         Set<Country> countries = new HashSet<>();
         Country country;
@@ -239,55 +399,49 @@ class SearchCandidateRequestTest {
         country.setId(456L);
         countries.add(country);
         user.setSourceCountries(countries);
-        String sql = request.extractSQL(true, user, null);
-        assertEquals("select distinct candidate.id from candidate "
-            + "where candidate.country_id in (456,123)", sql);
+        String sql = request.extractFetchSQL(user, null, false);
+        assertEquals(UNORDERED_SELECT +
+            " where candidate.country_id in (456,123)", sql);
     }
 
     @Test
     @DisplayName("SQL generated from date")
-    void extractSQLFromDateRequest() {
+    void extractFetchSQLFromDateRequest() {
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
-        String sql = request.extractSQL(true);
-        assertEquals(
-            "select distinct candidate.id from candidate "
-                + "where candidate.updated_date >= '2019-01-01T00:00Z'"
-            , sql);
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.updated_date >= '2019-01-01T00:00Z'", sql);
 
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
         request.setTimezone("Australia/Brisbane");
-        sql = request.extractSQL(true);
-        assertEquals(
-            "select distinct candidate.id from candidate "
-                + "where candidate.updated_date >= '2019-01-01T00:00+10:00'"
-            , sql);
+        sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.updated_date >= '2019-01-01T00:00+10:00'", sql);
     }
 
 //    @Test - modify for current date before running test
     @DisplayName("SQL generated from min age")
-    void extractSQLFromMinAgeRequest() {
+    void extractFetchSQLFromMinAgeRequest() {
         request.setMinAge(20);
-        String sql = request.extractSQL(true);
-        assertEquals(
-            "select distinct candidate.id from candidate "
-                + "where (candidate.dob <= '2003-07-15' or candidate.dob is null)"
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where (candidate.dob <= '2003-07-15' or candidate.dob is null)"
             , sql);
     }
 
     //    @Test - modify for current date before running test
     @DisplayName("SQL generated from max age")
-    void extractSQLFromMaxAgeRequest() {
+    void extractFetchSQLFromMaxAgeRequest() {
         request.setMaxAge(20);
-        String sql = request.extractSQL(true);
-        assertEquals(
-            "select distinct candidate.id from candidate "
-                + "where (candidate.dob > '2003-07-15' or candidate.dob is null)"
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where (candidate.dob > '2003-07-15' or candidate.dob is null)"
             , sql);
     }
 
     @Test
     @DisplayName("And together multiple filters")
-    void extractSQLFromMultipleFiltersRequest() {
+    void extractFetchSQLFromMultipleFiltersRequest() {
         List<CandidateStatus> statuses = new ArrayList<>();
         statuses.add(CandidateStatus.active);
         statuses.add(CandidateStatus.pending);
@@ -297,9 +451,9 @@ class SearchCandidateRequestTest {
         Gender gender = Gender.male;
         request.setGender(gender);
 
-        String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate "
-                + "where candidate.status in ('active','pending') and candidate.gender = 'male'"
+        String sql = request.extractFetchSQL();
+        assertEquals(UNORDERED_SELECT +
+                " where candidate.status in ('active','pending') and candidate.gender = 'male'"
             , sql);
     }
 

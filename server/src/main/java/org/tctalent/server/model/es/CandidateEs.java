@@ -168,6 +168,10 @@ public class CandidateEs {
     }
 
     private String regoReferrerParam;
+    private String regoUtmCampaign;
+    private String regoUtmSource;
+    private String regoUtmMedium;
+
 
     private Long updated;
 
@@ -205,9 +209,6 @@ public class CandidateEs {
         @Field(type = FieldType.Long)
         private Long yearsExperience;
     }
-
-    @Field(type = FieldType.Text)
-    private String migrationOccupation;
 
     @Field(type = FieldType.Text)
     private List<String> skills;
@@ -284,6 +285,10 @@ public class CandidateEs {
         this.partner = candidate.getUser() == null ? null
                 : candidate.getUser().getPartner().getAbbreviation();
         this.regoReferrerParam = candidate.getRegoReferrerParam();
+        this.regoUtmCampaign = candidate.getRegoUtmCampaign();
+        this.regoUtmSource = candidate.getRegoUtmSource();
+        this.regoUtmMedium = candidate.getRegoUtmMedium();
+
         this.status = candidate.getStatus();
 
         this.phone = candidate.getPhone();
@@ -403,7 +408,6 @@ public class CandidateEs {
         }
 
         this.occupations = new ArrayList<>();
-        this.migrationOccupation = null;
         List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
         if (candidateOccupations != null) {
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
@@ -417,10 +421,6 @@ public class CandidateEs {
                             occupation.setYearsExperience(yearsExperience);
                         }
                         occupations.add(occupation);
-                    }
-
-                    if (candidateOccupation.getMigrationOccupation() != null) {
-                        this.migrationOccupation = candidateOccupation.getMigrationOccupation();
                     }
                 }
             }

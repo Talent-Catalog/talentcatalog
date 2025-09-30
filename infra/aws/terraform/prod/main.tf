@@ -12,8 +12,14 @@ terraform {
   }
 }
 
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Include the flat configuration
 module "website" {
-  source                          = "../modules"
+  source = "../"
+
   app                             = var.app
   env                             = var.env
   site_domain                     = var.site_domain

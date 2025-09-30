@@ -76,7 +76,6 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
@@ -1565,7 +1564,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setStatus(status);
 
             final String tcAccountCreated = String.valueOf(candidate.getCreatedDate());
-            setTcAccountCreated(tcAccountCreated.substring(0, 9));
+            setTcAccountCreated(tcAccountCreated.substring(0, 10));
 
             final String unhcrRegistered = String.valueOf(candidate.getUnhcrRegistered());
             if (unhcrRegistered != null) {
@@ -1619,9 +1618,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             final boolean partnerContactConsent = candidate.getContactConsentPartners();
             setPartnerContactConsent(partnerContactConsent);
 
-            final boolean monitoringEvaluationConsent = getMonitoringEvaluationConsentBoolean(candidate);
-            setMonitoringEvaluationConsent(monitoringEvaluationConsent);
-
             if (candidate.getRelocatedAddress() != null) {
                 final String relocatedAddress = candidate.getRelocatedAddress();
                 setRelocatedAddress(relocatedAddress);
@@ -1658,18 +1654,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             } else {
                 return null;
             }
-        }
-
-        /**
-         * Need to set the string enum to a boolean to match the SF field (checkbox). This boolean field is then used in survey workflows.
-         * Kept the string value on the TC as we can capture Yes/No which provides a bit more detail on the response
-         * (e.g. difference between No vs NULL) but need to convert this to boolean for our SF workflow.
-         * Only explicitly answering Yes will render true. No, NoResponse & NULL values render false.
-         * @param candidate Candidate whose monitoring evaluation consent we are syncing to SF
-         * @return consent value, true = Yes or false = No/NoResponse/null
-         */
-        private boolean getMonitoringEvaluationConsentBoolean(Candidate candidate) {
-            return candidate.getMonitoringEvaluationConsent() == YesNo.Yes;
         }
 
         public void setAccountId(String accountId) {
@@ -1753,8 +1737,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public void setTcContactConsent(boolean tcContactConsent) { super.put("TC_Contact_Consent__c", tcContactConsent); }
 
         public void setPartnerContactConsent(boolean partnerContactConsent) { super.put("Partner_Contact_Consent__c", partnerContactConsent); }
-
-        public void setMonitoringEvaluationConsent(boolean monitoringEvaluationConsent) { super.put("Monitoring_Evaluation_Consent__c", monitoringEvaluationConsent); }
 
         public void setRelocatedAddress(String relocatedAddress) {
             super.put("Relocated_Street__c", relocatedAddress);

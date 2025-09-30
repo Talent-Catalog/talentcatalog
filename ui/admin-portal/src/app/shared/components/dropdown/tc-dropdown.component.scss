@@ -1,0 +1,33 @@
+@import '../../../../scss/color-mixins';
+
+.tc-dropdown {
+  [ngbDropdownToggle] {
+    display: inline-block;
+  }
+  .dropdown-toggle::after {
+    display: none;
+  }
+
+  .dropdown-menu.show{
+    border-radius: 0.8rem;
+    @include shadow-lg;
+    padding: 0.3rem;
+  }
+
+  ::ng-deep a.dropdown-item,   ::ng-deep button.dropdown-item{
+    border-radius: 0.5rem;
+    cursor:pointer;
+    padding-top:0.3rem;
+    padding-bottom:0.3rem;
+
+    &:hover {
+      background: color(primary, 100);
+      @include text-color-body;
+    }
+
+    &:active {
+      @include background-color-primary;
+      @include text-color-white;
+    }
+  }
+}

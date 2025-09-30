@@ -15,22 +15,48 @@
  */
 import {VisaCheckCaComponent} from "./visa-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
+import {Component, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
-import {
-  mockCandidateIntakeData
-} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
-import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {By} from "@angular/platform-browser";
+import {AuthorizationService} from "../../../../../../services/authorization.service";
+import {ReadOnlyInputsDirective} from "../../../../../../directives/read-only-inputs.directive";
+import {LocalStorageService} from "../../../../../../services/local-storage.service";
+
+// Mock IntProtectionComponent to include input elements for testing
+@Component({
+  selector: 'app-int-protection',
+  template: `
+    <ng-select></ng-select>
+    <input type="text"/>
+    <textarea></textarea>
+    <app-date-picker></app-date-picker>
+    <ngx-wig></ngx-wig>
+  `
+})
+class MockIntProtectionComponent {
+  // No isEditable method; inputs are controlled by parent directive
+}
 
 describe('VisaCheckCaComponent', () => {
   let component: VisaCheckCaComponent;
   let fixture: ComponentFixture<VisaCheckCaComponent>;
+  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
   const mockCandidate = new MockCandidate();
+
   beforeEach(async () => {
+    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
     await TestBed.configureTestingModule({
-      imports: [NgbAccordionModule],
-      declarations: [VisaCheckCaComponent],
+      imports: [NgbAccordionModule, HttpClientTestingModule],
+      declarations: [VisaCheckCaComponent, ReadOnlyInputsDirective, MockIntProtectionComponent],
+      providers: [
+        {provide: NgbModal, useValue: {}},
+        {provide: LocalStorageService, useValue: {}},
+        {provide: AuthorizationService, useValue: authServiceSpyObj}
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });
@@ -38,6 +64,7 @@ describe('VisaCheckCaComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(VisaCheckCaComponent);
     component = fixture.componentInstance;
+    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
 
     component.candidate = mockCandidate;
     component.candidateIntakeData = mockCandidateIntakeData;
@@ -57,5 +84,31 @@ describe('VisaCheckCaComponent', () => {
 
   it('should select the first job by default', () => {
     expect(component.selectedJob).toEqual(component.visaCheckRecord.candidateVisaJobChecks[0]);
+  });
+
+  it('should set inputs to read only if isEditable is false', (done) => {
+    authorizationServiceSpy.isEditableCandidate.and.returnValue(false);
+    component.isEditable();
+    fixture.detectChanges();
+
+    // Wait for ReadOnlyInputsDirective's setTimeout
+    setTimeout(() => {
+      // Query inputs within the ngb-accordion where the directive is applied
+      const accordion = fixture.debugElement.query(By.css('ngb-accordion'));
+      const inputElements = accordion.queryAll(
+        By.css('ng-select, input, textarea, app-date-picker, ngx-wig')
+      );
+
+      inputElements.forEach((element) => {
+        expect(element.nativeElement.hasAttribute('disabled')).toBeTrue();
+      });
+
+      const ngSelect = accordion.query(By.css('ng-select'));
+      const ngxWig = accordion.query(By.css('ngx-wig'));
+      expect(ngSelect.nativeElement.classList.contains('read-only')).toBeTrue();
+      expect(ngxWig.nativeElement.classList.contains('read-only')).toBeTrue();
+      expect(component.isEditable()).toBeFalse();
+      done();
+    }, 0);
   });
 });

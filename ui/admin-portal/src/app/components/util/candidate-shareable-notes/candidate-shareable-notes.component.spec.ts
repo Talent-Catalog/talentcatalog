@@ -18,10 +18,11 @@ import {By} from '@angular/platform-browser';
 import {CandidateShareableNotesComponent} from "./candidate-shareable-notes.component";
 import {CandidateService} from "../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {Candidate, UpdateCandidateShareableNotesRequest} from "../../../model/candidate";
 import {of} from "rxjs";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 describe('CandidateShareableNotesComponent', () => {
   let component: CandidateShareableNotesComponent;
@@ -30,13 +31,15 @@ describe('CandidateShareableNotesComponent', () => {
 
   beforeEach(async () => {
     const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateShareableNotes']);
+    const authorizationServiceSpy = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
 
     await TestBed.configureTestingModule({
       declarations: [CandidateShareableNotesComponent,AutosaveStatusComponent],
       imports: [ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateService, useValue: candidateServiceSpy }
+        { provide: CandidateService, useValue: candidateServiceSpy },
+        { provide: AuthorizationService, useValue: authorizationServiceSpy }
       ]
     }).compileComponents();
 

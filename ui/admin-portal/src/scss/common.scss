@@ -41,7 +41,7 @@
     text-decoration: $link-hover-decoration;
   }
 }
-
+// TODO REMOVE THIS PAGINATION CSS ONCE MOVED OVER TO NEW STYLE
 .page-link {
   position: relative;
   display: block;
@@ -79,7 +79,7 @@
     cursor: auto;
   }
 }
-
+// TODO REMOVE THIS TABLE CSS ONCE MOVED OVER TO NEW STYLE
 table {
   background-color: $white;
   border: $white;
@@ -164,4 +164,22 @@ table {
 
 .fw-600 {
   font-weight: 600;
+}
+
+// Custom css to make ng-select appear disabled, applied in the read only directive
+ng-select.read-only {
+  .ng-select-container {
+    pointer-events: none;
+    background-color: #e9ecef;
+  }
+}
+
+// Custom css to make ngx-wig appear disabled, applied in the read only directive
+ngx-wig.read-only {
+  .ng-wig {
+    pointer-events: none;
+  }
+  .nw-editor {
+    background-color: #e9ecef;
+  }
 }

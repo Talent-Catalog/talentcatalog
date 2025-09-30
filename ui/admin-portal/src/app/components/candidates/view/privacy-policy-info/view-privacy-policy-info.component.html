@@ -1,0 +1,38 @@
+<div class="card" *ngIf="candidate">
+  <div class="card-header">
+    Privacy Policy Information
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+      <div class="mb-3 col-sm-12 col-md-6">
+        <label class="col-form-label">Policy Version ID:</label>
+        <div>
+          <span class="form-control-plaintext">{{ candidate?.acceptedPrivacyPolicyId || 'N/A' }}</span>
+        </div>
+      </div>
+
+      <div class="mb-3 col-sm-12 col-md-6">
+        <label class="col-form-label">Accepted On:</label>
+        <div>
+          <span class="form-control-plaintext">{{ (candidate?.acceptedPrivacyPolicyDate | date: 'customDateTime') || 'N/A' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="mb-3 col-sm-12 col-md-6">
+        <label class="col-form-label">Accepted With Partner:</label>
+        <div>
+          <span class="form-control-plaintext">{{ candidate?.acceptedPrivacyPolicyPartner?.name || 'N/A'}}</span>
+        </div>
+      </div>
+      <div class="mb-3 col-sm-12 col-md-6">
+        <label class="col-form-label">Shown our terms but have not accepted them?</label>
+        <div>
+          <span class="form-control-plaintext">{{ candidate?.pendingTerms ? "Yes" : "No"}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

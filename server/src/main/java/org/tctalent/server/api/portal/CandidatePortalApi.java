@@ -21,17 +21,20 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.TaskDtoHelper;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
@@ -40,8 +43,10 @@ import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
+import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
+@RequiredArgsConstructor
 @RestController()
 @RequestMapping("/api/portal/candidate")
 public class CandidatePortalApi {
@@ -49,14 +54,7 @@ public class CandidatePortalApi {
     private final CandidateService candidateService;
     private final CountryService countryService;
     private final OccupationService occupationService;
-
-    @Autowired
-    public CandidatePortalApi(OccupationService occupationService, CandidateService candidateService,
-        CountryService countryService) {
-        this.occupationService = occupationService;
-        this.candidateService = candidateService;
-        this.countryService = countryService;
-    }
+    private final SavedListService savedListService;
 
     @GetMapping("contact")
     public Map<String, Object> getCandidateEmail() {
@@ -127,6 +125,23 @@ public class CandidatePortalApi {
         return candidateAdditionalInfoDto().build(candidate);
     }
 
+    @PutMapping("privacy/{id}")
+    public Map<String, Object> updateCandidateAcceptedPrivacyPolicy(@PathVariable("id") String id) {
+        Candidate candidate = this.candidateService.updateAcceptedPrivacyPolicy(id);
+
+        //Remove pending terms acceptance tag now that they have accepted
+        this.savedListService.updatePendingTermsAcceptance(candidate, false);
+
+        return candidateAdditionalInfoDto().build(candidate);
+    }
+
+    @PutMapping("pending-acceptance/{flag}")
+    public void updatePendingTermsAcceptance(@PathVariable("flag") boolean flag) {
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        this.savedListService.updatePendingTermsAcceptance(candidate, flag);
+    }
+
     @PostMapping("other-info")
     public Map<String, Object> updateCandidateAdditionalInfo(@Valid @RequestBody UpdateCandidateOtherInfoRequest request) {
         Candidate candidate = this.candidateService.updateOtherInfo(request);
@@ -169,25 +184,11 @@ public class CandidatePortalApi {
         return candidateWithDestinationsDto().build(candidate);
     }
 
-    @GetMapping("status")
-    public Map<String, Object> getCandidateStatus() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return candidateStatusDto().build(candidate);
-    }
-
     @GetMapping("profile")
     public Map<String, Object> getCandidateProfile() {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateProfileDto().build(candidate);
-    }
-
-    @GetMapping("candidate-number")
-    public Map<String, Object> getCandidateNumber() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return candidateNumberDto().build(candidate);
     }
 
     @GetMapping(value = "cv.pdf")
@@ -207,18 +208,17 @@ public class CandidatePortalApi {
         }
     }
 
-    @PostMapping("submit")
-    public Map<String, Object> submitRegistration() {
-        Candidate candidate = this.candidateService.submitRegistration();
-        return candidateStatusDto().build(candidate);
-    }
 
-    private DtoBuilder candidateNumberDto() {
-        return new DtoBuilder()
-                .add("candidateNumber")
-                .add("publicId")
-                .add("changePassword")
-                ;
+    /**
+     * Complete the registration process.
+     * @param submitRegistrationRequest Contains the id of the terms that they accepted
+     * @return Candidate personal info
+     */
+    @PostMapping("submit")
+    public Map<String, Object> submitRegistration(
+        @RequestBody SubmitRegistrationRequest submitRegistrationRequest) {
+        Candidate candidate = this.candidateService.submitRegistration(submitRegistrationRequest);
+        return candidatePersonalDto().build(candidate);
     }
 
     private DtoBuilder candidateContactDto() {
@@ -240,19 +240,33 @@ public class CandidatePortalApi {
                 .add("email")
                 .add("firstName")
                 .add("lastName")
+                .add("partner", partnerDto())
                 ;
+    }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+            .add("name")
+            .add("websiteUrl")
+            ;
     }
 
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()
                 .add("user", userDto())
+                .add("acceptedPrivacyPolicyId")
+                .add("acceptedPrivacyPolicyDate")
+                .add("acceptedPrivacyPolicyPartner",partnerDto())
                 .add("candidateNumber")
                 .add("publicId")
+                .add("candidateMessage")
+                .add("changePassword")
                 .add("gender")
                 .add("dob")
                 .add("country", countryService.selectBuilder())
                 .add("city")
                 .add("state")
+                .add("status")
                 .add("yearOfArrival")
                 .add("nationality", countryService.selectBuilder())
                 .add("candidateCitizenships", candidateCitizenshipDto())
@@ -286,7 +300,6 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
-                .add("migrationOccupation")
                 ;
     }
 
@@ -448,14 +461,6 @@ public class CandidatePortalApi {
                 ;
     }
 
-    private DtoBuilder candidateStatusDto() {
-        return new DtoBuilder()
-                .add("user", userDto())
-                .add("status")
-                .add("candidateMessage")
-                ;
-    }
-
     private DtoBuilder candidateProfileDto() {
         return new DtoBuilder()
                 .add("id")
@@ -477,6 +482,7 @@ public class CandidatePortalApi {
                 .add("yearOfArrival")
                 .add("nationality", countryService.selectBuilder())
                 .add("country", countryService.selectBuilder())
+                .add("birthCountry", countryService.selectBuilder())
                 .add("externalId")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")

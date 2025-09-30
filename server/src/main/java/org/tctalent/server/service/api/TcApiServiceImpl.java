@@ -26,6 +26,8 @@ import org.springframework.web.client.RestClientException;
 import org.tctalent.server.configuration.properties.TcApiServiceProperties;
 
 /**
+ * Implementation of the TcApiService interface for managing and running API migrations.
+ *
  * @author sadatmalik
  */
 @Service
@@ -41,7 +43,7 @@ public class TcApiServiceImpl implements TcApiService {
   }
 
   @Override
-  public String runApiAnonymisation() throws RestClientException {
+  public String runApiMigration() throws RestClientException {
     try {
       return restClient.post()
           .uri("/batch/jobs/run")
@@ -54,4 +56,94 @@ public class TcApiServiceImpl implements TcApiService {
       return e.getResponseBodyAsString();
     }
   }
+
+  @Override
+  public String runApiMigrationByListId(long listId) throws RestClientException {
+    try {
+      return restClient.post()
+          .uri("/batch/jobs/run/list/" + listId)
+          .contentType(APPLICATION_JSON)
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
+  @Override
+  public String runAuroraMigration() throws RestClientException {
+    try {
+      return restClient.post()
+          .uri("/batch/jobs/run/aurora")
+          .contentType(APPLICATION_JSON)
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
+  @Override
+  public String runMongoMigration() throws RestClientException {
+    try {
+      return restClient.post()
+          .uri("/batch/jobs/run/mongo")
+          .contentType(APPLICATION_JSON)
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
+  @Override
+  public String listApiMigrations() {
+    try {
+      return restClient.get()
+          .uri("/batch/jobs")
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
+  @Override
+  public String stopApiMigration(long id) {
+    try {
+      return restClient.post()
+          .uri("/batch/jobs/" + id + "/stop")
+          .contentType(APPLICATION_JSON)
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
+  @Override
+  public String restartApiMigration(long id) {
+    try {
+      return restClient.post()
+          .uri("/batch/jobs/" + id + "/restart")
+          .contentType(APPLICATION_JSON)
+          .header("x-api-key", properties.getApiKey())
+          .retrieve()
+          .body(String.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      return e.getResponseBodyAsString();
+    }
+  }
+
 }

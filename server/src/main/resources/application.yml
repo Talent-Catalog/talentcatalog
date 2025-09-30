@@ -1,9 +1,9 @@
-tbb:
+tc:
   cors:
-    urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
+    urls: ${TC_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
 
-  destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
-  partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
+  destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
+  partner-dbcopy-config: ${TC_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
 
 logging:
   level:
@@ -41,6 +41,13 @@ spring:
     exclude:
       # We only want to use Redis as a cache so we do not want it to auto configure as a data store
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+  # Batch
+  batch:
+    jdbc:
+      initialize-schema: never # batch schema are initialised by flyway
+    job:
+      enabled: false
 
   servlet:
     multipart:
@@ -125,7 +132,7 @@ salesforce:
   # - then selecting Edit. Bizarrely, you can't do it from
   # Setup|Apps|ConnectedApps|Manage Connected Apps)
   #
-  # For dev this should be set in tbb-secrets
+  # For dev this should be set in tc-secrets
   #
   # We use the same SF connected app and key/certificate for TC dev and staging to access our SF sandbox, but other URLs and access credentials are different and therefore defined below and designated per environment.
   privatekey: ${SF_PRIVATE_KEY:}
@@ -183,7 +190,7 @@ google:
     projectId: ${GOOGLE_DRIVE_PROJECTID:talentcatalog}
     tokenUri: ${GOOGLE_DRIVE_TOKENURI:https://oauth2.googleapis.com/token}
 
-  # For dev these should be set in tbb-secrets
+  # For dev these should be set in tc-secrets
     privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:}
     privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:}
 
@@ -217,7 +224,7 @@ aws:
     max-size: 52428800
     upload-folder: temp
   credentials:
-    # For dev this should be set in tbb-secrets
+    # For dev this should be set in tc-secrets
     accessKey: ${AWS_CREDENTIALS_ACCESSKEY:}
     secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
@@ -270,3 +277,7 @@ preset:
 tc-api:
   apiUrl: ${TC_API_URL:http://localhost:8082}
   apiKey: ${TC_API_KEY:}
+
+dpa:
+  # Used in EmailHelper
+  dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}

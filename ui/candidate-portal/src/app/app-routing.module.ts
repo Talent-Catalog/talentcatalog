@@ -26,6 +26,7 @@ import {RegisterComponent} from './components/register/register.component';
 import {AuthGuard} from './services/auth.guard';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 import {ViewCandidateComponent} from "./components/profile/view/view-candidate.component";
+import {TermsComponent} from "./components/privacy-policy/terms.component";
 
 const routes: Routes = [
   {
@@ -47,6 +48,11 @@ const routes: Routes = [
     path: 'login',
     component: LandingComponent,
     title: 'Login'
+  },
+  {
+    path: 'privacy',
+    component: TermsComponent,
+    title: 'Terms'
   },
   {
     path: 'register',
