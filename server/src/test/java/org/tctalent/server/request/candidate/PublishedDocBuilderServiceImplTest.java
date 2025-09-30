@@ -166,7 +166,7 @@ class PublishedDocBuilderServiceImplTest {
   @Test
   void computeNumberOfRowsByCandidate() {
     assertEquals(1, builder.computeNumberOfRowsByCandidate(candidate, null));
-    assertEquals(5, builder.computeNumberOfRowsByCandidate(candidate, infoDependants));
+    assertEquals(4, builder.computeNumberOfRowsByCandidate(candidate, infoDependants));
   }
 
   private PublishedDocColumnDef addColumn(String key, String header,
