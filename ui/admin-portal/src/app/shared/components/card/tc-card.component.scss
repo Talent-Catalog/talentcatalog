@@ -1,0 +1,11 @@
+@import '../../../../scss/color-mixins';
+
+.tc-card {
+  border-radius: 1rem;
+  @include shadow-lg;
+  margin-bottom: 1rem;
+
+  .tc-card-body {
+    padding: 1rem;
+  }
+}

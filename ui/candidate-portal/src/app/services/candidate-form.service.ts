@@ -2,8 +2,12 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {MyFirstFormData} from "../model/form";
+import {MyFirstFormData, MySecondFormData, TravelDocFormData} from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
+import {MySecondFormComponent} from "../components/form/my-second-form/my-second-form.component";
+import {
+  TravelDocFormComponent
+} from "../components/form/italy-travel-document-form/travel-doc-form.component";
 
 @Injectable({
   providedIn: 'root'
@@ -13,10 +17,13 @@ export class CandidateFormService {
   // You need to add an entry to this map for each form that can be displayed in a FormTask.
   // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {
-    'MyFirstForm': MyFirstFormComponent
+    'MyFirstForm': MyFirstFormComponent,
+    'MySecondForm': MySecondFormComponent,
+    'TravelDocForm': TravelDocFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
+  halApiUrl: string = environment.halApiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -26,6 +33,22 @@ export class CandidateFormService {
 
   getMyFirstForm(): Observable<MyFirstFormData> {
     return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
+  }
+
+  createOrUpdateMySecondForm(request: MySecondFormData): Observable<MySecondFormData> {
+    return this.http.put<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`, request);
+  }
+
+  getMySecondForm(): Observable<MySecondFormData> {
+    return this.http.get<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`);
+  }
+
+  createOrUpdateTravelDocumentForm(request: TravelDocFormData): Observable<TravelDocFormData> {
+    return this.http.post<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`, request);
+  }
+
+  getTravelDocumentForm(): Observable<TravelDocFormData> {
+    return this.http.get<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`);
   }
 
   getFormComponentByName(formName: string): any {

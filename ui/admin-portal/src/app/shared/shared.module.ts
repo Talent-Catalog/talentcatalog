@@ -18,9 +18,9 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
 import {
-  NgbInputDatepicker,
   NgbAlert,
   NgbDropdownModule,
+  NgbInputDatepicker,
   NgbNavModule,
   NgbPaginationModule
 } from "@ng-bootstrap/ng-bootstrap";
@@ -65,6 +65,15 @@ import {
   TcDateRangePickerComponent
 } from './components/date-range-picker/tc-date-range-picker.component'
 import {TcIconComponent} from './components/icon-component/tc-icon.component';
+import {TcAccordionComponent} from './components/accordion/tc-accordion.component';
+import {
+  TcAccordionItemComponent
+} from './components/accordion/accordion-item/tc-accordion-item.component';
+import {TcCardComponent} from './components/card/tc-card.component';
+import {TcCardHeaderComponent} from './components/card/card-header/tc-card-header.component';
+import {TcLoadingComponent} from './components/loading/tc-loading.component';
+import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -93,7 +102,13 @@ import {TcIconComponent} from './components/icon-component/tc-icon.component';
     TcDropdownMenuComponent,
     TcDropdownDividerComponent,
     TcDateRangePickerComponent,
-    TcIconComponent
+    TcIconComponent,
+    TcAccordionComponent,
+    TcAccordionItemComponent,
+    TcCardComponent,
+    TcCardHeaderComponent,
+    TcLoadingComponent,
+    TcDatePickerComponent
   ],
   imports: [
     CommonModule,
@@ -102,7 +117,9 @@ import {TcIconComponent} from './components/icon-component/tc-icon.component';
     NgbAlert,
     NgbDropdownModule,
     RouterLink,
-    NgbInputDatepicker
+    NgbInputDatepicker,
+    ReactiveFormsModule,
+    FormsModule
   ],
   exports: [
     ButtonComponent,
@@ -130,7 +147,13 @@ import {TcIconComponent} from './components/icon-component/tc-icon.component';
     TcDropdownMenuComponent,
     TcDropdownDividerComponent,
     TcDateRangePickerComponent,
-    TcIconComponent
+    TcIconComponent,
+    TcAccordionComponent,
+    TcAccordionItemComponent,
+    TcCardComponent,
+    TcCardHeaderComponent,
+    TcLoadingComponent,
+    TcDatePickerComponent
   ]
 })
 export class SharedModule { }

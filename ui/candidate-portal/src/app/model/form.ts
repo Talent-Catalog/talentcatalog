@@ -14,7 +14,33 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {Country} from "./country";
+
 export interface MyFirstFormData {
   city?: string;
   hairColour?: string;
+}
+
+export interface MySecondFormData {
+  city?: string;
+  hairColour?: string;
+}
+
+export enum TravelDocType {
+  Passport = 'PASSPORT',
+  NationalId = 'NATIONAL_ID',
+  RefugeeCertificate = 'REFUGEE_CERTIFICATE',
+}
+export interface TravelDocFormData {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: string;
+  birthCountry: Country | null;
+  placeOfBirth: string;
+  travelDocType: TravelDocType;
+  travelDocNumber: string;
+  travelDocIssuedBy: string;
+  travelDocIssueDate: string;
+  travelDocExpiryDate: string;
 }
