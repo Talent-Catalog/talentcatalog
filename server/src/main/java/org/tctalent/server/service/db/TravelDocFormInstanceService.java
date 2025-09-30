@@ -19,7 +19,7 @@ package org.tctalent.server.service.db;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateTravelDocForm;
+import org.tctalent.server.model.db.TravelDocForm;
 import org.tctalent.server.request.form.TravelDocFormData;
 
 /**
@@ -36,9 +36,9 @@ public interface TravelDocFormInstanceService {
      * @return Updated form instance
      */
     @NonNull
-    CandidateTravelDocForm createOrUpdateTravelDocForm(
+    TravelDocForm createOrUpdateTravelDocForm(
         @NonNull Candidate candidate, @NonNull TravelDocFormData request);
 
     @NonNull
-    Optional<CandidateTravelDocForm> getTravelDocForm(@NonNull Candidate candidate);
+    Optional<TravelDocForm> getTravelDocForm(@NonNull Candidate candidate);
 }

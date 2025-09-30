@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "candidate_form_instance")
-public class CandidateTravelDocForm extends CandidateFormInstance {
+public class TravelDocForm extends CandidateFormInstance {
 
   // Constants for property names
   private static final String DOC_TYPE_PROP = "travelDocType";
@@ -31,7 +31,7 @@ public class CandidateTravelDocForm extends CandidateFormInstance {
 
   @Override
   public String getFormName() {
-    return "CandidateTravelDocForm";
+    return "TravelDocForm";
   }
 
   // Existing TC fields (direct access - update candidate if needed)
