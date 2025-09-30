@@ -203,7 +203,9 @@
         </a>
       </td>
       <td>
-        {{ getCandidateOpportunityStageName(opp) }}
+        <tc-badge [color]="getBadgeColor(opp)">
+          {{getCandidateOpportunityStageName(opp) | truncate: 15}}
+        </tc-badge>
       </td>
       <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
         {{ opp.nextStep | truncate: 38 }}
