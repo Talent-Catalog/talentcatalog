@@ -15,6 +15,7 @@
  */
 
 @import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 :host {
   ::ng-deep .dropdown-btn {
@@ -26,37 +27,25 @@ label {
   font-size: 14px;
 }
 
-.fa-circle-check {
-  color: green;
-}
-
-.fa-circle-xmark {
-  color: red;
-}
-
-.fa-circle-question {
-  color: orange;
-}
-
 .fa-disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
 .starred {
-  color: $warning;
+  color: color(secondary, 500);
 }
 
 .notstarred {
-  color: grey;
+  @include text-color-primary;
 }
 
 .watched {
-  color: $success;
+  color: color(secondary, 500);
 }
 
 .notwatched {
-  color: grey;
+  @include text-color-primary;
 }
 
 

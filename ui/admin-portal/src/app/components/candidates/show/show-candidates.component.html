@@ -51,7 +51,7 @@
             <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
         </tc-icon>
       </a>
-      <a target="_blank" *ngIf="isSavedSearch() && !isDefaultSavedSearch()" (click)="doToggleWatch()" class="link-info">
+      <a target="_blank" *ngIf="isSavedSearch() && !isDefaultSavedSearch()" (click)="doToggleWatch()">
         <tc-icon [size]="'xl'"
                  [color]="'primary'"
                  [ariaLabel]="(!isWatching() ? 'Watch ' : 'Unwatch ') + 'search'">
