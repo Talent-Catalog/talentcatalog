@@ -47,7 +47,8 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
     private final CandidateTokenProvider candidateTokenProvider;
     private final ObjectMapper jsonObjectMapper;
 
-    public Object buildCell(Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef,
+    //Exposed as package private for testing
+    Object buildCell(Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef,
         int expandingCount, PublishedDocColumnDef columnInfo) {
 
         PublishedDocColumnContent columnContent = columnInfo.getContent();
