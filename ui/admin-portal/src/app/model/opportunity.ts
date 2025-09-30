@@ -14,12 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {
+  CandidateOpportunity,
   CandidateOpportunityStage,
   isCandidateOpportunity,
   isOppStageGreaterThanOrEqualTo
 } from "./candidate-opportunity";
 import {Auditable, HasId} from "./base";
-import {isJob, JobOpportunityStage} from "./job";
+import {isJob, Job, JobOpportunityStage} from "./job";
 import {BadgeColor} from "../shared/components/badge/badge.component";
 
 /**
@@ -68,45 +69,65 @@ export function getStageBadgeColor(opp: Opportunity): BadgeColor {
     return getCandidateOppStageBadgeColor(opp);
   }
   if (isJob(opp)) {
-    return getJobStageBadgeColor(opp.stage);
+    return getJobStageBadgeColor(opp);
   }
 }
 
-//todo complete the other badge colors, perhaps group colors by stages (early, mid, late)
-function getJobStageBadgeColor(opp: Opportunity): BadgeColor {
+/**
+ * Badge colors groups by job opp stages:
+ * - Won Stage: Yellow;
+ * - Closed Stages: Gray;
+ * - Recruiter Only Stages (stage CV Review onwards, but not closed or won): Orange;
+ * - Prospect: Purple;
+ * - Other stages (prospect to CV review): Blue;
+ * @param opp
+ */
+function getJobStageBadgeColor(opp: Job): BadgeColor {
+  if (opp.won) {
+    return "yellow"
+  } else if (opp.closed) {
+    return "gray"
+  } else if (isCvReviewStageOrMore(opp.stage)) {
+    return "orange"
+  } else if (opp.stage === "0. Prospect") {
+    return "purple"
+  } else {
+    return "blue"
+  }
+}
+
+/**
+ * Badge colors groups by candidate opp stages:
+ * - Closed Stages: Gray;
+ * - Employed Stages (stage 'training' onwards, but not closed): Green;
+ * - Recruiter Only Stages (stage CV Review onwards, but not closed or employed): Orange;
+ * - Prospect: Purple;
+ * - Other stages (prospect to CV review): Blue;
+ * @param opp
+ */
+function getCandidateOppStageBadgeColor(opp: CandidateOpportunity): BadgeColor {
   if (opp.closed) {
     return "gray"
-  } else if (isEmployed()) {
+  } else if (isEmployedStageOrMore(opp.stage)) {
     return "green"
+  } else if (isCvReviewStageOrMore(opp.stage)) {
+    return "orange"
+  } else if (opp.stage === "0. Prospect") {
+    return "purple"
+  } else {
+    return "blue"
   }
-  // switch (status) {
-  //   case 'recruitmentProcess':
-  //     return "purple";
-  //   case 'jobOffer':
-  //     return "orange";
-  //   case 'candidateSearch':
-  //     return "green";
-  //   default:
-  //     return "gray";
-  // }
 }
 
-function isEmployed(stage: string): boolean {
+export function isEmployedStageOrMore(stage: string): boolean {
   return isOppStageGreaterThanOrEqualTo(stage, "training")
 }
 
-//todo complete the other badge colors, perhaps group colors by stages (early, mid, late)
-function getCandidateOppStageBadgeColor(status: string): BadgeColor {
-  switch (status) {
-    case 'Recruitment process':
-      return "purple";
-    case "Job offer":
-      return "orange";
-    case 'Candidate search':
-      return "green";
-    default:
-      return "gray";
-  }
+/**
+ *  Recruiters only see candidates past the CV Review stage.
+ */
+export function isCvReviewStageOrMore(stage: string) {
+  return isOppStageGreaterThanOrEqualTo(stage, 'cvReview')
 }
 
 export interface OpportunityProgressParams {
