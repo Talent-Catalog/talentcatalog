@@ -19,6 +19,9 @@
 <div [hidden]="loading"
      [class.split]="manageScreenSplits && !!currentCandidate">
 
+  <!-- Full-page loading animation while searching -->
+  <tc-loading [loading]="searching" type="page"></tc-loading>
+
   <ng-content></ng-content>
 
   <div class="d-flex flex-column">
@@ -152,7 +155,7 @@
                size="sm">
       Description
       <i class="fas"
-         [ngClass]="showDescription ? 'fa-chevron-down' : 'fa-chevron-right'">
+         [ngClass]="showDescription ? 'fa-chevron-up' : 'fa-chevron-down'">
       </i>
     </tc-button>
 
@@ -497,13 +500,6 @@
         </thead>
 
         <tbody>
-          <!-- Loading icon while loading  -->
-          <tr *ngIf="searching">
-            <td colspan="42">
-              <i class="fas fa-spinner fa-spin"></i> Loading...
-            </td>
-          </tr>
-
           <!-- Special display for no results-->
           <tr *ngIf="!searching && !results?.totalElements">
             <td colspan="42">
