@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<a *ngIf="canOpen()" target="_blank" (click)="openCVs()" class="link-info">
+<a *ngIf="canOpen()" target="_blank" (click)="openCVs()">
   <tc-icon [color]="color"
            [size]="size"
            [ariaLabel]="'Opens/DLs uploaded CV(s)'">
@@ -24,4 +24,6 @@
 <span *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
 </span>
-<div *ngIf="error" class="error">{{error}}</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
