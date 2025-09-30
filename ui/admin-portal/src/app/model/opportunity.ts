@@ -20,7 +20,7 @@ import {
   isOppStageGreaterThanOrEqualTo
 } from "./candidate-opportunity";
 import {Auditable, HasId} from "./base";
-import {isJob, Job, JobOpportunityStage} from "./job";
+import {isJob, isJobOppStageGreaterThanOrEqualTo, Job, JobOpportunityStage} from "./job";
 import {BadgeColor} from "../shared/components/badge/badge.component";
 
 /**
@@ -77,9 +77,9 @@ export function getStageBadgeColor(opp: Opportunity): BadgeColor {
  * Badge colors groups by job opp stages:
  * - Won Stage: Yellow;
  * - Closed Stages: Gray;
- * - Recruiter Only Stages (stage CV Review onwards, but not closed or won): Orange;
- * - Prospect: Purple;
- * - Other stages (prospect to CV review): Blue;
+ * - Recruiter Stages (stage CV Review onwards, but not closed or won): Orange;
+ * - Prospect: Pink;
+ * - Other stages (prospect to CV review): Purple;
  * @param opp
  */
 function getJobStageBadgeColor(opp: Job): BadgeColor {
@@ -87,39 +87,39 @@ function getJobStageBadgeColor(opp: Job): BadgeColor {
     return "yellow"
   } else if (opp.closed) {
     return "gray"
-  } else if (isCvReviewStageOrMore(opp.stage)) {
+  } else if (isJobCvReviewStageOrMore(opp.stage)) {
     return "orange"
-  } else if (opp.stage === "0. Prospect") {
-    return "purple"
+  } else if (CandidateOpportunityStage[opp.stage] === CandidateOpportunityStage.prospect) {
+    return "pink"
   } else {
-    return "blue"
+    return "purple"
   }
 }
 
 /**
  * Badge colors groups by candidate opp stages:
  * - Closed Stages: Gray;
- * - Employed Stages (stage 'training' onwards, but not closed): Green;
- * - Recruiter Only Stages (stage CV Review onwards, but not closed or employed): Orange;
- * - Prospect: Purple;
- * - Other stages (prospect to CV review): Blue;
+ * - Employed Stages (stage 'training' onwards, but not closed): Yellow;
+ * - Recruiter Stages (stage CV Review onwards, but not closed or employed): Orange;
+ * - Prospect: Pink;
+ * - Other stages (prospect to CV review): Purple;
  * @param opp
  */
 function getCandidateOppStageBadgeColor(opp: CandidateOpportunity): BadgeColor {
   if (opp.closed) {
     return "gray"
-  } else if (isEmployedStageOrMore(opp.stage)) {
-    return "green"
+  } else if (isEmployedStage(opp.stage)) {
+    return "yellow"
   } else if (isCvReviewStageOrMore(opp.stage)) {
     return "orange"
-  } else if (opp.stage === "0. Prospect") {
-    return "purple"
+  } else if (CandidateOpportunityStage[opp.stage] === CandidateOpportunityStage.prospect) {
+    return "pink"
   } else {
-    return "blue"
+    return "purple"
   }
 }
 
-export function isEmployedStageOrMore(stage: string): boolean {
+export function isEmployedStage(stage: string): boolean {
   return isOppStageGreaterThanOrEqualTo(stage, "training")
 }
 
@@ -128,6 +128,10 @@ export function isEmployedStageOrMore(stage: string): boolean {
  */
 export function isCvReviewStageOrMore(stage: string) {
   return isOppStageGreaterThanOrEqualTo(stage, 'cvReview')
+}
+
+export function isJobCvReviewStageOrMore(stage: string) {
+  return isJobOppStageGreaterThanOrEqualTo(stage, 'cvReview');
 }
 
 export interface OpportunityProgressParams {
