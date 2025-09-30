@@ -17,7 +17,8 @@
 <tc-modal [title]="'Select columns to display'"
           [actionText]="'Ok'"
           (onAction)="close()"
-          [showCancel]="true">
+          [showCancel]="true"
+          [showClose]="true">
 
   <tc-alert type="danger" *ngIf="error">
     <div><strong>{{error}}</strong></div>

@@ -17,7 +17,8 @@
 <tc-modal [title]="title"
           [showCancel]="showCancel"
           [actionText]="'Ok'"
-          (onAction)="close()">
+          (onAction)="close()"
+          [showClose]="true">
   <span *ngIf="message">
     {{message}}
   </span>

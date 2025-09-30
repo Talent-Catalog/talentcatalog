@@ -17,7 +17,8 @@
 <tc-modal [title]="'Edit Candidate Status'"
           [actionText]="'Save'"
           (onAction)="onSave()"
-          [showCancel]="true">
+          [showCancel]="true"
+          [showClose]="true">
 
   <div *ngIf="warningText">
     <tc-alert>{{warningText}}</tc-alert>

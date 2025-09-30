@@ -85,6 +85,11 @@ export class TcModalComponent {
   @Input() icon: string;
   @Input() isError: boolean = false;
   @Input() cancelText: string = 'Cancel';
+  /**
+   * Places an 'x' close button in the top right-hand corner of the modal — typically used in larger
+   * modals or when showCancel is set to false.
+   */
+  @Input() showClose: boolean = false;
   /** Primarily intended for use when declaring modal programmatically via NgbModal service, when
    * ng-content projection not possible since there's no corresponding template element.
    */
@@ -101,4 +106,6 @@ export class TcModalComponent {
   action() {
     this.onAction.emit();
   }
+
+  protected readonly close = close;
 }

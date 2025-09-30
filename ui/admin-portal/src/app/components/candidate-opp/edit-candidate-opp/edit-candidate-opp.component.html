@@ -17,7 +17,8 @@
 <tc-modal [title]="'Update Candidate Opportunity'"
           [showCancel]="true"
           [actionText]="'Save'"
-          (onAction)="onSave()">
+          (onAction)="onSave()"
+          [showClose]="true">
 
   <form [formGroup]="salesforceStageForm">
 

@@ -18,7 +18,8 @@
           [showCancel]="true"
           [actionText]="'Save'"
           (onAction)="onSave()"
-          [disableAction]="form.invalid || loading || saving">
+          [disableAction]="form.invalid || loading || saving"
+          [showClose]="true">
 
   <div *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>

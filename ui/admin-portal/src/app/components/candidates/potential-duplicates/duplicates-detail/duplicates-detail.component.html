@@ -17,7 +17,8 @@
 <tc-modal [title]="'Potential Duplicate Candidate'"
           [showCancel]="true"
           [actionText]="'Refresh'"
-          (onAction)="refresh()">
+          (onAction)="refresh()"
+          [showClose]="true">
 
   <tc-alert type="danger" *ngIf="error">
     <div><strong>{{error}}</strong></div>

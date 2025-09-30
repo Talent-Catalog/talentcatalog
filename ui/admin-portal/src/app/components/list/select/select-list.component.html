@@ -18,7 +18,8 @@
           [showCancel]="true"
           [actionText]="action"
           (onAction)="select()"
-          [disableAction]="saving || (form.errors !== null)">
+          [disableAction]="saving || (form.errors !== null)"
+          [showClose]="true">
 
   <tc-alert type="danger" *ngIf="error">
     <div><strong>{{error}}</strong></div>
