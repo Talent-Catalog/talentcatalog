@@ -108,7 +108,7 @@ function getJobStageBadgeColor(opp: Job): BadgeColor {
 function getCandidateOppStageBadgeColor(opp: CandidateOpportunity): BadgeColor {
   if (opp.closed) {
     return "gray"
-  } else if (isEmployedStage(opp.stage)) {
+  } else if (isEmployedStageOrGreater(opp.stage)) {
     return "yellow"
   } else if (isCvReviewStageOrMore(opp.stage)) {
     return "orange"
@@ -119,7 +119,7 @@ function getCandidateOppStageBadgeColor(opp: CandidateOpportunity): BadgeColor {
   }
 }
 
-export function isEmployedStage(stage: string): boolean {
+export function isEmployedStageOrGreater(stage: string): boolean {
   return isOppStageGreaterThanOrEqualTo(stage, "training")
 }
 
