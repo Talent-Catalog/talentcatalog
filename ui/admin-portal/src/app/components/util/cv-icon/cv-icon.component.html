@@ -14,8 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<a *ngIf="canOpen()" target="_blank" (click)="openCVs()">
-  <tc-icon [color]="color"
+<a *ngIf="canOpen()"
+   target="_blank"
+   (click)="openCVs()"
+   class="cv-icon"
+><tc-icon [color]="color"
            [size]="size"
            [ariaLabel]="'Opens/DLs uploaded CV(s)'">
     <i class="fas fa-address-card" title="Opens/DLs uploaded CV(s)"></i>

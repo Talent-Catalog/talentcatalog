@@ -28,7 +28,10 @@
     <tc-button *ngIf="showCancel" [type]="'outline'" [size]="'lg'" (click)="dismiss()">
       {{cancelText}}
     </tc-button>
-    <tc-button [type]="'primary'" [size]="'lg'" (click)="action()" [disabled]="disableAction">
+    <tc-button [type]="'primary'"
+               [size]="'lg'"
+               (click)="action()"
+               [disabled]="disableAction">
       {{actionText}}
     </tc-button>
   </div>
