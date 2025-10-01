@@ -106,7 +106,11 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  getStageBadgeColor,
+  OpportunityIds
+} from "../../../model/opportunity";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
@@ -1832,4 +1836,5 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     window.open(`/candidate/${candidateNumber}`, '_blank');
   }
 
+  protected readonly getStageBadgeColor = getStageBadgeColor;
 }

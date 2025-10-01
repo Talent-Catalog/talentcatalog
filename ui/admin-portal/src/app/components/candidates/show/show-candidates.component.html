@@ -150,9 +150,9 @@
     </tc-alert>
 
     <!-- Toggle description -->
-    <tc-button (click)="showDescription = !showDescription"
-               type="plain"
-               size="sm">
+    <tc-button (clicked)="showDescription = !showDescription"
+               [type]="'plain'"
+               [size]="'sm'">
       Description
       <i class="fas"
          [ngClass]="showDescription ? 'fa-chevron-up' : 'fa-chevron-down'">
@@ -230,7 +230,7 @@
       <div *ngIf="haveTargetList() && savedSelection"
            class="d-flex align-items-center gap-2">
         <tc-button [type]="'outline'"
-                   (click)="saveSelectionAgain()">
+                   (clicked)="saveSelectionAgain()">
           <i class="fas fa-spinner fa-spin" *ngIf="savingSelection"></i>
           {{ targetListReplace ? 'Replace' : 'Save' }} Again
         </tc-button>
@@ -324,7 +324,7 @@
         <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
           <tc-button [type]="'primary'"
                      [disabled]="!isSelection()"
-                     (click)="saveSelection()"
+                     (clicked)="saveSelection()"
                      title="Save selected candidates to a list">
             <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
             <i class="fas fa-user-check"></i> to
@@ -334,7 +334,7 @@
           <tc-button [type]="'primary'"
                      *ngIf="isSavedList()"
                      [disabled]="!isSelection()"
-                     (click)="copyEmails()"
+                     (clicked)="copyEmails()"
                      title="Copy emails of selected candidates">
             <i class="fas fa-user-check"></i> to
             <i class="fa fa-envelope"></i>
@@ -343,7 +343,7 @@
           <tc-button [type]="'primary'"
                      *ngIf="canUpdateStatuses()"
                      [disabled]="!isSelection()"
-                     (click)="updateStatusOfSelection()"
+                     (clicked)="updateStatusOfSelection()"
                      title="Update statuses of selected candidates">
             <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
             <i class="fas fa-user-check"></i>
@@ -353,7 +353,7 @@
           <tc-button [type]="'primary'"
                      *ngIf="canResolveTasks()"
                      [disabled]="!isSelection()"
-                     (click)="resolveTaskAssignments()"
+                     (clicked)="resolveTaskAssignments()"
                      title="Resolve any outstanding tasks">
             <i class="fas fa-spinner fa-spin" *ngIf=updatingTasks></i>
             <i class="fas fa-user-check"></i> Resolve tasks
@@ -361,7 +361,7 @@
 
           <tc-button [type]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
-                     (click)="createUpdateSalesforce()"
+                     (clicked)="createUpdateSalesforce()"
                      title="Create or update selected candidate cases">
             <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
             <i class="fas fa-user-check"></i> Update Case/s <i class="fa-solid fa-address-book"></i>
@@ -370,7 +370,7 @@
           <tc-button [type]="'primary'"
                      *ngIf="!isSubmissionList() && isContentModifiable()"
                      [disabled]="!isSelection()"
-                     (click)="removeSelectedCandidatesFromList()"
+                     (clicked)="removeSelectedCandidatesFromList()"
                      title="Remove selected candidates from list">
             <i class="fas fa-user-check"></i> Remove
           </tc-button>
@@ -378,7 +378,7 @@
           <tc-button [type]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                      [disabled]="!isSelection()"
-                     (click)="closeSelectedOpportunities()"
+                     (clicked)="closeSelectedOpportunities()"
                      title="Close selected candidate cases. Not removed from list but hidden unless 'Show closed cases' checkbox is checked.">
             <i class="fas fa-spinner fa-spin" *ngIf=closing></i>
             <i class="fas fa-user-check"></i> Remove (Close)
@@ -386,14 +386,14 @@
 
           <tc-button [type]="'primary'"
                      [disabled]="!isSelection()"
-                     (click)="clearSelectionAndDoSearch()"
+                     (clicked)="clearSelectionAndDoSearch()"
                      title="Clear selected candidates">
             Clear <i class="fas fa-user-check"></i>
           </tc-button>
 
           <tc-button [type]="'primary'"
                      *ngIf="isSwapSelectionSupported()"
-                     (click)="swapSelection()"
+                     (clicked)="swapSelection()"
                      title="Swap selected candidates. Selected becomes unselected and vice versa.">
             <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
           </tc-button>
@@ -406,7 +406,7 @@
         <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
           <tc-button [type]="'outline'"
                      *ngIf="isImportable()"
-                     (click)="importCandidates()"
+                     (clicked)="importCandidates()"
                      title="Import candidates">
             <i class="fas fa-spinner fa-spin" *ngIf=importing></i>
             Import <i class="fas fa-file-excel"></i>
@@ -414,7 +414,7 @@
 
           <tc-button [type]="'outline'"
                      *ngIf="!isSavedList() && isExportable()"
-                     (click)="exportCandidates()"
+                     (clicked)="exportCandidates()"
                      title="Export candidates">
             <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
             Export <i class="fas fa-file-excel"></i>
@@ -422,7 +422,7 @@
 
           <tc-button [type]="'outline'"
                      *ngIf="isPublishable()"
-                     (click)="modifyExportColumns()"
+                     (clicked)="modifyExportColumns()"
                      title="Publish candidates to be shared externally - eg with employers">
             <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>
             Publish <i class="fas fa-globe"></i>
@@ -431,7 +431,7 @@
           <tc-button [type]="'outline'"
                      *ngIf= "hasPublishedDoc() && isContentModifiable()
                      && salesforceService.joblink(candidateSource)"
-                     (click)="importEmployerFeedback()"
+                     (clicked)="importEmployerFeedback()"
                      title="Import employer feedback from published list">
             <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
             Feedback <i class="fas fa-globe"></i>
@@ -663,9 +663,8 @@
               </div>
             </td>
             <td *ngIf="isShowStage()">
-              <tc-badge>
-<!--                todo uncomment and add line below to opening tag once CC branch merged -->
-<!--                [color]="getStageBadgeColor(getCandidateOppForThisJob(candidate))">-->
+              <tc-badge
+                [color]="getStageBadgeColor(getCandidateOppForThisJob(candidate))">
                 {{getStage(candidate) | truncate: 15}}
               </tc-badge>
             </td>
