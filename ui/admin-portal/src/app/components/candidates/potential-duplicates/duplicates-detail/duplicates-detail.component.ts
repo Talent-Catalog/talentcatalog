@@ -63,8 +63,4 @@ export class DuplicatesDetailComponent {
     this.fetchPotentialDuplicates(this.selectedCandidate.id);
   }
 
-  closeModal() {
-    this.activeModal.close()
-  }
-
 }
