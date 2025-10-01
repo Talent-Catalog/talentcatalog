@@ -69,6 +69,11 @@ import {TcAccordionComponent} from './components/accordion/tc-accordion.componen
 import {
   TcAccordionItemComponent
 } from './components/accordion/accordion-item/tc-accordion-item.component';
+import {TcCardComponent} from './components/card/tc-card.component';
+import {TcCardHeaderComponent} from './components/card/card-header/tc-card-header.component';
+import {TcLoadingComponent} from './components/loading/tc-loading.component';
+import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -99,7 +104,11 @@ import {
     TcDateRangePickerComponent,
     TcIconComponent,
     TcAccordionComponent,
-    TcAccordionItemComponent
+    TcAccordionItemComponent,
+    TcCardComponent,
+    TcCardHeaderComponent,
+    TcLoadingComponent,
+    TcDatePickerComponent
   ],
   imports: [
     CommonModule,
@@ -108,7 +117,9 @@ import {
     NgbAlert,
     NgbDropdownModule,
     RouterLink,
-    NgbInputDatepicker
+    NgbInputDatepicker,
+    ReactiveFormsModule,
+    FormsModule
   ],
   exports: [
     ButtonComponent,
@@ -138,7 +149,11 @@ import {
     TcDateRangePickerComponent,
     TcIconComponent,
     TcAccordionComponent,
-    TcAccordionItemComponent
+    TcAccordionItemComponent,
+    TcCardComponent,
+    TcCardHeaderComponent,
+    TcLoadingComponent,
+    TcDatePickerComponent
   ]
 })
 export class SharedModule { }

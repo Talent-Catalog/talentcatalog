@@ -17,6 +17,9 @@ export class MyFirstFormComponent implements OnInit, ICandidateFormComponent<MyF
   //When present and true, the form can't be modified or submitted
   @Input() readOnly = false;
 
+  /** Candidate object passed */
+  @Input() candidate: any | null = null;
+
   //Output event supplying the submitted data
   @Output() submitted = new EventEmitter<MyFirstFormData>();
 
