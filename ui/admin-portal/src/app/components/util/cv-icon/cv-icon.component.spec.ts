@@ -137,7 +137,7 @@ describe('CvIconComponent', () => {
     mockAuthService.canViewCandidateCV.and.returnValue(true);
     component.cvs = mockCanidiate.candidateAttachments;
     fixture.detectChanges();
-    const link: DebugElement = fixture.debugElement.query(By.css('.link-info'));
+    const link: DebugElement = fixture.debugElement.query(By.css('.fa-address-card'));
     expect(link).toBeTruthy();
     link.triggerEventHandler('click', null);
     expect(component.openCVs).toHaveBeenCalled();
