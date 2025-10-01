@@ -21,6 +21,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.CandidatePropertyType;
 import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.SavedList;
 
@@ -55,11 +56,13 @@ public class PublishListRequest {
    */
   @Nullable
   public PublishedDocColumnDef findExpandingColumnDef() {
-    //This is not very generic. The only expanding column is hard coded here to be the dependants
-    //travel info property.
+    //Expanding columns must have JSON type values.
     return columns.stream()
         .map(PublishedDocColumnConfig::getColumnDef)
-        .filter(columnDef -> columnDef.getKey().equals("DEPENDANTS_TRAVEL_INFO"))
+        .filter(columnDef ->
+            columnDef.getContent().getValue() != null)
+        .filter(columnDef ->
+            CandidatePropertyType.JSON == columnDef.getContent().getValue().getPropertyType())
         .findFirst().orElse(null);
   }
 

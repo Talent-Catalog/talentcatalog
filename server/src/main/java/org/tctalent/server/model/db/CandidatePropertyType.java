@@ -16,31 +16,18 @@
 
 package org.tctalent.server.model.db;
 
-import org.springframework.lang.Nullable;
-
 /**
- * Object which supports multiple String values organized into a number of rows.
- * <p>
- * Data from within a row is identified using a String name.
+ * All candidate properties are stored as strings in the database, but it can be useful to
+ * treat them as having a type - eg for sorting or display purposes.
  *
  * @author John Cameron
  */
-public interface HasMultipleRows {
-
+public enum CandidatePropertyType {
     /**
-     * Number of rows
-     * @return Number of rows
+     * This allows properties to have complex values.
+     * <p>
+     *  It is used, for example, to populate {@link HasMultipleRows} values
+     * </p>
      */
-    int nRows();
-
-    /**
-     * Gets the value specified by name from the n'th row (base 0)
-     * @param n Index
-     * @param name Specifies which element of the row to fetch
-     *
-     * @return Data - can be null if there is no such data or if the index or name is not
-     * recognized.
-     */
-    @Nullable
-    String get(int n, String name);
+    JSON,
 }
