@@ -152,7 +152,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         //gives alpha sort - eg 100 before 20
         candidates.sort(Comparator.comparing(Candidate::getId));
 
-        final PublishedDocColumnDef expandingColumnDef = request.getExpandingColumnDef();
+        final PublishedDocColumnDef expandingColumnDef = request.findExpandingColumnDef();
         //Add row for each candidate
         for (Candidate candidate : candidates) {
             //Could be more than one row per candidate if, for example, dependants are being displayed
@@ -234,7 +234,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         throws GeneralSecurityException, IOException {
 
         //The number of data rows required plus 1 for the header
-        int nRowsData = computeNumberOfRows(candidates, request.getExpandingColumnDef()) + 1;
+        int nRowsData = computeNumberOfRows(candidates, request.findExpandingColumnDef()) + 1;
 
         //Create copy of sheet from template
         GoogleFileSystemFile file = fileSystemService.copyFile(

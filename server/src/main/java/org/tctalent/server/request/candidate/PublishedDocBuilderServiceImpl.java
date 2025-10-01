@@ -58,22 +58,28 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
         Object value = null;
         String link = null;
         if (expandingCount == 0) {
+            value = valueSource == null ? null : fetchData(candidate, valueSource);
             if (expandingColumnDef != null
                 && expandingColumnDef.getKey().equals(columnInfo.getKey())) {
                 //Don't show unexpanded value if we are expanding it
-                value = "...";
+                value = value == null ? "" : "...";
             } else {
-                value = valueSource == null ? null : fetchData(candidate, valueSource);
                 link = linkSource == null ? null : (String) fetchData(candidate, linkSource);
             }
         } else {
             HasMultipleRows expandData = getExpandingData(candidate, expandingColumnDef);
             if (expandData != null) {
-                int dataIndex = expandingCount - 1;
-                value = valueSource == null ? null
-                    : expandData.get(dataIndex, valueSource.getFieldName());
-                link = linkSource == null ? null
-                    : expandData.get(dataIndex, linkSource.getFieldName());
+                if (expandingColumnDef != null
+                    && expandingColumnDef.getKey().equals(columnInfo.getKey())) {
+                    //Indicate that this row is an expanded row from a row above.
+                    value = ".";
+                } else {
+                    int dataIndex = expandingCount - 1;
+                    value = valueSource == null ? null
+                        : expandData.get(dataIndex, valueSource.getFieldName());
+                    link = linkSource == null ? null
+                        : expandData.get(dataIndex, linkSource.getFieldName());
+                }
             }
         }
 

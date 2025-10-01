@@ -38,7 +38,15 @@ public class PublishListRequest {
   private List<PublishedDocColumnConfig> columns;
 
   /**
-   * If not null, this specifies a {@link PublishedDocColumnDef} which can supply a second dimension
+   * If not null, indicates that this list is associated with a job (eg a submission list), and
+   * the boolean value indicates whether to publish candidates who have closed opportunities for
+   * the job.
+   */
+  private Boolean publishClosedOpps;
+
+
+  /**
+   * Searches for a {@link PublishedDocColumnDef} which can supply a second dimension
    * to the candidate data to be published.
    * This could mean that a single candidate could generate more than one row in the published doc.
    * <p>
@@ -46,14 +54,14 @@ public class PublishListRequest {
    * we can publish a row for each dependant in addition to the row for the candidate themselves.
    */
   @Nullable
-  private PublishedDocColumnDef expandingColumnDef;
-
-  /**
-   * If not null, indicates that this list is associated with a job (eg a submission list), and
-   * the boolean value indicates whether to publish candidates who have closed opportunities for
-   * the job.
-   */
-  private Boolean publishClosedOpps;
+  public PublishedDocColumnDef findExpandingColumnDef() {
+    //This is not very generic. The only expanding column is hard coded here to be the dependants
+    //travel info property.
+    return columns.stream()
+        .map(PublishedDocColumnConfig::getColumnDef)
+        .filter(columnDef -> columnDef.getKey().equals("DEPENDANTS_TRAVEL_INFO"))
+        .findFirst().orElse(null);
+  }
 
   /**
    * This extracts the corresponding ExportColumn information - this is what is stored on the
