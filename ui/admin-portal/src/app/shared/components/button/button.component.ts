@@ -56,7 +56,7 @@ export class ButtonComponent {
   @Input() disabled = false;
   @Input() ariaLabel?: string;
 
-  @Output() clicked = new EventEmitter();
+  @Output() click = new EventEmitter();
 
   get sizeClass(): string {
     return `btn-${this.size}`;
@@ -74,7 +74,7 @@ export class ButtonComponent {
   }
 
   onClick(): void {
-    this.clicked.emit();
+    this.click.emit();
   }
 
 }
