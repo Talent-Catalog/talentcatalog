@@ -22,6 +22,10 @@
 
 }
 
+:host(.disabled) {
+  pointer-events: none;
+}
+
 .btn-xs {
   @include paragraph-xs;
   height: 1.5rem;
@@ -126,5 +130,69 @@
   &:active {
     background-color: color(gray, 200);
     color: color(gray, 700);
+  }
+}
+
+.btn-success {
+  @include background-color-success;
+  @include text-color-success;
+
+  &:hover {
+    background-color: color(green, 200);
+  }
+  &:focus-visible {
+    outline: 2px solid color(green, 500);
+    outline-offset: 2px;
+  }
+  &:active {
+    background-color: color(green, 300);
+  }
+}
+
+.btn-warning {
+  @include background-color-warning;
+  @include text-color-warning;
+
+  &:hover {
+    background-color: color(yellow, 200);
+  }
+  &:focus-visible {
+    outline: 2px solid color(yellow, 500);
+    outline-offset: 2px;
+  }
+  &:active {
+    background-color: color(yellow, 300);
+  }
+}
+
+.btn-error {
+  @include background-color-error;
+  @include text-color-error;
+
+  &:hover {
+    background-color: color(red, 200);
+  }
+  &:focus-visible {
+    outline: 2px solid color(red, 500);
+    outline-offset: 2px;
+  }
+  &:active {
+    background-color: color(red, 300);
+  }
+}
+
+.btn-info {
+  @include background-color-info;
+  @include text-color-info;
+
+  &:hover {
+    background-color: color(blue, 200);
+  }
+  &:focus-visible {
+    outline: 2px solid color(blue, 500);
+    outline-offset: 2px;
+  }
+  &:active {
+    background-color: color(blue, 300);
   }
 }

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, HostBinding, Input} from '@angular/core';
 
 /**
  * @component ButtonComponent
@@ -52,9 +52,13 @@ import {Component, Input} from '@angular/core';
 })
 export class ButtonComponent {
   @Input() size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'  = 'default';
-  @Input() type: 'primary' | 'secondary' | 'outline' | 'plain' = 'primary';
+  @Input() type: 'primary' | 'secondary' | 'outline' | 'plain' | 'success' | 'warning' | 'error' | 'info' = 'primary';
   @Input() disabled = false;
   @Input() ariaLabel?: string;
+
+  @HostBinding('class.disabled') get isDisabled() {
+    return this.disabled;
+  }
 
   get sizeClass(): string {
     return `btn-${this.size}`;
