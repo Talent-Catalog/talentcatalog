@@ -1449,6 +1449,9 @@ public class CandidateServiceImpl implements CandidateService {
 
             //Check if country has changed
             if (!country.equals(candidate.getCountry())) {
+                //TODO JC This is where we can check for relocatedIndependently based on country change.
+                //TODO JC If assigned country is a known safe country (Australia, Canada, UK, etc) set relocatedIndependently
+                //TODO JC If safe country, partner does not need to be reassigned
                 reassignOrNotifyPartnerIfNeeded(candidate, country);
                 //Important that new country is not set on candidate until the above method has been
                 //called. This is because it needs to know the original country
