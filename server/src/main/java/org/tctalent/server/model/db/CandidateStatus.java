@@ -29,7 +29,7 @@ public enum CandidateStatus {
     active,
 
     /**
-     * The candidate has found employment themselves
+     * The candidate has found employment themselves.
      */
     autonomousEmployment,
 
@@ -46,7 +46,7 @@ public enum CandidateStatus {
     draft,
 
     /**
-     * Candidate is no longer looking for placement through TBB.
+     * Candidate is no longer looking for placement through the TC.
      */
     employed,
 
@@ -56,17 +56,23 @@ public enum CandidateStatus {
     incomplete,
 
     /**
-     * The candidate is not eligible for TBB's support
+     * The candidate is not eligible for support on the TC.
      */
     ineligible,
 
     /**
-     * Candidate has completed registration but TBB staff have not yet reviewed the registration.
+     * Candidate has completed registration, but the registration has not yet been reviewed.
      */
     pending,
 
     /**
-     * We cannot contact candidate
+     * The candidate has independently relocated to a country with a durable solution.
+     * They therefore no longer need our services and should not be considered active.
+     */
+    relocatedIndependently,
+
+    /**
+     * The candidate cannot be contacted.
      */
     unreachable,
 
