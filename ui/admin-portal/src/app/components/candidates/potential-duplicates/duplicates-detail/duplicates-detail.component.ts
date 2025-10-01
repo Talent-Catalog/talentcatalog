@@ -15,7 +15,6 @@
  */
 
 import {Component} from '@angular/core';
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../services/candidate.service";
 import {Candidate} from "../../../../model/candidate";
 
@@ -34,7 +33,6 @@ export class DuplicatesDetailComponent {
   potentialDuplicates: Candidate[];
 
   constructor(
-    private activeModal: NgbActiveModal,
     private candidateService: CandidateService
   ) { }
 

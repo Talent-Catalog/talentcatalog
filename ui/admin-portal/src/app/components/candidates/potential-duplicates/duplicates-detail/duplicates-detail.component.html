@@ -15,7 +15,7 @@
   -->
 
 <tc-modal [title]="'Potential Duplicate Candidate'"
-          [showCancel]="true"
+          [showCancel]="false"
           [actionText]="'Refresh'"
           (onAction)="refresh()"
           [showClose]="true">
@@ -36,12 +36,12 @@
 
     </a>
   </p>
-  <span *ngIf="potentialDuplicates.length > 0; else noDuplicates">
+  <span *ngIf="potentialDuplicates && potentialDuplicates.length > 0; else noDuplicates">
   <p>
     They may be a duplicate of the following candidate(s) with the same full name and date of birth:
   </p>
   <ul>
-    <li *ngFor="let candidate of potentialDuplicates">
+    <li *ngFor="let candidate of potentialDuplicates" class="mb-2">
       <a class="fw-bold"
          target="_blank"
          [routerLink]="['/candidate', candidate.candidateNumber]"
