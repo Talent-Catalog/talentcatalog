@@ -1,4 +1,14 @@
-import {Component, EventEmitter, forwardRef, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef
+} from '@angular/core';
+import {Observable} from "rxjs";
+import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 /**
@@ -12,6 +22,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
  * - Standard HTML `<input>` under the hood with sane defaults
  * - Works with `formControlName` / `ngModel`
  * - Emits `valueChange` when the value updates
+ * - For checkbox styling pass [checkbox]="true" to the parent tc-field component
  *
  * @example
  * ### Reactive Forms
@@ -58,11 +69,38 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() id?: string;
   @Input() ariaLabel?: string;
   @Input() name?: string;
-  @Input() type: string = 'text';
   @Input() placeholder: string = '';
   @Input() invalid: boolean = false;
   @Input() defaultValue: string = '';
+  @Input() ngbTypeahead!: (text$: Observable<string>) => Observable<any[]>;
+  @Input() resultTemplate?: TemplateRef<any>;
+  @Input() inputFormatter?: (value: any) => string;
+  @Input() resultFormatter?: (value: any) => string;
+  @Input() editable: boolean;
   @Input() readonly: boolean = false;
+  @Input() type:
+    | 'text'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'url'
+    | 'email'
+    | 'number'
+    | 'range'
+    | 'color'
+    | 'date'
+    | 'month'
+    | 'week'
+    | 'time'
+    | 'datetime-local'
+    | 'checkbox'
+    | 'radio'
+    | 'file'
+    | 'button'
+    | 'submit'
+    | 'reset'
+    | 'hidden'
+    | 'image' = 'text';
 
   /** Disabled state coming from an input e.g. [disabled]="loading" */
   @Input() set disabled(val: boolean) {
@@ -84,19 +122,22 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   private _disabledFromForm = false;
   private _disabledFinal = false;
 
-  @Output() valueChange = new EventEmitter<string>();
+  @Output() valueChange = new EventEmitter<string | boolean>();
 
-  private _value: string = '';
+  @Output() selectItem =
+    new EventEmitter<NgbTypeaheadSelectItemEvent<any>>();
 
-  get value(): string {
+  protected _value: string | boolean = '';
+
+  get value(): string | boolean {
     return this._value;
   }
 
-  set value(val: string) {
+  set value(val: string | boolean) {
     if (val !== this._value) {
       this._value = val;
       this.onChange(val);
-      this.valueChange.emit(val);
+      this.valueChange.emit(this.type === 'checkbox' ? val as boolean : val as string);
     }
   }
 
@@ -113,7 +154,11 @@ export class InputComponent implements ControlValueAccessor, OnInit {
 
   // ControlValueAccessor implementation
   writeValue(val: any): void {
-    this._value = val ?? '';
+    if (this.type === 'checkbox') {
+      this._value = Boolean(val);
+    } else {
+      this._value = val ?? '';
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -136,8 +181,8 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   }
 
   handleInput(event: Event) {
-    const newValue = (event.target as HTMLInputElement).value;
-    this.value = newValue;
+    const target = event.target as HTMLInputElement;
+    this.value = this.type === 'checkbox' ? target.checked : target.value;
   }
 
   handleBlur() {

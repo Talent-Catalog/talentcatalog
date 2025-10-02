@@ -15,26 +15,24 @@
  */
 
 @import "src/scss/_variables.scss";
+@import "../../../../scss/color-mixins";
 
 .field {
-  background-color: $accent3;
+  @include background-color-light;
   list-style: none;
   padding: 8px;
   color: $dark;
   margin-bottom: 0.5em;
-  border-radius: 3px;
+  border-radius: 8px;
   text-align: center;
+  cursor: pointer;
   &:active,&:focus {
-    background-color: $accent2;
+    @include background-color-soft
   }
 }
 
 .container:not(:last-child) {
   margin-right: 4em;
-}
-
-.gu-mirror {
-  background-color: $info;
 }
 
 .edit-btn {
@@ -51,10 +49,10 @@ label {
   font-weight: 300;
 }
 
-.dragula-container {
-  height: 100%;
-}
-
 .modal-body {
   height: 100vh;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
 }

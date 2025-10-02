@@ -14,12 +14,17 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [title]="title" [disableAction]="!isValid()" [actionText]="closeButtonLabel" (onAction)="close()">
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+<tc-modal [title]="title"
+          [actionText]="closeButtonLabel"
+          [disableAction]="!isValid()"
+          (onAction)="close()">
+
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
+
   <p>
-    Valid file extensions:
+    <strong>Valid file extensions:</strong>
     <span *ngFor="let extension of validExtensions">
       {{' ' + extension}}
     </span>
@@ -28,13 +33,15 @@
   <p *ngIf="instructions">{{instructions}}</p>
 
   <p *ngIf="selectedFiles.length > 0">
-    Selection:
+    <strong>Selection:</strong>
   </p>
   <div *ngFor="let file of selectedFiles">
     {{file.name}}
   </div>
 
-  <app-file-upload [validExtensions]="validExtensions" (newFiles)="addFiles($event)"
-  (error)="onError($event)"></app-file-upload>
+  <app-file-upload [validExtensions]="validExtensions"
+                   (newFiles)="addFiles($event)"
+                   (error)="onError($event)">
+  </app-file-upload>
 
 </tc-modal>
