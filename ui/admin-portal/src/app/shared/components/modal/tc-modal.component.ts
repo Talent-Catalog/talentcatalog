@@ -20,7 +20,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
  *
  *  **Usage in a template (with ng-content):**
  *  ```html
- *  <tc-modal title="Confirmation" icon="fas fa-bell" (onAction)="close()" actionText="Ok">
+ *  <tc-modal heading="Confirmation" icon="fas fa-bell" (onAction)="close()" actionText="Ok">
  *    <span *ngIf="message">{{message}}</span>
  *    <span *ngIf="!message">Are you sure?</span>
  *  </tc-modal>
@@ -34,14 +34,14 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
  *  modalRef.componentInstance.actionText = 'Retry';
  *  modalRef.componentInstance.message = this.error.message;
  *  modalRef.componentInstance.onAction.subscribe(() => {
- *    this.retruMethod();
+ *    this.returnMethod();
  *    modalRef.close();
  *  });
  *  ```
  *
  * **With Icon**
  *   ```html
- * <tc-modal title="Confirmation" icon="fas fa-bell" (onAction)="close()" actionText="Ok">
+ * <tc-modal heading="Confirmation" icon="fas fa-bell" (onAction)="close()" actionText="Ok">
  *     <span *ngIf="message">
  *       {{message}}
  *     </span>
@@ -55,7 +55,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
  * **Without Icon**
  *   ```html
  * <tc-modal
- *    title="Add Language"
+ *    heading="Add Language"
  *    [disableAction]="form.invalid || loading || saving"
  *    (onAction)="onSave()">
  *    <form [formGroup]="form">
@@ -78,7 +78,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
   styleUrls: ['./tc-modal.component.scss']
 })
 export class TcModalComponent {
-  @Input() header: string;
+  /** Appears as the title of the modal (note: reason the input isn't called title is that the
+   * title attribute applies a tooltip across the whole component */
+  @Input() heading: string;
   @Input() actionText: string = 'Save';
   /** Disable the action button e.g. on saving/loading status */
   @Input() disableAction: boolean = false;
