@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal title="Edit Job" (onAction)="onSave()" actionText="Save">
+<tc-modal heading="Edit Job" (onAction)="onSave()" actionText="Save" [disableAction]="saving">
 
   <div *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
@@ -82,31 +82,6 @@
         </tc-field>
       </tc-fieldset>
 
-<!--      &lt;!&ndash; SUBMISSION DUE DATE &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="submissionDueDate" [ngbTooltip]="submissionDueDateTip">-->
-<!--          Submission Due Date-->
-<!--        </label>-->
-<!--        <app-date-picker id="submissionDueDate"-->
-<!--                         [control]="jobForm.controls.submissionDueDate"-->
-<!--                         [ngbTooltip]="submissionDueDateTip">-->
-<!--        </app-date-picker>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Contact user &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="contactUser">Contact User</label>-->
-<!--        <ng-select-->
-<!--          id="contactUser"-->
-<!--          [items]="users"-->
-<!--          [multiple]="false"-->
-<!--          [closeOnSelect]="true"-->
-<!--          placeholder="Select or type..."-->
-<!--          bindLabel="name"-->
-<!--          bindValue="id"-->
-<!--          formControlName="contactUser">-->
-<!--        </ng-select>-->
-<!--      </div>-->
     </form>
 
   </div>

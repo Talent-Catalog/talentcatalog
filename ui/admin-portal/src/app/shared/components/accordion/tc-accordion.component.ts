@@ -92,7 +92,7 @@ export class TcAccordionComponent implements AfterContentInit {
   }
 
   toggleAll() {
-    if (this.openIndexes.size === this.items.length) {
+    if (this.openIndexes.size > 0) {
       this.closeAll();
     } else {
       this.openAll();

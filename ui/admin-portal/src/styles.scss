@@ -75,6 +75,7 @@ h4 {
 
 a {
   @include label-md;
+  font-size: inherit;
   color: inherit;
   text-decoration: underline;
 }
