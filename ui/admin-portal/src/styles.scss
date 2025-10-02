@@ -30,7 +30,7 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "./scss/tag";
 
 @import "./scss/btn";
-@import "./scss/dragula";
+@import "scss/dragula";
 @import "@ng-select/ng-select/themes/default.theme.css";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
@@ -42,12 +42,19 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import './scss/components/navbar';
 @import './scss/components/ngb-modal';
 @import './scss/components/ng-select';
+@import './scss/components/ngb-datepicker';
 
 body {
   padding-top: 5rem;
   margin:0 0.8rem 0 0.8rem;
   font-family: 'Lato', sans-serif;
   @include text-color-body;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  line-height: 1.5;
 }
 
 h1 {

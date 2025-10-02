@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
-import org.tctalent.server.model.db.CandidateTravelDocForm;
+import org.tctalent.server.model.db.TravelDocForm;
 import org.tctalent.server.repository.db.TravelDocFormRepository;
 import org.tctalent.server.request.form.TravelDocFormData;
 import org.tctalent.server.service.db.CandidateFormService;
@@ -39,14 +39,14 @@ public class TravelDocFormInstanceServiceImpl implements TravelDocFormInstanceSe
     private final TravelDocFormRepository travelDocFormRepository;
 
     @Override
-    public @NonNull CandidateTravelDocForm createOrUpdateTravelDocForm(
+    public @NonNull TravelDocForm createOrUpdateTravelDocForm(
         @NonNull Candidate candidate, @NonNull TravelDocFormData request) {
 
         final CandidateFormInstanceKey key = computeTravelDocFormKey(candidate);
         //Check if form instance exists and retrieve if it does.
-        CandidateTravelDocForm form = travelDocFormRepository.findById(key).orElse(null);
+        TravelDocForm form = travelDocFormRepository.findById(key).orElse(null);
         if (form == null) {
-            form = new CandidateTravelDocForm();
+            form = new TravelDocForm();
             form.setId(key);
             form.setCandidateForm(getTravelDocForm());
             form.setCandidate(candidate);
@@ -70,7 +70,7 @@ public class TravelDocFormInstanceServiceImpl implements TravelDocFormInstanceSe
 
     @Override
     @NonNull
-    public Optional<CandidateTravelDocForm> getTravelDocForm(@NonNull Candidate candidate) {
+    public Optional<TravelDocForm> getTravelDocForm(@NonNull Candidate candidate) {
         //Construct the instance key
         CandidateFormInstanceKey key = computeTravelDocFormKey(candidate);
         //Check if form instance exists and retrieve if it does.
@@ -78,7 +78,7 @@ public class TravelDocFormInstanceServiceImpl implements TravelDocFormInstanceSe
     }
 
     private CandidateForm getTravelDocForm() {
-        return candidateFormService.getByName("ItalyCandidateTravelDocumentForm");
+        return candidateFormService.getByName("TravelDocForm");
     }
 
     private CandidateFormInstanceKey computeTravelDocFormKey(@NonNull Candidate candidate) {

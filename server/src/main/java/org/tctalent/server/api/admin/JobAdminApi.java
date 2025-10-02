@@ -245,6 +245,8 @@ public class JobAdminApi implements
             .add("jobCreator", shortPartnerDto())
             .add("skipCandidateSearch")
             .add("stage")
+            .add("closed")
+            .add("won")
             .add("starringUsers", shortUserDto())
             .add("submissionDueDate")
             .add("submissionList", savedListBuilderSelector.selectBuilder())

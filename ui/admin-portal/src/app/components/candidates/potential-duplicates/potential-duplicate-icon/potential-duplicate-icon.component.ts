@@ -32,6 +32,7 @@ import {AuthorizationService} from "../../../../services/authorization.service";
 })
 export class PotentialDuplicateIconComponent {
   @Input('candidate') candidate: Candidate;
+  @Input() size: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
   @Output() refresh: EventEmitter<void> = new EventEmitter();
   error = null;
   loading = null;

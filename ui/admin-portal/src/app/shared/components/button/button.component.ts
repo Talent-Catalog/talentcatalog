@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 /**
  * @component ButtonComponent
@@ -56,6 +56,8 @@ export class ButtonComponent {
   @Input() disabled = false;
   @Input() ariaLabel?: string;
 
+  @Output() click = new EventEmitter();
+
   get sizeClass(): string {
     return `btn-${this.size}`;
   }
@@ -70,4 +72,9 @@ export class ButtonComponent {
       this.typeClass,
     ];
   }
+
+  onClick(): void {
+    this.click.emit();
+  }
+
 }

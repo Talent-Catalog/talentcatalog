@@ -22,7 +22,8 @@ import {
   NgbDropdownModule,
   NgbInputDatepicker,
   NgbNavModule,
-  NgbPaginationModule
+  NgbPaginationModule,
+  NgbTypeahead
 } from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
@@ -72,6 +73,8 @@ import {
 import {TcCardComponent} from './components/card/tc-card.component';
 import {TcCardHeaderComponent} from './components/card/card-header/tc-card-header.component';
 import {TcLoadingComponent} from './components/loading/tc-loading.component';
+import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -105,7 +108,8 @@ import {TcLoadingComponent} from './components/loading/tc-loading.component';
     TcAccordionItemComponent,
     TcCardComponent,
     TcCardHeaderComponent,
-    TcLoadingComponent
+    TcLoadingComponent,
+    TcDatePickerComponent
   ],
   imports: [
     CommonModule,
@@ -114,7 +118,11 @@ import {TcLoadingComponent} from './components/loading/tc-loading.component';
     NgbAlert,
     NgbDropdownModule,
     RouterLink,
-    NgbInputDatepicker
+    NgbInputDatepicker,
+    ReactiveFormsModule,
+    FormsModule,
+    NgbInputDatepicker,
+    NgbTypeahead
   ],
   exports: [
     ButtonComponent,
@@ -147,7 +155,8 @@ import {TcLoadingComponent} from './components/loading/tc-loading.component';
     TcAccordionItemComponent,
     TcCardComponent,
     TcCardHeaderComponent,
-    TcLoadingComponent
+    TcLoadingComponent,
+    TcDatePickerComponent
   ]
 })
 export class SharedModule { }

@@ -6,7 +6,7 @@ import {CandidateFormService} from '../../../services/candidate-form.service';
 import {CountryService} from '../../../services/country.service';
 import {profileMatchValidator} from '../../util/validators/profile-match-validator';
 
-import {ItalyCandidateTravelDocFormData, ItalyCandidateTravelDocType} from '../../../model/form';
+import {TravelDocFormData, TravelDocType} from '../../../model/form';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
 import {Country} from '../../../model/country';
 
@@ -19,12 +19,12 @@ import {Country} from '../../../model/country';
  * to update their profile before submitting.
  */
 @Component({
-  selector: 'app-italy-travel-document-form',
-  templateUrl: './italy-candidate-travel-document-form.component.html',
-  styleUrls: ['./italy-candidate-travel-document-form.component.scss'],
+  selector: 'app-travel-doc-form',
+  templateUrl: './travel-doc-form.component.html',
+  styleUrls: ['./travel-doc-form.component.scss'],
 })
-export class ItalyCandidateTravelDocumentFormComponent
-  implements OnInit, ICandidateFormComponent<ItalyCandidateTravelDocFormData> {
+export class TravelDocFormComponent
+  implements OnInit, ICandidateFormComponent<TravelDocFormData> {
   /** When true, the form is read-only and cannot be submitted. */
   @Input() readOnly = false;
 
@@ -32,7 +32,7 @@ export class ItalyCandidateTravelDocumentFormComponent
   @Input() candidate: any | null = null;
 
   /** Emits after successful submission with saved form data. */
-  @Output() submitted = new EventEmitter<ItalyCandidateTravelDocFormData>();
+  @Output() submitted = new EventEmitter<TravelDocFormData>();
 
   /** Holds the reactive form instance. */
   form: FormGroup | null = null;
@@ -47,7 +47,7 @@ export class ItalyCandidateTravelDocumentFormComponent
   countries: Country[] = [];
 
   /** Expose enum for binding in template. */
-  protected readonly TravelDocType = ItalyCandidateTravelDocType;
+  protected readonly TravelDocType = TravelDocType;
 
   constructor(
     private fb: FormBuilder,
@@ -175,7 +175,7 @@ export class ItalyCandidateTravelDocumentFormComponent
   }
 
   /** Check if control has a given validation error. */
-  hasError(ctrlName: keyof ItalyCandidateTravelDocFormData, validationName: string): boolean {
+  hasError(ctrlName: keyof TravelDocFormData, validationName: string): boolean {
     if (!this.form) return false;
     const ctrl = this.form.get(ctrlName as string);
     return !this.readOnly && !!ctrl && ctrl.touched && ctrl.hasError(validationName);
@@ -197,7 +197,7 @@ export class ItalyCandidateTravelDocumentFormComponent
     this.submitting = true;
     this.error = null;
 
-    const data: ItalyCandidateTravelDocFormData = this.form!.getRawValue();
+    const data: TravelDocFormData = this.form!.getRawValue();
 
     this.candidateFormService.createOrUpdateTravelDocumentForm(data).subscribe({
       next: (value) => {

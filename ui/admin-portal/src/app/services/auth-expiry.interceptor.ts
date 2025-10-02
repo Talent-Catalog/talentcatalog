@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
-  HttpRequest,
-  HttpHandler,
+  HttpErrorResponse,
   HttpEvent,
-  HttpInterceptor, HttpErrorResponse
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest
 } from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {Router} from "@angular/router";
@@ -26,7 +27,7 @@ export class AuthExpiryInterceptor implements HttpInterceptor {
             this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
           }
         }
-        return throwError(() => err);
+        return throwError(err);
       })
     );
   }

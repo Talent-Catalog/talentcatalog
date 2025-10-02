@@ -1,4 +1,5 @@
 @import '../../../../scss/color-mixins';
+@import '../../../../scss/dropdown-styles';
 
 .tc-dropdown {
   [ngbDropdownToggle] {
@@ -33,5 +34,7 @@
       @include background-color-primary;
       @include text-color-white;
     }
+  ::ng-deep{
+    @include dropdown-styles;
   }
 }

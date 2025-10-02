@@ -14,52 +14,46 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [title]="title"
+          [showCancel]="true"
+          [actionText]="'Save'"
+          (onAction)="save()"
+          [disableAction]="form?.invalid || saving"
+          [showClose]="true">
 
-  <h4 class="modal-title">{{title}}</h4>
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <form [formGroup]="form">
     <div class="mb-3">
-      <label class="form-label" for="name">Name *</label>
-      <input class="form-control" id="name" formControlName="name">
-      <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"
-           class="alert alert-danger">
-        <div *ngIf="nameControl.errors.required">
-          Name is required.
-        </div>
-      </div>
+      <tc-field>
+        <tc-label [for]="'name'">Name *</tc-label>
+        <tc-input [id]="'name'" formControlName="name"></tc-input>
+        <tc-alert [type]="'warning'" *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)">
+          <div *ngIf="nameControl.errors.required">
+            Name is required.
+          </div>
+        </tc-alert>
+      </tc-field>
     </div>
     <!--  Submission lists are meant to be collaborative - no 'Fixed?' option for those  -->
     <div *ngIf="!isSubmissionList">
-      <div class="form-check mb-3">
-        <label class="form-label" for="fixed">Fixed?</label>
-        <input type="checkbox" formControlName="fixed" id="fixed" class="form-check-input">
-        <button class="tool-tip-button"
-                triggers="click"
-                ngbTooltip="Prevent other users from making changes"
-                placement="right">
-          <i class="fa-regular fa-circle-question fa-xs"></i>
-        </button>
+      <div class="mb-3">
+        <tc-field [checkbox]="true">
+          <tc-input [type]="'checkbox'" formControlName="fixed" [id]="'fixed'"></tc-input>
+          <tc-label [for]="'fixed'">
+            Fixed?
+          </tc-label>
+          <button class="tool-tip-button"
+                  triggers="click"
+                  ngbTooltip="Prevent other users from making changes"
+                  placement="right">
+            <i class="fa-regular fa-circle-question fa-xs"></i>
+          </button>
+        </tc-field>
       </div>
     </div>
   </form>
-</div>
 
-<div class="modal-footer">
-  <button type="button" class="btn btn-success" (click)="save()"
-          [disabled]="form?.invalid || saving">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    Save
-  </button>
-</div>
-
-
+</tc-modal>

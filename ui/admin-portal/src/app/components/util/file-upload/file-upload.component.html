@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="upload-box card text-center" [class.hover]="hover">
+<div class="upload-box card text-center mt-2" [class.hover]="hover">
 
   <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
 
@@ -22,10 +22,8 @@
 
   <span class="or text-muted">OR</span>
 
-  <span>
-    <button class="btn btn-info" (click)="input.click()">
-      Browse Files
-    </button>
-  </span>
+  <tc-button (click)="input.click()">
+    Browse Files
+  </tc-button>
 
 </div>
