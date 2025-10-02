@@ -21,6 +21,7 @@ import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 import {AuthorizationService} from "../../../../../services/authorization.service";
+import {By} from "@angular/platform-browser";
 
 describe('ViewJobInfoComponent', () => {
   let component: ViewJobInfoComponent;
@@ -57,8 +58,8 @@ describe('ViewJobInfoComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should display job information correctly', () => {
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('#country').textContent).toContain('USA');
+    const items = fixture.debugElement.queryAll(By.css('tc-description-item'));
+    expect(items.some(item => item.nativeElement.textContent.includes('USA'))).toBeTrue();
    });
 
   it('should open edit modal when edit button is clicked', () => {
