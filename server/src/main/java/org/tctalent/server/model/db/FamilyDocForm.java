@@ -40,8 +40,6 @@ public class FamilyDocForm extends CandidateFormInstance {
     return "FamilyDocForm";
   }
 
-  // We expose typed names to the API; values are persisted as Candidate Properties.
-
   @JsonProperty("familyMembersJson")
   public String getFamilyMembersJson() {
     return getProperty(FAMILY_MEMBERS_JSON);
