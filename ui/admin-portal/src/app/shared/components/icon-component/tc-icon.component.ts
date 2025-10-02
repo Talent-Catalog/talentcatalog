@@ -67,7 +67,7 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./tc-icon.component.scss']
 })
 export class TcIconComponent {
-  @Input() size: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
+  @Input() size: 'sm' | 'md' | 'lg' | 'xl' | 'inherit' = 'inherit';
   @Input() color?: 'primary' | 'secondary' | 'white' | 'gray' | 'success' | 'info' | 'warning' | 'error' = 'primary';
   @Input() ariaLabel?: string;
 
