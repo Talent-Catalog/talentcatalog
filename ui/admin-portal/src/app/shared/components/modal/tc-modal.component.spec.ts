@@ -50,9 +50,9 @@ describe('TcModalComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render title', () => {
-    const titleEl = fixture.debugElement.query(By.css('.tc-modal-title')).nativeElement;
-    expect(titleEl.textContent).toContain('Test Modal');
+  it('should render header', () => {
+    const headerEl = fixture.debugElement.query(By.css('.tc-modal-header')).nativeElement;
+    expect(headerEl.textContent).toContain('Test Modal');
   });
 
   it('should render body content', () => {

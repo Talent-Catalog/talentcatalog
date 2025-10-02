@@ -17,8 +17,9 @@ import {ConfirmationComponent} from "./confirmation.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
+import {TcModalComponent} from "../../../shared/components/modal/tc-modal.component";
 
-describe('ConfirmationComponent', () => {
+fdescribe('ConfirmationComponent', () => {
   let component: ConfirmationComponent;
   let fixture: ComponentFixture<ConfirmationComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
@@ -27,7 +28,7 @@ describe('ConfirmationComponent', () => {
     const spy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
 
     await TestBed.configureTestingModule({
-      declarations: [ConfirmationComponent],
+      declarations: [ConfirmationComponent, TcModalComponent],
       providers: [
         { provide: NgbActiveModal, useValue: spy }
       ]
@@ -60,36 +61,36 @@ describe('ConfirmationComponent', () => {
     expect(activeModalSpy.close).toHaveBeenCalledWith(true);
   });
 
-  it('should display the title in the modal header', () => {
+  it('should display the header in the modal header', () => {
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.modal-title').textContent).toContain('Confirmation');
+    expect(compiled.querySelector('.tc-modal-header').textContent).toContain('Confirmation');
   });
 
   it('should display the message if provided', () => {
     component.message = 'Test message';
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.modal-body span').textContent).toContain('Test message');
+    expect(compiled.querySelector('.tc-modal-body span').textContent).toContain('Test message');
   });
 
   it('should display "Are you sure?" if message is not provided', () => {
     component.message = null;
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.modal-body span').textContent).toContain('Are you sure?');
+    expect(compiled.querySelector('.tc-modal-body span').textContent).toContain('Are you sure?');
   });
 
   it('should display the cancel button if showCancel is true', () => {
     component.showCancel = true;
     fixture.detectChanges();
-    const cancelButton = fixture.debugElement.query(By.css('.modal-footer button:nth-child(1)'));
+    const cancelButton = fixture.debugElement.query(By.css('.tc-modal-footer tc-button:nth-child(1)'));
     expect(cancelButton.nativeElement.textContent).toContain('Cancel');
   });
 
   it('should not display the cancel button if showCancel is false', () => {
     component.showCancel = false;
     fixture.detectChanges();
-    const cancelButton = fixture.debugElement.query(By.css('.modal-footer button:nth-child(2)'));
+    const cancelButton = fixture.debugElement.query(By.css('.tc-modal-footer tc-button:nth-child(2)'));
     expect(cancelButton).toBeNull();
   });
 });
