@@ -14,6 +14,7 @@
 .tc-description-details {
   @include paragraph-sm;
   @include text-color-body;
+  margin-bottom: 0;
 }
 
 :host-context(.tc-description-list.grid-column) {

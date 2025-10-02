@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [title]="'Select fields to publish'"
+<tc-modal [heading]="'Select fields to publish'"
           [actionText]="'Publish'"
           (onAction)="submit()"
           [disableAction]="!selectedColumns.length"
@@ -85,11 +85,11 @@
                 </div>
                 <div class="d-flex justify-content-end gap-2">
                   <tc-button [type]="'outline'"
-                             (click)="reset(field);
+                             (onClick)="reset(field);
                              dropdown.close()">
                     Reset
                   </tc-button>
-                  <tc-button (click)="update(field);
+                  <tc-button (onClick)="update(field);
                              dropdown.close()">
                     Update
                   </tc-button>
@@ -100,7 +100,7 @@
         </div>
       </div>
     </div>
-    <tc-button [type]="'outline'" (click)="default()">
+    <tc-button [type]="'outline'" (onClick)="default()">
       Reset to default
     </tc-button>
   </div>

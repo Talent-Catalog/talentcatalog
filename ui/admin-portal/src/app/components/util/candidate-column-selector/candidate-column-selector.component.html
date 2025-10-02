@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [title]="'Select columns to display'"
+<tc-modal [heading]="'Select columns to display'"
           [actionText]="'Ok'"
           (onAction)="close()"
           [showCancel]="true"
@@ -43,7 +43,7 @@
     </div>
   </div>
 
-  <tc-button [type]="'outline'" (click)="default(candidateSource)">
+  <tc-button [type]="'outline'" (onClick)="default(candidateSource)">
     Reset to default
   </tc-button>
 
