@@ -1441,50 +1441,51 @@ public class CandidateServiceImpl implements CandidateService {
         user = userRepository.save(user);
         Candidate candidate = candidateRepository.findByUserId(user.getId());
 
-        String newStatus = checkStatusValidity(request.getCountryId(), request.getNationalityId(), candidate);
+        CandidateStatus newStatus =
+            checkForAutomaticStatusChanges(request.getCountryId(), request.getNationalityId(), candidate);
 
-        if (candidate != null) {
-            candidate.setGender(request.getGender());
-            candidate.setDob(request.getDob());
+        candidate.setGender(request.getGender());
+        candidate.setDob(request.getDob());
 
-            //Check if country has changed
-            if (!country.equals(candidate.getCountry())) {
-                //TODO JC This is where we can check for relocatedIndependently based on country change.
-                //TODO JC If assigned country is a known safe country (Australia, Canada, UK, etc) set relocatedIndependently
-                //TODO JC If safe country, partner does not need to be reassigned
-                reassignOrNotifyPartnerIfNeeded(candidate, country);
-                //Important that new country is not set on candidate until the above method has been
-                //called. This is because it needs to know the original country
-                candidate.setCountry(country);
-            }
-
-            candidate.setCity(request.getCity());
-            candidate.setState(request.getState());
-            candidate.setYearOfArrival(request.getYearOfArrival());
-            candidate.setNationality(nationality);
-            candidate.setExternalId(request.getExternalId());
-            candidate.setExternalIdSource(request.getExternalIdSource());
-            candidate.setUnhcrRegistered(request.getUnhcrRegistered());
-            candidate.setUnhcrNumber(request.getUnhcrNumber());
-            candidate.setUnhcrConsent(request.getUnhcrConsent());
-
-            candidate.setAuditFields(user);
-
-            updateCitizenships(candidate, nationalities);
+        //Check for partner notifications if country has changed
+        if (!country.equals(candidate.getCountry())) {
+            reassignOrNotifyPartnerIfNeeded(candidate, country);
+            //Important that new country is not set on candidate until the above method has been
+            //called. This is because it needs to know the original country
+            candidate.setCountry(country);
         }
+
+        candidate.setCity(request.getCity());
+        candidate.setState(request.getState());
+        candidate.setYearOfArrival(request.getYearOfArrival());
+        candidate.setNationality(nationality);
+        candidate.setExternalId(request.getExternalId());
+        candidate.setExternalIdSource(request.getExternalIdSource());
+        candidate.setUnhcrRegistered(request.getUnhcrRegistered());
+        candidate.setUnhcrNumber(request.getUnhcrNumber());
+        candidate.setUnhcrConsent(request.getUnhcrConsent());
+
+        candidate.setAuditFields(user);
+
+        updateCitizenships(candidate, nationalities);
 
         candidate = save(candidate, true);
 
-        // Change status if required, and create note.
-        if (newStatus.equals("ineligible")) {
+        // Change status if is required, and create note if changed.
+        if (newStatus == CandidateStatus.ineligible) {
             UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
-            info.setStatus(CandidateStatus.ineligible);
+            info.setStatus(newStatus);
             info.setComment("TC criteria not met: Country located is same as country of nationality.");
             candidate = updateCandidateStatus(candidate, info);
-        } else if (newStatus.equals("pending")) {
+        } else if (newStatus == CandidateStatus.pending) {
             UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
-            info.setStatus(CandidateStatus.pending);
+            info.setStatus(newStatus);
             info.setComment("TC criteria met: Country located different to country of nationality.");
+            candidate = updateCandidateStatus(candidate, info);
+        } else if (newStatus == CandidateStatus.relocatedIndependently) {
+            UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
+            info.setStatus(newStatus);
+            info.setComment("Candidate has reported that they are now located in a destination country");
             candidate = updateCandidateStatus(candidate, info);
         }
 
@@ -3209,29 +3210,46 @@ public class CandidateServiceImpl implements CandidateService {
         return true;
     }
 
-    private String checkStatusValidity(long countryReq, long nationalityReq, Candidate candidate) {
-        String newStatus = "";
-        // If candidate pending, but they are updating country & nationality as same. Change to ineligible.
-        // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN or Ukrainian in Ukraine
-        if (candidate.getStatus() == CandidateStatus.pending) {
-            if (countryReq == nationalityReq
-                && countryReq != afghanistanCountryId && countryReq != ukraineCountryId) {
-                newStatus = "ineligible";
+    /**
+     * Checks for automatic status changes based on country and nationality changes
+     * @param countryReqId Requested country id
+     * @param nationalityReqId Request nationality id
+     * @param candidate Candidate
+     * @return new status or null if no change
+     */
+    private CandidateStatus checkForAutomaticStatusChanges(
+        long countryReqId, long nationalityReqId, Candidate candidate) {
+        CandidateStatus newStatus = null;
+
+        //If the candidate is in an active status make them inactive if they are in a destination
+        //country. If they are already inactive, leave them alone.
+        if (!candidate.getStatus().isInactive()) {
+            if (countryService.isTCDestination(countryReqId)) {
+                newStatus = CandidateStatus.relocatedIndependently;
             }
-        // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
-        // has nationality & country as different. We can change ineligible status to pending. This determines
-        // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
-        } else if (candidate.getStatus() == CandidateStatus.ineligible) {
-            if (candidate.getCountry().getId().equals(candidate.getNationality().getId())) {
-                //If the candidate currently has country and nationality the same, that is
-                //probably why they were ineligible.
-                if (countryReq != nationalityReq) {
-                    //But if requested country and nationality are now different, set status back to pending
-                    newStatus = "pending";
-                } else if (countryReq == afghanistanCountryId || countryReq == ukraineCountryId) {
-                    //or if country and nationality are the same, but either Afghanistan or Ukraine
-                    //that can also be changed to pending.
-                    newStatus = "pending";
+        } else {
+            // If candidate pending, but they are updating country & nationality as same. Change to ineligible.
+            // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN or Ukrainian in Ukraine
+            if (candidate.getStatus() == CandidateStatus.pending) {
+                if (countryReqId == nationalityReqId
+                    && countryReqId != afghanistanCountryId && countryReqId != ukraineCountryId) {
+                    newStatus = CandidateStatus.ineligible;
+                }
+                // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
+                // has nationality & country as different. We can change ineligible status to pending. This determines
+                // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
+            } else if (candidate.getStatus() == CandidateStatus.ineligible) {
+                if (candidate.getCountry().getId().equals(candidate.getNationality().getId())) {
+                    //If the candidate currently has country and nationality the same, that is
+                    //probably why they were ineligible.
+                    if (countryReqId != nationalityReqId) {
+                        //But if requested country and nationality are now different, set status back to pending
+                        newStatus = CandidateStatus.pending;
+                    } else if (countryReqId == afghanistanCountryId || countryReqId == ukraineCountryId) {
+                        //or if country and nationality are the same, but either Afghanistan or Ukraine
+                        //that can also be changed to pending.
+                        newStatus = CandidateStatus.pending;
+                    }
                 }
             }
         }
