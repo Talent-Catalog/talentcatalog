@@ -32,7 +32,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -42,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -179,15 +179,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * specified.
      * Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
      */
-    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>(
-        EnumSet.complementOf(EnumSet.of(
-            CandidateStatus.autonomousEmployment,
-            CandidateStatus.deleted,
-            CandidateStatus.draft,
-            CandidateStatus.employed,
-            CandidateStatus.ineligible,
-            CandidateStatus.withdrawn
-        )));
+    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>();
+
+    @PostConstruct
+    void init() {
+        for (CandidateStatus candidateStatus : CandidateStatus.values()) {
+            if (!candidateStatus.isInactive()) {
+                defaultSearchStatuses.add(candidateStatus);
+            }
+        }
+    }
 
     @Override
     public List<SavedSearch> search(IdsRequest request) {
