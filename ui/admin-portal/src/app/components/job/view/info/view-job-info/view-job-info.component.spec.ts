@@ -58,8 +58,7 @@ describe('ViewJobInfoComponent', () => {
   });
   it('should display job information correctly', () => {
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.card-header').textContent).toContain('Job Information');
-    expect(compiled.querySelector('.form-control-plaintext').textContent).toContain('USA');
+    expect(compiled.querySelector('#country').textContent).toContain('USA');
    });
 
   it('should open edit modal when edit button is clicked', () => {

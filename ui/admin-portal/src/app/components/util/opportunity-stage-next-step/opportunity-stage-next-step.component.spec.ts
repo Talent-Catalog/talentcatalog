@@ -72,7 +72,7 @@ describe('OpportunityStageNextStepComponent', () => {
   it('should display progress card when opp is provided', () => {
     component.opp = mockCandidateOpportunity;
     fixture.detectChanges();
-    const card = fixture.debugElement.query(By.css('.card'));
+    const card = fixture.debugElement.query(By.css('tc-card'));
     expect(card).toBeTruthy();
   });
 
