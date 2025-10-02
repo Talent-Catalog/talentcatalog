@@ -1,4 +1,4 @@
-import { Component} from '@angular/core';
+import {Component, HostBinding, Input} from '@angular/core';
 
 /**
  * @component FieldComponent
@@ -11,6 +11,7 @@ import { Component} from '@angular/core';
  * - Provides a `.form-field` wrapper for consistent styling and spacing
  * - Supports content projection (`<ng-content>`) so you can include any combination of label, input, error message, and description.
  * - Useful for composing complex form UIs with consistent alignment
+ * - Pass [checkbox]="true" from the parent to adapt alignment for a checkbox and label
  *
  * @example
  * ```html
@@ -31,4 +32,9 @@ import { Component} from '@angular/core';
   styleUrls: ['./field.component.scss']
 })
 export class FieldComponent {
+  @Input() checkbox = false;
+
+  @HostBinding('class.checkbox-style') get isCheckbox() {
+    return this.checkbox;
+  }
 }
