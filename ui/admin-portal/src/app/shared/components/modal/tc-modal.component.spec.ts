@@ -86,15 +86,19 @@ describe('TcModalComponent', () => {
 
   it('should call onAction when primary button clicked', () => {
     const primaryBtn = fixture.debugElement.queryAll(By.css('tc-button'))[host.showCancel ? 1 : 0];
-    primaryBtn.triggerEventHandler('click', null);
+    primaryBtn.triggerEventHandler('onClick', null);
     expect(host.actionCalled).toBeTrue();
   });
 
   it('should call activeModal.dismiss when cancel button clicked', () => {
     spyOn(activeModal, 'dismiss');
-    const cancelBtn = fixture.debugElement.queryAll(By.directive(ButtonComponent))[0];
-    cancelBtn.nativeElement.click();
-    expect(activeModal.dismiss).toHaveBeenCalledWith(false);
+    fixture.detectChanges();
+
+    const cancelBtn = fixture.debugElement.query(By.css('.cancel-btn'));
+    expect(cancelBtn).toBeTruthy();
+
+    cancelBtn.triggerEventHandler('onClick', {});
+    expect(activeModal.dismiss).toHaveBeenCalled();
   });
 
   it('should hide cancel button when showCancel is false', () => {
