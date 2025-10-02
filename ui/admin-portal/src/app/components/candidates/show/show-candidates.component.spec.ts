@@ -292,8 +292,8 @@ describe('ShowCandidatesComponent', () => {
     spyOn(component, 'saveSelection');
     fixture.detectChanges();
 
-    const saveButton = fixture.debugElement.query(By.css('.btn[title="Save selected candidates to a list"]'));
-    saveButton.triggerEventHandler('click', null);
+    const saveButton = fixture.debugElement.query(By.css('.save-selection-btn'));
+    saveButton.triggerEventHandler('onClick', null);
 
     expect(component.saveSelection).toHaveBeenCalled();
   });
@@ -313,7 +313,7 @@ describe('ShowCandidatesComponent', () => {
     const toggleLink = fixture.debugElement.query(By.css('.toggle-description'));
     expect(component.showDescription).toBeFalse();
 
-    toggleLink.triggerEventHandler('click', null);
+    toggleLink.triggerEventHandler('onClick', null);
     fixture.detectChanges();
 
     expect(component.showDescription).toBeTrue();
@@ -329,8 +329,8 @@ describe('ShowCandidatesComponent', () => {
     spyOn(component, 'importCandidates');
     fixture.detectChanges();
 
-    const importButton = fixture.debugElement.query(By.css('.btn[title="Import candidates"]'));
-    importButton.triggerEventHandler('click', null);
+    const importButton = fixture.debugElement.query(By.css('.import-candidates-btn'));
+    importButton.triggerEventHandler('onClick', null);
 
     expect(component.importCandidates).toHaveBeenCalled();
   });
