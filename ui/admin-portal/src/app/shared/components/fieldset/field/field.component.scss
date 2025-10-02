@@ -1,6 +1,11 @@
-.form-field {
+:host {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
   margin-bottom: 1rem;
+
+  &.checkbox-style {
+    flex-direction: row;
+    align-items: center;
+  }
 }

@@ -14,16 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
+<tc-modal [title]="title"
+          [showCancel]="showCancel"
+          [actionText]="'Ok'"
+          (onAction)="close()"
+          [showClose]="true">
   <span *ngIf="message">
     {{message}}
   </span>
@@ -31,13 +26,4 @@
   <span *ngIf="!message">
     Are you sure?
   </span>
-</div>
-
-<div class="modal-footer">
-  <button *ngIf="showCancel" type="button" class="btn btn-accent-2" (click)="dismiss()">
-    Cancel
-  </button>
-  <button type="button" class="btn btn-primary" (click)="close()">
-    Ok
-  </button>
-</div>
+</tc-modal>
