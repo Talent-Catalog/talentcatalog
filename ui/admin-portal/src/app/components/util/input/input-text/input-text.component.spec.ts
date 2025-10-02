@@ -18,6 +18,9 @@ import {InputTextComponent} from "./input-text.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {LabelComponent} from "../../../../shared/components/fieldset/label/label.component";
+import {TcModalComponent} from "../../../../shared/components/modal/tc-modal.component";
+import {InputComponent} from "../../../../shared/components/input/input.component";
 
 describe('InputTextComponent', () => {
   let component: InputTextComponent;
@@ -32,7 +35,7 @@ describe('InputTextComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [FormsModule, ReactiveFormsModule],
-      declarations: [InputTextComponent],
+      declarations: [InputTextComponent, LabelComponent, TcModalComponent, InputComponent],
       providers: [
         { provide: NgbActiveModal, useValue: modalMock }
       ]

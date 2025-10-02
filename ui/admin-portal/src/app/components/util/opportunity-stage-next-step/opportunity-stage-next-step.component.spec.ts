@@ -27,6 +27,7 @@ import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportuni
 import {OpportunityProgressParams} from "../../../model/opportunity";
 import {EditOppComponent} from "../../opportunity/edit-opp/edit-opp.component";
 import {of, throwError} from "rxjs";
+import {TcCardComponent} from "../../../shared/components/card/tc-card.component";
 
 describe('OpportunityStageNextStepComponent', () => {
   let component: OpportunityStageNextStepComponent;
@@ -43,7 +44,7 @@ describe('OpportunityStageNextStepComponent', () => {
     const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
 
     await TestBed.configureTestingModule({
-      declarations: [OpportunityStageNextStepComponent],
+      declarations: [OpportunityStageNextStepComponent, TcCardComponent],
       imports: [FormsModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
       providers: [
         { provide: AuthorizationService, useValue: authSpy },
@@ -72,7 +73,7 @@ describe('OpportunityStageNextStepComponent', () => {
   it('should display progress card when opp is provided', () => {
     component.opp = mockCandidateOpportunity;
     fixture.detectChanges();
-    const card = fixture.debugElement.query(By.css('.card'));
+    const card = fixture.debugElement.query(By.css('.tc-card'));
     expect(card).toBeTruthy();
   });
 
