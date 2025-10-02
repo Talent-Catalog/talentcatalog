@@ -22,7 +22,8 @@ import {
   NgbDropdownModule,
   NgbInputDatepicker,
   NgbNavModule,
-  NgbPaginationModule
+  NgbPaginationModule,
+  NgbTypeahead
 } from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
@@ -119,7 +120,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     RouterLink,
     NgbInputDatepicker,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgbInputDatepicker,
+    NgbTypeahead
   ],
   exports: [
     ButtonComponent,

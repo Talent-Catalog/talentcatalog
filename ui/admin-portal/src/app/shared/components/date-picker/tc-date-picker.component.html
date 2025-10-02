@@ -16,7 +16,7 @@
 
 <div class="tc-date-picker">
   <div id="date-container">
-    <tc-button class="calendar-btn" type="plain" (click)="picker.toggle()">
+    <tc-button class="calendar-btn" type="plain" (onClick)="picker.toggle()">
       <tc-icon color="primary" size="md">
         <i class="fas fa-calendar"></i>
       </tc-icon>
@@ -33,7 +33,7 @@
          [minDate]="minDate"
          [maxDate]="maxDate"
          [disabled]="control.disabled">
-    <tc-button class="clear-btn" type="plain" (click)="clear()">
+    <tc-button class="clear-btn" type="plain" (onClick)="clear()">
       <tc-icon color="gray" size="md">
         <i class="fas fa-times"></i>
       </tc-icon>
@@ -46,9 +46,9 @@
     {{ d.day }}
   </span>
 </ng-template>
-<small class="text-muted">
+<small class="text-muted d-block mt-2">
   If exact day or month unknown, use '01' to approximate, e.g., '2020-07-<b>01</b>'.
 </small>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
