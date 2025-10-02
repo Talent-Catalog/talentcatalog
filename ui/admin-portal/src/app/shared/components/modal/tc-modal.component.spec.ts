@@ -9,7 +9,7 @@ import {Component} from "@angular/core";
 @Component({
   template: `
     <tc-modal
-      [title]="title"
+      [heading]="heading"
       [actionText]="actionText"
       [disableAction]="disableAction"
       [showCancel]="showCancel"
@@ -21,7 +21,7 @@ import {Component} from "@angular/core";
   `
 })
 class TestHostComponent {
-  title = 'Test Modal';
+  heading = 'Test Modal';
   actionText = 'Confirm';
   disableAction = false;
   showCancel = true;
@@ -50,9 +50,9 @@ describe('TcModalComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render title', () => {
-    const titleEl = fixture.debugElement.query(By.css('.tc-modal-title')).nativeElement;
-    expect(titleEl.textContent).toContain('Test Modal');
+  it('should render header', () => {
+    const headerEl = fixture.debugElement.query(By.css('.tc-modal-header')).nativeElement;
+    expect(headerEl.textContent).toContain('Test Modal');
   });
 
   it('should render body content', () => {
@@ -97,12 +97,18 @@ describe('TcModalComponent', () => {
     expect(activeModal.dismiss).toHaveBeenCalledWith(false);
   });
 
-  it('should hide cancel button when showCancel is false', () => {
+  it('should display the cancel button if showCancel is true', () => {
+    host.showCancel = true;
+    fixture.detectChanges();
+    const cancelButton = fixture.debugElement.query(By.css('.tc-modal-footer tc-button:nth-child(1)'));
+    expect(cancelButton.nativeElement.textContent).toContain('Cancel');
+  });
+
+  it('should not display the cancel button if showCancel is false', () => {
     host.showCancel = false;
     fixture.detectChanges();
-
-    const cancelBtn = fixture.debugElement.query(By.css('tc-modal-footer tc-button[type="outline"]'));
-    expect(cancelBtn).toBeNull();
+    const cancelButton = fixture.debugElement.query(By.css('.tc-modal-footer tc-button:nth-child(2)'));
+    expect(cancelButton).toBeNull();
   });
 
   it('should disable primary button if disableAction is true', () => {
