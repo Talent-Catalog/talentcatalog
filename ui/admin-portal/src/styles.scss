@@ -30,7 +30,7 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "./scss/tag";
 
 @import "./scss/btn";
-@import "./scss/dragula";
+@import "scss/dragula";
 @import "@ng-select/ng-select/themes/default.theme.css";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
@@ -51,6 +51,12 @@ body {
   @include text-color-body;
 }
 
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
 h1 {
   @include heading-lg;
 }
@@ -69,6 +75,7 @@ h4 {
 
 a {
   @include label-md;
+  font-size: inherit;
   color: inherit;
   text-decoration: underline;
 }

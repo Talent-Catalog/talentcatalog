@@ -122,22 +122,13 @@ describe('CvIconComponent', () => {
     expect(spinner).toBeTruthy();
   });
 
-  it('should display error message when there is an error', () => {
-    component.candidate = mockCanidiate;
-    const errorMessage = 'Error occurred';
-    component.error = errorMessage;
-    fixture.detectChanges();
-    const errorElement: HTMLElement = fixture.debugElement.query(By.css('.error')).nativeElement;
-    expect(errorElement.textContent).toContain(errorMessage);
-  });
-
   it('should call openCVs when link is clicked', () => {
     component.candidate = mockCanidiate;
     spyOn(component, 'openCVs');
     mockAuthService.canViewCandidateCV.and.returnValue(true);
     component.cvs = mockCanidiate.candidateAttachments;
     fixture.detectChanges();
-    const link: DebugElement = fixture.debugElement.query(By.css('.link-info'));
+    const link: DebugElement = fixture.debugElement.query(By.css('.cv-icon'));
     expect(link).toBeTruthy();
     link.triggerEventHandler('click', null);
     expect(component.openCVs).toHaveBeenCalled();

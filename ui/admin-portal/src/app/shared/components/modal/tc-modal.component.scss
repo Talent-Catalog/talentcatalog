@@ -8,9 +8,6 @@
   flex-direction: column;
   &.has-icon {
     text-align: center;
-    i {
-      @include text-color-primary();
-    }
   }
   &.no-icon {
     .tc-modal-footer {
@@ -19,7 +16,7 @@
   }
 }
 
-.tc-modal-title {
+.tc-modal-header {
   @include text-color-body();
   @include paragraph-lg();
   padding-bottom: 12px;
