@@ -322,7 +322,7 @@ public class CandidateOpportunityServiceImplTest {
     }
 
     @Test
-    @DisplayName("should change candidate status to withdrawn when stage indicates relocated via "
+    @DisplayName("should change candidate status to relocatedIndependently when stage indicates relocated via "
         + "no job offer pathway")
     void createUpdateCandidateOpportunities_shouldChangeCandidateStatusToWithdrawn() {
         // Stage indicating ineligibility
@@ -337,7 +337,7 @@ public class CandidateOpportunityServiceImplTest {
         verify(candidateService, times(3)).
             updateCandidateStatus(any(Candidate.class), statusInfoCaptor.capture());
         List<UpdateCandidateStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
-        assertEquals(CandidateStatus.withdrawn, statusInfos.get(0).getStatus());
+        assertEquals(CandidateStatus.relocatedIndependently, statusInfos.get(0).getStatus());
     }
 
     @Test
