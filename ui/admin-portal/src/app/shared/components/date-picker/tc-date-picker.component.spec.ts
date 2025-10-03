@@ -111,7 +111,11 @@ describe('TcDatePickerComponent', () => {
   it('should call clear method when Clear button is clicked', () => {
     spyOn(component, 'clear');
     const clearButton: DebugElement = fixture.debugElement.query(By.css('.clear-btn'));
-    clearButton.nativeElement.click();
+    expect(clearButton).toBeTruthy();
+
+    clearButton.triggerEventHandler('onClick', {});
+    fixture.detectChanges();
+    
     expect(component.clear).toHaveBeenCalled();
   });
 });

@@ -16,7 +16,7 @@
 
 <div class="tc-date-picker">
   <div id="date-container">
-    <tc-button type="plain" (click)="picker.toggle()">
+    <tc-button type="plain" (onClick)="picker.toggle()">
       <tc-icon color="primary" size="md">
         <i class="fas fa-calendar"></i>
       </tc-icon>
@@ -32,7 +32,7 @@
            [readOnly]="readonly"
            (dateSelect)="selectDate($event)">
 
-    <tc-button type="plain" (click)="clearDates()">
+    <tc-button type="plain" (onClick)="clearDates()">
       <tc-icon color="gray" size="md">
         <i class="fas fa-times"></i>
       </tc-icon>

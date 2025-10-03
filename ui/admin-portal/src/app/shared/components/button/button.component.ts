@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 /**
  * @component ButtonComponent
@@ -24,6 +24,13 @@ import {Component, Input} from '@angular/core';
  *   Disables the button and applies muted styling. Defaults to `false`.
  * - `ariaLabel?: string`
  *   Accessible label for icon-only or ambiguous buttons.
+ *
+ * **Outputs**
+ * - `(onClick)`
+ * Instead of re-emitting the native (click) event, this component provides its own (onClick) output.
+ * Using (click) directly on <tc-button> works at runtime (because the event bubbles), but IDE
+ * type-checking flags it as invalid since Angular can’t see a declared @Output('click').
+ * To avoid false errors in IntelliJ/Angular Language Service, we use (onClick) as the explicit output.
  *
  * @examples
  * ```html
@@ -56,6 +63,8 @@ export class ButtonComponent {
   @Input() disabled = false;
   @Input() ariaLabel?: string;
 
+  @Output() onClick = new EventEmitter();
+
   get sizeClass(): string {
     return `btn-${this.size}`;
   }
@@ -70,4 +79,9 @@ export class ButtonComponent {
       this.typeClass,
     ];
   }
+
+  clicked(): void {
+    this.onClick.emit();
+  }
+
 }
