@@ -65,19 +65,17 @@ export interface RelocatingFamilyMember {
   countryOfBirth: string;
   placeOfBirth?: string;
 
-  dependantHealthConcerns?: 'Yes' | 'No' | null;
-  dependantHealthNotes?: string;
-  dependantRegistered?: 'Yes' | 'No' | null;
-  dependantRegisteredNumber?: string;
-  dependantRegisteredNotes?: string;
+  healthConcerns?: 'Yes' | 'No' | null;
+  healthNotes?: string;
+  registered?: 'Yes' | 'No' | null;
+  registeredNumber?: string;
+  registeredNotes?: string;
 
   travelDoc: FamilyMemberDoc;
 }
 
 export interface FamilyDocFormData {
-  // Stored as candidate properties on the server
   noEligibleFamilyMembers: boolean;
   noEligibleNotes?: string;
-  // I persist the members array as a JSON string (keeps backend simple like MySecondForm)
-  familyMembersJson: string; // JSON.stringify(RelocatingFamilyMember[])
+  familyMembersJson: string; 
 }
