@@ -94,7 +94,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
   private newMemberGroup(value?: Partial<RelocatingFamilyMember>) {
     const group = this.fb.nonNullable.group({
       relationship: [value?.relationship ?? DependantRelations.Partner, [Validators.required]],
-      dependantRelationOther: [(value as any)?.dependantRelationOther ?? ''],
+      relationOther: [(value as any)?.relationOther ?? ''],
 
       firstName: [value?.firstName ?? '', [Validators.required, Validators.maxLength(100)]],
       lastName: [value?.lastName ?? '', [Validators.required, Validators.maxLength(100)]],
@@ -104,11 +104,11 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
       placeOfBirth: [value?.placeOfBirth ?? ''],
 
       // NEW fields
-      dependantHealthConcerns: [(value as any)?.dependantHealthConcerns ?? null],
-      dependantHealthNotes: [(value as any)?.dependantHealthNotes ?? ''],
-      dependantRegistered: [(value as any)?.dependantRegistered ?? null],
-      dependantRegisteredNumber: [(value as any)?.dependantRegisteredNumber ?? ''],
-      dependantRegisteredNotes: [(value as any)?.dependantRegisteredNotes ?? ''],
+      healthConcerns: [(value as any)?.healthConcerns ?? null],
+      healthNotes: [(value as any)?.healthNotes ?? ''],
+      registered: [(value as any)?.registered ?? null],
+      registeredNumber: [(value as any)?.registeredNumber ?? ''],
+      registeredNotes: [(value as any)?.registeredNotes ?? ''],
 
       travelDoc: this.newDocGroup(value?.travelDoc)
     }, {
@@ -161,7 +161,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
   private otherRelationshipNotesIfOtherValidator() {
     return (group: AbstractControl): ValidationErrors | null => {
       const rel = group.get('relationship')?.value as DependantRelations;
-      const other = group.get('dependantRelationOther')?.value as string;
+      const other = group.get('relationOther')?.value as string;
       if (rel !== DependantRelations.Other) return null;
       return other && other.trim().length >= 2 ? null : {otherRelationshipRequired: true};
     };
@@ -169,8 +169,8 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
 
   private requireNotesIfHealthConcernYesValidator() {
     return (group: AbstractControl): ValidationErrors | null => {
-      const hc = group.get('dependantHealthConcerns')?.value;
-      const notes = group.get('dependantHealthNotes')?.value as string;
+      const hc = group.get('healthConcerns')?.value;
+      const notes = group.get('healthNotes')?.value as string;
       if (hc !== 'yes') return null;
       return notes && notes.trim().length > 0 ? null : {healthNotesRequired: true};
     };
@@ -178,8 +178,8 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
 
   private requireRegNumberIfRegisteredYesValidator() {
     return (group: AbstractControl): ValidationErrors | null => {
-      const reg = group.get('dependantRegistered')?.value;
-      const num = group.get('dependantRegisteredNumber')?.value as string;
+      const reg = group.get('registered')?.value;
+      const num = group.get('registeredNumber')?.value as string;
       if (reg !== 'yes') return null;
       return num && num.trim().length > 0 ? null : {registeredNumberRequired: true};
     };
