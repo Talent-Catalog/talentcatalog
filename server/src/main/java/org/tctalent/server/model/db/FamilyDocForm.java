@@ -19,7 +19,6 @@
  */
 package org.tctalent.server.model.db;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -40,33 +39,27 @@ public class FamilyDocForm extends CandidateFormInstance {
     return "FamilyDocForm";
   }
 
-  @JsonProperty("familyMembersJson")
   public String getFamilyMembersJson() {
     return getProperty(FAMILY_MEMBERS_JSON);
   }
 
-  @JsonProperty("familyMembersJson")
   public void setFamilyMembersJson(String json) {
     setProperty(FAMILY_MEMBERS_JSON, json);
   }
 
-  @JsonProperty("noEligibleFamilyMembers")
   public Boolean getNoEligibleFamilyMembers() {
     String v = getProperty(NO_ELIGIBLE);
     return v == null ? null : Boolean.valueOf(v);
   }
 
-  @JsonProperty("noEligibleFamilyMembers")
   public void setNoEligibleFamilyMembers(Boolean value) {
     setProperty(NO_ELIGIBLE, value == null ? null : value.toString());
   }
 
-  @JsonProperty("noEligibleNotes")
   public String getNoEligibleNotes() {
     return getProperty(NO_ELIGIBLE_NOTES);
   }
 
-  @JsonProperty("noEligibleNotes")
   public void setNoEligibleNotes(String notes) {
     setProperty(NO_ELIGIBLE_NOTES, notes);
   }
