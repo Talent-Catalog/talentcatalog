@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, HostBinding} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
 
 /**
  * @component ButtonComponent
@@ -59,7 +59,8 @@ import {Component, EventEmitter, Input, Output, HostBinding} from '@angular/core
 })
 export class ButtonComponent {
   @Input() size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'  = 'default';
-  @Input() type: 'primary' | 'secondary' | 'outline' | 'plain' | 'success' | 'warning' | 'error' | 'info' = 'primary';
+  @Input() type: 'solid' | 'outline' | 'plain' = 'solid';
+  @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
   @Input() disabled = false;
   @Input() ariaLabel?: string;
 
@@ -69,20 +70,15 @@ export class ButtonComponent {
     return this.disabled;
   }
 
-  get sizeClass(): string {
-    return `btn-${this.size}`;
-  }
-
-  get typeClass(): string {
-    return `btn-${this.type}`;
-  }
-
   get classList(): string[] {
     return [
-      this.sizeClass,
-      this.typeClass,
+      `btn-${this.size}`,
+      `btn-${this.color}`,
+      `btn-${this.type}`,
     ];
   }
+
+
 
   clicked(): void {
     this.onClick.emit();
