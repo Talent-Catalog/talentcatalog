@@ -18,7 +18,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   Candidate,
   UpdateCandidateNotificationPreferenceRequest,
-  UpdateCandidateMutedRequest,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -209,8 +208,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       candidateIds: [this.candidate.id],
       info: info
     };
-    this.candidateService.updateStatus(request).subscribe(
-      () => {
+    this.candidateService.updateStatus(request).pipe(
+      concatMap(() => this.candidateService.getByNumber(this.candidate.candidateNumber))
+    ).subscribe(
+      (candidate) => {
+        this.setCandidate(candidate);
         this.loading = false;
         //Update candidate with new status
         this.candidate.status = info.status;
