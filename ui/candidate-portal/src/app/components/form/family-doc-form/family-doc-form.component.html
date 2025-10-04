@@ -49,7 +49,7 @@
           <!-- If relationship is "Other", ask for detail -->
           <div class="col-md-6" *ngIf="m.get('relationship')?.value === 'Other'">
             <label class="form-label">{{'FAMILY-DOC.LABEL.OTHER' | translate}}</label>
-            <input class="form-control" formControlName="dependantRelationOther"
+            <input class="form-control" formControlName="relationOther"
                    [readonly]="readOnly">
             <div class="text-danger" *ngIf="m.touched && m.hasError('otherRelationshipRequired')">
               {{ "FORM.ERROR.REQUIRED" | translate }}
@@ -103,17 +103,17 @@
             <label class="form-label">{{'FAMILY-DOC.LABEL.HEALTH-CONCERN' | translate}}</label>
             <select
               class="form-select"
-              formControlName="dependantHealthConcerns"
+              formControlName="healthConcerns"
               [disabled]="readOnly">
               <option value="yes">{{ 'CONFIRMATION.YES' | translate }}</option>
               <option value="no">{{ 'CONFIRMATION.NO' | translate }}</option>
             </select>
           </div>
 
-          <div class="col-12" *ngIf="m.get('dependantHealthConcerns')?.value === 'yes'">
+          <div class="col-12" *ngIf="m.get('healthConcerns')?.value === 'yes'">
             <label class="form-label">{{ "REGISTRATION.EXAM.LABEL.NOTES" | translate }}</label>
             <textarea class="form-control" rows="3"
-                      formControlName="dependantHealthNotes"
+                      formControlName="healthNotes"
                       [readonly]="readOnly"></textarea>
             <div class="text-danger" *ngIf="m.touched && m.hasError('healthNotesRequired')">
               {{ "FORM.ERROR.REQUIRED" | translate }}
@@ -125,20 +125,20 @@
             <label class="form-label">{{ "FAMILY-DOC.LABEL.REGISTERED" | translate }}</label>
             <select
               class="form-select"
-              formControlName="dependantRegistered"
+              formControlName="registered"
               [disabled]="readOnly">
               <option value="yes">{{ 'CONFIRMATION.YES' | translate }}</option>
               <option value="no">{{ 'CONFIRMATION.NO' | translate }}</option>
             </select>
           </div>
 
-          <div class="col-12" *ngIf="m.get('dependantRegistered')?.value === 'yes'">
+          <div class="col-12" *ngIf="m.get('registered')?.value === 'yes'">
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label">
                  {{ "FAMILY-DOC.LABEL.REGISTRED-NUMBER" | translate }}
                 </label>
-                <input class="form-control" formControlName="dependantRegisteredNumber"
+                <input class="form-control" formControlName="registeredNumber"
                        [readonly]="readOnly">
                 <div class="text-danger"
                      *ngIf="m.touched && m.hasError('registeredNumberRequired')">
@@ -148,7 +148,7 @@
               <div class="col-md-6">
                 <label class="form-label">{{ "REGISTRATION.EXAM.LABEL.NOTES" | translate }}</label>
                 <textarea class="form-control" rows="3"
-                          formControlName="dependantRegisteredNotes"
+                          formControlName="registeredNotes"
                           [readonly]="readOnly"></textarea>
               </div>
             </div>
