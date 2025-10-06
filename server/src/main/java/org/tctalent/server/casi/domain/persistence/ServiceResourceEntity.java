@@ -42,13 +42,13 @@ public class ServiceResourceEntity extends AbstractDomainObject<Long> {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
-  private ServiceCode serviceCode; // e.g. "DUOLINGO_TEST_PROCTORED"
+  private ServiceCode serviceCode; // e.g. "TEST_PROCTORED"
 
   private String resourceCode; // coupon code
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
-  private ResourceStatus status; // AVAILABLE/...
+  private ResourceStatus status; // e.g. AVAILABLE/ASSIGNED/REDEEMED/EXPIRED
 
   private LocalDateTime expiresAt;
 

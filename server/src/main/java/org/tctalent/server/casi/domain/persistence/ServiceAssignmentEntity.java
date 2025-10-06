@@ -48,7 +48,7 @@ public class ServiceAssignmentEntity extends AbstractDomainObject<Long> {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
-  private ServiceCode serviceCode; // e.g. "DUOLINGO_TEST_PROCTORED"
+  private ServiceCode serviceCode; // e.g. "TEST_PROCTORED"
 
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name="resource_id", nullable=false)
@@ -63,7 +63,7 @@ public class ServiceAssignmentEntity extends AbstractDomainObject<Long> {
   private User actor;
 
   @Enumerated(EnumType.STRING) @Column(nullable=false)
-  private AssignmentStatus status; // ASSIGNED, REDEEMED, EXPIRED, REASSIGNED
+  private AssignmentStatus status; // e.g. ASSIGNED, REDEEMED, EXPIRED, REASSIGNED
 
   @Column(name="assigned_at", nullable=false)
   private LocalDateTime assignedAt;
