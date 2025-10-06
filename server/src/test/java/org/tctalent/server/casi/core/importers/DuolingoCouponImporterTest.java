@@ -38,12 +38,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.tctalent.server.casi.application.providers.duolingo.DuolingoCouponImporter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 
 class DuolingoCouponImporterTest {
 
-  private static final String PROVIDER = "DUOLINGO";
+  private static final ServiceProvider PROVIDER = ServiceProvider.DUOLINGO;
 
   @Mock
   private ServiceResourceRepository serviceResourceRepository;
