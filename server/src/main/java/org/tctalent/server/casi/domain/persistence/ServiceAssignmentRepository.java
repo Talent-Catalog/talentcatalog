@@ -72,7 +72,7 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
   List<ServiceAssignmentEntity> findByCandidateAndProviderServiceAndStatus(
       @Param("candidateId") Long candidateId,
       @Param("provider") String provider,
-      @Param("serviceCode") String serviceCode,
+      @Param("serviceCode") ServiceCode serviceCode,
       @Param("status") AssignmentStatus status);
 
 
