@@ -146,7 +146,7 @@ public class UdemyService extends AbstractCandidateService {
     this.udemyAllocator = allocator;
   }
 
-  @Override protected String provider() { return "UDEMY"; }
+  @Override protected ServiceProvider provider() { return ServiceProvider.UDEMY; }
   @Override protected ServiceCode serviceCode() { return ServiceCode.UDEMY_COURSE; }
   @Override protected ResourceAllocator allocator() { return udemyAllocator; }
   @Override protected FileInventoryImporter importer() { return udemyImporter; } // if needed
@@ -161,7 +161,7 @@ tasks to assign/close for each event.
 ```java
 @Component
 public class UdemyTaskPolicy implements TaskPolicy {
-  @Override public String provider() { return "UDEMY"; }
+  @Override public ServiceProvider provider() { return ServiceProvider.UDEMY; }
 
   @Override
   public List<String> tasksOnAssigned(ServiceAssignedEvent e) {
