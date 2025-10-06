@@ -72,14 +72,6 @@ Download and install the latest of the following tools.
             - Set the `Project bytecode version` to match the JDK chosen (e.g. **17**).
         - Go to IntelliJ / Settings / Build,Execution,Deployment / Build Tools / Gradle
             - Set the **GradleJVM** from the drop list to use the Project SDK.
-
-- Python
-    - It is not recommended to install Python using brew. 
-      See, for example, [here](https://pydevtools.com/handbook/explanation/should-i-use-homebrew-to-install-python/). 
-      Instead, download from the [Python website](https://www.python.org/downloads/).
-    - Intellij Settings:
-      - See [Intellij doc](https://www.jetbrains.com/help/idea/configuring-python-sdk.html).
-      We configure local Python interpreters using [virtual environments](https://www.w3schools.com/python/python_virtualenv.asp).
 - Code Style
     - Download the intellij-java-google-style.xml file from the google/styleguide repository
       [here](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).
@@ -91,6 +83,15 @@ Download and install the latest of the following tools.
     - Give the schema a name (or use the default GoogeStyle name from the import). Click **OK** or
       **Apply** for the settings to take effect.
 
+
+- Python 3.12
+    - Later versions of Python are not supported by all the packages that we use.
+    - It is not recommended to install Python using brew.
+      See, for example, [here](https://pydevtools.com/handbook/explanation/should-i-use-homebrew-to-install-python/).
+      Instead, download from the [Python website](https://www.python.org/downloads/).
+    - Intellij Settings:
+        - See [Intellij doc](https://www.jetbrains.com/help/idea/configuring-python-sdk.html).
+          We configure local Python interpreters using [virtual environments](https://www.w3schools.com/python/python_virtualenv.asp).
 
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
   ```
