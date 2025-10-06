@@ -31,8 +31,8 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
   @Query(value = """
     select * from service_resource
     where provider = :provider
-    and service_code = :serviceCode
-    and status = 'AVAILABLE'
+      and service_code = :serviceCode
+      and status = 'AVAILABLE'
     order by id
     for update skip locked
     limit 1
@@ -40,10 +40,30 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
   ServiceResourceEntity lockNextAvailable(@Param("provider") String provider,
       @Param("serviceCode") ServiceCode serviceCode);
 
-  List<ServiceResourceEntity> findByProviderAndServiceCodeAndStatus(
-      String provider, ServiceCode serviceCode, ResourceStatus status);
 
-  Optional<ServiceResourceEntity> findByProviderAndResourceCode(String provider, String resourceCode);
+  @Query("""
+    select r
+    from ServiceResourceEntity r
+    where r.provider = :provider
+      and r.serviceCode = :serviceCode
+      and r.status = :status
+    order by r.id desc
+    """)
+  List<ServiceResourceEntity> findByProviderAndServiceCodeAndStatus(
+      @Param("provider") String provider,
+      @Param("serviceCode") ServiceCode serviceCode,
+      @Param("status") ResourceStatus status);
+
+
+  @Query("""
+      select r
+      from ServiceResourceEntity r
+      where r.provider = :provider
+        and r.resourceCode = :resourceCode
+      """)
+  Optional<ServiceResourceEntity> findByProviderAndResourceCode(
+      @Param("provider") String provider,
+      @Param("resourceCode") String resourceCode);
 
   boolean existsByProviderAndResourceCode(String provider, String resourceCode);
 
