@@ -33,15 +33,18 @@ to specify a python interpreter running in the virtual environment.
    $ python3 SpacyPOC.py
 """
 
+"""
+NOTE: On an old Intel Mac I had to restrict the version on numpy to < 2
+although it worked on a new Mac with the latest numpy.
+"""
 
 
 # pip install spacy sentence-transformers pgvector psycopg2-binary
 # python -m spacy download en_core_web_sm
 
 import spacy
-from spacy.matcher import PhraseMatcher
 from sentence_transformers import SentenceTransformer, util
-
+from spacy.matcher import PhraseMatcher
 
 # --- spaCy: load base model
 nlp = spacy.load("en_core_web_sm")
@@ -102,7 +105,6 @@ cand_vecs = embed_texts(candidate_units)
 job_vecs = embed_texts(job_units)
 
 # --- Score: job → candidate (max or mean over candidate chunks)
-import numpy as np
 scores = util.cos_sim(job_vecs[0], cand_vecs).cpu().numpy().flatten()
 top_k_idx = scores.argsort()[::-1][:5]
 
