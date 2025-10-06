@@ -20,16 +20,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 @Component
 public class TaskPolicyRegistry {
 
-  private final Map<String, TaskPolicy> policies; // provider -> policy
+  private final Map<ServiceProvider, TaskPolicy> policies; // provider -> policy
 
   public TaskPolicyRegistry(List<TaskPolicy> policies) {
-    Map<String, TaskPolicy> map = new HashMap<>();
+    Map<ServiceProvider, TaskPolicy> map = new HashMap<>();
     for (TaskPolicy p : policies) {
-      String key = p.provider();
+      ServiceProvider key = p.provider();
       if (map.putIfAbsent(key, p) != null) {
         throw new IllegalStateException("Duplicate TaskPolicy for provider=" + key);
       }
@@ -37,7 +38,7 @@ public class TaskPolicyRegistry {
     this.policies = Map.copyOf(map);
   }
 
-  public TaskPolicy forProvider(String provider) { // provider descriptors
+  public TaskPolicy forProvider(ServiceProvider provider) { // provider descriptors
     var p = policies.get(provider);
     if (p == null) {
       throw new IllegalStateException("No policy for " + provider);

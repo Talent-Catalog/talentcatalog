@@ -28,6 +28,7 @@ import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
@@ -50,15 +51,15 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   protected final SavedListService savedListService;
 
   // provider-specific hooks
-  protected abstract String provider();                        // e.g. "DUOLINGO"
-  protected abstract ServiceCode serviceCode();                // e.g. "DUOLINGO_TEST_PROCTORED"
+  protected abstract ServiceProvider provider();               // e.g. "DUOLINGO"
+  protected abstract ServiceCode serviceCode();                // e.g. "TEST_PROCTORED"
   protected abstract ResourceAllocator allocator(); // TODO -- SM -- have a default allocator that assigns a single resource to multiple candidates?
   protected FileInventoryImporter importer() { return null; }  // Optional
 
   // default implementations
   @Override
   public String providerKey() {
-    return provider().trim().toUpperCase(Locale.ROOT) + "::"
+    return provider().name().trim().toUpperCase(Locale.ROOT) + "::"
         + serviceCode().name().trim().toUpperCase(Locale.ROOT);
   }
 
@@ -169,7 +170,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + resourceCode + " not found"));
 
     return assignmentRepository
-        .findTopByProviderAndServiceAndResource(provider(), serviceCode().name(), resource.getId())
+        .findTopByProviderAndServiceAndResource(provider(), serviceCode(), resource.getId())
         .map(ServiceAssignmentEntity::getCandidate)
         .orElse(null);
   }

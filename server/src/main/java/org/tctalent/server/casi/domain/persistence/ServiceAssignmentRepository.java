@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssignmentEntity, Long> {
 
@@ -56,7 +57,7 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
          """)
   List<ServiceAssignmentEntity> findByCandidateAndProviderAndService(
       @Param("candidateId") Long candidateId,
-      @Param("provider") String provider,
+      @Param("provider") ServiceProvider provider,
       @Param("serviceCode") ServiceCode serviceCode);
 
 
@@ -71,7 +72,7 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
          """)
   List<ServiceAssignmentEntity> findByCandidateAndProviderServiceAndStatus(
       @Param("candidateId") Long candidateId,
-      @Param("provider") String provider,
+      @Param("provider") ServiceProvider provider,
       @Param("serviceCode") ServiceCode serviceCode,
       @Param("status") AssignmentStatus status);
 
@@ -85,8 +86,8 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
         order by e.assignedAt desc
         """)
   Optional<ServiceAssignmentEntity> findTopByProviderAndServiceAndResource(
-      @Param("provider") String provider,
-      @Param("serviceCode") String serviceCode,
+      @Param("provider") ServiceProvider provider,
+      @Param("serviceCode") ServiceCode serviceCode,
       @Param("resourceId") Long resourceId);
 
 

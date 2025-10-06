@@ -25,7 +25,7 @@ import lombok.Value;
 @Builder
 public class ServiceResource {
   Long id;
-  String provider;
+  ServiceProvider provider;
   ServiceCode serviceCode;
   String resourceCode;
   ResourceStatus status;

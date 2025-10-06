@@ -21,12 +21,13 @@ import lombok.Builder;
 import lombok.Getter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 @Getter
 @Builder
 public class ServiceResourceDto {
   private Long id;
-  private String provider;
+  private ServiceProvider provider;
   private ServiceCode serviceCode;
   private String resourceCode;
   private ResourceStatus status;

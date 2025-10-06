@@ -21,10 +21,11 @@ import org.tctalent.server.casi.domain.events.ServiceAssignedEvent;
 import org.tctalent.server.casi.domain.events.ServiceExpiredEvent;
 import org.tctalent.server.casi.domain.events.ServiceReassignedEvent;
 import org.tctalent.server.casi.domain.events.ServiceRedeemedEvent;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 public interface TaskPolicy {
 
-  String provider();
+  ServiceProvider provider();
 
   List<String> tasksOnAssigned(ServiceAssignedEvent e);
 

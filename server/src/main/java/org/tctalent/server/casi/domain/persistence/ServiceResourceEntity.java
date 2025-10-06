@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.model.db.AbstractDomainObject;
 
 @Entity
@@ -38,7 +39,7 @@ import org.tctalent.server.model.db.AbstractDomainObject;
 public class ServiceResourceEntity extends AbstractDomainObject<Long> {
 
   @Column(nullable=false)
-  private String provider; // e.g. "DUOLINGO" // TODO -- SM -- make enum? Provider.DUOLINGO
+  private ServiceProvider provider; // e.g. "DUOLINGO" // TODO -- SM -- make enum? Provider.DUOLINGO
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)

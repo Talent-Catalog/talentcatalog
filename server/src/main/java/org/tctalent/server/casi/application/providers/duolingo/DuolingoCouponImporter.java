@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.exception.ImportFailedException;
@@ -50,7 +51,7 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
 
   private final ServiceResourceRepository serviceResourceRepository;
 
-  private static final String PROVIDER = "DUOLINGO";
+  private static final ServiceProvider PROVIDER = ServiceProvider.DUOLINGO;
 
   private static final DateTimeFormatter FORMATTER1 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
   private static final DateTimeFormatter FORMATTER2 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");

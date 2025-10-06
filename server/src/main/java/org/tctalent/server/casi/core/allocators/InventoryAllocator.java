@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
@@ -31,7 +32,7 @@ import org.tctalent.server.model.db.Candidate;
 public class InventoryAllocator implements ResourceAllocator {
 
   private final ServiceResourceRepository resources;
-  private final String provider;
+  private final ServiceProvider provider;
   private final ServiceCode serviceCode;
 
   @Override
@@ -51,7 +52,7 @@ public class InventoryAllocator implements ResourceAllocator {
   }
 
   @Override
-  public String getProvider() {
+  public ServiceProvider getProvider() {
     return provider;
   }
 

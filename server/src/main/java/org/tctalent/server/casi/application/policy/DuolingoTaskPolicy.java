@@ -21,13 +21,14 @@ import org.springframework.stereotype.Component;
 import org.tctalent.server.casi.domain.events.ServiceAssignedEvent;
 import org.tctalent.server.casi.domain.events.ServiceReassignedEvent;
 import org.tctalent.server.casi.domain.events.ServiceRedeemedEvent;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 @Component
 public class DuolingoTaskPolicy implements TaskPolicy {
 
   @Override
-  public String provider() {
-    return "DUOLINGO"; // TODO -- SM -- use enum or constant
+  public ServiceProvider provider() {
+    return ServiceProvider.DUOLINGO;
   }
 
   @Override

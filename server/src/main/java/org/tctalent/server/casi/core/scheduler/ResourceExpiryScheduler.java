@@ -64,7 +64,7 @@ public class ResourceExpiryScheduler {
       assignments
           .findTopByProviderAndServiceAndResource(
               resource.getProvider(),
-              resource.getServiceCode().name(),
+              resource.getServiceCode(),
               resource.getId())
           .ifPresent(assignment ->
               events.publishEvent(new ServiceExpiredEvent(ServiceAssignmentMapper.toModel(assignment))));

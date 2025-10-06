@@ -24,7 +24,7 @@ import lombok.Value;
 @Builder
 public class ServiceAssignment {
   Long id;
-  String provider;
+  ServiceProvider provider;
   ServiceCode serviceCode;
   ServiceResource resource; // e.g., coupon code
   Long candidateId;

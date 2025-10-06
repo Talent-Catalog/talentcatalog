@@ -25,6 +25,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 public interface ServiceResourceRepository extends JpaRepository<ServiceResourceEntity, Long> {
 
@@ -37,7 +38,8 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
     for update skip locked
     limit 1
     """, nativeQuery = true)
-  ServiceResourceEntity lockNextAvailable(@Param("provider") String provider,
+  ServiceResourceEntity lockNextAvailable(
+      @Param("provider") ServiceProvider provider,
       @Param("serviceCode") ServiceCode serviceCode);
 
 
@@ -50,7 +52,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
     order by r.id desc
     """)
   List<ServiceResourceEntity> findByProviderAndServiceCodeAndStatus(
-      @Param("provider") String provider,
+      @Param("provider") ServiceProvider provider,
       @Param("serviceCode") ServiceCode serviceCode,
       @Param("status") ResourceStatus status);
 
@@ -62,10 +64,10 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
       and r.resourceCode = :resourceCode
     """)
   Optional<ServiceResourceEntity> findByProviderAndResourceCode(
-      @Param("provider") String provider,
+      @Param("provider") ServiceProvider provider,
       @Param("resourceCode") String resourceCode);
 
-  boolean existsByProviderAndResourceCode(String provider, String resourceCode);
+  boolean existsByProviderAndResourceCode(ServiceProvider provider, String resourceCode);
 
   // provider + serviceCode (enum)
   @Query("""
@@ -76,7 +78,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
         and r.status      = org.tctalent.server.casi.domain.model.ResourceStatus.AVAILABLE
       """)
   long countAvailableByProviderAndService(
-      @Param("provider") String provider,
+      @Param("provider") ServiceProvider provider,
       @Param("serviceCode") ServiceCode serviceCode);
 
   // provider only (all service codes)
@@ -87,7 +89,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
         and r.status      = org.tctalent.server.casi.domain.model.ResourceStatus.AVAILABLE
       """)
   long countAvailableByProvider(
-      @Param("provider") String provider);
+      @Param("provider") ServiceProvider provider);
 
   // All providers; skip EXPIRED/REDEEMED/DISABLED; ignore null expiresAt
   @Query("""
@@ -107,7 +109,8 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
        and r.expiresAt is not null
        and r.status not in :excluded
   """)
-  List<ServiceResourceEntity> findExpirableForProvider(@Param("provider") String provider,
+  List<ServiceResourceEntity> findExpirableForProvider(
+      @Param("provider") ServiceProvider provider,
       @Param("now") LocalDateTime now,
       @Param("excluded") Collection<ResourceStatus> excluded);
 

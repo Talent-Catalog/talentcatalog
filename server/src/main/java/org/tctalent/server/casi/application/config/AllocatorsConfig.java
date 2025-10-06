@@ -19,6 +19,7 @@ package org.tctalent.server.casi.application.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.casi.core.allocators.InventoryAllocator;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
@@ -29,12 +30,12 @@ public class AllocatorsConfig {
 
   @Bean("duolingoNonProctoredAllocator")
   public ResourceAllocator duolingoNonProctoredAllocator(ServiceResourceRepository repo) {
-    return new InventoryAllocator(repo, "DUOLINGO", ServiceCode.TEST_NON_PROCTORED);
+    return new InventoryAllocator(repo, ServiceProvider.DUOLINGO, ServiceCode.TEST_NON_PROCTORED);
   }
 
   @Bean("duolingoProctoredAllocator")
   public ResourceAllocator duolingoProctoredAllocator(ServiceResourceRepository repo) {
-    return new InventoryAllocator(repo, "DUOLINGO", ServiceCode.TEST_PROCTORED);
+    return new InventoryAllocator(repo, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED);
   }
 
   // Add more providers by instantiating InventoryAllocator or other implementation of ResourceAllocator
