@@ -47,13 +47,13 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
 
 
   @Query("""
-       select e
-       from ServiceAssignmentEntity e
-       where e.candidate.id = :candidateId
-         and e.provider     = :provider
-         and e.serviceCode  = :serviceCode
-       order by e.assignedAt desc
-       """)
+         select e
+         from ServiceAssignmentEntity e
+         where e.candidate.id = :candidateId
+           and e.provider     = :provider
+           and e.serviceCode  = :serviceCode
+         order by e.assignedAt desc
+         """)
   List<ServiceAssignmentEntity> findByCandidateAndProviderAndService(
       @Param("candidateId") Long candidateId,
       @Param("provider") String provider,
@@ -61,14 +61,14 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
 
 
   @Query("""
-       select e
-       from ServiceAssignmentEntity e
-       where e.candidate.id = :candidateId
-         and e.provider     = :provider
-         and e.serviceCode  = :serviceCode
-         and e.status       = :status
-       order by e.assignedAt desc
-       """)
+         select e
+         from ServiceAssignmentEntity e
+         where e.candidate.id = :candidateId
+           and e.provider     = :provider
+           and e.serviceCode  = :serviceCode
+           and e.status       = :status
+         order by e.assignedAt desc
+         """)
   List<ServiceAssignmentEntity> findByCandidateAndProviderServiceAndStatus(
       @Param("candidateId") Long candidateId,
       @Param("provider") String provider,
@@ -77,13 +77,13 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
 
 
   @Query("""
-  select e
-  from ServiceAssignmentEntity e
-  where e.provider    = :provider
-    and e.serviceCode = :serviceCode
-    and e.resource.id  = :resourceId
-  order by e.assignedAt desc
-  """)
+        select e
+        from ServiceAssignmentEntity e
+        where e.provider    = :provider
+          and e.serviceCode = :serviceCode
+          and e.resource.id  = :resourceId
+        order by e.assignedAt desc
+        """)
   Optional<ServiceAssignmentEntity> findTopByProviderAndServiceAndResource(
       @Param("provider") String provider,
       @Param("serviceCode") String serviceCode,
