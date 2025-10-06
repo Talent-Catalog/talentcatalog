@@ -30,9 +30,9 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
 
   @Query(value = """
     select * from service_resource
-    where provider = :provider
+    where provider     = :provider
       and service_code = :serviceCode
-      and status = 'AVAILABLE'
+      and status       = 'AVAILABLE'
     order by id
     for update skip locked
     limit 1
@@ -56,11 +56,11 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
 
 
   @Query("""
-      select r
-      from ServiceResourceEntity r
-      where r.provider = :provider
-        and r.resourceCode = :resourceCode
-      """)
+    select r
+    from ServiceResourceEntity r
+    where r.provider = :provider
+      and r.resourceCode = :resourceCode
+    """)
   Optional<ServiceResourceEntity> findByProviderAndResourceCode(
       @Param("provider") String provider,
       @Param("resourceCode") String resourceCode);
@@ -68,27 +68,26 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
   boolean existsByProviderAndResourceCode(String provider, String resourceCode);
 
   // provider + serviceCode (enum)
-  @Query(value = """
-      select count(*) 
-      from service_resource sr
-      where sr.provider = :provider
-        and sr.service_code = :#{#serviceCode.name()}
-        and sr.status = cast('AVAILABLE' as resource_status)
-        and sr.candidate_id is null
-      """, nativeQuery = true)
-  long countAvailableByProviderAndService(@Param("provider") String provider,
+  @Query("""
+      select count(r)
+      from ServiceResourceEntity r
+      where r.provider    = :provider
+        and r.serviceCode = :serviceCode
+        and r.status      = org.tctalent.server.casi.domain.model.ResourceStatus.AVAILABLE
+      """)
+  long countAvailableByProviderAndService(
+      @Param("provider") String provider,
       @Param("serviceCode") ServiceCode serviceCode);
 
   // provider only (all service codes)
-  @Query(value = """
-      select count(*) 
-      from service_resource sr
-      where sr.provider = :provider
-        and sr.status = cast('AVAILABLE' as resource_status)
-        and sr.candidate_id is null
-      """, nativeQuery = true)
-  long countAvailableByProvider(@Param("provider") String provider);
-
+  @Query("""
+      select count(r)
+      from ServiceResourceEntity r
+      where r.provider    = :provider
+        and r.status      = org.tctalent.server.casi.domain.model.ResourceStatus.AVAILABLE
+      """)
+  long countAvailableByProvider(
+      @Param("provider") String provider);
 
   // All providers; skip EXPIRED/REDEEMED/DISABLED; ignore null expiresAt
   @Query("""
