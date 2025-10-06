@@ -22,11 +22,19 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
+
+/**
+ * Registry of TaskPolicy implementations, keyed by ServiceProvider.
+ * Keeps exactly one TaskPolicy per ServiceProvider.
+ *
+ * @author sadatmalik
+ */
 @Component
 public class TaskPolicyRegistry {
 
   private final Map<ServiceProvider, TaskPolicy> policies; // provider -> policy
 
+  // Constructs a registry from a list of Spring injected TaskPolicy implementations
   public TaskPolicyRegistry(List<TaskPolicy> policies) {
     Map<ServiceProvider, TaskPolicy> map = new HashMap<>();
     for (TaskPolicy p : policies) {
@@ -38,6 +46,7 @@ public class TaskPolicyRegistry {
     this.policies = Map.copyOf(map);
   }
 
+  // Returns the TaskPolicy for the given ServiceProvider, or throws if none found
   public TaskPolicy forProvider(ServiceProvider provider) { // provider descriptors
     var p = policies.get(provider);
     if (p == null) {

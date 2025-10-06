@@ -27,6 +27,11 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 
+/**
+ * Listens for service assignment events and sends notification emails to candidates.
+ *
+ * @author sadatmalik
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

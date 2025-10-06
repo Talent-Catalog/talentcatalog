@@ -22,12 +22,33 @@ import java.util.Locale;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
+
+/**
+ * Registry for CandidateAssistanceService implementations.
+ * It maps service providers and their service codes to the corresponding
+ * CandidateAssistanceService instances.
+ * <p>
+ * This allows for dynamic retrieval of services based on provider and service code.
+ * <p>
+ * Example usage:
+ * CandidateAssistanceService service = registry.forProviderAndServiceCode("ProviderA", "ServiceX");
+ * <p>
+ * The provider and service code are normalised for consistent lookups.
+ *
+ * @author sadatmalik
+ */
 @Component
 public class CandidateServiceRegistry {
 
   private static final String SEP = "::";
   private final Map<String, CandidateAssistanceService> services; // provider -> service
 
+  /**
+   * Constructs the registry with a list of CandidateAssistanceService beans.
+   * It builds a map of services keyed by a combination of provider and service code.
+   *
+   * @param serviceBeans the list of CandidateAssistanceService implementations
+   */
   public CandidateServiceRegistry(List<CandidateAssistanceService> serviceBeans) {
     Map<String, CandidateAssistanceService> map = new HashMap<>();
     for (CandidateAssistanceService s : serviceBeans) {
@@ -39,6 +60,15 @@ public class CandidateServiceRegistry {
     this.services = Map.copyOf(map);
   }
 
+  /**
+   * Retrieves the CandidateAssistanceService for the given provider and service code.
+   * The provider and service code are normalised for consistent lookups.
+   *
+   * @param provider the service provider (e.g., "DUOLINGO")
+   * @param serviceCode the specific service code (e.g., "TEST_PROCTORED")
+   * @return the corresponding CandidateAssistanceService
+   * @throws IllegalStateException if no service is found for the given provider and service code
+   */
   public CandidateAssistanceService forProviderAndServiceCode(String provider, String serviceCode) {
     String key = (normalise(provider) + SEP + normalise(serviceCode));
     CandidateAssistanceService svc = services.get(key);

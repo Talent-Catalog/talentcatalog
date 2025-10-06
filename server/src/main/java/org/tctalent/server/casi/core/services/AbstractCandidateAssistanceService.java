@@ -42,6 +42,13 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.SavedListService;
 
+
+/**
+ * Base class for candidate assistance services (e.g., Duolingo, PathwayClub, etc.)
+ * that manage service assignments and resources.
+ *
+ * @author sadatmalik
+ */
 @RequiredArgsConstructor
 public abstract class AbstractCandidateAssistanceService implements CandidateAssistanceService {
 
@@ -63,6 +70,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         + serviceCode().name().trim().toUpperCase(Locale.ROOT);
   }
 
+  // Import inventory from file
   @Override
   @Transactional
   public void importInventory(MultipartFile file) throws ImportFailedException {
@@ -73,6 +81,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     importer.importFile(file, serviceCode().name());
   }
 
+  // Assignments
   @Override
   @Transactional
   public ServiceAssignment assignToCandidate(Long candidateId, User user) {
@@ -87,6 +96,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     return assignmentEngine.assign(allocator(), candidateId, user);
   }
 
+  // Reassignments
   @Override
   @Transactional
   public ServiceAssignment reassignForCandidate(String candidateNumber, User user)
@@ -95,6 +105,11 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     return assignmentEngine.reassign(allocator(), candidateNumber, user);
   }
 
+  // Assign all candidates in a saved list
+  // Skip candidates who already have an active assignment
+  // Fail if not enough resources to assign to all candidates
+  // Return list of assignments done
+  // SM -- TODO -- add pagination for large lists
   @Override
   @Transactional
   public List<ServiceAssignment> assignToList(Long listId, User user) {
@@ -124,6 +139,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     return done;
   }
 
+  // Queries
   @Override
   @Transactional(readOnly = true)
   public List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId) {
@@ -134,6 +150,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         .toList();
   }
 
+  // Resources
   @Override
   @Transactional(readOnly = true)
   public List<ServiceResource> getResourcesForCandidate(Long candidateId) {
@@ -143,6 +160,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         .toList();
   }
 
+  // Get all available resources for this provider and service
+  // (e.g., all available Duolingo TEST_PROCTORED coupons)
   @Override
   @Transactional(readOnly = true)
   public List<ServiceResource> getAvailableResources() {
@@ -153,6 +172,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         .toList();
   }
 
+  // Get resource by resource code (e.g., get coupon by coupon code)
+  // Throws NoSuchObjectException if not found
   @Override
   @Transactional(readOnly = true)
   public ServiceResource getResourceForResourceCode(String resourceCode) throws NoSuchObjectException {
@@ -162,6 +183,9 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + resourceCode + " not found"));
   }
 
+  // Get candidate assigned to a resource by resource code (e.g., get candidate assigned to a coupon by coupon code)
+  // Returns null if not assigned
+  // Throws NoSuchObjectException if resource not found
   @Override
   public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException {
     var resource = resourceRepository
@@ -175,6 +199,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         .orElse(null);
   }
 
+  // Update resource status (e.g., mark a coupon as USED or DISABLED)
+  // No action if resource not found
   @Override
   @Transactional
   public void updateResourceStatus(String resourceCode, ResourceStatus status) {
@@ -186,11 +212,13 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         });
   }
 
+  // Count available resources for this provider (e.g., count all available Duolingo coupons
   @Override
   public long countAvailableForProvider() {
     return resourceRepository.countAvailableByProvider(provider());
   }
 
+  // Count available resources for this provider and service (e.g., count available Duolingo TEST_PROCTORED coupons)
   @Override
   public long countAvailableForProviderAndService() {
     return resourceRepository.countAvailableByProviderAndService(provider(), serviceCode());

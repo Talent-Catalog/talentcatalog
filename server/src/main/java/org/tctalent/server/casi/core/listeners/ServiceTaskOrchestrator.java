@@ -35,6 +35,12 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.TaskService;
 
+
+/**
+ * Listens for service assignment events and orchestrates task assignments based on defined policies.
+ *
+ * @author sadatmalik
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

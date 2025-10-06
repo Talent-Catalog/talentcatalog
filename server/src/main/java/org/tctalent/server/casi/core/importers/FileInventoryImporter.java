@@ -19,6 +19,16 @@ package org.tctalent.server.casi.core.importers;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
 
+
+/**
+ * Interface for importing service resources from files.
+ * <p/>
+ * This interface defines a method for importing service resources (e.g., coupons)
+ * from a file. Implementations of this interface will handle the specifics of
+ * parsing the file and adding the resources to the database.
+ *
+ * @author sadatmalik
+ */
 public interface FileInventoryImporter {
 
   /**

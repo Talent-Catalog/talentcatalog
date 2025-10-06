@@ -21,8 +21,22 @@ import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.model.db.Candidate;
 
+
+/**
+ * Interface for allocating service resources to candidates.
+ * Implementations of this interface should provide the logic to allocate
+ * resources based on the candidate and the service provider's capabilities.
+ *
+ * @author sadatmalik
+ */
 public interface ResourceAllocator {
+
+  // Allocate a service resource for the given candidate
   ServiceResource allocateFor(Candidate candidate);
+
+  // Get the service provider associated with this allocator
   ServiceProvider getProvider();
+
+  // Get the service code associated with this allocator
   ServiceCode getServiceCode();
 }

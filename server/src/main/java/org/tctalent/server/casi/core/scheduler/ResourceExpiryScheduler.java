@@ -32,6 +32,17 @@ import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 
+
+/**
+ * Scheduler that marks service resources as EXPIRED when their expiration date is reached.
+ * It runs daily at midnight GMT and processes resources that are not already in EXPIRED, REDEEMED,
+ * or DISABLED status.
+ * When a resource is marked as EXPIRED, an event is published to notify other parts of the system.
+ * <p>
+ * Note: The scheduler uses ShedLock so that only one instance runs in a distributed environment.
+ *
+ * @author sadatmalik
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

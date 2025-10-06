@@ -42,6 +42,11 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
 
 
+/**
+ * Engine to handle assignment and reassignment of services to candidates.
+ *
+ * @author sadatmalik
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -52,6 +57,15 @@ public class AssignmentEngine {
   private final ServiceResourceRepository resourceRepo;
   private final ApplicationEventPublisher events;
 
+  /**
+   * Assigns a service resource to a candidate using the provided allocator.
+   *
+   * @param allocator the resource allocator specific to the service provider
+   * @param candidateId the ID of the candidate to assign the resource to
+   * @param actor the user performing the assignment
+   * @return the created ServiceAssignment model
+   * @throws NoSuchObjectException if the candidate does not exist
+   */
   @Transactional
   public ServiceAssignment assign(ResourceAllocator allocator, Long candidateId, User actor) {
 
@@ -77,6 +91,16 @@ public class AssignmentEngine {
     return model;
   }
 
+  /**
+   * Reassigns a service resource to a candidate by disabling previous assignments
+   * and allocating a new resource.
+   *
+   * @param allocator the resource allocator specific to the service provider
+   * @param candidateNumber the unique candidate number
+   * @param actor the user performing the reassignment
+   * @return the new ServiceAssignment model
+   * @throws NoSuchObjectException if the candidate does not exist
+   */
   @Transactional
   public ServiceAssignment reassign(ResourceAllocator allocator, String candidateNumber, User actor) {
 

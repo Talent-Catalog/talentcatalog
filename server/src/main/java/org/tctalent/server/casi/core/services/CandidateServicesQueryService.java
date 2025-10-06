@@ -26,6 +26,11 @@ import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.mappers.ServiceAssignmentMapper;
 
 
+/**
+ * Service to query service assignments for a candidate.
+ *
+ * @author sadatmalik
+ */
 @Service
 @RequiredArgsConstructor
 public class CandidateServicesQueryService {

@@ -44,6 +44,17 @@ import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.logging.LogBuilder;
 
+/**
+ * Imports Duolingo coupons from a CSV file into the system.
+ * The CSV is expected to have the following columns:
+ * - coupon code
+ * - expiration date
+ * - date sent
+ * - coupon status
+ * <p>
+ * The importer checks for duplicates within the file and against existing records in the database.
+ * It supports multiple date formats for parsing dates.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

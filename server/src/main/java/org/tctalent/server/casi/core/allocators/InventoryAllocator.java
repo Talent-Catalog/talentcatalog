@@ -28,6 +28,13 @@ import org.tctalent.server.casi.domain.mappers.ServiceResourceMapper;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 
+
+/**
+ * An implementation of ResourceAllocator that allocates resources from existing inventory.
+ * For example, allocating a coupon code from a pool of pre-imported codes.
+ *
+ * @author sadatmalik
+ */
 @RequiredArgsConstructor
 public class InventoryAllocator implements ResourceAllocator {
 

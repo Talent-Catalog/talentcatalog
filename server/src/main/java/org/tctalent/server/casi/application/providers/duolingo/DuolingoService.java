@@ -29,6 +29,9 @@ import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.service.db.SavedListService;
 
 
+/**
+ * Service to manage Duolingo test assignments and resources.
+ */
 @Service
 public class DuolingoService extends AbstractCandidateAssistanceService {
 
