@@ -23,16 +23,27 @@ import org.tctalent.server.casi.domain.events.ServiceReassignedEvent;
 import org.tctalent.server.casi.domain.events.ServiceRedeemedEvent;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
+/**
+ * Task policy interface defining tasks to be executed on various service events.
+ * Implementations should specify the provider they handle and the tasks for each event.
+ *
+ * @author sadatmalik
+ */
 public interface TaskPolicy {
 
+  // Unique provider identifier
   ServiceProvider provider();
 
+  // Tasks to execute when a service is assigned
   List<String> tasksOnAssigned(ServiceAssignedEvent e);
 
+  // Tasks to execute when a service is redeemed
   default List<String> tasksOnRedeemed(ServiceRedeemedEvent e) { return List.of(); }
 
+  // Tasks to close when a service is reassigned
   default List<String> tasksOnReassigned(ServiceReassignedEvent e) { return List.of(); }
 
-  default void handleOnExpired(ServiceExpiredEvent e) {}
+  // Tasks to close when a service expires
+  default List<String> tasksOnExpired(ServiceExpiredEvent e) { return List.of(); }
 
 }

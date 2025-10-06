@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.casi.application.policy.TaskPolicyRegistry;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 @SpringBootTest
 class TaskPolicyRegistryTest {
@@ -31,6 +32,6 @@ class TaskPolicyRegistryTest {
 
   @Test
   void loadsDuolingo() {
-    assertNotNull(registry.forProvider("DUOLINGO"));
+    assertNotNull(registry.forProvider(ServiceProvider.DUOLINGO));
   }
 }
