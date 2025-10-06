@@ -1,17 +1,12 @@
 .tc-description-list {
-  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  row-gap: 0.75rem;
-  column-gap: 1rem;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 2rem;
-  padding-bottom: 0.75rem;
+  row-gap: 1.25rem;
+  column-gap: 1.25rem;
+  padding: 0.75rem;
 
-  &.grid-row {
-    grid-template-columns: 1fr 2fr;
-  }
+  // If direction = column, make the description items stack responsively in columns (min width 250px)
+  // If direction = row, the description items are just stacked vertically
   &.grid-column {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }

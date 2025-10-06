@@ -16,10 +16,9 @@
 
 package org.tctalent.server.model.db.task;
 
+import java.util.List;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.Candidate;
-
-import java.util.List;
 
 /**
  * Particular kind of task which simply involves the candidate answering a given question.

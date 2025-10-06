@@ -57,6 +57,12 @@ public class TermsInfoServiceImpl implements TermsInfoService {
                 TermsType.CANDIDATE_PRIVACY_POLICY,
                 LocalDate.of(2025, Month.JUNE, 5)
             ),
+            new TermsInfo(
+            "DataProcessingAgreementV1",
+            "/terms/DataProcessingAgreement-20250831.html",
+            TermsType.DATA_PROCESSING_AGREEMENT,
+            LocalDate.of(2025, Month.AUGUST, 31)
+        ),
         };
     }
 

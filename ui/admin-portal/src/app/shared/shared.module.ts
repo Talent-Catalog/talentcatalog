@@ -17,7 +17,14 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbAlert,
+  NgbDropdownModule,
+  NgbInputDatepicker,
+  NgbNavModule,
+  NgbPaginationModule,
+  NgbTypeahead
+} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -32,16 +39,42 @@ import {FieldComponent} from './components/fieldset/field/field.component';
 import {LabelComponent} from './components/fieldset/label/label.component';
 import {DescriptionComponent} from './components/fieldset/description/description.component';
 import {ErrorMessageComponent} from './components/fieldset/error-message/error-message.component';
-import { TextareaComponent } from './components/textarea/textarea.component';
+import {TextareaComponent} from './components/textarea/textarea.component';
 import {BadgeComponent} from './components/badge/badge.component';
 
 import {DescriptionListComponent} from './components/description-list/description-list.component';
 import {
-  DescriptionDetailsComponent
-} from './components/description-list/description-details/description-details.component';
+  DescriptionItemComponent
+} from './components/description-list/description-item/description-item.component';
+import {TcModalComponent} from './components/modal/tc-modal.component';
+import {AlertComponent} from './components/alert/alert.component';
+import {TcDropdownComponent} from './components/dropdown/tc-dropdown.component';
 import {
-  DescriptionTermComponent
-} from './components/description-list/description-term/description-term.component';
+  TcDropdownButtonComponent
+} from './components/dropdown/dropdown-button/tc-dropdown-button.component';
+import {
+  TcDropdownItemComponent
+} from './components/dropdown/dropdown-item/tc-dropdown-item.component';
+import {
+  TcDropdownMenuComponent
+} from './components/dropdown/dropdown-menu/tc-dropdown-menu.component';
+import {
+  TcDropdownDividerComponent
+} from './components/dropdown/dropdown-divider/tc-dropdown-divider.component';
+import {RouterLink} from "@angular/router";
+import {
+  TcDateRangePickerComponent
+} from './components/date-range-picker/tc-date-range-picker.component'
+import {TcIconComponent} from './components/icon-component/tc-icon.component';
+import {TcAccordionComponent} from './components/accordion/tc-accordion.component';
+import {
+  TcAccordionItemComponent
+} from './components/accordion/accordion-item/tc-accordion-item.component';
+import {TcCardComponent} from './components/card/tc-card.component';
+import {TcCardHeaderComponent} from './components/card/card-header/tc-card-header.component';
+import {TcLoadingComponent} from './components/loading/tc-loading.component';
+import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -61,13 +94,35 @@ import {
     TcTabContentComponent,
     BadgeComponent,
     DescriptionListComponent,
-    DescriptionDetailsComponent,
-    DescriptionTermComponent
+    DescriptionItemComponent,
+    TcModalComponent,
+    AlertComponent,
+    TcDropdownComponent,
+    TcDropdownButtonComponent,
+    TcDropdownItemComponent,
+    TcDropdownMenuComponent,
+    TcDropdownDividerComponent,
+    TcDateRangePickerComponent,
+    TcIconComponent,
+    TcAccordionComponent,
+    TcAccordionItemComponent,
+    TcCardComponent,
+    TcCardHeaderComponent,
+    TcLoadingComponent,
+    TcDatePickerComponent
   ],
   imports: [
     CommonModule,
     NgbPaginationModule,
-    NgbNavModule
+    NgbNavModule,
+    NgbAlert,
+    NgbDropdownModule,
+    RouterLink,
+    NgbInputDatepicker,
+    ReactiveFormsModule,
+    FormsModule,
+    NgbInputDatepicker,
+    NgbTypeahead
   ],
   exports: [
     ButtonComponent,
@@ -86,8 +141,22 @@ import {
     TcTabContentComponent,
     BadgeComponent,
     DescriptionListComponent,
-    DescriptionDetailsComponent,
-    DescriptionTermComponent,
+    DescriptionItemComponent,
+    TcModalComponent,
+    AlertComponent,
+    TcDropdownComponent,
+    TcDropdownButtonComponent,
+    TcDropdownItemComponent,
+    TcDropdownMenuComponent,
+    TcDropdownDividerComponent,
+    TcDateRangePickerComponent,
+    TcIconComponent,
+    TcAccordionComponent,
+    TcAccordionItemComponent,
+    TcCardComponent,
+    TcCardHeaderComponent,
+    TcLoadingComponent,
+    TcDatePickerComponent
   ]
 })
 export class SharedModule { }

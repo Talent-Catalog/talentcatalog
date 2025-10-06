@@ -126,6 +126,26 @@ export class CandidateTaskComponent implements OnInit {
     return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
   }
 
+  /**
+   * This is called when the form of a form task has been submitted
+   */
+  completedFormTask($event: TaskAssignment) {
+    this.saving = true;
+    const request: UpdateTaskAssignmentRequest = {
+      completed: true,
+      abandoned: false
+    }
+    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
   completedUploadTask($event: TaskAssignment) {
     this.selectedTask = $event;
   }
@@ -138,12 +158,17 @@ export class CandidateTaskComponent implements OnInit {
       this.updateTaskComment();
     } else {
       if (!this.abandonedTask) {
-        if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-          this.updateQuestionTask();
-        } else if (this.selectedTask.task.taskType === TaskType.Simple) {
-          this.updateSimpleTask();
-        } else {
-          this.updateUploadTask();
+        switch (this.selectedTask.task.taskType) {
+          case TaskType.Question:
+          case TaskType.YesNoQuestion:
+            this.updateQuestionTask();
+            break;
+          case TaskType.Simple:
+            this.updateSimpleTask();
+            break;
+          case TaskType.Upload:
+            this.updateUploadTask();
+            break;
         }
       } else {
         this.updateAbandonedTask();

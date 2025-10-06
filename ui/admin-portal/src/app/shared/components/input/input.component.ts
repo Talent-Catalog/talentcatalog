@@ -1,5 +1,15 @@
-import { Component, Input, Output, EventEmitter, forwardRef, OnInit } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef
+} from '@angular/core';
+import {Observable} from "rxjs";
+import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 /**
  * @component InputComponent
@@ -12,6 +22,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
  * - Standard HTML `<input>` under the hood with sane defaults
  * - Works with `formControlName` / `ngModel`
  * - Emits `valueChange` when the value updates
+ * - For checkbox styling pass [checkbox]="true" to the parent tc-field component
  *
  * @example
  * ### Reactive Forms
@@ -58,25 +69,75 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() id?: string;
   @Input() ariaLabel?: string;
   @Input() name?: string;
-  @Input() type: string = 'text';
   @Input() placeholder: string = '';
-  @Input() disabled = false;
   @Input() invalid: boolean = false;
   @Input() defaultValue: string = '';
+  @Input() ngbTypeahead!: (text$: Observable<string>) => Observable<any[]>;
+  @Input() resultTemplate?: TemplateRef<any>;
+  @Input() inputFormatter?: (value: any) => string;
+  @Input() resultFormatter?: (value: any) => string;
+  @Input() editable: boolean;
+  @Input() readonly: boolean = false;
+  @Input() type:
+    | 'text'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'url'
+    | 'email'
+    | 'number'
+    | 'range'
+    | 'color'
+    | 'date'
+    | 'month'
+    | 'week'
+    | 'time'
+    | 'datetime-local'
+    | 'checkbox'
+    | 'radio'
+    | 'file'
+    | 'button'
+    | 'submit'
+    | 'reset'
+    | 'hidden'
+    | 'image' = 'text';
 
-  @Output() valueChange = new EventEmitter<string>();
+  /** Disabled state coming from an input e.g. [disabled]="loading" */
+  @Input() set disabled(val: boolean) {
+    this._disabledInput = val;
+    this.updateDisabledState();
+  }
 
-  private _value: string = '';
+  get disabled(): boolean {
+    return this._disabledFinal;
+  }
 
-  get value(): string {
+  /** The input can be disabled in two ways:
+   * - input: _disabledInput eg. <tc-input formControlName="email" disabled="true">
+   * - form control: _disabledFromForm eg. this.form.get('email').disable();
+   * Both disabled states need to be tracked and if both are applied we need one to take precedence,
+   * so use disabledFinal for the final disabled state.
+   * */
+  private _disabledInput = false;
+  private _disabledFromForm = false;
+  private _disabledFinal = false;
+
+  @Output() valueChange = new EventEmitter<string | boolean>();
+
+  @Output() selectItem =
+    new EventEmitter<NgbTypeaheadSelectItemEvent<any>>();
+
+  protected _value: string | boolean = '';
+
+  get value(): string | boolean {
     return this._value;
   }
 
-  set value(val: string) {
+  set value(val: string | boolean) {
     if (val !== this._value) {
       this._value = val;
       this.onChange(val);
-      this.valueChange.emit(val);
+      this.valueChange.emit(this.type === 'checkbox' ? val as boolean : val as string);
     }
   }
 
@@ -88,11 +149,16 @@ export class InputComponent implements ControlValueAccessor, OnInit {
     if (this.defaultValue && !this._value) {
       this.value = this.defaultValue;
     }
+    this.updateDisabledState();
   }
 
   // ControlValueAccessor implementation
   writeValue(val: any): void {
-    this._value = val ?? '';
+    if (this.type === 'checkbox') {
+      this._value = Boolean(val);
+    } else {
+      this._value = val ?? '';
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -103,13 +169,20 @@ export class InputComponent implements ControlValueAccessor, OnInit {
     this.onTouched = fn;
   }
 
+  /** This method is called when the angular form control .disable() method is used */
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this._disabledFromForm = isDisabled;
+    this.updateDisabledState();
+  }
+
+  /** Form control disabled state takes precedence */
+  private updateDisabledState() {
+    this._disabledFinal = this._disabledFromForm || this._disabledInput;
   }
 
   handleInput(event: Event) {
-    const newValue = (event.target as HTMLInputElement).value;
-    this.value = newValue;
+    const target = event.target as HTMLInputElement;
+    this.value = this.type === 'checkbox' ? target.checked : target.value;
   }
 
   handleBlur() {

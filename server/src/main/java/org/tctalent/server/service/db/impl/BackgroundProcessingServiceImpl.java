@@ -28,9 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClientException;
-import org.tctalent.server.exception.SalesforceException;
-import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -70,43 +67,6 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   private final SavedSearchService savedSearchService;
   private final TaskScheduler taskScheduler;
   private final BatchListeningLogger batchListeningLogger;
-
-  public BackProcessor<PageContext> createSfSyncBackProcessor(
-      List<CandidateStatus> statuses, long totalNoOfPages
-  ) {
-    BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
-      @Override
-      public boolean process(PageContext ctx) throws SalesforceException, WebClientException {
-        int page =
-            ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
-
-        // Delegate page processing to the service, which will open a transaction
-        candidateService.processSfCandidateSyncPage(page, statuses);
-
-        // Log completed page
-        LogBuilder.builder(log)
-            .action("processSfCandidateSyncPage")
-            .message("Processed page " + (page + 1) + " of " + totalNoOfPages)
-            .logInfo();
-
-        // Set last processed page
-        ctx.setLastProcessedPage(page);
-
-        // Log if processing complete
-        if (page + 1 >= totalNoOfPages) {
-          LogBuilder.builder(log)
-              .action("Sync Candidates to Salesforce")
-              .message("SF candidate sync complete!")
-              .logInfo();
-        }
-
-        // Return true if complete - ends processing
-        return page + 1 >= totalNoOfPages;
-      }
-    };
-
-    return backProcessor;
-  }
 
   public BackProcessor<PageContext> createPotentialDuplicatesBackProcessor(
       List<Long> candidateIds

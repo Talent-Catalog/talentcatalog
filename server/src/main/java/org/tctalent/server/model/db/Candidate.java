@@ -23,9 +23,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -100,8 +101,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @Transient
     private Long contextSavedListId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateId", cascade = CascadeType.MERGE)
-    private Set<CandidateProperty> candidateProperties;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @MapKey(name="name")
+    private Map<String, CandidateProperty> candidateProperties;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("activatedDate DESC")
@@ -654,10 +656,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     @Nullable
     private String maritalStatusNotes;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private YesNo monitoringEvaluationConsent;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -1357,11 +1355,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateProperty> getCandidateProperties() {
+    public Map<String,CandidateProperty> getCandidateProperties() {
         return candidateProperties;
     }
 
-    public void setCandidateProperties(Set<CandidateProperty> properties) {
+    public void setCandidateProperties(Map<String,CandidateProperty> properties) {
         this.candidateProperties = properties;
     }
 
@@ -1479,7 +1477,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     }
 
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
-        candidateVisaChecks.sort(null);
+        if (candidateVisaChecks != null) {
+            candidateVisaChecks.sort(null);
+        }
         return candidateVisaChecks;
     }
 
@@ -2118,13 +2118,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public String getMaritalStatusNotes() { return maritalStatusNotes; }
 
     public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
-
-    @Nullable
-    public YesNo getMonitoringEvaluationConsent() {return monitoringEvaluationConsent;}
-
-    public void setMonitoringEvaluationConsent(@Nullable YesNo monitoringEvaluationConsent) {
-        this.monitoringEvaluationConsent = monitoringEvaluationConsent;
-    }
 
     @Nullable
     public String getPartnerRef() {

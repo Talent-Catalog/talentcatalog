@@ -17,12 +17,12 @@
 package org.tctalent.server.model.db;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,23 +40,29 @@ import org.springframework.lang.Nullable;
  */
 @Entity
 @Table(name = "candidate_property")
-@IdClass(CandidatePropertyKey.class)
 @Getter
 @Setter
 public class CandidateProperty {
 
-    /**
-     * ID of candidate associated with this property
-     */
-    @Id
-    @NonNull
-    @Column(name = "candidate_id")
-    private Long candidateId;
+    @EmbeddedId
+    CandidatePropertyKey id;
 
     /**
-     * The name of the property
+     * Candidate associated with this property
      */
-    @Id
+    @NonNull
+    @ManyToOne
+    @MapsId("candidateId")
+    @JoinColumn(name = "candidate_id")
+    private Candidate candidate;
+
+    /**
+     * The name of the property.
+     * <p/>
+     * Column annotation is needed here because the "name" field is already declared in the
+     * embedded id.
+     */
+    @Column(insertable = false, updatable = false)
     @NonNull
     private String name;
 
