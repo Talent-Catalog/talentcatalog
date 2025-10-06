@@ -20,7 +20,7 @@
     <span>Suggested searches</span>
     <div *ngIf="editable" [ngClass]="{'alert alert-danger mb-0': highlightSearches()}">
       <tc-button ngbTooltip="Create new suggested search"
-              (click)="addSearch()">
+              (onClick)="addSearch()">
         <i class="fas fa-plus"></i> Search
       </tc-button>
     </div>

@@ -18,7 +18,7 @@
   <tc-card-header>
    Job Information
     <div *ngIf="editable" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
-      <tc-button type="secondary" (click)="editJobInfo()">
+      <tc-button type="secondary" (onClick)="editJobInfo()">
         <i class="fas fa-edit"></i> Edit
       </tc-button>
     </div>

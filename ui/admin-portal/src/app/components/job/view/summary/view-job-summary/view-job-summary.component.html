@@ -29,7 +29,7 @@
         </app-autosave-status>
       </span>
 
-      <tc-button type="plain" size="sm" (click)="toggleEdit()">{{isEditing ? 'Done' : 'Edit' }}</tc-button>
+      <tc-button type="plain" size="sm" (onClick)="toggleEdit()">{{isEditing ? 'Done' : 'Edit' }}</tc-button>
     </div>
 
     <ng-container *ngIf="isEditing; else viewMode">
