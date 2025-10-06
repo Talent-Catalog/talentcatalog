@@ -22,6 +22,11 @@ import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 
 
+/**
+ * Mapper for converting between ServiceResource, ServiceResourceEntity, and ServiceResourceDto.
+ *
+ * @author sadatmalik
+ */
 @Component
 public class ServiceResourceMapper {
   public static ServiceResource toModel(ServiceResourceEntity e) {

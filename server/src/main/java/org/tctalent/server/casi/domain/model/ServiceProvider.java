@@ -16,6 +16,11 @@
 
 package org.tctalent.server.casi.domain.model;
 
+/**
+ * Enumeration of service providers.
+ *
+ * @author sadatmalik
+ */
 public enum ServiceProvider {
   DUOLINGO
 }

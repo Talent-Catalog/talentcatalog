@@ -16,6 +16,11 @@
 
 package org.tctalent.server.casi.domain.model;
 
+/**
+ * Enumeration of service codes representing different types of services.
+ *
+ * @author sadatmalik
+ */
 public enum ServiceCode {
   TEST_PROCTORED,
   TEST_NON_PROCTORED

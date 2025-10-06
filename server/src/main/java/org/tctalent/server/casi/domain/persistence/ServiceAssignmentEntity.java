@@ -37,6 +37,12 @@ import org.tctalent.server.model.db.AbstractDomainObject;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 
+/**
+ * Entity representing the assignment of a service to a candidate.
+ * The assignment may have a service resource associated with it, but this is not mandatory.
+ *
+ * @author sadatmalik
+ */
 @Entity
 @Table(name = "service_assignment")
 @SequenceGenerator(name = "seq_gen", sequenceName = "service_assignment_id_seq", allocationSize = 1)

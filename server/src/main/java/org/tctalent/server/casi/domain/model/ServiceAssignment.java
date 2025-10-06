@@ -20,6 +20,11 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
 
+/**
+ * Represents the assignment of a service to a candidate.
+ *
+ * @author sadatmalik
+ */
 @Value
 @Builder
 public class ServiceAssignment {

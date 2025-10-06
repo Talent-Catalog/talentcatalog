@@ -31,6 +31,11 @@ import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.model.db.AbstractDomainObject;
 
+/**
+ * Entity representing a service resource.
+ *
+ * @author sadatmalik
+ */
 @Entity
 @Table(name = "service_resource")
 @SequenceGenerator(name = "seq_gen", sequenceName = "service_resource_id_seq", allocationSize = 1)

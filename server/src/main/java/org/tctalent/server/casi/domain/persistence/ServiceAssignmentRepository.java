@@ -25,6 +25,11 @@ import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
+/**
+ * Repository interface for managing ServiceAssignmentEntity entities.
+ *
+ * @author sadatmalik
+ */
 public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssignmentEntity, Long> {
 
   @Query("""

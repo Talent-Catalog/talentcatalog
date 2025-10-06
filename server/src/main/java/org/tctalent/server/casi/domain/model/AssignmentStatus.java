@@ -16,6 +16,11 @@
 
 package org.tctalent.server.casi.domain.model;
 
+/**
+ * Status of a service assignment.
+ *
+ * @author sadatmalik
+ */
 public enum AssignmentStatus {
   ASSIGNED,   // assigned to candidate
   REDEEMED,   // used by candidate

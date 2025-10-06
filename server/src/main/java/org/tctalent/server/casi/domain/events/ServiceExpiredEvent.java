@@ -18,5 +18,10 @@ package org.tctalent.server.casi.domain.events;
 
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 
+/**
+ * Event published when a service assignment expires.
+ *
+ * @author sadatmalik
+ */
 public record ServiceExpiredEvent(ServiceAssignment assignment) {
 }

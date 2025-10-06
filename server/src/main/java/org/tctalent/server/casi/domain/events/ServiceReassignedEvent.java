@@ -18,5 +18,10 @@ package org.tctalent.server.casi.domain.events;
 
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 
+/**
+ * Event published when a service is reassigned for a candidate.
+ *
+ * @author sadatmalik
+ */
 public record ServiceReassignedEvent(ServiceAssignment assignment) {
 }

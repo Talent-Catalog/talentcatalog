@@ -27,6 +27,11 @@ import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
+/**
+ * Repository interface for managing ServiceResourceEntity entities.
+ *
+ * @author sadatmalik
+ */
 public interface ServiceResourceRepository extends JpaRepository<ServiceResourceEntity, Long> {
 
   @Query(value = """

@@ -25,6 +25,11 @@ import org.tctalent.server.casi.domain.persistence.ServiceAssignmentEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 
 
+/**
+ * Mapper for converting between ServiceAssignment, ServiceAssignmentEntity, and ServiceAssignmentDto.
+ *
+ * @author sadatmalik
+ */
 @Component
 public class ServiceAssignmentMapper {
   public static ServiceAssignment toModel(ServiceAssignmentEntity e) {

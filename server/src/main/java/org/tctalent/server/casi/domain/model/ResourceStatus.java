@@ -16,6 +16,11 @@
 
 package org.tctalent.server.casi.domain.model;
 
+/**
+ * Status of a resource (e.g., a coupon code).
+ *
+ * @author sadatmalik
+ */
 public enum ResourceStatus {
   AVAILABLE,   // unallocated, ready to use
   RESERVED,    // allocated to a candidate, not yet sent
