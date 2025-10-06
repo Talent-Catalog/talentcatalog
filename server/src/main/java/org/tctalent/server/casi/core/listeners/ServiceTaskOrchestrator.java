@@ -97,11 +97,31 @@ public class ServiceTaskOrchestrator {
     }
   }
 
-  // todo
   @TransactionalEventListener
   public void onExpired(ServiceExpiredEvent event) {
     var policy = policyRegistry.forProvider(event.assignment().getProvider());
-    policy.handleOnExpired(event); // e.g., mark tasks inactive
+    for (String taskName : policy.tasksOnExpired(event)) { // e.g. "duolingoTest"
+      TaskImpl task = taskService.getByName(taskName);
+
+      var existing = taskAssignmentService.findByTaskIdAndCandidateIdAndStatus(
+          task.getId(),
+          event.assignment().getCandidateId(),
+          Status.active
+      );
+
+      existing.forEach(ta -> {
+        ta.setStatus(Status.inactive); // mark old assignments inactive
+        taskAssignmentService.update(
+            ta, null, true,
+            "Marked inactive due to expiration", null);
+
+        LogBuilder.builder(log)
+            .user(Optional.of(user(event.assignment())))
+            .action("Expired: " + event.assignment().getProvider() + " " + event.assignment().getServiceCode())
+            .message("Marked task assignment ID " + ta.getId() + " as inactive for candidate " + ta.getCandidate().getId() + " due to expiration.")
+            .logInfo();
+      });
+    }
   }
 
   // Returns a Candidate entity with only the ID set.

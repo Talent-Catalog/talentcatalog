@@ -23,6 +23,13 @@ import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
+/**
+ * Data Transfer Object representing a service assignment to a candidate.
+ * Includes details about the service, the assigned resource, the assigning actor, and the
+ * assignment status.
+ *
+ * @author sadatmalik
+ */
 @Getter
 @Builder
 public class ServiceAssignmentDto {

@@ -23,6 +23,12 @@ import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
+/**
+ * Data Transfer Object representing a service resource, such as a coupon or access code.
+ * Includes details about the resource's provider, code, status, and relevant timestamps.
+ *
+ * @author sadatmalik
+ */
 @Getter
 @Builder
 public class ServiceResourceDto {

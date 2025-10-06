@@ -23,6 +23,13 @@ import org.tctalent.server.casi.domain.events.ServiceReassignedEvent;
 import org.tctalent.server.casi.domain.events.ServiceRedeemedEvent;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
+
+/**
+ * Task policy for Duolingo service assignments.
+ * Defines tasks to be executed on various service events.
+ *
+ * @author sadatmalik
+ */
 @Component
 public class DuolingoTaskPolicy implements TaskPolicy {
 

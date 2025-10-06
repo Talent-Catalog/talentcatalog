@@ -45,6 +45,16 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.security.AuthService;
 
+
+/**
+ * REST controller for managing candidate assistance services such as Duolingo. Candidate assistance
+ * services may offer resources (e.g., coupons, subscriptions) that can be assigned to candidates.
+ * <p>
+ * Provides endpoints for importing resources, assigning services to candidates, updating resource
+ * status, and querying service assignments and resources.
+ * <p>
+ * Note: All endpoints are secured and require admin privileges.
+ */
 //@PreAuthorize("hasAuthority('ROLE_ADMIN')") todo -- SM
 @RestController
 @RequestMapping("/api/admin/services")

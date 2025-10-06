@@ -25,6 +25,12 @@ import org.tctalent.server.casi.core.allocators.InventoryAllocator;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 
 
+/**
+ * Configuration class to define ResourceAllocator beans for different service providers and
+ * service codes.
+ *
+ * @author sadatmalik
+ */
 @Configuration
 public class AllocatorsConfig {
 
