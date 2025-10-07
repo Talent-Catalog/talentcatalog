@@ -13,184 +13,198 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-<div class="candidate-card side-panel-color" *ngIf="!!candidate">
+<div class="candidate-card" *ngIf="!!candidate" xmlns="http://www.w3.org/1999/html">
   <div class="content">
-  <button (click)="close()" type="button" class="btn-close text-reset float-end ms-4" aria-label="Close"></button>
 
+    <tc-icon
+      [type]="'button'"
+      (click)="close()"
+      [color]="'gray'"
+      [size]="'md'"
+      style="position: absolute; top: 1.5rem; right: 2rem; cursor: pointer"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </tc-icon>
+
+    <!-- CANDIDATE SOURCE-SPECIFIC -->
     <div *ngIf="isContextNoteDisplayed()" class="list-specific">
       <div class="candidate-header" >
         <h5 *ngIf="isList">List Specific</h5>
         <h5  *ngIf="isContextNoteDisplayed() && !isList">Search Specific</h5>
       </div>
 
-      <nav ngbNav #navContext="ngbNav" class="nav-tabs" [activeId]="activeContextTabId" (navChange)="onContextTabChanged($event)">
-        <!-- todo save the tab in localhost-->
+      <tc-tabs [activeTabId]="activeContextTabId" (tabChanged)="onContextTabChanged($event)">
 
         <!-- CONTEXT NOTES -->
-        <ng-container ngbNavItem="contextNotes">
-          <a ngbNavLink>Context Notes</a>
-          <ng-template ngbNavContent>
+        <tc-tab [id]="'contextNotes'">
+          <tc-tab-header>Context Notes</tc-tab-header>
+          <tc-tab-content>
             <app-candidate-context-note
               [candidate]="candidate"
               [candidateSource]="candidateSource"
-            >
-            </app-candidate-context-note>
-          </ng-template>
-        </ng-container>
+            ></app-candidate-context-note>
+          </tc-tab-content>
+        </tc-tab>
 
         <!-- SHAREABLE DOCS -->
-        <ng-container *ngIf="canViewPrivateInfo()" ngbNavItem="docs">
-          <a ngbNavLink>{{isList ? "List Specific " : null}}Shareable Docs</a>
-          <ng-template ngbNavContent>
+        <tc-tab *ngIf="canViewPrivateInfo()" [id]="'docs'">
+          <tc-tab-header>{{isList ? "List Specific " : null}}Shareable Docs</tc-tab-header>
+          <tc-tab-content>
             <app-shareable-docs
               [candidate]="candidate"
               [candidateSource]="candidateSource">
             </app-shareable-docs>
-          </ng-template>
-        </ng-container>
+          </tc-tab-content>
+        </tc-tab>
 
         <!-- PREVIEW CV -->
-        <ng-container *ngIf="canViewPrivateInfo()" ngbNavItem="cv">
-          <a ngbNavLink>Preview CV</a>
-          <ng-template ngbNavContent>
+        <tc-tab *ngIf="canViewPrivateInfo()" [id]="'cv'">
+          <tc-tab-header>Preview CV</tc-tab-header>
+          <tc-tab-content>
             <app-cv-preview
               [candidate]="candidate">
             </app-cv-preview>
-          </ng-template>
-        </ng-container>
+          </tc-tab-content>
+        </tc-tab>
 
         <!-- PROGRESS -->
-        <ng-container *ngIf="isSubmissionList()" ngbNavItem="progress">
-          <a ngbNavLink>Progress</a>
-          <ng-template ngbNavContent>
+        <tc-tab *ngIf="isSubmissionList()" [id]="'progress'">
+          <tc-tab-header>Progress</tc-tab-header>
+          <tc-tab-content>
             <app-opportunity-stage-next-step
               [opp]="getCandidateOppForJobSource()"
               [notEditable]="true">
             </app-opportunity-stage-next-step>
-          </ng-template>
-        </ng-container>
-      </nav>
-      <div [ngbNavOutlet]="navContext" class="mt-2"></div>
+          </tc-tab-content>
+        </tc-tab>
+      </tc-tabs>
     </div>
 
     <hr *ngIf="isContextNoteDisplayed()" class="my-4">
 
-
     <!-- HEADER -->
     <div class="candidate-header mt-3">
       <h3>{{candidate.user?.firstName}} {{candidate.user?.lastName}}
-        <span class="small text-muted me-2">
+        <span class="text-muted me-2">
           {{candidate.candidateNumber}} - {{candidate.status | titlecase}}
         </span>
         <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
           <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
         </a>
       </h3>
-      <button *ngIf="canSeeJobDetails()" (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-info me-1">
-        General Notes
-        <i *ngIf="!showNotes" class="fas fa-eye"></i>
-        <i *ngIf="showNotes" class="fas fa-eye-slash"></i>
-      </button>
     </div>
 
-    <!-- AUTO UPDATING SHAREABLE NOTES -->
-    <ng-container *ngIf="showNotes && canSeeJobDetails()">
+    <tc-button *ngIf="canSeeJobDetails()"
+               (onClick)="toggleNotes()"
+               [type]="'plain'"
+               [color]="'secondary'"
+               [size]="'sm'"
+    >
+      General Notes
+      <i class="fas"
+         [ngClass]="showNotes ? 'fa-chevron-up' : 'fa-chevron-down'">
+      </i>
+    </tc-button>
+
+    <!-- AUTO-UPDATING SHAREABLE NOTES -->
+    <div *ngIf="showNotes && canSeeJobDetails()"
+                  class="mt-2"
+    >
       <app-candidate-shareable-notes
         [candidate]="candidate"
         [editable] = "isEditable()"
-      >
-      </app-candidate-shareable-notes>
-    </ng-container>
+      ></app-candidate-shareable-notes>
+    </div>
 
-    <!-- TABS -->
-    <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+    <!-- GENERIC CANDIDATE PROFILE -->
+    <div class="mt-2">
+      <tc-tabs [activeTabId]="activeTabId"
+               (tabChanged)="onTabChanged($event)">
 
-      <!-- GENERAL -->
-      <ng-container ngbNavItem="general">
-        <a ngbNavLink>General</a>
-        <ng-template ngbNavContent>
-          <app-candidate-general-tab
-            [candidate]="candidate"
-            [editable]="false"
-            [adminUser]="isAnAdmin()">
-          </app-candidate-general-tab>
-        </ng-template>
-      </ng-container>
-
-      <!-- EXPERIENCE -->
-      <ng-container ngbNavItem="experience">
-        <a ngbNavLink>Experience</a>
-        <ng-template ngbNavContent>
-          <app-candidate-experience-tab
-            [candidate]="candidate"
-            [editable]="false"
-            [adminUser]="isAnAdmin()">
-          </app-candidate-experience-tab>
-        </ng-template>
-      </ng-container>
-
-      <!-- EDUCATION -->
-      <ng-container ngbNavItem="education">
-        <a ngbNavLink>Education</a>
-        <ng-template ngbNavContent>
-          <app-candidate-education-tab
-            [candidate]="candidate"
-            [editable]="false"
-            [adminUser]="isAnAdmin()">
-          </app-candidate-education-tab>
-        </ng-template>
-      </ng-container>
-
-      <!-- ADDITIONAL INFO -->
-      <ng-container ngbNavItem="additional">
-        <a ngbNavLink>Additional Info</a>
-        <ng-template ngbNavContent>
-          <app-candidate-additional-info-tab
-            [candidate]="candidate"
-            [editable]="false"
-            [canViewPrivateInfo]="canViewPrivateInfo()">
-          </app-candidate-additional-info-tab>
-        </ng-template>
-      </ng-container>
-
-      <!-- TASKS -->
-      <ng-container ngbNavItem="tasks" *ngIf="canViewPrivateInfo()">
-        <a ngbNavLink>Tasks</a>
-        <ng-template ngbNavContent>
-          <app-candidate-task-tab
-            [candidate]="candidate"
-            [editable]="false">
-          </app-candidate-task-tab>
-        </ng-template>
-      </ng-container>
-
-      <!-- NOTES -->
-      <ng-container ngbNavItem="notes" *ngIf="canViewPrivateInfo()">
-        <a ngbNavLink>Notes</a>
-        <ng-template ngbNavContent>
-          <app-candidate-history-tab
-            [candidate]="candidate"
-            [characterLimit]="100"
-            [editable]="false">
-          </app-candidate-history-tab>
-        </ng-template>
-      </ng-container>
-
-      <!-- JOBS -->
-      <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="jobs">
-        <a ngbNavLink>Jobs</a>
-        <ng-template ngbNavContent>
-          <app-candidate-jobs-tab
+        <!-- GENERAL -->
+        <tc-tab [id]="'general'">
+          <tc-tab-header>General</tc-tab-header>
+          <tc-tab-content>
+            <app-candidate-general-tab
               [candidate]="candidate"
-              [preview]="true">
-          </app-candidate-jobs-tab>
-        </ng-template>
-      </ng-container>
+              [editable]="false"
+              [adminUser]="isAnAdmin()">
+            </app-candidate-general-tab>
+          </tc-tab-content>
+        </tc-tab>
 
-    </nav>
+        <!-- EXPERIENCE -->
+        <tc-tab [id]="'experience'">
+          <tc-tab-header>Experience</tc-tab-header>
+          <tc-tab-content>
+            <app-candidate-experience-tab
+              [candidate]="candidate"
+              [editable]="false"
+              [adminUser]="isAnAdmin()">
+            </app-candidate-experience-tab>
+          </tc-tab-content>
+        </tc-tab>
 
-    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        <!-- EDUCATION -->
+        <tc-tab [id]="'education'">
+          <tc-tab-header>Education</tc-tab-header>
+          <tc-tab-content>
+            <app-candidate-education-tab
+              [candidate]="candidate"
+              [editable]="false"
+              [adminUser]="isAnAdmin()">
+            </app-candidate-education-tab>
+          </tc-tab-content>
+        </tc-tab>
+
+        <!-- ADDITIONAL INFO -->
+        <tc-tab [id]="'additional'">
+          <tc-tab-header>Additional Info</tc-tab-header>
+          <tc-tab-content>
+            <app-candidate-additional-info-tab
+              [candidate]="candidate"
+              [editable]="false"
+              [canViewPrivateInfo]="canViewPrivateInfo()">
+            </app-candidate-additional-info-tab>
+          </tc-tab-content>
+        </tc-tab>
+
+        <!-- TASKS -->
+        <tc-tab [id]="'tasks'" *ngIf="canViewPrivateInfo()">
+          <tc-tab-header>Tasks</tc-tab-header>
+          <tc-tab-content>
+            <app-candidate-task-tab
+              [candidate]="candidate"
+              [editable]="false">
+            </app-candidate-task-tab>
+          </tc-tab-content>
+        </tc-tab>
+
+        <!-- NOTES -->
+        <tc-tab [id]="'notes'" *ngIf="canViewPrivateInfo()">
+          <tc-tab-header>Notes</tc-tab-header>
+          <tc-tab-content>
+            <app-candidate-history-tab
+              [candidate]="candidate"
+              [characterLimit]="100"
+              [editable]="false">
+            </app-candidate-history-tab>
+          </tc-tab-content>
+        </tc-tab>
+
+        <!-- JOBS -->
+        <tc-tab *ngIf="canSeeJobDetails()" [id]="'jobs'">
+          <tc-tab-header>Jobs</tc-tab-header>
+          <tc-tab-content>
+            <app-candidate-jobs-tab
+                [candidate]="candidate"
+                [preview]="true">
+            </app-candidate-jobs-tab>
+          </tc-tab-content>
+        </tc-tab>
+
+      </tc-tabs>
+    </div>
+
   </div>
-
-
 </div>
