@@ -39,7 +39,7 @@
         <li class="prep-items" *ngFor="let item of jobPrepItems" (click)="onItemSelected(item)"
             [ngClass]="{'selected': isSelected(item)}"
         >
-          <span class="fa-li text-secondary">
+          <span class="fa-li">
              <i [ngClass]="item.isCompleted() ? 'far fa-check-square' : 'far fa-square'"></i>
           </span>
           {{item.description}}
