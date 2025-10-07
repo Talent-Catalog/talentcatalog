@@ -48,7 +48,9 @@
 
         <!-- SHAREABLE DOCS -->
         <tc-tab *ngIf="canViewPrivateInfo()" [id]="'docs'">
-          <tc-tab-header>{{isList ? "List Specific " : null}}Shareable Docs</tc-tab-header>
+          <tc-tab-header>
+            {{isList ? "List Specific " : null}}Shareable Docs
+          </tc-tab-header>
           <tc-tab-content>
             <app-shareable-docs
               [candidate]="candidate"
