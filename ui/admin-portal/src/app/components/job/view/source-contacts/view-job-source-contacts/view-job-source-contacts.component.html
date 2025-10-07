@@ -48,13 +48,7 @@
     <td>{{jobContact(partner)?.firstName}} {{jobContact(partner)?.lastName}}</td>
     <td>{{jobContact(partner)?.email}}</td>
   </tr>
-
-  <!-- loading -->
-  <tr *ngIf="loading">
-    <td colspan="42">
-      <i class="fas fa-spinner fa-spin"></i> Loading...
-    </td>
-  </tr>
+  <tc-loading [loading]="loading"></tc-loading>
   </tbody>
 </tc-table>
 
