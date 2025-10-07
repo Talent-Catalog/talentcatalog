@@ -20,6 +20,13 @@
 <tc-card *ngIf="jobPrepItems">
   <tc-card-header>
     Suggested job preparation items
+    <tc-button *ngIf="editable"
+               color="success"
+               (onClick)="publish()"
+               ngbTooltip=
+                 "Publish the job so other TC users can see it and begin the recruitment process.">
+      Publish Job
+    </tc-button>
   </tc-card-header>
   <div>
     <div>

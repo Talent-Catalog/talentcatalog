@@ -26,6 +26,7 @@ export class ViewJobPreparationItemsComponent implements OnInit {
   @Input() jobPrepItems: JobPrepItem[];
   @Input() editable: boolean;
   @Output() itemSelected = new EventEmitter();
+  @Output() onPublish = new EventEmitter();
 
   selectedItem: JobPrepItem;
   error: any;
@@ -42,5 +43,9 @@ export class ViewJobPreparationItemsComponent implements OnInit {
   isSelected(item: JobPrepItem): boolean {
     let res = item === this.selectedItem;
     return res;
+  }
+
+  publish() {
+    this.onPublish.emit();
   }
 }

@@ -107,23 +107,15 @@
     </app-view-job-summary>
   </div>
 
-  <app-view-job-preparation-items *ngIf="!job.publishedDate"
-
+  <app-view-job-preparation-items *ngIf="!job.publishedDate && !publishing"
+    [editable]="isEditable()"
     [jobPrepItems]="jobPrepItems"
     (itemSelected)="onPrepItemSelected($event)"
+    (onPublish)="publishJob()"
   >
   </app-view-job-preparation-items>
 
-  <!-- todo move this publish button to the view-job-preparation items?  -->
-  <div *ngIf="!job.publishedDate && isEditable()" class="text-end mb-2">
-    <tc-button color="success" type="outline"
-            (onClick)="publishJob()"
-            ngbTooltip=
-              "Publish the job so other TC users can see it and begin the recruitment process.">
-      Publish Job
-    </tc-button>
-    <i *ngIf="publishing" class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="publishing"></tc-loading>
 
   <div class="row mt-3">
     <div class="col-sm-{{mainPanelColWidth}}">
