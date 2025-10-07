@@ -29,7 +29,7 @@
       </p>
       <div class="job-name-container">
         <h1>{{job.name}}</h1>
-        <tc-icon type="button" color="warning" (click)="doToggleStarred()">
+        <tc-icon type="button" color="warning" size="lg" (click)="doToggleStarred()">
           <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
           <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
         </tc-icon>
