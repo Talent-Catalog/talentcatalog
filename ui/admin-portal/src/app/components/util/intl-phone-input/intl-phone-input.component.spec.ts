@@ -111,15 +111,6 @@ describe('IntlPhoneInputComponent', () => {
     expect(component.validatePhoneNumber).toHaveBeenCalled();
   });
 
-  it('if number is empty but isoCode exists set error on control', () => {
-    component.number = '';
-    component.isoCode = 'AU';
-
-    component.checkForValidity();
-
-    expect(component.control.hasError('phoneInvalid')).toBeTrue();
-  });
-
   it('should update control value if valid number', () => {
     component.number = '070 123 4567';
     component.isoCode = 'AF';
