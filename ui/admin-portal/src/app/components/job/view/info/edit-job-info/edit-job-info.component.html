@@ -38,7 +38,7 @@
                     [disabled]="!canChangeJobName()"></tc-input>
         </tc-field>
 
-        <tc-field>
+        <tc-field [checkbox]=true>
           <tc-label for="evergreen" [ngbTooltip]="evergreenTip">
             Evergreen job?
           </tc-label>
@@ -46,8 +46,8 @@
                     formControlName="evergreen"
                     id="evergreen"></tc-input>
         </tc-field>
-        <tc-field [ngbTooltip]="skipCandidateSearchTip">
-          <tc-label for="skipCandidateSearch">
+        <tc-field [checkbox]=true>
+          <tc-label for="skipCandidateSearch" [ngbTooltip]="skipCandidateSearchTip">
             Skip candidate search?
           </tc-label>
           <tc-input type="checkbox"
@@ -60,8 +60,7 @@
             Submission Due Date
           </tc-label>
           <tc-date-picker id="submissionDueDate"
-                           [control]="jobForm.controls.submissionDueDate"
-                           [ngbTooltip]="submissionDueDateTip">
+                           [control]="jobForm.controls.submissionDueDate">
           </tc-date-picker>
         </tc-field>
         <tc-field>

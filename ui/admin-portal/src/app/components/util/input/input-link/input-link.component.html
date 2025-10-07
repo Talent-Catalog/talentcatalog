@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [title]="title" (onAction)="close()"
+<tc-modal [heading]="title" (onAction)="close()"
           [disableAction]="form.pristine || form.invalid"
           [showCancel]="showCancel">
 
