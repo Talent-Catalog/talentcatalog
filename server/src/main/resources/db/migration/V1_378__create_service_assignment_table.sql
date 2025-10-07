@@ -10,12 +10,18 @@ create table if not exists service_assignment (
     created_at timestamptz not null default now()
 );
 
-create index if not exists sa_resource_idx on service_assignment(resource_id);
-create index if not exists sa_candidate_idx on service_assignment(candidate_id);
-create index if not exists sa_provider_service_candidate_status_time_idx
-    on service_assignment(provider, service_code, candidate_id, status, assigned_at desc);
-
 -- At most one current assignment per resource (resource-backed services)
 create unique index if not exists sa_assigned_per_resource_uq_idx
     on service_assignment(resource_id)
     where status = 'ASSIGNED' and resource_id is not null;
+
+-- fast lookups by resource
+create index if not exists sa_resource_idx on service_assignment(resource_id);
+
+-- fast lookups by candidate
+create index if not exists sa_candidate_idx on service_assignment(candidate_id);
+
+-- fast lookups by provider+service_code+candidate_id+status, ordered by assigned_at desc
+create index if not exists sa_provider_service_candidate_status_time_idx
+    on service_assignment(provider, service_code, candidate_id, status, assigned_at desc);
+
