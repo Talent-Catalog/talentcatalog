@@ -20,6 +20,9 @@
   padding: 1rem;
   border-radius: 5px;
   width: 50%;
+  &.selected {
+    @include background-color-red;
+  }
 }
 
 .job-header-container {

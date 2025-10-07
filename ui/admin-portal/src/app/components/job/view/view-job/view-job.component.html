@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <div *ngIf="canSeeJobDetails() && fromUrl" class="job-summary-container">
+    <div *ngIf="canSeeJobDetails() && fromUrl" class="job-summary-container" [ngClass]="{'selected': currentPrepItemIsSummary()}">
       <app-view-job-summary
         [job]="job"
         [editable]="isEditable()"
