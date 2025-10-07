@@ -20,12 +20,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.tctalent.server.casi.application.policy.DuolingoTaskPolicy;
 import org.tctalent.server.casi.application.policy.TaskPolicyRegistry;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
-@SpringBootTest
+
+@SpringJUnitConfig(classes = TaskPolicyRegistryTest.TestConfig.class) // load minimal context
 class TaskPolicyRegistryTest {
+
+  @Configuration
+  @ComponentScan(basePackageClasses = {
+      TaskPolicyRegistry.class,    // the registry @Component
+      DuolingoTaskPolicy.class     // the policy @Component (add others as needed)
+  })
+  static class TestConfig {
+    // no datasource, no flyway, or the test will fail in the GitHub CI action
+  }
 
   @Autowired
   TaskPolicyRegistry registry;
