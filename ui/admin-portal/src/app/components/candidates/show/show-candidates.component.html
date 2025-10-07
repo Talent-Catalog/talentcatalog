@@ -153,6 +153,7 @@
     <tc-button class="toggle-description"
                (onClick)="showDescription = !showDescription"
                [type]="'plain'"
+               [color]="'secondary'"
                [size]="'sm'">
       Description
       <i class="fas"
@@ -323,7 +324,7 @@
       <!-- First Group of Buttons (Left-aligned) -->
       <div class="col-9 d-flex justify-content-start">
         <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      [disabled]="!isSelection()"
                      (onClick)="saveSelection()"
                      title="Save selected candidates to a list"
@@ -333,7 +334,7 @@
             <i class="fas fa-list"></i>
           </tc-button>
 
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      *ngIf="isSavedList()"
                      [disabled]="!isSelection()"
                      (onClick)="copyEmails()"
@@ -342,7 +343,7 @@
             <i class="fa fa-envelope"></i>
           </tc-button>
 
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      *ngIf="canUpdateStatuses()"
                      [disabled]="!isSelection()"
                      (onClick)="updateStatusOfSelection()"
@@ -352,7 +353,7 @@
             Status change
           </tc-button>
 
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      *ngIf="canResolveTasks()"
                      [disabled]="!isSelection()"
                      (onClick)="resolveTaskAssignments()"
@@ -361,7 +362,7 @@
             <i class="fas fa-user-check"></i> Resolve tasks
           </tc-button>
 
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                      (onClick)="createUpdateSalesforce()"
                      title="Create or update selected candidate cases">
@@ -369,7 +370,7 @@
             <i class="fas fa-user-check"></i> Update Case/s <i class="fa-solid fa-address-book"></i>
           </tc-button>
 
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      *ngIf="!isSubmissionList() && isContentModifiable()"
                      [disabled]="!isSelection()"
                      (onClick)="removeSelectedCandidatesFromList()"
@@ -377,7 +378,7 @@
             <i class="fas fa-user-check"></i> Remove
           </tc-button>
 
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                      [disabled]="!isSelection()"
                      (onClick)="closeSelectedOpportunities()"
@@ -386,14 +387,14 @@
             <i class="fas fa-user-check"></i> Remove (Close)
           </tc-button>
 
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      [disabled]="!isSelection()"
                      (onClick)="clearSelectionAndDoSearch()"
                      title="Clear selected candidates">
             Clear <i class="fas fa-user-check"></i>
           </tc-button>
 
-          <tc-button [type]="'primary'"
+          <tc-button [color]="'primary'"
                      *ngIf="isSwapSelectionSupported()"
                      (onClick)="swapSelection()"
                      title="Swap selected candidates. Selected becomes unselected and vice versa.">
