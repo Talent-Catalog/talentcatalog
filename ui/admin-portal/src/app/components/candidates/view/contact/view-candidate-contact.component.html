@@ -14,168 +14,230 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div class="card" *ngIf="!loading">
 
-  <div class="card-header">
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
+
+  <tc-card-header>
     Contact Information
     <div class="float-end" *ngIf="editable">
-      <button class="btn btn-sm btn-secondary" (click)="editContactDetails()">
-        <i class="fas fa-edit"></i></button>
+      <tc-button (onClick)="editContactDetails()">
+        <i class="fas fa-edit"></i>
+      </tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
-
-    <div class="row">
-
-      <div *ngIf="candidate.address1 || candidate.city || candidate.state || candidate.country" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label">
+  <div class="row">
+    <div *ngIf="candidate.address1 || candidate.city || candidate.state || candidate.country"
+         class="mb-3 col-sm-12 col-md-4"
+    >
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
           <i class="fas fa-map-marker-alt"></i>
-          Address (Origin)
-        </label>
+        </tc-icon>
+        Address (Origin)
+      </tc-label>
 
-        <div class="form-control-plaintext address">
+      <div class="form-control-plaintext address">
 
-          <span class="field" *ngIf="candidate.address1"
-                [innerHtml]="candidate.address1"
-                appHighlightSearch>
-          </span>
+        <span class="field" *ngIf="candidate.address1"
+              [innerHtml]="candidate.address1"
+              appHighlightSearch>
+        </span>
 
-          <span class="comma"></span>
+        <span class="comma"></span>
 
-          <span class="field" *ngIf="candidate.city"
-                [innerHtml]="candidate.city"
-                appHighlightSearch>
-          </span>
+        <span class="field" *ngIf="candidate.city"
+              [innerHtml]="candidate.city"
+              appHighlightSearch>
+        </span>
 
-          <span class="comma"></span>
+        <span class="comma"></span>
 
-          <span class="field" *ngIf="candidate.state"
-                [innerHtml]="candidate.state"
-                appHighlightSearch>
-          </span>
+        <span class="field" *ngIf="candidate.state"
+              [innerHtml]="candidate.state"
+              appHighlightSearch>
+        </span>
 
-          <span class="comma"></span>
+        <span class="comma"></span>
 
-          <span class="field" *ngIf="candidate.country"
-                [innerHtml]="candidate.country?.name"
-                appHighlightSearch>
-          </span>
+        <span class="field" *ngIf="candidate.country"
+              [innerHtml]="candidate.country?.name"
+              appHighlightSearch>
+        </span>
 
-        </div>
       </div>
-
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-user"></i>Gender</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.gender"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-gift"></i>D.O.B.</label>
-
-        <div class="form-control-plaintext">
-          <span>{{candidate.dob | date}}</span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.phone" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-phone"></i>Phone</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.phone"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.whatsapp" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fab fa-whatsapp"></i>Whatsapp</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.whatsapp"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.nationality" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-globe"></i>Country of Nationality</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.nationality?.name"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-calendar"></i> Year of arrival</label>
-
-        <div class="form-control-plaintext">
-          <span *ngIf="candidate.yearOfArrival; else notApplicable">{{candidate.yearOfArrival}}</span>
-          <ng-template #notApplicable>n/a</ng-template>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.user.email" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-envelope"></i>Email</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.user.email"
-                appHighlightSearch>
-          </span>
-          <span *ngIf="candidate.user.emailVerified" > <i class="fa-regular fa-circle-check " style="color: #10B0E3; margin-left:4px;"></i></span>
-        </div>
-      </div>
-
-      <div class="mb-3 col-sm-12 col-md-4"
-           *ngIf="(candidate.relocatedAddress || candidate.relocatedCity
-           || candidate.relocatedState || candidate.relocatedCountry)" >
-        <label class="col-form-label"><i class="fa-solid fa-house-circle-check"></i>Address (Relocated)</label>
-
-        <div class="form-control-plaintext address">
-
-          <span class="field" *ngIf="candidate.relocatedAddress"
-                [innerHtml]="candidate.relocatedAddress"
-                appHighlightSearch>
-          </span>
-
-          <span class="comma"></span>
-
-          <span class="field" *ngIf="candidate.relocatedCity"
-                [innerHtml]="candidate.relocatedCity"
-                appHighlightSearch>
-          </span>
-
-          <span class="comma"></span>
-
-          <span class="field" *ngIf="candidate.relocatedState"
-                [innerHtml]="candidate.relocatedState"
-                appHighlightSearch>
-          </span>
-
-          <span class="comma"></span>
-
-          <span class="field" *ngIf="candidate.relocatedCountry"
-                [innerHtml]="candidate.relocatedCountry?.name"
-                appHighlightSearch>
-          </span>
-
-        </div>
-      </div>
-
     </div>
 
+    <div class="mb-3 col-sm-12 col-md-4">
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
+          <i class="fas fa-user"></i>
+        </tc-icon>
+          Gender
+      </tc-label>
+
+
+      <div class="form-control-plaintext">
+        <span [innerHtml]="candidate.gender"
+              appHighlightSearch>
+        </span>
+      </div>
+    </div>
+
+    <div class="mb-3 col-sm-12 col-md-4">
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
+          <i class="fas fa-gift"></i>
+        </tc-icon>
+        D.O.B.
+      </tc-label>
+
+      <div class="form-control-plaintext">
+        <span>{{candidate.dob | date}}</span>
+      </div>
+    </div>
+
+    <div *ngIf="candidate.phone" class="mb-3 col-sm-12 col-md-4">
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
+          <i class="fas fa-phone"></i>
+        </tc-icon>
+        Phone
+      </tc-label>
+
+      <div class="form-control-plaintext">
+        <span [innerHtml]="candidate.phone"
+              appHighlightSearch>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="candidate.whatsapp" class="mb-3 col-sm-12 col-md-4">
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
+          <i class="fab fa-whatsapp"></i>
+        </tc-icon>
+        Whatsapp
+      </tc-label>
+
+      <div class="form-control-plaintext">
+        <span [innerHtml]="candidate.whatsapp"
+              appHighlightSearch>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="candidate.nationality" class="mb-3 col-sm-12 col-md-4">
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
+          <i class="fas fa-globe"></i>
+        </tc-icon>
+        Country of Nationality
+      </tc-label>
+
+      <div class="form-control-plaintext">
+        <span [innerHtml]="candidate.nationality?.name"
+              appHighlightSearch>
+        </span>
+      </div>
+    </div>
+
+    <div class="mb-3 col-sm-12 col-md-4">
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
+          <i class="fas fa-calendar"></i>
+        </tc-icon>
+        Year of arrival
+      </tc-label>
+
+      <div class="form-control-plaintext">
+        <span *ngIf="candidate.yearOfArrival; else notApplicable">{{candidate.yearOfArrival}}</span>
+        <ng-template #notApplicable>n/a</ng-template>
+      </div>
+    </div>
+
+    <div *ngIf="candidate.user.email" class="mb-3 col-sm-12 col-md-4">
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
+          <i class="fas fa-envelope"></i>
+        </tc-icon>
+        Email
+      </tc-label>
+
+      <div class="form-control-plaintext text-break">
+        <span [innerHtml]="candidate.user.email"
+              appHighlightSearch>
+        </span>
+        <span *ngIf="candidate.user.emailVerified" > <i class="fa-regular fa-circle-check " style="color: #10B0E3; margin-left:4px;"></i></span>
+      </div>
+    </div>
+
+    <div class="mb-3 col-sm-12 col-md-4"
+         *ngIf="(candidate.relocatedAddress || candidate.relocatedCity
+          || candidate.relocatedState || candidate.relocatedCountry)"
+    >
+      <tc-label [size]="'sm'">
+        <tc-icon [size]="'sm'"
+                 [color]="'secondary'"
+        >
+          <i class="fa-solid fa-house-circle-check"></i>
+        </tc-icon>
+        Address (Relocated)
+      </tc-label>
+
+      <div class="form-control-plaintext address">
+
+        <span class="field" *ngIf="candidate.relocatedAddress"
+              [innerHtml]="candidate.relocatedAddress"
+              appHighlightSearch>
+        </span>
+
+        <span class="comma"></span>
+
+        <span class="field" *ngIf="candidate.relocatedCity"
+              [innerHtml]="candidate.relocatedCity"
+              appHighlightSearch>
+        </span>
+
+        <span class="comma"></span>
+
+        <span class="field" *ngIf="candidate.relocatedState"
+              [innerHtml]="candidate.relocatedState"
+              appHighlightSearch>
+        </span>
+
+        <span class="comma"></span>
+
+        <span class="field" *ngIf="candidate.relocatedCountry"
+              [innerHtml]="candidate.relocatedCountry?.name"
+              appHighlightSearch>
+        </span>
+
+      </div>
+    </div>
   </div>
-</div>
+
+</tc-card>
