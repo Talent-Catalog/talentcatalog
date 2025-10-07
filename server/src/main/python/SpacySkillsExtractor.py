@@ -17,9 +17,9 @@ SpacySkillsExtractor.py
 
 Proof of concept for using spaCy to extract skills from any text.
 
-The intention is that this code will be wrapped in a REST API service which
-can be called from our Spring code, passing in some text and getting back
-a list of skills.
+The intention is that this code will be wrapped in a REST API service. It
+can be called from our Spring code, passing in some text, a language indicator,
+and getting back a list of skills in the required language.
 
 Dependencies:
 
