@@ -36,6 +36,7 @@ nlp = spacy.load("en_core_web_sm")
 
 #Example: this should be populated from skills on our Postgres database
 # populated from ESCO.
+# Could be around 20,000 of these
 esco_skill_labels = [
   "Java", "Spring Boot", "Python", "FastAPI", "Docker", "Kubernetes", "PostgreSQL",
   "MapStruct", "Angular", "AWS", "Terraform", "Natural language processing","Spring"
@@ -50,6 +51,9 @@ patterns = [nlp.make_doc(s) for s in esco_skill_labels]
 # Configure the matcher to recognize the skills as a special kind of match.
 # See https://spacy.io/api/phrasematcher#add
 matcher.add("SKILL", patterns)
+
+# The above matcher only needs to be created once at start up (20,000 skill
+# names - so only want to do once).
 
 # --- Example data
 text = """
