@@ -34,9 +34,12 @@ export class IntlPhoneInputComponent implements OnInit {
     // Get countries for the country code dropdown
     this.getCountries();
     // Parse the phone number supplied to separate the iso code from the number
-    const phoneNumber = this.getPhoneNumberFromString(this.control.value, null)
+    let phoneNumber: PhoneNumber = null;
+    if (this.control.value) {
+      phoneNumber = this.getPhoneNumberFromString(this.control.value, null)
+    }
     // Set the separate iso code and number values for inputs if they exist
-    if (phoneNumber as PhoneNumber) {
+    if (phoneNumber) {
       this.isoCode = phoneNumber.country;
       this.number = phoneNumber.nationalNumber;
     } else {
