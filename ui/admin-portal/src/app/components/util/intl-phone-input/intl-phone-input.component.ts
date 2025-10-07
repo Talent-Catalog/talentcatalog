@@ -80,8 +80,8 @@ export class IntlPhoneInputComponent implements OnInit {
     // Else if there is no number or country code, remove any previously set errors as phone isn't a required field
     if (this.number && this.isoCode) {
       this.validatePhoneNumber()
-    } else if ((this.number == '' && this.isoCode) || (!this.isoCode && this.number)){
-      // If a country code has been set without a number (or vice versa) set errors, we need both to validate a number
+    } else if (!this.isoCode && this.number){
+      // If a number has been set without a country code, a country code is required
       this.control.setErrors({phoneInvalid: true});
     } else {
       this.control.setErrors(null);
