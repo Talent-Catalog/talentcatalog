@@ -19,8 +19,12 @@
   background-color: color(gray, 100);
   padding: 1rem;
   border-radius: 5px;
-  width: 50%;
-  &.selected {
+  margin-bottom: 1rem;
+  &.from-url {
+    width: 50%;
+    margin-bottom: 0;
+  }
+  &.prep-item-highlight {
     @include background-color-red;
   }
 }

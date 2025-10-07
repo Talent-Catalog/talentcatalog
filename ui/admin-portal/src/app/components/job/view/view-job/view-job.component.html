@@ -36,13 +36,12 @@
       </div>
     </div>
 
-    <div *ngIf="canSeeJobDetails() && fromUrl" class="job-summary-container" [ngClass]="{'selected': currentPrepItemIsSummary()}">
+    <div *ngIf="canSeeJobDetails() && fromUrl" class="from-url job-summary-container"
+         [ngClass]="{'prep-item-highlight': currentPrepItemIsSummary()}">
       <app-view-job-summary
         [job]="job"
         [editable]="isEditable()"
-        [nRows]=2
-        [highlight]="currentPrepItemIsSummary()"
-      >
+        [nRows]=2>
       </app-view-job-summary>
     </div>
 
@@ -97,13 +96,12 @@
 
   <div class="tc-divider"></div>
 
-  <div *ngIf="canSeeJobDetails() && !fromUrl">
+  <div *ngIf="canSeeJobDetails() && !fromUrl" class="job-summary-container"
+       [ngClass]="{'prep-item-highlight': currentPrepItemIsSummary()}">
     <app-view-job-summary
       [job]="job"
       [editable]="isEditable()"
-      [nRows]=2
-      [highlight]="currentPrepItemIsSummary()"
-    >
+      [nRows]=2>
     </app-view-job-summary>
   </div>
 
