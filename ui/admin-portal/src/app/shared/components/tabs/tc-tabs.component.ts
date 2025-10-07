@@ -76,6 +76,23 @@ export class TcTabsComponent implements AfterContentInit {
     this.activeIndex = foundIndex >= 0 ? foundIndex : 0;
     this.activeTabId = this.tabs[this.activeIndex]?.id;
     this.emitActiveTab();
+
+    //  Listen for tab changes when *ngIf adds/removes tabs
+    this.tabComponents.changes.subscribe(() => {
+      const previousActiveId = this.activeTabId;
+      this.tabs = this.tabComponents.map(tab => ({
+        id: tab.id,
+        description: tab.description,
+        header: tab.header,
+        content: tab.content,
+      }));
+
+      // Keep the same active tab, or fall back to first tab
+      const foundIndex = this.tabs.findIndex(tab => tab.id === previousActiveId);
+      this.activeIndex = foundIndex >= 0 ? foundIndex : 0;
+      this.activeTabId = this.tabs[this.activeIndex]?.id;
+      this.emitActiveTab();
+    });
   }
 
   selectTab(index: number) {

@@ -225,6 +225,45 @@ class TcTextareaStubComponent extends ValueAccessorStubBase {
 }
 
 @Component({
+  selector: 'tc-loading',
+  template: `
+    <ng-container>
+      <div *ngIf="loading"
+           class="tc-loader"
+           [ngClass]="{
+             'tc-loader-page': type === 'page',
+             'tc-loader-section': type === 'section'
+           }">
+        <ng-container *ngIf="type === 'page'">
+          <div class="tc-loader-ring" aria-hidden="true">
+            <div class="tc-loader-logo"></div>
+          </div>
+          <p>Loading page<span class="tc-loader-dots"></span></p>
+        </ng-container>
+
+        <ng-container *ngIf="type === 'section'">
+          <div class="tc-loader-ring tc-loader-ring--small" aria-hidden="true">
+            <div class="tc-loader-logo"></div>
+          </div>
+          <p>Loading<span class="tc-loader-dots"></span></p>
+        </ng-container>
+
+        <span class="sr-only">Loading</span>
+      </div>
+
+      <br *ngIf="!loading && holdTheLine"/>
+    </ng-container>
+  `,
+  inputs: ['loading', 'type', 'holdTheLine'],
+})
+class TcLoadingStubComponent extends GenericStubBase {
+  loading: boolean = false;
+  type: 'page' | 'section' = 'section';
+  holdTheLine: boolean;
+  constructor() { super([]); }
+}
+
+@Component({
   // one component can match multiple selectors separated by commas
   selector: 'tc-icon, tc-field, tc-label, tc-tab, tc-tab-header, tc-tab-content, tc-card, tc-card-header',
   template: '<ng-content></ng-content>',
@@ -310,6 +349,7 @@ const STUB_DECLARATIONS = [
   TcModalStubComponent,
   TcInputStubComponent,
   TcTextareaStubComponent,
+  TcLoadingStubComponent,
   PassThroughTcStubComponent,
   TcTabsStubComponent,
   TcTableStubComponent,
