@@ -83,6 +83,9 @@ export class IntlPhoneInputComponent implements OnInit {
     } else if (!this.isoCode && this.number){
       // If a number has been set without a country code, a country code is required
       this.control.setErrors({phoneInvalid: true});
+    } else if (!this.number) {
+      // If no number, allow for the number to be removed (with or without a country code selected)
+      this.removePhoneNumber();
     } else {
       this.control.setErrors(null);
     }
@@ -108,6 +111,11 @@ export class IntlPhoneInputComponent implements OnInit {
       // If the number is invalid, set errors to parent so that the form can't be submitted
       this.control.setErrors({phoneInvalid: true});
     }
+  }
+
+  removePhoneNumber() {
+    this.control.patchValue(null);
+    this.control.setErrors(null);
   }
 
   // WRAP LIB-PHONENUMBERJS FUNCTIONS IN OWN METHOD TO MOCK IN TESTS
