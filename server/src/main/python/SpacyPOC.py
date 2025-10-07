@@ -15,6 +15,8 @@
 """
 SpacyPOC.py
 
+Proof of concept for using spaCy to extract skills from a CV and a job description.
+
 Prerequisites
 -------------
 0. The assumption is that you have installed a virtual environment in ~venv
