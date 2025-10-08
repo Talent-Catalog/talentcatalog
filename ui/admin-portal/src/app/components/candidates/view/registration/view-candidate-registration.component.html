@@ -27,7 +27,11 @@
   <tc-card-header>
     Registration
     <div class="float-end" *ngIf="editable">
-      <tc-button (onClick)="editRegistrationDetails()">
+      <tc-button (onClick)="editRegistrationDetails()"
+                 [color]="'secondary'"
+                 [type]="'plain'"
+                 [size]="'sm'"
+      >
         <i class="fas fa-edit"></i>
       </tc-button>
     </div>

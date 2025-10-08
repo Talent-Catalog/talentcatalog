@@ -27,7 +27,11 @@
   <tc-card-header>
     Contact Information
     <div class="float-end" *ngIf="editable">
-      <tc-button (onClick)="editContactDetails()">
+      <tc-button (onClick)="editContactDetails()"
+                 [type]="'plain'"
+                 [color]="'secondary'"
+                 [size]="'sm'"
+      >
         <i class="fas fa-edit"></i>
       </tc-button>
     </div>

@@ -14,49 +14,44 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div class="card" *ngIf="!loading">
 
-  <div class="card-header">
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
+
+  <tc-card-header>
     Account Information
-<!--    <div class="float-end" *ngIf="editable">-->
-<!--      <button type="button" class="btn btn-default" (click)="editAccountDetails()"><i-->
-<!--        class="fas fa-edit"></i></button>-->
-<!--    </div>-->
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
-    <div class="row">
+  <div class="row">
 
-      <div class="mb-3 col-sm-12 col-md-6">
-        <label class="col-form-label">Account Created:</label>
-        <div >
-          <span class="form-control-plaintext">{{candidate.user.createdDate | date: 'customDateTime' }}</span>
-        </div>
-      </div>
-      <div class="mb-3 col-sm-12 col-md-6">
-        <label class="col-form-label">Last Logged In:</label>
-        <div >
-          <span class="form-control-plaintext">{{candidate.user.lastLogin | date: 'customDateTime' }}</span>
-        </div>
+    <div class="mb-3 col-sm-12 col-md-6">
+      <label class="col-form-label">Account Created:</label>
+      <div >
+        <span class="form-control-plaintext">{{candidate.user.createdDate | date: 'customDateTime' }}</span>
       </div>
     </div>
-    <div class="row">
-      <div class="mb-3 col-sm-12 col-md-6">
-        <label class="col-form-label">Password:</label>
-        <div>
-          <span class="form-control-plaintext">*********</span>
-          <span  *ngIf="editable"><a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">reset</a></span>
-        </div>
+    <div class="mb-3 col-sm-12 col-md-6">
+      <label class="col-form-label">Last Logged In:</label>
+      <div >
+        <span class="form-control-plaintext">{{candidate.user.lastLogin | date: 'customDateTime' }}</span>
       </div>
-
+    </div>
+  </div>
+  <div class="row">
+    <div class="mb-3 col-sm-12 col-md-6">
+      <label class="col-form-label">Password:</label>
+      <div>
+        <span class="form-control-plaintext">*********</span>
+        <span  *ngIf="editable"><a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">reset</a></span>
+      </div>
     </div>
 
   </div>
 
-</div>
+</tc-card>
