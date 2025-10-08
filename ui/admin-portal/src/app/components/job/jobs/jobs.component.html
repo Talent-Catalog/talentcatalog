@@ -14,17 +14,12 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-loading [loading]="loading"></tc-loading>
+<tc-alert type="danger" *ngIf="error">{{error}}</tc-alert>
 
 <div class="searches" *ngIf="searchBy">
   <div class="position-relative">
-    <tc-button size="sm" type="outline" (click)="refresh($event)" class="position-absolute end-0">
-      Refresh
+    <tc-button color="info" type="plain" (onClick)="refresh($event)" class="position-absolute end-0">
       <i class="fas fa-sync" title="Refresh data"></i>
     </tc-button>
   </div>
@@ -48,7 +43,6 @@
           [items]="stages"
           [multiple]="true"
           [closeOnSelect]="true"
-          [searchable]="false"
           bindLabel="stringValue"
           bindValue="key"
           placeholder="Select..."
