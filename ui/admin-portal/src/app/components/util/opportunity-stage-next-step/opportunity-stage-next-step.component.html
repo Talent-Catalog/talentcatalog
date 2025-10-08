@@ -20,15 +20,15 @@
     Progress
     <i class="fas fa-spinner fa-spin ms-1" *ngIf=updating></i>
     <div class="float-end" *ngIf="editable">
-      <tc-button color="secondary" title="Update progress" (onClick)="editOppProgress()">
+      <tc-button type="plain" title="Update progress" (onClick)="editOppProgress()">
         <i class="fas fa-edit"></i>
       </tc-button>
     </div>
   </tc-card-header>
 
-  <div class="alert alert-danger" *ngIf="error">
+  <tc-alert *ngIf="error" type="danger">
     {{error}}
-  </div>
+  </tc-alert>
 
   <tc-description-list direction="column">
     <tc-description-item label="Stage" icon="fa-solid fa-map-location-dot">
