@@ -17,6 +17,8 @@
 package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -24,22 +26,22 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
+import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.MyFirstForm;
+import org.tctalent.server.model.db.mapper.CandidateMapper;
 import org.tctalent.server.repository.db.MyFirstFormRepository;
 import org.tctalent.server.request.form.MyFirstFormData;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
 import org.tctalent.server.service.db.CandidateFormService;
+import org.tctalent.server.service.db.CandidatePropertyService;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Service
 @RequiredArgsConstructor
 public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceService {
 
     private final CandidateFormService candidateFormService;
+    private final CandidateMapper candidateMapper;
+    private final CandidatePropertyService candidatePropertyService;
     private final MyFirstFormRepository myFirstFormRepository;
 
     @Override
@@ -76,6 +78,26 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
         return myFirstFormRepository.findById(key);
     }
 
+    @Override
+    public void populateCandidateFromPending(
+        @NonNull Candidate pendingCandidate, @NonNull Candidate candidate) {
+
+            //This copies across non-null fields - except for Candidate Properties
+            candidateMapper.updateCandidateFromSource(pendingCandidate, candidate);
+
+            //Copy across properties
+            //Note that we can't just simply transfer properties directly from one candidate
+            //object to another because each property is associated with a particular candidate.
+            //We have to use the CandidatePropertyService.
+            Map<String, CandidateProperty> pendingProperties = pendingCandidate.getCandidateProperties();
+            if (pendingProperties != null) {
+                for (Entry<String, CandidateProperty> entry : pendingProperties.entrySet()) {
+                    candidatePropertyService.createOrUpdateProperty(
+                        candidate, entry.getKey(), entry.getValue().getValue(), null);
+                }
+            }
+    }
+
     private CandidateForm getMyFirstForm() {
         return candidateFormService.getByName("MyFirstForm");
     }
@@ -85,3 +107,4 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
         return new CandidateFormInstanceKey(candidate.getId(), candidateForm.getId());
     }
 }
+

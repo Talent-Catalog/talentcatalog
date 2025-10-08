@@ -14,7 +14,68 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {Country} from "./country";
+import {DependantRelations, Gender} from "./candidate";
+
 export interface MyFirstFormData {
   city?: string;
   hairColour?: string;
+}
+
+export interface MySecondFormData {
+  city?: string;
+  hairColour?: string;
+}
+
+export enum TravelDocType {
+  Passport = 'PASSPORT',
+  NationalId = 'NATIONAL_ID',
+  RefugeeCertificate = 'REFUGEE_CERTIFICATE',
+}
+export interface TravelDocFormData {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: string;
+  birthCountry: Country | null;
+  placeOfBirth: string;
+  travelDocType: TravelDocType;
+  travelDocNumber: string;
+  travelDocIssuedBy: string;
+  travelDocIssueDate: string;
+  travelDocExpiryDate: string;
+}
+
+export interface FamilyMemberDoc {
+  docType: TravelDocType;
+  docNumber: string;
+  issuer: string;
+  issuedOn: string;
+  expiresOn: string;
+}
+
+export interface RelocatingFamilyMember {
+  relationship: DependantRelations;
+  dependantRelationOther?: string;
+
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: Gender;
+  countryOfBirth: string;
+  placeOfBirth?: string;
+
+  healthConcerns?: 'Yes' | 'No' | null;
+  healthNotes?: string;
+  registered?: 'Yes' | 'No' | null;
+  registeredNumber?: string;
+  registeredNotes?: string;
+
+  travelDoc: FamilyMemberDoc;
+}
+
+export interface FamilyDocFormData {
+  noEligibleFamilyMembers: boolean;
+  noEligibleNotes?: string;
+  familyMembersJson: string; 
 }

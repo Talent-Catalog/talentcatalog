@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
 
 /**
  * @component ButtonComponent
@@ -24,6 +24,13 @@ import {Component, Input} from '@angular/core';
  *   Disables the button and applies muted styling. Defaults to `false`.
  * - `ariaLabel?: string`
  *   Accessible label for icon-only or ambiguous buttons.
+ *
+ * **Outputs**
+ * - `(onClick)`
+ * Instead of re-emitting the native (click) event, this component provides its own (onClick) output.
+ * Using (click) directly on <tc-button> works at runtime (because the event bubbles), but IDE
+ * type-checking flags it as invalid since Angular can’t see a declared @Output('click').
+ * To avoid false errors in IntelliJ/Angular Language Service, we use (onClick) as the explicit output.
  *
  * @examples
  * ```html
@@ -52,22 +59,29 @@ import {Component, Input} from '@angular/core';
 })
 export class ButtonComponent {
   @Input() size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'  = 'default';
-  @Input() type: 'primary' | 'secondary' | 'outline' | 'plain' = 'primary';
+  @Input() type: 'solid' | 'outline' | 'plain' = 'solid';
+  @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
   @Input() disabled = false;
   @Input() ariaLabel?: string;
 
-  get sizeClass(): string {
-    return `btn-${this.size}`;
-  }
+  @Output() onClick = new EventEmitter();
 
-  get typeClass(): string {
-    return `btn-${this.type}`;
+  @HostBinding('class.disabled') get isDisabled() {
+    return this.disabled;
   }
 
   get classList(): string[] {
     return [
-      this.sizeClass,
-      this.typeClass,
+      `btn-${this.size}`,
+      `btn-${this.color}`,
+      `btn-${this.type}`,
     ];
   }
+
+
+
+  clicked(): void {
+    this.onClick.emit();
+  }
+
 }

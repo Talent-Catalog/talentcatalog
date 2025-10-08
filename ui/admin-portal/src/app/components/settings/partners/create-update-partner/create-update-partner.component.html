@@ -96,9 +96,9 @@
       <div class="mb-3">
         <label class="form-label" for="defaultContact">Default contact</label>
         <ng-select id="defaultContact" [formControlName]="'defaultContact'"
-                  [items]="partnerUsers"
+                   [items]="partnerUsers"
                    bindLabel="name"
-                  placeholder="Select" [clearable]="true">
+                   placeholder="Select" [clearable]="true">
         </ng-select>
       </div>
 
@@ -187,6 +187,26 @@
           bindValue="id"
           [formControlName]="'redirectPartnerId'">
         </ng-select>
+      </div>
+      <!-- New DPA Status Section (only shown when updating) -->
+      <div *ngIf="!isCreate()" class="mb-3">
+        <h5>Data Processing Agreement Status</h5>
+        <div class="row">
+          <div class="col">
+            <label for="acceptedDataProcessingAgreementId" class="form-label">Accepted DPA ID</label>
+            <input id="acceptedDataProcessingAgreementId" formControlName="acceptedDataProcessingAgreementId" class="form-control" readonly>
+            <small *ngIf="!form.get('acceptedDataProcessingAgreementId')?.value" class="text-muted">
+              Not yet accepted by partner.
+            </small>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="acceptedDataProcessingAgreementDate" class="form-label">Acceptance Date</label>
+            <input id="acceptedDataProcessingAgreementDate" formControlName="acceptedDataProcessingAgreementDate" class="form-control" readonly>
+            <small class="text-muted">Partner will be prompted to accept/re-accept upon login if needed.</small>
+          </div>
+        </div>
       </div>
     </div>
     <hr/>

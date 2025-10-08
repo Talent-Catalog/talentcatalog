@@ -14,17 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {Candidate} from "./candidate";
+
 /**
  * Defines what a Candidate Form component should look like.
  *
- * MyFirstFormComponent is an example of a candidate form component. If you look at that code,
+ * MySecondFormComponent is an example of a candidate form component. If you look at that code,
  * you will see how it works. In particular note the onSubmit method which calls a form-specific
- * method in the CandidateFormService which will be processed on the server by a form-specific API:
- * MyFirstFormPortalApi.java. That API updates a form-specific entity: MyFirstForm.java.
+ * method in the CandidateFormService which will be processed on the server by Spring Data Rest
+ * which auto-generates a form-specific API. A form-specific entity, MySecondForm.java, is updated.
  * That entity defines the data the form should gather and how it is stored. Each field is
  * stored either in a Candidate-related table or in Candidate.candidateProperties.
  *
- * Every candidate form component should have aa <code>@Input readOnly: boolean</code> which makes
+ * Every candidate form component should have a <code>@Input readOnly: boolean</code> which makes
  * the form read-only and disables submitting the form.
  *
  * It should also have an <code>@Output submitted = new EventEmitter<form data> </code> which
@@ -33,13 +35,13 @@
  * So typically a component that is being used as a candidate form should look something
  * like this...
  * ```
- * export class MyFirstFormComponent
- *                    implements ICandidateFormComponent<MyFirstFormData>, ... {
+ * export class MySecondFormComponent
+ *                    implements ICandidateFormComponent<MySecondFormData>, ... {
  *   //When present and true, the form can't be modified or submitted
  *   @Input() readOnly = false;
  *
  *   //Output event supplying the submitted data
- *   @Output() submitted = new EventEmitter<MyFirstFormData>();
+ *   @Output() submitted = new EventEmitter<MySecondFormData>();
  * ```
  * The form component also needs to be added to the componentMap of CandidateFormService.
  * See the beginning of CandidateFormService...
@@ -50,7 +52,7 @@
  *   // displayed in a FormTask.
  *   // The mapping is from the name of the form to an Angular component.
  *   private componentMap: Record<string, any> = {
- *     'MyFirstForm': MyFirstFormComponent
+ *     'MySecondForm': MySecondFormComponent
  *   }
  * ```
  *
@@ -63,22 +65,23 @@
  * Here is the definition of a CandidateForm:
  * ```
  * insert into candidate_form (name, description) values (
- *   'MyFirstForm',
+ *   'MySecondForm',
  *   'Enter city where you live and the colour of your hair');
  * ```
  * Note that the form is just a name and a description. The data in a form is defined in the
- * entity named after the form: <code>MyFirstForm.java</code> for the above form.
+ * entity named after the form: <code>MySecondForm.java</code> for the above form.
  *
  *  Here is the definition of CandidateFormTask:
  *  ```
  * insert into task (name, display_name, task_type, description, ..., candidate_form_id)
- * values ('myFirstFormTask','Fill out my first form',
+ * values ('mySecondFormTask','Fill out my first form',
  *         'FormTask', 'This form asks you for some pretty useless information.',
- *         ..., (select id from candidate_form where name = 'MyFirstForm'));
+ *         ..., (select id from candidate_form where name = 'MySecondForm'));
  *  ```
  */
 export interface ICandidateFormComponent<T = unknown> {
   readOnly: boolean;
   submitted: import("@angular/core").EventEmitter<T>;
+  candidate: Candidate;
 }
 

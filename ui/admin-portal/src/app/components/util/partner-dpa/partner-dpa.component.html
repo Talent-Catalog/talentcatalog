@@ -1,0 +1,59 @@
+<div class="container mt-4" *ngIf="isSourcePartner; else notFound">
+  <h1>Data Processing Agreement</h1>
+  <!-- Info note for the user -->
+  <tc-alert type="info" [dismissible]="false">
+    <strong>Why am I seeing this?</strong><br/>
+    We show you this Data Processing Agreement (DPA) so that you understand
+    how your data is processed and have the chance to review and accept it
+    before continuing.
+  </tc-alert>
+  <div *ngIf="loading" class="text-center">
+    <i class="fas fa-spinner fa-spin fa-2x"></i>
+    <p>Loading...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="currentDpa && !loading">
+    <div class="card mt-4">
+      <div class="card-body" style="max-height: 400px; overflow-y: auto;"
+           (scroll)="onScroll($event)">
+        <div [innerHTML]="content | safeHtml"></div>
+      </div>
+    </div>
+    <div class="mt-3">
+      <p *ngIf="acceptedDpaId && acceptedDpaId === currentDpa.id">
+        You have already accepted this agreement (ID: {{ acceptedDpaId }}) on {{ acceptedDpaDate }}.
+      </p>
+      <p *ngIf="!acceptedDpaId || acceptedDpaId !== currentDpa.id">
+        Please scroll to the bottom to accept the agreement or skip to do it later.
+      </p>
+      <div class="d-flex gap-2">
+        <tc-button
+          type="primary"
+          size="lg"
+          [disabled]="!termsRead || loading"
+          (onClick)="acceptTerms()">
+
+          <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
+          Accept Agreement
+        </tc-button>
+
+        <tc-button
+          type="secondary"
+          size="lg"
+          *ngIf="!acceptedDpaId || acceptedDpaId !== currentDpa.id"
+          (onClick)="skipDpa()">
+          Skip for Now
+        </tc-button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #notFound>
+  <app-not-found></app-not-found>
+</ng-template>
