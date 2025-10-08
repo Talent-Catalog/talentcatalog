@@ -23,7 +23,7 @@
 
 <div class="container my-lg-5">
   <div *ngIf="!readOnly && !chatIsRead" class="d-flex justify-content-end mb-2">
-    <tc-button type="primary" (click)="onMarkChatAsRead()">
+    <tc-button color="secondary" (onClick)="onMarkChatAsRead()">
       {{ 'CHAT.MARK-AS-READ' | translate }} <tc-icon color="white" size="md"><i class="fa-solid fa-envelope-circle-check ms-1"></i></tc-icon>
     </tc-button>
   </div>
