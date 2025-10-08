@@ -34,28 +34,16 @@
       <div><strong>{{error}}</strong></div>
     </tc-alert>
 
-    <div class="row">
+  <tc-description-list direction="column">
+    <tc-description-item label="Stage" icon="fa-solid fa-map-location-dot">
+      {{getOpportunityStageName(opp)}}
+    </tc-description-item>
+    <tc-description-item label="Next Step" icon="fa-solid fa-circle-arrow-right">
+      {{opp.nextStep}}
+    </tc-description-item>
+    <tc-description-item label="Next Step Due" icon="fa-regular fa-calendar-days">
+      {{opp.nextStepDueDate}}
+    </tc-description-item>
+  </tc-description-list>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>Stage</label>
-        <div class="form-control-plaintext">
-          {{getOpportunityStageName(opp)}}
-        </div>
-      </div>
-
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-solid fa-circle-arrow-right"></i>Next Step</label>
-        <div class="form-control-plaintext">
-          {{opp.nextStep}}
-        </div>
-      </div>
-
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Next Step Due</label>
-        <div class="form-control-plaintext">
-          {{opp.nextStepDueDate}}
-        </div>
-      </div>
-    </div>
-
-  </tc-card>
+</tc-card>

@@ -16,14 +16,10 @@
 
 <tc-modal heading="Edit Job" (onAction)="onSave()" actionText="Save" [disableAction]="saving">
 
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+    <tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
     <form [formGroup]="jobForm">
       <tc-fieldset>
@@ -38,7 +34,7 @@
                     [disabled]="!canChangeJobName()"></tc-input>
         </tc-field>
 
-        <tc-field>
+        <tc-field [checkbox]=true>
           <tc-label for="evergreen" [ngbTooltip]="evergreenTip">
             Evergreen job?
           </tc-label>
@@ -46,8 +42,8 @@
                     formControlName="evergreen"
                     id="evergreen"></tc-input>
         </tc-field>
-        <tc-field [ngbTooltip]="skipCandidateSearchTip">
-          <tc-label for="skipCandidateSearch">
+        <tc-field [checkbox]=true>
+          <tc-label for="skipCandidateSearch" [ngbTooltip]="skipCandidateSearchTip">
             Skip candidate search?
           </tc-label>
           <tc-input type="checkbox"
@@ -59,10 +55,9 @@
           <tc-label for="submissionDueDate" [ngbTooltip]="submissionDueDateTip">
             Submission Due Date
           </tc-label>
-          <app-date-picker id="submissionDueDate"
-                           [control]="jobForm.controls.submissionDueDate"
-                           [ngbTooltip]="submissionDueDateTip">
-          </app-date-picker>
+          <tc-date-picker id="submissionDueDate"
+                           [control]="jobForm.controls.submissionDueDate">
+          </tc-date-picker>
         </tc-field>
         <tc-field>
           <tc-label for="contactUser">
@@ -82,31 +77,6 @@
         </tc-field>
       </tc-fieldset>
 
-<!--      &lt;!&ndash; SUBMISSION DUE DATE &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="submissionDueDate" [ngbTooltip]="submissionDueDateTip">-->
-<!--          Submission Due Date-->
-<!--        </label>-->
-<!--        <app-date-picker id="submissionDueDate"-->
-<!--                         [control]="jobForm.controls.submissionDueDate"-->
-<!--                         [ngbTooltip]="submissionDueDateTip">-->
-<!--        </app-date-picker>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Contact user &ndash;&gt;-->
-<!--      <div class="mb-3">-->
-<!--        <label class="form-label" for="contactUser">Contact User</label>-->
-<!--        <ng-select-->
-<!--          id="contactUser"-->
-<!--          [items]="users"-->
-<!--          [multiple]="false"-->
-<!--          [closeOnSelect]="true"-->
-<!--          placeholder="Select or type..."-->
-<!--          bindLabel="name"-->
-<!--          bindValue="id"-->
-<!--          formControlName="contactUser">-->
-<!--        </ng-select>-->
-<!--      </div>-->
     </form>
 
   </div>
