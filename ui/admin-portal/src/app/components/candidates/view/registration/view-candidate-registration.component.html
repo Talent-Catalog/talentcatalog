@@ -37,256 +37,126 @@
     </div>
   </tc-card-header>
 
-  <div class="card-body">
-    <div class="row">
+  <tc-description-list [direction]="'column'">
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-id-badge"></i>
-          </tc-icon>
-          Partner
-        </tc-label>
+    <tc-description-item [label]="'Partner'"
+                         [icon]="'fas fa-id-badge'"
+    >
+        <a target="_blank" [href]="candidate.user.partner.websiteUrl"
+           [innerHtml]="candidate.user.partner.name + ' ' + candidate.user.partner.abbreviation"
+           appHighlightSearch>
+        </a>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>
-            <a target="_blank" [href]="candidate.user.partner.websiteUrl"
-               [innerHtml]="candidate.user.partner.name + ' ' + candidate.user.partner.abbreviation"
-               appHighlightSearch>
-            </a>
-          </span>
-        </div>
-      </div>
+    <tc-description-item [label]="'Partner\'s ID for candidate'"
+                         [icon]="'fas fa-id-badge'"
+    >
+      <span *ngIf="candidate.partnerRef"
+            [innerHtml]="candidate.partnerRef"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-id-badge"></i>
-          </tc-icon>
-          Partner's id for candidate
-        </tc-label>
+    <tc-description-item [label]="'External ID'"
+                         [icon]="'fas fa-id-badge'"
+    >
+      <span
+          [innerHtml]="candidate.externalId"
+          appHighlightSearch
+      ></span>
+      <span *ngIf="candidate.externalIdSource"
+            [innerHtml]="': ' + candidate.externalIdSource"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span *ngIf="candidate.partnerRef"
-                [innerHtml]="candidate.partnerRef"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UNHCR Registered'"
+                         [icon]="'far fa-registered'"
+    >
+      <span>{{candidate.unhcrRegistered}}</span>
+      <span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"
+            [innerHtml]="' - #' + candidate.unhcrNumber"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.externalId" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-id-badge"></i>
-          </tc-icon>
-          External Id
-        </tc-label>
+    <tc-description-item [label]="'UNRWA Registered'"
+                         [icon]="'far fa-registered'"
+    >
+      <span>{{candidate.unrwaRegistered}}</span>
+      <span *ngIf="candidate.unrwaNumber && candidate.unrwaRegistered === 'Yes'"
+            [innerHtml]="' - #' + candidate.unrwaNumber"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span
-              [innerHtml]="candidate.externalId"
-              appHighlightSearch>
-          </span>
-          <span *ngIf="candidate.externalIdSource"
-                [innerHtml]="': ' + candidate.externalIdSource"
-                appHighlightSearch></span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UNHCR Status'"
+                         [icon]="'far fa-registered'"
+    >
+      <span>{{candidate.unhcrStatus}}</span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.unhcrRegistered" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="far fa-registered"></i>
-          </tc-icon>
-            UNHCR Registered
-          </tc-label>
+    <tc-description-item [label]="'UNHCR Consent'"
+                         [icon]="'far fa-thumbs-up'"
+    >
+      <span>{{candidate.unhcrConsent}}</span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.unhcrRegistered}}</span>
-          <span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"
-                [innerHtml]="' - #' + candidate.unhcrNumber"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
+    <tc-description-item [label]="'Partner Query Param'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoPartnerParam"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.unrwaRegistered" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="far fa-registered"></i>
-          </tc-icon>
-          UNRWA Registered
-        </tc-label>
+    <tc-description-item [label]="'Referrer Query Param'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoReferrerParam"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.unrwaRegistered}}</span>
-          <span *ngIf="candidate.unrwaNumber && candidate.unrwaRegistered === 'Yes'"
-                [innerHtml]="' - #' + candidate.unrwaNumber"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UTM Campaign'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmCampaign"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.unhcrStatus" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="far fa-registered"></i>
-          </tc-icon>
-          UNHCR Status
-        </tc-label>
+    <tc-description-item [label]="'UTM Content'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmContent"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.unhcrStatus}}</span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UTM Medium'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmMedium"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.unhcrConsent" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="far fa-thumbs-up"></i>
-          </tc-icon>
-          UNHCR Consent
-        </tc-label>
+    <tc-description-item [label]="'UTM Source'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmSource"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.unhcrConsent}}</span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UTM Term'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmTerm"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.regoPartnerParam" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-question"></i>
-          </tc-icon>
-          Partner Query Parameter
-        </tc-label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoPartnerParam"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoReferrerParam" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-question"></i>
-            Referrer Query Parameter
-          </tc-icon>
-        </tc-label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoReferrerParam"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmCampaign" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-question"></i>
-          </tc-icon>
-          UTM Campaign
-        </tc-label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmCampaign"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmContent" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-question"></i>
-          </tc-icon>
-          UTM Content
-        </tc-label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmContent"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmMedium" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-question"></i>
-          </tc-icon>
-          UTM Medium
-        </tc-label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmMedium"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmSource" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-question"></i>
-          UTM Source
-          </tc-icon>
-        </tc-label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmSource"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmTerm" class="mb-3 col-sm-12 col-md-4">
-        <tc-label [size]="'sm'">
-          <tc-icon [size]="'sm'"
-                   [color]="'secondary'"
-          >
-            <i class="fas fa-question"></i>
-          </tc-icon>
-            UTM Term
-        </tc-label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmTerm"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
+  </tc-description-list>
 </tc-card>

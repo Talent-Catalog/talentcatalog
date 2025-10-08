@@ -3,34 +3,24 @@
     Privacy Policy Information
   </tc-card-header>
 
-  <div class="row">
-    <div class="mb-3 col-sm-12 col-md-6">
-      <label class="col-form-label">Policy Version ID:</label>
-      <div>
-        <span class="form-control-plaintext">{{ candidate?.acceptedPrivacyPolicyId || 'N/A' }}</span>
-      </div>
-    </div>
+  <tc-description-list [direction]="'column'">
 
-    <div class="mb-3 col-sm-12 col-md-6">
-      <label class="col-form-label">Accepted On:</label>
-      <div>
-        <span class="form-control-plaintext">{{ (candidate?.acceptedPrivacyPolicyDate | date: 'customDateTime') || 'N/A' }}</span>
-      </div>
-    </div>
-  </div>
+    <tc-description-item [label]="'Policy Version ID:'">
+      {{ candidate?.acceptedPrivacyPolicyId || 'N/A' }}
+    </tc-description-item>
 
-  <div class="row">
-    <div class="mb-3 col-sm-12 col-md-6">
-      <label class="col-form-label">Accepted With Partner:</label>
-      <div>
-        <span class="form-control-plaintext">{{ candidate?.acceptedPrivacyPolicyPartner?.name || 'N/A'}}</span>
-      </div>
-    </div>
-    <div class="mb-3 col-sm-12 col-md-6">
-      <label class="col-form-label">Shown our terms but have not accepted?</label>
-      <div>
-        <span class="form-control-plaintext">{{ candidate?.pendingTerms ? "Yes" : "No"}}</span>
-      </div>
-    </div>
-  </div>
+    <tc-description-item [label]="'Accepted On:'">
+      {{ (candidate?.acceptedPrivacyPolicyDate | date: 'customDateTime') || 'N/A' }}
+    </tc-description-item>
+
+    <tc-description-item [label]="'Accepted With Partner:'">
+      {{ candidate?.acceptedPrivacyPolicyPartner?.name || 'N/A'}}
+    </tc-description-item>
+
+    <tc-description-item [label]="'Terms shown but not accepted:'">
+      {{ candidate?.pendingTerms ? "Yes" : "No"}}
+    </tc-description-item>
+
+  </tc-description-list>
+
 </tc-card>

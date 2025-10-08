@@ -28,30 +28,26 @@
     Account Information
   </tc-card-header>
 
-  <div class="row">
+  <tc-description-list direction="column">
 
-    <div class="mb-3 col-sm-12 col-md-6">
-      <label class="col-form-label">Account Created:</label>
-      <div >
-        <span class="form-control-plaintext">{{candidate.user.createdDate | date: 'customDateTime' }}</span>
-      </div>
-    </div>
-    <div class="mb-3 col-sm-12 col-md-6">
-      <label class="col-form-label">Last Logged In:</label>
-      <div >
-        <span class="form-control-plaintext">{{candidate.user.lastLogin | date: 'customDateTime' }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="mb-3 col-sm-12 col-md-6">
-      <label class="col-form-label">Password:</label>
-      <div>
-        <span class="form-control-plaintext">*********</span>
-        <span  *ngIf="editable"><a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">reset</a></span>
-      </div>
-    </div>
+    <tc-description-item [label]="'Account Created:'">
+      {{candidate.user.createdDate | date: 'customDateTime' }}
+    </tc-description-item>
 
-  </div>
+    <tc-description-item [label]="'Last Logged In:'">
+      {{candidate.user.lastLogin | date: 'customDateTime' }}
+    </tc-description-item>
+
+    <tc-description-item [label]="'Password:'">
+      *********
+      <span  *ngIf="editable">
+        <br>
+        <a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">
+          reset
+        </a>
+      </span>
+    </tc-description-item>
+
+  </tc-description-list>
 
 </tc-card>
