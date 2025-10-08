@@ -265,7 +265,7 @@ class TcLoadingStubComponent extends GenericStubBase {
 
 @Component({
   // one component can match multiple selectors separated by commas
-  selector: 'tc-icon, tc-field, tc-label, tc-tab, tc-tab-header, tc-tab-content',
+  selector: 'tc-icon, tc-field, tc-label, tc-tab, tc-tab-header, tc-tab-content, tc-card, tc-card-header',
   template: '<ng-content></ng-content>',
 })
 class PassThroughTcStubComponent extends GenericStubBase {
@@ -320,6 +320,25 @@ class TcLinkStubComponent extends GenericStubBase {
   constructor() { super(['click']); }
 }
 
+@Component({
+  selector: 'tc-description-list',
+  template: '<ng-content></ng-content>',
+  inputs: ['direction'],
+})
+class TcDescriptionListStub extends GenericStubBase {
+  constructor() { super([]); }
+}
+
+
+@Component({
+  selector: 'tc-description-item',
+  template: '<ng-content></ng-content>',
+  inputs: ['input', 'icon'],
+})
+class TcDescriptionItemStub extends GenericStubBase {
+  constructor() { super([]); }
+}
+
 /* ===========================
    Static declarations (AOT-safe)
    =========================== */
@@ -335,6 +354,8 @@ const STUB_DECLARATIONS = [
   TcTabsStubComponent,
   TcTableStubComponent,
   TcLinkStubComponent,
+  TcDescriptionListStub,
+  TcDescriptionItemStub,
 ];
 
 /* ===========================
