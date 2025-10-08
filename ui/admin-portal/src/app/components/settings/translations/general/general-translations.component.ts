@@ -845,7 +845,7 @@ const ALL_FIELDS = {
       "VIEWHELP": null,
       "RETURN": null,
       "SUBMIT": null,
-    },
+    }
   },
   "CANDIDATE-OPPS": {
     "HEADER": null,
@@ -938,5 +938,19 @@ const ALL_FIELDS = {
       "NATIONALID": null,
       "REFUGEE": null
     }
+  },
+  "FAMILY-DOC":{
+      "LABEL":{
+        "NO_ELIGIBLE": null,
+        "FAMILY-MEMBER": null,
+        "RELATIONSHIP":null,
+        "OTHER":null,
+        "AGE-VALIDATION":null,
+        "HEALTH-CONCERN":null,
+        "REGISTERED":null,
+        "REGISTRED-NUMBER":null,
+        "DOC-VALIDATION":null,
+        "ANOTHER-MEMBER":null
+      }
   }
 }
