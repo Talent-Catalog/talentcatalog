@@ -70,8 +70,10 @@ describe('ViewJobInfoComponent', () => {
     } as NgbModalRef);
 
     // Trigger the editJobInfo method, for example, by clicking the edit button
-    const editButton = fixture.nativeElement.querySelector('.btn-secondary');
-    editButton.click();
+    const editButton = fixture.debugElement.query(By.css('#edit-job-info-btn'));
+    editButton.triggerEventHandler('onClick', null);
+
+    fixture.detectChanges();
 
     // Expect that modalService.open was called with EditJobInfoComponent
     expect(modalService.open).toHaveBeenCalledWith(EditJobInfoComponent, jasmine.any(Object));

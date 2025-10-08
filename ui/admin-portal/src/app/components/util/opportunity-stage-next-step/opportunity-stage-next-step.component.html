@@ -20,7 +20,7 @@
     Progress
     <i class="fas fa-spinner fa-spin ms-1" *ngIf=updating></i>
     <div class="float-end" *ngIf="editable">
-      <tc-button type="plain" title="Update progress" (onClick)="editOppProgress()">
+      <tc-button id="edit-opp-progress-btn" ariaLabel="Edit Opportunity Progress" type="plain" title="Update progress" (onClick)="editOppProgress()">
         <i class="fas fa-edit"></i>
       </tc-button>
     </div>
