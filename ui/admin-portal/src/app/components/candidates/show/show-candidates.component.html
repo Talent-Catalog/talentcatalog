@@ -300,7 +300,7 @@
 
     <!--  Task selection - select just one task to focus on  -->
     <tc-field *ngIf="hasTasksAssigned()" class="mb-3">
-      <ng-select class="tc-select tc-select--no-val-highlight"
+      <ng-select class="tc-select"
                  [items]="tasksAssignedToList"
                  bindLabel="displayName"
                  [(ngModel)]="monitoredTask"
