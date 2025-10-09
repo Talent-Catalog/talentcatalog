@@ -15,13 +15,16 @@
   -->
 
 <tc-modal [title]="'Add Language'"
-          [showClose]="true">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+          [showClose]="true"
+          [showCancel]="true"
+          [actionText]="'Save'"
+          (onAction)="onSave()"
+          [disableAction]="candidateForm.invalid || loading || saving"
+>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
+
     <tc-alert type="danger" *ngIf="error">
       <div><strong>{{error}}</strong></div>
     </tc-alert>
@@ -30,33 +33,61 @@
 
       <!-- LANGUAGE TYPE -->
       <div class="mb-3">
-        <label class="form-label" for="languageId">Language:</label>
-        <ng-select id="languageId" name="languageId" [formControlName]="'languageId'" [items]="languages"
-                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+        <tc-field>
+          <tc-label [for]="'languageId'">
+            Language:
+          </tc-label>
+          <ng-select class="tc-select"
+                     id="languageId"
+                     name="languageId"
+                     [formControlName]="'languageId'"
+                     [items]="languages"
+                     [clearable]="false"
+                     placeholder="Select"
+                     bindValue="id"
+                     bindLabel="name"
+          ></ng-select>
+        </tc-field>
       </div>
 
       <!-- SPOKEN LEVEL -->
       <div class="mb-3">
-        <label class="form-label" for="spokenLevelId">Speaking:</label>
-        <ng-select id="spokenLevelId" name="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels"
-                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+        <tc-field>
+          <tc-label [for]="'spokenLevelId'">
+            Speaking:
+          </tc-label>
+          <ng-select id="spokenLevelId"
+                     class="tc-select"
+                     name="spokenLevelId"
+                     [formControlName]="'spokenLevelId'"
+                     [items]="languageLevels"
+                     [clearable]="false"
+                     placeholder="Select"
+                     bindValue="id"
+                     bindLabel="name"
+          ></ng-select>
+        </tc-field>
       </div>
 
       <!-- SPOKEN LEVEL -->
       <div class="mb-3">
-        <label class="form-label" for="writtenLevelId">Reading and Writing:</label>
-        <ng-select id="writtenLevelId" name="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels"
-                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+        <tc-field>
+          <tc-label [for]="'writtenLevelId'">
+            Reading and Writing:
+          </tc-label>
+          <ng-select class="tc-select"
+                     id="writtenLevelId"
+                     name="writtenLevelId"
+                     [formControlName]="'writtenLevelId'"
+                     [items]="languageLevels"
+                     [clearable]="false"
+                     placeholder="Select"
+                     bindValue="id"
+                     bindLabel="name"
+          ></ng-select>
+        </tc-field>
       </div>
 
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
     </form>
 
   </div>
