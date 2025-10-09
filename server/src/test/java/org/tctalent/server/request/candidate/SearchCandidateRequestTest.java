@@ -207,7 +207,7 @@ class SearchCandidateRequestTest {
         String sql = request.extractFetchSQL();
         assertEquals(UNORDERED_SELECT +
                 " left join candidate_education on candidate.id = candidate_education.candidate_id"
-                + " where (major_id in (123) or migration_education_major_id in (123))"
+                + " where major_id in (123)"
                 , sql);
     }
 
