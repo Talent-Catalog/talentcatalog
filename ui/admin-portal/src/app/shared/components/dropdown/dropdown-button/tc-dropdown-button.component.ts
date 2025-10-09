@@ -9,16 +9,16 @@ import {Component, Input} from '@angular/core';
  *
  * **Features**
  * - Uses your design-system `<tc-button>` for consistent styling
- * - Supports button style variants via `type`
- * - Accepts extra classes through `buttonClass`
+ * - Supports button style variants via `type` and `color`
  * - Accessible labeling via `ariaLabel` (important for icon-only toggles)
  * - Disables interaction with `disabled`
  *
  * @selector tc-dropdown-button
  *
  * @inputs
- * - `type: 'primary' | 'secondary' | 'outline' | 'plain' = 'plain'` — visual variant passed to `<tc-button>`
- * - `buttonClass: string = ''` — extra CSS classes applied to the `<tc-button>`
+ * - `type: 'solid' | 'outline' | 'plain' = 'plain'` — visual variant passed to `<tc-button>`
+ * - `color: 'primary' | 'secondary' | 'gray' = 'primary'` — color variant passed to `<tc-button>
+ *   limited colors to keep simple and consistent styling`
  * - `ariaLabel: string = ''` — accessible name (required if content is icon-only)
  * - `disabled: boolean = false` — disables the toggle
  *
@@ -30,7 +30,7 @@ import {Component, Input} from '@angular/core';
  * @example Basic
  * ```html
  * <tc-dropdown>
- *   <tc-dropdown-button type="primary">Actions</tc-dropdown-button>
+ *   <tc-dropdown-button color="primary">Actions</tc-dropdown-button>
  *   <tc-dropdown-menu>
  *     <tc-dropdown-item routerLink="/profile">Profile</tc-dropdown-item>
  *   </tc-dropdown-menu>
@@ -54,8 +54,9 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./tc-dropdown-button.component.scss']
 })
 export class TcDropdownButtonComponent {
-  @Input() type: 'primary' | 'secondary' | 'outline' | 'plain' = 'plain';
-  @Input() buttonClass: string = '';
+  @Input() type: 'solid' | 'outline' | 'plain' = 'plain';
+  /** Limited button colors for the dropdown button to keep simple and consistent styling */
+  @Input() color: 'primary' | 'secondary' | 'gray' = 'primary';
   @Input() ariaLabel: string = '';
   @Input() disabled: boolean = false;
 }
