@@ -34,9 +34,12 @@ export class IntlPhoneInputComponent implements OnInit {
     // Get countries for the country code dropdown
     this.getCountries();
     // Parse the phone number supplied to separate the iso code from the number
-    const phoneNumber = this.getPhoneNumberFromString(this.control.value, null)
+    let phoneNumber: PhoneNumber = null;
+    if (this.control.value) {
+      phoneNumber = this.getPhoneNumberFromString(this.control.value, null)
+    }
     // Set the separate iso code and number values for inputs if they exist
-    if (phoneNumber as PhoneNumber) {
+    if (phoneNumber) {
       this.isoCode = phoneNumber.country;
       this.number = phoneNumber.nationalNumber;
     } else {
@@ -80,9 +83,12 @@ export class IntlPhoneInputComponent implements OnInit {
     // Else if there is no number or country code, remove any previously set errors as phone isn't a required field
     if (this.number && this.isoCode) {
       this.validatePhoneNumber()
-    } else if ((this.number == '' && this.isoCode) || (!this.isoCode && this.number)){
-      // If a country code has been set without a number (or vice versa) set errors, we need both to validate a number
+    } else if (!this.isoCode && this.number){
+      // If a number has been set without a country code, a country code is required
       this.control.setErrors({phoneInvalid: true});
+    } else if (!this.number) {
+      // If no number, allow for the number to be removed (with or without a country code selected)
+      this.removePhoneNumber();
     } else {
       this.control.setErrors(null);
     }
@@ -108,6 +114,11 @@ export class IntlPhoneInputComponent implements OnInit {
       // If the number is invalid, set errors to parent so that the form can't be submitted
       this.control.setErrors({phoneInvalid: true});
     }
+  }
+
+  removePhoneNumber() {
+    this.control.patchValue(null);
+    this.control.setErrors(null);
   }
 
   // WRAP LIB-PHONENUMBERJS FUNCTIONS IN OWN METHOD TO MOCK IN TESTS
