@@ -55,7 +55,6 @@ import {Component, Input} from '@angular/core';
 })
 export class TcDropdownButtonComponent {
   @Input() type: 'solid' | 'outline' | 'plain' = 'plain';
-  /** Limited button colors for the dropdown button to keep simple and consistent styling */
   @Input() color: 'primary' | 'secondary' | 'gray' = 'primary';
   @Input() ariaLabel: string = '';
   @Input() disabled: boolean = false;
