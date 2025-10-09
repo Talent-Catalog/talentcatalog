@@ -14,55 +14,40 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Update {{oppType}} Progress</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
-
-</div>
-
-<div class="modal-body">
+<tc-modal [title]="'Update ' + oppType + ' Progress'" (onAction)="onSave()">
   <form [formGroup]="salesforceStageForm">
+    <tc-fieldset>
+      <tc-field>
+        <tc-label for="stage">{{oppType}} Stage - order is just a guide, most stages are optional.
+          <app-help [request]="stageHelpRequest"></app-help>
+        </tc-label>
+        <ng-select class="tc-select" id="stage" [formControlName]="'stage'" [items]="opportunityStageOptions"
+                   (change)="onStageSelectionChange($event)"
+                   placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
+        <p *ngIf="isEvergreenJob()" class="paragraph-sm">
+          This is an evergreen job. When the stage of an evergreen job reaches "Recruitment" a new
+          copy of the job opportunity is automatically created set to the "Candidate search" stage.
+          That allows new potential candidates to be added to that new opportunity
+          while candidates for the original opportunity are going through the recruitment process.
+        </p>
+      </tc-field>
 
-    <div class="mb-3">
-      <label class="form-label" for="stage">{{oppType}} Stage - order is just a guide, most stages are optional.
-        <app-help [request]="stageHelpRequest"></app-help>
-      </label>
-      <ng-select id="stage" [formControlName]="'stage'" [items]="opportunityStageOptions"
-                 (change)="onStageSelectionChange($event)"
-                 placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
-      <p *ngIf="isEvergreenJob()">
-        This is an evergreen job. When the stage of an evergreen job reaches "Recruitment" a new
-        copy of the job opportunity is automatically created set to the "Candidate search" stage.
-        That allows new potential candidates to be added to that new opportunity
-        while candidates for the original opportunity are going through the recruitment process.
-      </p>
-    </div>
+      <tc-field>
+        <tc-label for="nextStep">Next step</tc-label>
+        <tc-input type="text" id="nextStep" [formControlName]="'nextStep'"></tc-input>
+        <p class="paragraph-sm">Note: when a new next step is saved, the date and user will be appended to the next step automatically for audit purposes.</p>
+      </tc-field>
 
-    <div class="mb-3">
-      <label class="form-label" for="nextStep">Next step</label>
-      <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
-      <div class="form-text">Note: when a new next step is saved, the date and user will be appended to the next step automatically for audit purposes.</div>
-    </div>
+      <tc-field>
+        <tc-label for="nextStepDueDate">Next step due date</tc-label>
+        <tc-date-picker id="nextStepDueDate" [control]="salesforceStageForm.controls.nextStepDueDate"
+                         [allowFuture]="true"></tc-date-picker>
+      </tc-field>
 
-    <div class="mb-3">
-      <label class="form-label" for="nextStepDueDate">Next step due date</label>
-      <app-date-picker id="nextStepDueDate" [control]="salesforceStageForm.controls.nextStepDueDate"
-                       [allowFuture]="true"></app-date-picker>
-    </div>
-
-    <div *ngIf="this.isOnlyOpenCaseOfParentJob" class="mb-3">
-      <input type="checkbox" id="copyToParentJob" [formControlName]="'copyToParentJob'">
-      <label class ="form-label ms-2" for="copyToParentJob">Copy 'next step' info to parent job opportunity?</label>
-    </div>
-
+      <tc-field *ngIf="this.isOnlyOpenCaseOfParentJob" class="mb-3">
+        <tc-input type="checkbox" id="copyToParentJob" [formControlName]="'copyToParentJob'"></tc-input>
+        <tc-label for="copyToParentJob">Copy 'next step' info to parent job opportunity?</tc-label>
+      </tc-field>
+    </tc-fieldset>
   </form>
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary"
-          (click)="onSave()">Do it</button>
-  <button type="button" class="btn btn-secondary"
-          (click)="cancel()">Cancel</button>
-</div>
+</tc-modal>

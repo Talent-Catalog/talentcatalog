@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2024 Talent Catalog.
+/*
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,16 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "src/scss/color-mixins";
+package org.tctalent.server.repository.db;
 
-.selected {
-  @include background-color-red;
-}
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.tctalent.server.model.db.CandidateFormInstanceKey;
+import org.tctalent.server.model.db.FamilyDocForm;
 
-i {
-  @include text-color-green;
-}
-
-.prep-items {
-  cursor: pointer;
+@RepositoryRestResource(path = "family-doc-form")
+public interface FamilyDocsFormRepository extends JpaRepository<FamilyDocForm, CandidateFormInstanceKey> {
 }

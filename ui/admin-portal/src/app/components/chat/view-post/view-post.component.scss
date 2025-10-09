@@ -14,6 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "src/scss/color-mixins";
+@import "src/scss/support-colors";
+
 button.reaction-btn {
   border: none;
   background-color: inherit;
@@ -21,13 +24,13 @@ button.reaction-btn {
 }
 
 button.reaction-btn:hover {
-  color: #00969e;
+  @include text-color-primary;
 }
 
 button.reaction-btn-selected {
   border: none;
   background-color: inherit;
-  color: #0F6267;
+  @include text-color-secondary;
 }
 
 button.modify-reaction-btn {
@@ -42,8 +45,8 @@ button.modify-reaction-btn {
 }
 
 button.modify-reaction-btn:hover {
-  border-color: #00969e;
-  color: #00969e;
+  border-color: color(secondary, 700);
+  @include text-color-secondary;
 }
 
 emoji-mart#reactionPicker {
@@ -51,6 +54,19 @@ emoji-mart#reactionPicker {
   left: 0;
   top: 0;
   z-index: 1050;
+}
+
+section.emoji-mart {
+  @include shadow-lg;
+  border-radius: 1rem;
+}
+
+span.emoji-mart-anchor-bar {
+  background-color: color(primary,500) !important;
+}
+
+span.emoji-mart-anchor.emoji-mart-anchor-selected {
+  color: color(primary,500) !important;
 }
 
 div#reactionTooltipEmoji {
@@ -89,8 +105,8 @@ div#reactionTooltipEmoji {
 }
 
 .avatar.post-author {
-  background-color: #49B6BD;
-  color: #0F6267;
+  @include background-color-secondary;
+  @include text-color-white;
 }
 
 .message-content {
@@ -130,11 +146,10 @@ div#reactionTooltipEmoji {
   display: flex;
   align-items: center;
   background-color: #e6f7ff;
-  border: 1px solid #0F6267;
   border-radius: 1.5rem;
   padding: 0.25rem 0.5rem;
   font-size: 1rem;
-  color: #0F6267;
+  @include text-color-secondary;
 }
 
 .emoji {

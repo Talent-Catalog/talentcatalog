@@ -14,29 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-  <form [formGroup]="form">
-    <div class="mb-3">
-      <label class="form-label" *ngIf="message" for="text">{{message}}</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="{{nRows}}"
-                id="text" [formControlName]="'text'"></textarea>
-    </div>
-  </form>
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="close()">
-    Ok
-  </button>
-  <button *ngIf="showCancel" type="button" class="btn btn-primary" (click)="dismiss()">
-    Cancel
-  </button>
-</div>
+<tc-modal [title]="title" (onAction)="close()" actionText="Ok">
+    <form [formGroup]="form">
+      <tc-field>
+        <tc-label *ngIf="message" for="text">{{message}}</tc-label>
+        <tc-input type="text" id="text" [formControlName]="'text'"></tc-input>
+      </tc-field>
+    </form>
+</tc-modal>
