@@ -14,24 +14,17 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Add Language</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
+<tc-modal [title]="'Add Language'"
+          [showClose]="true">
 
   <div *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
   </div>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="candidateForm">
 
@@ -67,4 +60,4 @@
     </form>
 
   </div>
-</div>
+</tc-modal>
