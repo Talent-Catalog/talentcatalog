@@ -39,23 +39,22 @@
     </div>
 
     <div *ngIf="searchBy === SearchOppsBy.mineAsSourcePartner ||
-    searchBy === SearchOppsBy.mineAsJobCreator " class="my-2">
-      <div class="row justify-content-center mb-2">
+    searchBy === SearchOppsBy.mineAsJobCreator ">
+      <div class="row justify-content-center">
         <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <label class="form-check-label" [title]="myOppsOnlyTip"
-                   for="myOppsOnly">{{ myOppsOnlyLabel }}</label>
-            <input [title]="myOppsOnlyTip" type="checkbox"
-                   formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
-          </div>
+          <tc-field [checkbox]="true">
+            <tc-label [title]="myOppsOnlyTip" for="myOppsOnly">{{ myOppsOnlyLabel }}</tc-label>
+            <tc-input [title]="myOppsOnlyTip" type="checkbox"
+                      formControlName="myOppsOnly" id="myOppsOnly"></tc-input>
+          </tc-field>
         </div>
         <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="showClosedOppsTip" type="checkbox"
-                   formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
-            <label class="form-check-label" [title]="showClosedOppsTip"
-                   for="showClosedOpps">{{ showClosedOppsLabel }}</label>
-          </div>
+          <tc-field [checkbox]="true">
+            <tc-label [title]="showClosedOppsTip" for="showClosedOpps">
+              {{ showClosedOppsLabel }}</tc-label>
+            <tc-input [title]="showClosedOppsTip" type="checkbox"
+                      formControlName="showClosedOpps" id="showClosedOpps"></tc-input>
+          </tc-field>
         </div>
       </div>
       <div class="row justify-content-center mb-2">
