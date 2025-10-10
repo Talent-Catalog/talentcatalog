@@ -16,9 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,7 +46,7 @@ public class SkillsServiceImpl implements SkillsService {
     public @NonNull List<String> getEscoSkills() {
 
         if (cachedList == null) {
-            List<String> skills = new ArrayList<>(INITIAL_CAPACITY);
+            Set<String> skills = new HashSet<>(INITIAL_CAPACITY);
             //TODO JC Could this be a hashSet to eliminate duplicates?
             PageRequest request = PageRequest.ofSize(CHUNK_SIZE);
             request = request.first();
@@ -61,18 +62,28 @@ public class SkillsServiceImpl implements SkillsService {
                 request = request.next();
             } while (page.hasNext());
 
-            cachedList = Collections.unmodifiableList(skills);
+            cachedList = List.copyOf(skills);
         }
 
         return cachedList;
     }
 
-    private void addSkills(List<String> skills, SkillsEscoEn see) {
-        skills.add(see.getPreferredlabel());
+    private void addSkills(Collection<String> skills, SkillsEscoEn see) {
 
-        addDelimitedSkills(skills, see.getAltlabels());
+        final String preferredlabel = see.getPreferredlabel();
+        if (!ObjectUtils.isEmpty(preferredlabel)) {
+            skills.add(preferredlabel.toLowerCase());
+        }
 
-        addDelimitedSkills(skills, see.getHiddenlabels());
+        final String altLabels = see.getPreferredlabel();
+        if (!ObjectUtils.isEmpty(altLabels)) {
+            addDelimitedSkills(skills, altLabels.toLowerCase());
+        }
+
+        final String hiddenLabels = see.getPreferredlabel();
+        if (!ObjectUtils.isEmpty(hiddenLabels)) {
+            addDelimitedSkills(skills, hiddenLabels.toLowerCase());
+        }
     }
 
     /**
@@ -81,7 +92,7 @@ public class SkillsServiceImpl implements SkillsService {
      * @param skills List of skills we are accumulating
      * @param textWithDelimitedSkills text containing multiple skills separated by delimiter
      */
-    private void addDelimitedSkills(List<String> skills, String textWithDelimitedSkills) {
+    private void addDelimitedSkills(Collection<String> skills, String textWithDelimitedSkills) {
         if (!ObjectUtils.isEmpty(textWithDelimitedSkills)) {
             skills.addAll(List.of(textWithDelimitedSkills.split(DELIMITER)));
         }
