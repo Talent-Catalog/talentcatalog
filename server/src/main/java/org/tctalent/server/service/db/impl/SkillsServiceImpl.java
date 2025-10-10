@@ -40,14 +40,13 @@ public class SkillsServiceImpl implements SkillsService {
 
     private final static int CHUNK_SIZE = 100;
     private final static String DELIMITER = "\n";
-    private final static int INITIAL_CAPACITY = 25_000;  //todo How big should this be?
+    private final static int INITIAL_CAPACITY = 25_000;
 
     @Override
     public @NonNull List<String> getEscoSkills() {
 
         if (cachedList == null) {
             Set<String> skills = new HashSet<>(INITIAL_CAPACITY);
-            //TODO JC Could this be a hashSet to eliminate duplicates?
             PageRequest request = PageRequest.ofSize(CHUNK_SIZE);
             request = request.first();
             Page<SkillsEscoEn> page;
@@ -62,6 +61,7 @@ public class SkillsServiceImpl implements SkillsService {
                 request = request.next();
             } while (page.hasNext());
 
+            //Copy into an immutable list so that it can be shared around.
             cachedList = List.copyOf(skills);
         }
 
