@@ -20,20 +20,24 @@ import java.util.List;
 import org.springframework.lang.NonNull;
 
 /**
- * TODO JC Doc
+ *
  *
  * @author John Cameron
  */
 public interface SkillsService {
 
     /**
-     * Returns the English language skills defined by Esco.
+     * Returns English language skills.
      * <p>
      * Skills can be single words or short phrases. There could be around 20,000 of them. This list
      * of skills does not change often - so the skill list will be cached.
+     * <p>
+     * These skills can come from multiple sources (for example Esco and ONet).
+     * <p>
+     * All skills are converted to lower case and duplicates are removed.
      *
-     * @return Skills.
+     * @return Immutable list of skills.
      */
     @NonNull
-    List<String> getEscoSkills();
+    List<String> getSkills();
 }

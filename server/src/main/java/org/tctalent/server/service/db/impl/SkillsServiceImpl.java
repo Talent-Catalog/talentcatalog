@@ -43,29 +43,39 @@ public class SkillsServiceImpl implements SkillsService {
     private final static int INITIAL_CAPACITY = 25_000;
 
     @Override
-    public @NonNull List<String> getEscoSkills() {
+    public @NonNull List<String> getSkills() {
 
         if (cachedList == null) {
             Set<String> skills = new HashSet<>(INITIAL_CAPACITY);
-            PageRequest request = PageRequest.ofSize(CHUNK_SIZE);
-            request = request.first();
-            Page<SkillsEscoEn> page;
-            do {
-                //Get page of skills
-                page = skillsEscoEnRepository.findBySkilltype("knowledge", request);
-                //Process skills in page
-                final List<SkillsEscoEn> pageContent = page.getContent();
-                for (SkillsEscoEn skillsEscoEn : pageContent) {
-                    addSkills(skills, skillsEscoEn);
-                }
-                request = request.next();
-            } while (page.hasNext());
+
+            loadEscoSkills(skills);
+            loadOnetSkills(skills);
 
             //Copy into an immutable list so that it can be shared around.
             cachedList = List.copyOf(skills);
         }
 
         return cachedList;
+    }
+
+    private void loadOnetSkills(Set<String> skills) {
+        //TODO JC Implement loadOnetSkills
+    }
+
+    private void loadEscoSkills(Set<String> skills) {
+        PageRequest request = PageRequest.ofSize(CHUNK_SIZE);
+        request = request.first();
+        Page<SkillsEscoEn> page;
+        do {
+            //Get page of skills
+            page = skillsEscoEnRepository.findBySkilltype("knowledge", request);
+            //Process skills in page
+            final List<SkillsEscoEn> pageContent = page.getContent();
+            for (SkillsEscoEn skillsEscoEn : pageContent) {
+                addSkills(skills, skillsEscoEn);
+            }
+            request = request.next();
+        } while (page.hasNext());
     }
 
     private void addSkills(Collection<String> skills, SkillsEscoEn see) {

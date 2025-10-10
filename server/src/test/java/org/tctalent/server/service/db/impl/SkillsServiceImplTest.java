@@ -38,8 +38,8 @@ class SkillsServiceImplTest {
     }
 
     @Test
-    void getEscoSkills() {
-        final List<String> escoSkills = skillsService.getEscoSkills();
+    void getSkills() {
+        final List<String> escoSkills = skillsService.getSkills();
         assertNotNull(escoSkills);
     }
 }
