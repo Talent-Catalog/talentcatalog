@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [title]="'Add Language'"
+<tc-modal [heading]="'Add Language'"
           [showClose]="true"
           [showCancel]="true"
           [actionText]="'Save'"
@@ -39,7 +39,6 @@
           </tc-label>
           <ng-select class="tc-select"
                      id="languageId"
-                     name="languageId"
                      [formControlName]="'languageId'"
                      [items]="languages"
                      [clearable]="false"
@@ -58,7 +57,6 @@
           </tc-label>
           <ng-select id="spokenLevelId"
                      class="tc-select"
-                     name="spokenLevelId"
                      [formControlName]="'spokenLevelId'"
                      [items]="languageLevels"
                      [clearable]="false"
@@ -77,7 +75,6 @@
           </tc-label>
           <ng-select class="tc-select"
                      id="writtenLevelId"
-                     name="writtenLevelId"
                      [formControlName]="'writtenLevelId'"
                      [items]="languageLevels"
                      [clearable]="false"
