@@ -14,21 +14,26 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-card *ngIf="opp">
+  <tc-card *ngIf="opp">
+    <tc-card-header>
+      Progress
+      <i class="fas fa-spinner fa-spin ms-1" *ngIf=updating></i>
+      <div class="float-end" *ngIf="editable">
+        <tc-button [title]="'Update progress'"
+                   (onClick)="editOppProgress()"
+                   [color]="'secondary'"
+                   [type]="'solid'"
+                   [size]="'sm'"
+                   class="edit-opp-progress-btn"
+        >
+          <i class="fas fa-edit"></i>
+        </tc-button>
+      </div>
+    </tc-card-header>
 
-  <tc-card-header>
-    Progress
-    <i class="fas fa-spinner fa-spin ms-1" *ngIf=updating></i>
-    <div class="float-end" *ngIf="editable">
-      <tc-button id="edit-opp-progress-btn" ariaLabel="Edit Opportunity Progress" type="plain" title="Update progress" (onClick)="editOppProgress()">
-        <i class="fas fa-edit"></i>
-      </tc-button>
-    </div>
-  </tc-card-header>
-
-  <tc-alert *ngIf="error" type="danger">
-    {{error}}
-  </tc-alert>
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
   <tc-description-list direction="column">
     <tc-description-item label="Stage" icon="fa-solid fa-map-location-dot">

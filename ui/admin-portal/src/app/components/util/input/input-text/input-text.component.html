@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [title]="title" (onAction)="close()" actionText="Ok">
+<tc-modal [heading]="title" (onAction)="close()" actionText="Ok">
     <form [formGroup]="form">
       <tc-field>
         <tc-label *ngIf="message" for="text">{{message}}</tc-label>
