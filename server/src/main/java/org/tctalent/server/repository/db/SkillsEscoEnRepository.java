@@ -16,8 +16,12 @@
 
 package org.tctalent.server.repository.db;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.tctalent.server.model.db.SkillsEscoEn;
 
 public interface SkillsEscoEnRepository extends JpaRepository<SkillsEscoEn, String> {
+
+    Page<SkillsEscoEn> findBySkilltype(String skilltype, Pageable pageable);
 }

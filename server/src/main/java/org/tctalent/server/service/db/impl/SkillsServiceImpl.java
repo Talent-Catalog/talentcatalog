@@ -21,31 +21,45 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.tctalent.server.model.db.SkillsEscoEn;
+import org.tctalent.server.repository.db.SkillsEscoEnRepository;
 import org.tctalent.server.service.db.SkillsService;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class SkillsServiceImpl implements SkillsService {
-    private final SkillsService skillsService;
+    private final SkillsEscoEnRepository skillsEscoEnRepository;
     private List<String> cachedList;
 
+    private final static int CHUNK_SIZE = 100;
     private final static String DELIMITER = "\n";
+    private final static int INITIAL_CAPACITY = 25_000;  //todo How big should this be?
 
     @Override
     public @NonNull List<String> getEscoSkills() {
 
         if (cachedList == null) {
-            List<String> skills = new ArrayList<>(20_000); //todo How big should this be?
-
-            //TODO JC Get page of skills
-                //TODO JC Process skills in page
-                    SkillsEscoEn see = new SkillsEscoEn(); //todo read from page
-                    addSkills(skills, see);
+            List<String> skills = new ArrayList<>(INITIAL_CAPACITY);
+            //TODO JC Could this be a hashSet to eliminate duplicates?
+            PageRequest request = PageRequest.ofSize(CHUNK_SIZE);
+            request = request.first();
+            Page<SkillsEscoEn> page;
+            do {
+                //Get page of skills
+                page = skillsEscoEnRepository.findBySkilltype("knowledge", request);
+                //Process skills in page
+                final List<SkillsEscoEn> pageContent = page.getContent();
+                for (SkillsEscoEn skillsEscoEn : pageContent) {
+                    addSkills(skills, skillsEscoEn);
+                }
+                request = request.next();
+            } while (page.hasNext());
 
             cachedList = Collections.unmodifiableList(skills);
         }
@@ -61,9 +75,15 @@ public class SkillsServiceImpl implements SkillsService {
         addDelimitedSkills(skills, see.getHiddenlabels());
     }
 
-    private void addDelimitedSkills(List<String> skills, String delimitedLabels) {
-        if (ObjectUtils.isEmpty(delimitedLabels)) {
-            skills.addAll(List.of(delimitedLabels.split(DELIMITER)));
+    /**
+     * Some fields in the ESCO database consist of multiple skills in a single text field
+     * delimited by newline characters.
+     * @param skills List of skills we are accumulating
+     * @param textWithDelimitedSkills text containing multiple skills separated by delimiter
+     */
+    private void addDelimitedSkills(List<String> skills, String textWithDelimitedSkills) {
+        if (!ObjectUtils.isEmpty(textWithDelimitedSkills)) {
+            skills.addAll(List.of(textWithDelimitedSkills.split(DELIMITER)));
         }
     }
 }
