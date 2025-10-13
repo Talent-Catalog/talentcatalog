@@ -31,6 +31,21 @@ import org.tctalent.server.model.db.SkillsEscoEn;
 import org.tctalent.server.repository.db.SkillsEscoEnRepository;
 import org.tctalent.server.service.db.SkillsService;
 
+/**
+ * This service imports skills from
+ * <a href="https://esco.ec.europa.eu/en/use-esco/download">ESCO</a>
+ * which requires the following acknowledgements:
+ * <ul>
+ *     <li>
+ * For services, tools and applications integrating totally or partially ESCO:
+ * "This service uses the ESCO classification of the European Commission."
+ *     </li>
+ *     <li>
+ * For other documents such as studies, analysis or reports making use of ESCO:
+ * "This publication uses the ESCO classification of the European Commission."
+ *     </li>
+ * </ul>
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
