@@ -20,7 +20,7 @@ import java.util.List;
 import org.springframework.lang.NonNull;
 
 /**
- *
+ * Service related to exposing and managing skills.
  *
  * @author John Cameron
  */

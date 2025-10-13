@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * TODO JC Doc
+ * Entity corresponding to imported English language ESCO skills.
  *
  * @author John Cameron
  */

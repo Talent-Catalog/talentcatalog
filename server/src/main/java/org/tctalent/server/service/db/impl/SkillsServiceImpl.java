@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,17 +98,17 @@ public class SkillsServiceImpl implements SkillsService {
 
         final String preferredlabel = see.getPreferredlabel();
         if (!ObjectUtils.isEmpty(preferredlabel)) {
-            skills.add(preferredlabel.toLowerCase());
+            skills.add(preferredlabel.toLowerCase(Locale.ENGLISH));
         }
 
         final String altLabels = see.getPreferredlabel();
         if (!ObjectUtils.isEmpty(altLabels)) {
-            addDelimitedSkills(skills, altLabels.toLowerCase());
+            addDelimitedSkills(skills, altLabels.toLowerCase(Locale.ENGLISH));
         }
 
         final String hiddenLabels = see.getPreferredlabel();
         if (!ObjectUtils.isEmpty(hiddenLabels)) {
-            addDelimitedSkills(skills, hiddenLabels.toLowerCase());
+            addDelimitedSkills(skills, hiddenLabels.toLowerCase(Locale.ENGLISH));
         }
     }
 
