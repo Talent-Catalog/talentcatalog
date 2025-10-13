@@ -18,7 +18,9 @@
   {{error}}
 </div>
 
-<tc-table [ngClass]="{'table-hover' : selectable}">
+<tc-loading [loading]="loading"></tc-loading>
+
+<tc-table *ngIf="!loading" [ngClass]="{'table-hover' : selectable}">
   <thead>
   <tr>
     <th></th>
@@ -32,7 +34,7 @@
   <tbody>
   <tr *ngFor="let partner of sourcePartners" (click)="selectCurrent(partner)"
       [ngClass]="{'current': currentSourcePartner?.id == partner.id && selectable, 'clickable': selectable}">
-    <td>
+    <td class="text-center">
       <tc-icon *ngIf="isEditable(partner)" title="Change partner details" size="sm" color="gray"
                (click)="editPartnerContact(partner)">
         <i class="fas fa-edit"></i>
@@ -48,7 +50,6 @@
     <td>{{jobContact(partner)?.firstName}} {{jobContact(partner)?.lastName}}</td>
     <td>{{jobContact(partner)?.email}}</td>
   </tr>
-  <tc-loading [loading]="loading"></tc-loading>
   </tbody>
 </tc-table>
 

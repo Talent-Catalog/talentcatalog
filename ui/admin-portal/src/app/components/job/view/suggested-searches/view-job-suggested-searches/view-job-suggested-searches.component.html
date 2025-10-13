@@ -19,7 +19,9 @@
   <tc-card-header>
     <span>Suggested searches</span>
     <div *ngIf="editable" [ngClass]="{'alert alert-danger mb-0': highlightSearches()}">
-      <tc-button ngbTooltip="Create new suggested search" type="plain"
+      <tc-button ngbTooltip="Create new suggested search"
+                 type="solid"
+                 color="primary"
               (onClick)="addSearch()">
         <i class="fas fa-plus"></i>
       </tc-button>
@@ -73,7 +75,7 @@
 
         <!-- EDIT -->
         <div class="col-2 col-sm-auto" *ngIf="editable">
-          <tc-button type="outline" color="gray" (onClick)="removeSearch(search)">
+          <tc-button type="plain" color="gray" (onClick)="removeSearch(search)">
             <i class="fas fa-trash"></i>
           </tc-button>
         </div>
