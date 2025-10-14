@@ -15,7 +15,6 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy, SearchOppsBy} from "../../model/base"
 import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from "../../services/saved-search.service";
@@ -71,9 +70,9 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
-    this.setTabParam(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
+    this.setTabParam(activeTabId);
   }
 
   onSavedSearchSubtypeChange($event: SavedSearchTypeSubInfo) {

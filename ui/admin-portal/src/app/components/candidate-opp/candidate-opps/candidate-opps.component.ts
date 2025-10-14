@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Inject, Input, LOCALE_ID, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, Inject, Input, LOCALE_ID, SimpleChanges, ViewChild} from '@angular/core';
 import {
   CandidateOpportunity,
   CandidateOpportunityStage,
@@ -33,6 +33,7 @@ import {ChatService} from "../../../services/chat.service";
 import {SearchResults} from "../../../model/search-results";
 import {PartnerService} from "../../../services/partner.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -74,7 +75,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   withUnreadMessagesTip = "Only show cases which have unread chat messages";
 
   @ViewChild("searchFilter")
-  declare searchFilter: ElementRef;
+  declare searchFilter: InputComponent;
 
   constructor(
     chatService: ChatService,
