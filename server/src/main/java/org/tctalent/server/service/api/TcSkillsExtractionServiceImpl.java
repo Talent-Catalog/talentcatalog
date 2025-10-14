@@ -24,7 +24,7 @@ import org.springframework.web.client.RestClientException;
 import org.tctalent.server.configuration.properties.TcSkillsExtractionServiceProperties;
 
 /**
- * TODO JC Doc
+ * Connects to an external API for extracting skills from text.
  *
  * @author John Cameron
  */

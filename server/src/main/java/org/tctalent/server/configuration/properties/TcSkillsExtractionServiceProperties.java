@@ -22,16 +22,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * Configuration properties for {@link org.tctalent.server.service.api.TcApiService}.
+ * Configuration properties for {@link org.tctalent.server.service.api.TcSkillsExtractionService}.
  * </p>
  * Example configuration in {@code application.yml}:
  * <pre>
- *  tc-api:
- *    apiUrl: http://localhost:8082
+ *  tc-skills-extraction-service:
+ *    apiUrl: http://localhost:8000
  *    apiKey: xxxx
  * </pre>
  *
- * @author sadatmalik
  */
 @Getter
 @Setter

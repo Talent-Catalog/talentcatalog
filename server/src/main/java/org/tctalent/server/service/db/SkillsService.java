@@ -26,7 +26,11 @@ import org.springframework.lang.NonNull;
  */
 public interface SkillsService {
 
-    //TODO JC Doc
+    /**
+     * Extracts skills from the given text.
+     * @param text Text to extract skills from.
+     * @return List of skills extracted from the given text.
+     */
     List<String> extractSkills(String text);
 
     /**

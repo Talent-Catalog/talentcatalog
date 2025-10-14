@@ -38,6 +38,13 @@ class SkillsServiceImplTest {
     }
 
     @Test
+    void extractSkills() {
+        String text = "John knows Java, Python, and Scala. He also knows C++, C, and Fortran.";
+        List<String> skills = skillsService.extractSkills(text);
+        assertNotNull(skills);
+    }
+
+    @Test
     void getSkills() {
         final List<String> escoSkills = skillsService.getSkills();
         assertNotNull(escoSkills);

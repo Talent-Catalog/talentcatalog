@@ -17,11 +17,16 @@
 package org.tctalent.server.service.api;
 
 /**
- * TODO JC Doc
+ * Service for extracting skills from a given text.
  *
  * @author John Cameron
  */
 public interface TcSkillsExtractionService {
-    //TODO JC Doc
+
+    /**
+     * Extracts skills from the text contained in the given request.
+     * @param request Request containg the text to extract skills from.
+     * @return Response containing the extracted skills.
+     */
     ExtractSkillsResponse extractSkills(ExtractSkillsRequest request);
 }

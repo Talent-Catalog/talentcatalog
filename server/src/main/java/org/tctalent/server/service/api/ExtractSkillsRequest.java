@@ -21,7 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * TODO JC Doc
+ * Request to extract skills from a given text.
  *
  * @author John Cameron
  */
@@ -29,6 +29,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ExtractSkillsRequest {
-    //TODO JC Doc
+
+    /**
+     * The text to extract skills from.
+     */
     private String text;
 }

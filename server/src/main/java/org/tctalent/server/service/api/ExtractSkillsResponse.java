@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * TODO JC Doc
+ * Response to a request to extract skills from a given text.
  *
  * @author John Cameron
  */
@@ -30,5 +30,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ExtractSkillsResponse {
+
+    /**
+     * Skill names extracted from the given text.
+     */
     private List<String> skills;
 }

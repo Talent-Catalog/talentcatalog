@@ -46,6 +46,5 @@ class TcSkillsExtractionServiceImplTest {
         request.setText("John knows Java, Python, and Scala. He also knows C++, C, and Fortran.");
         final ExtractSkillsResponse response = skillsExtractionService.extractSkills(request);
         assertNotNull(response);
-
     }
 }

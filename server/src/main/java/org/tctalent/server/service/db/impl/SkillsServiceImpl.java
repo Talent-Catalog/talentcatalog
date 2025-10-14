@@ -16,7 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.tctalent.server.model.db.SkillsEscoEn;
 import org.tctalent.server.repository.db.SkillsEscoEnRepository;
+import org.tctalent.server.service.api.ExtractSkillsRequest;
+import org.tctalent.server.service.api.ExtractSkillsResponse;
+import org.tctalent.server.service.api.TcSkillsExtractionService;
 import org.tctalent.server.service.db.SkillsService;
 
 /**
@@ -52,6 +54,7 @@ import org.tctalent.server.service.db.SkillsService;
 @RequiredArgsConstructor
 @Slf4j
 public class SkillsServiceImpl implements SkillsService {
+    private final TcSkillsExtractionService skillsExtractionService;
     private final SkillsEscoEnRepository skillsEscoEnRepository;
     private List<String> cachedList;
 
@@ -61,9 +64,10 @@ public class SkillsServiceImpl implements SkillsService {
 
     @Override
     public List<String> extractSkills(String text) {
-        List<String> skills = new ArrayList<>();
-        //TODO JC Call Python service
-        return skills;
+        ExtractSkillsRequest request = new ExtractSkillsRequest();
+        request.setText(text);
+        final ExtractSkillsResponse response = skillsExtractionService.extractSkills(request);
+        return response.getSkills();
     }
 
     @Override
