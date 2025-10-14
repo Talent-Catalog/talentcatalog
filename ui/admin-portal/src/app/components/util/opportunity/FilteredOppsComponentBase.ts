@@ -16,12 +16,12 @@
 
 import {
   Directive,
-  ElementRef,
   EventEmitter,
   Inject,
   Input,
   LOCALE_ID,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges
@@ -35,23 +35,25 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {
   getOpportunityStageName,
+  getStageBadgeColor,
   Opportunity,
   OpportunityOwnershipType
 } from "../../../model/opportunity";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
-import {BehaviorSubject, Subscription} from "rxjs";
+import {BehaviorSubject, Subject, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
 import {Partner} from "../../../model/partner";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Directive()
-export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
+export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges, OnDestroy {
 
   /**
    * Defines type of opportunity search.
@@ -114,7 +116,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   results: SearchResults<T>;
 
   //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
-  protected searchFilter: ElementRef;
+  protected searchFilter: InputComponent;
 
   searchForm: UntypedFormGroup;
 
@@ -137,6 +139,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private sortDirectionSuffix: string = 'SortDir';
   private sortFieldSuffix: string = 'Sort';
   private withUnreadMessagesSuffix: string = 'WithUnreadMessages';
+
+  private destroy$ = new Subject<void>();
 
   protected constructor(
     protected chatService: ChatService,
@@ -430,7 +434,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     }
 
     //Following the search filter loses focus, so focus back on it again
-    setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
+    setTimeout(()=>{this.searchFilter.focus()},0);
   }
 
   canAccessSalesforce(): boolean {
@@ -439,6 +443,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   get getCandidateOpportunityStageName() {
     return getOpportunityStageName;
+  }
+
+  get getBadgeColor() {
+    return getStageBadgeColor;
   }
 
   getChats(opp: Opportunity): JobChat[] {
@@ -453,7 +461,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.searchForm.valueChanges
     .pipe(
       debounceTime(1000),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
     )
     .subscribe(() => {
       this.search();
@@ -466,8 +475,9 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
    * when a stage is added. Re-enable once the stages are removed.
    */
   private subscribeToStagesChanges() {
-    this.searchForm.get('selectedStages').valueChanges.subscribe(
-      (stages) => {
+    this.searchForm.get('selectedStages').valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((stages) => {
           if (stages.length > 0) {
             this.searchForm.get('showClosedOpps').reset({value: false, disabled: true});
             this.searchForm.get('showInactiveOpps').reset({value: false, disabled: true});
@@ -585,6 +595,16 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       this.subscription.unsubscribe();
       this.subscription = null;
     }
+  }
+
+  // These changes ensure subscriptions are torn down whenever the tab content is destroyed, preventing multiple overlapping subscriptions and eliminating the repeated console logs.
+  ngOnDestroy(): void {
+    // Existing: release combined chat subscription
+    this.unsubscribe();
+
+    // New: terminate form subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

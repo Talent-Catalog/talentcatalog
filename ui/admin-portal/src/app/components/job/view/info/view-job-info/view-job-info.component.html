@@ -18,7 +18,11 @@
   <tc-card-header>
    Job Information
     <div *ngIf="editable" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
-      <tc-button id="edit-job-info-btn" ariaLabel="Edit Job Information" type="plain" color="primary" (onClick)="editJobInfo()">
+      <tc-button id="edit-job-info-btn"
+                 ariaLabel="Edit Job Information"
+                 type="solid"
+                 color="primary"
+                 (onClick)="editJobInfo()">
         <i class="fas fa-edit"></i>
       </tc-button>
     </div>
