@@ -15,10 +15,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="card">
+<tc-card >
 
   <!-- HEADER -->
-  <div class="card-header justify-content-between">
+  <tc-card-header>
 
     <span>Attachments <span *ngIf="loading">
         <i class="fas fa-spinner fa-spin"></i> loading...
@@ -31,18 +31,18 @@
 <!--        <i class="fas fa-plus"></i> Link-->
 <!--      </button>-->
 
-      <button class="btn btn-sm btn-primary ms-2" (click)="addAttachment('file')">
+      <tc-button type="outline"  (click)="addAttachment('file')">
         <i class="fas fa-plus"></i> File
-      </button>
+      </tc-button>
     </div>
 
-  </div>
+  </tc-card-header>
 
   <!-- BODY -->
   <div class="card-body">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
     <!-- EMPTY STATE -->
     <div *ngIf="!candidate.candidateAttachments?.length">
       <p >
@@ -98,13 +98,13 @@
         <!-- EDIT -->
         <div class="col-2 col-sm-auto" *ngIf="editable">
           <div class="float-end">
-            <button class="btn btn-sm btn-outline-secondary me-2" (click)="editCandidateAttachment(attachment)">
-              <i class="fas fa-edit"></i>
-            </button>
+            <tc-button type="outline" color="secondary" (click)="editCandidateAttachment(attachment)">
+              <i class="fas fa-edit"></i> Edit
+            </tc-button>
 
-            <button class="btn btn-sm btn-outline-danger " (click)="deleteCandidateAttachment(attachment)">
+            <tc-button type="plain"  color="gray" (click)="deleteCandidateAttachment(attachment)">
               <i class="fas fa-trash"></i>
-            </button>
+            </tc-button>
           </div>
         </div>
 
@@ -113,7 +113,7 @@
     </div>
   </div>
 
-</div>
+</tc-card>
 
 
 
