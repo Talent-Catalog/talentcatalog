@@ -173,8 +173,9 @@ export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
       this.results = results;
       this.candidates = results.content;
 
-    //Following the search, filter loses focus, so focus back on it again
-    setTimeout(()=>{this.searchFilter?.focus()},0);
+    // todo fix this focus feature using the new tc-input component, currently throws angular error
+    // //Following the search, filter loses focus, so focus back on it again
+    // setTimeout(()=>{this.searchFilter?.focus()},0);
 
     this.fetchChats();
   }
