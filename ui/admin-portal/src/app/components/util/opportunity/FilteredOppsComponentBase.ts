@@ -16,7 +16,6 @@
 
 import {
   Directive,
-  ElementRef,
   EventEmitter,
   Inject,
   Input,
@@ -51,6 +50,7 @@ import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
 import {Partner} from "../../../model/partner";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Directive()
 export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges, OnDestroy {
@@ -116,7 +116,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   results: SearchResults<T>;
 
   //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
-  protected searchFilter: ElementRef;
+  protected searchFilter: InputComponent;
 
   searchForm: UntypedFormGroup;
 
@@ -434,7 +434,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     }
 
     //Following the search filter loses focus, so focus back on it again
-    setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
+    setTimeout(()=>{this.searchFilter.focus()},0);
   }
 
   canAccessSalesforce(): boolean {
