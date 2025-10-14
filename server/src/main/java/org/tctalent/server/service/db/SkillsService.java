@@ -26,6 +26,9 @@ import org.springframework.lang.NonNull;
  */
 public interface SkillsService {
 
+    //TODO JC Doc
+    List<String> extractSkills(String text);
+
     /**
      * Returns English language skills.
      * <p>

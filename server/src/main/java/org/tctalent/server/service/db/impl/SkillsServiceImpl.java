@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,13 @@ public class SkillsServiceImpl implements SkillsService {
     private final static int CHUNK_SIZE = 100;
     private final static String DELIMITER = "\n";
     private final static int INITIAL_CAPACITY = 25_000;
+
+    @Override
+    public List<String> extractSkills(String text) {
+        List<String> skills = new ArrayList<>();
+        //TODO JC Call Python service
+        return skills;
+    }
 
     @Override
     public @NonNull List<String> getSkills() {
