@@ -14,16 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
@@ -33,6 +24,7 @@ import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
 import {ChatService} from "../../../services/chat.service";
 import {BehaviorSubject, forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 /**
  * Simple candidate view with support for showing read/unread status of their chats with source.
@@ -66,7 +58,7 @@ export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
-  @ViewChild("searchFilter") searchFilter: ElementRef;
+  @ViewChild("searchFilter", {static: false}) searchFilter: InputComponent;
 
   error: any;
   loading: boolean;
@@ -182,7 +174,7 @@ export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
       this.candidates = results.content;
 
     //Following the search, filter loses focus, so focus back on it again
-    setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
+    setTimeout(()=>{this.searchFilter?.focus()},0);
 
     this.fetchChats();
   }

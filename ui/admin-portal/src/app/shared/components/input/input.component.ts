@@ -194,6 +194,8 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   }
 
   focus(): void {
-    this.inputEl.nativeElement.focus();
+    if (this.inputEl?.nativeElement) {
+      this.inputEl.nativeElement.focus();
+    }
   }
 }
