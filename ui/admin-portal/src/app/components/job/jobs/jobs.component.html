@@ -32,7 +32,12 @@
             Job Search
           </tc-label>
           <tc-description>Search the list of available jobs for candidates</tc-description>
-          <tc-input #searchFilter id="keyword" placeholder="Job Name" ariaLabel="Search"></tc-input>
+          <tc-input #searchFilter
+                    id="keyword"
+                    placeholder="Job Name"
+                    ariaLabel="Search"
+                    formControlName="keyword">
+          </tc-input>
         </tc-field>
 
         <tc-field>
