@@ -131,8 +131,9 @@ export class InputComponent implements ControlValueAccessor, OnInit {
 
   @ViewChild('inputEl', { static: false }) inputEl!: ElementRef<HTMLInputElement>;
 
-  protected _value: string | boolean = '';
+  private _value: string | boolean = '';
 
+  @Input()
   get value(): string | boolean {
     return this._value;
   }
@@ -141,7 +142,9 @@ export class InputComponent implements ControlValueAccessor, OnInit {
     if (val !== this._value) {
       this._value = val;
       this.onChange(val);
-      this.valueChange.emit(this.type === 'checkbox' ? val as boolean : val as string);
+      this.valueChange.emit(
+        this.type === 'checkbox' ? (val as boolean) : (val as string)
+      );
     }
   }
 
