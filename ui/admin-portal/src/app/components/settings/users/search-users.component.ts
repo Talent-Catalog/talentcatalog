@@ -66,7 +66,7 @@ export class SearchUsersComponent implements OnInit {
       status: ['active']
     });
     this.pageNumber = 1;
-    this.pageSize = 50;
+    this.pageSize = 5;
 
     this.onChanges();
     if (this.authService.getLoggedInRole() === Role.partneradmin) {
@@ -90,6 +90,11 @@ export class SearchUsersComponent implements OnInit {
   getLoggedInUser(){
     /* GET LOGGED IN USER ROLE FROM LOCAL STORAGE */
     this.loggedInUser = this.authenticationService.getLoggedInUser();
+    this.search();
+  }
+
+  changePage(pageNumber: number) {
+    this.pageNumber = pageNumber;
     this.search();
   }
 
