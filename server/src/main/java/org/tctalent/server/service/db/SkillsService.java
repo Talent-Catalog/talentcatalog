@@ -17,6 +17,8 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
 
 /**
@@ -27,14 +29,24 @@ import org.springframework.lang.NonNull;
 public interface SkillsService {
 
     /**
-     * Extracts skills from the given text.
+     * Extracts skill names from the given text.
      * @param text Text to extract skills from.
+     * @param languageCode Language code.
      * @return List of skills extracted from the given text.
      */
-    List<String> extractSkills(String text);
+    List<String> extractSkillNames(String text, @NonNull String languageCode);
+
 
     /**
-     * Returns English language skills.
+     * Returns a page of skill names.
+     * @param request Page request. Note that sorting is not supported. Any sort-order will be ignored.
+     * @param languageCode Language code.
+     * @return Page of skills.
+     */
+    Page<String> getSkillNames(PageRequest request, @NonNull String languageCode);
+
+    /**
+     * Returns all skill names.
      * <p>
      * Skills can be single words or short phrases. There could be around 20,000 of them. This list
      * of skills does not change often - so the skill list will be cached.
@@ -42,9 +54,10 @@ public interface SkillsService {
      * These skills can come from multiple sources (for example Esco and ONet).
      * <p>
      * All skills are converted to lower case and duplicates are removed.
+     * @param languageCode Language code.
      *
-     * @return Immutable list of skills.
+     * @return Immutable list of skill names.
      */
     @NonNull
-    List<String> getSkills();
+    List<String> getSkillNames(@NonNull String languageCode);
 }

@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -38,15 +39,15 @@ class SkillsServiceImplTest {
     }
 
     @Test
-    void extractSkills() {
+    void extractSkillNames() {
         String text = "John knows Java, Python, and Scala. He also knows C++, C, and Fortran.";
-        List<String> skills = skillsService.extractSkills(text);
+        List<String> skills = skillsService.extractSkillNames(text, Locale.ENGLISH.getLanguage());
         assertNotNull(skills);
     }
 
     @Test
-    void getSkills() {
-        final List<String> escoSkills = skillsService.getSkills();
-        assertNotNull(escoSkills);
+    void getSkillNames() {
+        final List<String> skills = skillsService.getSkillNames(Locale.ENGLISH.getLanguage());
+        assertNotNull(skills);
     }
 }
