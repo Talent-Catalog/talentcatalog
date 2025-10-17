@@ -16,34 +16,32 @@
 
 package org.tctalent.server.service.api;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Known skills.
+ * Skill name in a given language.
  * <p>
- * Currently not used - but this is a suggestion for providing skill names with an indication
- * of their source. It gets complicated because the same skill name could occur in multiple sources.
- * And each source will have its own id for what is essentially the same skill.
- * <p>
- * Currently, we are working with an approach which merges the names of skills from multiple sources,
- * removing duplicates. So it is not clear which source a particular skill name comes from.
- * <p>
+ * Note that the same skill can have multiple names (ie aliases) even in the same languages.
  * @author John Cameron
  */
 @Getter
 @Setter
 @ToString
-public class Skill {
+@AllArgsConstructor
+public class SkillName {
 
     /**
-     * Source of the skill.
+     * Language code of the skill name. eg lang = "en" for English.
      */
-    private SkillSource source;
+    private String lang;
 
     /**
-     * Unique ID of skill in the source.
+     * A name for the skill in the language specified by languageCode.
+     * <p>
+     * Note that a skill may have multiple names (aliases) even within a given language.
      */
-    private String sourceSkillId;
+    private String name;
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
+import org.tctalent.server.service.api.SkillName;
 
 /**
  * Service related to exposing and managing skills.
@@ -34,7 +35,7 @@ public interface SkillsService {
      * @param languageCode Language code.
      * @return List of skills extracted from the given text.
      */
-    List<String> extractSkillNames(String text, @NonNull String languageCode);
+    List<String> extractSkillNames(@NonNull String text, @NonNull String languageCode);
 
 
     /**
@@ -43,7 +44,7 @@ public interface SkillsService {
      * @param languageCode Language code.
      * @return Page of skills.
      */
-    Page<String> getSkillNames(PageRequest request, @NonNull String languageCode);
+    Page<SkillName> getSkillNames(PageRequest request, @NonNull String languageCode);
 
     /**
      * Returns all skill names.
@@ -59,5 +60,5 @@ public interface SkillsService {
      * @return Immutable list of skill names.
      */
     @NonNull
-    List<String> getSkillNames(@NonNull String languageCode);
+    List<SkillName> getSkillNames(@NonNull String languageCode);
 }
