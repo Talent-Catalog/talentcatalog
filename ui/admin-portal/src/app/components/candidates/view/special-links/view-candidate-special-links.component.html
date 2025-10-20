@@ -14,31 +14,31 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
 
-<div class="card">
-  <div class="card-header">
+<tc-card>
+  <tc-card-header>
     Special links
     <span *ngIf="loading">
         <i class="fas fa-spinner fa-spin"></i>
     </span>
-    <div class="float-end" *ngIf="editable">
-      <button *ngIf="canAccessSalesforce()" class="btn btn-primary me-2"
+    <div class="flex" *ngIf="editable">
+      <tc-button type="outline" *ngIf="canAccessSalesforce()"
               (click)="createUpdateSalesforce()">
         <i class="fab fa-salesforce"></i> Create/update Salesforce
-      </button>
+      </tc-button>
       <button *ngIf="!candidate.folderlink && canAccessGoogleDrive()"
-              class="btn btn-primary me-2"
+
               (click)="createCandidateFolder()">
         <i class="fab fa-google-drive"></i> Create Google Docs Folder
       </button>
-      <button class="btn btn-sm btn-secondary" (click)="editSpecialLinks()">
+      <tc-button style="margin-left: 0.5rem"  (click)="editSpecialLinks()">
         <i class="fas fa-edit"></i>
-      </button>
+      </tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
   <div class="card-body">
 
@@ -87,4 +87,4 @@
     </div>
   </div>
 
-</div>
+</tc-card>
