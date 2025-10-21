@@ -1505,7 +1505,6 @@ public class SystemAdminApi {
 
     @GetMapping("migrate/extract")
     public void migrateExtract() {
-        TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
         Long userId = 1L;
         if (authService != null) {
             User loggedInUser = authService.getLoggedInUser().orElse(null);
@@ -1515,8 +1514,8 @@ public class SystemAdminApi {
         }
 
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
-        extractTextFromMigratedFiles(textExtractHelper, types);
-        extractTextFromNewFiles(textExtractHelper, types);
+        extractTextFromMigratedFiles(types);
+        extractTextFromNewFiles(types);
     }
 
 //    @GetMapping("es-to-db/unhcr-status")
@@ -1524,7 +1523,7 @@ public class SystemAdminApi {
         populateElasticsearchService.populateCandidateFromElastic();
     }
 
-    private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {
+    private void extractTextFromMigratedFiles(List<String> types) {
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
         int count = 0;
         int success = 0;
@@ -1533,7 +1532,7 @@ public class SystemAdminApi {
                 String uniqueFilename = file.getLocation();
                 String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
                 if(StringUtils.isNotBlank(extractedText)) {
                     file.setTextExtract(extractedText);
                     candidateAttachmentRepository.save(file);
@@ -1557,7 +1556,7 @@ public class SystemAdminApi {
         }
     }
 
-    private void extractTextFromNewFiles(TextExtractHelper textExtractHelper, List<String> types) {
+    private void extractTextFromNewFiles(List<String> types) {
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
         int count = 0;
         int success = 0;
@@ -1566,7 +1565,7 @@ public class SystemAdminApi {
                 String uniqueFilename = file.getLocation();
                 String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
                 if (StringUtils.isNotBlank(extractedText)) {
                     file.setTextExtract(extractedText);
                     candidateAttachmentRepository.save(file);

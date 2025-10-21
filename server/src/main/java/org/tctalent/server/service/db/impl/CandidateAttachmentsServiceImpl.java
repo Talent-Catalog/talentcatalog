@@ -72,7 +72,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final FileSystemService fileSystemService;
     private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
-    private final TextExtractHelper textExtractHelper;
 
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
@@ -86,7 +85,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         this.fileSystemService = fileSystemService;
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
-        this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
     }
 
     @Override
@@ -196,7 +194,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             // Extract text from the file
             if(request.getCv()) {
                 try {
-                    textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
+                    textExtract = TextExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
                     if(StringUtils.isNotBlank(textExtract)) {
                         attachment.setTextExtract(textExtract);
                         candidateAttachmentRepository.save(attachment);
@@ -396,7 +394,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                         }
                         File srcFile = this.s3ResourceHelper.downloadFile(
                             this.s3ResourceHelper.getS3Bucket(), destination);
-                        String extractedText = textExtractHelper.getTextExtractFromFile(srcFile,
+                        String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile,
                             candidateAttachment.getFileType());
                         if (StringUtils.isNotBlank(extractedText)) {
                             candidateAttachment.setTextExtract(extractedText);
@@ -480,8 +478,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         String textExtract = null;
         if(uploadType == UploadType.cv) {
             try {
-                textExtract = textExtractHelper
-                    .getTextExtractFromFile(tempFile, fileType);
+                textExtract = TextExtractHelper.getTextExtractFromFile(tempFile, fileType);
             } catch (Exception e) {
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())

@@ -21,31 +21,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.repository.db.CandidateAttachmentRepository;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
 
 public class TextExtractHelper {
 
-        private final CandidateAttachmentRepository candidateAttachmentRepository;
-        private final S3ResourceHelper s3ResourceHelper;
-
-        @Autowired
-        public TextExtractHelper(CandidateAttachmentRepository candidateAttachmentRepository,
-                                 S3ResourceHelper s3ResourceHelper) {
-            this.candidateAttachmentRepository = candidateAttachmentRepository;
-            this.s3ResourceHelper = s3ResourceHelper;
-        }
-
-        public String getTextFromPDFFile(File srcFile) throws IOException {
+        public static String getTextFromPDFFile(File srcFile) throws IOException {
             PDFTextStripper tStripper = new PDFTextStripper();
             tStripper.setSortByPosition(true);
             PDDocument document = PDDocument.load(srcFile);
@@ -57,7 +43,7 @@ public class TextExtractHelper {
             return pdfFileInText.trim();
         }
 
-        public String getTextFromDocxFile(File srcFile) throws IOException {
+        public static String getTextFromDocxFile(File srcFile) throws IOException {
             FileInputStream fis = new FileInputStream(srcFile);
             XWPFDocument doc = new XWPFDocument(fis);
             XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
@@ -66,7 +52,7 @@ public class TextExtractHelper {
             return docxTxt;
         }
 
-        public String getTextFromDocFile(File srcFile) throws IOException {
+        public static String getTextFromDocFile(File srcFile) throws IOException {
             FileInputStream fis = new FileInputStream(srcFile);
             HWPFDocument document = new HWPFDocument(fis);
             WordExtractor we = new WordExtractor(document);
@@ -75,12 +61,12 @@ public class TextExtractHelper {
             return docTxt;
         }
 
-        public String getTextFromTxtFile(File srcFile) throws IOException {
+        public static String getTextFromTxtFile(File srcFile) throws IOException {
             String txt = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
             return txt;
         }
 
-        public @Nullable String getTextExtractFromFile(File srcFile, @Nullable String fileType) throws IOException {
+        public static @Nullable String getTextExtractFromFile(File srcFile, @Nullable String fileType) throws IOException {
             if(fileType == null) {
                 return null;
             } else if(fileType.equals("pdf")) {
