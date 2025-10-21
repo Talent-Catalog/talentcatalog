@@ -2,7 +2,7 @@
   <li *ngFor="let tab of tabs; let i = index"
     class="nav-item"
     (click)="selectTab(i)">
-    <a class="nav-link" [class.active]="i === activeIndex" [title]="tab.description">
+    <a class="nav-link" [class.active]="i === activeIndex" [title]="tab.description ? tab.description : ''">
       <ng-container *ngTemplateOutlet="tab.header"></ng-container>
     </a>
   </li>
