@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
+import {SearchResults} from "../../../model/search-results";
 
 /**
  * @component TcTableComponent
@@ -17,9 +18,8 @@ import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angula
  * ```html
  * <tc-table
  *   name="My Paged Search Results"
- *   [totalElements]="results?.totalElements"
- *   [pageSize]="pageSize"
- *   [(pageNumber)]="pageNumber"
+ *   [results]="results"
+ *   [loading]="loading"
  *   (pageChange)="search()">
  * </tc-table>
  * ```
@@ -34,17 +34,21 @@ import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angula
   encapsulation: ViewEncapsulation.None
 })
 export class TcTableComponent {
-  /** Table name (optional) */
+  // Required inputs
+  /** Knowing the results allows the table to display a 'no results' warning if no results appear
+   * (e.g. in a table search).
+   * For paged search results passing them in allows the table to include the pagination feature.
+   */
+  @Input() results: SearchResults<any> | any[];
+  @Input() loading: boolean = false;
+
+  // Optional style inputs
   @Input() name: string;
-  /** Types of table styles */
   @Input() striped: boolean = false;
   @Input() hover: boolean = true;
 
-  /** Variables for pagination (see {@link TcPaginationComponent} for doc) */
-  @Input() totalElements: number;
-  @Input() pageSize: number;
-  @Input() pageNumber: number;
-  @Output() pageNumberChange = new EventEmitter<number>();
+  // Required inputs IF results are paged to support pagination
+  @Input() paginationPosition: 'top' | 'bottom' = 'bottom';
   @Output() pageChange = new EventEmitter();
 
   get classList() {
@@ -54,12 +58,61 @@ export class TcTableComponent {
     };
   }
 
+  get totalElements(): number {
+    if (!this.results) {
+      return 0;
+    }
+
+    if (Array.isArray(this.results)) {
+      return this.results.length;
+    }
+
+    return this.results.totalElements;
+  }
+
+  get pageNumber(): number | null {
+    if (!this.results || Array.isArray(this.results)) {
+      return null;
+    }
+
+    return this.results.number + 1;
+  }
+
+  get pageSize(): number | null {
+    if (!this.results || Array.isArray(this.results)) {
+      return null;
+    }
+
+    return this.results.size;
+  }
+
+  get hasResults(): boolean {
+    return !!this.results;
+  }
+
+  get noResults(): boolean {
+    if (!this.results) {
+      return false;
+    }
+
+    if (Array.isArray(this.results)) {
+      return this.results.length === 0;
+    }
+
+    return this.results.totalElements === 0;
+  }
+
+  get isPagedResults(): boolean {
+    if (!this.results) {
+      return false;
+    }
+
+    return !Array.isArray(this.results);
+  }
+
   onPageChange(newPageNumber: number) {
-    this.pageNumber = newPageNumber;
-    // Emit the pageNumberChange so I can use two way binding on pageNumber
-    this.pageNumberChange.emit(newPageNumber);
-    // Emit the pageChange event so I can do an action on the page change e.g. Search
-    this.pageChange.emit();
+    // Emit the pageChange event with new page number for search to be performed by parent
+    this.pageChange.emit(newPageNumber);
   }
 
 }
