@@ -81,11 +81,6 @@ export class SearchHelpLinksComponent implements OnInit {
 
   }
 
-  changePage(pageNumber: number) {
-    this.pageNumber = pageNumber;
-    this.search();
-  }
-
   /**
    * Search based on current search form contents
    */

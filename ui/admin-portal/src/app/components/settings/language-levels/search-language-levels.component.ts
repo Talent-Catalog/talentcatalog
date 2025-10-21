@@ -75,12 +75,6 @@ export class SearchLanguageLevelsComponent implements OnInit {
     return this.importForm.value?.langCode;
   }
 
-
-  changePage(pageNumber: number) {
-    this.pageNumber = pageNumber;
-    this.search();
-  }
-
   onChanges(): void {
     /* SEARCH ON CHANGE*/
     this.searchForm.valueChanges

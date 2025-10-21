@@ -93,12 +93,6 @@ export class SearchUsersComponent implements OnInit {
     this.search();
   }
 
-  changePage(pageNumber: number) {
-    this.pageNumber = pageNumber;
-    this.search();
-  }
-
-
 /* SEARCH FORM */
   search() {
     this.loading = true;

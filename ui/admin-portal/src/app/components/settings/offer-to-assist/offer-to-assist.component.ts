@@ -45,11 +45,6 @@ export class OfferToAssistComponent implements OnInit {
       });
   }
 
-  changePage(pageNumber: number) {
-    this.pageNumber = pageNumber;
-    this.search();
-  }
-
   search() {
     this.loading = true;
     const request: KeywordPagedSearchRequest =  {

@@ -73,11 +73,6 @@ export class DropdownTranslationsComponent implements OnInit {
       translations: this.fb.array([])
     });
   }
-  
-  changePage(pageNumber: number) {
-    this.pageNumber = pageNumber;
-    this.search();
-  }
 
   getSystemLanguages() {
     this.loading = true;

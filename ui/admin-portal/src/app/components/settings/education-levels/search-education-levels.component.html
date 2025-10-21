@@ -61,8 +61,11 @@
   </div>
 
 
-  <tc-table [results]="results" [loading]="loading" [paginationPosition]="'top'"
-            (pageChange)="changePage($event)">
+  <tc-table [results]="results"
+            [loading]="loading"
+            [paginationPosition]="'top'"
+            [(pageNumber)]="pageNumber"
+            (pageChange)="search()">
 
     <thead>
     <tr>

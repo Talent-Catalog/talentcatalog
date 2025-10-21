@@ -76,11 +76,6 @@ export class SearchPartnersComponent implements OnInit {
 
   }
 
-  changePage(pageNumber: number) {
-    this.pageNumber = pageNumber;
-    this.search();
-  }
-
   /**
    * Search based on current search form contents
    */

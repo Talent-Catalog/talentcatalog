@@ -42,7 +42,8 @@
 <tc-table [results]="results"
           [loading]="loading"
           [paginationPosition]="'top'"
-          (pageChange)="changePage($event)">
+          [(pageNumber)]="pageNumber"
+          (pageChange)="search()">
   <thead>
   <tr>
     <th *ngIf="!readOnly"></th>

@@ -37,7 +37,8 @@
 <tc-table [results]="results"
           [loading]="loading"
           [paginationPosition]="'top'"
-          (pageChange)="changePage($event)">
+          [(pageNumber)]="pageNumber"
+          (pageChange)="search()">
 
   <thead>
   <tr>
@@ -60,9 +61,9 @@
   <tbody>
   <tr *ngFor="let helpLink of results?.content">
     <td>
-      <div class="btn-group" *ngIf="!readOnly">
-        <button type="button" class="btn btn-default" (click)="editHelpLink(helpLink)"><i
-          class="fas fa-edit" title="Change partner details"></i></button>
+      <div *ngIf="!readOnly">
+        <tc-button type="plain" color="secondary" (onClick)="editHelpLink(helpLink)"><i
+          class="fas fa-edit" title="Change partner details"></i></tc-button>
       </div>
     </td>
     <td>{{helpLink.label}}</td>
