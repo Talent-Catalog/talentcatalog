@@ -14,100 +14,66 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div>
-  <div class="section">
-    <div>
-      <div class="float-end">
-        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addLink()">Add</button>
-      </div>
+<tc-alert *ngIf="error">
+  {{error}}
+</tc-alert>
+
+<form [formGroup]="searchForm" (ngSubmit)="search()">
+
+  <div class="row mb-3">
+
+    <div class="col-4">
+      <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                id="keyword"></tc-input>
     </div>
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
+
+    <div class="col-4">
+      <ng-select class="tc-select" id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
+        <ng-option value="active">Active</ng-option>
+        <ng-option value="inactive">Inactive</ng-option>
+      </ng-select>
     </div>
-    <form [formGroup]="searchForm" (ngSubmit)="search()">
 
-      <div class="row">
+    <div class="col-4 text-end">
+      <tc-button *ngIf="isAnAdmin() && !loggedInUser.readOnly" (onClick)="addLink()">Add</tc-button>
+    </div>
 
-        <div class="mb-3 col-4">
-          <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
-                 id="keyword">
-        </div>
+  </div>
+</form>
 
-        <div class="mb-3 col-4">
-          <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
-            <ng-option value="active">Active</ng-option>
-            <ng-option value="inactive">Inactive</ng-option>
-          </ng-select>
-        </div>
 
+<tc-table [results]="results" [loading]="loading" [paginationPosition]="'top'"
+          (pageChange)="changePage($event)">
+
+  <thead>
+  <tr>
+    <th>Saved List</th>
+    <th>Published Document Link</th>
+    <th></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let savedList of results?.content">
+    <td><a [routerLink]="['/list', savedList.id]"> {{savedList.name}}</a></td>
+    <td>
+      <a target="_blank" href="{{externalDocLink(savedList)}}">{{externalDocLink(savedList)}}</a>
+      <div *ngIf="savedList.publishedDocLink == null" class="text-muted small">
+        <i class="fas fa-exclamation-circle"></i>
+        No published doc associated with list, link will not go anywhere.
       </div>
-    </form>
-  </div>
+    </td>
+    <td>
+      <div class="d-flex justify-content-evenly" *ngIf="(!loggedInUser.readOnly)">
+        <tc-button type="plain" color="info" (onClick)="doCopyLink(savedList)"><i
+          class="fas fa-link" title="Copy shareable link"></i></tc-button>
+        <tc-button type="plain" color="secondary" (onClick)="editLink(savedList)"><i
+          class="fas fa-edit"></i></tc-button>
+        <tc-button type="plain" color="gray" (onClick)="deleteLink(savedList)"><i
+          class="fas fa-trash"></i></tc-button>
+      </div>
+    </td>
+  </tr>
+  </tbody>
 
-  <div class="text-muted mb-2 align-middle">
-
-    <ngb-pagination class="float-end"
-                    [boundaryLinks]="true"
-                    [pageSize]="pageSize"
-                    [collectionSize]="results?.totalElements"
-                    [(page)]="pageNumber"
-                    [maxSize]="5"
-                    [ellipses]="true"
-                    [rotate]="true"
-                    (pageChange)="search()">
-    </ngb-pagination>
-
-    Found {{results?.totalElements}} external links
-  </div>
-
-  <table class="table align-middle">
-
-    <thead class="table-primary">
-    <tr>
-      <th>Saved List</th>
-      <th>Published Document Link</th>
-      <th></th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr *ngFor="let savedList of results?.content">
-      <td><a [routerLink]="['/list', savedList.id]"> {{savedList.name}}</a></td>
-      <td>
-        <a target="_blank" href="{{externalDocLink(savedList)}}">{{externalDocLink(savedList)}}</a>
-        <div *ngIf="savedList.publishedDocLink == null" class="text-muted small">
-          <i class="fas fa-exclamation-circle"></i>
-          No published doc associated with list, link will not go anywhere.
-        </div>
-      </td>
-      <td>
-        <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
-          <button type="button" class="btn btn-default" (click)="doCopyLink(savedList)"><i
-            class="fas fa-link" title="Copy shareable link"></i></button>
-          <button type="button" class="btn btn-default" (click)="editLink(savedList)"><i
-            class="fas fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteLink(savedList)"><i
-            class="fas fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>
-
-    <!-- loading -->
-    <tr *ngIf="loading">
-      <td colspan="42">
-        <i class="fas fa-spinner fa-spin"></i> Loading...
-      </td>
-    </tr>
-
-    <!-- no results -->
-    <tr *ngIf="!loading && !results?.totalElements">
-      <td colspan="42">
-        <span class="text-muted">(no matching external links)</span>
-      </td>
-    </tr>
-
-    </tbody>
-
-  </table>
-
-</div>
+</tc-table>

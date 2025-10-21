@@ -13,47 +13,43 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
+<tc-loading [loading]="loading"></tc-loading>
 
-<div class="main container">
-  <ng-container *ngIf="!loading; else isLoading">
-
+<div *ngIf="!loading" class="main container">
     <div class="header">
       <h4>General Translations</h4>
       <div>
-        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-success"
-                (click)="save()" [disabled]="saving || error || saveError">Save</button>
+        <tc-button *ngIf="isAnAdmin() && !loggedInUser.readOnly"
+                (onClick)="save()" [disabled]="saving || error || saveError">Save</tc-button>
       </div>
     </div>
-
-    <div class="alert alert-danger mt-2" *ngIf="saveError">
+    <tc-alert *ngIf="saveError">
       Sorry, there was an error saving this file:
       <div>
         {{saveError | json}}
       </div>
-    </div>
-
-    <div class="alert alert-danger mt-2" *ngIf="error">
+    </tc-alert>
+    <tc-alert *ngIf="error">
       Sorry, there was an error loading this file:
       <div>
         {{error | json}}
       </div>
-    </div>
-
+    </tc-alert>
     <div class="filter">
       <div class="row">
         <div class="col-sm-6">
-          <ng-select [items]="languages" (change)="setLanguage($event)" [clearable]="false" [ngModel]="systemLanguage">
+          <ng-select class="tc-select" [items]="languages" (change)="setLanguage($event)" [clearable]="false" [ngModel]="systemLanguage">
           </ng-select>
         </div>
         <div class="col-sm-6">
-          <ng-select [items]="keys" [placeholder]="'Filter by a specific field group'" [clearable]="true" (change)="filterItems($event)">
+          <ng-select class="tc-select" [items]="keys" [placeholder]="'Filter by a specific field group'" [clearable]="true" (change)="filterItems($event)">
           </ng-select>
         </div>
       </div>
     </div>
 
-    <table class="table table-bordered">
-      <thead class="table-primary">
+    <tc-table [results]="fields" [loading]="loading">
+      <thead>
       <tr>
         <th>Field</th>
         <th>Translation</th>
@@ -71,14 +67,9 @@
         </tr>
       </ng-container>
       </tbody>
-    </table>
+    </tc-table>
 
-    <button class="btn btn-primary position-fixed bottom-0 end-0 m-3" (click)="scrollToTop()">
+    <tc-button class="position-fixed bottom-0 end-0 m-3" (onClick)="scrollToTop()">
          <i class="fas fa-chevron-up"></i>
-    </button>
-  </ng-container>
+    </tc-button>
 </div>
-
-<ng-template #isLoading>
-  Loading...
-</ng-template>

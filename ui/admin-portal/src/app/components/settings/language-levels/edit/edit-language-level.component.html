@@ -14,53 +14,32 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Edit Language Level</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
-
+<tc-modal heading="Edit Langauge Level" (onAction)="onSave()" [disableAction]="languageLevelForm?.invalid || loading || saving">
+  <tc-loading [loading]="loading"></tc-loading>
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
-
+    <tc-alert *ngIf="error">{{error}}</tc-alert>
     <form [formGroup]="languageLevelForm">
-      <div class="mb-3">
-        <label class="form-label" for="level">TC Level</label>
-        <input type="number" min="0" class="form-control" id="level" formControlName="level">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="cefrLevel">CEFR Level</label>
-        <input type="text" min="0" class="form-control" id="cefrLevel" formControlName="cefrLevel">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="name">Name</label>
-        <input type="text" class="form-control" id="name" formControlName="name">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="status">Status</label>
-        <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
+      <tc-fieldset>
+      <tc-field>
+        <tc-label for="level">TC Level</tc-label>
+        <tc-input type="number" min="0" id="level" formControlName="level"></tc-input>
+      </tc-field>
+      <tc-field>
+        <tc-label for="cefrLevel">CEFR Level</tc-label>
+        <tc-input type="text" min="0" id="cefrLevel" formControlName="cefrLevel"></tc-input>
+      </tc-field>
+      <tc-field>
+        <tc-label for="name">Name</tc-label>
+        <tc-input type="text" id="name" formControlName="name"></tc-input>
+      </tc-field>
+      <tc-field>
+        <tc-label for="status">Status</tc-label>
+        <ng-select class="tc-select" id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
           <ng-option value="active">Active</ng-option>
           <ng-option value="inactive">Inactive</ng-option>
         </ng-select>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="languageLevelForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
+      </tc-field>
+      </tc-fieldset>
     </form>
   </div>
-</div>
+</tc-modal>

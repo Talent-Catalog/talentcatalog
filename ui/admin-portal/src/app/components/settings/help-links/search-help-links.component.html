@@ -14,112 +14,70 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="section">
-  <div class="float-end">
-    <button *ngIf="!readOnly" class="btn btn-primary" (click)="addHelpLink()">Add</button>
-  </div>
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
-  <form [formGroup]="searchForm" (ngSubmit)="search()">
-
-    <div class="row">
-
-      <div class="mb-3 col-4">
-        <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
-               id="keyword">
-      </div>
-
-      <div class="mb-3 col-4">
-        <ng-select id="countryId" [formControlName]="'countryId'" [items]="destinationCountries"
-                   placeholder="Filter by country..." bindLabel="name" bindValue="id">
-        </ng-select>
-      </div>
-
+<tc-alert *ngIf="error">
+  {{error}}
+</tc-alert>
+<form [formGroup]="searchForm" (ngSubmit)="search()">
+  <div class="row">
+    <div class="mb-3 col-4">
+      <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                id="keyword"></tc-input>
     </div>
-  </form>
-</div>
-
-
-<div class="section d-flex justify-content-between">
-  <div class="text-muted mb-2 align-middle">
-    Found {{results?.totalElements}} help links
+    <div class="mb-3 col-4">
+      <ng-select class="tc-select" id="countryId" [formControlName]="'countryId'" [items]="destinationCountries"
+                 placeholder="Filter by country..." bindLabel="name" bindValue="id">
+      </ng-select>
+    </div>
+    <div class="col-4 text-end">
+      <tc-button *ngIf="!readOnly" (onClick)="addHelpLink()">Add</tc-button>
+    </div>
   </div>
-  <div>
-    <ngb-pagination class="float-end"
-                    [boundaryLinks]="true"
-                    [pageSize]="pageSize"
-                    [collectionSize]="results?.totalElements"
-                    [(page)]="pageNumber"
-                    [maxSize]="5"
-                    [ellipses]="true"
-                    [rotate]="true"
-                    (pageChange)="search()">
-    </ngb-pagination>
-  </div>
-</div>
+</form>
 
-<div class="section">
-  <div class="table-responsive">
+<tc-table [results]="results"
+          [loading]="loading"
+          [paginationPosition]="'top'"
+          (pageChange)="changePage($event)">
 
-    <table class="table align-middle">
+  <thead>
+  <tr>
+    <th *ngIf="!readOnly"></th>
 
-      <thead class="table-primary">
-      <tr>
-        <th *ngIf="!readOnly"></th>
+    <th>
+      Label <app-help [request]="labelHelpRequest"></app-help>
+    </th>
+    <th>Link</th>
+    <th>Country</th>
+    <th>Case Stage</th>
+    <th>Job Stage</th>
+    <th>Focus</th>
+    <th>Next Step Name</th>
+    <th>Next Step Text</th>
+    <th>Next Step Days</th>
+  </tr>
+  </thead>
 
-        <th>
-          Label <app-help [request]="labelHelpRequest"></app-help>
-        </th>
-        <th>Link</th>
-        <th>Country</th>
-        <th>Case Stage</th>
-        <th>Job Stage</th>
-        <th>Focus</th>
-        <th>Next Step Name</th>
-        <th>Next Step Text</th>
-        <th>Next Step Days</th>
-      </tr>
-      </thead>
+  <tbody>
+  <tr *ngFor="let helpLink of results?.content">
+    <td>
+      <div class="btn-group" *ngIf="!readOnly">
+        <button type="button" class="btn btn-default" (click)="editHelpLink(helpLink)"><i
+          class="fas fa-edit" title="Change partner details"></i></button>
+      </div>
+    </td>
+    <td>{{helpLink.label}}</td>
+    <td>
+      <a [href]="helpLink.link" target="_blank"
+         rel="noopener">{{helpLink.link}}</a>
+    </td>
+    <td>{{helpLink?.country?.name}}</td>
+    <td>{{caseStageKeyToValue(helpLink?.caseStage)}}</td>
+    <td>{{jobStageKeyToValue(helpLink?.jobStage)}}</td>
+    <td>{{focusKeyToValue(helpLink?.focus)}}</td>
+    <td>{{helpLink?.nextStepInfo?.nextStepName}}</td>
+    <td>{{helpLink?.nextStepInfo?.nextStepText}}</td>
+    <td>{{helpLink?.nextStepInfo?.nextStepDays}}</td>
+  </tr>
+  </tbody>
 
-      <tbody>
-      <tr *ngFor="let helpLink of results?.content">
-        <td>
-          <div class="btn-group" *ngIf="!readOnly">
-            <button type="button" class="btn btn-default" (click)="editHelpLink(helpLink)"><i
-              class="fas fa-edit" title="Change partner details"></i></button>
-          </div>
-        </td>
-        <td>{{helpLink.label}}</td>
-        <td>
-          <a [href]="helpLink.link" target="_blank"
-             rel="noopener">{{helpLink.link}}</a>
-        </td>
-        <td>{{helpLink?.country?.name}}</td>
-        <td>{{caseStageKeyToValue(helpLink?.caseStage)}}</td>
-        <td>{{jobStageKeyToValue(helpLink?.jobStage)}}</td>
-        <td>{{focusKeyToValue(helpLink?.focus)}}</td>
-        <td>{{helpLink?.nextStepInfo?.nextStepName}}</td>
-        <td>{{helpLink?.nextStepInfo?.nextStepText}}</td>
-        <td>{{helpLink?.nextStepInfo?.nextStepDays}}</td>
-      </tr>
-
-      <!-- loading -->
-      <tr *ngIf="loading">
-        <td colspan="42">
-          <i class="fas fa-spinner fa-spin"></i> Loading...
-        </td>
-      </tr>
-
-      <!-- no results -->
-      <tr *ngIf="!loading && !results?.totalElements">
-        <td colspan="42">
-          <span class="text-muted">(no matching help links)</span>
-        </td>
-      </tr>
-
-      </tbody>
-
-    </table>
-  </div>
-</div>
+</tc-table>

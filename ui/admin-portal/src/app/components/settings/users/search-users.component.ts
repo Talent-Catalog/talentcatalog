@@ -66,7 +66,7 @@ export class SearchUsersComponent implements OnInit {
       status: ['active']
     });
     this.pageNumber = 1;
-    this.pageSize = 5;
+    this.pageSize = 50;
 
     this.onChanges();
     if (this.authService.getLoggedInRole() === Role.partneradmin) {

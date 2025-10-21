@@ -14,120 +14,81 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="section">
-      <div class="float-end">
-        <button *ngIf="!readOnly" class="btn btn-primary" (click)="addPartner()">Add</button>
-      </div>
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
+<tc-alert *ngIf="error">
+  {{error}}
+</tc-alert>
+<form [formGroup]="searchForm" (ngSubmit)="search()">
+
+  <div class="row">
+
+    <div class="mb-3 col-4">
+      <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                id="keyword"></tc-input>
     </div>
-    <form [formGroup]="searchForm" (ngSubmit)="search()">
 
-      <div class="row">
+    <div class="mb-3 col-4">
+      <ng-select class="tc-select" id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
+        <ng-option value="active">Active</ng-option>
+        <ng-option value="inactive">Inactive</ng-option>
+      </ng-select>
+    </div>
 
-        <div class="mb-3 col-4">
-          <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
-                 id="keyword">
-        </div>
+    <div class="col-4 text-end">
+      <tc-button *ngIf="!readOnly" (onClick)="addPartner()">Add</tc-button>
+    </div>
 
-        <div class="mb-3 col-4">
-          <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
-            <ng-option value="active">Active</ng-option>
-            <ng-option value="inactive">Inactive</ng-option>
-          </ng-select>
-        </div>
-
-      </div>
-    </form>
-</div>
-
-
-<div class="section">
-  <div class="text-muted mb-2 align-middle">
-
-    <ngb-pagination class="float-end"
-                    [boundaryLinks]="true"
-                    [pageSize]="pageSize"
-                    [collectionSize]="results?.totalElements"
-                    [(page)]="pageNumber"
-                    [maxSize]="5"
-                    [ellipses]="true"
-                    [rotate]="true"
-                    (pageChange)="search()">
-    </ngb-pagination>
-
-    Found {{results?.totalElements}} partners
   </div>
-</div>
-<div class="section">
-  <div class="table-responsive">
+</form>
+<tc-table [results]="results"
+          [loading]="loading"
+          [paginationPosition]="'top'"
+          (pageChange)="changePage($event)">
+  <thead>
+  <tr>
+    <th *ngIf="!readOnly"></th>
+    <th>Partner</th>
+    <th>Abbreviation</th>
+    <th>Contact</th>
+    <th>Email</th>
+    <th>Job Creator?</th>
+    <th>Source Partner?</th>
+    <th>Source countries</th>
+    <th>Autoassignable?</th>
+    <th>Logo</th>
+    <th>Website</th>
+    <th>Rego Landing page</th>
+    <th>Default partner ref?</th>
+    <th>Status</th>
+    <th>Redirect Partner</th>
+  </tr>
+  </thead>
 
-    <table class="table align-middle">
+  <tbody>
+  <tr *ngFor="let partner of results?.content">
+    <td>
+      <tc-icon *ngIf="!readOnly" type="button" color="secondary" class="mx-3" (click)="editPartner(partner)">
+        <i class="fas fa-edit" title="Change partner details"></i>
+      </tc-icon>
+    </td>
+    <td>{{partner.name}}
+      <a *ngIf="partner.sflink && canAccessSalesforce()" [href]="partner.sflink" target="_blank">
+        <i class="fab fa-salesforce" title="Show partner account in Salesforce"></i>
+      </a>
+    </td>
+    <td>{{partner.abbreviation}}</td>
+    <td>{{showContact(partner.defaultContact)}}</td>
+    <td>{{partner.notificationEmail}}</td>
+    <td>{{partner.jobCreator}}</td>
+    <td>{{partner.sourcePartner}}</td>
+    <td>{{sourceCountries(partner)}}</td>
+    <td>{{partner.autoAssignable}}</td>
+    <td>{{partner.logo}}</td>
+    <td>{{partner.websiteUrl}}</td>
+    <td>{{partner.registrationLandingPage}}</td>
+    <td>{{partner.defaultPartnerRef}}</td>
+    <td>{{partner.status}}</td>
+    <td>{{partner.redirectPartner?.abbreviation}}</td>
+  </tr>
 
-      <thead class="table-primary">
-      <tr>
-        <th *ngIf="!readOnly"></th>
-        <th>Partner</th>
-        <th>Abbreviation</th>
-        <th>Contact</th>
-        <th>Email</th>
-        <th>Job Creator?</th>
-        <th>Source Partner?</th>
-        <th>Source countries</th>
-        <th>Autoassignable?</th>
-        <th>Logo</th>
-        <th>Website</th>
-        <th>Rego Landing page</th>
-        <th>Default partner ref?</th>
-        <th>Status</th>
-        <th>Redirect Partner</th>
-      </tr>
-      </thead>
-
-      <tbody>
-      <tr *ngFor="let partner of results?.content">
-        <td>
-          <div class="btn-group" *ngIf="!readOnly">
-            <button type="button" class="btn btn-default" (click)="editPartner(partner)"><i
-              class="fas fa-edit" title="Change partner details"></i></button>
-          </div>
-        </td>
-        <td>{{partner.name}}
-          <a *ngIf="partner.sflink && canAccessSalesforce()" [href]="partner.sflink" target="_blank">
-            <i class="fab fa-salesforce" title="Show partner account in Salesforce"></i>
-          </a>
-        </td>
-        <td>{{partner.abbreviation}}</td>
-        <td>{{showContact(partner.defaultContact)}}</td>
-        <td>{{partner.notificationEmail}}</td>
-        <td>{{partner.jobCreator}}</td>
-        <td>{{partner.sourcePartner}}</td>
-        <td>{{sourceCountries(partner)}}</td>
-        <td>{{partner.autoAssignable}}</td>
-        <td>{{partner.logo}}</td>
-        <td>{{partner.websiteUrl}}</td>
-        <td>{{partner.registrationLandingPage}}</td>
-        <td>{{partner.defaultPartnerRef}}</td>
-        <td>{{partner.status}}</td>
-        <td>{{partner.redirectPartner?.abbreviation}}</td>
-      </tr>
-
-      <!-- loading -->
-      <tr *ngIf="loading">
-        <td colspan="42">
-          <i class="fas fa-spinner fa-spin"></i> Loading...
-        </td>
-      </tr>
-
-      <!-- no results -->
-      <tr *ngIf="!loading && !results?.totalElements">
-        <td colspan="42">
-          <span class="text-muted">(no matching external links)</span>
-        </td>
-      </tr>
-
-      </tbody>
-
-    </table>
-  </div>
-</div>
+  </tbody>
+</tc-table>

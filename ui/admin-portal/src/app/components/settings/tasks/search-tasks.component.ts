@@ -74,6 +74,11 @@ export class SearchTasksComponent implements OnInit {
     this.search();
   }
 
+  changePage(pageNumber: number) {
+    this.pageNumber = pageNumber;
+    this.search();
+  }
+
   search() {
     this.loading = true;
     const request: SearchTaskRequest =  {
