@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error" class="alert alert-danger">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
 <form [formGroup]="form" class="mb-3">
   <div class="row align-items-end" [appReadOnlyInputs]="isReadOnly()">
     <div class="col">
@@ -28,6 +28,7 @@
         </app-autosave-status>
       </div>
       <ng-select
+        class="tc-select"
         id="relocatingDependantIds"
         [items]="dependants"
         [multiple]="true"
@@ -47,7 +48,7 @@
       </ng-select>
     </div>
     <div *ngIf="!isReadOnly()" class="col-auto">
-      <button class="btn btn-sm btn-secondary mb-1" [disabled]="updatingSf || loading"
+      <tc-button type="outline" color="secondary" [disabled]="updatingSf || loading"
               (click)="requestSfCaseRelocationInfoUpdate()">
         <span *ngIf="updatingSf; else elseBlock">
             <i class="fas fa-spinner fa-spin"></i>
@@ -56,7 +57,7 @@
           <i class="fa-solid fa-chart-simple"></i>
         </ng-template>
         Update case stats
-      </button>
+      </tc-button>
     </div>
   </div>
   <div class="form-text">If a dependant isn't listed in the dropdown, you may need to add the dependant to the Dependants section under the Full Intake tab.</div>
