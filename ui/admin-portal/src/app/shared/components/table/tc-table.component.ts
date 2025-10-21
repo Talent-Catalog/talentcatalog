@@ -20,6 +20,7 @@ import {SearchResults} from "../../../model/search-results";
  *   name="My Paged Search Results"
  *   [results]="results"
  *   [loading]="loading"
+ *   [(pageNumber)]="pageNumber"
  *   (pageChange)="search()">
  * </tc-table>
  * ```
@@ -46,9 +47,12 @@ export class TcTableComponent {
   @Input() name: string;
   @Input() striped: boolean = false;
   @Input() hover: boolean = true;
+  // Optional if pagination supported
+  @Input() paginationPosition: 'top' | 'bottom' = 'bottom';
 
   // Required inputs IF results are paged to support pagination
-  @Input() paginationPosition: 'top' | 'bottom' = 'bottom';
+  @Input() pageNumber: number;
+  @Output() pageNumberChange = new EventEmitter<number>();
   @Output() pageChange = new EventEmitter();
 
   get classList() {
@@ -68,14 +72,6 @@ export class TcTableComponent {
     }
 
     return this.results.totalElements;
-  }
-
-  get pageNumber(): number | null {
-    if (!this.results || Array.isArray(this.results)) {
-      return null;
-    }
-
-    return this.results.number + 1;
   }
 
   get pageSize(): number | null {
@@ -111,8 +107,11 @@ export class TcTableComponent {
   }
 
   onPageChange(newPageNumber: number) {
-    // Emit the pageChange event with new page number for search to be performed by parent
-    this.pageChange.emit(newPageNumber);
+    this.pageNumber = newPageNumber;
+    // Emit the pageNumberChange so I can use two way binding on pageNumber
+    this.pageNumberChange.emit(newPageNumber);
+    // Emit the pageChange event so I can do an action on the page change e.g. Search
+    this.pageChange.emit();
   }
 
 }

@@ -131,7 +131,7 @@
     </form>
   </div>
 
-  <tc-table [results]="results" [loading]="loading" (pageChange)="search()" >
+  <tc-table [results]="results" [loading]="loading" [(pageNumber)]="pageNumber" (pageChange)="search()" >
     <!--          Header-->
     <thead>
     <tr>

@@ -453,8 +453,8 @@
 
       <!-- Table of list contents -->
       <tc-table
-        [totalElements]="results?.totalElements"
-        [pageSize]="pageSize"
+        [results]="results"
+        [loading]="loading"
         [(pageNumber)]="pageNumber"
         (pageChange)="doSearch(true)">
 
