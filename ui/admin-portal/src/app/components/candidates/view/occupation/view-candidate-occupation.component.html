@@ -24,7 +24,7 @@
 </tc-alert>
 
 <ng-container *ngIf="!loading">
-  <div class="mb-2 d-flex justify-content-between align-items-center">
+  <div class="mb-4 d-flex justify-content-between align-items-center">
     <!-- ORDER BY -->
     <tc-dropdown>
       <tc-dropdown-button [type]="'outline'">
@@ -68,20 +68,23 @@
   <!-- EXPERIENCE VIEW -->
   <ng-container *ngIf="!orderOccupation">
 
-    <div class="card mb-4" *ngFor="let experience of candidate?.candidateJobExperiences">
+    <tc-card class="mb-4" *ngFor="let experience of candidate?.candidateJobExperiences">
 
       <!-- HEADER -->
-      <div class="card-header">
+      <tc-card-header>
         <span>{{experience.role}}</span>
 
         <div class="float-end" *ngIf="editable">
-          <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(experience)"><i
-            class="fas fa-edit"></i></button>
+          <tc-button (onClick)="editCandidateJobExperience(experience)"
+                     [type]="'plain'"
+                     [color]="'secondary'"
+          >
+            <i class="fas fa-edit"></i>
+          </tc-button>
         </div>
-      </div>
+      </tc-card-header>
 
       <!-- BODY -->
-      <div class="card-body">
 
         <div class="row">
           <!-- DESCRIPTION -->
@@ -100,9 +103,7 @@
 
         </div>
 
-      </div>
-
-    </div>
+    </tc-card>
 
   </ng-container>
 
