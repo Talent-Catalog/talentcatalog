@@ -14,7 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-tabs class="mt-2" [activeTabId]="activeTabId" (tabChanged)="onTabChanged($event)">
+<tc-tabs class="mt-2"
+         [activeTabId]="activeTabId"
+         (tabChanged)="onTabChanged($event)"
+         [defaultTabId]="defaultTabId"
+>
 
   <tc-tab [id]="'NewSearch'"
           [description]="'Search TC candidate database'"
