@@ -86,6 +86,8 @@ import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {first} from "rxjs/operators";
+import {JobService} from "../../../services/job.service";
+import {SkillName} from "../../../model/skill";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -114,6 +116,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('formWrapper', {static: true}) formWrapper: ElementRef;
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
+  @Input() jobId: number;
   @Input() savedSearch: SavedSearch;
   @Input() pageNumber: number;
   @Input() pageSize: number;
@@ -172,6 +175,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private educationMajorService: EducationMajorService,
               private candidateOccupationService: CandidateOccupationService,
               private surveyTypeService: SurveyTypeService,
+              private jobService: JobService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private router: Router,
@@ -299,6 +303,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         this.showSearchRequest = this.savedSearch.defaultSearch;
       }
 
+      if (this.jobId) {
+        //Load the job skills
+        this.jobService.getSkills(this.jobId).subscribe({
+          next: (skills) => this.initializeQueryStringWithJobSkills(skills),
+        })
+      }
+
     }, error => {
       this.loading = false;
       this.error = error;
@@ -310,6 +321,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm.valueChanges.subscribe(() => {
       this.onFormChange.emit(this.searchForm.dirty);
     });
+  }
+
+  private initializeQueryStringWithJobSkills(skills: SkillName[]) {
+    if (skills && skills.length > 0) {
+      let queryString = skills.map(s => '"' + s.name + '"').join(' ');
+      this.searchForm.controls['simpleQueryString'].patchValue(queryString);
+
+    }
   }
 
   // Stops Keyword Search tooltip from opening on keydown.enter in inputs

@@ -23,6 +23,7 @@ import {SearchResults} from "../model/search-results";
 import {UpdateLinkRequest} from "../components/util/input/input-link/input-link.component";
 import {OpportunityService} from "../components/util/opportunity/OpportunityService";
 import {JobChatUserInfo} from "../model/chat";
+import {SkillName} from "../model/skill";
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +45,10 @@ export class JobService implements OpportunityService<Job> {
 
   get(id: number): Observable<Job> {
     return this.http.get<Job>(`${this.apiUrl}/${id}`);
+  }
+
+  getSkills(id: number): Observable<SkillName[]> {
+    return this.http.get<SkillName[]>(`${this.apiUrl}/${id}/skills`);
   }
 
   publishJob(id: number): Observable<Job> {
