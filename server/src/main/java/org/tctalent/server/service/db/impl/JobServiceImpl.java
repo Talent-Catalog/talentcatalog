@@ -87,6 +87,7 @@ import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.EmployerService;
@@ -101,6 +102,7 @@ import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
@@ -144,6 +146,7 @@ public class JobServiceImpl implements JobService {
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
+    private final SkillsService skillsService;
     private final JobOppIntakeService jobOppIntakeService;
     private final NextStepProcessingService nextStepProcessingService;
 
@@ -433,6 +436,20 @@ public class JobServiceImpl implements JobService {
         SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
         return checkEmployerEntity(jobOpp);
+    }
+
+    @Override
+    public @NonNull List<SkillName> getSkills(long id, @NonNull String lang) {
+        SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
+
+        String text = extractJobText(jobOpp);
+        return skillsService.extractSkillNames(text, lang);
+    }
+
+    private String extractJobText(SalesforceJobOpp jobOpp) {
+        //TODO JC Other sources of text
+        return jobOpp.getJobSummary();
     }
 
     /**
