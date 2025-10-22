@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.api;
 
+import java.util.List;
+
 /**
  * Service for extracting skills from a given text.
  *
@@ -26,7 +28,7 @@ public interface TcSkillsExtractionService {
     /**
      * Extracts skills from the text contained in the given request.
      * @param request Request containg the text to extract skills from.
-     * @return Response containing the extracted skills.
+     * @return List of the extracted skills.
      */
-    ExtractSkillsResponse extractSkills(ExtractSkillsRequest request);
+    List<SkillName> extractSkills(ExtractSkillsRequest request);
 }

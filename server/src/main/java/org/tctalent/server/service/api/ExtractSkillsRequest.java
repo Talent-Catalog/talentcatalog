@@ -19,6 +19,7 @@ package org.tctalent.server.service.api;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.NonNull;
 
 /**
  * Request to extract skills from a given text.
@@ -31,7 +32,14 @@ import lombok.ToString;
 public class ExtractSkillsRequest {
 
     /**
+     * Language of the text to be scanned for skills - eg 'en' for English
+     */
+    @NonNull
+    private String lang;
+
+    /**
      * The text to extract skills from.
      */
+    @NonNull
     private String text;
 }

@@ -35,7 +35,7 @@ public interface SkillsService {
      * @param languageCode Language code.
      * @return List of skills extracted from the given text.
      */
-    List<String> extractSkillNames(@NonNull String text, @NonNull String languageCode);
+    List<SkillName> extractSkillNames(@NonNull String text, @NonNull String languageCode);
 
 
     /**

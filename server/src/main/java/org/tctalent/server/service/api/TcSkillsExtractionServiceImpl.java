@@ -18,6 +18,8 @@ package org.tctalent.server.service.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import java.util.List;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -41,14 +43,14 @@ public class TcSkillsExtractionServiceImpl implements TcSkillsExtractionService 
     }
 
     @Override
-    public ExtractSkillsResponse extractSkills(ExtractSkillsRequest request) throws RestClientException {
+    public List<SkillName> extractSkills(ExtractSkillsRequest request) throws RestClientException {
         return restClient.post()
             .uri("/extract_skills")
             .contentType(APPLICATION_JSON)
             .header("x-api-key", properties.getApiKey())
             .body(request)
             .retrieve()
-            .body(ExtractSkillsResponse.class);
+            .body(new ParameterizedTypeReference<>() {});
 
     }
 }
