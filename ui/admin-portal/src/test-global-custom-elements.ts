@@ -225,8 +225,47 @@ class TcTextareaStubComponent extends ValueAccessorStubBase {
 }
 
 @Component({
+  selector: 'tc-loading',
+  template: `
+    <ng-container>
+      <div *ngIf="loading"
+           class="tc-loader"
+           [ngClass]="{
+             'tc-loader-page': type === 'page',
+             'tc-loader-section': type === 'section'
+           }">
+        <ng-container *ngIf="type === 'page'">
+          <div class="tc-loader-ring" aria-hidden="true">
+            <div class="tc-loader-logo"></div>
+          </div>
+          <p>Loading page<span class="tc-loader-dots"></span></p>
+        </ng-container>
+
+        <ng-container *ngIf="type === 'section'">
+          <div class="tc-loader-ring tc-loader-ring--small" aria-hidden="true">
+            <div class="tc-loader-logo"></div>
+          </div>
+          <p>Loading<span class="tc-loader-dots"></span></p>
+        </ng-container>
+
+        <span class="sr-only">Loading</span>
+      </div>
+
+      <br *ngIf="!loading && holdTheLine"/>
+    </ng-container>
+  `,
+  inputs: ['loading', 'type', 'holdTheLine'],
+})
+class TcLoadingStubComponent extends GenericStubBase {
+  loading: boolean = false;
+  type: 'page' | 'section' = 'section';
+  holdTheLine: boolean;
+  constructor() { super([]); }
+}
+
+@Component({
   // one component can match multiple selectors separated by commas
-  selector: 'tc-icon, tc-field, tc-label, tc-tab, tc-tab-header, tc-tab-content',
+  selector: 'tc-icon, tc-field, tc-label, tc-tab, tc-tab-header, tc-tab-content, tc-card, tc-card-header',
   template: '<ng-content></ng-content>',
 })
 class PassThroughTcStubComponent extends GenericStubBase {
@@ -281,6 +320,25 @@ class TcLinkStubComponent extends GenericStubBase {
   constructor() { super(['click']); }
 }
 
+@Component({
+  selector: 'tc-description-list',
+  template: '<ng-content></ng-content>',
+  inputs: ['direction'],
+})
+class TcDescriptionListStub extends GenericStubBase {
+  constructor() { super([]); }
+}
+
+
+@Component({
+  selector: 'tc-description-item',
+  template: '<ng-content></ng-content>',
+  inputs: ['input', 'icon'],
+})
+class TcDescriptionItemStub extends GenericStubBase {
+  constructor() { super([]); }
+}
+
 /* ===========================
    Static declarations (AOT-safe)
    =========================== */
@@ -291,10 +349,13 @@ const STUB_DECLARATIONS = [
   TcModalStubComponent,
   TcInputStubComponent,
   TcTextareaStubComponent,
+  TcLoadingStubComponent,
   PassThroughTcStubComponent,
   TcTabsStubComponent,
   TcTableStubComponent,
   TcLinkStubComponent,
+  TcDescriptionListStub,
+  TcDescriptionItemStub,
 ];
 
 /* ===========================

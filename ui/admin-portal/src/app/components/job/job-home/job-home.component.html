@@ -18,103 +18,116 @@
   {{error}}
 </div>
 
-<nav ngbNav #nav="ngbNav" class="nav-tabs mt-2" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
-
-  <ng-container *ngIf="seesAllLiveJobs()" ngbNavItem="LiveJobs">
-    <a ngbNavLink
-       title="Jobs associated with active opportunities which have been published on the TC">
-      Live Jobs <i class="fa-solid fa-briefcase"></i></a>
-    <ng-template ngbNavContent>
+<tc-tabs [activeTabId]="activeTabId"
+         [defaultTabId]="defaultTabId"
+         (tabChanged)="onTabChanged($event)"
+>
+  <tc-tab *ngIf="seesAllLiveJobs()"
+          [id]="'LiveJobs'"
+          [description]="'Jobs associated with active opportunities which have been published on the TC'">
+    <tc-tab-header>
+      Live Jobs <i class="fa-solid fa-briefcase"></i>
+    </tc-tab-header>
+    <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.live"
       >
       </app-jobs-with-detail>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container ngbNavItem="StarredJobs">
-    <a ngbNavLink title="Starred jobs (eg those I am working with)">
+  <tc-tab [id]="'StarredJobs'"
+              [description]="'Starred jobs (eg those I am working with)'">
+    <tc-tab-header>
       <i class="fas fa-star"></i>Jobs <i class="fa-solid fa-briefcase"></i>
       <app-chat-read-status
         [observable]="starredJobChatsRead$"
       ></app-chat-read-status>
-    </a>
-    <ng-template ngbNavContent>
+    </tc-tab-header>
+    <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.starredByMe"
         [chatsRead$]="starredJobChatsRead$"
       >
       </app-jobs-with-detail>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container *ngIf="isJobCreator()" ngbNavItem="MyJobs">
-    <a ngbNavLink title="Jobs created by my partner organization">
+  <tc-tab *ngIf="isJobCreator()"
+              [id]="'MyJobs'"
+              [description]="'Jobs created by my partner organization'">
+    <tc-tab-header>
       {{loggedInPartner.abbreviation}} Jobs <i class="fa-solid fa-briefcase"></i>
       <app-chat-read-status
         [observable]="partnerJobChatsRead$"
       ></app-chat-read-status>
-    </a>
-    <ng-template ngbNavContent>
+    </tc-tab-header>
+    <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
         [chatsRead$]="partnerJobChatsRead$"
       >
       </app-jobs-with-detail>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container *ngIf="isJobCreator()" ngbNavItem="MyCasesAsJobCreator">
-    <a ngbNavLink title="Candidate cases associated with jobs created by my partner organization">
+  <tc-tab *ngIf="isJobCreator()"
+          [id]="'MyCasesAsJobCreator'"
+          [description]="'Candidate cases associated with jobs created by my partner organization'">
+    <tc-tab-header>
       {{myCasesTabName(SearchOppsBy.mineAsJobCreator)}} <i class="fa-solid fa-address-book"></i>
       <app-chat-read-status
         [observable]="jobCreatorChatsRead$"
       ></app-chat-read-status>
-    </a>
-    <ng-template ngbNavContent>
+    </tc-tab-header>
+    <tc-tab-content>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
         [chatsRead$]="jobCreatorChatsRead$"
       >
       </app-candidate-opps-with-detail>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCasesAsSourcePartner">
-    <a ngbNavLink title="Candidate cases managed by my partner organization">
+  <tc-tab *ngIf="isSourcePartner()"
+          [id]="'MyCasesAsSourcePartner'"
+          [description]="'Candidate cases managed by my partner organization'">
+    <tc-tab-header >
       {{myCasesTabName(SearchOppsBy.mineAsSourcePartner)}} <i class="fa-solid fa-address-book"></i>
       <app-chat-read-status
         [observable]="sourcePartnerChatsRead$"
       ></app-chat-read-status>
-    </a>
-    <ng-template ngbNavContent>
+    </tc-tab-header>
+    <tc-tab-content>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsSourcePartner"
         [chatsRead$]="sourcePartnerChatsRead$"
       >
       </app-candidate-opps-with-detail>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container *ngIf="isJobCreator() && !isReadOnly()" ngbNavItem="NewJob">
-    <a ngbNavLink title="Create a new TC job">New Job <i class="fa-solid fa-briefcase"></i></a>
-    <ng-template ngbNavContent>
+  <tc-tab *ngIf="isJobCreator() && !isReadOnly()"
+          [id]="'NewJob'"
+          [description]="'Create a new TC job'">
+    <tc-tab-header>New Job <i class="fa-solid fa-briefcase"></i></tc-tab-header>
+    <tc-tab-content>
       <app-new-job></app-new-job>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCandidateChatsAsSourcePartner">
-    <a ngbNavLink title="Active chats with candidates managed by my partner organization">
+  <tc-tab *ngIf="isSourcePartner()"
+        [id]="'MyCandidateChatsAsSourcePartner'"
+        [description]="'Active chats with candidates managed by my partner organization'">
+    <tc-tab-header>
       {{loggedInPartner.abbreviation}} Candidate Chats  <i class="fa-solid fa-user"></i>
       <app-chat-read-status
         [observable]="candidatesWithChatRead$"
       ></app-chat-read-status>
-    </a>
-    <ng-template ngbNavContent>
+    </tc-tab-header>
+    <tc-tab-content>
       <app-candidates-with-chat [chatsRead$]="candidatesWithChatRead$">
       </app-candidates-with-chat>
-    </ng-template>
-  </ng-container>
-
-</nav>
-<div [ngbNavOutlet]="nav" class="m-2"></div>
+    </tc-tab-content>
+  </tc-tab>
+</tc-tabs>

@@ -4,6 +4,7 @@
 .tc-pagination {
   font-size: 14px;
   padding: 0 10px;
+  margin-bottom: 1em;
 }
 
 .custom-ngb-pagination {
@@ -12,6 +13,8 @@
   ngb-pagination {
     width: 100%;
     .pagination {
+      margin-bottom: 0;
+      align-items: center;
       > .page-item {
         &.disabled .page-link {
           @include text-color-caption;
@@ -23,14 +26,17 @@
       }
     }
     .select-pages {
-      display: flex;
-      flex: 1 1 auto !important;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      width: 100%;
     }
   }
 }
 
 // Align the results total to the center
 .results-total {
-  display: flex;
-  justify-content: center;
+  text-align: end;
+  margin-right: 2em;
+  @include text-color-secondary;
 }

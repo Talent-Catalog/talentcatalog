@@ -1,33 +1,38 @@
 <div *ngIf="!loading" id="intl-phone-input">
-  <div class="d-flex">
-    <ng-select
-      id="isoCodeSelect"
-      [items]="countries"
-      bindLabel="name"
-      bindValue="isoCode"
-      [(ngModel)]="isoCode"
-      [placeholder]="'Country (code)'"
-      [clearable]="false"
-      [searchable]="true"
-      [searchFn]="searchCountry"
-      (change)="checkForValidity()">
-      <ng-template ng-label-tmp let-item="item">
-        {{ item.countryCode }}
-      </ng-template>
+  <div class="d-flex w-100">
+    <div class="flex-shrink-0 me-2" style="flex-basis: 20%;">
+      <ng-select
+        class="tc-select"
+        id="isoCodeSelect"
+        [items]="countries"
+        bindLabel="name"
+        bindValue="isoCode"
+        [(ngModel)]="isoCode"
+        [placeholder]="'Country (code)'"
+        [clearable]="false"
+        [searchable]="true"
+        [searchFn]="searchCountry"
+        (change)="checkForValidity()"
+      >
+        <ng-template ng-label-tmp let-item="item">
+          {{ item.countryCode }}
+        </ng-template>
 
-      <ng-template ng-option-tmp let-item="item">
-          {{ item.isoCode ? getFlag(item.isoCode) : item.name}} {{ item.name }} {{ item.countryCode }}
-      </ng-template>
-    </ng-select>
+        <ng-template ng-option-tmp let-item="item">
+            {{ item.isoCode ? getFlag(item.isoCode) : item.name}} {{ item.name }} {{ item.countryCode }}
+        </ng-template>
+      </ng-select>
+    </div>
 
     <!-- Phone number input -->
-    <input
-      type="tel"
-      class="form-control"
-      [(ngModel)]="number"
-      placeholder="Enter phone number"
-      (ngModelChange)="checkForValidity()"
-    />
+    <div class="flex-grow-1" style="flex-basis: 80%;">
+      <tc-input
+        [type]="'tel'"
+        [(ngModel)]="number"
+        placeholder="Enter phone number"
+        (ngModelChange)="checkForValidity()"
+      ></tc-input>
+    </div>
   </div>
 
   <div id="codeRequired" *ngIf="countryCodeRequired" class="text-danger small">

@@ -29,7 +29,7 @@
           <app-help [request]="stageHelpRequest"></app-help>
         </tc-label>
         <ng-select id="stage"
-                   class="tc-select tc-select--no-val-highlight"
+                   class="tc-select"
                    [formControlName]="'stage'"
                    [items]="candidateOpportunityStageOptions"
                    (change)="onStageSelectionChange($event)"
