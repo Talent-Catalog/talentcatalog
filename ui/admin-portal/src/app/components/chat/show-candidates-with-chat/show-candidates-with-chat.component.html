@@ -49,8 +49,7 @@
     </form>
   </div>
 
-  <tc-table [totalElements]="results?.totalElements"
-            [pageSize]="pageSize" [(pageNumber)]="pageNumber" (pageChange)="fetchCandidatesWithActiveChat(true)">
+  <tc-table [results]="results" [loading]="loading" [(pageNumber)]="pageNumber" (pageChange)="fetchCandidatesWithActiveChat(true)">
     <thead>
     <tr>
       <th (click)="toggleSort('id')">

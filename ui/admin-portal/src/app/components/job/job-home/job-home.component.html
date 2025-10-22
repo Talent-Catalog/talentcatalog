@@ -18,7 +18,10 @@
   {{error}}
 </div>
 
-<tc-tabs [activeTabId]="activeTabId" (tabChanged)="onTabChanged($event)">
+<tc-tabs [activeTabId]="activeTabId"
+         [defaultTabId]="defaultTabId"
+         (tabChanged)="onTabChanged($event)"
+>
   <tc-tab *ngIf="seesAllLiveJobs()"
           [id]="'LiveJobs'"
           [description]="'Jobs associated with active opportunities which have been published on the TC'">
