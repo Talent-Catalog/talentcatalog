@@ -653,6 +653,7 @@
                   [color]="'primary'">
                 </app-cv-icon>
                 <app-tasks-monitor
+                  class="mx-2"
                   *ngIf="hasTaskAssignments(candidate)"
                   [candidate]="candidate"
                   [completedTasks]="getCompletedMonitoredTasks(candidate)"
