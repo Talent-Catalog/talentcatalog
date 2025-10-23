@@ -3,6 +3,7 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/server/src/main/resources/db/migration/V1_368__remove_unused_task_definition_drop_unused_field_on_candidate_form.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/server/src/main/resources/db/migration/V1_369__add_candidate_form_to_task_and_define_demo_candidate_form.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/server/src/main/resources/db/migration/V1_376__add_candidate_family_members_form.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/server/src/main/resources/db/migration/V1_379__create_esco_skills_table.sql" dialect="PostgreSQL" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
