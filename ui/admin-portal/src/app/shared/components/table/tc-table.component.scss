@@ -32,9 +32,9 @@
         @include border-color-light;
         padding: 10px;
         @include text-color-body;
-
-        a > i {
-          @include text-color-secondary;
+        tc-icon {
+          // Add some margin to the icons in a table column to space them out
+          margin-left: 3px;
         }
       }
 
