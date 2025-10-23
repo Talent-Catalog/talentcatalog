@@ -17,15 +17,11 @@
 <tc-modal [heading]="'Associate Task with List'"
           [disableAction]="assignForm.invalid || loading"
           (onAction)="onSave()"
+          actionText="Add Task"
           [showCancel]="true"
           [cancelText]="'Close'"
           [showClose]="true">
 
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
-
-  <div *ngIf="!loading">
 
     <tc-alert type="danger" *ngIf="error">
       <div><strong>{{error}}</strong></div>
@@ -66,45 +62,57 @@
       </div>
 
     </form>
-  </div>
 
-  <div class="d-block pt-lg-4">
-    <div class="paragraph-lg mb-3">Current Task Associations</div>
-    <tc-field>
-      <tc-input [type]="'text'"
-                class="mb-3"
-                [placeholder]="'Search within...'"
-                [ariaLabel]="'Search'"
-                (keyup)="search($event.target)"
-                [id]="'keyword'">
-      </tc-input>
-    </tc-field>
 
-    <div *ngFor="let t of filteredTaskAssociations;">
-      <div class="container card grey-bg" [ngClass]="{'required-task-bg': !t.optional, 'optional-task-bg': t.optional}">
-        <div class="row align-items-center">
-          <div class="col">
+
+    <tc-table [results]="filteredTaskAssociations" [loading]="loading" name="Current Task Associations">
+      <tc-loading [loading]="loading"></tc-loading>
+      <thead>
+      <tr>
+        <th>Task</th>
+        <th>Current Assignments</th>
+        <th>      <tc-field>
+          <tc-input [type]="'text'"
+                    [placeholder]="'Search current tasks...'"
+                    [ariaLabel]="'Search'"
+                    (keyup)="search($event.target)"
+                    [id]="'keyword'">
+          </tc-input>
+        </tc-field></th>
+      </tr>
+      </thead>
+      <tbody *ngFor="let t of filteredTaskAssociations;">
+        <tr>
+          <td>
             <p class="small fw-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
-          </div>
-          <div class="col-auto">
+          </td>
+          <td>
             <app-tasks-monitor-list
               [task]="t"
               [list]="savedList">
             </app-tasks-monitor-list>
-          </div>
-          <div class="col-auto">
-            <div class="btn-group float-end">
-              <button type="button" class="btn" aria-label="Close" (click)="monitorTask(t)">
+          </td>
+          <td>
+            <div class="float-end">
+              <tc-icon size="md"
+                       type="button"
+                       class="me-4"
+                       aria-label="Monitor Task"
+                       [ngbTooltip]="'Zoom in to view current assignments for this task only'"
+                       (click)="monitorTask(t)">
                 <i class="fas fa-search-plus"></i>
-              </button>
-              <button type="button" class="btn" aria-label="Close" (click)="removeTask(t)">
+              </tc-icon>
+              <tc-icon size="md"
+                       type="button"
+                       aria-label="Remove Task"
+                       [ngbTooltip]="'Remove this task from the candidates in this list'"
+                       (click)="removeTask(t)">
                 <i class="far fa-trash-alt"></i>
-              </button>
+              </tc-icon>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+          </td>
+        </tr>
+      </tbody>
+    </tc-table>
 
 </tc-modal>
