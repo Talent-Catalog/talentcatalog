@@ -14,35 +14,24 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
-
+<tc-modal [heading]="title" (onAction)="save()" [disableAction]="form?.invalid || working">
+  <tc-alert *ngIf="error">{{error}}</tc-alert>
   <form [formGroup]="form">
-    <div class="mb-3">
-      <div class="mb-3">
-        <label class="form-label" for="label">Label *</label>
-        <input class="form-control" id="label" formControlName="label">
-      </div>
+    <tc-fieldset>
+      <tc-field>
+        <tc-label for="label">Label *</tc-label>
+        <tc-input id="label" formControlName="label"></tc-input>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="link">Link *</label>
-        <input class="form-control" id="link" formControlName="link">
-      </div>
+      <tc-field>
+        <tc-label for="link">Link *</tc-label>
+        <tc-input id="link" formControlName="link"></tc-input>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label">Destination country? (if applicable)</label>
+      <tc-field>
+        <tc-label>Destination country? (if applicable)</tc-label>
         <ng-select
+          class="tc-select"
           id="status"
           [items]="destinationCountries"
           [multiple]="false"
@@ -52,12 +41,13 @@
           bindValue="id"
           [formControlName]="'countryId'">
         </ng-select>
-      </div>
+      </tc-field>
 
 
-      <div class="mb-3">
-        <label for="caseStage" class="form-label">Candidate Opportunity stage? (if applicable)</label>
+      <tc-field>
+        <tc-label for="caseStage">Candidate Opportunity stage? (if applicable)</tc-label>
         <ng-select
+          class="tc-select"
           id="caseStage"
           [items]="caseStages"
           [multiple]="false"
@@ -67,11 +57,12 @@
           bindValue="key"
           [formControlName]="'caseStage'">
         </ng-select>
-      </div>
+      </tc-field>
 
-      <div class="mb-3">
-        <label for="jobStage" class="form-label">Job Opportunity stage? (if applicable)</label>
+      <tc-field>
+        <tc-label for="jobStage">Job Opportunity stage? (if applicable)</tc-label>
         <ng-select
+          class="tc-select"
           id="jobStage"
           [items]="jobStages"
           [multiple]="false"
@@ -81,11 +72,12 @@
           bindValue="key"
           [formControlName]="'jobStage'">
         </ng-select>
-      </div>
+      </tc-field>
 
-      <div class="mb-3">
-        <label for="focus" class="form-label">Help focus? (if applicable)</label>
+      <tc-field>
+        <tc-label for="focus">Help focus? (if applicable)</tc-label>
         <ng-select
+          class="tc-select"
           id="focus"
           [items]="focuses"
           [multiple]="false"
@@ -95,32 +87,24 @@
           bindValue="key"
           [formControlName]="'focus'">
         </ng-select>
-      </div>
+      </tc-field>
 
-      <h5 class="modal-title mb-3">Next Step Help</h5>
+      <h5 class="mb-3">Next Step Help</h5>
 
-      <div class="mb-3">
-        <label class="form-label" for="nextStepName">Next step name</label>
-        <input class="form-control" id="nextStepName" formControlName="nextStepName">
-      </div>
+      <tc-field>
+        <tc-label for="nextStepName">Next step name</tc-label>
+        <tc-input id="nextStepName" formControlName="nextStepName"></tc-input>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="nextStepText">Next step text</label>
-        <input class="form-control" id="nextStepText" formControlName="nextStepText">
-      </div>
+      <tc-field>
+        <tc-label for="nextStepText">Next step text</tc-label>
+        <tc-input id="nextStepText" formControlName="nextStepText"></tc-input>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="nextStepDays">Next step days</label>
-        <input type="number" class="form-control" id="nextStepDays" formControlName="nextStepDays">
-      </div>
-    </div>
+      <tc-field>
+        <tc-label for="nextStepDays">Next step days</tc-label>
+        <tc-input type="number" id="nextStepDays" formControlName="nextStepDays"></tc-input>
+      </tc-field>
+    </tc-fieldset>
   </form>
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="save()"
-          [disabled]="form?.invalid || working">
-    <i class="fas fa-spinner fa-spin" *ngIf="working"></i>
-    Save
-  </button>
-</div>
+</tc-modal>

@@ -98,11 +98,30 @@ describe('DefineSearchComponent', () => {
   });
 
   it('should clear the form on clearForm() method call', () => {
+    component.modifiedDatePicker = jasmine.createSpyObj('DateRangePickerComponent', ['clearDates']);
+    component.englishLanguagePicker = jasmine.createSpyObj('LanguageLevelFormControlComponent', ['clearProficiencies']);
+    component.otherLanguagePicker = {
+      form: jasmine.createSpyObj('FormGroup', ['reset'])
+    } as any;
+
+    // Set some initial values
     component.searchForm.get('simpleQueryString').patchValue('test query');
     component.searchForm.get('statuses').patchValue(['status1', 'status2']);
+
+    // Clear value
     component.clearForm();
+
+    // Assert main fields are cleared
     expect(component.searchForm.get('simpleQueryString').value).toBeNull();
-    expect(component.searchForm.get('statuses').value).toEqual(null);
+    expect(component.searchForm.get('statuses').value).toBeNull();
+
+    // Verify that picker methods were called
+    expect(component.modifiedDatePicker.clearDates).toHaveBeenCalled();
+    expect(component.englishLanguagePicker.clearProficiencies).toHaveBeenCalled();
+    expect(component.otherLanguagePicker.form.reset).toHaveBeenCalled();
+
+    // Verify the form has actually changed
+    expect(component.searchForm.dirty).toBeTruthy();
   });
 
   it('should call apply() method to initialize search request', () => {

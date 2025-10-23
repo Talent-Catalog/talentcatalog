@@ -22,15 +22,13 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {CandidateSource} from '../../../model/base';
 import {isSavedSearch} from "../../../model/saved-search";
 import {isSavedList} from "../../../model/saved-list";
-import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {LocalStorageService} from "../../../services/local-storage.service";
@@ -61,14 +59,9 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
   showAttachments: boolean = false;
   showNotes: boolean = true;
 
-  //Get reference to the nav element
-  @ViewChild('nav')
-  nav: NgbNav;
   activeTabId: string;
   private lastTabKey: string = 'SelectedCandidateLastTab';
 
-  @ViewChild('navContext')
-  navContext: NgbNav;
   activeContextTabId: string;
   private lastContextTabKey: string = 'SelectedCandidateContextLastTab';
 
@@ -153,21 +146,19 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
     return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(tabId: string) {
+    this.setActiveTabId(tabId);
   }
 
-  onContextTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveContextTabId(event.nextId);
+  onContextTabChanged(contextTabId: string) {
+    this.setActiveContextTabId(contextTabId);
   }
 
   private setActiveTabId(id: string) {
-    this.nav?.select(id);
     this.localStorageService.set(this.lastTabKey, id);
   }
 
   private setActiveContextTabId(id: string) {
-    this.navContext?.select(id);
     this.localStorageService.set(this.lastContextTabKey, id);
   }
 
