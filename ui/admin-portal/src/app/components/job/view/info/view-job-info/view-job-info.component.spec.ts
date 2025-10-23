@@ -21,6 +21,7 @@ import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 import {AuthorizationService} from "../../../../../services/authorization.service";
+import {By} from "@angular/platform-browser";
 
 describe('ViewJobInfoComponent', () => {
   let component: ViewJobInfoComponent;
@@ -57,9 +58,8 @@ describe('ViewJobInfoComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should display job information correctly', () => {
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.card-header').textContent).toContain('Job Information');
-    expect(compiled.querySelector('.form-control-plaintext').textContent).toContain('USA');
+    const items = fixture.debugElement.queryAll(By.css('tc-description-item'));
+    expect(items.some(item => item.nativeElement.textContent.includes('USA'))).toBeTrue();
    });
 
   it('should open edit modal when edit button is clicked', () => {
@@ -70,8 +70,10 @@ describe('ViewJobInfoComponent', () => {
     } as NgbModalRef);
 
     // Trigger the editJobInfo method, for example, by clicking the edit button
-    const editButton = fixture.nativeElement.querySelector('.btn-secondary');
-    editButton.click();
+    const editButton = fixture.debugElement.query(By.css('#edit-job-info-btn'));
+    editButton.triggerEventHandler('onClick', null);
+
+    fixture.detectChanges();
 
     // Expect that modalService.open was called with EditJobInfoComponent
     expect(modalService.open).toHaveBeenCalledWith(EditJobInfoComponent, jasmine.any(Object));

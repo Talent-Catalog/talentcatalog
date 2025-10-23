@@ -14,19 +14,21 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="card">
+<tc-card>
 
-  <div class="card-header d-flex justify-content-between align-items-center">
+  <tc-card-header>
     <span>Suggested searches</span>
     <div *ngIf="editable" [ngClass]="{'alert alert-danger mb-0': highlightSearches()}">
-      <button ngbTooltip="Create new suggested search"  class="btn btn-sm btn-primary"
-              (click)="addSearch()">
-        <i class="fas fa-plus"></i> Search
-      </button>
+      <tc-button ngbTooltip="Create new suggested search"
+                 type="solid"
+                 color="primary"
+              (onClick)="addSearch()">
+        <i class="fas fa-plus"></i>
+      </tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
+  <div>
     <div class="alert alert-danger" *ngIf="error">
       {{error}}
     </div>
@@ -73,13 +75,13 @@
 
         <!-- EDIT -->
         <div class="col-2 col-sm-auto" *ngIf="editable">
-          <button class="btn btn-sm btn-outline-danger" (click)="removeSearch(search)">
+          <tc-button type="plain" color="gray" (onClick)="removeSearch(search)">
             <i class="fas fa-trash"></i>
-          </button>
+          </tc-button>
         </div>
 
       </div>
     </div>
   </div>
 
-</div>
+</tc-card>

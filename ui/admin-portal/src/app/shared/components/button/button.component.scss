@@ -19,7 +19,10 @@
     cursor: not-allowed;
     border: none;
   }
+}
 
+:host(.disabled) {
+  pointer-events: none;
 }
 
 .btn-xs {
@@ -52,79 +55,352 @@
   padding: 0.5rem 1rem;
 }
 
-.btn-primary {
-  @include background-color-primary;
-  @include text-color-white;
+.btn-solid {
+  &.btn-primary {
+    @include background-color-primary;
+    @include text-color-white;
 
-  &:hover {
-    background-color: color(primary, 600);
-  }
-  &:focus-visible {
-    outline: 2px solid color(primary, 500);
-    outline-offset: 2px;
-  }
-  &:active {
-    background-color: color(primary, 800);
-  }
-}
-
-.btn-secondary {
-  @include background-color-secondary;
-  @include text-color-white;
-
-  &:hover {
-    background-color: color(secondary, 600);
-  }
-  &:focus-visible {
-    outline: 2px solid color(secondary, 500);
-    outline-offset: 2px;
-  }
-  &:active {
-    background-color: color(secondary, 800);
-  }
-}
-
-.btn-outline {
-  background-color: color(core, white);
-  color: color(primary, 500);
-  @include border-color-base;
-  border: 1px solid color(primary, 500);
-
-  &:hover {
-    background-color: color(primary, 50);
+    &:hover {
+      background-color: color(primary, 600);
+    }
+    &:focus-visible {
+      outline: 2px solid color(primary, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(primary, 800);
+    }
   }
 
-  &:focus-visible {
-    outline: 2px solid color(primary, 500);
-    outline-offset: 2px;
-    color: color(primary, 500);
+  &.btn-secondary {
+    @include background-color-secondary;
+    @include text-color-white;
+
+    &:hover {
+      background-color: color(secondary, 600);
+    }
+    &:focus-visible {
+      outline: 2px solid color(secondary, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(secondary, 800);
+    }
   }
 
-  &:active {
-    background-color: color(primary, 100);
-    outline: 2px solid color(primary, 800);
-    color: color(primary, 500);
-  }
-}
+  &.btn-success {
+    @include background-color-success;
+    @include text-color-success;
 
-.btn-plain {
-  background-color: transparent;
-  @include text-color-secondary;
-  border: none;
-  box-shadow: none;
-
-  &:hover {
-    background-color: color(gray, 200);
-    color: color(gray, 600);
+    &:hover {
+      background-color: color(green, 200);
+    }
+    &:focus-visible {
+      outline: 2px solid color(green, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(green, 300);
+    }
   }
 
-  &:focus-visible {
-    outline: 2px solid color(gray, 500);
-    outline-offset: 2px;
+  &.btn-warning {
+    @include background-color-warning;
+    @include text-color-warning;
+
+    &:hover {
+      background-color: color(yellow, 200);
+    }
+    &:focus-visible {
+      outline: 2px solid color(yellow, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(yellow, 300);
+    }
   }
 
-  &:active {
+  &.btn-error {
+    @include background-color-error;
+    @include text-color-error;
+
+    &:hover {
+      background-color: color(red, 200);
+    }
+    &:focus-visible {
+      outline: 2px solid color(red, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(red, 300);
+    }
+  }
+
+  &.btn-info {
+    @include background-color-info;
+    @include text-color-info;
+
+    &:hover {
+      background-color: color(blue, 200);
+    }
+    &:focus-visible {
+      outline: 2px solid color(blue, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(blue, 300);
+    }
+  }
+
+  &.btn-gray {
     background-color: color(gray, 200);
     color: color(gray, 700);
+
+    &:hover {
+      background-color: color(gray, 300);
+    }
+    &:focus-visible {
+      outline: 2px solid color(gray, 400);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(gray, 400);
+    }
+  }
+}
+
+// Outline type styles
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid;
+
+  &.btn-primary {
+    color: color(primary, 500);
+    border-color: color(primary, 500);
+
+    &:hover {
+      background-color: color(primary, 50);
+    }
+    &:focus-visible {
+      outline: 2px solid color(primary, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(primary, 100);
+    }
+  }
+
+  &.btn-secondary {
+    color: color(secondary, 500);
+    border-color: color(secondary, 500);
+
+    &:hover {
+      background-color: color(secondary, 50);
+    }
+    &:focus-visible {
+      outline: 2px solid color(secondary, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(secondary, 100);
+    }
+  }
+
+  &.btn-success {
+    color: color(green, 500);
+    border-color: color(green, 500);
+
+    &:hover {
+      background-color: color(green, 50);
+    }
+    &:focus-visible {
+      outline: 2px solid color(green, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(green, 100);
+    }
+  }
+
+  &.btn-warning {
+    color: color(yellow, 500);
+    border-color: color(yellow, 500);
+
+    &:hover {
+      background-color: color(yellow, 50);
+    }
+    &:focus-visible {
+      outline: 2px solid color(yellow, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(yellow, 100);
+    }
+  }
+
+  &.btn-error {
+    color: color(red, 500);
+    border-color: color(red, 500);
+
+    &:hover {
+      background-color: color(red, 50);
+    }
+    &:focus-visible {
+      outline: 2px solid color(red, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(red, 100);
+    }
+  }
+
+  &.btn-info {
+    color: color(blue, 500);
+    border-color: color(blue, 500);
+
+    &:hover {
+      background-color: color(blue, 50);
+    }
+    &:focus-visible {
+      outline: 2px solid color(blue, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(blue, 100);
+    }
+  }
+
+  &.btn-gray {
+    color: color(gray, 500);
+    border-color: color(gray, 300);
+
+    &:hover {
+      background-color: color(gray, 50);
+    }
+    &:focus-visible {
+      outline: 2px solid color(gray, 400);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(gray, 100);
+    }
+  }
+}
+
+// Plain type styles
+.btn-plain {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+
+  &.btn-primary {
+    color: color(primary, 500);
+
+    &:hover {
+      color: color(primary, 800);
+      transform: scale(1.1);
+    }
+    &:focus-visible {
+      outline: 2px solid color(primary, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      color: color(primary, 800);
+      transform: scale(1.1);
+       background-color: transparent;
+    }
+  }
+
+  &.btn-secondary {
+    color: color(secondary, 500);
+
+    &:hover {
+      color: color(secondary, 800);
+    }
+    &:focus-visible {
+      outline: 2px solid color(secondary, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      color: color(secondary, 800);
+    }
+  }
+
+  &.btn-success {
+    color: color(green, 500);
+
+    &:hover {
+      color: color(green, 800);
+    }
+    &:focus-visible {
+      outline: 2px solid color(green, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      color: color(green, 800);
+    }
+  }
+
+  &.btn-warning {
+    color: color(yellow, 500);
+
+    &:hover {
+      color: color(yellow, 800);
+    }
+    &:focus-visible {
+      outline: 2px solid color(yellow, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      color: color(yellow, 800);
+    }
+  }
+
+  &.btn-error {
+    color: color(red, 500);
+
+    &:hover {
+      color: color(red, 800);
+    }
+    &:focus-visible {
+      outline: 2px solid color(red, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      color: color(red, 800);
+    }
+  }
+
+  &.btn-info {
+    color: color(blue, 500);
+
+    &:hover {
+      color: color(blue, 800);
+    }
+    &:focus-visible {
+      outline: 2px solid color(blue, 500);
+      outline-offset: 2px;
+    }
+    &:active {
+      color: color(blue, 800);
+    }
+  }
+
+  &.btn-gray {
+    color: color(gray, 500);
+
+    &:hover {
+      color: color(gray, 800);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color(blue, 500);
+      outline-offset: 2px;
+    }
+
+    &:active {
+      color: color(gray, 800);
+    }
   }
 }

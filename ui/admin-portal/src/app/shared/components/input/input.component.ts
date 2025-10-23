@@ -1,11 +1,13 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   forwardRef,
   Input,
   OnInit,
   Output,
-  TemplateRef
+  TemplateRef,
+  ViewChild
 } from '@angular/core';
 import {Observable} from "rxjs";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
@@ -127,12 +129,15 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Output() selectItem =
     new EventEmitter<NgbTypeaheadSelectItemEvent<any>>();
 
+  @ViewChild('inputEl', { static: false }) inputEl!: ElementRef<HTMLInputElement>;
+
   protected _value: string | boolean = '';
 
   get value(): string | boolean {
     return this._value;
   }
 
+  @Input()
   set value(val: string | boolean) {
     if (val !== this._value) {
       this._value = val;
@@ -187,5 +192,11 @@ export class InputComponent implements ControlValueAccessor, OnInit {
 
   handleBlur() {
     this.onTouched();
+  }
+
+  focus(): void {
+    if (this.inputEl?.nativeElement) {
+      this.inputEl.nativeElement.focus();
+    }
   }
 }
