@@ -14,35 +14,43 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Add Candidate Occupation</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
+<tc-modal [heading]="'Add Candidate Occupation'"
+          [showClose]="true"
+          [disableAction]="form.invalid || saving"
+          [actionText]="'Save'"
+          (onAction)="onSave()"
+          [showCancel]="true"
+>
 
   <div *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
   </div>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="form">
 
       <div class="row">
 
         <div class="col-12">
-          <div class="mb-3">
-            <label class="form-label" for="occupationId">Occupation</label>
-            <ng-select id="occupationId" name="occupationId" [formControlName]="'occupationId'" [items]="occupations"
-                       [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
-          </div>
+          <tc-field class="mb-3">
+            <tc-label [for]="'occupationId'">
+              Occupation
+            </tc-label>
+            <ng-select class="tc-select"
+                       id="occupationId"
+                       [formControlName]="'occupationId'"
+                       [items]="occupations"
+                       [clearable]="false"
+                       placeholder="Select"
+                       bindLabel="name"
+                       bindValue="id"
+            ></ng-select>
+          </tc-field>
         </div>
 
       </div>
@@ -50,23 +58,20 @@
       <div class="row">
 
         <div class="col-12">
-          <div class="mb-3">
-            <label class="form-label" for="yearsExperience">Years Experience</label>
-            <input type="number" min="0" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
-          </div>
+          <tc-field class="mb-3">
+            <tc-label [for]="'yearsExperience'">
+              Years Experience
+            </tc-label>
+            <tc-input [type]="'number'"
+                      [min]="0"
+                      [name]="'yearsExperience'"
+                      [id]="'yearsExperience'"
+                      [formControlName]="'yearsExperience'"
+            ></tc-input>
+          </tc-field>
         </div>
 
       </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="form.invalid || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
     </form>
-
-
   </div>
-</div>
+</tc-modal>
