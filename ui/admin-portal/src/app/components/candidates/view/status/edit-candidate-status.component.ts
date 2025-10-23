@@ -26,7 +26,7 @@ import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../../model/cand
 export class EditCandidateStatusComponent {
 
   candidateStatus: CandidateStatus;
-  text: string;
+  warningText: string;
 
   private candidateStatusInfo: UpdateCandidateStatusInfo;
 

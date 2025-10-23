@@ -18,6 +18,10 @@
     font-size: 1.5rem;
   }
 
+  &.icon-inherit, &.icon-inherit::ng-deep > i {
+    font-size: inherit;
+  }
+
   // Color variations
   &.icon-primary {
     @include text-color-primary;

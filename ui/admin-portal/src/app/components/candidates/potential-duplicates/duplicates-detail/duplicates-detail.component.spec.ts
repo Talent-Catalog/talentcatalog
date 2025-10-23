@@ -83,11 +83,6 @@ describe('DuplicatesDetailComponent', () => {
     expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalled();
     })
 
-  it('should close the modal', () => {
-    component.closeModal();
-    expect(activeModalSpy.close).toHaveBeenCalled();
-  });
-
   it('should display different text when no duplicates are returned', () => {
     component.potentialDuplicates = [];
     fixture.detectChanges();
@@ -108,13 +103,6 @@ describe('DuplicatesDetailComponent', () => {
     const errorMessage = fixture.debugElement.nativeElement.querySelector('.alert-danger');
     expect(errorMessage).toBeTruthy();
     expect(errorMessage.textContent).toContain('Test error message');
-  });
-
-  it('should call close modal when cancel button is clicked', () => {
-    spyOn(component, 'closeModal');
-    const crossButton = fixture.debugElement.nativeElement.querySelector('.btn-close');
-    crossButton.click();
-    expect(component.closeModal).toHaveBeenCalled();
   });
 
 });

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 /**
  * @component LabelComponent
@@ -28,4 +28,5 @@ import { Component, Input } from '@angular/core';
 })
 export class LabelComponent {
   @Input() for?: string; // to associate with input by id
+  @Input() size: 'sm' | 'md' = 'md';
 }

@@ -35,6 +35,9 @@ export class CvIconComponent implements OnInit {
   //Optional Input - if a candidate attachment is passed in, this will only
   //open the single attachment.
   @Input() attachment: CandidateAttachment;
+  // tc-icon properties
+  @Input() size?: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
+  @Input() color?: 'primary' | 'secondary' | 'white' | 'gray' | 'success' | 'info' | 'warning' | 'error' = 'primary';
 
   //Used to indicate loading status.
   @Output() loadingStatus = new EventEmitter<boolean>();

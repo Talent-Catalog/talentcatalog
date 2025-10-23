@@ -14,47 +14,36 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="opp">
-  <div class="card">
-
-    <div class="card-header">
+  <tc-card *ngIf="opp">
+    <tc-card-header>
       Progress
       <i class="fas fa-spinner fa-spin ms-1" *ngIf=updating></i>
       <div class="float-end" *ngIf="editable">
-        <button class="btn btn-sm btn-secondary" title="Update progress" (click)="editOppProgress()">
+        <tc-button [title]="'Update progress'"
+                   (onClick)="editOppProgress()"
+                   [color]="'primary'"
+                   [type]="'solid'"
+                   class="edit-opp-progress-btn"
+        >
           <i class="fas fa-edit"></i>
-        </button>
+        </tc-button>
       </div>
-    </div>
+    </tc-card-header>
 
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
-    <div class="card-body">
-      <div class="row">
+  <tc-description-list direction="column">
+    <tc-description-item label="Stage" icon="fa-solid fa-map-location-dot">
+      {{getOpportunityStageName(opp)}}
+    </tc-description-item>
+    <tc-description-item label="Next Step" icon="fa-solid fa-circle-arrow-right">
+      {{opp.nextStep}}
+    </tc-description-item>
+    <tc-description-item label="Next Step Due" icon="fa-regular fa-calendar-days">
+      {{opp.nextStepDueDate}}
+    </tc-description-item>
+  </tc-description-list>
 
-        <div class="mb-3 col-sm-12 col-md-4">
-          <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>Stage</label>
-          <div class="form-control-plaintext">
-            {{getOpportunityStageName(opp)}}
-          </div>
-        </div>
-
-        <div class="mb-3 col-sm-12 col-md-4">
-          <label class="col-form-label"><i class="fa-solid fa-circle-arrow-right"></i>Next Step</label>
-          <div class="form-control-plaintext">
-            {{opp.nextStep}}
-          </div>
-        </div>
-
-        <div class="mb-3 col-sm-12 col-md-4">
-          <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Next Step Due</label>
-          <div class="form-control-plaintext">
-            {{opp.nextStepDueDate}}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+</tc-card>

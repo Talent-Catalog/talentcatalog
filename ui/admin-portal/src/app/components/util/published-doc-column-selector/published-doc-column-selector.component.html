@@ -14,28 +14,27 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [heading]="'Select fields to publish'"
+          [actionText]="'Publish'"
+          (onAction)="submit()"
+          [disableAction]="!selectedColumns.length"
+          [showCancel]="true"
+          [showClose]="true">
 
-  <h4 class="modal-title">Select fields to publish</h4>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
   <div *ngIf="updating">
     <i class="fas fa-spinner fa-spin"></i> Updating...
   </div>
+
   <div class="container">
-    <div>
-      <p class="text-center h6 mb-1">Available Fields</p>
+    <tc-field>
+      <tc-label class="text-center">Available Fields</tc-label>
       <ng-select
+        class="tc-select"
         [items]="availableColumns"
-        placeholder="Select"
         [bindLabel]="'columnDef.header'"
         [multiple]="true"
         [clearable]="false"
@@ -43,40 +42,57 @@
         (add)="addColumn($event)"
         (remove)="removeColumn($event)">
       </ng-select>
-    </div>
+    </tc-field>
 
     <hr>
 
     <div>
       <p class="text-center h6 mb-1">Selected Fields</p>
       <div class="small mb-3 text-muted text-center">
-        Drag away from column to remove.
+        Drag away to remove | Click to rename
       </div>
       <div dragula="COLUMNS" [(dragulaModel)]="selectedColumns" class="dragula-container">
         <div *ngIf="!selectedColumns.length" class="text-center small mt-3">No Columns Selected</div>
         <div *ngFor="let field of selectedColumns; let i = index">
-          <div ngbDropdown #dropdown=ngbDropdown class="d-flex">
-            <button id="dropdownForm" class="btn field width-100" ngbDropdownToggle>
+          <div ngbDropdown container="body" #dropdown=ngbDropdown class="d-flex">
+            <div id="dropdownForm" class="dragula-field width-100" ngbDropdownToggle>
               <span *ngIf="field.columnProps.header != null; else defaultHeader">{{field.columnProps.header}}</span>
               <ng-template #defaultHeader>
                 <span>{{field.columnDef.header}}</span>
               </ng-template>
-              <i class="fa fa-pencil ms-3"></i>
-            </button>
+            </div>
             <div ngbDropdownMenu aria-labelledby="dropdownForm">
               <div class="px-4 py-3">
                 <h6 class="py-1">{{field.columnDef.header}}</h6>
                 <div class="mb-3">
-                  <label class="form-label" [for]="'header'+ i">New Header Name</label>
-                  <input type="text" class="form-control" [id]="'header'+ i" [(ngModel)]="field.columnProps.header">
+                  <tc-label [for]="'header'+ i" class="d-block mb-1">
+                    New Header Name:
+                  </tc-label>
+
+                  <tc-input [type]="'text'"
+                            [id]="'header'+ i"
+                            [(ngModel)]="field.columnProps.header">
+                  </tc-input>
                 </div>
                 <div *ngIf="!hasFieldName(field)" class="mb-3">
-                  <label class="form-label" [for]="'constant'+ i">Constant Name</label>
-                  <input type="text" class="form-control" [id]="'constant'+ i" [(ngModel)]="field.columnProps.constant">
+                  <tc-label [for]="'constant'+ i" class="d-block mb-1">
+                    New Constant Name:
+                  </tc-label>
+                  <tc-input [type]="'text'"
+                            [id]="'constant'+ i"
+                            [(ngModel)]="field.columnProps.constant">
+                  </tc-input>
                 </div>
-                <div class="d-flex justify-content-between">
-                  <button type="submit" (click)="update(field); dropdown.close()" class="btn btn-primary btn-sm">Update</button>
-                  <button type="submit" (click)="reset(field); dropdown.close()" class="btn btn-secondary btn-sm">Reset</button>
+                <div class="d-flex justify-content-end gap-2">
+                  <tc-button [type]="'outline'"
+                             (onClick)="reset(field);
+                             dropdown.close()">
+                    Reset
+                  </tc-button>
+                  <tc-button (onClick)="update(field);
+                             dropdown.close()">
+                    Update
+                  </tc-button>
                 </div>
               </div>
             </div>
@@ -84,17 +100,9 @@
         </div>
       </div>
     </div>
-    <button type="button" class="btn btn-info" (click)="default()">
+    <tc-button [type]="'outline'" (onClick)="default()">
       Reset to default
-    </button>
+    </tc-button>
   </div>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-accent-1" (click)="cancel()">
-    Cancel
-  </button>
-  <button type="button" class="btn btn-success" (click)="submit()" [disabled]="!selectedColumns.length">
-    Publish
-  </button>
-</div>
 
+</tc-modal>

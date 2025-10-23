@@ -23,7 +23,7 @@ import {NgbAccordionModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {
   CostCommitEmployerComponent
 } from "../../../intake/cost-commit-employer/cost-commit-employer.component";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgxWigModule} from "ngx-wig";
 import {MockPartner} from "../../../../../MockData/MockPartner";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
@@ -73,14 +73,14 @@ describe('JobIntakeTabComponent', () => {
   it('should display loading state when loading is true', () => {
     component.loading = true;
     fixture.detectChanges();
-    const loadingElement = fixture.nativeElement.querySelector('.fa-spinner');
+    const loadingElement = fixture.nativeElement.querySelector('tc-loading');
     expect(loadingElement).toBeTruthy();
   });
   it('should display error message when error is set', () => {
     const errorMessage = 'An error occurred.';
     component.error = errorMessage;
     fixture.detectChanges();
-    const errorElement = fixture.nativeElement.querySelector('div.error-message');
+    const errorElement = fixture.nativeElement.querySelector('tc-alert');
     expect(errorElement.textContent).toContain(errorMessage);
   });
   it('should emit intakeChanged event when onIntakeChanged is called', () => {

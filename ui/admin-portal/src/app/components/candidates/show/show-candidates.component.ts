@@ -22,8 +22,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from '@angular/core';
 
 import {
@@ -107,11 +106,16 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  getStageBadgeColor,
+  OpportunityIds
+} from "../../../model/opportunity";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {TcModalComponent} from "../../../shared/components/modal/tc-modal.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -126,8 +130,6 @@ interface CachedTargetList {
   styleUrls: ['./show-candidates.component.scss']
 })
 export class ShowCandidatesComponent extends CandidateSourceBaseComponent implements OnInit, OnChanges, OnDestroy {
-
-  @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
@@ -622,13 +624,18 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         const _this = this;
         reader.addEventListener('loadend', function () {
           if (typeof reader.result === 'string') {
-            _this.error = JSON.parse(reader.result);
-            const modalRef = _this.modalService.open(_this.downloadCsvErrorModal);
-            modalRef.result
-              .then(() => {
-              })
-              .catch(() => {
-              });
+            const errorObj = JSON.parse(reader.result);
+            const csvExportErrorModal = _this.modalService.open(TcModalComponent, {});
+            csvExportErrorModal.componentInstance.title = 'Export Failed';
+            csvExportErrorModal.componentInstance.icon = 'fas fa-triangle-exclamation';
+            csvExportErrorModal.componentInstance.actionText = 'Retry';
+            csvExportErrorModal.componentInstance.message =
+              "CSV download error: " + "'" + errorObj.message + "'";
+            csvExportErrorModal.componentInstance.isError = true;
+            csvExportErrorModal.componentInstance.onAction.subscribe(() => {
+              _this.exportCandidates();
+              csvExportErrorModal.close();
+            });
           }
         });
         reader.readAsText(err.error);
@@ -791,7 +798,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     const sourceType = getCandidateSourceType(candidateSource);
     let sourcePrefix = isSubmissionList(candidateSource) ? "Submission" : "";
     return candidateSource != null ?
-      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name) : sourceType;
+      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')')
+      : sourceType;
   }
 
   onReviewStatusFilterChange() {
@@ -830,7 +838,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
-
     //Record change
     candidate.selected = selected;
     //Update cache
@@ -1256,7 +1263,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     showReport.componentInstance.showCancel = false;
     showReport.componentInstance.message = "Paste the link where you want";
     showReport.componentInstance.message = "Paste the link (" + text + ") where you want";
-
   }
 
   addCandidateToList(candidate: Candidate) {
@@ -1504,7 +1510,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   private requestNewStatusInfo(nSelections: number) {
     const modal = this.modalService.open(EditCandidateStatusComponent);
     if (nSelections > 1) {
-      modal.componentInstance.text = "WARNING: You are about to set the status of " +
+      modal.componentInstance.warningText = "You are about to set the status of " +
         nSelections + " candidates. This can only be undone manually, one by one.";
     }
     modal.result
@@ -1826,4 +1832,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return this.authorizationService.isReadOnly();
   }
 
+  openCandidateInNewTab(candidateNumber: string): void {
+    window.open(`/candidate/${candidateNumber}`, '_blank');
+  }
+
+  protected readonly getStageBadgeColor = getStageBadgeColor;
 }

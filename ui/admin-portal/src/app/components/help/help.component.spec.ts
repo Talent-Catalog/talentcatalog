@@ -20,7 +20,7 @@ import {HelpLinkService} from "../../services/help-link.service";
 import {of, throwError} from "rxjs";
 import {By} from "@angular/platform-browser";
 import {MOCK_HELP_LINK} from "../../MockData/MockHelpLink";
-import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbTooltip, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {SearchHelpLinkRequest} from "../../model/help-link";
 
 describe('HelpComponent', () => {
@@ -68,9 +68,12 @@ describe('HelpComponent', () => {
   });
 
   it('should fetch help links on button click', (() => {
+    const tooltipDebugElement = fixture.debugElement.query(By.directive(NgbTooltip));
+    const tooltipDirective = tooltipDebugElement.injector.get(NgbTooltip);
+
+    tooltipDirective.shown.emit();
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.help-tip-button')).nativeElement;
-    button.click();
+
     expect(component.helpLinks).toEqual([MOCK_HELP_LINK]);
     expect(component.loading).toBeFalse();
     expect(component.error).toBeNull();
@@ -80,8 +83,11 @@ describe('HelpComponent', () => {
     const errorMessage = 'Failed to fetch help links';
     helpLinkService.fetch.and.returnValue(throwError(errorMessage));
 
-    const button = fixture.debugElement.query(By.css('.help-tip-button')).nativeElement;
-    button.click();
+    const tooltipDebugElement = fixture.debugElement.query(By.directive(NgbTooltip));
+    const tooltipDirective = tooltipDebugElement.injector.get(NgbTooltip);
+
+    tooltipDirective.shown.emit();
+    fixture.detectChanges();
 
     expect(component.helpLinks).toBeUndefined();
     expect(component.loading).toBeFalse();

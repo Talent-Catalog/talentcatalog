@@ -9,7 +9,7 @@ import {Component} from "@angular/core";
 @Component({
   template: `
     <tc-modal
-      [title]="title"
+      [heading]="heading"
       [actionText]="actionText"
       [disableAction]="disableAction"
       [showCancel]="showCancel"
@@ -21,7 +21,7 @@ import {Component} from "@angular/core";
   `
 })
 class TestHostComponent {
-  title = 'Test Modal';
+  heading = 'Test Modal';
   actionText = 'Confirm';
   disableAction = false;
   showCancel = true;
@@ -50,9 +50,9 @@ describe('TcModalComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render title', () => {
-    const titleEl = fixture.debugElement.query(By.css('.tc-modal-title')).nativeElement;
-    expect(titleEl.textContent).toContain('Test Modal');
+  it('should render header', () => {
+    const headerEl = fixture.debugElement.query(By.css('.tc-modal-header')).nativeElement;
+    expect(headerEl.textContent).toContain('Test Modal');
   });
 
   it('should render body content', () => {
@@ -86,23 +86,33 @@ describe('TcModalComponent', () => {
 
   it('should call onAction when primary button clicked', () => {
     const primaryBtn = fixture.debugElement.queryAll(By.css('tc-button'))[host.showCancel ? 1 : 0];
-    primaryBtn.triggerEventHandler('click', null);
+    primaryBtn.triggerEventHandler('onClick', null);
     expect(host.actionCalled).toBeTrue();
   });
 
   it('should call activeModal.dismiss when cancel button clicked', () => {
     spyOn(activeModal, 'dismiss');
-    const cancelBtn = fixture.debugElement.queryAll(By.directive(ButtonComponent))[0];
-    cancelBtn.nativeElement.click();
-    expect(activeModal.dismiss).toHaveBeenCalledWith(false);
-  });
-
-  it('should hide cancel button when showCancel is false', () => {
-    host.showCancel = false;
     fixture.detectChanges();
 
-    const cancelBtn = fixture.debugElement.query(By.css('tc-modal-footer tc-button[type="outline"]'));
-    expect(cancelBtn).toBeNull();
+    const cancelBtn = fixture.debugElement.query(By.css('.cancel-btn'));
+    expect(cancelBtn).toBeTruthy();
+
+    cancelBtn.triggerEventHandler('onClick', {});
+    expect(activeModal.dismiss).toHaveBeenCalled();
+  });
+
+  it('should display the cancel button if showCancel is true', () => {
+    host.showCancel = true;
+    fixture.detectChanges();
+    const cancelButton = fixture.debugElement.query(By.css('.tc-modal-footer tc-button:nth-child(1)'));
+    expect(cancelButton.nativeElement.textContent).toContain('Cancel');
+  });
+
+  it('should not display the cancel button if showCancel is false', () => {
+    host.showCancel = false;
+    fixture.detectChanges();
+    const cancelButton = fixture.debugElement.query(By.css('.tc-modal-footer tc-button:nth-child(2)'));
+    expect(cancelButton).toBeNull();
   });
 
   it('should disable primary button if disableAction is true', () => {

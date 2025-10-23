@@ -17,12 +17,13 @@ import {Component, Input} from '@angular/core';
  * - Automatically removes default browser styles when rendered as `<button>` or `<a>`
  *
  * **Inputs**
- * - `size: 'sm' | 'md' | 'lg' | 'xl'`
- *   Controls icon size. Defaults to `'lg'`.
+ * - `size: 'sm' | 'md' | 'lg' | 'xl' | 'inherit'`
+ *   Controls icon size. Defaults to `'inherit'`.
  *   - sm → 12px
  *   - md → 16px
  *   - lg → 20px
  *   - xl → 24px
+ *   - inherit → inherits from parents font size
  *
  * - `color?: 'primary' | 'secondary' | 'white' | 'gray' | 'success' | 'info' | 'warning' | 'error'`
  *   Optional color variant. Defaults to `'primary'` if not set.
@@ -67,7 +68,7 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./tc-icon.component.scss']
 })
 export class TcIconComponent {
-  @Input() size: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
+  @Input() size: 'sm' | 'md' | 'lg' | 'xl' | 'inherit' = 'inherit';
   @Input() color?: 'primary' | 'secondary' | 'white' | 'gray' | 'success' | 'info' | 'warning' | 'error' = 'primary';
   @Input() ariaLabel?: string;
 

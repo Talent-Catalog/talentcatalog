@@ -40,11 +40,13 @@ import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 import static org.tctalent.server.data.CountryTestData.UNITED_KINGDOM;
 import static org.tctalent.server.data.OpportunityTestData.getOpportunityForCandidate;
+import static org.tctalent.server.data.PartnerImplTestData.getDefaultPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
+import static org.tctalent.server.data.UserTestData.getFullUser;
 
 import java.io.File;
 import java.io.IOException;
@@ -222,6 +224,36 @@ public class CandidateOpportunityServiceImplTest {
     @Test
     @DisplayName("should update opp as expected")
     void createUpdateCandidateOpportunities_shouldUpdateOppAsExpected() {
+        stubUpdateCandidateOpp();
+
+        candidateOpportunityService.createUpdateCandidateOpportunities(updateRequest);
+
+        assertThat(oppCaptor.getValue())
+            .usingRecursiveComparison()
+            .ignoringFields("candidate.createdDate", "candidate.updatedDate",
+                "createdBy", "createdDate", "updatedDate")
+            .isEqualTo(expectedOpp);
+    }
+
+    @Test
+    @DisplayName("should update opp when user partner is default source partner but not the candidate partner")
+    void createUpdateCandidateOpportunities_shouldUpdateOpp_whenUserPartnerIsDefaultSourcePartnerButNotCandidatePartner() {
+        // Admin user has default source partner, candidate has different partner
+        adminUser.setPartner(getDefaultPartner());
+        candidateList.get(0).setUser(getFullUser());
+
+        stubUpdateCandidateOpp();
+
+        candidateOpportunityService.createUpdateCandidateOpportunities(updateRequest);
+
+        assertThat(oppCaptor.getValue())
+            .usingRecursiveComparison()
+            .ignoringFields("candidate.createdDate", "candidate.updatedDate",
+                "createdBy", "createdDate", "updatedDate", "updatedBy")
+            .isEqualTo(expectedOpp);
+    }
+
+    private void stubUpdateCandidateOpp() {
         given(candidateService.findByIds(updateRequest.getCandidateIds()))
             .willReturn(candidateList);
         given(salesforceJobOppService.getOrCreateJobOppFromId(updateRequest.getSfJobOppId()))
@@ -232,14 +264,6 @@ public class CandidateOpportunityServiceImplTest {
             .willReturn(candidateOpp);
         given(candidateOpportunityRepository.save(oppCaptor.capture())).willReturn(candidateOpp);
         given(nextStepProcessingService.processNextStep(candidateOpp, nextStep)).willReturn(nextStep);
-
-        candidateOpportunityService.createUpdateCandidateOpportunities(updateRequest);
-
-        assertThat(oppCaptor.getValue())
-            .usingRecursiveComparison()
-            .ignoringFields("candidate.createdDate", "candidate.updatedDate",
-                "createdBy", "createdDate", "updatedDate")
-            .isEqualTo(expectedOpp);
     }
 
     @Test
