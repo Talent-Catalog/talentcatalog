@@ -80,6 +80,7 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() resultFormatter?: (value: any) => string;
   @Input() editable: boolean;
   @Input() readonly: boolean = false;
+  @Input() min?: number;
   @Input() type:
     | 'text'
     | 'password'
