@@ -19,7 +19,7 @@
     <div class="header">
       <h4>General Translations</h4>
       <div>
-        <tc-button *ngIf="isAnAdmin() && !loggedInUser.readOnly"
+        <tc-button id="save-translations" *ngIf="isAnAdmin() && !loggedInUser.readOnly"
                 (onClick)="save()" [disabled]="saving || error || saveError">Save</tc-button>
       </div>
     </div>

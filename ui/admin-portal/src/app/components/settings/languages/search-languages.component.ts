@@ -49,8 +49,7 @@ export class SearchLanguagesComponent implements OnInit {
   ngOnInit() {
     this.search();
   }
-
-  /* SEARCH FORM */
+  
   search() {
     this.loading = true;
     this.languageService.listSystemLanguages().subscribe(results => {
