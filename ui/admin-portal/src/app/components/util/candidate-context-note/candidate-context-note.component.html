@@ -15,21 +15,26 @@
   -->
 
 <div>
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <form [formGroup]="form">
 
     <div class="mb-3" [appReadOnlyInputs]="!isEditable()">
-      <label class="form-label h6" for="contextNotes">
-        <span class="me-2 font-weight-normal">{{title}}</span>
-        <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
-      </label>
-
-      <textarea id="contextNotes" class="md-textarea-auto form-control" rows="2"
-                placeholder="Add context notes specific to the candidate in the list which can be shared with potential employers..."
-                [formControlName]="'contextNote'"></textarea>
+      <tc-label [for]="'contextNotes'">
+        {{title}}
+      </tc-label>
+      <div class="mt-2">
+        <tc-textarea id="contextNotes"
+                     [placeholder]="'Add context notes specific to the candidate in the list which can be shared with potential employers...'"
+                     [formControlName]="'contextNote'"
+        ></tc-textarea>
+      </div>
+      <app-autosave-status [saving]="saving"
+                           [typing]="typing"
+                           [size]="'md'"
+      ></app-autosave-status>
     </div>
 
   </form>

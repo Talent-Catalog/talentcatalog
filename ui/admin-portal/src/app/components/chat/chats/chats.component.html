@@ -15,11 +15,11 @@
   -->
 
 <div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+  <tc-loading [loading]="true"></tc-loading>
 </div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div>{{error}}</div>
+</tc-alert>
 
 <ul class="list-group">
   <li *ngFor="let chat of chats" (click)="selectCurrent(chat)" [ngClass]="{'bg-active-custom': currentChat?.id == chat.id}"

@@ -19,14 +19,14 @@
 </ng-template>
 
 <div>
-  <button class="btn btn-sm btn-accent-2" (click)="toggleMuted()" title="">
+  <tc-button size="sm" type="outline" color="gray" (onClick)="toggleMuted()" title="">
     {{ computeMuteButtonLabel() }}
     <i *ngIf="candidate?.muted; else notMuted" class="fas fa-comment"></i>
     <ng-template #notMuted><i class="fas fa-comment-slash"></i></ng-template>
-  </button>
+  </tc-button>
 
-  <button class="tool-tip-button" [ngbTooltip]="mutingTip" triggers="click" tooltipClass="mute-tip">
-    <i class="fa-regular fa-circle-question fa-xs"></i>
-  </button>
+  <tc-icon size="sm" color="gray" class="tool-tip-button" [ngbTooltip]="mutingTip" triggers="click" tooltipClass="mute-tip">
+    <i class="fa-regular fa-circle-question"></i>
+  </tc-icon>
 </div>
 

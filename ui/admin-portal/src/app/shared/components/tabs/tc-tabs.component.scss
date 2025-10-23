@@ -3,7 +3,7 @@
 
 .nav.nav-tabs {
   border-bottom: 1px solid;
-  @include border-color-base;
+  border-color: color(gray, 200);
   .nav-link {
     @include text-color-secondary;
     font-size: 14px;
@@ -23,4 +23,8 @@
     @include border-color-primary;
     @include text-color-primary;
   }
+}
+
+.tab-content {
+  margin-top: 2rem;
 }

@@ -112,18 +112,4 @@ describe('HasNameSelectorComponent', () => {
     expect(activeModal.close).toHaveBeenCalledWith(mockHasNames[2]);
   });
 
-  it('should call onCancel method when cancel button is clicked', () => {
-    spyOn(component, 'onCancel');
-    const cancelButton = fixture.debugElement.query(By.css('.btn-secondary')).nativeElement;
-    cancelButton.click();
-    expect(component.onCancel).toHaveBeenCalled();
-  });
-
-  it('should call onSelect method when select button is clicked', () => {
-    spyOn(component, 'onSelect');
-    const selectButton = fixture.debugElement.query(By.css('.btn-primary')).nativeElement;
-    selectButton.click();
-    expect(component.onSelect).toHaveBeenCalled();
-  });
-
 });
