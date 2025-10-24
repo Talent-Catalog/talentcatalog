@@ -3,12 +3,22 @@
 </ng-template>
 
 <ng-container [ngSwitch]="type">
-  <a *ngSwitchCase="'link'"
-     [href]="href"
-     [attr.aria-label]="ariaLabel"
-     [ngClass]="classList">
-    <ng-container *ngTemplateOutlet="content"></ng-container>
-  </a>
+  <ng-container *ngSwitchCase="'link'">
+    <ng-container *ngIf="routerLink">
+      <a [routerLink]="routerLink"
+        [attr.aria-label]="ariaLabel"
+        [ngClass]="classList">
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+      </a>
+    </ng-container>
+    <ng-container *ngIf="!routerLink">
+      <a [href]="href"
+         [attr.aria-label]="ariaLabel"
+         [ngClass]="classList">
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+      </a>
+    </ng-container>
+  </ng-container>
 
   <button *ngSwitchCase="'button'"
           type="button"

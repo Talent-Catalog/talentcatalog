@@ -14,16 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
 import {ChatService} from "../../../services/chat.service";
-import {BehaviorSubject, forkJoin, Observable, Subscription} from "rxjs";
+import {BehaviorSubject, forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 /**
  * Simple candidate view with support for showing read/unread status of their chats with source.
@@ -41,7 +42,9 @@ import {JobChat, JobChatUserInfo} from "../../../model/chat";
   templateUrl: './show-candidates-with-chat.component.html',
   styleUrls: ['./show-candidates-with-chat.component.scss']
 })
-export class ShowCandidatesWithChatComponent implements OnInit {
+export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
+  // Using takeUntil(destroy$) ensures all form-related streams terminate when the component is destroyed, allowing the instance to be garbage-collected and stopping further logs.
+  private destroy$ = new Subject<void>();
 
   @Output() candidateSelection = new EventEmitter<Candidate>();
 
@@ -55,7 +58,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
-  @ViewChild("searchFilter") searchFilter: ElementRef;
+  @ViewChild("searchFilter", {static: false}) searchFilter: InputComponent;
 
   error: any;
   loading: boolean;
@@ -121,7 +124,8 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     this.searchForm.valueChanges
     .pipe(
       debounceTime(1000),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
     )
     .subscribe(() => {
       this.fetchCandidatesWithActiveChat(true);
@@ -169,8 +173,9 @@ export class ShowCandidatesWithChatComponent implements OnInit {
       this.results = results;
       this.candidates = results.content;
 
-    //Following the search, filter loses focus, so focus back on it again
-    setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
+    // todo fix this focus feature using the new tc-input component, currently throws angular error
+    // //Following the search, filter loses focus, so focus back on it again
+    // setTimeout(()=>{this.searchFilter?.focus()},0);
 
     this.fetchChats();
   }
@@ -299,6 +304,15 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     error => {
       this.error = error
     })
+  }
+
+  ngOnDestroy(): void {
+    // Existing: release combined chat subscription
+    this.unsubscribe();
+
+    // New: terminate form subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

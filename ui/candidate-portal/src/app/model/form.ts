@@ -15,6 +15,7 @@
  */
 
 import {Country} from "./country";
+import {DependantRelations, Gender} from "./candidate";
 
 export interface MyFirstFormData {
   city?: string;
@@ -43,4 +44,38 @@ export interface TravelDocFormData {
   travelDocIssuedBy: string;
   travelDocIssueDate: string;
   travelDocExpiryDate: string;
+}
+
+export interface FamilyMemberDoc {
+  docType: TravelDocType;
+  docNumber: string;
+  issuer: string;
+  issuedOn: string;
+  expiresOn: string;
+}
+
+export interface RelocatingFamilyMember {
+  relationship: DependantRelations;
+  dependantRelationOther?: string;
+
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: Gender;
+  countryOfBirth: string;
+  placeOfBirth?: string;
+
+  healthConcerns?: 'Yes' | 'No' | null;
+  healthNotes?: string;
+  registered?: 'Yes' | 'No' | null;
+  registeredNumber?: string;
+  registeredNotes?: string;
+
+  travelDoc: FamilyMemberDoc;
+}
+
+export interface FamilyDocFormData {
+  noEligibleFamilyMembers: boolean;
+  noEligibleNotes?: string;
+  familyMembersJson: string; 
 }

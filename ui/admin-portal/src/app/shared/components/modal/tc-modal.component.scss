@@ -8,18 +8,21 @@
   flex-direction: column;
   &.has-icon {
     text-align: center;
-    i {
-      @include text-color-primary();
-    }
   }
   &.no-icon {
     .tc-modal-footer {
       text-align: end;
     }
   }
+  #close-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    cursor: pointer;
+  }
 }
 
-.tc-modal-title {
+.tc-modal-header {
   @include text-color-body();
   @include paragraph-lg();
   padding-bottom: 12px;

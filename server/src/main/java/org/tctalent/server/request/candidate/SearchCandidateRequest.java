@@ -392,7 +392,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         // POTENTIAL DUPLICATE
         if (getPotentialDuplicate() != null) {
             boolean potentialDuplicate = getPotentialDuplicate();
-            ands.add("potentialDuplicate = " + potentialDuplicate);
+            ands.add("candidate.potential_duplicate = " + potentialDuplicate);
         }
 
         // MAJOR SEARCH
@@ -400,8 +400,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             String values = getEducationMajorIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             joins.add("candidate_education");
-            ands.add("(major_id in (" + values + ") "
-                + "or migration_education_major_id in (" + values + "))");
+            ands.add("major_id in (" + values + ")");
         }
 
         // LANGUAGE SEARCH

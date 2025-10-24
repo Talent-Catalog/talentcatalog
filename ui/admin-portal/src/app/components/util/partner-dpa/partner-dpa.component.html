@@ -35,7 +35,7 @@
           type="primary"
           size="lg"
           [disabled]="!termsRead || loading"
-          (click)="acceptTerms()">
+          (onClick)="acceptTerms()">
 
           <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
           Accept Agreement
@@ -45,7 +45,7 @@
           type="secondary"
           size="lg"
           *ngIf="!acceptedDpaId || acceptedDpaId !== currentDpa.id"
-          (click)="skipDpa()">
+          (onClick)="skipDpa()">
           Skip for Now
         </tc-button>
       </div>

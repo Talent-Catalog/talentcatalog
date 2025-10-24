@@ -935,7 +935,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     public boolean isPartnerAuthorizedForCandidate(Partner userPartner, Candidate candidate) {
         Partner candidatePartner = candidate.getUser().getPartner();
         // If the user is a source partner, they can only access their own candidates
-        if (userPartner.isSourcePartner()) {
+        // Unless they are the default source partner, in which case there are no restrictions
+        if (userPartner.isSourcePartner() && !userPartner.isDefaultSourcePartner()) {
             return userPartner.getId().equals(candidatePartner.getId());
         }
         return true;

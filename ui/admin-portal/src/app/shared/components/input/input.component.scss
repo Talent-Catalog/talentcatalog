@@ -1,6 +1,7 @@
 @import '../../../../scss/color-mixins';
 @import '../../../../scss/support-colors';
 @import '../../../../scss/typography-mixins';
+@import '../../../../scss/dropdown-styles';
 
 .form-input {
   @include paragraph-md;
@@ -37,4 +38,9 @@
     @include border-color-info;
     box-shadow: 0 0 0 1px color(blue, 500);
   }
+}
+
+// NgbTypeAhead dropdown, which Angular renders as a sibling of the input:
+::ng-deep {
+  @include dropdown-styles;
 }

@@ -93,7 +93,6 @@ export class SearchUsersComponent implements OnInit {
     this.search();
   }
 
-
 /* SEARCH FORM */
   search() {
     this.loading = true;

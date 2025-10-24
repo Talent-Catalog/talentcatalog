@@ -24,32 +24,30 @@
 
   <div class="col-sm-{{sidePanelColWidth}}">
     <div *ngIf="canToggleSizes()" class="float-end">
-      <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()">
+      <tc-button size="sm" type="outline" color="gray" (onClick)="resizeSidePanel()">
         <i class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i>
-      </button>
+      </tc-button>
     </div>
-    <div class="alert alert-danger" *ngIf="error">
+    <tc-alert type="warning" *ngIf="error">
       {{error}}
-    </div>
-    <div class="detail-panel side-panel-color d-flex flex-column"
+    </tc-alert>
+    <div class="detail-panel background-color-soft d-flex flex-column"
          style="min-height: 70vh;"
          [ngClass]="selectedCandidate != null ?
             'justify-content-between':'justify-content-center'"
     >
       <div *ngIf="selectedCandidate; else noSelectedChat">
-        <h5 class="text-center text-accent-1 mb-3">{{chatHeader}}</h5>
-        <div class="alert alert-danger" *ngIf="error">
+        <h5 class="text-center">{{chatHeader}}</h5>
+
+        <tc-alert type="warning" *ngIf="error">
           {{error}}
-        </div>
-
-        <div class="mute-btn-align" *ngIf="!isReadOnlyUser()">
-          <app-chat-mute-toggle-button
-            [candidate]="selectedCandidate"
-            [refreshAfterToggle]="false"
-            >
-          </app-chat-mute-toggle-button>
-        </div>
-
+        </tc-alert>
+        <app-chat-mute-toggle-button
+          *ngIf="!isReadOnlyUser()"
+          class="mute-btn-align"
+          [candidate]="selectedCandidate"
+          [refreshAfterToggle]="false">
+        </app-chat-mute-toggle-button>
         <app-view-chat-posts
           [readOnly] = "isReadOnlyUser()"
           [chat]="selectedCandidateChat"
