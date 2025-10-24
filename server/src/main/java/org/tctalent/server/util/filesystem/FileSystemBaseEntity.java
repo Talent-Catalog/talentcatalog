@@ -17,7 +17,6 @@
 package org.tctalent.server.util.filesystem;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -33,7 +32,7 @@ import lombok.ToString;
 @ToString
 public abstract class FileSystemBaseEntity {
 
-    public FileSystemBaseEntity(@NonNull String url) {
+    public FileSystemBaseEntity(String url) {
         this.url = url;
     }
 
@@ -49,6 +48,5 @@ public abstract class FileSystemBaseEntity {
     /**
      * Url by which folder or file can be identified on the file system.
      */
-    @NonNull
     private String url;
 }

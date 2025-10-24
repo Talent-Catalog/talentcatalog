@@ -1434,11 +1434,7 @@ public class JobServiceImpl implements JobService {
         //Name of file being uploaded (this is the name it had on the originating computer).
         String fileName = file.getOriginalFilename();
 
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
-        setJobJdLink(job, uploadedFile.getName(), uploadedFile.getUrl());
-        job.setAuditFields(authService.getLoggedInUser().orElse(null));
-
-        //Do text extraction.
+        //Do text extraction. uploadJobFile deletes temp file - so need to do this first.
         try {
             String textExtract = TextExtractHelper.getTextExtractFromFile(tempFile, fileName);
             job.setJdFileText(textExtract);
@@ -1449,6 +1445,10 @@ public class JobServiceImpl implements JobService {
                 .message("Could not extract text from uploaded file")
                 .logError(e);
         }
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
+        setJobJdLink(job, uploadedFile.getName(), uploadedFile.getUrl());
+        job.setAuditFields(authService.getLoggedInUser().orElse(null));
         return salesforceJobOppRepository.save(job);
     }
 
