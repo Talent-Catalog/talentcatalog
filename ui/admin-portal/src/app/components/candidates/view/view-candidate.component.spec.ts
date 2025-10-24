@@ -76,7 +76,8 @@ describe('ViewCandidateComponent', () => {
       'canSeeGlobalLists',
       'canViewCandidateCV',
       'canSeeJobDetails',
-      'isAnAdmin'
+      'isAnAdmin',
+      'isReadOnly'
     ]);
 
     TestBed.configureTestingModule({

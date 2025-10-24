@@ -37,8 +37,7 @@
               (keyup.enter)="selectPage(i.value)"
               (blur)="selectPage(i.value)"
               (input)="formatInput($any($event).target)"
-              aria-labelledby="paginationInputLabel paginationDescription"
-              style="width: 2.5rem"/>
+              aria-labelledby="paginationInputLabel paginationDescription"/>
             <span id="paginationDescription" class=" text-nowrap px-2"> of {{ pages.length }}</span>
           </div>
           <span class="results-total">Found {{totalElements}} in total</span>

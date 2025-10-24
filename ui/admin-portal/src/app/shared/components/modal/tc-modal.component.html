@@ -1,13 +1,12 @@
 <div class="tc-modal" [ngClass]="icon ? 'has-icon' : 'no-icon'">
   <!-- Optional close (X) button -->
   <tc-icon
+    id="close-btn"
     *ngIf="showClose"
     [type]="'button'"
     (click)="dismiss()"
     [color]="'gray'"
-    [size]="'md'"
-    style="position: absolute; top: 1.5rem; right: 2rem; cursor: pointer"
-  >
+    [size]="'md'">
     <i class="fa-solid fa-xmark"></i>
   </tc-icon>
 

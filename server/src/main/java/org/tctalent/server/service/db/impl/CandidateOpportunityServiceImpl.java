@@ -474,22 +474,29 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
     }
 
+    /**
+     * Returns Candidate's status, possibly auto-updated based on the given new stage.
+     * @param newStage New opportunity stage
+     * @param candidate Candidate
+     * @return New status if it should be updated, otherwise null.
+     */
     @Nullable
-    private static CandidateStatus checkForNewStatus(CandidateOpportunityStage stage,
-        Candidate candidate) {
+    private static CandidateStatus checkForNewStatus(
+        CandidateOpportunityStage newStage, Candidate candidate) {
+
         CandidateStatus status = candidate.getStatus();
         CandidateStatus newStatus = null;
-        if (stage.isEmployed() && status != CandidateStatus.employed) {
+        if (newStage.isEmployed() && status != CandidateStatus.employed) {
             //Auto set status to employed
             newStatus = CandidateStatus.employed;
-        } else if (stage == CandidateOpportunityStage.notEligibleForTC
+        } else if (newStage == CandidateOpportunityStage.notEligibleForTC
             && status != CandidateStatus.ineligible) {
             //Auto set status
             newStatus = CandidateStatus.ineligible;
-        } else if (stage == CandidateOpportunityStage.relocatedNoJobOfferPathway
-            && status != CandidateStatus.withdrawn) {
+        } else if (newStage == CandidateOpportunityStage.relocatedNoJobOfferPathway
+            && status != CandidateStatus.relocatedIndependently) {
             //Auto set status
-            newStatus = CandidateStatus.withdrawn;
+            newStatus = CandidateStatus.relocatedIndependently;
         }
         return newStatus;
     }

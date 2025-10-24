@@ -54,6 +54,9 @@
   &.icon-warning {
     color: color(yellow, 500);
   }
+  &:hover {
+    filter: brightness(0.6);
+  }
 }
 
 button.tc-icon {
