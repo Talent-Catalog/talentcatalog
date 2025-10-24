@@ -282,6 +282,10 @@ tc-api:
   apiUrl: ${TC_API_URL:http://localhost:8082}
   apiKey: ${TC_API_KEY:}
 
+tc-skills-extraction-service:
+  apiUrl: ${TC_API_URL:http://localhost:8000}
+  apiKey: ${TC_API_KEY:}
+
 dpa:
   # Used in EmailHelper
   dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}

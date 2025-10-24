@@ -14,24 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.db.impl;
+package org.tctalent.server.service.api;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.tctalent.server.service.db.SkillsService;
 
+/**
+ * TODO JC Doc
+ *
+ * @author John Cameron
+ */
 @Tag("skip-test-in-gradle-build")
 @SpringBootTest
-class SkillsServiceImplTest {
+class TcSkillsExtractionServiceImplTest {
 
     @Autowired
-    private SkillsService skillsService;
+    private TcSkillsExtractionService skillsExtractionService;
 
     @BeforeEach
     void setUp() {
@@ -39,14 +42,9 @@ class SkillsServiceImplTest {
 
     @Test
     void extractSkills() {
-        String text = "John knows Java, Python, and Scala. He also knows C++, C, and Fortran.";
-        List<String> skills = skillsService.extractSkills(text);
-        assertNotNull(skills);
-    }
-
-    @Test
-    void getSkills() {
-        final List<String> escoSkills = skillsService.getSkills();
-        assertNotNull(escoSkills);
+        ExtractSkillsRequest request = new ExtractSkillsRequest();
+        request.setText("John knows Java, Python, and Scala. He also knows C++, C, and Fortran.");
+        final ExtractSkillsResponse response = skillsExtractionService.extractSkills(request);
+        assertNotNull(response);
     }
 }

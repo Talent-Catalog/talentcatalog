@@ -27,6 +27,13 @@ import org.springframework.lang.NonNull;
 public interface SkillsService {
 
     /**
+     * Extracts skills from the given text.
+     * @param text Text to extract skills from.
+     * @return List of skills extracted from the given text.
+     */
+    List<String> extractSkills(String text);
+
+    /**
      * Returns English language skills.
      * <p>
      * Skills can be single words or short phrases. There could be around 20,000 of them. This list

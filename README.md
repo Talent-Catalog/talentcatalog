@@ -259,7 +259,7 @@ A standard dump file is kept specifically for getting new developers started, bu
 also quickly create a new one from their local containerised version with the following commands:
 
    ```shell    
-   docker exec -it docker-compose-postgres-1 pg_dump --file=/tmp/dump.sql --create --username=tctalent --host=localhost --port=5432
+   docker exec -it docker-compose-postgres-1 pg_dump --file=/tmp/tcdump.sql --create --username=tctalent --host=localhost --port=5432
    ```
    ```shell    
    docker cp docker-compose-postgres-1:/tmp/tcdump.sql </path/to/file>   
