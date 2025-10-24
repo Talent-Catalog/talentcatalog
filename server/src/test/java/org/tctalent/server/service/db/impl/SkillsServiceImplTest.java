@@ -42,7 +42,7 @@ class SkillsServiceImplTest {
     @Test
     void extractSkillNames() {
         String text = "John knows Java, Python, and Scala. He also knows C++, C, and Fortran.";
-        List<String> skillNames = skillsService.extractSkillNames(text, Locale.ENGLISH.getLanguage());
+        List<SkillName> skillNames = skillsService.extractSkillNames(text, Locale.ENGLISH.getLanguage());
         assertNotNull(skillNames);
     }
 
