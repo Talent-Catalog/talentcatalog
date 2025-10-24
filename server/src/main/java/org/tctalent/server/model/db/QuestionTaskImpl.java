@@ -16,18 +16,17 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Convert;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.task.AllowedQuestionTaskAnswer;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.TaskType;
-
-import jakarta.persistence.Convert;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Transient;
-import java.util.List;
 
 /**
  * Default Implementation
@@ -45,7 +44,7 @@ public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
      * If exist the question task answer format will be a dropdown.
      */
     @Nullable
-    @Convert(converter = DelimitedStringsConverter.class)
+    @Convert(converter = CommaDelimitedStringsConverter.class)
     private List<String> explicitAllowedAnswers;
 
     /**

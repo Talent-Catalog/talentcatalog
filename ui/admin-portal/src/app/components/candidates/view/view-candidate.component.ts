@@ -18,13 +18,12 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   Candidate,
   UpdateCandidateNotificationPreferenceRequest,
-  UpdateCandidateMutedRequest,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
@@ -209,8 +208,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       candidateIds: [this.candidate.id],
       info: info
     };
-    this.candidateService.updateStatus(request).subscribe(
-      () => {
+    this.candidateService.updateStatus(request).pipe(
+      concatMap(() => this.candidateService.getByNumber(this.candidate.candidateNumber))
+    ).subscribe(
+      (candidate) => {
+        this.setCandidate(candidate);
         this.loading = false;
         //Update candidate with new status
         this.candidate.status = info.status;
@@ -285,12 +287,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+    this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   publicCvUrl() {

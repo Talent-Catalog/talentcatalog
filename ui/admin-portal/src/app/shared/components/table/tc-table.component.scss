@@ -28,13 +28,18 @@
 
       td {
         border-bottom: 1px solid;
+        line-height: 25px;
         @include border-color-light;
         padding: 10px;
         @include text-color-body;
-
-        a > i {
-          @include text-color-secondary;
+        tc-icon {
+          // Add some margin to the icons in a table column to space them out
+          margin-left: 3px;
         }
+      }
+
+      tr {
+        vertical-align: middle;
       }
 
       &.table-hover > tbody > tr:hover {
@@ -53,6 +58,10 @@
 
       tr.clickable:hover {
         cursor: pointer;
+      }
+
+      tr a {
+        @include paragraph-sm;
       }
     }
   }

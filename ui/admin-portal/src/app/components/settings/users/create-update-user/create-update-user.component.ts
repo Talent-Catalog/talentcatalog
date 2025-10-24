@@ -182,10 +182,6 @@ export class CreateUpdateUserComponent implements OnInit {
     this.activeModal.close(user);
   }
 
-  dismiss() {
-    this.activeModal.dismiss(false);
-  }
-
   canAssignPartner(): boolean {
     return this.authorizationService.canAssignPartner();
   }

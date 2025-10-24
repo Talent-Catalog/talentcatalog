@@ -72,7 +72,7 @@ describe('OpportunityStageNextStepComponent', () => {
   it('should display progress card when opp is provided', () => {
     component.opp = mockCandidateOpportunity;
     fixture.detectChanges();
-    const card = fixture.debugElement.query(By.css('.card'));
+    const card = fixture.debugElement.query(By.css('tc-card'));
     expect(card).toBeTruthy();
   });
 
@@ -98,8 +98,10 @@ describe('OpportunityStageNextStepComponent', () => {
     component.updating = true;
     authServiceSpy.canEditCandidateOpp.and.returnValue(true);
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.btn-secondary'));
-    button.nativeElement.click();
+    const button = fixture.debugElement.query(By.css('.edit-opp-progress-btn'));
+    button.triggerEventHandler('onClick', null);
+
+    fixture.detectChanges();
     expect(component.editOppProgress).toHaveBeenCalled();
   });
 

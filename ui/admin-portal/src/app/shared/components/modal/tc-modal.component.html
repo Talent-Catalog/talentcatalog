@@ -1,18 +1,41 @@
 <div class="tc-modal" [ngClass]="icon ? 'has-icon' : 'no-icon'">
-  <div *ngIf="icon">
+  <!-- Optional close (X) button -->
+  <tc-icon
+    id="close-btn"
+    *ngIf="showClose"
+    [type]="'button'"
+    (click)="dismiss()"
+    [color]="'gray'"
+    [size]="'md'">
+    <i class="fa-solid fa-xmark"></i>
+  </tc-icon>
+
+  <tc-icon *ngIf="icon" [color]="isError ? 'error' : 'primary'">
     <i [class]="icon"></i>
+  </tc-icon>
+
+  <div class="tc-modal-header" [ngClass]="{'text-danger': isError}">
+    {{heading}}
   </div>
-  <div class="tc-modal-title">{{title}}</div>
 
   <div class="tc-modal-body">
+    <span *ngIf="message">{{ message }}</span>
     <ng-content></ng-content>
   </div>
 
   <div class="tc-modal-footer">
-    <tc-button *ngIf="showCancel" type="outline" size="lg" (click)="dismiss()">
-      Cancel
+    <tc-button *ngIf="showCancel"
+               type="outline"
+               color="primary"
+               [size]="'lg'"
+               (onClick)="dismiss()"
+               class="cancel-btn">
+      {{cancelText}}
     </tc-button>
-    <tc-button type="primary" size="lg" (click)="action()" [disabled]="disableAction">
+    <tc-button color="primary"
+               [size]="'lg'"
+               (onClick)="action()"
+               [disabled]="disableAction">
       {{actionText}}
     </tc-button>
   </div>

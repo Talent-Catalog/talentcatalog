@@ -14,107 +14,76 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div>
-  <div>
-    <form [formGroup]="importForm">
-      <div class="mb-3 col-4">
-        <label class="form-label" for="langCode">Importing language?</label>
-        <input type="text" class="form-control" placeholder="Language code..."
-               formControlName="langCode" id="langCode">
+<tc-alert *ngIf="error">{{error}}</tc-alert>
+<div class="import-language">
+  <form [formGroup]="importForm">
+    <div class="row">
+      <div class="col-4">
+        <tc-field>
+          <tc-label for="langCode">Importing language?</tc-label>
+          <tc-input type="text" placeholder="Language code..."
+                    formControlName="langCode" id="langCode">
+          </tc-input>
+        </tc-field>
       </div>
-    </form>
-
-    <button *ngIf="isAnAdmin() && !loggedInUser.readOnly && importForm.valid" class="btn btn-primary"
-            (click)="importTranslations()">Import Translation File</button>
-  </div>
-  <div class="section">
-    <div>
-      <div class="float-end">
-        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addEducationMajor()">Add</button>
+      <div class="col-4 align-content-center">
+        <tc-button *ngIf="isAnAdmin() && !loggedInUser.readOnly && importForm.valid" type="outline"
+                   color="secondary" (onClick)="importTranslations()">Import Translation File</tc-button>
       </div>
     </div>
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+  </form>
+</div>
+<div class="search-education-majors">
     <form [formGroup]="searchForm" (ngSubmit)="search()">
-
-      <div class="row">
-
-        <div class="mb-3 col-4">
-          <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
-                 id="keyword">
+      <div class="row mb-3">
+        <div class="col-4">
+          <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                    id="keyword"></tc-input>
         </div>
-
-        <div class="mb-3 col-4">
-          <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
+        <div class="col-4">
+          <ng-select class="tc-select" id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
             <ng-option value="active">Active</ng-option>
             <ng-option value="inactive">Inactive</ng-option>
           </ng-select>
         </div>
-
+        <div class="col-4 text-end">
+          <tc-button *ngIf="isAnAdmin() && !loggedInUser.readOnly" (onClick)="addEducationMajor()">Add</tc-button>
+        </div>
       </div>
     </form>
   </div>
 
-  <div class="text-muted mb-2 align-middle">
+<tc-table [results]="results"
+          [loading]="loading"
+          [paginationPosition]="'top'"
+          [(pageNumber)]="pageNumber"
+          (pageChange)="search()">
 
-    <ngb-pagination class="float-end"
-                    [boundaryLinks]="true"
-                    [pageSize]="pageSize"
-                    [collectionSize]="results?.totalElements"
-                    [(page)]="pageNumber"
-                    [maxSize]="5"
-                    [ellipses]="true"
-                    [rotate]="true"
-                    (pageChange)="search()">
-    </ngb-pagination>
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Status</th>
+    <th>Translation count</th>
+    <th></th>
+  </tr>
+  </thead>
 
-    Found {{results?.totalElements}} education majors
-  </div>
+  <tbody>
+  <tr *ngFor="let educationMajor of results?.content">
+    <td>{{educationMajor.name}}</td>
+    <td>{{educationMajor.status}}</td>
+    <td></td>
+    <td>
+      <div class="d-flex justify-content-evenly" *ngIf="(!loggedInUser.readOnly)">
+        <tc-button type="plain" color="secondary" (onClick)="editEducationMajor(educationMajor)">
+          <i class="fas fa-edit"></i></tc-button>
+        <tc-button type="plain" color="gray" (onClick)="deleteEducationMajor(educationMajor)">
+          <i class="fas fa-trash"></i></tc-button>
+      </div>
+    </td>
+  </tr>
 
-  <table class="table align-middle">
+  </tbody>
 
-    <thead class="table-primary">
-    <tr>
-      <th>Name</th>
-      <th>Status</th>
-      <th>Translation count</th>
-      <th></th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr *ngFor="let educationMajor of results?.content">
-      <td>{{educationMajor.name}}</td>
-      <td>{{educationMajor.status}}</td>
-      <td></td>
-      <td>
-        <div class="btn-group" *ngIf="(!loggedInUser.readOnly)">
-          <button type="button" class="btn btn-default" (click)="editEducationMajor(educationMajor)"><i
-            class="fas fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteEducationMajor(educationMajor)"><i
-            class="fas fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>
-
-    <!-- loading -->
-    <tr *ngIf="loading">
-      <td colspan="42">
-        <i class="fas fa-spinner fa-spin"></i> Loading...
-      </td>
-    </tr>
-
-    <!-- no results -->
-    <tr *ngIf="!loading && !results?.totalElements">
-      <td colspan="42">
-        <span class="text-muted">(no matching education majors)</span>
-      </td>
-    </tr>
-
-    </tbody>
-
-  </table>
-
-</div>
+</tc-table>
 
