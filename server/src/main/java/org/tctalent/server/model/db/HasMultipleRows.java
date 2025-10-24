@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,34 +14,33 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.candidate;
+package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
- * Describes a particular published document column instance - eg a column in a spreadsheet.
- * <p/>
- * It comprises details of a standard column definition, plus optional special configuration
- * for this particular instance of that column.
+ * Object which supports multiple String values organized into a number of rows.
+ * <p>
+ * Data from within a row is identified using a String name.
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-public class PublishedDocColumnConfig {
+public interface HasMultipleRows {
 
-  /**
-   * Optional properties which can override some standard column configuration.
-   */
-  @Nullable
-  private PublishedDocColumnProps columnProps;
+    /**
+     * Number of rows
+     * @return Number of rows
+     */
+    int nRows();
 
-  /**
-   * The standard definition of this column.
-   */
-  @NonNull
-  private PublishedDocColumnDef columnDef;
+    /**
+     * Gets the value specified by name from the n'th row (base 0)
+     * @param n Index
+     * @param name Specifies which element of the row to fetch
+     *
+     * @return Data - can be null if there is no such data or if the index or name is not
+     * recognized.
+     */
+    @Nullable
+    String get(int n, String name);
 }

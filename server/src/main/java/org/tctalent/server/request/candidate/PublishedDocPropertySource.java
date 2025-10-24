@@ -16,32 +16,15 @@
 
 package org.tctalent.server.request.candidate;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-
 /**
- * Describes a particular published document column instance - eg a column in a spreadsheet.
- * <p/>
- * It comprises details of a standard column definition, plus optional special configuration
- * for this particular instance of that column.
+ * Convenience class for creating a value source based on a candidate property.
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-public class PublishedDocColumnConfig {
+public class PublishedDocPropertySource extends PublishedDocValueSource {
 
-  /**
-   * Optional properties which can override some standard column configuration.
-   */
-  @Nullable
-  private PublishedDocColumnProps columnProps;
-
-  /**
-   * The standard definition of this column.
-   */
-  @NonNull
-  private PublishedDocColumnDef columnDef;
+  public PublishedDocPropertySource(String propertyName) {
+    super();
+    setPropertyName(propertyName);
+  }
 }

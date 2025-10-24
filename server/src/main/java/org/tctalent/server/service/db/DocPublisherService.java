@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
-import org.tctalent.server.request.candidate.PublishedDocColumnDef;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocColumnSetUp;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
@@ -40,7 +41,9 @@ public interface DocPublisherService {
    * The document is made viewable by anyone with a link to it.
    *
    * @param folder Folder where doc is created
-   * @param name Name of created document
+   * @param name Name of the created document
+   * @param candidates The candidates supplying the data
+   * @param request The PublishListRequest
    * @param dataRangeName Name of range for candidate data
    * @param props Extra properties to send to sheet. Each property key should correspond to
    *              a named cell reference in the document template, and the value is the value
@@ -53,7 +56,8 @@ public interface DocPublisherService {
    * @see #populatePublishedDoc
    */
   String createPublishedDoc(GoogleFileSystemFolder folder,
-      String name, String dataRangeName, int nRowsData, Map<String, Object> props,
+      String name, String dataRangeName, List<Candidate> candidates, PublishListRequest request,
+      Map<String, Object> props,
       Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
       throws GeneralSecurityException, IOException;
 
@@ -69,14 +73,14 @@ public interface DocPublisherService {
    * @param savedListId Id of list associated with the published doc
    * @param candidateIds Ids of candidates whose data is used to populate the doc. Note that this
    *                     will be the candidates in the list.
-   * @param columnInfos Specifies the columns of data to be populated
+   * @param request The PublishListRequest
    * @param publishedSheetDataRangeName The name of the range in the doc where data will be written
    * @throws GeneralSecurityException if there are security problems accessing the document
    * @throws IOException if there are communication problems accessing the document
    * @see #createPublishedDoc
    */
   void populatePublishedDoc(String publishedDocLink, long savedListId, List<Long> candidateIds,
-      List<PublishedDocColumnDef> columnInfos, String publishedSheetDataRangeName)
+      PublishListRequest request, String publishedSheetDataRangeName)
       throws GeneralSecurityException, IOException;
 
   /**

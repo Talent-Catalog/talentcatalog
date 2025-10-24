@@ -189,12 +189,12 @@ public class SavedListServiceImpl implements SavedListService {
                 if (candidate.isPendingTerms()) {
                     //Candidates who have been shown our latest terms but have not accepted them
                     //cannot be added to submission lists
-                    throw new InvalidRequestException("Candidate " + candidate.getCandidateNumber() 
-                        + " cannot be added to a submission list." 
-                        + " They have been shown the latest TC terms but have not accepted them." 
+                    throw new InvalidRequestException("Candidate " + candidate.getCandidateNumber()
+                        + " cannot be added to a submission list."
+                        + " They have been shown the latest TC terms but have not accepted them."
                         + " Ask the candidate to log on to their TC account and accept the terms.");
                 }
-                
+
                 //With no params specified will not change any existing opp associated with this job,
                 //but will create a new opp if needed, with stage defaulting to "prospect"
                 candidateOpportunityService.createUpdateCandidateOpportunities(
@@ -1033,16 +1033,17 @@ public class SavedListServiceImpl implements SavedListService {
             candidates = new ArrayList<>(savedList.getCandidates());
         }
 
-        //Create an empty doc - leaving room for the number of candidates
-        String link = docPublisherService.createPublishedDoc(listFolder, savedList.getName(),
-                publishedSheetDataRangeName, candidates.size() + 1, props, columnSetUpMap);
+        //Create the document - empty but with the number of rows of data expected
+        String link = docPublisherService.createPublishedDoc(
+            listFolder, savedList.getName(), publishedSheetDataRangeName,
+            candidates, request, props, columnSetUpMap);
 
-        //Populate candidate data in doc.
-        //This is processed asynchronously so pass candidate ids, rather than candidate entities
-        //which will not in a persistence context in the Async processing. They will need to
+        //Populate candidate data in doc - filling the empty rows.
+        //This is all processed asynchronously so pass candidate ids, rather than candidate entities,
+        //which will not be in a persistence context in the Async processing. They will need to
         //be reloaded from the database using their ids.
         List<Long> candidateIds = candidates.stream().map(Candidate::getId).collect(Collectors.toList());
-        docPublisherService.populatePublishedDoc(link, savedList.getId(), candidateIds, columnInfos,
+        docPublisherService.populatePublishedDoc(link, savedList.getId(), candidateIds, request,
             publishedSheetDataRangeName);
 
         /*
