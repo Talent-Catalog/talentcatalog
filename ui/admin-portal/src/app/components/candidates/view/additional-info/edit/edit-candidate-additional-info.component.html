@@ -14,39 +14,33 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [heading]="'Edit Additional Info'"
+          [showClose]="true"
+          [disableAction]="candidateForm.invalid || loading || saving"
+          [showCancel]="true"
+          [actionText]="'Save'"
+          (onAction)="onSave()"
+>
 
-  <h4 class="modal-title">Edit Additional Info</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="candidateForm">
       <div class="mb-3">
-        <label class="form-label" for="additionalInfo">Additional Information</label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="8" id="additionalInfo" placeholder="" [formControlName]="'additionalInfo'"></textarea>
+        <tc-label [for]="'additionalInfo'">
+          Additional Information
+        </tc-label>
+        <tc-textarea [id]="'additionalInfo'"
+                     [formControlName]="'additionalInfo'"
+        ></tc-textarea>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
     </form>
 
   </div>
-</div>
+</tc-modal>
