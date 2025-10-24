@@ -19,11 +19,11 @@
           [actionText]="'Ok'"
           (onAction)="close()"
           [showClose]="true">
-  <span *ngIf="message">
+  <p *ngIf="message">
     {{message}}
-  </span>
+  </p>
 
-  <span *ngIf="!message">
+  <p *ngIf="!message">
     Are you sure?
-  </span>
+  </p>
 </tc-modal>

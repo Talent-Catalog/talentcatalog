@@ -51,6 +51,5 @@ import {Placement} from '@ng-bootstrap/ng-bootstrap';
 export class TcDropdownComponent {
   @Input() placement: Placement = 'bottom-start';
   @Input() menuClass: any;
-  @Input() container: string | null = 'body';
   @Input() align: 'start' | 'end' = 'start';
 }

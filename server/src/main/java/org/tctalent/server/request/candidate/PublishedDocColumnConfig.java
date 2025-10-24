@@ -33,15 +33,15 @@ import org.springframework.lang.Nullable;
 @Setter
 public class PublishedDocColumnConfig {
 
-  @Nullable
   /**
    * Optional properties which can override some standard column configuration.
    */
+  @Nullable
   private PublishedDocColumnProps columnProps;
 
-  @NonNull
   /**
    * The standard definition of this column.
    */
+  @NonNull
   private PublishedDocColumnDef columnDef;
 }

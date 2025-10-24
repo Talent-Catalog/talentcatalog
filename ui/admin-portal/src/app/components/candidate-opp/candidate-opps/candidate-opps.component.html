@@ -112,8 +112,7 @@
     </form>
   </div>
 
-  <tc-table [totalElements]="results?.totalElements" [pageSize]="pageSize"
-            [(pageNumber)]="pageNumber" (pageChange)="search()">
+  <tc-table [results]="results" [loading]="loading" [(pageNumber)]="pageNumber" (pageChange)="search()">
     <!--          Header-->
     <thead>
     <tr>
@@ -165,43 +164,41 @@
           [chats]="getChats(opp)"
         ></app-chat-read-status>
         {{ opp.name | truncate: 25 }}
-        <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+        <tc-icon type="link" color="gray" [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
           <i class="fas fa-user" title="Candidate"></i>
-        </a>
-        <a [routerLink]="['/opp',opp.id]">
+        </tc-icon>
+        <tc-icon type="link" color="gray" [routerLink]="['/opp',opp.id]">
           <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
-        </a>
-        <a [routerLink]="['/job',opp.jobOpp.id]">
+        </tc-icon>
+        <tc-icon type="link" color="gray" [routerLink]="['/job',opp.jobOpp.id]">
           <i class="fa-solid fa-briefcase" title="Job"></i>
-        </a>
-        <a *ngIf="opp.jobOpp.submissionList"
+        </tc-icon>
+        <tc-icon type="link" color="gray" *ngIf="opp.jobOpp.submissionList"
            [routerLink]="['/list',opp.jobOpp.submissionList.id]">
           <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
-        </a>
-        <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
-           target="_blank">
+        </tc-icon>
+        <tc-icon type="link" color="gray" *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)">
           <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
-        </a>
+        </tc-icon>
       </td>
       <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
         <app-chat-read-status
           [chats]="getChats(opp)"
         ></app-chat-read-status>
-        <a [routerLink]="['/opp',opp.id]">
+        <tc-icon type="link" color="gray" [routerLink]="['/opp',opp.id]">
           {{ opp.jobOpp.name }} <i class="fas fa-address-book"
                                    title="Case (candidate opportunity)"></i>
-        </a>
-        <a [routerLink]="['/job',opp.jobOpp.id]">
+        </tc-icon>
+        <tc-icon type="link" color="gray" [routerLink]="['/job',opp.jobOpp.id]">
           <i class="fa-solid fa-briefcase" title="Job"></i>
-        </a>
-        <a *ngIf="opp.jobOpp.submissionList"
+        </tc-icon>
+        <tc-icon type="link" color="gray" *ngIf="opp.jobOpp.submissionList"
            [routerLink]="['/list',opp.jobOpp.submissionList.id]">
           <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
-        </a>
-        <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
-           target="_blank">
+        </tc-icon>
+        <tc-icon type="link" color="gray" *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)">
           <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
-        </a>
+        </tc-icon>
       </td>
       <td>
         <tc-badge [color]="getBadgeColor(opp)">

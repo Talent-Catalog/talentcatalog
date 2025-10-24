@@ -274,6 +274,10 @@ preset:
     apiToken: ${PRESET_API_TOKEN:}
     workspaceId: ${PRESET_WORKSPACE_ID:}
 
+spacy-skills-extraction-api:
+  apiUrl: ${SPACY_SKILLS_EXTRACTION_API_URL:http://localhost:8083}
+  apiKey: ${SPACY_SKILLS_EXTRACTION_API_KEY:}
+
 tc-api:
   apiUrl: ${TC_API_URL:http://localhost:8082}
   apiKey: ${TC_API_KEY:}
