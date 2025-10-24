@@ -16,64 +16,77 @@
 
 package org.tctalent.server.model.db;
 
+import lombok.Getter;
+
 /**
  * Every candidate can only be in one status at a time.
- * <p/>
- * Only candidates with CandidateStatus.active are made visible to potential employers
  */
+@Getter
 public enum CandidateStatus {
 
     /**
      * The candidate's data is ready to be shared with prospective employers.
      */
-    active,
+    active(false),
 
     /**
-     * The candidate has found employment themselves
+     * The candidate has found employment themselves.
      */
-    autonomousEmployment,
+    autonomousEmployment(true),
 
     /**
      * Candidate has been deleted. (The status of the candidate's corresponding User object should
      * also be set to deleted - ie {@link Status#deleted}
      */
-    deleted,
+    deleted(true),
 
     /**
      * Candidate has started registration but has not submitted - ie they are still in the
      * middle of completing their registration.
      */
-    draft,
+    draft(true),
 
     /**
-     * Candidate is no longer looking for placement through TBB.
+     * Candidate is no longer looking for placement through the TC.
      */
-    employed,
+    employed(true),
 
     /**
-     * Candidate's registration is not complete enough to be considered active.
+     * Candidate's registration is not complete enough to be useful to them.
      */
-    incomplete,
+    incomplete(false),
 
     /**
-     * The candidate is not eligible for TBB's support
+     * The candidate is not eligible for support on the TC.
      */
-    ineligible,
+    ineligible(true),
 
     /**
-     * Candidate has completed registration but TBB staff have not yet reviewed the registration.
+     * Candidate has completed registration, but the registration has not yet been reviewed.
      */
-    pending,
+    pending(false),
 
     /**
-     * We cannot contact candidate
+     * The candidate has independently relocated to a country with a durable solution.
+     * They therefore no longer need our services and should not be considered active.
      */
-    unreachable,
+    relocatedIndependently(true),
+
+    /**
+     * The candidate cannot be contacted.
+     */
+    unreachable(false),
 
     /**
      * The candidate has requested to be withdrawn from consideration.
      */
-    withdrawn,
+    withdrawn(true),
+    ;
 
+    private final boolean inactive;
+
+    CandidateStatus(boolean inactive) {
+        this.inactive = inactive;
+    }
 
 }
