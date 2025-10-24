@@ -307,6 +307,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         //Load the job skills
         this.jobService.getSkills(this.jobId).subscribe({
           next: (skills) => this.initializeQueryStringWithJobSkills(skills),
+          error: (error) => this.error = error
         })
       }
 
