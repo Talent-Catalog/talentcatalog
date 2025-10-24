@@ -325,9 +325,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   private initializeQueryStringWithJobSkills(skills: SkillName[]) {
     if (skills && skills.length > 0) {
-      let queryString = skills.map(s => '"' + s.name + '"').join(' ');
+      let queryString = skills
+      .map(
+        s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
+      ).join(' ');
       this.searchForm.controls['simpleQueryString'].patchValue(queryString);
-
+      this.searchForm.markAsDirty();
     }
   }
 
