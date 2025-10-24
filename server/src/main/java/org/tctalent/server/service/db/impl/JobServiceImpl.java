@@ -47,6 +47,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -110,6 +111,7 @@ import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
+import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @Service
 @Slf4j
@@ -448,8 +450,30 @@ public class JobServiceImpl implements JobService {
     }
 
     private String extractJobText(SalesforceJobOpp jobOpp) {
-        //TODO JC Other sources of text
-        return jobOpp.getJobSummary();
+        StringBuilder sb = new StringBuilder();
+
+        appendJobText(sb, jobOpp.getJobSummary());
+
+        final JobOppIntake jobOppIntake = jobOpp.getJobOppIntake();
+        if (jobOppIntake != null) {
+            appendJobText(sb, jobOppIntake.getEmploymentExperience());
+            appendJobText(sb, jobOppIntake.getEducationRequirements());
+            appendJobText(sb, jobOppIntake.getSkillRequirements());
+        }
+
+        final String jdFileText = jobOpp.getJdFileText();
+        if (jdFileText != null) {
+            appendJobText(sb, jdFileText);
+        }
+
+        return sb.toString();
+    }
+
+    private void appendJobText(@NonNull StringBuilder sb, @Nullable String text) {
+        if (StringUtils.hasText(text)) {
+            sb.append(text);
+            sb.append("||\n");
+        }
     }
 
     /**
@@ -1364,14 +1388,7 @@ public class JobServiceImpl implements JobService {
     }
 
     private GoogleFileSystemFile uploadFile(String folderLink, String fileName,
-        MultipartFile file) throws IOException {
-
-        //Save to a temporary file
-        File tempFile = File.createTempFile("job", ".tmp");
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
-            InputStream inputStream = file.getInputStream()) {
-            inputStream.transferTo(outputStream);
-        }
+        File file) throws IOException {
 
         final GoogleFileSystemDrive listFoldersDrive = googleDriveConfig.getListFoldersDrive();
         final GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(folderLink);
@@ -1379,29 +1396,25 @@ public class JobServiceImpl implements JobService {
         //Upload the file to its folder, with the correct name (not the temp
         //file name).
         GoogleFileSystemFile uploadedFile =
-            fileSystemService.uploadFile(listFoldersDrive, parentFolder, fileName, tempFile);
+            fileSystemService.uploadFile(listFoldersDrive, parentFolder, fileName, file);
 
         //Delete tempfile
-        if (!tempFile.delete()) {
+        if (!file.delete()) {
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("UploadFile")
-                .message("Failed to delete temporary file " + tempFile)
+                .message("Failed to delete temporary file " + file)
                 .logError();
         }
 
         return uploadedFile;
     }
 
-    private GoogleFileSystemFile uploadJobFile(SalesforceJobOpp job, MultipartFile file)
+    private GoogleFileSystemFile uploadJobFile(SalesforceJobOpp job, File file, String fileName)
         throws IOException {
         SavedList submissionList = job.getSubmissionList();
 
         String jdFolderLink = submissionList.getFolderjdlink();
-
-        //Name of file being uploaded (this is the name it had on the
-        //originating computer).
-        String fileName = file.getOriginalFilename();
 
         return uploadFile(jdFolderLink, fileName, file);
     }
@@ -1414,10 +1427,38 @@ public class JobServiceImpl implements JobService {
         if (job.getSubmissionList() == null) {
             throw new InvalidRequestException("Job " + id + " does not have submission list");
         }
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+
+        //Save to a temporary file
+        File tempFile = saveToTempFile(file);
+
+        //Name of file being uploaded (this is the name it had on the originating computer).
+        String fileName = file.getOriginalFilename();
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
         setJobJdLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         job.setAuditFields(authService.getLoggedInUser().orElse(null));
-        return job;
+
+        //Do text extraction.
+        try {
+            String textExtract = TextExtractHelper.getTextExtractFromFile(tempFile, fileName);
+            job.setJdFileText(textExtract);
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("UploadJd")
+                .message("Could not extract text from uploaded file")
+                .logError(e);
+        }
+        return salesforceJobOppRepository.save(job);
+    }
+
+    private File saveToTempFile(MultipartFile file) throws IOException {
+        File tempFile = File.createTempFile("job", ".tmp");
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+            InputStream inputStream = file.getInputStream()) {
+            inputStream.transferTo(outputStream);
+        }
+        return tempFile;
     }
 
     @Override
@@ -1428,7 +1469,14 @@ public class JobServiceImpl implements JobService {
         if (job.getSubmissionList() == null) {
             throw new InvalidRequestException("Job " + id + " does not have submission list");
         }
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+
+        //Save to a temporary file
+        File tempFile = saveToTempFile(file);
+
+        //Name of file being uploaded (this is the name it had on the originating computer).
+        String fileName = file.getOriginalFilename();
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
         setJobJoiLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }
@@ -1441,7 +1489,14 @@ public class JobServiceImpl implements JobService {
         if (job.getSubmissionList() == null) {
             throw new InvalidRequestException("Job " + id + " does not have submission list");
         }
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+
+        //Save to a temporary file
+        File tempFile = saveToTempFile(file);
+
+        //Name of file being uploaded (this is the name it had on the originating computer).
+        String fileName = file.getOriginalFilename();
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
         setJobInterviewGuidanceLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }
@@ -1454,7 +1509,14 @@ public class JobServiceImpl implements JobService {
         if (job.getSubmissionList() == null) {
             throw new InvalidRequestException("Job " + id + " does not have submission list");
         }
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+
+        //Save to a temporary file
+        File tempFile = saveToTempFile(file);
+
+        //Name of file being uploaded (this is the name it had on the originating computer).
+        String fileName = file.getOriginalFilename();
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
         setJobMouLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }
