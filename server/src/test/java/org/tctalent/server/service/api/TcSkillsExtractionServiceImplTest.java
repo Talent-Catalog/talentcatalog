@@ -24,11 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Tag("skip-test-in-gradle-build")
 @SpringBootTest
 class TcSkillsExtractionServiceImplTest {
@@ -43,7 +38,7 @@ class TcSkillsExtractionServiceImplTest {
     @Test
     void extractSkills() {
         ExtractSkillsRequest request = new ExtractSkillsRequest();
-        request.setText("John knows Java, Python, and Scala. He also knows C++, C, and Fortran.");
+        request.setText("John knows Java, Python, and Algol. He also knows C++, C, and Fortran.");
         final ExtractSkillsResponse response = skillsExtractionService.extractSkills(request);
         assertNotNull(response);
     }

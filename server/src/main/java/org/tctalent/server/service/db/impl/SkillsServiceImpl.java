@@ -24,14 +24,17 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.SkillsEscoEn;
 import org.tctalent.server.repository.db.SkillsEscoEnRepository;
 import org.tctalent.server.service.api.ExtractSkillsRequest;
 import org.tctalent.server.service.api.ExtractSkillsResponse;
+import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.api.TcSkillsExtractionService;
 import org.tctalent.server.service.db.SkillsService;
 
@@ -56,14 +59,15 @@ import org.tctalent.server.service.db.SkillsService;
 public class SkillsServiceImpl implements SkillsService {
     private final TcSkillsExtractionService skillsExtractionService;
     private final SkillsEscoEnRepository skillsEscoEnRepository;
-    private List<String> cachedList;
+    private List<SkillName> cachedList;
 
     private final static int CHUNK_SIZE = 100;
     private final static String DELIMITER = "\n";
     private final static int INITIAL_CAPACITY = 25_000;
 
     @Override
-    public List<String> extractSkills(String text) {
+    public List<String> extractSkillNames(@NonNull String text, @NonNull String languageCode) {
+        checkLanguageAvailability(languageCode);
         ExtractSkillsRequest request = new ExtractSkillsRequest();
         request.setText(text);
         final ExtractSkillsResponse response = skillsExtractionService.extractSkills(request);
@@ -71,10 +75,29 @@ public class SkillsServiceImpl implements SkillsService {
     }
 
     @Override
-    public @NonNull List<String> getSkills() {
+    public Page<SkillName> getSkillNames(PageRequest request, @NonNull String languageCode) {
+        List<SkillName> skillNames = getSkillNames(languageCode);
+
+        final int fromIndex = (int) request.getOffset();
+        final int toIndex = (int) Math.min(skillNames.size(),
+            request.getOffset() + request.getPageSize());
+        if (toIndex <= fromIndex) {
+            //Requesting non existent page. Return empty content.
+            return new PageImpl<>(List.of(), request, skillNames.size());
+        }
+
+        //Extract sub list as content.
+        List<SkillName> content = skillNames.subList(fromIndex, toIndex);
+
+        return new PageImpl<>(content, request, skillNames.size());
+    }
+
+    @Override
+    public @NonNull List<SkillName> getSkillNames(@NonNull String languageCode) {
+        checkLanguageAvailability(languageCode);
 
         if (cachedList == null) {
-            Set<String> skills = new HashSet<>(INITIAL_CAPACITY);
+            Set<SkillName> skills = new HashSet<>(INITIAL_CAPACITY);
 
             loadEscoSkills(skills);
             loadOnetSkills(skills);
@@ -86,11 +109,11 @@ public class SkillsServiceImpl implements SkillsService {
         return cachedList;
     }
 
-    private void loadOnetSkills(Set<String> skills) {
+    private void loadOnetSkills(Set<SkillName> skillNames) {
         //TODO JC Implement loadOnetSkills
     }
 
-    private void loadEscoSkills(Set<String> skills) {
+    private void loadEscoSkills(Set<SkillName> skillNames) {
         PageRequest request = PageRequest.ofSize(CHUNK_SIZE);
         request = request.first();
         Page<SkillsEscoEn> page;
@@ -100,27 +123,28 @@ public class SkillsServiceImpl implements SkillsService {
             //Process skills in page
             final List<SkillsEscoEn> pageContent = page.getContent();
             for (SkillsEscoEn skillsEscoEn : pageContent) {
-                addSkills(skills, skillsEscoEn);
+                addSkills(skillNames, skillsEscoEn);
             }
             request = request.next();
         } while (page.hasNext());
     }
 
-    private void addSkills(Collection<String> skills, SkillsEscoEn see) {
+    private void addSkills(Collection<SkillName> skillNames, SkillsEscoEn see) {
 
         final String preferredlabel = see.getPreferredlabel();
         if (!ObjectUtils.isEmpty(preferredlabel)) {
-            skills.add(preferredlabel.toLowerCase(Locale.ENGLISH));
+            skillNames.add(new SkillName(Locale.ENGLISH.getLanguage(),
+                preferredlabel.toLowerCase(Locale.ENGLISH)));
         }
 
-        final String altLabels = see.getPreferredlabel();
+        final String altLabels = see.getAltlabels();
         if (!ObjectUtils.isEmpty(altLabels)) {
-            addDelimitedSkills(skills, altLabels.toLowerCase(Locale.ENGLISH));
+            addDelimitedSkills(skillNames, altLabels.toLowerCase(Locale.ENGLISH));
         }
 
-        final String hiddenLabels = see.getPreferredlabel();
+        final String hiddenLabels = see.getHiddenlabels();
         if (!ObjectUtils.isEmpty(hiddenLabels)) {
-            addDelimitedSkills(skills, hiddenLabels.toLowerCase(Locale.ENGLISH));
+            addDelimitedSkills(skillNames, hiddenLabels.toLowerCase(Locale.ENGLISH));
         }
     }
 
@@ -130,9 +154,21 @@ public class SkillsServiceImpl implements SkillsService {
      * @param skills List of skills we are accumulating
      * @param textWithDelimitedSkills text containing multiple skills separated by delimiter
      */
-    private void addDelimitedSkills(Collection<String> skills, String textWithDelimitedSkills) {
+    private void addDelimitedSkills(Collection<SkillName> skills, String textWithDelimitedSkills) {
         if (!ObjectUtils.isEmpty(textWithDelimitedSkills)) {
-            skills.addAll(List.of(textWithDelimitedSkills.split(DELIMITER)));
+            final String[] split = textWithDelimitedSkills.split(DELIMITER);
+            for (String s : split) {
+                if (!ObjectUtils.isEmpty(s)) {
+                    skills.add(
+                        new SkillName(Locale.ENGLISH.getLanguage(), s.toLowerCase(Locale.ENGLISH)));
+                }
+            }
+        }
+    }
+
+    private void checkLanguageAvailability(String languageCode) {
+        if (!Locale.ENGLISH.getLanguage().equals(languageCode)) {
+            throw new NoSuchObjectException(SkillsService.class, languageCode);
         }
     }
 }

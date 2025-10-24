@@ -19,11 +19,13 @@ package org.tctalent.server.service.db.impl;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.SkillsService;
 
 @Tag("skip-test-in-gradle-build")
@@ -38,15 +40,15 @@ class SkillsServiceImplTest {
     }
 
     @Test
-    void extractSkills() {
+    void extractSkillNames() {
         String text = "John knows Java, Python, and Scala. He also knows C++, C, and Fortran.";
-        List<String> skills = skillsService.extractSkills(text);
-        assertNotNull(skills);
+        List<String> skillNames = skillsService.extractSkillNames(text, Locale.ENGLISH.getLanguage());
+        assertNotNull(skillNames);
     }
 
     @Test
-    void getSkills() {
-        final List<String> escoSkills = skillsService.getSkills();
-        assertNotNull(escoSkills);
+    void getSkillNames() {
+        final List<SkillName> skillNames = skillsService.getSkillNames(Locale.ENGLISH.getLanguage());
+        assertNotNull(skillNames);
     }
 }
