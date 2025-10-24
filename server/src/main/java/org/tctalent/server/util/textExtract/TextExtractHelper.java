@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
@@ -66,20 +67,25 @@ public class TextExtractHelper {
             return txt;
         }
 
-        public static @Nullable String getTextExtractFromFile(File srcFile, @Nullable String fileType) throws IOException {
-            if(fileType == null) {
-                return null;
-            } else if(fileType.equals("pdf")) {
-                return getTextFromPDFFile(srcFile);
-            } else if (fileType.equals("docx")) {
-                return getTextFromDocxFile(srcFile);
-            } else if (fileType.equals("doc")) {
-                return getTextFromDocFile(srcFile);
-            } else if (fileType.equals("txt")) {
-                return getTextFromTxtFile(srcFile);
-            } else {
-                return null;
+        public static @Nullable String getTextExtractFromFile(
+            File srcFile, @Nullable String fileType) throws IOException {
+
+            String s = null;
+            if ("pdf".equals(fileType)) {
+                s = getTextFromPDFFile(srcFile);
+            } else if ("docx".equals(fileType)) {
+                s = getTextFromDocxFile(srcFile);
+            } else if ("doc".equals(fileType)) {
+                s = getTextFromDocFile(srcFile);
+            } else if ("txt".equals(fileType)) {
+                s = getTextFromTxtFile(srcFile);
             }
+            if (s != null) {
+                // Remove any null bytes to avoid problems like
+                // PSQLException: ERROR: invalid byte sequence for encoding "UTF8"
+                s = Pattern.compile("\\x00").matcher(s).replaceAll("?");
+            }
+            return s;
         }
 
         private static String getFileExtension(String fileName) {
