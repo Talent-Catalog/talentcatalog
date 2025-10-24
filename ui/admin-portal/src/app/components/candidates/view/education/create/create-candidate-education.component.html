@@ -14,95 +14,134 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [heading]="'Add Education'"
+          [showClose]="true"
+          [showCancel]="true"
+          (onAction)="onSave()"
+          [actionText]="'Save'"
+          [disableAction]="candidateForm.invalid || loading || saving"
+>
 
-  <h4 class="modal-title">Add Education</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="candidateForm">
 
       <!-- EDUCATION TYPE -->
-      <div class="mb-3">
-        <label class="form-label" for="educationType">Education Type</label>
-        <ng-select id="educationType" [formControlName]="'educationType'" placeholder="Select" [clearable]="false">
+      <tc-field class="mb-4">
+        <tc-label [for]="'educationType'">
+          Education Type
+        </tc-label>
+        <ng-select id="educationType"
+                   [formControlName]="'educationType'"
+                   placeholder="Select"
+                   [clearable]="false"
+                   class="tc-select"
+        >
           <ng-option value="Associate">Associate</ng-option>
           <ng-option value="Vocational">Vocational</ng-option>
           <ng-option value="Bachelor">Bachelor</ng-option>
           <ng-option value="Masters">Masters</ng-option>
           <ng-option value="Doctoral">Doctoral</ng-option>
         </ng-select>
-      </div>
+      </tc-field>
 
       <!-- MAJOR -->
-      <div class="mb-3">
-        <label class="form-label" for="educationMajorId">Major *</label>
-        <ng-select id="educationMajorId" name="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors"
-                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label [for]="'educationMajorId'">
+          Major *
+        </tc-label>
+        <ng-select id="educationMajorId"
+                   [formControlName]="'educationMajorId'"
+                   [items]="majors"
+                   [clearable]="false"
+                   placeholder="Select"
+                   bindValue="id"
+                   class="tc-select"
+                   bindLabel="name"
+        ></ng-select>
+      </tc-field>
 
       <!-- COURSE NAME -->
-      <div class="mb-3">
-        <label class="form-label" for="courseName">Course Name</label>
-        <input type="text" class="form-control" id="courseName" [formControlName]="'courseName'">
-      </div>
+      <tc-field class="mb-4">
+        <tc-label [for]="'courseName'">
+          Course Name
+        </tc-label>
+        <tc-input [type]="'text'"
+                  [id]="'courseName'"
+                  [formControlName]="'courseName'"
+        ></tc-input>
+      </tc-field>
 
       <!-- INSTITUTION NAME -->
-      <div class="mb-3">
-        <label class="form-label" for="institution">Institution</label>
-        <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
-      </div>
+      <tc-field class="mb-4">
+        <tc-label [for]="'institution'">
+          Institution
+        </tc-label>
+        <tc-input [type]="'text'"
+                  id="institution"
+                  [formControlName]="'institution'"
+        ></tc-input>
+      </tc-field>
 
       <!-- COUNTRY -->
-      <div class="mb-3">
-        <label class="form-label" for="countryId">Country *</label>
-        <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
-                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label [for]="'countryId'">
+          Country *
+        </tc-label>
+        <ng-select id="countryId"
+                   [formControlName]="'countryId'"
+                   [items]="countries"
+                   [clearable]="false"
+                   placeholder="Select"
+                   bindValue="id"
+                   class="tc-select"
+                   bindLabel="name"
+        ></ng-select>
+      </tc-field>
 
       <!-- COURSE LENGTH -->
-      <div class="mb-3">
-        <label class="form-label" for="lengthOfCourseYears">Length of Course Years</label>
-        <input type="number" class="form-control" placeholder="" id="lengthOfCourseYears"
-               [formControlName]="'lengthOfCourseYears'">
-      </div>
+      <tc-field class="mb-4">
+        <tc-label [for]="'lengthOfCourseYears'">
+          Length of Course Years
+        </tc-label>
+        <tc-input [type]="'number'"
+                  [placeholder]="''"
+                  [id]="'lengthOfCourseYears'"
+                  [formControlName]="'lengthOfCourseYears'"
+        ></tc-input>
+      </tc-field>
+
       <!-- Year -->
-      <div class="mb-3">
-        <label class="form-label" for="yearCompleted">Year of completion</label>
-        <ng-select id="yearCompleted" name="yearCompleted" [formControlName]="'yearCompleted'" [items]="years"
-                   placeholder="Select"></ng-select>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label [for]="'yearCompleted'">
+          Year of completion
+        </tc-label>
+        <ng-select id="yearCompleted"
+                   [formControlName]="'yearCompleted'"
+                   [items]="years"
+                   class="tc-select"
+                   placeholder="Select"
+        ></ng-select>
+      </tc-field>
 
-
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input"  id="incomplete" [value]="true" [formControlName]="'incomplete'">
-        <label class="form-check-label" for="incomplete">
+      <tc-field [checkbox]="true">
+        <tc-input [type]="'checkbox'"
+                  [id]="'incomplete'"
+                  [value]="true"
+                  [formControlName]="'incomplete'"
+        ></tc-input>
+        <tc-label [for]="'incomplete'">
           Not completed
-        </label>
-      </div>
+        </tc-label>
+      </tc-field>
 
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
     </form>
 
   </div>
-</div>
+</tc-modal>
