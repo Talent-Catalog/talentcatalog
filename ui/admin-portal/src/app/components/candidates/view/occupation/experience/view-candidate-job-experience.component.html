@@ -31,12 +31,14 @@
     <div class="d-flex gap-2 justify-content-end" *ngIf="editable">
       <tc-button (onClick)="createCandidateJobExperience()"
                  [type]="'solid'"
+                 [size]="'sm'"
                  [color]="'primary'"
       >
         <i class="fas fa-plus"></i>
       </tc-button>
       <tc-button (onClick)="editOccupation()"
                  [type]="'outline'"
+                 [size]="'sm'"
                  [color]="'primary'"
       >
         <i class="fas fa-edit"></i>
@@ -44,6 +46,7 @@
       <tc-button *ngIf="adminUser"
                  (onClick)="deleteCandidateOccupation()"
                  [type]="'outline'"
+                 [size]="'sm'"
                  [color]="'primary'"
       >
         <i class="fas fa-trash"></i>
@@ -63,6 +66,8 @@
 
     <!-- JOB EXPERIENCE CARDS -->
     <ng-container *ngFor="let experience of experiences; let i = index">
+
+      <hr *ngIf="i > 0">
 
       <div class="row">
 
@@ -119,9 +124,5 @@
 
       </div>
 
-      <hr *ngIf="i < experiences?.length - 1">
-
     </ng-container>
 </tc-card>
-
-<hr/>

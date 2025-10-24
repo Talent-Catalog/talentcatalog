@@ -19,14 +19,10 @@
   [editable]="editable">
 </app-view-candidate-contact>
 
-<hr/>
-
 <app-view-candidate-registration
   [candidate]="candidate"
   [editable]="editable">
 </app-view-candidate-registration>
-
-<hr/>
 
 <app-view-candidate-language
   [candidate]="candidate"
@@ -34,15 +30,12 @@
   [adminUser]="adminUser">
 </app-view-candidate-language>
 
-<hr/>
-
 <app-view-candidate-destinations
   [candidate]="candidate"
   [editable]="editable">
 </app-view-candidate-destinations>
 
 <ng-container *ngIf="adminUser">
-  <hr/>
   <app-view-candidate-account
     [candidate]="candidate"
     [editable]="editable">
@@ -50,7 +43,6 @@
 </ng-container>
 
 <ng-container *ngIf="adminUser">
-  <hr/>
   <app-view-privacy-policy-info
     [candidate]="candidate"
     [editable]="editable">
