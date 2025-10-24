@@ -24,7 +24,7 @@ import lombok.ToString;
 
 /**
  * Base class for representing drives, folders or files on a remote file system where
- * all can be identified by a url.
+ * a url can identify all.
  *
  * @author John Cameron
  */
@@ -33,12 +33,12 @@ import lombok.ToString;
 @ToString
 public abstract class FileSystemBaseEntity {
 
-    public FileSystemBaseEntity(String url) {
+    public FileSystemBaseEntity(@NonNull String url) {
         this.url = url;
     }
 
     /**
-     * Name of file or older on file system.
+     * Name of the file or folder on the file system.
      * <p/>
      * Note that this is changeable (eg can be renamed to anything - manually on Google by the user)
      * and does not have to be unique. It is the url that ultimately
