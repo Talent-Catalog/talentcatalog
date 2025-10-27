@@ -20,7 +20,9 @@ import java.util.Optional;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.MyFirstForm;
+import org.tctalent.server.model.db.RsdEvidenceForm;
 import org.tctalent.server.request.form.MyFirstFormData;
+import org.tctalent.server.request.form.RsdEvidenceFormData;
 
 /**
  * Manages instances of forms
@@ -52,5 +54,12 @@ public interface CandidateFormInstanceService {
      */
     void populateCandidateFromPending(
         @NonNull Candidate pendingCandidate, @NonNull Candidate candidate);
+
+    @NonNull
+    RsdEvidenceForm createOrUpdateRsdEvidenceForm(
+        @NonNull Candidate candidate, @NonNull RsdEvidenceFormData request);
+
+    @NonNull
+    Optional<RsdEvidenceForm> getRsdEvidenceForm(@NonNull Candidate candidate);
 
 }

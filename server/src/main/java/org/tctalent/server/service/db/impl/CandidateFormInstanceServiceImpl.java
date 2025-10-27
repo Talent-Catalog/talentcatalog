@@ -28,9 +28,12 @@ import org.tctalent.server.model.db.CandidateForm;
 import org.tctalent.server.model.db.CandidateFormInstanceKey;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.MyFirstForm;
+import org.tctalent.server.model.db.RsdEvidenceForm;
 import org.tctalent.server.model.db.mapper.CandidateMapper;
 import org.tctalent.server.repository.db.MyFirstFormRepository;
+import org.tctalent.server.repository.db.RsdEvidenceFormRepository;
 import org.tctalent.server.request.form.MyFirstFormData;
+import org.tctalent.server.request.form.RsdEvidenceFormData;
 import org.tctalent.server.service.db.CandidateFormInstanceService;
 import org.tctalent.server.service.db.CandidateFormService;
 import org.tctalent.server.service.db.CandidatePropertyService;
@@ -43,6 +46,7 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
     private final CandidateMapper candidateMapper;
     private final CandidatePropertyService candidatePropertyService;
     private final MyFirstFormRepository myFirstFormRepository;
+    private final RsdEvidenceFormRepository rsdEvidenceFormRepository;
 
     @Override
     public @NonNull MyFirstForm createOrUpdateMyFirstForm(
@@ -79,6 +83,36 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
     }
 
     @Override
+    public @NonNull RsdEvidenceForm createOrUpdateRsdEvidenceForm(
+        @NonNull Candidate candidate, @NonNull RsdEvidenceFormData request) {
+
+        final CandidateFormInstanceKey key = computeRsdEvidenceFormKey(candidate);
+        RsdEvidenceForm form = rsdEvidenceFormRepository.findById(key).orElse(null);
+        if (form == null) {
+            form = new RsdEvidenceForm();
+            form.setId(key);
+            form.setCandidateForm(getRsdEvidenceForm());
+            form.setCandidate(candidate);
+            form.setCreatedDate(OffsetDateTime.now());
+        } else {
+            form.setUpdatedDate(OffsetDateTime.now());
+        }
+
+        form.setRefugeeStatus(request.getRefugeeStatus());
+        form.setDocumentType(request.getDocumentType());
+        form.setDocumentNumber(request.getDocumentNumber());
+
+        return rsdEvidenceFormRepository.save(form);
+    }
+
+    @Override
+    @NonNull
+    public Optional<RsdEvidenceForm> getRsdEvidenceForm(@NonNull Candidate candidate) {
+        CandidateFormInstanceKey key = computeRsdEvidenceFormKey(candidate);
+        return rsdEvidenceFormRepository.findById(key);
+    }
+
+    @Override
     public void populateCandidateFromPending(
         @NonNull Candidate pendingCandidate, @NonNull Candidate candidate) {
 
@@ -104,6 +138,15 @@ public class CandidateFormInstanceServiceImpl implements CandidateFormInstanceSe
 
     private CandidateFormInstanceKey computeMyFirstFormKey(@NonNull Candidate candidate) {
         CandidateForm candidateForm = getMyFirstForm();
+        return new CandidateFormInstanceKey(candidate.getId(), candidateForm.getId());
+    }
+
+    private CandidateForm getRsdEvidenceForm() {
+        return candidateFormService.getByName("RsdEvidenceForm");
+    }
+
+    private CandidateFormInstanceKey computeRsdEvidenceFormKey(@NonNull Candidate candidate) {
+        CandidateForm candidateForm = getRsdEvidenceForm();
         return new CandidateFormInstanceKey(candidate.getId(), candidateForm.getId());
     }
 }
