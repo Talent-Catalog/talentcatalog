@@ -176,10 +176,9 @@
     [(selectedJob)]="selectedJob">
   </app-candidate-visa-job>
 
-  <hr *ngIf="visaCheckRecord.candidateVisaJobChecks.length > 0"/>
-
   <!--  Generate all job entries - but only one is enabled at a time-->
-  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;" [appReadOnlyInputs]="!isEditable()">
+  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;"
+       [appReadOnlyInputs]="!isEditable()" class="mt-3">
     <app-visa-job-check-au *ngIf="job.id == selectedJob.id"
                            [selectedJobCheck]="job"
                            [candidate]="candidate"

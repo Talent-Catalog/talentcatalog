@@ -30,8 +30,7 @@
   </div>
 
   <div class="row">
-    <div class="col pt-3">
-      <app-export-pdf *ngIf="visaChecks?.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
+    <div class="col">
     </div>
     <div class="mx-auto col-10 col-md-8 col-lg-6">
       <form [formGroup]="form">
@@ -50,7 +49,8 @@
         </div>
       </form>
     </div>
-    <div class="col">
+    <div class="col pt-3 text-end">
+      <app-export-pdf *ngIf="visaChecks?.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
     </div>
   </div>
   <div *ngIf="visaChecks?.length == 0">
