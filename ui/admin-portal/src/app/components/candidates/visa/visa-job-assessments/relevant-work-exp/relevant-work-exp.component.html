@@ -14,27 +14,20 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-
-  <div class="mb-3">
-    <label class="form-label" for="visaJobRelevantWorkExp">
+  <tc-field>
+    <tc-label for="visaJobRelevantWorkExp">
       Years work experience in relevant time? (e.g. 2 years in last 5) - Include expiration if applicable.
-    </label>
-    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </div>
+    </tc-label>
     <textarea class="md-textarea-auto form-control" rows="2"
               id="visaJobRelevantWorkExp" formControlName="visaJobRelevantWorkExp"
               placeholder="" ></textarea>
-    <small>Please include the date that this is recorded</small>
-  </div>
-
-
+    <tc-description>Please include the date that this is recorded</tc-description>
+  </tc-field>
 </form>
 

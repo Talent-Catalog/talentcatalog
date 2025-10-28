@@ -14,27 +14,28 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="visaValidTravelDocs">Has valid travel document?</label>
-    <div class="float-end">
+  <tc-fieldset>
+
+  </tc-fieldset>
+  <tc-field>
+    <tc-label for="visaValidTravelDocs">Has valid travel document?
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </div>
-    <ng-select id="visaValidTravelDocs" [formControlName]="'visaValidTravelDocs'" (clear)="setNoResponse('visaValidTravelDocs')"
+    </tc-label>
+    <ng-select class="tc-select" id="visaValidTravelDocs" [formControlName]="'visaValidTravelDocs'"
+               (clear)="setNoResponse('visaValidTravelDocs')"
                [items]="travelDocumentOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaValidTravelDocsNotes">Notes</label>
+  </tc-field>
+  <tc-field *ngIf="hasNotes">
+    <tc-label for="visaValidTravelDocsNotes">Notes</tc-label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="visaValidTravelDocsNotes" [formControlName]="'visaValidTravelDocsNotes'"
               placeholder="" ></textarea>
-  </div>
+  </tc-field>
 </form>

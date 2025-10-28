@@ -14,26 +14,22 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-
-  <div class="mb-3">
-    <label class="form-label" for="visaJobOccupationCategory">
-      Occupation category (e.g. TEER in Canada) <span class="small fw-light fst-italic">(For help with categories see: <a [href]="occupationCatLink" target="_blank">{{occupationCatLink}}</a>)</span>
-    </label>
-    <div class="float-end">
+  <tc-field>
+    <tc-label for="visaJobOccupationCategory">
+      Occupation category (e.g. TEER in Canada)
+      <span class="small fw-light fst-italic">(For help with categories see:
+        <a [href]="occupationCatLink" target="_blank">{{occupationCatLink}}</a>)
+      </span>
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </div>
+    </tc-label>
     <textarea class="md-textarea-auto form-control" rows="3"
               id="visaJobOccupationCategory" formControlName="visaJobOccupationCategory"
               placeholder="" ></textarea>
-  </div>
-
-
+  </tc-field>
 </form>
 

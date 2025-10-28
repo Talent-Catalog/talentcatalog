@@ -14,26 +14,22 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-
-  <div class="mb-3">
-    <label class="form-label" for="visaJobOccupationSubCategory">
-      Occupation subcategory (e.g. NOC details in Canada) <span class="small fw-light fst-italic">(For help with subcategories see: <a [href]="occupationSubcatLink" target="_blank">{{occupationSubcatLink}}</a>)</span>
-    </label>
-    <div class="float-end">
+  <tc-field>
+    <tc-label for="visaJobOccupationSubCategory">
+      Occupation subcategory (e.g. NOC details in Canada)
+      <span class="small fw-light fst-italic">(For help with subcategories see:
+        <a [href]="occupationSubcatLink" target="_blank">{{occupationSubcatLink}}</a>)
+      </span>
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </div>
+    </tc-label>
     <textarea class="md-textarea-auto form-control" rows="3"
               id="visaJobOccupationSubCategory" formControlName="visaJobOccupationSubCategory"
               placeholder="" ></textarea>
-  </div>
-
-
+  </tc-field>
 </form>
 
