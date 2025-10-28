@@ -160,6 +160,9 @@ public abstract class CandidateFormInstance {
             //real candidate entity.
             property.setCandidate(workingCandidate);
         }
+        if (property.getId() == null && workingCandidate.getId() != null) {
+            property.setId(new CandidatePropertyKey(workingCandidate.getId(), propertyName));
+        }
         property.setValue(value);
     }
 }
