@@ -14,35 +14,63 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Directive, ElementRef, Input, Renderer2} from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  ElementRef,
+  Input,
+  OnChanges,
+  Renderer2,
+  SimpleChanges
+} from '@angular/core';
 
 @Directive({
   selector: '[appReadOnlyInputs]'
 })
-export class ReadOnlyInputsDirective implements AfterViewInit {
+export class ReadOnlyInputsDirective implements AfterViewInit, OnChanges {
   @Input('appReadOnlyInputs') isReadonly: boolean;
 
   constructor(private el: ElementRef, private renderer: Renderer2) {}
 
+  // ngAfterViewInit runs before the accordion panels are expanded/rendered
   ngAfterViewInit(): void {
-    // Delay to allow for accordion panels/view to render
-    setTimeout(() => this.setReadonlyState(this.el.nativeElement, this.isReadonly));
+    this.applyReadonlyState();
+
+    // Watch for DOM changes (accordion opening)
+    const observer = new MutationObserver(() => {
+      this.applyReadonlyState();
+    });
+
+    observer.observe(this.el.nativeElement, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isReadonly'] && !changes['isReadonly'].firstChange) {
+      this.applyReadonlyState();
+    }
+  }
+
+  private applyReadonlyState(): void {
+    setTimeout(() => this.setReadonlyState(this.el.nativeElement, this.isReadonly), 0);
   }
 
   private setReadonlyState(root: HTMLElement, isReadonly: boolean): void {
-    const inputTags = ['NG-SELECT, TEXTAREA', 'INPUT', 'APP-DATE-PICKER', 'NGX-WIG'];
+    const inputTags = ['ng-select', 'textarea', 'input', 'app-date-picker', 'ngx-wig'];
 
     const elements = root.querySelectorAll(inputTags.join(','));
     elements.forEach((element: HTMLElement) => {
       if (isReadonly) {
         this.renderer.setAttribute(element, 'disabled', 'true');
-        if (element.tagName === 'NG-SELECT' || element.tagName === "NGX-WIG") {
-          this.renderer.addClass(element, 'read-only')
+        if (element.tagName.toLowerCase() === 'ng-select' || element.tagName.toLowerCase() === 'ngx-wig') {
+          this.renderer.addClass(element, 'read-only');
         }
       } else {
-        this.renderer.removeAttribute(element, 'disabled', 'false');
-        if (element.tagName === 'NG-SELECT') {
-          this.renderer.removeClass(element, 'read-only')
+        this.renderer.removeAttribute(element, 'disabled');
+        if (element.tagName.toLowerCase() === 'ng-select' || element.tagName.toLowerCase() === 'ngx-wig') {
+          this.renderer.removeClass(element, 'read-only');
         }
       }
     });
