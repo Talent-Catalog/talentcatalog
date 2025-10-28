@@ -35,9 +35,8 @@
     </tc-field>
     <tc-field *ngIf="hasNotes">
       <tc-label for="visaEnglishThresholdNotes">Notes</tc-label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="2"
-                id="visaEnglishThresholdNotes" [formControlName]="'visaEnglishThresholdNotes'"
-                placeholder="" ></textarea>
+      <tc-textarea type="text" id="visaEnglishThresholdNotes" [formControlName]="'visaEnglishThresholdNotes'"
+                placeholder="" ></tc-textarea>
     </tc-field>
   </tc-fieldset>
 </form>

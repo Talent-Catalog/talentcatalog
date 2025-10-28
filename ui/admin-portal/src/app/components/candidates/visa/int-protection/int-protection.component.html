@@ -29,10 +29,8 @@
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </tc-field>
     <tc-field *ngIf="form.controls.visaProtection.value === 'Yes'">
-      <tc-label class="form-label" for="visaProtectionGrounds">If yes, on what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TC eligibility policy</a>)</tc-label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                id="visaProtectionGrounds" [formControlName]="'visaProtectionGrounds'"
-                placeholder="" ></textarea>
+      <tc-label for="visaProtectionGrounds">If yes, on what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TC eligibility policy</a>)</tc-label>
+      <tc-textarea id="visaProtectionGrounds" [formControlName]="'visaProtectionGrounds'"></tc-textarea>
     </tc-field>
   </tc-fieldset>
 </form>
