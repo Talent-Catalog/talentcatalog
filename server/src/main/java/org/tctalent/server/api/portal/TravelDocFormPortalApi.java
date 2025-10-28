@@ -25,14 +25,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.exception.InvalidSessionException;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.TravelDocForm;
 import org.tctalent.server.request.form.TravelDocFormData;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.TravelDocFormInstanceService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
@@ -40,49 +38,53 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RequiredArgsConstructor
 public class TravelDocFormPortalApi {
 
-  private final AuthService authService;
-  private final TravelDocFormInstanceService formService;
-  private final CandidateService candidateService;
-  private final CountryService countryService;
+    private final AuthService authService;
+    private final CandidateService candidateService;
+    private final CountryService countryService;
+    private final CandidatePropertyService candidatePropertyService;
 
-  @PostMapping
-  @NotNull
-  public Map<String, Object> createOrUpdate(@Valid @RequestBody TravelDocFormData request) {
-    Candidate candidate = getLoggedInCandidate();
-    TravelDocForm form = formService.createOrUpdateTravelDocForm(candidate, request);
-    return travelDocFormDto().build(form);
-  }
+    @PostMapping
+    @NotNull
+    public Map<String, Object> createOrUpdate(@Valid @RequestBody TravelDocFormData request) {
+        TravelDocForm form = new TravelDocForm(
+            "TravelDocForm", authService, candidateService, candidatePropertyService);
 
-  @GetMapping
-  @NotNull
-  public Map<String, Object> get() {
-    Candidate candidate = getLoggedInCandidate();
-    TravelDocForm form = formService.getTravelDocForm(candidate)
-        .orElse(null);
-    return travelDocFormDto().build(form);
-  }
+        form.setFirstName(request.getFirstName());
+        form.setLastName(request.getLastName());
+        form.setBirthCountry(request.getBirthCountry());
+        form.setGender(request.getGender());
+        form.setDateOfBirth(request.getDateOfBirth());
+        form.setPlaceOfBirth(request.getPlaceOfBirth());
+        form.setTravelDocType(request.getTravelDocType());
+        form.setTravelDocNumber(request.getTravelDocNumber());
+        form.setTravelDocIssuedBy(request.getTravelDocIssuedBy());
+        form.setTravelDocIssueDate(request.getTravelDocIssueDate());
+        form.setTravelDocExpiryDate(request.getTravelDocExpiryDate());
 
-  private Candidate getLoggedInCandidate() {
-    Long loggedInCandidateId = authService.getLoggedInCandidateId();
-    if (loggedInCandidateId == null) {
-      throw new InvalidSessionException("Not logged in");
+        return travelDocFormDto().build(form);
     }
-    return candidateService.getCandidate(loggedInCandidateId);
-  }
 
-  private DtoBuilder travelDocFormDto() {
-    return new DtoBuilder()
-        .add("firstName")
-        .add("lastName")
-        .add("dateOfBirth")
-        .add("gender")
-        .add("birthCountry", countryService.selectBuilder())
-        .add("placeOfBirth")
-        .add("travelDocType")
-        .add("travelDocNumber")
-        .add("travelDocIssuedBy")
-        .add("travelDocIssueDate")
-        .add("travelDocExpiryDate");
-  }
+    @GetMapping
+    @NotNull
+    public Map<String, Object> get() {
+        TravelDocForm form = new TravelDocForm(
+            "TravelDocForm", authService, candidateService, candidatePropertyService);
+        return travelDocFormDto().build(form);
+    }
+
+    private DtoBuilder travelDocFormDto() {
+        return new DtoBuilder()
+            .add("firstName")
+            .add("lastName")
+            .add("dateOfBirth")
+            .add("gender")
+            .add("birthCountry", countryService.selectBuilder())
+            .add("placeOfBirth")
+            .add("travelDocType")
+            .add("travelDocNumber")
+            .add("travelDocIssuedBy")
+            .add("travelDocIssueDate")
+            .add("travelDocExpiryDate");
+    }
 
 }

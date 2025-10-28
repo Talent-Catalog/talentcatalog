@@ -25,13 +25,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.exception.InvalidSessionException;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.MyFirstForm;
 import org.tctalent.server.request.form.MyFirstFormData;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateFormInstanceService;
+import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -41,32 +38,29 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class MyFirstFormPortalApi {
 
     private final AuthService authService;
-    private final CandidateFormInstanceService formService;
     private final CandidateService candidateService;
+    private final CandidatePropertyService candidatePropertyService;
 
     @PostMapping
     @NotNull
     public Map<String, Object> createOrUpdate(@Valid @RequestBody MyFirstFormData request) {
-        Candidate candidate = getLoggedInCandidate();
-        MyFirstForm form = formService.createOrUpdateMyFirstForm(candidate, request);
+
+        MyFirstForm form = new MyFirstForm(
+            "MyFirstForm", authService, candidateService, candidatePropertyService);
+
+        form.setCity(request.getCity());
+        form.setHairColour(request.getHairColour());
+        form.save();
+
         return myFirstFormDto().build(form);
     }
 
     @GetMapping
     @NotNull
     public Map<String, Object> get() {
-        Candidate candidate = getLoggedInCandidate();
-        MyFirstForm form = formService.getMyFirstForm(candidate)
-            .orElseThrow(() -> new NoSuchObjectException("No MyFirstForm found"));
+        MyFirstForm form = new MyFirstForm(
+            "MyFirstForm", authService, candidateService, candidatePropertyService);
         return myFirstFormDto().build(form);
-    }
-
-    private Candidate getLoggedInCandidate() {
-        Long loggedInCandidateId = authService.getLoggedInCandidateId();
-        if (loggedInCandidateId == null) {
-            throw new InvalidSessionException("Not logged in");
-        }
-        return candidateService.getCandidate(loggedInCandidateId);
     }
 
     private DtoBuilder myFirstFormDto() {
@@ -74,5 +68,4 @@ public class MyFirstFormPortalApi {
             .add("city")
             .add("hairColour");
     }
-
 }

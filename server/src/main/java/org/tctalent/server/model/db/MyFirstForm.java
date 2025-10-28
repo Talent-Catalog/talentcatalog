@@ -16,30 +16,34 @@
 
 package org.tctalent.server.model.db;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidatePropertyService;
+import org.tctalent.server.service.db.CandidateService;
 
 /**
  * Very simple form
  *
  * @author John Cameron
  */
-@Entity
-@Table(name = "candidate_form_instance")
-public class MyFirstForm extends CandidateFormInstance {
+public class MyFirstForm extends CandidateFormInstanceHelper {
+
     private static final String HAIR_COLOUR_PROPERTY_NAME = "hairColour";
 
-    @Override
+    public MyFirstForm(String formName, AuthService authService,
+        CandidateService candidateService, CandidatePropertyService propertyService) {
+        super(formName, authService, candidateService, propertyService);
+    }
+
     public String getFormName() {
         return "MyFirstForm";
     }
 
     public String getCity() {
-        return getWorkingCandidate().getCity();
+        return getCandidate().getCity();
     }
 
     public void setCity(String city) {
-        getWorkingCandidate().setCity(city);
+        getCandidate().setCity(city);
     }
 
     public String getHairColour() {
