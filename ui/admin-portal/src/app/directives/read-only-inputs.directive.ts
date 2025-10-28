@@ -14,20 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  AfterViewInit,
-  Directive,
-  ElementRef,
-  Input,
-  OnChanges,
-  Renderer2,
-  SimpleChanges
-} from '@angular/core';
+import {AfterViewInit, Directive, ElementRef, Input, Renderer2} from '@angular/core';
 
 @Directive({
   selector: '[appReadOnlyInputs]'
 })
-export class ReadOnlyInputsDirective implements AfterViewInit, OnChanges {
+export class ReadOnlyInputsDirective implements AfterViewInit {
   @Input('appReadOnlyInputs') isReadonly: boolean;
 
   constructor(private el: ElementRef, private renderer: Renderer2) {}
@@ -47,12 +39,6 @@ export class ReadOnlyInputsDirective implements AfterViewInit, OnChanges {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['isReadonly'] && !changes['isReadonly'].firstChange) {
-      this.applyReadonlyState();
-    }
-  }
-
   private applyReadonlyState(): void {
     setTimeout(() => this.setReadonlyState(this.el.nativeElement, this.isReadonly), 0);
   }
@@ -66,11 +52,6 @@ export class ReadOnlyInputsDirective implements AfterViewInit, OnChanges {
         this.renderer.setAttribute(element, 'disabled', 'true');
         if (element.tagName.toLowerCase() === 'ng-select' || element.tagName.toLowerCase() === 'ngx-wig') {
           this.renderer.addClass(element, 'read-only');
-        }
-      } else {
-        this.renderer.removeAttribute(element, 'disabled');
-        if (element.tagName.toLowerCase() === 'ng-select' || element.tagName.toLowerCase() === 'ngx-wig') {
-          this.renderer.removeClass(element, 'read-only');
         }
       }
     });
