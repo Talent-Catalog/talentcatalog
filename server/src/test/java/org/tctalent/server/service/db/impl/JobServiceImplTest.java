@@ -1183,6 +1183,7 @@ class JobServiceImplTest {
         GoogleFileSystemFile mockGoogleFile = mock(GoogleFileSystemFile.class);
 
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        given(salesforceJobOppRepository.save(any())).willReturn(longJob);
         given(mockFile.getOriginalFilename()).willReturn(NAME);
         given(mockFile.getInputStream()).willReturn(mockStream);
         given(googleDriveConfig.getListFoldersDrive()).willReturn(mock(GoogleFileSystemDrive.class));
