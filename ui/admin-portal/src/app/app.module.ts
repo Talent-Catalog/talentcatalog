@@ -460,9 +460,6 @@ import {
   QualificationRelevantComponent
 } from "./components/candidates/visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
 import {
-  VisaFinalAssessmentComponent
-} from "./components/candidates/visa/visa-job-assessments/visa-final-assessment/visa-final-assessment.component";
-import {
   JobOccupationComponent
 } from "./components/candidates/visa/visa-job-assessments/job-occupation/job-occupation.component";
 import {
@@ -1010,7 +1007,6 @@ import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
     SecurityRiskComponent,
     TravelDocumentComponent,
     RiskAssessmentComponent,
-    VisaFinalAssessmentComponent,
     JobOccupationComponent,
     SalaryTsmitComponent,
     RegionalAreaComponent,

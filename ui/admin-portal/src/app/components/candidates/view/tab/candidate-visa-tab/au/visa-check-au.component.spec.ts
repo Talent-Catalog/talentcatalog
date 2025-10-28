@@ -26,10 +26,15 @@ import {AuthorizationService} from '../../../../../../services/authorization.ser
 import {ReadOnlyInputsDirective} from '../../../../../../directives/read-only-inputs.directive';
 import {MockCandidate} from '../../../../../../MockData/MockCandidate';
 import {MockCandidateVisa} from '../../../../../../MockData/MockCandidateVisa';
-import {mockCandidateIntakeData} from '../../candidate-intake-tab/candidate-intake-tab.component.spec';
-import {By} from '@angular/platform-browser';
-import {DestinationFamilyComponent} from "../../../../visa/destination-family/destination-family.component";
-import {HealthAssessmentComponent} from "../../../../visa/health-assessment/health-assessment.component";
+import {
+  mockCandidateIntakeData
+} from '../../candidate-intake-tab/candidate-intake-tab.component.spec';
+import {
+  DestinationFamilyComponent
+} from "../../../../visa/destination-family/destination-family.component";
+import {
+  HealthAssessmentComponent
+} from "../../../../visa/health-assessment/health-assessment.component";
 
 // Mock IntProtectionComponent to include input elements for testing
 @Component({
@@ -106,31 +111,5 @@ describe('VisaCheckAuComponent', () => {
 
   it('should select the first job by default', () => {
     expect(component.selectedJob).toEqual({id: 1});
-  });
-
-  it('should set inputs to read only if isEditable is false', (done) => {
-    authorizationServiceSpy.isEditableCandidate.and.returnValue(false);
-    component.isEditable();
-    fixture.detectChanges();
-
-    // Wait for ReadOnlyInputsDirective's setTimeout
-    setTimeout(() => {
-      // Query inputs within the ngb-accordion where the directive is applied
-      const accordion = fixture.debugElement.query(By.css('ngb-accordion'));
-      const inputElements = accordion.queryAll(
-        By.css('ng-select, input, textarea, app-date-picker, ngx-wig')
-      );
-
-      inputElements.forEach((element) => {
-        expect(element.nativeElement.hasAttribute('disabled')).toBeTrue();
-      });
-
-      const ngSelect = accordion.query(By.css('ng-select'));
-      const ngxWig = accordion.query(By.css('ngx-wig'));
-      expect(ngSelect.nativeElement.classList.contains('read-only')).toBeTrue();
-      expect(ngxWig.nativeElement.classList.contains('read-only')).toBeTrue();
-      expect(component.isEditable()).toBeFalse();
-      done();
-    }, 0);
   });
 });

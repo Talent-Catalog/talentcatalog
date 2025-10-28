@@ -14,25 +14,22 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="mb-3">
-    <label class="form-label" for="visaJobEligible186">Eligible for 186?</label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="visaJobEligible186" [formControlName]="'visaJobEligible186'" [items]="visa186Options"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaJobEligible186Notes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaJobEligible186Notes" [formControlName]="'visaJobEligible186Notes'"
-              placeholder=""></textarea>
-  </div>
+  <tc-fieldset>
+    <tc-field *ngIf="editable">
+      <tc-label for="visaJobEligible186">Eligible for 186?
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </tc-label>
+      <ng-select class="tc-select" id="visaJobEligible186" [formControlName]="'visaJobEligible186'" [items]="visa186Options"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <tc-field *ngIf="hasNotes">
+      <tc-label for="visaJobEligible186Notes">Notes</tc-label>
+      <tc-textarea id="visaJobEligible186Notes" [formControlName]="'visaJobEligible186Notes'"></tc-textarea>
+    </tc-field>
+  </tc-fieldset>
 </form>

@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2024 Talent Catalog.
+/*
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,3 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+package org.tctalent.server.service.api;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * Request to extract skills from a given text.
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+@ToString
+public class ExtractSkillsRequest {
+
+    /**
+     * The text to extract skills from.
+     */
+    private String text;
+}

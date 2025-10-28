@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
-import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
-import {CandidateVisaJobCheck} from "../../../../../model/candidate";
+package org.tctalent.server.service.api;
 
-@Component({
-  selector: 'app-visa-final-assessment',
-  templateUrl: './visa-final-assessment.component.html',
-  styleUrls: ['./visa-final-assessment.component.scss']
-})
-export class VisaFinalAssessmentComponent extends IntakeComponentTabBase {
-  @Input() selectedIndex: number;
-  @Input() visaCheckRecord: CandidateVisaJobCheck;
-  @Input() selectedJobCheck: CandidateVisaJobCheck;
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * Response to a request to extract skills from a given text.
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+@ToString
+public class ExtractSkillsResponse {
+
+    /**
+     * Skill names extracted from the given text.
+     */
+    private List<String> skills;
 }

@@ -19,6 +19,7 @@ package org.tctalent.server.request.candidate;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.CandidatePropertyType;
 
 /**
  * Values can come from one of three sources:
@@ -60,5 +61,12 @@ public class PublishedDocValueSource {
    */
   @Nullable
   private String propertyName;
+
+  /**
+   * If not null, this is the type of the candidate property.
+   * Only meaningful if propertyName is not null.
+   */
+  @Nullable
+  private CandidatePropertyType propertyType;
 
 }
