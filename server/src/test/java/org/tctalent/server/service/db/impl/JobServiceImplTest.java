@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -1183,7 +1184,7 @@ class JobServiceImplTest {
         GoogleFileSystemFile mockGoogleFile = mock(GoogleFileSystemFile.class);
 
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
-        given(salesforceJobOppRepository.save(any())).willReturn(longJob);
+        lenient().when(salesforceJobOppRepository.save(any())).thenReturn(longJob);
         given(mockFile.getOriginalFilename()).willReturn(NAME);
         given(mockFile.getInputStream()).willReturn(mockStream);
         given(googleDriveConfig.getListFoldersDrive()).willReturn(mock(GoogleFileSystemDrive.class));
