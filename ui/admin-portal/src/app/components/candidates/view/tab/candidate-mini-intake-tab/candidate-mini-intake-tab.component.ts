@@ -23,7 +23,10 @@ import {EducationLevelService} from "../../../../../services/education-level.ser
 import {OccupationService} from "../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
@@ -115,7 +118,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
       backdrop: 'static'
     });
 
-    editCandidateModal.componentInstance.candidateId = this.candidate.id;
+    editCandidateModal.componentInstance.candidate = this.candidate;
 
     editCandidateModal.result
     .then((candidate) => this.candidate = candidate)
