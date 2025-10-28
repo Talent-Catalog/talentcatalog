@@ -39,6 +39,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 })
 export class TcDropdownItemComponent {
   @Input() href?: string;
+  @Input() target?: string;
   @Input() routerLink?: string | any[];
   @Input() disabled = false;
   @Input() itemClass: any = '';
