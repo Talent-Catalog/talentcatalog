@@ -18,19 +18,10 @@
 <tc-alert *ngIf="error">{{error}}</tc-alert>
 
 <div *ngIf="!loading" id="VisaIntakes">
-  <div class="row">
+  <div class="row align-items-center">
     <div class="col">
-      <h5 class="mb-2">Visa Eligibility Checks</h5>
-    </div>
-    <div class="col" *ngIf="isEditable()">
-      <tc-button class="float-end" (onClick)="addRecord()">
-        <i class="fas fa-plus"></i> Add Country
-      </tc-button>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col">
+      <h5 class="mb-3">Visa Eligibility Checks</h5>
+      <app-export-pdf *ngIf="visaChecks?.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
     </div>
     <div class="mx-auto col-10 col-md-8 col-lg-6">
       <form [formGroup]="form">
@@ -49,10 +40,13 @@
         </div>
       </form>
     </div>
-    <div class="col pt-3 text-end">
-      <app-export-pdf *ngIf="visaChecks?.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
+    <div class="col align-self-start">
+      <tc-button *ngIf="isEditable()" class="float-end" size="sm" (onClick)="addRecord()">
+        <i class="fas fa-plus"></i> Add Country
+      </tc-button>
     </div>
   </div>
+
   <div *ngIf="visaChecks?.length == 0">
     <p class="paragraph-sm text-color-caption text-center">No visa checks added - add a country to begin</p>
   </div>
