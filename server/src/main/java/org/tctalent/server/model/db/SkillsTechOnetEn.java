@@ -27,6 +27,9 @@ import lombok.Setter;
  * Entity corresponding to imported English language ONET tech skills.
  * <p/>
  * We ignore fields that are not used in the application.
+ * <p/>
+ * This is populated from the
+ * <a href="https://www.onetcenter.org/database.html#t2">O*NET Technology Skills text (CSV) file</a>
  *
  * @author John Cameron
  */
