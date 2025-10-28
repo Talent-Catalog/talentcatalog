@@ -15,45 +15,25 @@
   -->
 
 <div id="VisaAustralia">
-  <div class="row my-4">
-    <div class="col-6">
-      <h5>Section 1: Visa Assessment - Australia</h5>
-    </div>
-
-    <div class="col-6">
-      <div class="row">
-        <div class="col text-end">
-          <button (click)="visaAus.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-          <button (click)="visaAus.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <h5>Section 1: Visa Assessment - Australia</h5>
 
 <!-- ACCORDION VERSION OF FORM  -->
-  <ngb-accordion #visaAus="ngbAccordion" [destroyOnHide]="false" [appReadOnlyInputs]="!isEditable()">
+  <tc-accordion [appReadOnlyInputs]="!isEditable()">
 
-    <ngb-panel id="visa-aus-confirm" title="Confirmation Details">
-      <ng-template ngbPanelContent>
-        <div class="card card-body intake-data">
-          <app-confirm-contact
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-confirm-contact>
-        </div>
-      </ng-template>
-    </ngb-panel>
+    <tc-accordion-item id="visa-aus-confirm" header="Confirmation Details">
+      <app-confirm-contact
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-confirm-contact>
+    </tc-accordion-item>
 
-    <ngb-panel id="visa-aus-destination" title="Destination">
-      <ng-template ngbPanelContent>
+    <tc-accordion-item id="visa-aus-destination" header="Destination">
         <app-destination-family
           [entity]="visaCheckRecord">
         </app-destination-family>
-      </ng-template>
-    </ngb-panel>
+    </tc-accordion-item>
 
-    <ngb-panel id="visa-aus-tbb" title="Assessing TC Eligibility">
-      <ng-template ngbPanelContent>
+    <tc-accordion-item id="visa-aus-tbb" header="Assessing TC Eligibility">
         <div class="card card-body intake-data">
           <app-left-home-reason
             [entity]="visaCheckRecord"
@@ -75,11 +55,9 @@
         <app-int-protection
           [entity]="visaCheckRecord">
         </app-int-protection>
-      </ng-template>
-    </ngb-panel>
+    </tc-accordion-item>
 
-    <ngb-panel id="visa-aus-english" title="English Threshold">
-      <ng-template ngbPanelContent>
+    <tc-accordion-item id="visa-aus-english" header="English Threshold">
         <div class="card card-body intake-data">
           <div class="card-title">Language exams</div>
           <div *ngIf="candidateIntakeData.candidateExams.length == 0">
@@ -98,11 +76,9 @@
         <app-english-threshold
           [entity]="visaCheckRecord">
         </app-english-threshold>
-      </ng-template>
-    </ngb-panel>
+    </tc-accordion-item>
 
-    <ngb-panel id="visa-aus-health" title="Health Assessment">
-      <ng-template ngbPanelContent>
+    <tc-accordion-item id="visa-aus-health" header="Health Assessment">
         <div class="card card-body intake-data">
           <app-health-issues
             [entity]="candidate"
@@ -124,11 +100,9 @@
         <app-health-assessment
           [entity]="visaCheckRecord">
         </app-health-assessment>
-      </ng-template>
-    </ngb-panel>
+    </tc-accordion-item>
 
-    <ngb-panel id="visa-aus-character" title="Character Assessment">
-      <ng-template ngbPanelContent>
+    <tc-accordion-item id="visa-aus-character" header="Character Assessment">
         <div class="card card-body intake-data">
           <app-crime
             [entity]="candidate"
@@ -140,11 +114,9 @@
         <app-character-assessment
           [entity]="visaCheckRecord">
         </app-character-assessment>
-      </ng-template>
-    </ngb-panel>
+    </tc-accordion-item>
 
-    <ngb-panel id="visa-aus-secruity" title="Security Assessment">
-      <ng-template ngbPanelContent>
+    <tc-accordion-item id="visa-aus-security" header="Security Assessment">
         <div class="card card-body intake-data">
           <app-military-service
             [entity]="candidate"
@@ -166,42 +138,36 @@
         <app-security-risk
           [entity]="visaCheckRecord">
         </app-security-risk>
-      </ng-template>
-    </ngb-panel>
+    </tc-accordion-item>
 
-    <ngb-panel id="visa-aus-risk" title="Overall Risk Assessment">
-      <ng-template ngbPanelContent>
-        <app-risk-assessment
-          [entity]="visaCheckRecord">
-        </app-risk-assessment>
-      </ng-template>
-    </ngb-panel>
+    <tc-accordion-item id="visa-aus-risk" header="Overall Risk Assessment">
+      <app-risk-assessment
+        [entity]="visaCheckRecord">
+      </app-risk-assessment>
+    </tc-accordion-item>
 
-    <ngb-panel id="visa-aus-travel" title="Travel Document">
-      <ng-template ngbPanelContent>
-        <div class="card card-body intake-data">
-          <ul *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;">
-            <li *ngIf="citizenship?.nationality">
-              {{citizenship?.nationality.name}}:
-              <span>{{citizenship?.hasPassport}}</span>
-              <span *ngIf="citizenship.passportExp">, expiry {{citizenship.passportExp}}</span>.
-              <span *ngIf="citizenship.notes">Notes: {{citizenship.notes}}.</span>
-            </li>
-          </ul>
-        </div>
-        <hr>
-        <app-travel-document
-          [entity]="visaCheckRecord">
-        </app-travel-document>
-      </ng-template>
-    </ngb-panel>
-  </ngb-accordion>
+    <tc-accordion-item id="visa-aus-travel" header="Travel Document">
+      <div class="card card-body intake-data">
+        <ul *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;">
+          <li *ngIf="citizenship?.nationality">
+            {{citizenship?.nationality.name}}:
+            <span>{{citizenship?.hasPassport}}</span>
+            <span *ngIf="citizenship.passportExp">, expiry {{citizenship.passportExp}}</span>.
+            <span *ngIf="citizenship.notes">Notes: {{citizenship.notes}}.</span>
+          </li>
+        </ul>
+      </div>
+      <hr>
+      <app-travel-document
+        [entity]="visaCheckRecord">
+      </app-travel-document>
+    </tc-accordion-item>
 
-  <div class="row my-4">
-    <div class="col-6">
-      <h5>Section 2: Job Specific Assessment</h5>
-    </div>
-  </div>
+  </tc-accordion>
+
+  <hr>
+
+  <h5>Section 2: Job Specific Assessment</h5>
 
   <app-candidate-visa-job
     [candidate]="candidate"

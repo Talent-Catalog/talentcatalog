@@ -15,28 +15,23 @@
   -->
 
 <!-- ERROR -->
-<div *ngIf="error" class="alert alert-danger">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
-<ngb-accordion *ngIf="selectedJobCheck" #visaJobUk="ngbAccordion" [destroyOnHide]="false">
-
-  <ngb-panel id="family-assessment" title="Family Assessment">
-    <ng-template ngbPanelContent>
-      <div>
-        <app-relocating-dependants
-          [candidateOpp]="candidateOpportunity"
-          [candidateId]="candidate.id">
-        </app-relocating-dependants>
-      </div>
-      <div class="card card-body intake-data">
-        <div class="mb-3 h6">Dependant Family</div>
-        <app-dependants
-          [candidateIntakeData]="candidateIntakeData"
-          [candidate]="candidate"
-          [editable]="false">
-        </app-dependants>`
-      </div>
-    </ng-template>
-  </ngb-panel>
-</ngb-accordion>
+<tc-accordion *ngIf="selectedJobCheck" [allOpen]="true">
+  <tc-accordion-item id="family-assessment" header="Family Assessment">
+    <div>
+      <app-relocating-dependants
+        [candidateOpp]="candidateOpportunity"
+        [candidateId]="candidate.id">
+      </app-relocating-dependants>
+    </div>
+    <div class="card card-body intake-data">
+      <div class="mb-3 h6">Dependant Family</div>
+      <app-dependants
+        [candidateIntakeData]="candidateIntakeData"
+        [candidate]="candidate"
+        [editable]="false">
+      </app-dependants>`
+    </div>
+  </tc-accordion-item>
+</tc-accordion>

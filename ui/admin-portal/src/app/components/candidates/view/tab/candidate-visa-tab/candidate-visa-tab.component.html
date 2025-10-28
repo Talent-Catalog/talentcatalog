@@ -14,12 +14,8 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-loading [loading]="loading"></tc-loading>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
 <div *ngIf="!loading" id="VisaIntakes">
   <div class="row">
@@ -27,9 +23,9 @@
       <h5 class="mb-2">Visa Eligibility Checks</h5>
     </div>
     <div class="col" *ngIf="isEditable()">
-      <button type="button" class="btn btn-primary btn-sm float-end" (click)="addRecord()">
+      <tc-button class="float-end" (onClick)="addRecord()">
         <i class="fas fa-plus"></i> Add Country
-      </button>
+      </tc-button>
     </div>
   </div>
 
@@ -44,7 +40,12 @@
             <input class="form-check-input" type="radio" [value]="i" name="visaCountry" [id]="'radio'+i"
                    [formControlName]="'visaCountry'" (change)="reloadAndSelectVisaCheck(i)">
             <label class="form-check-label fw-light" [for]="'radio'+i">{{visaCheck?.country?.name}}</label>
-            <a *ngIf="canDeleteVisa() && isEditable()" class="link-danger float-end" (click)="deleteRecord(i)"><i class="fas fa-trash"></i></a>
+            <tc-icon *ngIf="canDeleteVisa() && isEditable()"
+                     type="button" color="gray"
+                     class="float-end"
+                     (click)="deleteRecord(i)">
+              <i class="fas fa-trash"></i>
+            </tc-icon>
           </div>
         </div>
       </form>
@@ -53,7 +54,7 @@
     </div>
   </div>
   <div *ngIf="visaChecks?.length == 0">
-    <p class="small text-muted text-center fw-light">No visa checks added - add a country to begin</p>
+    <p class="paragraph-sm text-color-caption text-center">No visa checks added - add a country to begin</p>
   </div>
 </div>
 
