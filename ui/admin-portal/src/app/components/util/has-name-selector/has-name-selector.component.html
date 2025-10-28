@@ -18,7 +18,7 @@
           [actionText]="select"
           [cancelText]="cancel">
   <form [formGroup]="form">
-    <ng-select id="hasName" [formControlName]="'hasNameIndex'"
+    <ng-select id="hasName" [formControlName]="'hasNameIndex'" class="tc-select"
                placeholder="Select" [clearable]="false">
       <ng-option *ngFor="let hasName of hasNames; let i=index" [value]="i">
         {{hasName?.name}}</ng-option>

@@ -15,41 +15,18 @@
   -->
 
 <div id="VisaUK">
-  <div class="row my-4">
-    <div class="col-6">
-      <h5>Section 1: Visa Assessment - UK</h5>
-    </div>
+  <h5>Section 1: Visa Assessment - UK</h5>
 
-    <div class="col-6">
-      <div class="row">
-        <div class="col text-end">
-          <button (click)="visaUK.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-          <button (click)="visaUK.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- ACCORDION VERSION OF FORM  -->
+  <tc-accordion [appReadOnlyInputs]="!isEditable()" [allOpen]="true">
+    <tc-accordion-item id="visa-uk-destination" header="Destination">
+      <app-destination-family
+        [entity]="visaCheckRecord">
+      </app-destination-family>
+    </tc-accordion-item>
+  </tc-accordion>
 
-  <div>
-    <!-- ACCORDION VERSION OF FORM  -->
-    <ngb-accordion #visaUK="ngbAccordion" [destroyOnHide]="false" [activeIds]="'visa-uk-destination'" [appReadOnlyInputs]="!isEditable()">
-
-
-      <ngb-panel id="visa-uk-destination" title="Destination">
-        <ng-template ngbPanelContent>
-          <app-destination-family
-            [entity]="visaCheckRecord">
-          </app-destination-family>
-        </ng-template>
-      </ngb-panel>
-    </ngb-accordion>
-  </div>
-
-  <div class="row my-4">
-    <div class="col-6">
-      <h5>Job Specific Assessment</h5>
-    </div>
-  </div>
+  <h5>Job Specific Assessment</h5>
 
   <app-candidate-visa-job
     [candidate]="candidate"

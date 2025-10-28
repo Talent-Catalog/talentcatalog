@@ -14,27 +14,27 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="visaCharacterAssessment">Meets character requirement? (e.g. no criminal record)</label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="visaCharacterAssessment" [formControlName]="'visaCharacterAssessment'" (clear)="setNoResponse('visaCharacterAssessment')"
-               [items]="characterAssessmentOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaCharacterAssessmentNotes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaCharacterAssessmentNotes" [formControlName]="'visaCharacterAssessmentNotes'"
-              placeholder="" ></textarea>
-  </div>
+  <tc-fieldset>
+    <tc-field>
+      <tc-label for="visaCharacterAssessment">Meets character requirement? (e.g. no criminal record)
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </tc-label>
+      <ng-select class="tc-select" id="visaCharacterAssessment" [formControlName]="'visaCharacterAssessment'"
+                 (clear)="setNoResponse('visaCharacterAssessment')"
+                 [items]="characterAssessmentOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <tc-field *ngIf="hasNotes">
+      <tc-label for="visaCharacterAssessmentNotes">Notes</tc-label>
+      <tc-textarea id="visaCharacterAssessmentNotes"
+                   [formControlName]="'visaCharacterAssessmentNotes'">
+      </tc-textarea>
+    </tc-field>
+  </tc-fieldset>
 </form>
