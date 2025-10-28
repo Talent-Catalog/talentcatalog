@@ -14,34 +14,55 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 @import "src/scss/variables";
+@import "src/scss/color-mixins";
+
+.candidate-source-card {
+  border-radius: 1rem;
+  @include shadow-lg;
+  background-color: white;
+  padding: 1rem;
+
+  .card-footer {
+    border-top: 1px solid var(--bs-border-color, #dee2e6);
+    padding-top: 0.4rem;
+  }
+}
+
+.btn-toolbar {
+  justify-content: flex-end;
+}
 
 .selected {
   background-color: lightgray;
 }
 
 .starred {
-  color: $warning;
+  @include text-color-yellow;
 }
 
 .notstarred {
-  color: grey;
+  @include text-color-caption;
 }
 
 .watched {
-  color: $success;
+  @include  text-color-green;
 }
 
 .notwatched {
-  color: grey;
+  @include text-color-caption;
 }
 
 .d-flex {
   i {
-    margin-top: 5px;
-    padding-right: 7px;
+    //margin-top: 5px;
+    padding:4px;
   }
 }
 
 .min-height-150 {
   min-height: 160px;
+}
+
+button.btn.btn-default.btn-gray.btn-solid {
+  padding: 0.375rem;
 }
