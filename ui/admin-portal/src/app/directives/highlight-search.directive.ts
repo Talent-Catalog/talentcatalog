@@ -82,7 +82,7 @@ export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContent
 
     // First, collect all text nodes that contain the term
     while (node = walk.nextNode()) {
-      if (regex.test(node.nodeValue)) {
+      if (this.showHighlightsOnly || regex.test(node.nodeValue)) {
         textNodes.push(node);
       }
       regex.lastIndex = 0; // Reset regex lastIndex
@@ -149,7 +149,7 @@ export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContent
       }
 
       // Replace the original text node with the new content if there was a match
-      if (docFrag.hasChildNodes()) {
+      if (this.showHighlightsOnly || docFrag.hasChildNodes()) {
         node.parentNode.replaceChild(docFrag, node);
       }
 
