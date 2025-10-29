@@ -19,10 +19,13 @@
 .admin-panel {
   display: flex;
   justify-content: space-between;
-  //align-items: flex-end;
-  background-color: fade-out($accent3, 0.7);
-  padding: 1em;
-  border-radius: 0.25rem;
+  background-color: white;
+  border: 1px solid #aaa;
+  padding: 1.5em;
+  margin-bottom: 24px; // Lines up with the bottom padding of profile tabs
+  // Overrides matching the height of the tab in the same row:
+  align-self: flex-start;
+  height: auto !important;
 }
 
 .dropdown-text {

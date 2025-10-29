@@ -342,8 +342,13 @@
       <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} admin-panel">
         <div class="w-100">
           <div *ngIf="canToggleSizes()" class="float-end">
-            <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-              class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i></button>
+            <tc-button (onClick)="resizeSidePanel()"
+                       [type]="'outline'"
+                       [size]="'sm'"
+                       [color]="'primary'"
+            >
+              <i class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i>
+            </tc-button>
           </div>
           <app-view-candidate-note
             [candidate]="candidate"
