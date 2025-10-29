@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="maritalStatus">
@@ -28,7 +28,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="maritalStatus" [formControlName]="'maritalStatus'" (clear)="setNoResponse('maritalStatus')"
+    <ng-select class="tc-select" id="maritalStatus" [formControlName]="'maritalStatus'" (clear)="setNoResponse('maritalStatus')"
                [items]="maritalStatusOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     <p class="small">
@@ -42,7 +42,7 @@
       <label class="form-label" for="partnerRegistered">
         Is your partner registered with the Talent Catalog?
       </label>
-      <ng-select id="partnerRegistered" [formControlName]="'partnerRegistered'" (clear)="setNoResponse('partnerRegistered')"
+      <ng-select class="tc-select" id="partnerRegistered" [formControlName]="'partnerRegistered'" (clear)="setNoResponse('partnerRegistered')"
                  [items]="partnerRegisteredOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
@@ -64,7 +64,7 @@
       <label class="form-label" for="partnerEduLevelId">
         What is your partner’s highest level of education?
       </label>
-      <ng-select id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'" [items]="educationLevels"
+      <ng-select class="tc-select" id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'" [items]="educationLevels"
                  [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
@@ -73,16 +73,16 @@
         <label class="form-label" for="partnerEduLevelNotes">
           Additional notes about partner's education level
         </label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+        <tc-textarea rows="4"
                   id="partnerEduLevelNotes" [formControlName]="'partnerEduLevelNotes'"
-                  placeholder="" ></textarea>
+                  placeholder="" ></tc-textarea>
       </div>
     </div>
     <div class="mb-3">
       <label class="form-label" for="partnerOccupationId">
         What is your partner’s occupation?
       </label>
-      <ng-select id="partnerOccupationId" [formControlName]="'partnerOccupationId'" [closeOnSelect]="true"
+      <ng-select class="tc-select" id="partnerOccupationId" [formControlName]="'partnerOccupationId'" [closeOnSelect]="true"
                  [items]="occupations" [clearOnBackspace]="false" placeholder="Select" bindLabel="name" bindValue="id">
       </ng-select>
     </div>
@@ -92,16 +92,16 @@
           Additional notes about selected occupation, or description of an occupation that does
           not appear in the above list.
         </label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+        <tc-textarea rows="4"
                   id="partnerOccupationNotes" [formControlName]="'partnerOccupationNotes'"
-                  placeholder="" ></textarea>
+                  placeholder="" ></tc-textarea>
       </div>
     </div>
     <div class="mb-3">
       <label class="form-label" for="partnerEnglish">
         Does your partner speak English?
       </label>
-      <ng-select id="partnerEnglish" [formControlName]="'partnerEnglish'" (clear)="setNoResponse('partnerEnglish')"
+      <ng-select class="tc-select" id="partnerEnglish" [formControlName]="'partnerEnglish'" (clear)="setNoResponse('partnerEnglish')"
                  [items]="partnerEnglishOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
@@ -110,7 +110,7 @@
         <label class="form-label" for="partnerEnglishLevelId">
           What level of English does your partner speak?
         </label>
-        <ng-select id="partnerEnglishLevelId" [formControlName]="'partnerEnglishLevelId'" (clear)="setNoResponse('partnerEnglishLevelId')"
+        <ng-select class="tc-select" id="partnerEnglishLevelId" [formControlName]="'partnerEnglishLevelId'" (clear)="setNoResponse('partnerEnglishLevelId')"
                    [items]="languageLevels" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
       </div>
@@ -118,7 +118,7 @@
         <label class="form-label" for="partnerIelts">
           Has your partner completed IELTS?
         </label>
-        <ng-select id="partnerIelts" [formControlName]="'partnerIelts'" (clear)="setNoResponse('partnerIelts')"
+        <ng-select class="tc-select" id="partnerIelts" [formControlName]="'partnerIelts'" (clear)="setNoResponse('partnerIelts')"
                    [items]="partnerIeltsOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
@@ -136,7 +136,7 @@
           <label class="form-label" for="partnerIeltsYr">
             In what year did your partner take the test?
           </label>
-          <ng-select id="partnerIeltsYr" [formControlName]="'partnerIeltsYr'" [items]="years" [closeOnSelect]="true"
+          <ng-select class="tc-select" id="partnerIeltsYr" [formControlName]="'partnerIeltsYr'" [items]="years" [closeOnSelect]="true"
                      [clearOnBackspace]="false" placeholder="Select"></ng-select>
         </div>
       </div>
@@ -147,6 +147,7 @@
         List any country for which your partner has citizenship
       </label>
       <ng-select
+        class="tc-select"
         id="partnerCitizenship"
         [items]="nationalities"
         [multiple]="true"
@@ -166,9 +167,9 @@
       <label class="form-label" for="maritalStatusNotes">
         Additional notes about marital status
       </label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+      <tc-textarea rows="4"
                 id="maritalStatusNotes" [formControlName]="'maritalStatusNotes'"
-                placeholder="" ></textarea>
+                placeholder="" ></tc-textarea>
     </div>
   </div>
 
