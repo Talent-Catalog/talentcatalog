@@ -8,5 +8,5 @@ import {Candidate} from "../../../../../model/candidate";
 })
 export class CandidateCvTextTabComponent {
   @Input() candidate: Candidate;
-
+  cvText: string = "John was here with deep dta and logic.";
 }
