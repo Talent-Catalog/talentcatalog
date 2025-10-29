@@ -92,6 +92,7 @@ export class TextareaComponent implements ControlValueAccessor, OnInit {
   @Input() invalid: boolean = false;
   @Input() value: string = '';
   @Input() defaultValue: string = '';
+  @Input() rows: string = '3';
 
   @Output() valueChange = new EventEmitter<string>();
 
