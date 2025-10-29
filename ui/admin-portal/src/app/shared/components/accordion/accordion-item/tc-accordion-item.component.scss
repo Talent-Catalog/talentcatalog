@@ -41,6 +41,8 @@
   }
 
   &.open {
+    overflow: visible;
+
     .tc-accordion-header {
       border-bottom: none;
       border-bottom-left-radius: 0;
