@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="intRecruitReasons">
@@ -29,7 +29,7 @@
       </app-autosave-status>
     </div>
     <ng-select
-      id="intRecruitReasons"
+      class="tc-select"
       [items]="intRecruitReasonOptions"
       [multiple]="true"
       [closeOnSelect]="false"
@@ -43,9 +43,9 @@
   <div *ngIf="hasOther">
     <div class="mb-3">
       <label class="form-label" for="intRecruitOther">If other, please explain</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+      <tc-textarea rows="4"
                 id="intRecruitOther" [formControlName]="'intRecruitOther'"
-                placeholder="" ></textarea>
+                placeholder="" ></tc-textarea>
     </div>
   </div>
 </form>
