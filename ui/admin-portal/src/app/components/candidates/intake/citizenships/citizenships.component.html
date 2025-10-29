@@ -15,9 +15,10 @@
   -->
 
 <!-- EXISTING RECORDS -->
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
+
 <div *ngIf="candidateIntakeData.candidateCitizenships.length == 0">
   <p class="mb-0">No Citizenships Added</p>
 </div>
@@ -30,5 +31,4 @@
     [nationalities]="nationalities"
     (delete)="deleteRecord(i)">
   </app-candidate-citizenship-card>
-  <hr/>
 </div>
