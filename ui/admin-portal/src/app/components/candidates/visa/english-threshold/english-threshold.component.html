@@ -19,22 +19,24 @@
 </div>
 
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="visaEnglishThreshold">Meets English threshold?</label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="visaEnglishThreshold" [formControlName]="'visaEnglishThreshold'" (clear)="setNoResponse('visaEnglishThreshold')"
-               [items]="englishThresholdOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaEnglishThresholdNotes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="2"
-              id="visaEnglishThresholdNotes" [formControlName]="'visaEnglishThresholdNotes'"
-              placeholder="" ></textarea>
-  </div>
+  <tc-fieldset>
+    <tc-field>
+      <tc-label for="visaEnglishThreshold">Meets English threshold?
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </tc-label>
+
+      <ng-select class="tc-select" id="visaEnglishThreshold" [formControlName]="'visaEnglishThreshold'"
+                 (clear)="setNoResponse('visaEnglishThreshold')"
+                 [items]="englishThresholdOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <tc-field *ngIf="hasNotes">
+      <tc-label for="visaEnglishThresholdNotes">Notes</tc-label>
+      <tc-textarea type="text" id="visaEnglishThresholdNotes" [formControlName]="'visaEnglishThresholdNotes'"
+                placeholder="" ></tc-textarea>
+    </tc-field>
+  </tc-fieldset>
 </form>

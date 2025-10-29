@@ -59,8 +59,9 @@ describe('AdminApiComponent', () => {
   it('should call send method when the button is clicked', () => {
     spyOn(component, 'send');
 
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
-    button.click();
+    const button = fixture.debugElement.query(By.css('tc-button'));
+    button.triggerEventHandler('onClick', null);
+    fixture.detectChanges();
 
     expect(component.send).toHaveBeenCalled();
   });

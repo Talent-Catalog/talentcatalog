@@ -137,6 +137,7 @@ export class InputComponent implements ControlValueAccessor, OnInit {
     return this._value;
   }
 
+  @Input()
   set value(val: string | boolean) {
     if (val !== this._value) {
       this._value = val;

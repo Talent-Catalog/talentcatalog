@@ -247,8 +247,9 @@ export class PublishedDocColumnService {
     if (defs != null) {
       defs.forEach(def => {
         //Use name as the label if we don't have a label
-        this.addColumn(def.name, def.label ? def.label : def.name,
-          new PublishedDocPropertySource(def.name));
+        let propertySource = new PublishedDocPropertySource(def.name);
+        propertySource.propertyType = def.type;
+        this.addColumn(def.name, def.label ? def.label : def.name, propertySource);
       })
     }
   }

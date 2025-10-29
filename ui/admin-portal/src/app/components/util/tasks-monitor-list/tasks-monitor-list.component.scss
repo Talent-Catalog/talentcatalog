@@ -14,3 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+span {
+  margin: 0 15px;
+  &:first-child {
+    margin-left: 0;
+  }
+}

@@ -17,7 +17,7 @@ import {SettingsComponent} from "./settings.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AuthorizationService} from "../../services/authorization.service";
 import {AuthenticationService} from "../../services/authentication.service";
-import {NgbModule, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockUser} from "../../MockData/MockUser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -78,7 +78,7 @@ describe('SettingsComponent', () => {
   });
 
   it('should save the selected tab in local storage on tab change', () => {
-    component.onTabChanged({ nextId: 'languages' } as NgbNavChangeEvent);
+    component.onTabChanged( 'languages');
     expect(localStorageService.set).toHaveBeenCalledWith('SettingsLastTab', 'languages');
   });
 

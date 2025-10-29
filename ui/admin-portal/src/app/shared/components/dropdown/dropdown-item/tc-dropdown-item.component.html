@@ -18,6 +18,7 @@
   <a *ngSwitchCase="'href'"
      ngbDropdownItem
      [attr.href]="href"
+     [attr.target]="target"
      [ngClass]="itemClass"
      [disabled]="disabled ? true : null"
      (click)="emit($event)">

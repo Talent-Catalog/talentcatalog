@@ -14,12 +14,12 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-loading [loading]="loading"></tc-loading>
+
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
 <div *ngIf="!loading && !loadingError">
 
   <nav aria-label="breadcrumb">
@@ -139,117 +139,138 @@
       <!-- Just have main panel taking up whole screen if they cannot view private data (case notes)-->
       <div class="col-sm-{{canViewPrivateInfo() ? mainPanelColWidth : totalPanelWidth}}">
         <!-- TABS -->
-        <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+        <tc-tabs [activeTabId]="activeTabId"
+                 (tabChanged)="onTabChanged($event)"
+        >
 
           <!-- GENERAL -->
-          <ng-container ngbNavItem="General">
-            <a ngbNavLink>General</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'General'">
+            <tc-tab-header>
+              General
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-general-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-general-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- EXPERIENCE -->
-          <ng-container ngbNavItem="Experience">
-            <a ngbNavLink>Experience</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Experience'">
+            <tc-tab-header>
+              Experience
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-experience-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-experience-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Education -->
-          <ng-container ngbNavItem="Education">
-            <a ngbNavLink>Education</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Education'">
+            <tc-tab-header>
+              Education
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-education-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-education-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Additional Info -->
-          <ng-container ngbNavItem="Additional">
-            <a ngbNavLink>Additional Info</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Additional'">
+            <tc-tab-header>
+              Additional Info
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-additional-info-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
                 [canViewPrivateInfo]="canViewPrivateInfo()">
               </app-candidate-additional-info-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Mini Intake -->
-          <ng-container ngbNavItem="MiniIntake" *ngIf="canViewPrivateInfo()">
-            <a ngbNavLink>Mini Intake</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'MiniIntake'" *ngIf="canViewPrivateInfo()">
+            <tc-tab-header>
+              Mini Intake
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-mini-intake-tab
                 [candidate]="candidate">
               </app-candidate-mini-intake-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Intake -->
-          <ng-container ngbNavItem="FullIntake" *ngIf="canViewPrivateInfo()">
-            <a ngbNavLink>Full Intake</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'FullIntake'" *ngIf="canViewPrivateInfo()">
+            <tc-tab-header>
+              Full Intake
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-intake-tab
                 [candidate]="candidate">
               </app-candidate-intake-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Visa eligibility -->
-          <ng-container ngbNavItem="Visa" *ngIf="canViewPrivateInfo()">
-            <a ngbNavLink>Visa</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Visa'" *ngIf="canViewPrivateInfo()">
+            <tc-tab-header>
+              Visa
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-visa-tab
                 [candidate]="candidate">
               </app-candidate-visa-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- TASKS -->
-          <ng-container ngbNavItem="Tasks" *ngIf="canViewPrivateInfo()">
-            <a ngbNavLink>Tasks</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Tasks'" *ngIf="canViewPrivateInfo()">
+            <tc-tab-header>
+              Tasks
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-task-tab
                 [candidate]="candidate"
                 [editable]="isEditable()">
               </app-candidate-task-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- JOBS -->
-          <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Jobs">
-            <a ngbNavLink>Jobs</a>
-            <ng-template ngbNavContent>
+          <tc-tab *ngIf="canSeeJobDetails()" [id]="'Jobs'">
+            <tc-tab-header>
+              Jobs
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-jobs-tab
                 [candidate]="candidate">
               </app-candidate-jobs-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Chat between source partner and candidate, or the option to create one -->
-          <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
+          <tc-tab [id]="'CandidateProspect'" *ngIf="candidateProspectTabVisible">
             <!-- Tab header -->
-            <a ngbNavLink>
+            <tc-tab-header>
               Chat With Candidate
-              <app-chat-read-status *ngIf="candidateChat" [chats]="[candidateChat]">
-              </app-chat-read-status>
-            </a>
+            </tc-tab-header>
+            <app-chat-read-status *ngIf="candidateChat"
+                                  [chats]="[candidateChat]"
+            ></app-chat-read-status>
             <!-- Tab content — either the chats or a button to create one with help text -->
-            <ng-template ngbNavContent>
+            <tc-tab-content>
 
               <!-- Candidate's notification preferences for non read only users-->
 <!--              todo Comment this back in when Opt in/out is being supported-->
@@ -289,6 +310,7 @@
                                    [readOnly] = "isReadOnlyUser()"
                                    [chat]="candidateChat">
               </app-view-chat-posts>
+
               <ng-template #createChatButton>
                 <div *ngIf="!isReadOnlyUser()">
                   <div class="text-center mt-5 mb-4">
@@ -311,11 +333,11 @@
                   </div>
                 </div>
               </ng-template>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
-        </nav>
-        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        </tc-tabs>
+
       </div>
       <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} admin-panel">
         <div class="w-100">

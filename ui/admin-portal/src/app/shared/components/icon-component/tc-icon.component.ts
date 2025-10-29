@@ -38,7 +38,8 @@ import {Component, Input} from '@angular/core';
  *   - `"link"` → icon inside an anchor `<a>`
  *
  * - `href?: string`
- *   Required when `type="link"`. Sets the target URL.
+ * - `routerLink?: any[] | string`
+ *   Required when `type="link"`. Sets the target URL/route.
  *
  * - `onClick?: (event: MouseEvent) => void`
  *   Optional click handler for `type="button"` or `type="span"`.
@@ -59,6 +60,10 @@ import {Component, Input} from '@angular/core';
  * <tc-icon type="link" href="/settings" size="sm" color="info" ariaLabel="Settings">
  *   <i class="fas fa-cog"></i>
  * </tc-icon>
+ *
+ * <tc-icon type="link" [routerLink]="['/list', 123]" size="sm" color="info" ariaLabel="Settings">
+ *   <i class="fas fa-cog"></i>
+ * </tc-icon>
  * ```
  */
 
@@ -74,6 +79,7 @@ export class TcIconComponent {
 
   @Input() type: 'link' | 'button' | 'span' = 'span';
   @Input() href?: string;
+  @Input() routerLink?: any[] | string | null;
   @Input() onClick?: (e: MouseEvent) => void;
 
   get classList(): string[] {

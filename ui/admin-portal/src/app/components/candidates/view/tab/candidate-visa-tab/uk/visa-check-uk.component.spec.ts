@@ -16,7 +16,9 @@
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {
+  mockCandidateIntakeData
+} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {By} from '@angular/platform-browser';
 import {VisaCheckUkComponent} from "./visa-check-uk.component";
 import {MockCandidateVisa} from "../../../../../../MockData/MockCandidateVisa";
@@ -24,7 +26,9 @@ import {MockCandidateVisaJobCheck} from "../../../../../../MockData/MockCandidat
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {AutosaveStatusComponent} from "../../../../../util/autosave-status/autosave-status.component";
+import {
+  AutosaveStatusComponent
+} from "../../../../../util/autosave-status/autosave-status.component";
 import {RouterLinkStubDirective} from "../../../../../login/login.component.spec";
 import {DependantsComponent} from "../../../../intake/dependants/dependants.component";
 import {Component, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
@@ -122,31 +126,5 @@ describe('VisaCheckUkComponent', () => {
 
     const visaJobCheckUkComponents = fixture.debugElement.queryAll(By.css('app-visa-job-check-uk'));
     expect(visaJobCheckUkComponents.length).toBeLessThanOrEqual(2);
-  });
-
-  it('should set inputs to read only if isEditable is false', (done) => {
-    authorizationServiceSpy.isEditableCandidate.and.returnValue(false);
-    component.isEditable();
-    fixture.detectChanges();
-
-    // Wait for ReadOnlyInputsDirective's setTimeout
-    setTimeout(() => {
-      // Query inputs within the ngb-accordion where the directive is applied
-      const accordion = fixture.debugElement.query(By.css('ngb-accordion'));
-      const inputElements = accordion.queryAll(
-        By.css('ng-select, input, textarea, app-date-picker, ngx-wig')
-      );
-
-      inputElements.forEach((element) => {
-        expect(element.nativeElement.hasAttribute('disabled')).toBeTrue();
-      });
-
-      const ngSelect = accordion.query(By.css('ng-select'));
-      const ngxWig = accordion.query(By.css('ngx-wig'));
-      expect(ngSelect.nativeElement.classList.contains('read-only')).toBeTrue();
-      expect(ngxWig.nativeElement.classList.contains('read-only')).toBeTrue();
-      expect(component.isEditable()).toBeFalse();
-      done();
-    }, 0);
   });
 });

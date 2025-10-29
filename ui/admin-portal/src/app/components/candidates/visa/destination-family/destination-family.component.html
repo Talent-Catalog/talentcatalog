@@ -14,29 +14,27 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" [for]="'visaDestinationFamily'">Do you have family in {{visaCheck?.country.name}} and if so what is the closest relative?</label>
-    <div class="float-end">
-      <app-autosave-status
+  <tc-fieldset>
+    <tc-field>
+      <tc-label [for]="'visaDestinationFamily'">Do you have family in {{visaCheck?.country.name}} and if so what is the closest relative?
+        <app-autosave-status
         [saving]="saving"
         [typing]="typing">
-      </app-autosave-status>
+        </app-autosave-status>
+      </tc-label>
+      <ng-select class="tc-select" [id]="'visaDestinationFamily'" [formControlName]="'visaDestinationFamily'" (clear)="setNoResponse('visaDestinationFamily')"
+                 [items]="destFamilyOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <div  *ngIf="showLocation()">
+      <tc-field>
+        <tc-label [for]="'visaDestinationFamilyLocation'">Where are they located in {{visaCheck?.country.name}}?</tc-label>
+        <tc-input type="text"
+               [id]="'visaDestinationFamilyLocation'"
+                  [formControlName]="'visaDestinationFamilyLocation'"></tc-input>
+      </tc-field>
     </div>
-    <ng-select [id]="'visaDestinationFamily'" [formControlName]="'visaDestinationFamily'" (clear)="setNoResponse('visaDestinationFamily')"
-               [items]="destFamilyOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div  *ngIf="showLocation()">
-    <div class="mb-3">
-      <label class="form-label" [for]="'visaDestinationFamilyLocation'">Where are they located in {{visaCheck?.country.name}}?</label>
-      <input type="text"
-             class="form-control"
-             [id]="'visaDestinationFamilyLocation'"
-             [formControlName]="'visaDestinationFamilyLocation'">
-    </div>
-  </div>
+  </tc-fieldset>
 </form>

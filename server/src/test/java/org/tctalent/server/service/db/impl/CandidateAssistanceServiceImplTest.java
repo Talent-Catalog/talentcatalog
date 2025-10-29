@@ -61,6 +61,7 @@ import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.util.PersistenceContextHelper;
@@ -86,6 +87,7 @@ class CandidateAssistanceServiceImplTest {
     @Mock private CandidateRepository candidateRepository;
     @Mock private PartnerService partnerService;
     @Mock private CountryRepository countryRepository;
+    @Mock private CountryService countryService;
     @Mock private AuthService authService;
     @Mock private UserRepository userRepository;
     @Mock private CandidateCitizenshipService candidateCitizenshipService;
@@ -254,7 +256,10 @@ class CandidateAssistanceServiceImplTest {
     @Test
     @DisplayName("should not reassign registered candidate")
     void reassignPartnerIfNeeded_shouldNotReassignButShouldNotify() {
-        stubUpdatePersonalToReachReassignOrNotifyPartnerIfNeeded(CandidateStatus.pending, false, false, null); // Existing profile
+        stubUpdatePersonalToReachReassignOrNotifyPartnerIfNeeded(
+            CandidateStatus.pending, false, false, null); // Existing profile
+
+        given(countryService.isTCDestination(any(Long.class))).willReturn(false);
 
         candidateService.updatePersonal(updateCandidatePersonalRequest); // When
 
