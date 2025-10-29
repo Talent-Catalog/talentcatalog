@@ -14,63 +14,72 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-  <h4 class="modal-title">Assign Task to Candidate</h4>
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
-</div>
-<div class="modal-body">
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+<tc-modal [heading]="'Assign Task to Candidate'"
+          [showClose]="true"
+          [disableAction]="assignForm.invalid || loading || saving"
+          actionText="Save"
+          (onAction)="onSave()"
+>
+
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
+
     <form [formGroup]="assignForm">
 
       <!-- TASKS -->
-      <div class="mb-3">
-        <label class="form-label" for="task">Assign to task:</label>
-        <ng-select id="task" [formControlName]="'task'" [items]="allTasks"
-                   [groupBy]="'taskType'" [searchFn]="searchTypeOrName" [clearable]="false"
-                    placeholder="Select or type to search..." bindLabel="displayName"></ng-select>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="task">
+          Assign to task:
+        </tc-label>
+        <ng-select id="task"
+                   class="tc-select"
+                   [formControlName]="'task'"
+                   [items]="allTasks"
+                   [groupBy]="'taskType'"
+                   [searchFn]="searchTypeOrName"
+                   [clearable]="false"
+                   placeholder="Select or type to search..."
+                   bindLabel="displayName"
+        ></ng-select>
+      </tc-field>
 
       <!-- DAYS TO COMPLETE -->
-      <div *ngIf="selectedTask">
-        <div class="mb-3">
-          <div>Description:
+      <tc-description-list *ngIf="selectedTask"
+                           [direction]="'column'"
+      >
+        <tc-description-item label="Description:">
             <span class="fw-light" [innerHtml]="selectedTask.description"></span>
-          </div>
-        </div>
-        <div class="mb-3">
-          <div>Estimated Due Date:
-            <span class="fw-light">{{estimatedDueDate | date}}</span>
-          </div>
-          <small class="text-muted">{{selectedTask?.daysToComplete}} days to complete.</small>
-        </div>
+        </tc-description-item>
+        <tc-description-item label="Estimated Due Date:">
+            <span class="fw-light">
+              {{estimatedDueDate | date}} ({{selectedTask?.daysToComplete}} days to complete)
+            </span>
+        </tc-description-item>
+      </tc-description-list>
 
         <!-- CUSTOM DUE DATE -->
-        <div class="mb-3">
-          <div class="form-check-inline">
-            <label class="form-check-label" for="customDate">Do you want to set a custom due date?</label>
-            <input class="form-check-input" id="customDate" [formControlName]="'customDate'" type="checkbox">
-          </div>
-          <div *ngIf="assignForm.controls.customDate.value">
-              <app-date-picker id="dueDate" [control]="assignForm.controls.dueDate" [allowPast]="false"></app-date-picker>
-          </div>
-        </div>
-
-      </div>
+        <tc-field [checkbox]="true">
+          <tc-label for="customDate">
+            Do you want to set a custom due date?
+          </tc-label>
+          <tc-input id="customDate"
+                    [formControlName]="'customDate'"
+                    type="checkbox"
+          ></tc-input>
+        </tc-field>
+          <tc-field *ngIf="assignForm.controls.customDate.value">
+              <tc-date-picker id="dueDate"
+                              [control]="assignForm.controls.dueDate"
+                              [allowPast]="false"
+              ></tc-date-picker>
+          </tc-field>
 
     </form>
   </div>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-success" [disabled]="assignForm.invalid || loading || saving"
-          (click)="onSave()"><i class="fas fa-spinner fa-spin" *ngIf="saving"></i>Save
-  </button>
-  <button type="button" class="btn btn-secondary"
-          (click)="cancel()">Cancel</button>
-</div>
+
+</tc-modal>
