@@ -110,6 +110,10 @@
   }
 
   &.ng-select-multiple {
+    .ng-placeholder {
+      margin-top: 3px; // adjust to visually match single mode
+    }
+
     .ng-value {
       background: color(primary, 100) !important;
       border-radius: 0.3rem !important;
