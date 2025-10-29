@@ -14,11 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 
-<div class="card">
+<tc-card [header]=false>
   <div class="card-body">
 
     <form [formGroup]="form">
@@ -31,13 +31,13 @@
               [typing]="typing">
             </app-autosave-status>
             <button class="btn" (click)="doDelete()">
-              <i class="fas fa-trash"></i>
+             <tc-icon color="gray"> <i class="fas fa-trash"></i></tc-icon>
             </button>
           </div>
 
         </div>
 
-        <ng-select [id]="'dependantRelation'+myRecordIndex" [formControlName]="'dependantRelation'" (clear)="setNoResponse('dependantRelation')"
+        <ng-select class="tc-select" [id]="'dependantRelation'+myRecordIndex" [formControlName]="'dependantRelation'" (clear)="setNoResponse('dependantRelation')"
                    [items]="dependantRelations" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
@@ -47,14 +47,14 @@
           <div class="mb-3">
             <label class="form-label" [for]="'dependantRelationOther'+myRecordIndex">If other, please explain relationship</label>
 
-            <input type="text" class="form-control"
-                   [id]="'dependantRelationOther'+myRecordIndex" [formControlName]="'dependantRelationOther'">
+            <tc-input
+              [id]="'dependantRelationOther'+myRecordIndex" [formControlName]="'dependantRelationOther'"></tc-input>
           </div>
         </div>
         <div class="mb-3">
           <label class="form-label" [for]="'dependantGender'+myRecordIndex">Gender</label>
 
-          <ng-select [id]="'dependantGender'+myRecordIndex" [formControlName]="'dependantGender'"
+          <ng-select class="tc-select" [id]="'dependantGender'+myRecordIndex" [formControlName]="'dependantGender'"
                      [items]="dependantGenders" [clearable]="false"
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
         </div>
@@ -62,13 +62,13 @@
         <div class="mb-3">
           <label class="form-label" [for]="'dependantName'+myRecordIndex">Name</label>
 
-          <input type="text" class="form-control"
-                 [id]="'dependantName'+myRecordIndex" [formControlName]="'dependantName'">
+          <tc-input
+                 [id]="'dependantName'+myRecordIndex" [formControlName]="'dependantName'"></tc-input>
         </div>
 
         <div class="mb-3">
           <label class="form-label me-2" [for]="'dependantDob'+myRecordIndex">DOB</label>
-          <app-date-picker *ngIf="editable; else notEditable" [id]="'dependantDob'+myRecordIndex" [control]="form.controls.dependantDob"></app-date-picker>
+          <tc-date-picker *ngIf="editable; else notEditable" [id]="'dependantDob'+myRecordIndex" [control]="form.controls.dependantDob"></tc-date-picker>
           <ng-template #notEditable><span>{{myRecord.dob}}</span></ng-template>
           <p class="small">Age: {{dependantAge}}</p>
         </div>
@@ -77,23 +77,23 @@
           <label class="form-label" [for]="'dependantHealthConcerns'+myRecordIndex">
             Any health concerns?
           </label>
-          <ng-select [id]="'dependantHealthConcerns'+myRecordIndex" [formControlName]="'dependantHealthConcerns'"
+          <ng-select class="tc-select" [id]="'dependantHealthConcerns'+myRecordIndex" [formControlName]="'dependantHealthConcerns'"
                      (clear)="setNoResponse('dependantHealthConcerns')" [items]="dependentHealthConcerns"
                      [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
         </div>
         <div *ngIf="hasHealthConcern === 'Yes'" class="mb-3">
           <label class="form-label" [for]="'dependantHealthNotes'+myRecordIndex">Notes</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+          <tc-textarea rows="3"
                     [id]="'dependantHealthNotes'+myRecordIndex" [formControlName]="'dependantHealthNotes'"
-                    placeholder="" ></textarea>
+                    placeholder="" ></tc-textarea>
         </div>
 
         <div class="mb-3">
           <label class="form-label" [for]="'dependantRegistered'+myRecordIndex">
             Are they registered?
           </label>
-          <ng-select [id]="'dependantRegistered'+myRecordIndex" [formControlName]="'dependantRegistered'"
+          <ng-select class="tc-select" [id]="'dependantRegistered'+myRecordIndex" [formControlName]="'dependantRegistered'"
                      (clear)="setNoResponse('dependantRegistered')" [items]="dependantRegisterOptions"
                      [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
@@ -102,14 +102,14 @@
         <div *ngIf="dependantRegisteredNumber">
           <div class="mb-3">
             <label class="form-label" [for]="'dependantRegisteredNumber'+myRecordIndex">If spouse or child, what is their ID number? (only if different from yours)</label>
-            <input type="text" class="form-control"
-                   [id]="'dependantRegisteredNumber'+myRecordIndex" [formControlName]="'dependantRegisteredNumber'">
+            <tc-input type="text"
+                      [id]="'dependantRegisteredNumber'+myRecordIndex" [formControlName]="'dependantRegisteredNumber'"></tc-input>
           </div>
           <div class="mb-3">
             <label class="form-label" [for]="'dependantRegisteredNotes'+myRecordIndex">Notes</label>
-            <textarea type="text" class="md-textarea-auto form-control" rows="3"
+            <tc-textarea type="text" rows="3"
                       [id]="'dependantRegisteredNotes'+myRecordIndex" [formControlName]="'dependantRegisteredNotes'"
-                      placeholder="" ></textarea>
+                      placeholder="" ></tc-textarea>
           </div>
         </div>
 
@@ -117,5 +117,5 @@
 
     </form>
   </div>
-</div>
+</tc-card>
 
