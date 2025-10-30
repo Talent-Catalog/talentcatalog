@@ -19,24 +19,27 @@
 
 <div *ngIf="!loading" id="VisaIntakes">
   <div class="row align-items-center">
-    <div class="col">
+    <div class="col align-self-start">
       <h5 class="mb-3">Visa Eligibility Checks</h5>
       <app-export-pdf *ngIf="visaChecks?.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
     </div>
     <div class="mx-auto col-10 col-md-8 col-lg-6">
       <form [formGroup]="form">
-        <div *ngFor="let visaCheck of visaChecks; let i = index;">
-          <div class="form-check">
-            <input class="form-check-input" type="radio" [value]="i" name="visaCountry" [id]="'radio'+i"
-                   [formControlName]="'visaCountry'" (change)="reloadAndSelectVisaCheck(i)">
-            <label class="form-check-label fw-light" [for]="'radio'+i">{{visaCheck?.country?.name}}</label>
-            <tc-icon *ngIf="canDeleteVisa() && isEditable()"
-                     type="button" color="gray"
-                     class="float-end"
-                     (click)="deleteRecord(i)">
-              <i class="fas fa-trash"></i>
-            </tc-icon>
-          </div>
+        <div *ngFor="let visaCheck of visaChecks; let i = index">
+            <tc-radio
+              [id]="'radio' + i"
+              name="visaCountry"
+              [value]="i"
+              [label]="visaCheck.country.name"
+              [formControlName]="'visaCountry'"
+              (change)="reloadAndSelectVisaCheck(i)">
+              <tc-icon *ngIf="canDeleteVisa() && isEditable()"
+                       type="button" color="gray"
+                       class="float-end"
+                       (click)="deleteRecord(i)">
+                <i class="fas fa-trash"></i>
+              </tc-icon>
+            </tc-radio>
         </div>
       </form>
     </div>
