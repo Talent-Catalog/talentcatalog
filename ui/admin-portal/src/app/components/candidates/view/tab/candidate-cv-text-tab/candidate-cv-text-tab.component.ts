@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
 import {CvText} from "../../../../../model/cv-text";
@@ -8,7 +8,7 @@ import {CvText} from "../../../../../model/cv-text";
   templateUrl: './candidate-cv-text-tab.component.html',
   styleUrls: ['./candidate-cv-text-tab.component.scss']
 })
-export class CandidateCvTextTabComponent implements OnInit {
+export class CandidateCvTextTabComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   cvText: string;
   error: string;
@@ -17,6 +17,9 @@ export class CandidateCvTextTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
     this.error = null;
     this.candidateAttachmentService.getCandidateCvText(this.candidate?.id).subscribe(
       {
