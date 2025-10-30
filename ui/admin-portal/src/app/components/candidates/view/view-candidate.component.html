@@ -22,22 +22,6 @@
 
 <div *ngIf="!loading && !loadingError">
 
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb align-items-center">
-      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
-      <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
-      <li *ngIf="isEditable()" class="ms-auto">
-        <div  class="input-group">
-          <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
-                 value="{{candidate.status | titlecase}}" disabled>
-          <button class="btn btn-sm btn-secondary" (click)="editCandidate()"><i class="fas fa-edit fa-sm"></i></button>
-        </div>
-      </li>
-    </ol>
-
-  </nav>
-
   <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
 
     <div class="candidate-header-container">
@@ -162,13 +146,12 @@
       </div>
     </div>
 
-
-      <div class="col-sm-4">
-        <app-candidate-shareable-notes
-          [candidate]="candidate"
-          [editable] = "isEditable()"
-        ></app-candidate-shareable-notes>
-      </div>
+    <div class="col-sm-4">
+      <app-candidate-shareable-notes
+        [candidate]="candidate"
+        [editable] = "isEditable()"
+      ></app-candidate-shareable-notes>
+    </div>
 
   </div>
 
@@ -417,7 +400,7 @@
         </tc-tabs>
 
       </div>
-      <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} admin-panel">
+      <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} candidate-notes-panel">
         <div class="w-100">
           <div *ngIf="canToggleSizes()" class="float-end">
             <tc-button (onClick)="resizeSidePanel()"

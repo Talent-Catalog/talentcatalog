@@ -16,11 +16,11 @@
 
 @import "src/scss/variables";
 
-.admin-panel {
+.candidate-notes-panel {
   display: flex;
   justify-content: space-between;
   background-color: white;
-  border: 1px solid #aaa;
+  border: 1px solid #ddd;
   padding: 1.5em;
   margin-bottom: 24px; // Lines up with the bottom padding of profile tabs
   // Overrides matching the height of the tab in the same row:
