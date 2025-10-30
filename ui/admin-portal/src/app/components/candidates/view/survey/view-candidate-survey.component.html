@@ -28,13 +28,15 @@
     </div>
   </tc-card-header>
 
-  <tc-description-list [direction]="'column'">
-    <tc-description-item [label]="'Source:'">
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
+    <tc-description-item label="Source:">
       <span [innerHtml]="candidate?.surveyType?.name"
             appHighlightSearch
       ></span>
     </tc-description-item>
-    <tc-description-item [label]="'Comment:'">
+    <tc-description-item label="Comment:">
       <span [innerHtml]="candidate?.surveyComment"
             appHighlightSearch
       ></span>

@@ -51,7 +51,9 @@
     </div>
   </tc-card-header>
 
-  <tc-description-list [direction]="'column'">
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
     <tc-description-item>
       <span *ngIf="candidate.linkedInLink">
         <a [href]="candidate.linkedInLink" target="_blank" class="no-underline">
