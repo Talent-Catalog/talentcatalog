@@ -1,0 +1,84 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="container mt-4">
+  <div class="alert alert-danger" *ngIf="error">{{ error?.message || error }}</div>
+
+  <div class="text-center my-4" *ngIf="loadingMembers">
+    <div class="spinner-border" role="status"></div>
+  </div>
+
+  <div class="alert alert-info" *ngIf="!loadingMembers && members.length === 0">
+    {{ 'FAMILY_RSD.NO_MEMBERS' | translate }}
+  </div>
+
+  <ng-container formArrayName="members" *ngIf="!loadingMembers && members.length > 0">
+    <p class="text-muted">{{ 'FAMILY_RSD.DESCRIPTION' | translate }}</p>
+
+    <div class="card mb-3" *ngFor="let group of members.controls; index as ix" [formGroupName]="ix">
+      <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <strong>{{ 'FAMILY_RSD.LABEL.MEMBER' | translate }} #{{ ix + 1 }}:</strong>
+          {{ group.get('displayName')?.value }}
+        </div>
+        <div class="attachment-actions" *ngIf="group.get('attachmentId')?.value">
+          <span class="badge bg-success">
+            {{ 'FAMILY_RSD.LABEL.UPLOADED_FILE' | translate }}: {{ group.get('attachmentName')?.value }}
+          </span>
+          <button type="button" class="btn btn-link btn-sm" (click)="removeDocument(ix)" [disabled]="readOnly">
+            {{ 'FAMILY_RSD.BUTTON.REMOVE' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">{{ 'FAMILY_RSD.LABEL.REFUGEE_STATUS' | translate }}</label>
+            <select class="form-select" formControlName="refugeeStatus" [disabled]="readOnly">
+              <option [ngValue]="''" disabled>{{ 'FORM.SELECT.DEFAULT' | translate }}</option>
+              <option *ngFor="let option of refugeeStatusOptions" [ngValue]="option.value">
+                {{ option.label | translate }}
+              </option>
+            </select>
+            <div class="text-danger small"
+                 *ngIf="hasError(group.get('refugeeStatus'), 'required')">
+              {{ 'FORM.ERROR.REQUIRED' | translate }}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">{{ 'FAMILY_RSD.LABEL.DOCUMENT_TYPE' | translate }}</label>
+            <select class="form-select" formControlName="documentType" [disabled]="readOnly">
+              <option [ngValue]="''" disabled>{{ 'FORM.SELECT.DEFAULT' | translate }}</option>
+              <option *ngFor="let option of documentTypeOptions" [ngValue]="option.value">
+                {{ option.label | translate }}
+              </option>
+            </select>
+            <div class="text-danger small"
+                 *ngIf="hasError(group.get('documentType'), 'required')">
+              {{ 'FORM.ERROR.REQUIRED' | translate }}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">{{ 'FAMILY_RSD.LABEL.DOCUMENT_NUMBER' | translate }}</label>
+            <input type="text" class="form-control" formControlName="documentNumber"
+                   [readonly]="readOnly" maxlength="30">
+            <div class="text-danger small"
+                 *ngIf="hasError(group.get('documentNumber'), 'required')">
+              {{ 'FORM.ERROR.REQUIRED' | translate }}
+            </div>
+            <div class="text-danger small"
+                 *ngIf="hasError(group.get('documentNumber'), 'maxlength')">
+              {{ 'FORM.ERROR.MAX_LENGTH' | translate:{max:30} }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="text-end" *ngIf="!loadingMembers && members.length > 0">
+    <button type="submit" class="btn btn-primary" [disabled]="!canSubmit()">
+      {{ 'TASKS.TASK.SUBMIT' | translate }}
+    </button>
+  </div>
+</form>

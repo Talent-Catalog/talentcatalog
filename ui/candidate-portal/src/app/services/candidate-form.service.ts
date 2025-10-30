@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 import {FamilyDocFormComponent} from "../components/form/family-doc-form/family-doc-form.component";
 import {
   FamilyDocFormData,
+  FamilyRsdEvidenceFormData,
   MyFirstFormData,
   MySecondFormData,
   TravelDocFormData
@@ -14,6 +15,9 @@ import {MySecondFormComponent} from "../components/form/my-second-form/my-second
 import {
   TravelDocFormComponent
 } from "../components/form/italy-travel-document-form/travel-doc-form.component";
+import {
+  FamilyRsdEvidenceFormComponent
+} from "../components/form/family-rsd-evidence-form/family-rsd-evidence-form.component";
 
 
 @Injectable({
@@ -27,7 +31,8 @@ export class CandidateFormService {
     'MyFirstForm': MyFirstFormComponent,
     'MySecondForm': MySecondFormComponent,
     'FamilyDocForm': FamilyDocFormComponent,
-    'TravelDocForm': TravelDocFormComponent
+    'TravelDocForm': TravelDocFormComponent,
+    'FamilyRsdEvidenceForm': FamilyRsdEvidenceFormComponent,
   }
 
   apiUrl: string = environment.apiUrl + '/form';
@@ -68,5 +73,12 @@ export class CandidateFormService {
 
   getFamilyDocsForm() {
     return this.http.get<FamilyDocFormData>(`${this.halApiUrl}/family-doc-form/FamilyDocForm`);
+  }
+  createOrUpdateFamilyRsdEvidenceForm(request: FamilyRsdEvidenceFormData) {
+    return this.http.post<FamilyRsdEvidenceFormData>(`${this.apiUrl}/family-rsd-evidence-form`, request);
+  }
+
+  getFamilyRsdEvidenceForm() {
+    return this.http.get<FamilyRsdEvidenceFormData>(`${this.apiUrl}/family-rsd-evidence-form`);
   }
 }

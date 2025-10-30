@@ -77,5 +77,24 @@ export interface RelocatingFamilyMember {
 export interface FamilyDocFormData {
   noEligibleFamilyMembers: boolean;
   noEligibleNotes?: string;
-  familyMembersJson: string; 
+  familyMembersJson: string;
+}
+
+
+export interface FamilyRsdEvidenceEntry {
+  memberKey: string;
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: string;
+  displayName?: string;
+  refugeeStatus?: string;
+  documentType?: string;
+  documentNumber?: string;
+  attachmentId?: number;
+  attachmentName?: string;
+  attachmentLocation?: string;
+}
+
+export interface FamilyRsdEvidenceFormData {
+  familyRsdEvidenceJson?: string;
 }
