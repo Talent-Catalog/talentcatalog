@@ -12,3 +12,10 @@
     border-bottom-left-radius: 1rem;
   }
 }
+
+.tc-card.no-header {
+  .tc-card-body {
+    border-radius: 1rem;
+    border: 1px solid color(gray, 100);
+  }
+}
