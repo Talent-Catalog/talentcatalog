@@ -15,29 +15,38 @@
   -->
 
 <div class="background-image-wrapper" [ngStyle]="{'background-image': backgroundImage}"></div>
-
-<form class="login wrapper" [formGroup]="loginForm" (submit)="login()">
-  <img [src]="loginImage" width="500" alt="Login" class="login-logo">
-
-  <div class="alert alert-danger" *ngIf="error">
+<img [src]="loginImage" alt="Login" class="login-logo">
+<form [formGroup]="loginForm" (submit)="login()">
+  <tc-alert type="danger" *ngIf="error">
     {{error}}
-  </div>
+  </tc-alert>
 
-  <input class="form-control" type="text" formControlName="username" placeholder="Username">
-  <input class="form-control" type="password" formControlName="password" placeholder="Password">
-  <input class="form-control" type="text" formControlName="totpToken" placeholder="Code shown on your phone's authenticator app">
+  <tc-fieldset>
+    <tc-field>
+      <tc-input type="text" formControlName="username"
+                placeholder="Username"></tc-input>
+    </tc-field>
+    <tc-field>
+      <tc-input type="password" formControlName="password"
+                placeholder="Password"></tc-input>
+    </tc-field>
+    <tc-field>
+      <tc-input type="text" formControlName="totpToken"
+                placeholder="Code shown on your phone's authenticator app"></tc-input>
+    </tc-field>
+    <tc-button [disabled]="loading || !loginForm.valid" color="secondary" size="lg" class="align-self-center">
+      <span *ngIf="!loading">Login</span>
 
-  <button class="btn btn-secondary" type="submit" [disabled]="loading || !loginForm.valid">
-    <span *ngIf="!loading">Login</span>
-
-    <div class="d-flex justify-content-center" *ngIf="loading">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
+      <div class="d-flex justify-content-center" *ngIf="loading">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
       </div>
-    </div>
-  </button>
+    </tc-button>
+  </tc-fieldset>
 
-  <div class="text-center mt-2 small">
+
+  <div class="text-center mt-3 text-color-caption">
     <a [routerLink]="'/reset-password'">Forgot Password?</a>
   </div>
 
