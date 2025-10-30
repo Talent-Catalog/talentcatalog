@@ -1,6 +1,32 @@
 import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
+/**
+ * @component TcRadioComponent
+ * @selector tc-radio
+ * @description
+ * A reusable radio button component that implements Angular's `ControlValueAccessor`
+ * so it works seamlessly with Reactive Forms and Template-driven Forms.
+ *
+ * **Features**
+ * - Works with `formControlName` / `ngModel`.
+ * - Supports string, number, or boolean values.
+ * - Emits a `change` event when the user selects a radio.
+ * - Fully compatible with multiple radio groups on the same page.
+ * - Can contain additional content in the label as it follows with <ng-content> (e.g. can add buttons/icons)
+ *
+ * @example
+ * ```html
+ * <tc-radio
+ *   id="option1"
+ *   name="myGroup"
+ *   label="Option 1"
+ *   value="1"
+ *   formControlName="myControl"
+ *   (change)="onChange($event)">
+ * </tc-radio>
+ * ```
+ */
 @Component({
   selector: 'tc-radio',
   templateUrl: './tc-radio.component.html',
