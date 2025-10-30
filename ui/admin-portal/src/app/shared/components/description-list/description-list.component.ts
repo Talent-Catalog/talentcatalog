@@ -12,16 +12,16 @@ import {Component, Input} from '@angular/core';
  *
  * **Inputs**
  *  - `direction: 'row' | 'column'` — Layout direction of the list:
- *  - `"row"`: items are displayed side by side, with one item per row.
+ *    - `"row"`: items are displayed side by side, with one item per row.
  *  ```html
  *  description label: description item
  *  ```
- *  - `"column"`: items are stacked vertically, with multiple responsive columns per row.
+ *    - `"column"`: items are stacked vertically, with multiple responsive columns per row.
  *  ```html
  *  description label:
  *  description item
  *  ```
- *
+ * - `compact: boolean (defaults to false)` — if true will reduce column spacing when used with column layout
  *
  * **Features**
  * - Wraps the native `<dl>` for semantic, accessible description lists
@@ -60,5 +60,8 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./description-list.component.scss']
 })
 export class DescriptionListComponent {
+  /** Direction of single item and all items */
   @Input() direction: 'row' | 'column' = 'row';
+  /** Smaller spacing for column layout, useful when list is used in compact spaces */
+  @Input() compact = false;
 }
