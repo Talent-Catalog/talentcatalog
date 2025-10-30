@@ -131,7 +131,8 @@ export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContent
         }
 
         // Create and add a highlighted span for the match
-        const highlightSpan = document.createElement('span');
+        const highlightSpan = document.createElement(
+          this.showHighlightsOnly ? 'div' :'span');
         highlightSpan.className = 'highlight';
         highlightSpan.textContent = match[0];
         docFrag.appendChild(highlightSpan);
