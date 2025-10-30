@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Edit Job Experience'"
+<tc-modal heading="Edit Job Experience"
           [showCancel]="true"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="onSave()"
           [disableAction]="candidateForm.invalid || loading || saving"
           [showClose]="true"
@@ -34,18 +34,18 @@
 
       <!-- COMPANY NAME -->
       <tc-field class="mb-3">
-        <tc-label [for]="'companyName'">
+        <tc-label for="companyName">
           Company Name *
         </tc-label>
         <tc-input [type]="'text'"
-                  [id]="'companyName'"
+                  id="companyName"
                   [formControlName]="'companyName'"
         ></tc-input>
       </tc-field>
 
       <!-- COUNTRY -->
       <tc-field class="mb-3">
-        <tc-label [for]="'countryId'">
+        <tc-label for="countryId">
           Country *
         </tc-label>
         <ng-select id="countryId"
@@ -60,7 +60,7 @@
 
       <!-- START DATE -->
       <tc-field class="mb-3">
-        <tc-label [for]="'startDate'">
+        <tc-label for="startDate">
           Start Date *
         </tc-label>
         <tc-date-picker id="startDate"
@@ -72,7 +72,7 @@
 
       <!-- END DATE -->
       <tc-field class="mb-3">
-        <tc-label [for]="'endDate'">
+        <tc-label for="endDate">
           End Date
         </tc-label>
         <tc-date-picker id="endDate"
@@ -84,7 +84,7 @@
 
       <!-- FULL TIME -->
       <tc-field class="mb-3">
-        <tc-label [for]="'fullTime'">
+        <tc-label for="fullTime">
           Contract Type *
         </tc-label>
         <ng-select id="fullTime"
@@ -99,7 +99,7 @@
 
       <!-- PAID -->
       <tc-field class="mb-3">
-        <tc-label [for]="'paid'">
+        <tc-label for="paid">
           Employment Type *
         </tc-label>
         <ng-select id="paid"
@@ -114,18 +114,18 @@
 
       <!-- ROLE NAME -->
       <tc-field class="mb-3">
-        <tc-label [for]="'role'">
+        <tc-label for="role">
           Role *
         </tc-label>
         <tc-input [type]="'text'"
-                  [id]="'role'"
+                  id="role"
                   [formControlName]="'role'"
         ></tc-input>
       </tc-field>
 
       <!-- DESCRIPTION -->
       <tc-field class="mb-3">
-        <tc-label [for]="'description'">
+        <tc-label for="description">
           Description *
         </tc-label>
         <ngx-wig id="description"

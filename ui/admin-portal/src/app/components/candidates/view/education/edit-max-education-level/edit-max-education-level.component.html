@@ -1,7 +1,7 @@
-<tc-modal [heading]="'Edit Max Education Level'"
+<tc-modal heading="Edit Max Education Level"
           [showCancel]="true"
           [showClose]="true"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="save()"
           [disableAction]="form.invalid || loading"
 >
@@ -17,7 +17,7 @@
 
       <ng-select class="tc-select"
                  [items]="educationLevels"
-                 id="'educationLevelId'"
+                 id="educationLevelId"
                  [formControlName]="'educationLevelId'"
                  bindValue="id"
                  bindLabel="name"

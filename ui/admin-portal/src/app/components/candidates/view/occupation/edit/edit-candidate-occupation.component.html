@@ -14,10 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Edit Candidate Occupation'"
+<tc-modal heading="Edit Candidate Occupation"
           [showClose]="true"
           [disableAction]="form.invalid || saving"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="onSave()"
           [showCancel]="true"
 >
@@ -50,13 +50,13 @@
 
         <div class="col-12">
           <tc-field class="mb-3">
-            <tc-label [for]="'yearsExperience'">
+            <tc-label for="yearsExperience">
               Years Experience
             </tc-label>
             <tc-input [type]="'number'"
                       [min]="0"
-                      [name]="'yearsExperience'"
-                      [id]="'yearsExperience'"
+                      name="yearsExperience"
+                      id="yearsExperience"
                       [formControlName]="'yearsExperience'"
             ></tc-input>
           </tc-field>

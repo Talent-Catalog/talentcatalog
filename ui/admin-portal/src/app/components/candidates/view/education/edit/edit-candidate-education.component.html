@@ -14,11 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Edit Education'"
+<tc-modal heading="Edit Education"
           [showClose]="true"
           [showCancel]="true"
           [disableAction]="candidateForm.invalid || loading || saving"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="onSave()"
 >
 
@@ -107,8 +107,7 @@
           Length of Course Years
         </tc-label>
         <tc-input [type]="'number'"
-                  [placeholder]="''"
-                  [id]="'lengthOfCourseYears'"
+                  id="lengthOfCourseYears"
                   [formControlName]="'lengthOfCourseYears'"
         ></tc-input>
       </tc-field>
@@ -129,11 +128,11 @@
 
       <tc-field [checkbox]="true">
         <tc-input [type]="'checkbox'"
-                  [id]="'incomplete'"
+                  id="incomplete"
                   [value]="true"
                   [formControlName]="'incomplete'"
         ></tc-input>
-        <tc-label [for]="'incomplete'">
+        <tc-label for="incomplete">
           Not completed
         </tc-label>
       </tc-field>

@@ -14,12 +14,12 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Edit Survey'"
+<tc-modal heading="Edit Survey"
           [showClose]="true"
           [showCancel]="true"
           [disableAction]="candidateForm.invalid || loading || saving"
           (onAction)="onSave()"
-          [actionText]="'Save'"
+          actionText="Save"
 >
 
   <tc-loading [loading]="loading"></tc-loading>
@@ -46,11 +46,11 @@
       </tc-field>
 
       <tc-field class="mb-4">
-        <tc-label [for]="'surveyComment'">
+        <tc-label for="surveyComment">
           Comment
         </tc-label>
         <tc-input [type]="'text'"
-                  [id]="'surveyComment'"
+                  id="surveyComment"
                   [formControlName]="'surveyComment'"
         ></tc-input>
       </tc-field>

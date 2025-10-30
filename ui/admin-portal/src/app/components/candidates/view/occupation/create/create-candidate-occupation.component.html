@@ -14,10 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Add Candidate Occupation'"
+<tc-modal heading="Add Candidate Occupation"
           [showClose]="true"
           [disableAction]="form.invalid || saving"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="onSave()"
           [showCancel]="true"
 >
@@ -38,7 +38,7 @@
 
         <div class="col-12">
           <tc-field class="mb-3">
-            <tc-label [for]="'occupationId'">
+            <tc-label for="occupationId">
               Occupation
             </tc-label>
             <ng-select class="tc-select"
@@ -59,13 +59,13 @@
 
         <div class="col-12">
           <tc-field class="mb-3">
-            <tc-label [for]="'yearsExperience'">
+            <tc-label for="yearsExperience">
               Years Experience
             </tc-label>
             <tc-input [type]="'number'"
                       [min]="0"
-                      [name]="'yearsExperience'"
-                      [id]="'yearsExperience'"
+                      name="yearsExperience"
+                      id="yearsExperience"
                       [formControlName]="'yearsExperience'"
             ></tc-input>
           </tc-field>

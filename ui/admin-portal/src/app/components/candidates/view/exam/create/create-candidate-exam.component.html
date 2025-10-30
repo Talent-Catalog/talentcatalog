@@ -14,11 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Add Exam'"
+<tc-modal heading="Add Exam"
           [showClose]="true"
           [disableAction]="candidateForm.invalid || loading || saving"
           (onAction)="onSave()"
-          [actionText]="'Save'"
+          actionText="Save"
           [showCancel]="true"
 >
 
@@ -34,7 +34,7 @@
 
       <!-- Exam -->
       <tc-field class="mb-4">
-        <tc-label [for]="'exam'">
+        <tc-label for="exam">
           Exam
         </tc-label>
         <ng-select class="tc-select"
@@ -51,11 +51,11 @@
       <!-- OtherExam NAME -->
       <ng-container *ngIf="isOtherExam">
         <tc-field class="mb-4">
-          <tc-label [for]="'otherExam'">
+          <tc-label for="otherExam">
             Other Exam Name
           </tc-label>
           <tc-input [type]="'text'"
-                    [id]="'otherExam'"
+                    id="'otherExam'"
                     [formControlName]="'otherExam'"
           ></tc-input>
         </tc-field>
@@ -64,10 +64,10 @@
       <!-- Score -->
       <ng-container *ngIf="hasSelectedExam">
         <tc-field class="mb-4">
-          <tc-label [for]="'score'">Score
+          <tc-label for="score">Score
           </tc-label>
           <app-ielts-score-validation
-            [id]="'score'"
+            id="score"
             [control]="candidateForm.controls.score"
             [examType]="candidateForm.controls.exam.value">
           </app-ielts-score-validation>
@@ -76,7 +76,7 @@
 
       <!-- Year -->
       <tc-field class="mb-4">
-        <tc-label [for]="'year'">
+        <tc-label for="year">
           In what year did you take the test?
         </tc-label>
         <ng-select class="tc-select"
@@ -90,7 +90,7 @@
 
       <!-- Notes -->
       <tc-field class="mb-4">
-        <tc-label [for]="'notes'">
+        <tc-label for="notes">
           Notes
         </tc-label>
         <tc-textarea [id]="'notes'"

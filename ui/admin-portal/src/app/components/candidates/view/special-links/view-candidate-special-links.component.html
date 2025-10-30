@@ -22,7 +22,7 @@
   <tc-card-header>
     Special links
     <div class="d-flex gap-2 justify-content-end" *ngIf="editable">
-      <tc-button type="outline"
+      <tc-button [type]="'outline'"
                  [color]="'primary'"
                  [size]="'sm'"
                  *ngIf="canAccessSalesforce()"

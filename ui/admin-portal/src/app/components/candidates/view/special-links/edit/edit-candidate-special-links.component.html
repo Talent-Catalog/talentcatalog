@@ -14,11 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Edit Candidate\'s Special Links'"
+<tc-modal heading="Edit Candidate's Special Links"
           [showClose]="true"
           [showCancel]="true"
           [disableAction]="candidateForm.invalid || loading || saving"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="onSave()"
 >
 
@@ -32,56 +32,56 @@
 
     <form [formGroup]="candidateForm">
       <tc-field class="mb-4">
-        <tc-label [for]="'linkedInLink'">
+        <tc-label for="linkedInLink">
           LinkedIn Profile
         </tc-label>
         <div>
           <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
         </div>
         <tc-input [type]="'text'"
-                  [id]="'linkedInLink'"
+                  id="linkedInLink"
                   [formControlName]="'linkedInLink'"
                   [placeholder]="'https://www.linkedin.com/in/...'"
         ></tc-input>
       </tc-field>
 
       <tc-field class="mb-4">
-        <tc-label [for]="'folderlink'">
+        <tc-label for="folderlink">
           Google Docs Folder
         </tc-label>
         <div>
           <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
         </div>
         <tc-input [type]="'text'"
-                  [id]="'folderlink'"
+                  id="folderlink"
                   [formControlName]="'folderlink'"
                   [placeholder]="'https://drive.google.com/drive/folders/...'"
         ></tc-input>
       </tc-field>
 
       <tc-field class="mb-4">
-        <tc-label [for]="'sflink'">
+        <tc-label for="sflink">
           Salesforce Contact Page
         </tc-label>
         <div>
           <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
         </div>
         <tc-input [type]="'text'"
-                  [id]="'sflink'"
+                  id="sflink"
                   [formControlName]="'sflink'"
-               [placeholder]="sfUrlPlaceholder + '...'"
+                  [placeholder]="sfUrlPlaceholder + '...'"
         ></tc-input>
       </tc-field>
 
       <tc-field class="mb-4">
-        <tc-label [for]="'videolink'">
+        <tc-label for="videolink">
           One way video
         </tc-label>
         <div>
           <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
         </div>
         <tc-input [type]="'text'"
-                  [id]="'videolink'"
+                  id="videolink"
                   [formControlName]="'videolink'"
                   [placeholder]="'https://hire.li/...'"
         ></tc-input>

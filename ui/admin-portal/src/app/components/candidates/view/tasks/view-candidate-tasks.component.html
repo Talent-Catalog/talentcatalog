@@ -90,8 +90,8 @@
             <i class="fas fa-edit fa-sm"></i>
           </tc-button>
           <tc-button (onClick)="deleteTaskAssignment(ta)"
-                     type="plain"
-                     color="gray"
+                     [type]="'plain'"
+                     [color]="'gray'"
           >
             <i class="fas fa-trash fa-sm"></i>
           </tc-button>
