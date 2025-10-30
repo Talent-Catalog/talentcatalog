@@ -39,21 +39,27 @@
     </div>
     <!--  Submission lists are meant to be collaborative - no 'Fixed?' option for those  -->
     <div *ngIf="!isSubmissionList">
-      <div class="mb-3">
-        <tc-field [checkbox]="true">
-          <tc-input [type]="'checkbox'" formControlName="fixed" [id]="'fixed'"></tc-input>
-          <tc-label [for]="'fixed'">
-            Fixed?
-          </tc-label>
-          <button class="tool-tip-button"
-                  triggers="click"
-                  ngbTooltip="Prevent other users from making changes"
-                  placement="right">
-            <i class="fa-regular fa-circle-question fa-xs"></i>
-          </button>
-        </tc-field>
-      </div>
+
+      <tc-field [checkbox]="true">
+        <tc-input [type]="'checkbox'"
+                  formControlName="fixed"
+                  [id]="'fixed'"
+        ></tc-input>
+        <tc-label [for]="'fixed'">
+          Fixed?
+        </tc-label>
+        <tc-button class="tool-tip-button"
+                   [type]="'plain'"
+                   triggers="click"
+                   ngbTooltip="Prevent other users from making changes"
+                   placement="right"
+        >
+          <i class="fa-regular fa-circle-question fa-xs"></i>
+        </tc-button>
+      </tc-field>
+
     </div>
+
   </form>
 
 </tc-modal>
