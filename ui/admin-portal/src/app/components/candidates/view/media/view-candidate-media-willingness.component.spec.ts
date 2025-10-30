@@ -59,7 +59,7 @@ describe('ViewCandidateMediaWillingnessComponent', () => {
   it('should show edit button when editable is true', () => {
     component.editable = true;
     fixture.detectChanges();
-    const editButton = fixture.debugElement.query(By.css('.btn-secondary'));
+    const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
     expect(editButton).toBeTruthy();
   });
 
