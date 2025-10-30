@@ -25,8 +25,8 @@ import lombok.Setter;
 /**
  * This names a type of form that a candidate may fill out.
  * <p>
- *     Note that the actual detail of the form is defined in Entity classes which subclass
- *     {@link CandidateFormInstance}.
+ *     Note that the actual detail of the form is defined in classes which subclass
+ *     {@link CandidateFormInstanceHelper}.
  * </p>
  */
 @Getter
