@@ -241,7 +241,6 @@ import {
   ViewFormTaskComponent
 } from './components/profile/view/tab/tasks/task/form/view-form-task.component';
 import {MyFirstFormComponent} from './components/form/my-first-form/my-first-form.component';
-import {MySecondFormComponent} from './components/form/my-second-form/my-second-form.component';
 import {
   TravelDocFormComponent
 } from './components/form/italy-travel-document-form/travel-doc-form.component';
@@ -333,7 +332,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     ShowTermsComponent,
     ViewFormTaskComponent,
     MyFirstFormComponent,
-    MySecondFormComponent,
     TravelDocFormComponent,
   ],
   imports: [
