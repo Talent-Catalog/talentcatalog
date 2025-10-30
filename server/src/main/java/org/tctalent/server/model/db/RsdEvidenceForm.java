@@ -16,19 +16,22 @@
 
 package org.tctalent.server.model.db;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidatePropertyService;
+import org.tctalent.server.service.db.CandidateService;
 
 /**
  * Candidate form that captures refugee status determination evidence details.
  */
-@Entity
-@Table(name = "candidate_form_instance")
-public class RsdEvidenceForm extends CandidateFormInstance {
+public class RsdEvidenceForm extends CandidateFormInstanceHelper {
   private static final String REFUGEE_STATUS_PROPERTY = "refugeeStatus";
   private static final String DOCUMENT_TYPE_PROPERTY = "documentType";
   private static final String DOCUMENT_NUMBER_PROPERTY = "documentNumber";
 
+  public RsdEvidenceForm(String formName, AuthService authService,
+      CandidateService candidateService, CandidatePropertyService propertyService) {
+    super(formName, authService, candidateService, propertyService);
+  }
   @Override
   public String getFormName() {
     return "RsdEvidenceForm";
@@ -60,3 +63,4 @@ public class RsdEvidenceForm extends CandidateFormInstance {
     setProperty(DOCUMENT_NUMBER_PROPERTY, documentNumber);
   }
 }
+

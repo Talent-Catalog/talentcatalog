@@ -26,13 +26,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.exception.InvalidSessionException;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.RsdEvidenceForm;
 import org.tctalent.server.request.form.RsdEvidenceFormData;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateFormInstanceService;
+import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -42,33 +39,33 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class RsdEvidenceFormPortalApi {
 
   private final AuthService authService;
-  private final CandidateFormInstanceService formService;
   private final CandidateService candidateService;
+  private final CandidatePropertyService candidatePropertyService;
+
 
   @PostMapping
   @NotNull
   public Map<String, Object> createOrUpdate(@Valid @RequestBody RsdEvidenceFormData request) {
-    Candidate candidate = getLoggedInCandidate();
-    RsdEvidenceForm form = formService.createOrUpdateRsdEvidenceForm(candidate, request);
+
+    RsdEvidenceForm form = new RsdEvidenceForm(
+        "RsdEvidenceForm", authService, candidateService, candidatePropertyService);
+
+    form.setRefugeeStatus(request.getRefugeeStatus());
+    form.setDocumentType(request.getDocumentType());
+    form.setDocumentNumber(request.getDocumentNumber());
+    form.save();
+
     return rsdEvidenceFormDto().build(form);
   }
 
   @GetMapping
   @NotNull
   public Map<String, Object> get() {
-    Candidate candidate = getLoggedInCandidate();
-    RsdEvidenceForm form = formService.getRsdEvidenceForm(candidate)
-        .orElseThrow(() -> new NoSuchObjectException("No RsdEvidenceForm found"));
+    RsdEvidenceForm form = new RsdEvidenceForm(
+        "RsdEvidenceForm", authService, candidateService, candidatePropertyService);
     return rsdEvidenceFormDto().build(form);
   }
 
-  private Candidate getLoggedInCandidate() {
-    Long loggedInCandidateId = authService.getLoggedInCandidateId();
-    if (loggedInCandidateId == null) {
-      throw new InvalidSessionException("Not logged in");
-    }
-    return candidateService.getCandidate(loggedInCandidateId);
-  }
 
   private DtoBuilder rsdEvidenceFormDto() {
     return new DtoBuilder()
@@ -77,3 +74,4 @@ public class RsdEvidenceFormPortalApi {
         .add("documentNumber");
   }
 }
+
