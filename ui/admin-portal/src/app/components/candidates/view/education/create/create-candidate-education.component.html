@@ -14,11 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Add Education'"
+<tc-modal heading="Add Education"
           [showClose]="true"
           [showCancel]="true"
           (onAction)="onSave()"
-          [actionText]="'Save'"
+          actionText="Save"
           [disableAction]="candidateForm.invalid || loading || saving"
 >
 
@@ -34,7 +34,7 @@
 
       <!-- EDUCATION TYPE -->
       <tc-field class="mb-4">
-        <tc-label [for]="'educationType'">
+        <tc-label for="educationType">
           Education Type
         </tc-label>
         <ng-select id="educationType"
@@ -69,18 +69,18 @@
 
       <!-- COURSE NAME -->
       <tc-field class="mb-4">
-        <tc-label [for]="'courseName'">
+        <tc-label for="courseName">
           Course Name
         </tc-label>
         <tc-input [type]="'text'"
-                  [id]="'courseName'"
+                  id="courseName"
                   [formControlName]="'courseName'"
         ></tc-input>
       </tc-field>
 
       <!-- INSTITUTION NAME -->
       <tc-field class="mb-4">
-        <tc-label [for]="'institution'">
+        <tc-label for="institution">
           Institution
         </tc-label>
         <tc-input [type]="'text'"
@@ -107,19 +107,18 @@
 
       <!-- COURSE LENGTH -->
       <tc-field class="mb-4">
-        <tc-label [for]="'lengthOfCourseYears'">
+        <tc-label for="lengthOfCourseYears">
           Length of Course Years
         </tc-label>
         <tc-input [type]="'number'"
-                  [placeholder]="''"
-                  [id]="'lengthOfCourseYears'"
+                  id="lengthOfCourseYears"
                   [formControlName]="'lengthOfCourseYears'"
         ></tc-input>
       </tc-field>
 
       <!-- Year -->
       <tc-field class="mb-4">
-        <tc-label [for]="'yearCompleted'">
+        <tc-label for="yearCompleted">
           Year of completion
         </tc-label>
         <ng-select id="yearCompleted"
@@ -132,11 +131,11 @@
 
       <tc-field [checkbox]="true">
         <tc-input [type]="'checkbox'"
-                  [id]="'incomplete'"
+                  id="incomplete"
                   [value]="true"
                   [formControlName]="'incomplete'"
         ></tc-input>
-        <tc-label [for]="'incomplete'">
+        <tc-label for="incomplete">
           Not completed
         </tc-label>
       </tc-field>

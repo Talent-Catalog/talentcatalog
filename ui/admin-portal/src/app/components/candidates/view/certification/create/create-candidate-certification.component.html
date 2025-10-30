@@ -14,10 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Add Certification'"
+<tc-modal heading="Add Certification"
           [showClose]="true"
           [disableAction]="candidateForm.invalid || loading || saving"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="onSave()"
           [showCancel]="true"
 >
@@ -34,32 +34,32 @@
 
       <!-- COURSE NAME -->
       <tc-field class="mb-4">
-        <tc-label [for]="'name'">
+        <tc-label for="name">
           Course Name
         </tc-label>
         <tc-input [type]="'text'"
-                  [id]="'name'"
+                  id="name"
                   [formControlName]="'name'"
         ></tc-input>
       </tc-field>
 
       <!-- INSTITUTION NAME -->
       <tc-field class="mb-4">
-        <tc-label [for]="'institution'">
+        <tc-label for="institution">
           City
         </tc-label>
         <tc-input [type]="'text'"
-                  [id]="'institution'"
+                  id="institution"
                   [formControlName]="'institution'"
         ></tc-input>
       </tc-field>
 
       <!-- DATE OF COMPLETION -->
       <tc-field class="mb-4">
-        <tc-label [for]="'dateCompleted'">
+        <tc-label for="dateCompleted">
           Date of Completion
         </tc-label>
-        <tc-date-picker [id]="'dateCompleted'"
+        <tc-date-picker id="dateCompleted"
                         [control]="candidateForm.controls.dateCompleted"
         ></tc-date-picker>
       </tc-field>

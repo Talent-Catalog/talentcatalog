@@ -18,7 +18,7 @@
           [showClose]="true"
           [disableAction]="candidateForm.invalid || loading || saving"
           [showCancel]="true"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="onSave()"
 >
 
@@ -32,10 +32,10 @@
 
     <form [formGroup]="candidateForm">
       <div class="mb-3">
-        <tc-label [for]="'additionalInfo'">
+        <tc-label for="'additionalInfo'">
           Additional Information
         </tc-label>
-        <tc-textarea [id]="'additionalInfo'"
+        <tc-textarea id="additionalInfo"
                      [formControlName]="'additionalInfo'"
         ></tc-textarea>
       </div>
