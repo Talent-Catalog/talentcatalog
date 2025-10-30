@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
+import {CvText} from "../../../../../model/cv-text";
 
 @Component({
   selector: 'app-candidate-cv-text-tab',
@@ -10,17 +11,26 @@ import {CandidateAttachmentService} from "../../../../../services/candidate-atta
 export class CandidateCvTextTabComponent implements OnInit {
   @Input() candidate: Candidate;
   cvText: string;
+  error: string;
 
   constructor(private candidateAttachmentService: CandidateAttachmentService) {
   }
 
   ngOnInit(): void {
-    this.candidateAttachmentService.getCandidateCvText(this.candidate).subscribe(
+    this.error = null;
+    this.candidateAttachmentService.getCandidateCvText(this.candidate?.id).subscribe(
       {
-        next: (cvText: string) => {this.cvText = cvText;},
-        error: (error) => {},
+        next: (cvsText: CvText[]) => {this.cvText = this.concatenateCvText(cvsText);},
+        error: (error) => {this.error = error;},
       }
     )
   }
 
+  private concatenateCvText(cvsText: CvText[]): string {
+    let s = "";
+    if (cvsText && cvsText.length > 0) {
+      s = cvsText.map((cvText) => cvText.text).join('||\n');
+    }
+    return s;
+  }
 }
