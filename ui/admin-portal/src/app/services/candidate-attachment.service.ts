@@ -49,9 +49,12 @@ export interface ListByUploadTypeRequest {
 export class CandidateAttachmentService {
 
   private apiUrl = environment.apiUrl + '/candidate-attachment';
-  s3BucketUrl = environment.s3BucketUrl;
 
   constructor(private http: HttpClient) {}
+
+  getCandidateCVText(candidateId: number): Observable<String> {
+    return this.http.get<String>(`${this.apiUrl}/cv-text/${candidateId}`);
+  }
 
   search(request: SearchCandidateAttachmentsRequest): Observable<CandidateAttachment[]> {
     return this.http.post<CandidateAttachment[]>(`${this.apiUrl}/search`, request);
