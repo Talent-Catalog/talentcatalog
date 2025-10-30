@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
-import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
-import {CandidateVisaJobCheck} from "../../../../../model/candidate";
+package org.tctalent.server.casi.domain.model;
 
-@Component({
-  selector: 'app-visa-final-assessment',
-  templateUrl: './visa-final-assessment.component.html',
-  styleUrls: ['./visa-final-assessment.component.scss']
-})
-export class VisaFinalAssessmentComponent extends IntakeComponentTabBase {
-  @Input() selectedIndex: number;
-  @Input() visaCheckRecord: CandidateVisaJobCheck;
-  @Input() selectedJobCheck: CandidateVisaJobCheck;
+/**
+ * Enumeration of service providers.
+ *
+ * @author sadatmalik
+ */
+public enum ServiceProvider {
+  DUOLINGO
 }

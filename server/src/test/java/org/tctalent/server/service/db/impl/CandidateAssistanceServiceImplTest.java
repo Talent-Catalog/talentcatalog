@@ -67,7 +67,7 @@ import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.util.PersistenceContextHelper;
 
 @ExtendWith(MockitoExtension.class)
-class CandidateServiceImplTest {
+class CandidateAssistanceServiceImplTest {
     private User user;
     private User testUser2;
     private Candidate candidate;
