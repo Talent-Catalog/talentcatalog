@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<button class="btn btn-sm btn-secondary" (click)="exportAsPdf(idToExport)" [disabled]="saving">
+<tc-button color="secondary" size="sm" (onClick)="exportAsPdf(idToExport)" [disabled]="saving">
   <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
   Export PDF
-</button>
+</tc-button>

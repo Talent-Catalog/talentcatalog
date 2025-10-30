@@ -18,6 +18,7 @@
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/mixins";
 @import "bootstrap/scss/buttons";
+@import "src/scss/support-colors";
 
 @mixin tag($theme: Dark, $text: White) {
   background-color: $theme;
@@ -31,9 +32,9 @@
 }
 
 .tag-light {
-   @include tag($theme: #d8d8d8, $text: $accent1);
+   @include tag($theme: color(primary,300), $text: color(primary,800));
 }
 
 .tag-danger {
-  @include tag($theme: #c77e7e, $text: $accent1)
+  @include tag($theme: color(red,200), $text: color(red,500))
 }
