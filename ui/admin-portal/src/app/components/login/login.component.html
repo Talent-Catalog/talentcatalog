@@ -15,12 +15,11 @@
   -->
 
 <div class="background-image-wrapper" [ngStyle]="{'background-image': backgroundImage}"></div>
-<img [src]="loginImage" alt="Login" class="login-logo">
-<form [formGroup]="loginForm" (submit)="login()">
-  <tc-alert type="danger" *ngIf="error">
-    {{error}}
-  </tc-alert>
+<img [src]="loginImage" alt="Login">
+<tc-loading [loading]="loading"></tc-loading>
+<tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
+<form *ngIf="!loading" [formGroup]="loginForm" (submit)="login()" class="mt-3">
   <tc-fieldset>
     <tc-field>
       <tc-input type="text" formControlName="username"
@@ -35,13 +34,7 @@
                 placeholder="Code shown on your phone's authenticator app"></tc-input>
     </tc-field>
     <tc-button [disabled]="loading || !loginForm.valid" color="secondary" size="lg" class="align-self-center">
-      <span *ngIf="!loading">Login</span>
-
-      <div class="d-flex justify-content-center" *ngIf="loading">
-        <div class="spinner-border" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
+      Login
     </tc-button>
   </tc-fieldset>
 
