@@ -18,11 +18,16 @@
    target="_blank"
    (click)="openCVs()"
    class="cv-icon"
-><tc-icon [color]="color"
+>
+  <tc-icon [color]="color"
            [size]="size"
-           [ariaLabel]="'Opens/DLs uploaded CV(s)'">
-    <i class="fas fa-address-card" title="Opens/DLs uploaded CV(s)"></i>
+           [ariaLabel]="'Opens/DLs uploaded CV(s)'"
+  >
+    <i class="fas fa-address-card" title="Open/download uploaded CV(s)"></i>
   </tc-icon>
+  <span *ngIf="showLabel">
+    Open/download uploaded CV(s)
+  </span>
 </a>
 <span *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
