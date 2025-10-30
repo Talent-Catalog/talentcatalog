@@ -115,7 +115,8 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     event.stopPropagation(); // Stop the click event from opening/closing the accordion
     const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
+      size: "xl"
     });
 
     editCandidateModal.componentInstance.candidate = this.candidate;
