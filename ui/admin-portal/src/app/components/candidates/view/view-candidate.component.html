@@ -146,7 +146,23 @@
       </div>
     </div>
 
-    <div class="col-sm-4">
+
+    <div class="col-sm-5">
+      <div *ngIf="isEditable()"
+           class="input-group status-editor ms-auto"
+      >
+        <input type="text"
+               class="form-control"
+               id="status"
+               title="{{candidate.candidateMessage}}"
+               value="{{candidate.status | titlecase}}"
+               disabled
+        >
+        <button class="btn btn-sm btn-secondary edit-status-btn" (click)="editCandidate()">
+          <i class="fas fa-edit fa-sm"></i>
+        </button>
+      </div>
+
       <app-candidate-shareable-notes
         [candidate]="candidate"
         [editable] = "isEditable()"

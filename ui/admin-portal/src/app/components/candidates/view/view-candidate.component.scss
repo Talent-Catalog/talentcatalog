@@ -15,6 +15,7 @@
  */
 
 @import "src/scss/variables";
+@import "../../../../scss/color-mixins";
 
 .candidate-notes-panel {
   display: flex;
@@ -57,4 +58,24 @@
   top: 30px;
   position: relative;
   text-align: end;
+}
+
+.edit-status-btn.btn-secondary {
+  @include background-color-secondary;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  &:focus,
+  &:active,
+  &:focus-visible {
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.input-group.status-editor {
+  margin-bottom: 16px;
+  width: 40%;
 }
