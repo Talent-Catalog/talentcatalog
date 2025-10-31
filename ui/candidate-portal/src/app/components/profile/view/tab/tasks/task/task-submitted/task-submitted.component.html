@@ -1,0 +1,29 @@
+<div class="modal-content">
+  <div class="modal-header">
+<!--    todo translate -->
+    <h4 class="modal-title">Task Submitted</h4>
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            (click)="stayOnTaskClick()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <!-- todo translate -->
+<!--    <h5>{{ 'TRANSLATION KEY' | translate }}</h5>-->
+    <p>You can return to your task list or stay here to review and edit your submission.</p>
+    <button class="btn btn-primary"
+            (click)="returnToTasksClick()"
+    >
+<!--      todo translate-->
+      Return to Tasks
+    </button>
+    <button class="btn btn-secondary"
+            (click)="stayOnTaskClick()"
+    >
+<!--      todo translate -->
+      Stay on Task
+    </button>
+  </div>
+</div>

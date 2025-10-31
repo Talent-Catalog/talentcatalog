@@ -115,8 +115,10 @@
     </div>
   </section>
 
-  <button class="btn btn-primary mt-2" type="submit"
-          [disabled]="form.invalid || form.pristine">
+  <button class="btn btn-primary mt-2"
+          type="submit"
+          [disabled]="form.invalid || form.pristine"
+  >
     {{ 'TASKS.TASK.SUBMIT' | translate }}
     <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
   </button>
