@@ -41,10 +41,10 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 })
 export class TcRadioComponent implements
   ControlValueAccessor {
-  @Input() id!: string;
-  @Input() name!: string;
-  @Input() value!: string | number | boolean;
-  @Input() label!: string;
+  @Input() id: string;
+  @Input() name: string;
+  @Input() value: string | number | boolean;
+  @Input() label: string;
 
   /** Emits whenever the user changes the selection */
   @Output() change = new EventEmitter<string | number | boolean>();

@@ -20,7 +20,7 @@ import {TcRadioComponent} from './tc-radio.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {By} from "@angular/platform-browser";
 
-fdescribe('TcRadioComponent', () => {
+describe('TcRadioComponent', () => {
   let component: TcRadioComponent;
   let fixture: ComponentFixture<TcRadioComponent>;
 
