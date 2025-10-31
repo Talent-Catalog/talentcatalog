@@ -34,6 +34,7 @@
   .candidate-name-container {
     display: flex;
     align-items: center;
+
   }
 }
 
@@ -78,4 +79,9 @@
 .input-group.status-editor {
   margin-bottom: 16px;
   width: 40%;
+}
+
+tc-dropdown-button {
+  position: relative;
+  top: -0.2rem;
 }
