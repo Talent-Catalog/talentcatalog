@@ -14,36 +14,33 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.api;
+package org.tctalent.server.model.db;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
- * Skill name in a given language.
+ * Entity corresponding to imported English language ONET tech skills.
  * <p>
- * Note that the same skill can have multiple names (ie aliases) even in the same languages.
+ * We ignore fields that are not used in the application.
+ * <p>
+ * This is populated from the
+ * <a href="https://www.onetcenter.org/database.html#t2">O*NET Technology Skills text (CSV) file</a>
+ *
  * @author John Cameron
  */
+@Entity
+@Table(name = "skills_tech_onet_en")
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode(of = {"lang", "name"})
-@AllArgsConstructor
-public class SkillName {
+public class SkillsTechOnetEn implements Serializable {
+    @Id
+    private long id;
 
-    /**
-     * Language code of the skill name. eg lang = "en" for English.
-     */
-    private String lang;
+    private String example;
 
-    /**
-     * A name for the skill in the language specified by languageCode.
-     * <p>
-     * Note that a skill may have multiple names (aliases) even within a given language.
-     */
-    private String name;
 }
