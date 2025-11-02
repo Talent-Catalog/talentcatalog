@@ -1,0 +1,93 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<!-- Floating Chatbot Icon -->
+<div class="chatbot-icon" 
+     (click)="toggleChatbot()"
+     [attr.aria-label]="isOpen ? 'Close chatbot' : 'Open chatbot'"
+     role="button"
+     tabindex="0"
+     (keydown.enter)="toggleChatbot()"
+     (keydown.space)="toggleChatbot()">
+  <fa-icon [icon]="isOpen ? 'times' : 'message'"></fa-icon>
+</div>
+
+<!-- Chatbot Panel -->
+<div class="chatbot-panel" 
+     [class.open]="isOpen"
+     role="dialog"
+     aria-labelledby="chatbot-title">
+
+  <!-- Panel Header -->
+  <div class="chatbot-header">
+    <h3 id="chatbot-title" class="chatbot-title">
+      <fa-icon icon="message" class="chatbot-title-icon"></fa-icon>
+      Talent Catalog Assistant
+    </h3>
+    <button class="chatbot-close-btn" 
+            (click)="closeChatbot()"
+            aria-label="Close chatbot"
+            type="button">
+      <fa-icon icon="times"></fa-icon>
+    </button>
+  </div>
+
+  <!-- Messages Container -->
+  <div class="chatbot-messages" 
+       #messageContainer
+       role="log"
+       aria-live="polite"
+       aria-label="Chat messages">
+    <div *ngFor="let message of messages" 
+         class="message"
+         [class.user-message]="message.sender === 'user'"
+         [class.bot-message]="message.sender === 'bot'">
+      <div class="message-content">
+        <div class="message-text" [innerHTML]="formatMessageText(message.message)"></div>
+        <div class="message-time">{{ formatTime(message.timestamp) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Area -->
+  <div class="chatbot-input">
+    <div class="input-group">
+      <textarea #messageInput
+                [(ngModel)]="messageText"
+                (keydown)="onKeyPress($event)"
+                [placeholder]="isUnavailable ? 'Chatbot is unavailable' : 'Type your message...'"
+                class="form-control chatbot-textarea"
+                rows="1"
+                aria-label="Type your message"
+                [disabled]="isUnavailable">
+      </textarea>
+      <button class="btn btn-primary chatbot-send-btn"
+              (click)="sendMessage()"
+              [disabled]="!messageText.trim() || isUnavailable"
+              aria-label="Send message"
+              type="button">
+        <fa-icon icon="paper-plane"></fa-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Backdrop -->
+<div class="chatbot-backdrop" 
+     *ngIf="isOpen"
+     (click)="closeChatbot()"
+     [class.show]="isOpen">
+</div>

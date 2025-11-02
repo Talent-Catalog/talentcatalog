@@ -1,6 +1,6 @@
 tc:
   cors:
-    urls: ${TC_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
+    urls: ${TC_CORS_URLS:http://localhost:4200,http://127.0.0.1:4200,http://localhost:4201,http://localhost:4202}
 
   destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
   partner-dbcopy-config: ${TC_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
@@ -257,6 +257,16 @@ duolingo:
   api:
     apiSecret: ${DUOLINGO_SECRET:}
     baseUrl: https://englishtest.duolingo.com/api/partner/2
+
+# Anthropic Claude API Configuration:
+# Contains the API key and configuration for Anthropic's Claude AI service.
+anthropic:
+  api:
+    apiKey: ${ANTHROPIC_API_KEY:}
+    baseUrl: https://api.anthropic.com
+    model: claude-haiku-4-5-20251001
+    maxTokens: 20000
+    temperature: 1.0
 
 #Support for in context language translation
 translation:

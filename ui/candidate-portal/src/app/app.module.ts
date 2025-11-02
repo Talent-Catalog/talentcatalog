@@ -131,6 +131,7 @@ import {
   faLink,
   faListCheck,
   faMessage,
+  faPaperPlane,
   faPlus,
   faQuestion,
   faQuestionCircle,
@@ -245,6 +246,7 @@ import {MySecondFormComponent} from './components/form/my-second-form/my-second-
 import {
   TravelDocFormComponent
 } from './components/form/italy-travel-document-form/travel-doc-form.component';
+import {ChatbotComponent} from './components/chatbot/chatbot.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -335,6 +337,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MyFirstFormComponent,
     MySecondFormComponent,
     TravelDocFormComponent,
+    ChatbotComponent,
   ],
   imports: [
     BrowserModule,
@@ -417,6 +420,7 @@ export class AppModule {
       faListCheck,
       faBriefcase,
       faMessage,
+      faPaperPlane,
       faHandshake,
       faEnvelope,
       faEnvelopeOpen,
