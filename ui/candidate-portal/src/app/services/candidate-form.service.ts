@@ -7,6 +7,7 @@ import {
   FamilyDocFormData,
   MyFirstFormData,
   MySecondFormData,
+  RsdEvidenceFormData,
   TravelDocFormData
 } from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
@@ -14,6 +15,9 @@ import {MySecondFormComponent} from "../components/form/my-second-form/my-second
 import {
   TravelDocFormComponent
 } from "../components/form/italy-travel-document-form/travel-doc-form.component";
+import {
+  RsdEvidenceFormComponent
+} from "../components/form/rsd-evidence-form/rsd-evidence-form.component";
 
 
 @Injectable({
@@ -27,7 +31,8 @@ export class CandidateFormService {
     'MyFirstForm': MyFirstFormComponent,
     'MySecondForm': MySecondFormComponent,
     'FamilyDocForm': FamilyDocFormComponent,
-    'TravelDocForm': TravelDocFormComponent
+    'TravelDocForm': TravelDocFormComponent,
+    'RsdEvidenceForm': RsdEvidenceFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
@@ -68,5 +73,13 @@ export class CandidateFormService {
 
   getFamilyDocsForm() {
     return this.http.get<FamilyDocFormData>(`${this.halApiUrl}/family-doc-form/FamilyDocForm`);
+  }
+
+  createOrUpdateRsdEvidenceForm(request: RsdEvidenceFormData): Observable<RsdEvidenceFormData> {
+    return this.http.post<RsdEvidenceFormData>(`${this.apiUrl}/rsd-evidence-form`, request);
+  }
+
+  getRsdEvidenceForm(): Observable<RsdEvidenceFormData> {
+    return this.http.get<RsdEvidenceFormData>(`${this.apiUrl}/rsd-evidence-form`);
   }
 }
