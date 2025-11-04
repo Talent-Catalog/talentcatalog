@@ -845,6 +845,10 @@ const ALL_FIELDS = {
       "VIEWHELP": null,
       "RETURN": null,
       "SUBMIT": null,
+      "SUBMITTED": null,
+      "SUBMITTED-PARA": null,
+      "STAY-TASK": null,
+      "RETURN-TASKS": null,
     }
   },
   "CANDIDATE-OPPS": {

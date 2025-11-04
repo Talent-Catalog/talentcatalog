@@ -1,7 +1,6 @@
 <div class="modal-content">
   <div class="modal-header">
-<!--    todo translate -->
-    <h4 class="modal-title">Response Submitted</h4>
+    <h4 class="modal-title">{{ 'TASKS.TASK.SUBMITTED' | translate }}</h4>
     <button type="button"
             class="btn-close"
             data-bs-dismiss="modal"
@@ -10,20 +9,16 @@
     ></button>
   </div>
   <div class="modal-body">
-    <!-- todo translate -->
-<!--    <h5>{{ 'TRANSLATION KEY' | translate }}</h5>-->
-    <p>You can return to the Tasks list or stay here to review and edit your submission.</p>
+    <p>{{ 'TASKS.TASK.SUBMITTED-PARA' | translate }}</p>
     <button class="btn btn-primary"
             (click)="returnToTasksClick()"
     >
-<!--      todo translate-->
-      Return to Tasks
+      {{ 'TASKS.TASK.RETURN-TASKS' | translate }}
     </button>
     <button class="btn btn-secondary"
             (click)="stayOnTaskClick()"
     >
-<!--      todo translate -->
-      Stay on Task
+      {{ 'TASKS.TASK.STAY-TASK' | translate }}
     </button>
   </div>
 </div>
