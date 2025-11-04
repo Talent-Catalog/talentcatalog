@@ -27,11 +27,9 @@
 
   <form [formGroup]="form">
 
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-      <input type="radio" class="btn-check" [formControlName]="'newList'" id="btnradio1" autocomplete="off" checked [value]="true">
-      <label class="btn btn-outline-secondary" for="btnradio1">New List</label>
-      <input type="radio" class="btn-check" [formControlName]="'newList'" id="btnradio2" autocomplete="off" [value]="false">
-      <label class="btn btn-outline-secondary" for="btnradio2">Existing List</label>
+    <div class="btn-group" role="group">
+      <tc-radio [formControlName]="'newList'" id="btnradio1" [value]="true" label="New List"></tc-radio>
+      <tc-radio [formControlName]="'newList'" id="btnradio2" [value]="false" label="Existing List"></tc-radio>
     </div>
 
     <hr>

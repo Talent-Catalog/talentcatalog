@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.CandidateAttachment;
+import org.tctalent.server.model.db.CvText;
 import org.tctalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tctalent.server.request.attachment.ListByUploadTypeRequest;
 import org.tctalent.server.request.attachment.SearchByIdCandidateAttachmentRequest;
@@ -51,6 +53,22 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class CandidateAttachmentAdminApi {
 
     private final CandidateAttachmentService candidateAttachmentService;
+
+    /**
+     * Get the text of any candidate cvs.
+     * @param candidateId Id of the candidate whose cv's we are requesting
+     * @return List of text of cvs. Maybe empty.
+     * @throws NoSuchObjectException if there is no such record with the given id
+     */
+    @GetMapping("cv-text/{id}")
+    @NotNull
+    List<CvText> getCandidateCvText(@PathVariable("id") long candidateId)
+        throws NoSuchObjectException {
+
+        List<CvText> cvTexts = candidateAttachmentService.listCandidateCvs(candidateId).stream()
+            .map(cv -> new CvText(cv.getId(), cv.getTextExtract())).toList();
+        return cvTexts;
+    }
 
     @PostMapping("search")
     public List<Map<String, Object>> search(@RequestBody SearchByIdCandidateAttachmentRequest request) {
