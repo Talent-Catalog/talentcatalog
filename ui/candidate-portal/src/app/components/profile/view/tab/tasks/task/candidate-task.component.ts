@@ -149,10 +149,12 @@ export class CandidateTaskComponent implements OnInit {
         this.saving = false;
       }
     )
+    this.openTaskSubmittedModal()
   }
 
   completedUploadTask($event: TaskAssignment) {
     this.selectedTask = $event;
+    this.openTaskSubmittedModal();
   }
 
   submitTask() {
