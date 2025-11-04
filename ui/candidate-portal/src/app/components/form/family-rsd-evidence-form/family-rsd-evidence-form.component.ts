@@ -1,30 +1,25 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {forkJoin, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
-import {TranslateService} from '@ngx-translate/core';
-
 import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
 import {
   FamilyDocFormData,
   FamilyRsdEvidenceEntry,
   FamilyRsdEvidenceFormData,
-  RelocatingFamilyMember
+  RelocatingFamilyMember,
+  RsdEvidenceDocumentType,
+  RsdRefugeeStatus,
 } from '../../../model/form';
-
-interface Option {
-  value: string;
-  label: string;
-}
 
 @Component({
   selector: 'app-family-rsd-evidence-form',
   templateUrl: './family-rsd-evidence-form.component.html',
   styleUrls: ['./family-rsd-evidence-form.component.scss'],
 })
-export class FamilyRsdEvidenceFormComponent implements
-  OnInit, ICandidateFormComponent<FamilyRsdEvidenceFormData> {
+export class FamilyRsdEvidenceFormComponent
+  implements OnInit, ICandidateFormComponent<FamilyRsdEvidenceFormData> {
 
   @Input() readOnly = false;
   @Input() candidate: any | null = null;
@@ -35,30 +30,19 @@ export class FamilyRsdEvidenceFormComponent implements
   submitting = false;
   loadingMembers = true;
 
-  readonly refugeeStatusOptions: Option[] = [
-    {value: 'Recognized by UNHCR', label: 'FAMILY_RSD.STATUS.UNHCR'},
-    {value: 'Recognized by host country', label: 'FAMILY_RSD.STATUS.HOST'},
-    {value: 'Pending', label: 'FAMILY_RSD.STATUS.PENDING'}
-  ];
+  RsdRefugeeStatus = RsdRefugeeStatus;
+  RsdEvidenceDocumentType = RsdEvidenceDocumentType;
 
-  readonly documentTypeOptions: Option[] = [
-    {value: 'UNHCR Certificate of Recognition', label: 'FAMILY_RSD.DOC_TYPE.UNHCR'},
-    {value: 'Host Country Refugee ID or Residence Permit', label: 'FAMILY_RSD.DOC_TYPE.HOST'},
-    {value: 'Registration Document from Official Refugee Camp',
-      label: 'FAMILY_RSD.DOC_TYPE.CAMP'}
-  ];
-
-  constructor(private fb: FormBuilder,
-              private candidateFormService: CandidateFormService,
-              private translate: TranslateService) {
-    this.registerLocalTranslations();
+  constructor(
+    private fb: FormBuilder,
+    private candidateFormService: CandidateFormService
+  ) {
   }
 
   ngOnInit(): void {
     this.form = this.fb.nonNullable.group({
-      members: this.fb.nonNullable.array([] as FormGroup[])
+      members: this.fb.nonNullable.array([] as FormGroup[]),
     });
-
     this.loadData();
   }
 
@@ -70,19 +54,6 @@ export class FamilyRsdEvidenceFormComponent implements
     return this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
   }
 
-  hasError(ctrl: AbstractControl | null, errorName: string): boolean {
-    return !this.readOnly && !!ctrl && ctrl.touched && ctrl.hasError(errorName);
-  }
-
-  removeDocument(ix: number): void {
-    const group = this.members.at(ix);
-    group.patchValue({
-      attachmentId: null,
-      attachmentName: '',
-      attachmentLocation: ''
-    });
-  }
-
   onSubmit(): void {
     if (this.form.invalid) {
       this.members.controls.forEach(ctrl => ctrl.markAllAsTouched());
@@ -92,25 +63,9 @@ export class FamilyRsdEvidenceFormComponent implements
     this.submitting = true;
     this.error = null;
 
-    const entries: FamilyRsdEvidenceEntry[] = this.members.controls.map(ctrl => {
-      const value = ctrl.getRawValue();
-      return {
-        memberKey: value.memberKey,
-        firstName: value.firstName,
-        lastName: value.lastName,
-        dateOfBirth: value.dateOfBirth,
-        displayName: value.displayName,
-        refugeeStatus: value.refugeeStatus,
-        documentType: value.documentType,
-        documentNumber: value.documentNumber,
-        attachmentId: value.attachmentId,
-        attachmentName: value.attachmentName,
-        attachmentLocation: value.attachmentLocation
-      } as FamilyRsdEvidenceEntry;
-    });
-
+    const entries: FamilyRsdEvidenceEntry[] = this.members.controls.map(ctrl => ctrl.getRawValue());
     const payload: FamilyRsdEvidenceFormData = {
-      familyRsdEvidenceJson: JSON.stringify(entries)
+      familyRsdEvidenceJson: JSON.stringify(entries),
     };
 
     this.candidateFormService.createOrUpdateFamilyRsdEvidenceForm(payload).subscribe({
@@ -123,7 +78,7 @@ export class FamilyRsdEvidenceFormComponent implements
       error: err => {
         this.error = err;
         this.submitting = false;
-      }
+      },
     });
   }
 
@@ -152,42 +107,40 @@ export class FamilyRsdEvidenceFormComponent implements
       error: err => {
         this.error = err;
         this.loadingMembers = false;
-      }
+      },
     });
   }
 
   private extractMembers(data: FamilyDocFormData | null | undefined): RelocatingFamilyMember[] {
-    if (!data?.familyMembersJson) {
-      return [];
-    }
+    if (!data?.familyMembersJson) return [];
     try {
       return JSON.parse(data.familyMembersJson) as RelocatingFamilyMember[];
-    } catch (e) {
-      console.error('Failed to parse relocating family members JSON', e);
+    } catch {
+      console.error('Failed to parse relocating family members JSON');
       return [];
     }
   }
 
   private parseEvidence(json?: string): Map<string, FamilyRsdEvidenceEntry> {
     const map = new Map<string, FamilyRsdEvidenceEntry>();
-    if (!json) {
-      return map;
-    }
+    if (!json) return map;
+
     try {
       const parsed = JSON.parse(json) as FamilyRsdEvidenceEntry[];
       parsed.forEach(entry => {
-        if (entry?.memberKey) {
-          map.set(entry.memberKey, entry);
-        }
+        if (entry?.memberKey) map.set(entry.memberKey, entry);
       });
-    } catch (e) {
-      console.error('Failed to parse family RSD evidence JSON', e);
+    } catch {
+      console.error('Failed to parse family RSD evidence JSON');
     }
     return map;
   }
 
-  private buildMemberGroup(member: RelocatingFamilyMember, key: string,
-                           existing?: FamilyRsdEvidenceEntry): FormGroup {
+  private buildMemberGroup(
+    member: RelocatingFamilyMember,
+    key: string,
+    existing?: FamilyRsdEvidenceEntry
+  ): FormGroup {
     const displayName = this.composeDisplayName(member);
     return this.fb.nonNullable.group({
       memberKey: [key],
@@ -197,7 +150,7 @@ export class FamilyRsdEvidenceFormComponent implements
       displayName: [existing?.displayName ?? displayName],
       refugeeStatus: [existing?.refugeeStatus ?? '', [Validators.required]],
       documentType: [existing?.documentType ?? '', [Validators.required]],
-      documentNumber: [existing?.documentNumber ?? '', [Validators.required, Validators.maxLength(30)]]
+      documentNumber: [existing?.documentNumber ?? '', [Validators.required, Validators.maxLength(30)]],
     });
   }
 
@@ -205,12 +158,7 @@ export class FamilyRsdEvidenceFormComponent implements
     const first = member.firstName?.trim() ?? '';
     const last = member.lastName?.trim() ?? '';
     const fullName = `${first} ${last}`.trim();
-    if (fullName) {
-      return fullName;
-    }
-    const relationship = member.relationship ?? '';
-    return relationship ? this.translate.instant('FAMILY_RSD.LABEL.MEMBER_GENERIC', {relationship})
-      : this.translate.instant('FAMILY_RSD.LABEL.MEMBER_FALLBACK');
+    return fullName || member.relationship || 'Unnamed Member';
   }
 
   private computeMemberKey(member: RelocatingFamilyMember): string {
@@ -218,48 +166,5 @@ export class FamilyRsdEvidenceFormComponent implements
     const last = (member.lastName ?? '').trim().toLowerCase();
     const dob = (member.dateOfBirth ?? '').trim();
     return `${first}|${last}|${dob}`;
-  }
-
-
-  private registerLocalTranslations(): void {
-    const payload = {
-      FAMILY_RSD: {
-        TITLE: 'Relocating family refugee ID evidence',
-        DESCRIPTION: 'Upload ID evidence and record refugee status details for each relocating family member.',
-        NO_MEMBERS: 'You have not listed any relocating family members yet. Please complete the family members form first.',
-        LABEL: {
-          MEMBER: 'Family member',
-          MEMBER_GENERIC: '{{relationship}} family member',
-          MEMBER_FALLBACK: 'Relocating family member',
-          REFUGEE_STATUS: 'Refugee status',
-          DOCUMENT_TYPE: 'Type of document',
-          DOCUMENT_NUMBER: 'Document number',
-          UPLOAD: 'Refugee ID upload',
-          UPLOADED_FILE: 'Uploaded file'
-        },
-        STATUS: {
-          UNHCR: 'Recognized by UNHCR',
-          HOST: 'Recognized by host country',
-          PENDING: 'Pending'
-        },
-        DOC_TYPE: {
-          UNHCR: 'UNHCR Certificate of Recognition',
-          HOST: 'Host Country Refugee ID or Residence Permit',
-          CAMP: 'Registration Document from Official Refugee Camp'
-        },
-        HELP: {
-          UPLOAD_HINT: 'Accepted formats: PDF, JPG, PNG. Maximum one file per family member.'
-        }
-      }
-    };
-
-    this.translate.setTranslation('en', payload, true);
-    const current = this.translate.currentLang;
-    const defaultLang = this.translate.getDefaultLang();
-    if (current && current !== 'en') {
-      this.translate.setTranslation(current, payload, true);
-    } else if (defaultLang && defaultLang !== 'en') {
-      this.translate.setTranslation(defaultLang, payload, true);
-    }
   }
 }
