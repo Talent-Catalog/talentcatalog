@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 /**
  * @component CardComponent
@@ -46,5 +46,5 @@ import {Component} from '@angular/core';
   styleUrls: ['./tc-card.component.scss']
 })
 export class TcCardComponent {
-
+  @Input() header: boolean = true;
 }

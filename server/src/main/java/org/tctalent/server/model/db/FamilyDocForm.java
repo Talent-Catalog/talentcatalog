@@ -19,48 +19,52 @@
  */
 package org.tctalent.server.model.db;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidatePropertyService;
+import org.tctalent.server.service.db.CandidateService;
 
 /**
- * Task 2 form: stores relocating family members (as JSON) and the "no eligible" toggle
- * using candidate properties, consistent with the MySecondForm approach.
+ * Task 2 form: stores relocating family members (as JSON) and the "no eligible" toggle using
+ * candidate properties, consistent with the MySecondForm approach.
  */
-@Entity
-@Table(name = "candidate_form_instance")
-public class FamilyDocForm extends CandidateFormInstance {
+public class FamilyDocForm extends CandidateFormInstanceHelper {
 
-  private static final String FAMILY_MEMBERS_JSON = "familyMembersJson";
-  private static final String NO_ELIGIBLE = "noEligibleFamilyMembers";
-  private static final String NO_ELIGIBLE_NOTES = "noEligibleNotes";
+    private static final String FAMILY_MEMBERS_JSON = "familyMembersJson";
+    private static final String NO_ELIGIBLE = "noEligibleFamilyMembers";
+    private static final String NO_ELIGIBLE_NOTES = "noEligibleNotes";
 
-  @Override
-  public String getFormName() {
-    return "FamilyDocForm";
-  }
+    public FamilyDocForm(String formName, AuthService authService,
+        CandidateService candidateService,
+        CandidatePropertyService propertyService) {
+        super(formName, authService, candidateService, propertyService);
+    }
 
-  public String getFamilyMembersJson() {
-    return getProperty(FAMILY_MEMBERS_JSON);
-  }
+    public String getFormName() {
+        return "FamilyDocForm";
+    }
 
-  public void setFamilyMembersJson(String json) {
-    setProperty(FAMILY_MEMBERS_JSON, json);
-  }
+    public String getFamilyMembersJson() {
+        return getProperty(FAMILY_MEMBERS_JSON);
+    }
 
-  public Boolean getNoEligibleFamilyMembers() {
-    String v = getProperty(NO_ELIGIBLE);
-    return v == null ? null : Boolean.valueOf(v);
-  }
+    public void setFamilyMembersJson(String json) {
+        setProperty(FAMILY_MEMBERS_JSON, json);
+    }
 
-  public void setNoEligibleFamilyMembers(Boolean value) {
-    setProperty(NO_ELIGIBLE, value == null ? null : value.toString());
-  }
+    public Boolean getNoEligibleFamilyMembers() {
+        String v = getProperty(NO_ELIGIBLE);
+        return v == null ? null : Boolean.valueOf(v);
+    }
 
-  public String getNoEligibleNotes() {
-    return getProperty(NO_ELIGIBLE_NOTES);
-  }
+    public void setNoEligibleFamilyMembers(Boolean value) {
+        setProperty(NO_ELIGIBLE, value == null ? null : value.toString());
+    }
 
-  public void setNoEligibleNotes(String notes) {
-    setProperty(NO_ELIGIBLE_NOTES, notes);
-  }
+    public String getNoEligibleNotes() {
+        return getProperty(NO_ELIGIBLE_NOTES);
+    }
+
+    public void setNoEligibleNotes(String notes) {
+        setProperty(NO_ELIGIBLE_NOTES, notes);
+    }
 }
