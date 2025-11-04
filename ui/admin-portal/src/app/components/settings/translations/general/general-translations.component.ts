@@ -848,7 +848,6 @@ const ALL_FIELDS = {
       "SUBMITTED": null,
       "SUBMITTED-PARA": null,
       "STAY-TASK": null,
-      "RETURN-TASKS": null,
     }
   },
   "CANDIDATE-OPPS": {
