@@ -247,6 +247,7 @@ public class CandidatePortalApi {
     private DtoBuilder partnerDto() {
         return new DtoBuilder()
             .add("name")
+            .add("notificationEmail")
             .add("websiteUrl")
             ;
     }
