@@ -33,6 +33,9 @@
           <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
           <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
         </tc-icon>
+        <tc-icon type="button" color="warning" size="lg" (click)="doSearchSkills()">
+          <i class="fas fa-search" title="Search skills"></i>
+        </tc-icon>
         <tc-dropdown class="ms-3" placement="bottom-start">
           <tc-dropdown-button type="solid" color="gray">
             <i class="fas fa-angle-down"></i>

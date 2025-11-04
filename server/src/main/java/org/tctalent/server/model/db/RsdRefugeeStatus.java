@@ -14,32 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.api;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.lang.NonNull;
+package org.tctalent.server.model.db;
 
 /**
- * Request to extract skills from a given text.
- *
- * @author John Cameron
+ * Refugee status values captured in the RSD evidence form.
  */
-@Getter
-@Setter
-@ToString
-public class ExtractSkillsRequest {
-
-    /**
-     * Language of the text to be scanned for skills - eg 'en' for English
-     */
-    @NonNull
-    private String lang;
-
-    /**
-     * The text to extract skills from.
-     */
-    @NonNull
-    private String text;
+public enum RsdRefugeeStatus {
+  RECOGNIZED_BY_UNHCR,
+  RECOGNIZED_BY_HOST_COUNTRY,
+  PENDING
 }

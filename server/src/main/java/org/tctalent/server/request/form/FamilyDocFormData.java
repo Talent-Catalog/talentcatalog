@@ -14,25 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.api;
+package org.tctalent.server.request.form;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
- * Response to a request to extract skills from a given text.
- *
- * @author John Cameron
+ * DTO for Family Document Form data exchange.
+ * Stores family member information and "no eligible" toggle/notes.
  */
 @Getter
 @Setter
-@ToString
-public class ExtractSkillsResponse {
-
-    /**
-     * Skill names extracted from the given text.
-     */
-    private List<String> skills;
+public class FamilyDocFormData {
+  private String familyMembersJson;
+  private Boolean noEligibleFamilyMembers;
+  private String noEligibleNotes;
 }

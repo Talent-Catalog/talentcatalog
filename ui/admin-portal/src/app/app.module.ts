@@ -835,6 +835,9 @@ import {
   ViewPrivacyPolicyInfoComponent
 } from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
 import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
+import {
+  CandidateCvTextTabComponent
+} from './components/candidates/view/tab/candidate-cv-text-tab/candidate-cv-text-tab.component';
 
 @NgModule({
   declarations: [
@@ -1172,7 +1175,8 @@ import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
     ChatMuteToggleButtonComponent,
     ViewPrivacyPolicyInfoComponent,
     PartnerDpaComponent,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    CandidateCvTextTabComponent
   ],
   imports: [
     BrowserModule,

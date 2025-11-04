@@ -14,32 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.api;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.lang.NonNull;
-
 /**
- * Request to extract skills from a given text.
- *
- * @author John Cameron
+ * Extracted text of a CV
  */
-@Getter
-@Setter
-@ToString
-public class ExtractSkillsRequest {
+export interface CvText {
+  /**
+   * Id of CV attachment
+   */
+  id: number;
 
-    /**
-     * Language of the text to be scanned for skills - eg 'en' for English
-     */
-    @NonNull
-    private String lang;
-
-    /**
-     * The text to extract skills from.
-     */
-    @NonNull
-    private String text;
+  /**
+   * Text extracted from CV
+   */
+  text: string;
 }
+
