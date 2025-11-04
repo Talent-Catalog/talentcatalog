@@ -231,7 +231,7 @@ import {
 import {
   DuolingoComponent
 } from './components/profile/view/tab/services/duolingo/duolingo.component';
-import {CasiHeaderComponent} from './components/common/casi-header/casi-header.component';
+import {TabHeaderComponent} from './components/common/tab-header/tab-header.component';
 import {TermsComponent} from './components/privacy-policy/terms.component';
 import {
   RegistrationSubmitComponent
@@ -328,7 +328,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServicesComponent,
     DuolingoCouponComponent,
     DuolingoComponent,
-    CasiHeaderComponent,
+    TabHeaderComponent,
     TermsComponent,
     RegistrationSubmitComponent,
     ShowTermsComponent,
