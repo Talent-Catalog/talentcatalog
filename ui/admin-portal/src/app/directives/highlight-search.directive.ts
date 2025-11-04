@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterContentChecked, Directive, ElementRef, OnDestroy, OnInit} from '@angular/core';
+import {AfterContentChecked, Directive, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
 import {SearchQueryService} from "../services/search-query.service";
 import {Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
@@ -28,6 +28,7 @@ import {takeUntil} from "rxjs/operators";
   selector: '[appHighlightSearch]'
 })
 export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContentChecked {
+  @Input() showHighlightsOnly: boolean = false;
   private destroy$ = new Subject<void>();
   private currentSearchTerms = [];
   private lastHighlight = '';
@@ -81,7 +82,7 @@ export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContent
 
     // First, collect all text nodes that contain the term
     while (node = walk.nextNode()) {
-      if (regex.test(node.nodeValue)) {
+      if (this.showHighlightsOnly || regex.test(node.nodeValue)) {
         textNodes.push(node);
       }
       regex.lastIndex = 0; // Reset regex lastIndex
@@ -113,18 +114,25 @@ export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContent
     let startIndex = 0;
     let match: RegExpExecArray;
 
+    const matches: RegExpExecArray[] = [];
+
     try {
       // Process matches in the text node
       while ((match = regex.exec(text))) {
 
-        // Add text before the match
-        if (match.index > startIndex) {
-          const beforeMatch = text.slice(startIndex, match.index);
-          docFrag.appendChild(document.createTextNode(beforeMatch));
+        matches.push(match);
+
+        if (!this.showHighlightsOnly) {
+          //Add text before the match
+          if (match.index > startIndex) {
+            const beforeMatch = text.slice(startIndex, match.index);
+            docFrag.appendChild(document.createTextNode(beforeMatch));
+          }
         }
 
         // Create and add a highlighted span for the match
-        const highlightSpan = document.createElement('span');
+        const highlightSpan = document.createElement(
+          this.showHighlightsOnly ? 'div' :'span');
         highlightSpan.className = 'highlight';
         highlightSpan.textContent = match[0];
         docFrag.appendChild(highlightSpan);
@@ -133,16 +141,20 @@ export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContent
         startIndex = match.index + match[0].length;
       }
 
-      // Add any remaining text after the last match
-      if (startIndex < text.length) {
-        const afterLastMatch = text.slice(startIndex);
-        docFrag.appendChild(document.createTextNode(afterLastMatch));
+      if (!this.showHighlightsOnly) {
+        // Add any remaining text after the last match
+        if (startIndex < text.length) {
+          const afterLastMatch = text.slice(startIndex);
+          docFrag.appendChild(document.createTextNode(afterLastMatch));
+        }
       }
 
       // Replace the original text node with the new content if there was a match
-      if (docFrag.hasChildNodes()) {
+      if (this.showHighlightsOnly || docFrag.hasChildNodes()) {
         node.parentNode.replaceChild(docFrag, node);
       }
+
+      console.log('matches', matches.length);
 
     } catch (error) {
       console.error('Failed to highlight search term: ', error);

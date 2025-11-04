@@ -14,25 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.api;
-
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 /**
- * Response to a request to extract skills from a given text.
- *
- * @author John Cameron
+ * Extracted text of a CV
  */
-@Getter
-@Setter
-@ToString
-public class ExtractSkillsResponse {
+export interface CvText {
+  /**
+   * Id of CV attachment
+   */
+  id: number;
 
-    /**
-     * Skill names extracted from the given text.
-     */
-    private List<String> skills;
+  /**
+   * Text extracted from CV
+   */
+  text: string;
 }
+
