@@ -16,13 +16,17 @@
 
 package org.tctalent.server.api.admin;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.service.api.ExtractSkillsRequest;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.SkillsService;
 
@@ -48,4 +52,8 @@ public class SkillAdminApi {
         return skillsService.getSkillNames(request, lang);
     }
 
+    @PostMapping("extract_skills")
+    public List<SkillName> extractSkillNames(@RequestBody ExtractSkillsRequest request) {
+        return skillsService.extractSkillNames(request.getText(), request.getLang());
+    }
 }

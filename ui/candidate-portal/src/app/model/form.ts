@@ -22,11 +22,6 @@ export interface MyFirstFormData {
   hairColour?: string;
 }
 
-export interface MySecondFormData {
-  city?: string;
-  hairColour?: string;
-}
-
 export enum TravelDocType {
   Passport = 'PASSPORT',
   NationalId = 'NATIONAL_ID',
@@ -97,4 +92,22 @@ export interface FamilyRsdEvidenceEntry {
 
 export interface FamilyRsdEvidenceFormData {
   familyRsdEvidenceJson?: string;
+}
+
+export enum RsdRefugeeStatus {
+  RecognizedByUnhcr = 'RECOGNIZED_BY_UNHCR',
+  RecognizedByHostCountry = 'RECOGNIZED_BY_HOST_COUNTRY',
+  Pending = 'PENDING',
+}
+
+export enum RsdEvidenceDocumentType {
+  UnhcrCertificate = 'UNHCR_CERTIFICATE',
+  HostCountryId = 'HOST_COUNTRY_ID',
+  OfficialCampRegistration = 'OFFICIAL_CAMP_REGISTRATION',
+}
+
+export interface RsdEvidenceFormData {
+  refugeeStatus: RsdRefugeeStatus | null;
+  documentType: RsdEvidenceDocumentType | null;
+  documentNumber: string;
 }

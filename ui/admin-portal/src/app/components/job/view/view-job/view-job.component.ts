@@ -340,6 +340,11 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     )
   }
 
+  doSearchSkills() {
+    //Route to NewSearch Page with the job id as a parameter.
+    this.router.navigate(['/searches'], {queryParams: {tab: 'NewSearch', job: this.job.id}});
+  }
+
   isStarred(): boolean {
     return this.authorizationService.isStarredByMe(this.job?.starringUsers);
   }
@@ -375,5 +380,4 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
-
 }

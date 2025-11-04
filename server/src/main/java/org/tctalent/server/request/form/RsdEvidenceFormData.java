@@ -14,30 +14,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.configuration.properties;
 
+package org.tctalent.server.request.form;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.tctalent.server.model.db.RsdEvidenceDocumentType;
+import org.tctalent.server.model.db.RsdRefugeeStatus;
 
 /**
- * Configuration properties for {@link org.tctalent.server.service.db.impl.SpacySkillsExtractionServiceImpl}.
- * </p>
- * Example configuration in {@code application.yml}:
- * <pre>
- *  spacy-skills-extraction-api:
- *    apiUrl: http://localhost:8083
- *    apiKey: xxxx
- * </pre>
- *
- * @author sadatmalik
+ * Payload captured by the RSD evidence form.
  */
 @Getter
 @Setter
-@Component
-@ConfigurationProperties(prefix = "spacy-skills-extraction-api")
-public class SpacySkillsExtractionApiProperties {
-  private String apiUrl;
-  private String apiKey;
+public class RsdEvidenceFormData {
+  @NotNull
+  private RsdRefugeeStatus refugeeStatus;
+
+  @NotNull
+  private RsdEvidenceDocumentType documentType;
+
+  @NotBlank
+  @Size(max = 30)
+  private String documentNumber;
 }
