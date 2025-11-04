@@ -23,15 +23,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -72,7 +71,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final FileSystemService fileSystemService;
     private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
-    private final TextExtractHelper textExtractHelper;
 
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
@@ -86,7 +84,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         this.fileSystemService = fileSystemService;
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
-        this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
     }
 
     @Override
@@ -196,8 +193,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             // Extract text from the file
             if(request.getCv()) {
                 try {
-                    textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
-                    if(StringUtils.isNotBlank(textExtract)) {
+                    textExtract = TextExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
+                    if(StringUtils.hasText(textExtract)) {
                         attachment.setTextExtract(textExtract);
                         candidateAttachmentRepository.save(attachment);
                     }
@@ -407,9 +404,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                         }
                         File srcFile = this.s3ResourceHelper.downloadFile(
                             this.s3ResourceHelper.getS3Bucket(), destination);
-                        String extractedText = textExtractHelper.getTextExtractFromFile(srcFile,
+                        String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile,
                             candidateAttachment.getFileType());
-                        if (StringUtils.isNotBlank(extractedText)) {
+                        if (StringUtils.hasText(extractedText)) {
                             candidateAttachment.setTextExtract(extractedText);
                             candidateAttachmentRepository.save(candidateAttachment);
                         }
@@ -493,8 +490,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         String textExtract = null;
         if(uploadType == UploadType.cv) {
             try {
-                textExtract = textExtractHelper
-                    .getTextExtractFromFile(tempFile, fileType);
+                textExtract = TextExtractHelper.getTextExtractFromFile(tempFile, fileType);
             } catch (Exception e) {
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
@@ -522,9 +518,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setLocation(uploadedFile.getUrl());
         req.setUploadType(uploadType);
         req.setCv(uploadType == UploadType.cv);
-        if(StringUtils.isNotBlank(textExtract)) {
-            // Remove any null bytes to avoid PSQLException: ERROR: invalid byte sequence for encoding "UTF8"
-            textExtract = Pattern.compile("\\x00").matcher(textExtract).replaceAll("?");
+        if(StringUtils.hasText(textExtract)) {
             req.setTextExtract(textExtract);
         }
 

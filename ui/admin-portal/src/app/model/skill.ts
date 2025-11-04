@@ -14,25 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.api;
 
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import {HasName} from "./base";
 
-/**
- * Response to a request to extract skills from a given text.
- *
- * @author John Cameron
- */
-@Getter
-@Setter
-@ToString
-public class ExtractSkillsResponse {
-
-    /**
-     * Skill names extracted from the given text.
-     */
-    private List<String> skills;
+export interface SkillName extends HasName {
+  lang: string;
+  name: string;
 }
+

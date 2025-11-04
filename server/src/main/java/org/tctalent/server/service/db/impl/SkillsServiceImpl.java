@@ -35,7 +35,6 @@ import org.tctalent.server.model.db.SkillsTechOnetEn;
 import org.tctalent.server.repository.db.SkillsEscoEnRepository;
 import org.tctalent.server.repository.db.SkillsTechOnetEnRepository;
 import org.tctalent.server.service.api.ExtractSkillsRequest;
-import org.tctalent.server.service.api.ExtractSkillsResponse;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.api.TcSkillsExtractionService;
 import org.tctalent.server.service.db.SkillsService;
@@ -69,12 +68,12 @@ public class SkillsServiceImpl implements SkillsService {
     private final static int INITIAL_CAPACITY = 30_000;
 
     @Override
-    public List<String> extractSkillNames(@NonNull String text, @NonNull String languageCode) {
+    public List<SkillName> extractSkillNames(@NonNull String text, @NonNull String languageCode) {
         checkLanguageAvailability(languageCode);
         ExtractSkillsRequest request = new ExtractSkillsRequest();
         request.setText(text);
-        final ExtractSkillsResponse response = skillsExtractionService.extractSkills(request);
-        return response.getSkills();
+        request.setLang(languageCode);
+        return skillsExtractionService.extractSkills(request);
     }
 
     @Override

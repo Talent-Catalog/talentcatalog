@@ -18,6 +18,7 @@ package org.tctalent.server.service.api;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,8 @@ class TcSkillsExtractionServiceImplTest {
     void extractSkills() {
         ExtractSkillsRequest request = new ExtractSkillsRequest();
         request.setText("John knows Java, Python, and Algol. He also knows C++, C, and Fortran.");
-        final ExtractSkillsResponse response = skillsExtractionService.extractSkills(request);
+        request.setLang("en");
+        final List<SkillName> response = skillsExtractionService.extractSkills(request);
         assertNotNull(response);
     }
 }
