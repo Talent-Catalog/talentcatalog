@@ -27,6 +27,7 @@ import {
 } from '../model/candidate-attachment';
 import {saveBlob} from "../util/file";
 import {Candidate} from "../model/candidate";
+import {CvText} from "../model/cv-text";
 
 export interface UpdateCandidateAttachmentRequest {
   id?: number;
@@ -49,9 +50,16 @@ export interface ListByUploadTypeRequest {
 export class CandidateAttachmentService {
 
   private apiUrl = environment.apiUrl + '/candidate-attachment';
-  s3BucketUrl = environment.s3BucketUrl;
 
   constructor(private http: HttpClient) {}
+
+  /**
+   * Fetch the text of a candidate's CVs.
+   * @param candidateId Id of candidate
+   */
+  getCandidateCvText(candidateId: number): Observable<CvText[]> {
+    return this.http.get<CvText[]>(`${this.apiUrl}/cv-text/${candidateId}`);
+  }
 
   search(request: SearchCandidateAttachmentsRequest): Observable<CandidateAttachment[]> {
     return this.http.post<CandidateAttachment[]>(`${this.apiUrl}/search`, request);

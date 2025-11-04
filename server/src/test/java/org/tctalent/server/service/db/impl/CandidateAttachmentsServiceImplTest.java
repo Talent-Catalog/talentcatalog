@@ -673,6 +673,7 @@ public class CandidateAttachmentsServiceImplTest {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
         given(candidateAttachmentRepository.findByIdLoadCandidate(ATTACHMENT_ID))
             .willReturn(Optional.of(attachment));
+        given(candidateAttachmentRepository.save(attachment)).willReturn(attachment);
         given(authService.authoriseLoggedInUser(candidate)).willReturn(true);
 
         candidateAttachmentsService.updateCandidateAttachment(ATTACHMENT_ID, updateRequest);
@@ -680,7 +681,7 @@ public class CandidateAttachmentsServiceImplTest {
         assertEquals(newName, attachment.getName());
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate, true, false);
         assertEquals(ADMIN_USER, attachment.getUpdatedBy());
         verify(candidateAttachmentRepository).save(attachment);
     }
@@ -698,6 +699,7 @@ public class CandidateAttachmentsServiceImplTest {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
         given(candidateAttachmentRepository.findByIdLoadCandidate(ATTACHMENT_ID))
             .willReturn(Optional.of(attachment));
+        given(candidateAttachmentRepository.save(attachment)).willReturn(attachment);
         given(authService.authoriseLoggedInUser(candidate)).willReturn(true);
 
         candidateAttachmentsService.updateCandidateAttachment(ATTACHMENT_ID, updateRequest);
@@ -705,7 +707,7 @@ public class CandidateAttachmentsServiceImplTest {
         assertEquals(newName, attachment.getName());
         assertEquals(newLocation, attachment.getLocation());
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate, true, false);
         assertEquals(ADMIN_USER, attachment.getUpdatedBy());
         verify(candidateAttachmentRepository).save(attachment);
     }
