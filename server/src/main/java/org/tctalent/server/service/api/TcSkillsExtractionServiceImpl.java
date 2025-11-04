@@ -50,6 +50,7 @@ public class TcSkillsExtractionServiceImpl implements TcSkillsExtractionService 
             .header("x-api-key", properties.getApiKey())
             .body(request)
             .retrieve()
+//MODEL How to return a parameterized type (eg List<X>) from a REST response
             .body(new ParameterizedTypeReference<>() {});
 
     }
