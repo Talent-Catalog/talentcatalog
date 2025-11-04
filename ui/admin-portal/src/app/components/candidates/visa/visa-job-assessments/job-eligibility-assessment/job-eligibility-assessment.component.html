@@ -14,19 +14,17 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="mb-3">
-    <label class="form-label" for="visaJobTbbEligibility">TC Eligibility Assessment?</label>
-    <div class="float-end">
+  <tc-field *ngIf="editable">
+    <tc-label for="visaJobTbbEligibility">TC Eligibility Assessment?
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </div>
-    <ng-select id="visaJobTbbEligibility" [formControlName]="'visaJobTbbEligibility'" [items]="jobEligibilityAssessOptions"
+    </tc-label>
+    <ng-select class="tc-select" id="visaJobTbbEligibility" [formControlName]="'visaJobTbbEligibility'"
+               [items]="jobEligibilityAssessOptions"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
+  </tc-field>
 </form>

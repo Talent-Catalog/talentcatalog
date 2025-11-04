@@ -14,29 +14,25 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="visaProtection">
-      Is the candidate in need of international protection?
-    </label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="visaProtection" [formControlName]="'visaProtection'" [items]="visaProtectionOptions"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="form.controls.visaProtection.value === 'Yes'" class="mb-3">
-    <label class="form-label" for="visaProtectionGrounds">If yes, on what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TC eligibility policy</a>)</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaProtectionGrounds" [formControlName]="'visaProtectionGrounds'"
-              placeholder="" ></textarea>
-  </div>
+  <tc-fieldset>
+    <tc-field>
+      <tc-label for="visaProtection">
+        Is the candidate in need of international protection?
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </tc-label>
+      <ng-select class="tc-select" id="visaProtection" [formControlName]="'visaProtection'" [items]="visaProtectionOptions"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <tc-field *ngIf="form.controls.visaProtection.value === 'Yes'">
+      <tc-label for="visaProtectionGrounds">If yes, on what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TC eligibility policy</a>)</tc-label>
+      <tc-textarea id="visaProtectionGrounds" [formControlName]="'visaProtectionGrounds'"></tc-textarea>
+    </tc-field>
+  </tc-fieldset>
 </form>
 
 

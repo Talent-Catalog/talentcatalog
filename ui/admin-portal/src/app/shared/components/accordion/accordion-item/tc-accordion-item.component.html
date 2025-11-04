@@ -1,4 +1,4 @@
-<div class="tc-accordion-item">
+<div class="tc-accordion-item" [class.open]="isOpen">
   <a class="tc-accordion-header" (click)="toggle()">
     <!-- If exists custom header projected using attribute selector -->
     <ng-content select="[custom-header]"></ng-content>

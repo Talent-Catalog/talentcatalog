@@ -14,26 +14,23 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="visaSecurityRisk">Meets security requirement? (e.g. military, prior visa cancellation)</label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="visaSecurityRisk" [formControlName]="'visaSecurityRisk'" [items]="securityRiskOptions"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaSecurityRiskNotes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaSecurityRiskNotes" [formControlName]="'visaSecurityRiskNotes'"
-              placeholder="" ></textarea>
-  </div>
+  <tc-fieldset>
+    <tc-field>
+      <tc-label for="visaSecurityRisk">Meets security requirement? (e.g. military, prior visa cancellation)
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </tc-label>
+      <ng-select class="tc-select" id="visaSecurityRisk" [formControlName]="'visaSecurityRisk'"
+                 [items]="securityRiskOptions" placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <tc-field *ngIf="hasNotes">
+      <tc-label for="visaSecurityRiskNotes">Notes</tc-label>
+      <tc-textarea id="visaSecurityRiskNotes" [formControlName]="'visaSecurityRiskNotes'"></tc-textarea>
+    </tc-field>
+  </tc-fieldset>
 </form>

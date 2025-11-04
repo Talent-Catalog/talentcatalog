@@ -14,46 +14,44 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-loading [loading]="loading"></tc-loading>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
 <div *ngIf="!loading" id="VisaIntakes">
-  <div class="row">
-    <div class="col">
-      <h5 class="mb-2">Visa Eligibility Checks</h5>
-    </div>
-    <div class="col" *ngIf="isEditable()">
-      <button type="button" class="btn btn-primary btn-sm float-end" (click)="addRecord()">
-        <i class="fas fa-plus"></i> Add Country
-      </button>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col pt-3">
+  <div class="row align-items-center">
+    <div class="col align-self-start">
+      <h5 class="mb-3">Visa Eligibility Checks</h5>
       <app-export-pdf *ngIf="visaChecks?.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
     </div>
     <div class="mx-auto col-10 col-md-8 col-lg-6">
       <form [formGroup]="form">
-        <div *ngFor="let visaCheck of visaChecks; let i = index;">
-          <div class="form-check">
-            <input class="form-check-input" type="radio" [value]="i" name="visaCountry" [id]="'radio'+i"
-                   [formControlName]="'visaCountry'" (change)="reloadAndSelectVisaCheck(i)">
-            <label class="form-check-label fw-light" [for]="'radio'+i">{{visaCheck?.country?.name}}</label>
-            <a *ngIf="canDeleteVisa() && isEditable()" class="link-danger float-end" (click)="deleteRecord(i)"><i class="fas fa-trash"></i></a>
-          </div>
+        <div *ngFor="let visaCheck of visaChecks; let i = index">
+            <tc-radio
+              [id]="'radio' + i"
+              name="visaCountry"
+              [value]="i"
+              [label]="visaCheck.country.name"
+              [formControlName]="'visaCountry'"
+              (change)="reloadAndSelectVisaCheck(i)">
+              <tc-icon *ngIf="canDeleteVisa() && isEditable()"
+                       type="button" color="gray"
+                       class="float-end"
+                       (click)="deleteRecord(i)">
+                <i class="fas fa-trash"></i>
+              </tc-icon>
+            </tc-radio>
         </div>
       </form>
     </div>
-    <div class="col">
+    <div class="col align-self-start">
+      <tc-button *ngIf="isEditable()" class="float-end" size="sm" (onClick)="addRecord()">
+        <i class="fas fa-plus"></i> Add Country
+      </tc-button>
     </div>
   </div>
+
   <div *ngIf="visaChecks?.length == 0">
-    <p class="small text-muted text-center fw-light">No visa checks added - add a country to begin</p>
+    <p class="paragraph-sm text-color-caption text-center">No visa checks added - add a country to begin</p>
   </div>
 </div>
 

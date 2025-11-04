@@ -14,19 +14,19 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="mb-3">
-    <label class="form-label" for="visaJobRegional">In a designated regional area? (<a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list/regional-postcodes" target="_blank">Relevant postcodes</a>)</label>
-    <div class="float-end">
+  <tc-field *ngIf="editable">
+    <tc-label for="visaJobRegional">In a designated regional area? (
+      <a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list/regional-postcodes"
+         target="_blank">Relevant postcodes</a>)
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </div>
-    <ng-select id="visaJobRegional" [formControlName]="'visaJobRegional'" [items]="regionalAreaOptions"
+    </tc-label>
+    <ng-select class="tc-select" id="visaJobRegional" [formControlName]="'visaJobRegional'"
+               [items]="regionalAreaOptions"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
+  </tc-field>
 </form>

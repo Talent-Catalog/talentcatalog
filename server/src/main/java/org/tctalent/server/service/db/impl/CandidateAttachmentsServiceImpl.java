@@ -213,12 +213,16 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         }
 
 
-        // Update candidate audit fields
+        //Save the updated attachment
+        attachment = candidateAttachmentRepository.save(attachment);
+
+        //Now update candidate audit fields and potentially update candidate text to take
+        //account of any cv text in the attachment we just updated above.
         candidate.setAuditFields(user);
         boolean updateCandidateText = request.getCv() != null ? request.getCv() : false;
         candidateService.save(candidate, true, updateCandidateText);
 
-        return candidateAttachmentRepository.save(attachment);
+        return attachment;
     }
 
     // Removed @Transactional to fix logged error ObjectDeletedException. There is a risk that now deleting from
@@ -376,11 +380,18 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 }
             }
 
+            boolean extractedCvTextChanged = false;
+
             //Only AWS/S3 files support this CV to not CV and vice versa
             //for CV to non CV and vice versa only applies to AWS/S3 files
             if (attachmentType == AttachmentType.file) {
-                // Run text extraction if attachment changed from not CV to a CV or remove if changed from CV to not CV.
-                if (request.getCv() && !candidateAttachment.isCv()) {
+                // Run text extraction if attachment changed from not CV to a CV
+                // or remove if changed from CV to not CV.
+                if (!request.getCv() && candidateAttachment.isCv()) {
+                    //Was tagged as a CV and now it isn't. Set extracted text to null.
+                    candidateAttachment.setTextExtract(null);
+                    extractedCvTextChanged = true;
+                } else if (request.getCv() && !candidateAttachment.isCv()) {
                     try {
                         String uniqueFilename = candidateAttachment.getLocation();
                         String destination;
@@ -408,18 +419,20 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
                         candidateAttachment.setTextExtract(null);
                     }
+                    extractedCvTextChanged = true;
                 }
             }
             // UPDATE THE URL LOCATION (IF LINK)
             if (candidateAttachment.getType().equals(AttachmentType.link)) {
                 candidateAttachment.setLocation(request.getLocation());
             }
+            candidateAttachment.setAuditFields(user);
+            candidateAttachment = candidateAttachmentRepository.save(candidateAttachment);
+
             // UPDATE THE CANDIDATE AUDIT FIELDS
             Candidate candidate = candidateAttachment.getCandidate();
             candidate.setAuditFields(user);
-            candidateService.save(candidate, true);
-            candidateAttachment.setAuditFields(user);
-            candidateAttachmentRepository.save(candidateAttachment);
+            candidateService.save(candidate, true, extractedCvTextChanged);
         } else {
             throw new UnauthorisedActionException("update");
         }

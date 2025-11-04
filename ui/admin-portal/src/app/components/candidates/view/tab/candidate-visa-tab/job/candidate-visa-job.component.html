@@ -14,31 +14,35 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<button *ngIf="isEditable()" [disabled]="!hasJobOpps" type="button" class="btn btn-primary btn-sm float-end" (click)="addJob()">
+<tc-button *ngIf="isEditable()" [disabled]="!hasJobOpps" class="float-end" size="sm" (onClick)="addJob()">
   <i class="fas fa-plus"></i> Add Job
-</button>
+</tc-button>
 
 <div *ngIf="!hasJobChecks">
-  <p class="small text-muted text-center fw-light">No job checks added. If candidate has job opportunities click the Add Job button.</p>
+  <p class="paragraph-sm text-color-caption text-center">No job checks added. If candidate has job opportunities click the Add Job button.</p>
 </div>
 
 <div class="row" *ngIf="hasJobChecks">
   <div class="mx-auto col-10 col-md-8 col-lg-6">
     <form [formGroup]="form">
       <div *ngFor="let visaJob of visaCheckRecord?.candidateVisaJobChecks; let i = index;">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" [value]="i" name="jobIndex" [id]="'radioJob'+i"
+        <div>
+          <tc-radio [value]="i" name="jobIndex" [id]="'radioJob'+i" [label]="visaJob?.jobOpp?.name"
                  [formControlName]="'jobIndex'" (change)="fetchUpdatedSelectedJob(visaJob)">
-          <label class="form-check-label fw-light" [for]="'radioJob'+i">
-            {{visaJob?.jobOpp?.name}}
-            <a [routerLink]="visaJob?.jobOpp ? ['/job',visaJob.jobOpp.id] : null" target="_blank" class="link-info">
-              <i *ngIf="visaJob?.jobOpp" class="fa-solid fa-briefcase" title="Open job in new tab"></i>
-            </a>
-            <a *ngIf="fetchCandidateOppIdForJob(visaJob?.jobOpp?.id)" [routerLink]="visaJob?.jobOpp ? ['/opp', fetchCandidateOppIdForJob(visaJob?.jobOpp?.id)] : null" target="_blank" class="link-info">
-              <i  class="fa-solid fa-address-book" title="Open case in new tab"></i>
-            </a>
-          </label>
-          <a *ngIf="canDeleteVisaJob() && isEditable()" class="link-danger float-end" (click)="deleteJob(i)"><i class="fas fa-trash"></i></a>
+
+            <tc-icon type="link" *ngIf="visaJob?.jobOpp"
+                     [routerLink]="visaJob?.jobOpp ? ['/job',visaJob.jobOpp.id] : null">
+              <i class="fa-solid fa-briefcase" title="Open job in new tab"></i>
+            </tc-icon>
+            <tc-icon type="link" *ngIf="fetchCandidateOppIdForJob(visaJob?.jobOpp?.id)"
+                     [routerLink]="visaJob?.jobOpp ? ['/opp', fetchCandidateOppIdForJob(visaJob?.jobOpp?.id)] : null">
+              <i class="fa-solid fa-address-book" title="Open case in new tab"></i>
+            </tc-icon>
+            <tc-icon type="button" color="gray" *ngIf="canDeleteVisaJob() && isEditable()"
+                     class="float-end" (click)="deleteJob(i)">
+              <i class="fas fa-trash"></i>
+            </tc-icon>
+          </tc-radio>
         </div>
       </div>
     </form>

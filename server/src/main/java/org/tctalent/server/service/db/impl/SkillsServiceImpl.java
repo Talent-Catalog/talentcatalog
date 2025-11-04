@@ -31,7 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.SkillsEscoEn;
+import org.tctalent.server.model.db.SkillsTechOnetEn;
 import org.tctalent.server.repository.db.SkillsEscoEnRepository;
+import org.tctalent.server.repository.db.SkillsTechOnetEnRepository;
 import org.tctalent.server.service.api.ExtractSkillsRequest;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.api.TcSkillsExtractionService;
@@ -58,11 +60,12 @@ import org.tctalent.server.service.db.SkillsService;
 public class SkillsServiceImpl implements SkillsService {
     private final TcSkillsExtractionService skillsExtractionService;
     private final SkillsEscoEnRepository skillsEscoEnRepository;
+    private final SkillsTechOnetEnRepository skillsTechOnetEnRepository;
     private List<SkillName> cachedList;
 
     private final static int CHUNK_SIZE = 100;
     private final static String DELIMITER = "\n";
-    private final static int INITIAL_CAPACITY = 25_000;
+    private final static int INITIAL_CAPACITY = 30_000;
 
     @Override
     public List<SkillName> extractSkillNames(@NonNull String text, @NonNull String languageCode) {
@@ -96,6 +99,7 @@ public class SkillsServiceImpl implements SkillsService {
         checkLanguageAvailability(languageCode);
 
         if (cachedList == null) {
+            //Use set to remove duplicates
             Set<SkillName> skills = new HashSet<>(INITIAL_CAPACITY);
 
             loadEscoSkills(skills);
@@ -109,7 +113,19 @@ public class SkillsServiceImpl implements SkillsService {
     }
 
     private void loadOnetSkills(Set<SkillName> skillNames) {
-        //TODO JC Implement loadOnetSkills
+        PageRequest request = PageRequest.ofSize(CHUNK_SIZE);
+        request = request.first();
+        Page<SkillsTechOnetEn> page;
+        do {
+            //Get page of skills
+            page = skillsTechOnetEnRepository.findAll(request);
+            //Process skills in page
+            final List<SkillsTechOnetEn> pageContent = page.getContent();
+            for (SkillsTechOnetEn skillsTechOnetEn : pageContent) {
+                addSkills(skillNames, skillsTechOnetEn);
+            }
+            request = request.next();
+        } while (page.hasNext());
     }
 
     private void loadEscoSkills(Set<SkillName> skillNames) {
@@ -128,22 +144,41 @@ public class SkillsServiceImpl implements SkillsService {
         } while (page.hasNext());
     }
 
-    private void addSkills(Collection<SkillName> skillNames, SkillsEscoEn see) {
+    /**
+     * Adds ESCO skill names
+     * @param skillNames Collection of skill names to add to
+     * @param rec ESCO skill record
+     */
+    private void addSkills(Collection<SkillName> skillNames, SkillsEscoEn rec) {
 
-        final String preferredlabel = see.getPreferredlabel();
+        final String preferredlabel = rec.getPreferredlabel();
         if (!ObjectUtils.isEmpty(preferredlabel)) {
             skillNames.add(new SkillName(Locale.ENGLISH.getLanguage(),
                 preferredlabel.toLowerCase(Locale.ENGLISH)));
         }
 
-        final String altLabels = see.getAltlabels();
+        final String altLabels = rec.getAltlabels();
         if (!ObjectUtils.isEmpty(altLabels)) {
             addDelimitedSkills(skillNames, altLabels.toLowerCase(Locale.ENGLISH));
         }
 
-        final String hiddenLabels = see.getHiddenlabels();
+        final String hiddenLabels = rec.getHiddenlabels();
         if (!ObjectUtils.isEmpty(hiddenLabels)) {
             addDelimitedSkills(skillNames, hiddenLabels.toLowerCase(Locale.ENGLISH));
+        }
+    }
+
+    /**
+     * Adds ONET Tech skill names
+     * @param skillNames Collection of skill names to add to
+     * @param rec ONET tech skill record
+     */
+    private void addSkills(Collection<SkillName> skillNames, SkillsTechOnetEn rec) {
+        final String example = rec.getExample();
+        if (!ObjectUtils.isEmpty(example)) {
+            String lower = example.toLowerCase(Locale.ENGLISH);
+            final SkillName sn = new SkillName(Locale.ENGLISH.getLanguage(), lower);
+            skillNames.add(sn);
         }
     }
 
