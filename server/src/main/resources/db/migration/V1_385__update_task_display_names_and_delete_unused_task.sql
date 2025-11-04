@@ -14,4 +14,5 @@ UPDATE task
 SET display_name = 'Family RSD Documents'
 WHERE name = 'familyRsdEvidenceFormTask';
 
-
+DELETE FROM task
+WHERE name = 'mySecondFormTask';
