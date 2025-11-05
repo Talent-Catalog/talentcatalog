@@ -185,6 +185,20 @@ marked as required but not actually required to proceed
 
 # Developer Notes
 
+## Test Coverage
+
+- #2392 Create DuolingoExamServiceImplTest.java
+- #2391 Create DuolingoExtraFieldsServiceImplTest.java
+- #1667 Write Unit Tests for Duolingo Coupon Service
+- #2148 Enhance Tests for Low-Coverage Components in Admin Portal
+- #2149 Improve Test Coverage for Admin Portal Directives
+- #2400 Testing: GoogleFileSystemServiceImpl
+- #2139 Enhance Test Coverage for org.tctalent.server.api.admin Package
+- #2211 Extensive per-resource test data
+- #2410 GDPR process verification
+- #2398 Testing: DuolingoApiServiceImpl
+
+- // TODO -- capture coverage stats as the coverage % has massively increased
 
 ## Code Refactoring
 
