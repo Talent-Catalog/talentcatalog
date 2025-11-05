@@ -40,13 +40,13 @@ label {
 //  @include text-color-primary;
 //}
 
-//.watched {
-//  color: color(secondary, 500);
-//}
+.watched {
+  color: color(secondary, 500);
+}
 
-//.notwatched {
-//  @include text-color-primary;
-//}
+.notwatched {
+  color: color(secondary, 500);
+}
 
 
 .filter-form {

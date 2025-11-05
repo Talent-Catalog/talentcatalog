@@ -54,7 +54,6 @@
 
       <a target="_blank" *ngIf="isSavedSearch() && !isDefaultSavedSearch()" (click)="doToggleWatch()">
         <tc-icon [size]="'xl'"
-                 [color]="'warning'"
                  [ariaLabel]="(!isWatching() ? 'Watch ' : 'Unwatch ') + 'search'">
           <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
           <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
@@ -154,7 +153,7 @@
 
         </tc-dropdown-menu>
       </tc-dropdown>
-      
+
     </div>
 
     <tc-alert type="danger" *ngIf="error">
