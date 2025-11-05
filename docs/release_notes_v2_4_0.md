@@ -111,7 +111,17 @@ sass:
 
 # User Guides
 
-
+Helpful TC user guides:
+<ul>
+    <li>
+        <a href="https://docs.google.com/document/d/1aI7dTq9wwucPmY7UMjpsjn9V5sLf1WWpYnhiA_9q43U/edit?usp=sharing" 
+        target="_blank">Employer Access User Guide</a>
+    </li>
+    <li>
+        <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" 
+        target="_blank">TC Chats Explainer Doc</a>
+    </li>
+</ul>
 
 ## General Improvements
 
