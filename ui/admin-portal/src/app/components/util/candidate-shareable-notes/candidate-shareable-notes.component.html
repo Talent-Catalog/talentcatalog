@@ -28,9 +28,8 @@
                  [placeholder]="'Add general candidate notes, which may be shared with potential employers...'"
                  [formControlName]="'shareableNotes'"
     ></tc-textarea>
-    <div class="d-flex align-items-center">
-      <app-autosave-status class="me-2"
-                           [saving]="saving"
+    <div class="d-flex align-items-center gap-2">
+      <app-autosave-status [saving]="saving"
                            [typing]="typing"
                            [size]="'md'"
       ></app-autosave-status>

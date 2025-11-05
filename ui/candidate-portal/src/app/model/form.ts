@@ -22,11 +22,6 @@ export interface MyFirstFormData {
   hairColour?: string;
 }
 
-export interface MySecondFormData {
-  city?: string;
-  hairColour?: string;
-}
-
 export enum TravelDocType {
   Passport = 'PASSPORT',
   NationalId = 'NATIONAL_ID',

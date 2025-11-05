@@ -18,6 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {EducationLevel} from "../../../../../model/education-level";
 import {EducationLevelService} from "../../../../../services/education-level.service";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-edit-max-education-level',
@@ -25,24 +26,43 @@ import {EducationLevelService} from "../../../../../services/education-level.ser
   styleUrls: ['./edit-max-education-level.component.scss']
 })
 export class EditMaxEducationLevelComponent implements OnInit {
-  educationLevels: EducationLevel[] = [];
-  selectedLevel: EducationLevel;
-  currentLevel: EducationLevel;
+  educationLevel: EducationLevel;
+  educationLevels: EducationLevel[];
+
+  form: UntypedFormGroup;
+
+  error: string;
+  loading: boolean;
+  saving: boolean;
 
   constructor(
     private educationLevelService: EducationLevelService,
-    public activeModal: NgbActiveModal
+    private activeModal: NgbActiveModal,
+    private fb: UntypedFormBuilder
   ) {
   }
 
   ngOnInit() {
-    this.educationLevelService.listEducationLevels().subscribe(levels => {
-      this.educationLevels = levels;
-      this.selectedLevel = this.educationLevels.find(level => level.id === this.currentLevel?.id);
+    this.loading = true;
+    this.form = this.fb.group({
+      educationLevelId: [this.educationLevel?.id, Validators.required]
     });
+
+    // Load education levels
+    this.educationLevelService.listEducationLevels().subscribe(
+      (response) => {
+        this.educationLevels = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 
   save() {
-    this.activeModal.close(this.selectedLevel);
+    const selectedId = this.form.value.educationLevelId;
+    this.activeModal.close(selectedId);
   }
 }

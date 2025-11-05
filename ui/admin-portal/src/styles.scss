@@ -258,7 +258,7 @@ ngx-wig {
 .tool-tip-button {
   border: none;
   background-color: inherit;
-  margin-left: 5px;
+  margin-left: 4px;
   padding: 0;
 }
 
@@ -272,6 +272,13 @@ ngx-wig {
 
 tr.clickable:hover {
   cursor: pointer;
+}
+
+.tc-divider {
+  width: 100%;
+  height: 1px;
+  @include background-color-light;
+  margin: 10px 0;
 }
 
 .modal-content {

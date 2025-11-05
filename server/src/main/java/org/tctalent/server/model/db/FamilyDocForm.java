@@ -25,7 +25,7 @@ import org.tctalent.server.service.db.CandidateService;
 
 /**
  * Task 2 form: stores relocating family members (as JSON) and the "no eligible" toggle using
- * candidate properties, consistent with the MySecondForm approach.
+ * candidate properties.
  */
 public class FamilyDocForm extends CandidateFormInstanceHelper {
 

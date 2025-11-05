@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
   ViewCandidateJobExperienceComponent
 } from "../occupation/experience/view-candidate-job-experience.component";
@@ -28,7 +28,7 @@ import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {throwError} from "rxjs";
 
-describe('ViewCandidateJobExperienceComponent', () => {
+describe('ViewCandidateCertificationComponent', () => {
   let component: ViewCandidateJobExperienceComponent;
   let fixture: ComponentFixture<ViewCandidateJobExperienceComponent>;
   let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;
@@ -80,26 +80,22 @@ describe('ViewCandidateJobExperienceComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display loading state', () => {
-    component.loading = true;
-    fixture.detectChanges();
-    const loadingElement = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(loadingElement).toBeTruthy();
-    expect(fixture.nativeElement.textContent).toContain('loading...');
-  });
-
   it('should display error state', () => {
     component.error = 'Failed to load data';
     component.loading = false;
+
     fixture.detectChanges();
-    const errorElement = fixture.debugElement.query(By.css('div'));
+
+    const errorElement =
+      fixture.debugElement.query(By.css('tc-alert[type="danger"]'));
+    expect(errorElement).toBeTruthy();
     expect(errorElement.nativeElement.textContent).toContain('Failed to load data');
   });
 
   it('should render candidate occupation details', () => {
     component.loading = false;
     fixture.detectChanges();
-    const cardHeader = fixture.debugElement.query(By.css('.card-header'));
+    const cardHeader = fixture.debugElement.query(By.css('tc-card-header'));
     expect(cardHeader.nativeElement.textContent).toContain('Software Developer (5 years)');
     expect(cardHeader.nativeElement.textContent).toContain('Migrated Occupation: Engineer');
   });

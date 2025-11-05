@@ -78,8 +78,6 @@ export class ButtonComponent {
     ];
   }
 
-
-
   clicked(): void {
     this.onClick.emit();
   }

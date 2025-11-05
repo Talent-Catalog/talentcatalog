@@ -231,7 +231,7 @@ import {
 import {
   DuolingoComponent
 } from './components/profile/view/tab/services/duolingo/duolingo.component';
-import {CasiHeaderComponent} from './components/common/casi-header/casi-header.component';
+import {TabHeaderComponent} from './components/common/tab-header/tab-header.component';
 import {TermsComponent} from './components/privacy-policy/terms.component';
 import {
   RegistrationSubmitComponent
@@ -241,7 +241,6 @@ import {
   ViewFormTaskComponent
 } from './components/profile/view/tab/tasks/task/form/view-form-task.component';
 import {MyFirstFormComponent} from './components/form/my-first-form/my-first-form.component';
-import {MySecondFormComponent} from './components/form/my-second-form/my-second-form.component';
 import {
   TravelDocFormComponent
 } from './components/form/italy-travel-document-form/travel-doc-form.component';
@@ -328,13 +327,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServicesComponent,
     DuolingoCouponComponent,
     DuolingoComponent,
-    CasiHeaderComponent,
+    TabHeaderComponent,
     TermsComponent,
     RegistrationSubmitComponent,
     ShowTermsComponent,
     ViewFormTaskComponent,
     MyFirstFormComponent,
-    MySecondFormComponent,
     TravelDocFormComponent,
     RsdEvidenceFormComponent,
   ],

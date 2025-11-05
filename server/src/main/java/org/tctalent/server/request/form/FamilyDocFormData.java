@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component } from '@angular/core';
+package org.tctalent.server.request.form;
 
-@Component({
-  selector: 'app-casi-header',
-  templateUrl: './casi-header.component.html',
-  styleUrls: ['./casi-header.component.scss']
-})
-export class CasiHeaderComponent {
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * DTO for Family Document Form data exchange.
+ * Stores family member information and "no eligible" toggle/notes.
+ */
+@Getter
+@Setter
+public class FamilyDocFormData {
+  private String familyMembersJson;
+  private Boolean noEligibleFamilyMembers;
+  private String noEligibleNotes;
 }

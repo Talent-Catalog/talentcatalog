@@ -32,7 +32,8 @@
                class="cancel-btn">
       {{cancelText}}
     </tc-button>
-    <tc-button color="primary"
+    <tc-button *ngIf="showAction"
+               color="primary"
                [size]="'lg'"
                (onClick)="action()"
                [disabled]="disableAction">

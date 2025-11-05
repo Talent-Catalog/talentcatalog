@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,11 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  padding-bottom: 24px;
-}
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-:host ::ng-deep .read-only-white {
-  background-color: white;
-}
+import {TabHeaderComponent} from './tab-header.component';
+
+describe('TabHeaderComponent', () => {
+  let component: TabHeaderComponent;
+  let fixture: ComponentFixture<TabHeaderComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [TabHeaderComponent]
+    });
+    fixture = TestBed.createComponent(TabHeaderComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

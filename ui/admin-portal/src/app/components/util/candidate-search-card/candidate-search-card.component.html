@@ -131,8 +131,9 @@
             <app-candidate-general-tab
               [candidate]="candidate"
               [editable]="false"
-              [adminUser]="isAnAdmin()">
-            </app-candidate-general-tab>
+              [adminUser]="isAnAdmin()"
+              [compact]="true"
+            ></app-candidate-general-tab>
           </tc-tab-content>
         </tc-tab>
 
@@ -177,8 +178,9 @@
             <app-candidate-additional-info-tab
               [candidate]="candidate"
               [editable]="false"
-              [canViewPrivateInfo]="canViewPrivateInfo()">
-            </app-candidate-additional-info-tab>
+              [canViewPrivateInfo]="canViewPrivateInfo()"
+              [compact]="true"
+            ></app-candidate-additional-info-tab>
           </tc-tab-content>
         </tc-tab>
 
