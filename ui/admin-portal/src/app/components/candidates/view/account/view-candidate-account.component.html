@@ -28,7 +28,9 @@
     Account Information
   </tc-card-header>
 
-  <tc-description-list direction="column">
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
 
     <tc-description-item [label]="'Account Created:'">
       {{candidate.user.createdDate | date: 'customDateTime' }}
