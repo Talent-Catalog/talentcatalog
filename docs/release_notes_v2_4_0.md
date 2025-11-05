@@ -131,6 +131,8 @@ managing source partner (not just TBB)
 
 ## Data Improvements
 
+#2440 Slovakia added to TC countries
+#2130 Email alert for failing scheduled background batch operations
 
 # UI / UX Enhancements
 
