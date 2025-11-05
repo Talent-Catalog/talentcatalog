@@ -3,7 +3,9 @@
     Privacy Policy Information
   </tc-card-header>
 
-  <tc-description-list [direction]="'column'">
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
 
     <tc-description-item [label]="'Policy Version ID:'">
       {{ candidate?.acceptedPrivacyPolicyId || 'N/A' }}

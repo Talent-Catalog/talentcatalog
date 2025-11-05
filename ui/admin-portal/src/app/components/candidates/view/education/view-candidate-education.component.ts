@@ -56,11 +56,11 @@ export class ViewCandidateEducationComponent implements OnInit {
       backdrop: 'static'
     });
 
-    modalRef.componentInstance.currentLevel = this.candidate.maxEducationLevel;
-    modalRef.result.then((newLevel) => {
-      if (newLevel && newLevel.id) {
+    modalRef.componentInstance.educationLevel = this.candidate.maxEducationLevel;
+    modalRef.result.then((newLevelId) => {
+      if (newLevelId) {
         const candidatePayload = {
-          maxEducationLevel: newLevel.id
+          maxEducationLevel: newLevelId
         };
 
         this.candidateService.updateMaxEducationLevel(this.candidate.id, candidatePayload).subscribe(() => {

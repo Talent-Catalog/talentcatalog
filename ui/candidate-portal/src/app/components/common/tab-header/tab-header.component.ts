@@ -14,24 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {Component} from '@angular/core';
 
-import { CasiHeaderComponent } from './casi-header.component';
+@Component({
+  selector: 'app-tab-header',
+  templateUrl: './tab-header.component.html',
+  styleUrls: ['./tab-header.component.scss']
+})
+export class TabHeaderComponent {
 
-describe('CasiHeaderComponent', () => {
-  let component: CasiHeaderComponent;
-  let fixture: ComponentFixture<CasiHeaderComponent>;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [CasiHeaderComponent]
-    });
-    fixture = TestBed.createComponent(CasiHeaderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+}

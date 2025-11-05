@@ -97,6 +97,7 @@ export class TcModalComponent {
    * ng-content projection not possible since there's no corresponding template element.
    */
   @Input() message?: string;
+  @Input() showAction: boolean = true;
 
   @Output() onAction = new EventEmitter();
 
