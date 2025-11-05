@@ -2,9 +2,10 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {EditMaxEducationLevelComponent} from './edit-max-education-level.component';
 import {EducationLevelService} from '../../../../../services/education-level.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {of} from 'rxjs';
-import {FormsModule} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {EducationLevel} from '../../../../../model/education-level';
+import {of} from "rxjs";
+import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('EditMaxEducationLevelComponent', () => {
   let component: EditMaxEducationLevelComponent;
@@ -18,13 +19,12 @@ describe('EditMaxEducationLevelComponent', () => {
     { id: 3, name: 'Master', status: 'INACTIVE', level: 3 },
   ];
 
-
   beforeEach(async () => {
     mockEducationLevelService = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     mockActiveModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
 
     await TestBed.configureTestingModule({
-      imports: [FormsModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       declarations: [EditMaxEducationLevelComponent],
       providers: [
         { provide: EducationLevelService, useValue: mockEducationLevelService },
@@ -36,26 +36,34 @@ describe('EditMaxEducationLevelComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EditMaxEducationLevelComponent);
     component = fixture.componentInstance;
-    component.currentLevel = dummyLevels[1]; // Bachelor
+    component.educationLevel = dummyLevels[0];
+
+    // initialize the form
+    component.form = new FormGroup({
+      educationLevelId: new FormControl(null)
+    });
+
+    mockEducationLevelService.listEducationLevels.and.returnValue(of(dummyLevels));
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load education levels and set selectedLevel based on currentLevel', () => {
-    mockEducationLevelService.listEducationLevels.and.returnValue(of(dummyLevels));
+  it('should set ngSelect value based on educationLevel', () => {
 
     fixture.detectChanges(); // triggers ngOnInit
 
-    expect(component.educationLevels.length).toBe(3);
-    expect(component.selectedLevel).toEqual(dummyLevels[1]);
+    expect(component.form.get('educationLevelId')!.value).toBe(dummyLevels[0].id);
   });
 
-  it('should call activeModal.close with selectedLevel on save()', () => {
-    component.selectedLevel = dummyLevels[2];
+  it('should call activeModal.close with the newly selected education level on save', () => {
+    const selectedLevel = dummyLevels[2]; // Master
+    component.form.get('educationLevelId')!.setValue(selectedLevel.id);
+
     component.save();
 
-    expect(mockActiveModal.close).toHaveBeenCalledWith(dummyLevels[2]);
+    expect(mockActiveModal.close).toHaveBeenCalledWith(selectedLevel.id);
   });
 });

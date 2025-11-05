@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,14 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import '../../../../scss/_mixins.scss';
+import {Component} from '@angular/core';
 
-.casi-header{
-  @include background-color('primary');
-  padding: 2rem;
-  color: white;
-  border-bottom-left-radius: 2rem;
-  border-bottom-right-radius: 2rem;
-  margin-bottom: 1rem;
+@Component({
+  selector: 'app-tab-header',
+  templateUrl: './tab-header.component.html',
+  styleUrls: ['./tab-header.component.scss']
+})
+export class TabHeaderComponent {
+
 }
-

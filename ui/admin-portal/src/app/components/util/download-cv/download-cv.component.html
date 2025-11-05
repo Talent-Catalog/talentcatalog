@@ -14,8 +14,8 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Download Candidate CV'"
-          [actionText]="'Save'"
+<tc-modal heading="Download Candidate CV"
+          actionText="Ok"
           (onAction)="onSave()"
           [disableAction]="form.invalid || loading || saving"
           [showCancel]="true"
@@ -27,12 +27,22 @@
 
   <form [formGroup]="form">
         <tc-field [checkbox]="true">
-          <tc-label [for]="'name'">Include name?</tc-label>
-          <tc-input [type]="'checkbox'" [formControlName]="'name'" [id]="'name'"></tc-input>
+          <tc-label for="name">
+            Include name?
+          </tc-label>
+          <tc-input [type]="'checkbox'"
+                    [formControlName]="'name'"
+                    id="name"
+          ></tc-input>
         </tc-field>
         <tc-field [checkbox]="true">
-          <tc-label [for]="'contact'">Include contact details?</tc-label>
-          <tc-input [type]="'checkbox'" [formControlName]="'contact'" [id]="'contact'"></tc-input>
+          <tc-label for="contact">
+            Include contact details?
+          </tc-label>
+          <tc-input [type]="'checkbox'"
+                    [formControlName]="'contact'"
+                    id="contact"
+          ></tc-input>
         </tc-field>
   </form>
 
