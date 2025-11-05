@@ -396,22 +396,28 @@
               <ng-template #createChatButton>
                 <div *ngIf="!isReadOnlyUser()">
                   <div class="text-center mt-5 mb-4">
-                    <button class="btn btn-secondary mb-1" (click)="createChat()">
-                  <span *ngIf="loadingButton; else elseBlock">
-                    <i class="fas fa-spinner fa-spin"></i>
-                  </span>
+                    <tc-button class="mb-1"
+                               (onClick)="createChat()"
+                               [type]="'solid'"
+                               [color]="'primary'"
+                               [size]="'lg'"
+                    >
+                      <tc-loading [loading]="true"
+                                  *ngIf="loadingButton; else elseBlock"
+                      ></tc-loading>
                       <ng-template #elseBlock>
                         <i class="fa-regular fa-comment"></i>
                       </ng-template>
                       Create Chat
-                    </button>
+                    </tc-button>
                   </div>
                   <div class="text-muted fw-light text-center fs-6">
                     Click the button to create a chat with this candidate.
                     <br><br>
                     They will not see the chat until you have posted, at which point the Chat tab
-                    will appear on their candidate portal profile. Candidates are notified via email
-                    when new posts are added.
+                    will appear on their candidate portal profile.
+                    <br>
+                    Candidates are notified via email when new posts are added.
                   </div>
                 </div>
               </ng-template>
