@@ -22,13 +22,13 @@
     {{error}}
   </tc-alert>
 
-  <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+  <div class="d-flex justify-content-between align-items-center gap-2 my-3">
     <div class="job-header-container">
-      <p class="text-color-secondary heading-xs">
+      <p class="text-color-secondary heading-xs" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-1' : !showBreadcrumb}">
         Job opportunity #{{job.id}}
       </p>
       <div class="job-name-container">
-        <h2>{{job.name}}</h2>
+        <h2 [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}</h2>
         <tc-icon type="button" color="warning" size="lg" (click)="doToggleStarred()">
           <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
           <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
