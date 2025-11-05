@@ -209,6 +209,15 @@ marked as required but not actually required to proceed
 ## Cloud Enhancements
 
 
+## New Tools and Standards
+
+- #2418 Simply configured Spring Batch based solution for processing candidates in a list or search
+- #2418 Spring Batch version of old BackgroundProcessor which adapts batch processing depending on
+  how busy system is.
+- #2165 Additional reporting via Preset dashboard on candidate UTMs and params for TBB comms
+
+
+
 ---
 
 Thank you for using Talent Catalog! Your feedback and support are invaluable to us. If you encounter
