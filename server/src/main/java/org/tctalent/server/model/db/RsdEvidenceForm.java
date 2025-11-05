@@ -24,9 +24,9 @@ import org.tctalent.server.service.db.CandidateService;
  * Candidate form that captures refugee status determination evidence details.
  */
 public class RsdEvidenceForm extends CandidateFormInstanceHelper {
-  private static final String REFUGEE_STATUS_PROPERTY = "refugeeStatus";
-  private static final String DOCUMENT_TYPE_PROPERTY = "documentType";
-  private static final String DOCUMENT_NUMBER_PROPERTY = "documentNumber";
+  private static final String REFUGEE_STATUS_PROPERTY = "REFUGEE_STATUS";
+  private static final String DOCUMENT_TYPE_PROPERTY = "EVIDENCE_DOCUMENT_TYPE";
+  private static final String DOCUMENT_NUMBER_PROPERTY = "EVIDENCE_DOCUMENT_NUMBER";
 
   public RsdEvidenceForm(String formName, AuthService authService,
       CandidateService candidateService, CandidatePropertyService propertyService) {

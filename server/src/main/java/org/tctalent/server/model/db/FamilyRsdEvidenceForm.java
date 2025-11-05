@@ -28,7 +28,7 @@ import org.tctalent.server.service.db.CandidateService;
  */
 public class FamilyRsdEvidenceForm extends CandidateFormInstanceHelper {
 
-  private static final String FAMILY_RSD_JSON = "familyRsdEvidenceJson";
+  private static final String FAMILY_RSD_JSON = "FAMILY_RSD_EVIDENCE_INFO";
 
   public FamilyRsdEvidenceForm(String formName, AuthService authService,
       CandidateService candidateService,
