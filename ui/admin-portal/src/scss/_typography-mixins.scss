@@ -34,8 +34,8 @@ $font-lato: 'Lato', sans-serif;
 
 @mixin heading-lg { @include font-style(40px, 700, 2.25rem, $font-lato); }
 @mixin heading-md { @include font-style(30px, 700, 1.875rem, $font-lato); }
-@mixin heading-sm { @include font-style(24px, 700, 1.5rem, $font-lato); }
-@mixin heading-xs { @include font-style(20px, 700, 1.25rem, $font-lato); }
+@mixin heading-sm { @include font-style(24px, 500, 1.5rem, $font-lato); }
+@mixin heading-xs { @include font-style(20px, 500, 1.25rem, $font-lato); }
 
 // =====================
 // Labels

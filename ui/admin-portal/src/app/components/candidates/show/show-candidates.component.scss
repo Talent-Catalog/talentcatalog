@@ -32,21 +32,21 @@ label {
   cursor: not-allowed;
 }
 
-.starred {
-  color: color(secondary, 500);
-}
+//.starred {
+//  color: color(secondary, 500);
+//}
 
-.notstarred {
-  @include text-color-primary;
-}
+//.notstarred {
+//  @include text-color-primary;
+//}
 
-.watched {
-  color: color(secondary, 500);
-}
+//.watched {
+//  color: color(secondary, 500);
+//}
 
-.notwatched {
-  @include text-color-primary;
-}
+//.notwatched {
+//  @include text-color-primary;
+//}
 
 
 .filter-form {

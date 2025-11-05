@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-loading [loading]="loading"></tc-loading>
+<tc-loading type="page" [loading]="loading"></tc-loading>
 
 <tc-alert type="danger" *ngIf="error">
   <div><strong>{{error}}</strong></div>
@@ -22,14 +22,14 @@
 
 <div *ngIf="!loading && !loadingError">
 
-  <div class="d-flex justify-content-between align-items-center gap-3">
+  <div class="d-flex justify-content-between align-items-center mt-3">
 
     <div class="candidate-header-container">
       <p class="text-color-secondary heading-xs">
         Candidate #{{ candidate.candidateNumber }}
       </p>
 
-      <div class="candidate-name-container gap-3">
+      <div class="candidate-name-container gap-2">
         <h2>{{candidate.user.firstName}} {{candidate.user.lastName}}</h2>
         <app-potential-duplicate-icon
           [candidate]="candidate"
