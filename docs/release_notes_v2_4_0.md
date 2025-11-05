@@ -115,24 +115,24 @@ sass:
 
 ## General Improvements
 
-#2499 Improved use and display of candidate properties
-#2136 Support for versioned privacy agreements and automated approval processes. New Candidate 
+- #2499 Improved use and display of candidate properties
+- #2136 Support for versioned privacy agreements and automated approval processes. New Candidate 
 Registration process to support new agreements. Support for separate candidate agreements with each 
 managing source partner (not just TBB)
-#2280 New GDPR compatible candidate privacy agreement
-#2375 Display date that privacy terms were accepted by candidate
-#1939 Warning to candidate about CV related content could be made publicly viewable.
-#2190 Hotfix 2.3.0 Added WhatsApp number to the export feature of searches
-#2528 New Candidate Status: RelocatedIndependently
-#1885 Added WhatsApp numbers to candidate quick search by phone
-#2191 Added country code to phone number inputs on admin portal
-#1984 Removal of candidate.migration_nationality from TC database and entities
-#2690 Update CASI header misleading name
+- #2280 New GDPR compatible candidate privacy agreement 
+- #2375 Display date that privacy terms were accepted by candidate 
+- #1939 Warning to candidate about CV related content could be made publicly viewable. 
+- #2190 Hotfix 2.3.0 Added WhatsApp number to the export feature of searches 
+- #2528 New Candidate Status: RelocatedIndependently 
+- #1885 Added WhatsApp numbers to candidate quick search by phone 
+- #2191 Added country code to phone number inputs on admin portal 
+- #1984 Removal of candidate.migration_nationality from TC database and entities 
+- #2690 Update CASI header misleading name
 
 ## Data Improvements
 
-#2440 Slovakia added to TC countries
-#2130 Email alert for failing scheduled background batch operations
+- #2440 Slovakia added to TC countries 
+- #2130 Email alert for failing scheduled background batch operations
 
 # UI / UX Enhancements
 
@@ -145,6 +145,7 @@ managing source partner (not just TBB)
 
 # Security Fixes
 
+- #2482 Discontinue TC->SF all-candidates sync
 
 # Bug Fixes
 
