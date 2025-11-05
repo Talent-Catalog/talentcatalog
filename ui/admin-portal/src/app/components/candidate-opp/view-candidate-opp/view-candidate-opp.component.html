@@ -15,48 +15,76 @@
   -->
 
 <div *ngIf="opp">
-
-  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
-    <ol class="breadcrumb align-items-center">
-      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="opp.name" class="breadcrumb-item active" aria-current="page">Case / {{opp.name}}</li>
-    </ol>
-
-  </nav>
-
   <div class="py-3">
-    <div class="d-flex justify-content-between align-items-center">
-      <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
-        <span class="small text-muted icon-padding">
-          <a *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
-            <tc-icon>
-            <i class="fas fa-expand" title="Open"></i>
-              </tc-icon>
-          </a>
-          <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
-              <tc-icon> <i class="fas fa-user " title="Candidate"></i>              </tc-icon>
-          </a>
-          <a *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
-                     <tc-icon>     <i class="fas fa-address-book " title="Case (same as Open)"></i>    </tc-icon>
-          </a>
-          <a [routerLink]="['/job',opp.jobOpp.id]">
-                  <tc-icon> <i class="fa-solid fa-briefcase " title="Job"></i>    </tc-icon>
-          </a>
-          <a *ngIf="opp.jobOpp.submissionList"
-             [routerLink]="['/list',opp.jobOpp.submissionList.id]">
-                <tc-icon>   <i class="fa-solid fa-rectangle-list"
-                               title="Submission list"></i>    </tc-icon>
-          </a>
-          <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
-             target="_blank">
-                <tc-icon>   <i class="fab fa-salesforce ms-2" title="Show opp in Salesforce"></i>    </tc-icon>
-          </a>
-        </span>
-      </h1>
-    </div>
-    <p class="text-accent-1 fst-italic" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-0' : !showBreadcrumb}">
+    <p class="text-color-secondary heading-xs" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-1' : !showBreadcrumb}">
       Candidate Opportunity Case Number {{opp.id}}
     </p>
+    <div class="d-flex align-items-center gap-3">
+      <h2  [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
+      </h2>
+        <tc-dropdown placement="bottom-start">
+          <tc-dropdown-button type="solid" color="gray">
+            <i class="fas fa-angle-down"></i>
+          </tc-dropdown-button>
+
+          <tc-dropdown-menu>
+            <tc-dropdown-item *ngIf="!showBreadcrumb"
+                              [routerLink]="['/opp',opp.id]"
+                              [style.line-height]="'1rem'">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fas fa-expand" title="Open"></i>
+              </tc-icon>
+              Open
+            </tc-dropdown-item>
+
+            <tc-dropdown-item [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fas fa-user " title="Candidate"></i>
+              </tc-icon>
+              View Candidate
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fas fa-address-book " title="Case (same as Open)"></i>
+              </tc-icon>
+              Case (same as Open)
+            </tc-dropdown-item>
+
+            <tc-dropdown-item [routerLink]="['/job',opp.jobOpp.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fa-solid fa-briefcase " title="Job"></i>
+              </tc-icon>
+              Job
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="opp.jobOpp.submissionList"
+                              [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fa-solid fa-rectangle-list"
+                   title="Submission list"></i>
+              </tc-icon>
+              View Submission list
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
+                              target="_blank">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+              </tc-icon>
+              Show Opp in Salesforce
+            </tc-dropdown-item>
+
+
+          </tc-dropdown-menu>
+        </tc-dropdown>
+    </div>
   </div>
 
   <div class="pt-2"  style="margin-bottom: 2rem">
