@@ -23,7 +23,7 @@ sass:
     </div>
   </a>
 
-  <a href="./v230/italy_train_to_hire" class="card">
+  <a href="./v240/italy_train_to_hire" class="card">
     <img src="./assets/images/v240/ItalyTrainToHire.png" alt="Italy Train to Hire" class="card-image">
     <div class="card-body">
       <div class="card-title">Italy Train to Hire Support</div>
@@ -40,7 +40,7 @@ sass:
 </div>
 
 <div class="card-container">
-  <a href="./v230/privacy_agreements" class="card">
+  <a href="./v240/privacy_agreements" class="card">
     <img src="./assets/images/v240/PrivacyAgreementReview.png" alt="Privacy Agreement Review" class="card-image">
     <div class="card-body">
       <div class="card-title">Privacy Agreements Review - GDPR compliance</div>
@@ -55,7 +55,7 @@ sass:
     </div>
   </a>
 
-  <a href="./v230/improved_matching" class="card">
+  <a href="./v240/improved_matching" class="card">
     <img src="./assets/images/v240/ImprovedMatching.png" alt="Improved Matching" class="card-image">
     <div class="card-body">
       <div class="card-title">Improved Matching</div>
@@ -91,18 +91,6 @@ sass:
         This release delivers the backend framework for the Candidate Assistance Services Interface 
         (CASI), enabling future partner-led, data-driven support and engagement for Talent Catalog 
         candidates.
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <img src="./assets/images/v240/SkillsExtraction.png" alt="Skills Extraction" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Skills Extraction</div>
-      <div class="card-description">
-        This release lays the groundwork for integrating globally recognized ESCO and ONET skills 
-        into candidate profiles, with AI-assisted extraction to improve data quality and candidate 
-        visibility.
       </div>
     </div>
   </div>
