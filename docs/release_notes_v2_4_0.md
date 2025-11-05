@@ -141,14 +141,31 @@ managing source partner (not just TBB)
 
 ## Data Improvements
 
+- Integrates with standard skills from sources including **ESCO** and **ONet**
 - Slovakia added to TC countries 
 - Email alert for failing scheduled background batch operations
 
 # UI / UX Enhancements
 
+- Implemented phase 1 of the Talent Catalog re-design
+- Prioritized Matching: Results of user text searches can be sorted with best matches first
+- Automatically extracts standard skills from job description and generates search for candidates 
+with those skills.
+- Shows search matches found in uploaded CVs
+- Functionality to automate travel doc upload and data entry
+- Functionality to automate RSD evidence and refugee ID upload and data entry
+- Functionality to automate relocating family member RSD evidence and refugee ID upload and data 
+entry
+
 
 ## Other UI / UX Enhancements
 
+- New search filter request: max education level
+- Additional search filters for campaigns, sources, and mediums
+- Manually Update Max Education Level from Admin Panel
+- Can now import lists from candidate publicIds as well as candidate numbers.
+- Ability of TC admin user to find candidate by public ID
+- Display candidate Exam results in admin portal candidate profile
 
 # Performance Improvements
 
@@ -215,12 +232,15 @@ marked as required but not actually required to proceed
 
 ## Continuous Integration & Deployment
 
+- Setup integration tests with Docker Testcontainers 
+- Support for integration test DB Dump in CI/CD
 
 ## Cloud Enhancements
 
 
 ## New Tools and Standards
 
+- Introduced Candidate Forms and Form Tasks framework
 - Simply configured Spring Batch based solution for processing candidates in a list or search
 - Spring Batch version of old BackgroundProcessor which adapts batch processing depending on
   how busy system is.
