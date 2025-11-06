@@ -79,7 +79,7 @@
       <tc-accordion-item>
         <div custom-header class="d-flex justify-content-between align-items-center w-100 me-2">
           <span>Confirm General Information</span>
-          <tc-button (onClick)="editContactDetails($event)"
+          <tc-button (onClick)="editContactDetails()"
                      [type]="'solid'"
                      [color]="'primary'"
                      [size]="'sm'"
@@ -93,7 +93,6 @@
           [candidateIntakeData]="candidateIntakeData">
         </app-confirm-contact>
       </tc-accordion-item>
-
 
       <!--        International Recruitment-->
       <tc-accordion-item header="Availability for International Recruitment">
@@ -113,7 +112,7 @@
                 someone soon who will give you another citizenship?)</small>
             </div>
             <div *ngIf="isEditable()" class="col-1">
-              <tc-button (onClick)="addCitizenshipRecord($event)"
+              <tc-button (onClick)="addCitizenshipRecord()"
                          [type]="'solid'"
                          [size]="'sm'"
                          [color]="'primary'"
@@ -236,7 +235,7 @@
               </div>
             </div>
             <div *ngIf="isEditable()" class="col-1">
-              <tc-button (onClick)="addExamRecord($event)"
+              <tc-button (onClick)="addExamRecord()"
                          [size]="'sm'"
                          [type]="'solid'"
                          [color]="'primary'"

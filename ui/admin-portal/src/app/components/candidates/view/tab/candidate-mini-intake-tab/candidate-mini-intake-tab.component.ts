@@ -76,8 +76,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     return this.countryService.isPalestine(this.candidate?.nationality)
   }
 
-  addExamRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addExamRecord() {
     this.saving = true;
     const request: CreateCandidateExamRequest = {};
     this.candidateExamService.create(this.candidate.id, request).subscribe(
@@ -91,9 +90,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addCitizenshipRecord(e: MouseEvent) {
-    // Stop the button from opening/closing the accordion
-    e.stopPropagation();
+  addCitizenshipRecord() {
     this.saving = true;
     const request: CreateCandidateCitizenshipRequest = {};
     this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
@@ -111,8 +108,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
-  editContactDetails(event: MouseEvent) {
-    event.stopPropagation(); // Stop the click event from opening/closing the accordion
+  editContactDetails() {
     const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
       centered: true,
       backdrop: 'static',

@@ -78,7 +78,8 @@ export class ButtonComponent {
     ];
   }
 
-  clicked(): void {
+  clicked(e: MouseEvent): void {
+    e.stopPropagation(); // Stop unwanted native click events
     this.onClick.emit();
   }
 

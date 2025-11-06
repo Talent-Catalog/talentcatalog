@@ -106,7 +106,7 @@
             <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
           </div>
           <div *ngIf="isEditable()" class="col-1">
-            <tc-button (onClick)="addCitizenshipRecord($event)"
+            <tc-button (onClick)="addCitizenshipRecord()"
                        [size]="'sm'"
                        [type]="'solid'"
                        [color]="'primary'"
@@ -166,7 +166,7 @@
             </div>
           </div>
           <div *ngIf="isEditable()" class="col-1">
-            <tc-button (onClick)="addExamRecord($event)"
+            <tc-button (onClick)="addExamRecord()"
                        [size]="'sm'"
                        [type]="'solid'"
                        [color]="'primary'"
@@ -244,7 +244,7 @@
 
           </div>
           <div *ngIf="isEditable()" class="col-1">
-            <tc-button (onClick)="addDependantRecord($event)"
+            <tc-button (onClick)="addDependantRecord()"
                        [size]="'sm'"
                        [type]="'solid'"
                        [color]="'primary'"
