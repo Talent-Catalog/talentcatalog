@@ -44,7 +44,7 @@
   </div>
 
   <div *ngIf="candidate.candidateAttachments.length">
-    <div class="mb-4">
+    <div class="mb-3">
       <app-shareable-docs
         [candidate]="candidate">
       </app-shareable-docs>
@@ -78,6 +78,8 @@
             [candidate]="candidate"
             [attachment]="attachment"
             (loadingStatus)="loading = $event"
+            [color]="'secondary'"
+            [size]="'md'"
           >
           </app-cv-icon>
         </div>
