@@ -29,9 +29,9 @@ import org.tctalent.server.service.db.CandidateService;
  */
 public class FamilyDocForm extends CandidateFormInstanceHelper {
 
-    private static final String FAMILY_MEMBERS_JSON = "familyMembersJson";
-    private static final String NO_ELIGIBLE = "noEligibleFamilyMembers";
-    private static final String NO_ELIGIBLE_NOTES = "noEligibleNotes";
+    private static final String FAMILY_MEMBERS_JSON = "DEPENDANTS_TRAVEL_INFO";
+    private static final String NO_ELIGIBLE = "NO_ELIGIBLE_FAMILY_MEMBERS";
+    private static final String NO_ELIGIBLE_NOTES = "NO_ELIGIBLE_NOTES";
 
     public FamilyDocForm(String formName, AuthService authService,
         CandidateService candidateService,

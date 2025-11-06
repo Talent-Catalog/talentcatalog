@@ -28,11 +28,11 @@ public class TravelDocForm extends CandidateFormInstanceHelper {
     }
 
     // Constants for property names
-    private static final String DOC_TYPE_PROP = "travelDocType";
-    private static final String DOC_NUMBER_PROP = "travelDocNumber";
-    private static final String DOC_ISSUED_BY_PROP = "travelDocIssuedBy";
-    private static final String DOC_ISSUE_DATE_PROP = "travelDocIssueDate";
-    private static final String DOC_EXPIRY_DATE_PROP = "travelDocExpiryDate";
+    private static final String DOC_TYPE_PROP = "TRAVEL_DOC_TYPE";
+    private static final String DOC_NUMBER_PROP = "TRAVEL_DOC_NUMBER";
+    private static final String DOC_ISSUED_BY_PROP = "TRAVEL_DOC_ISSUED_BY";
+    private static final String DOC_ISSUE_DATE_PROP = "TRAVEL_DOC_ISSUE_DATE";
+    private static final String DOC_EXPIRY_DATE_PROP = "TRAVEL_DOC_EXPIRY_DATE";
 
     public String getFormName() {
         return "TravelDocForm";
