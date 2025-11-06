@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-loading [loading]="loading"></tc-loading>
+<tc-loading type="page" [loading]="loading"></tc-loading>
 
 <tc-alert type="danger" *ngIf="error">
   <div><strong>{{error}}</strong></div>
@@ -22,84 +22,161 @@
 
 <div *ngIf="!loading && !loadingError">
 
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb align-items-center">
-      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
-      <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
-      <li *ngIf="isEditable()" class="ms-auto">
-        <div  class="input-group">
-          <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
-                 value="{{candidate.status | titlecase}}" disabled>
-          <button class="btn btn-sm btn-secondary" (click)="editCandidate()"><i class="fas fa-edit fa-sm"></i></button>
-        </div>
-      </li>
-    </ol>
+  <div class="d-flex justify-content-between align-items-center mt-3">
 
-  </nav>
+    <div class="candidate-header-container">
+      <p class="text-color-secondary heading-xs">
+        Candidate #{{ candidate.candidateNumber }}
+      </p>
 
-  <div class="d-flex justify-content-between align-items-center">
-
-      <h1>{{candidate.user.firstName}} {{candidate.user.lastName}}
-        <span class="small text-muted">
-        {{candidate.candidateNumber}}
-          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]" class="link-primary">
-            <i class="fas fa-external-link-alt is-link" title="Show candidate in new tab"></i>
-          </a>
-           -
-          <a target="_blank" (click)="downloadGeneratedCV()" class="link-info">
-              <i class="fas fa-file-download"
-                 title="Opens/DLs CV generated from candidate profile"
-              ></i>
-          </a>
-          <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank" class="link-info">
-            <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
-          </a>
-          <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
-             [href]="candidate.folderlink"
-             target="_blank"
-             class="link-info">
-            <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
-          </a>
-          <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank" class="link-info">
-            <i class="fas fa-video" title="Show candidate's one way video"></i>
-          </a>
-          <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank" class="link-info" >
-            <i class="fab fa-linkedin" title="Show candidate's linkedIn"></i>
-          </a>
-          <app-cv-icon
-            *ngIf="isCVViewable()"
-            [candidate]="candidate">
-          </app-cv-icon>
-          <a [href]="publicCvUrl()" target="_blank" class="link-info">
-            <i class="fas fa-users" title="View candidate's public CV"></i>
-          </a>
-          <a (click)="createTailoredCv()" class="link-info">
-            <i class="fas fa-users-gear"  title="View tailored candidate's public CV"></i>
-          </a>
-          <app-potential-duplicate-icon
-            [candidate]="candidate"
-            (refresh)="refreshCandidateProfile()"
-          ></app-potential-duplicate-icon>
-        </span>
-      </h1>
-
-
-      <div class="col-sm-4">
-        <app-candidate-shareable-notes
+      <div class="candidate-name-container gap-2">
+        <h2>{{candidate.user.firstName}} {{candidate.user.lastName}}</h2>
+        <app-potential-duplicate-icon
           [candidate]="candidate"
-          [editable] = "isEditable()"
-        >
-        </app-candidate-shareable-notes>
+          (refresh)="refreshCandidateProfile()"
+          [size]="'lg'"
+        ></app-potential-duplicate-icon>
+
+        <tc-dropdown placement="bottom-start">
+          <tc-dropdown-button type="solid" color="gray">
+            <i class="fas fa-angle-down"></i>
+          </tc-dropdown-button>
+
+          <tc-dropdown-menu>
+            <tc-dropdown-item (itemSelect)="downloadGeneratedCV()"
+                              target="_blank"
+                              title="Open/download generated CV"
+                              [style.line-height]="'1rem'"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+              >
+                <i class="fas fa-file-download"></i>
+              </tc-icon>
+              Open/download generated CV
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="candidate.sflink && canAccessSalesforce()"
+                              [href]="candidate.sflink"
+                              target="_blank"
+                              title="View candidate in Salesforce"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+              >
+                <i class="fab fa-salesforce"></i>
+              </tc-icon>
+              View candidate in Salesforce
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="candidate.folderlink && canAccessGoogleDrive()"
+                              [href]="candidate.folderlink"
+                              target="_blank"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View Google Drive folder"
+              >
+                <i class="fab fa-google-drive"></i>
+              </tc-icon>
+              View Google Drive folder
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="candidate.videolink"
+                              [href]="candidate.videolink"
+                              target="_blank"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View one-way video"
+              >
+                <i class="fas fa-video"></i>
+              </tc-icon>
+              View one-way video
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="candidate.linkedInLink"
+                              [href]="candidate.linkedInLink"
+                              target="_blank"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View LinkedIn"
+              >
+                <i class="fab fa-linkedin"></i>
+              </tc-icon>
+              View LinkedIn
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="isCVViewable() && uploadedCvAvailable"
+                              [routerLink]="['/candidate',candidate.candidateNumber]"
+            >
+              <app-cv-icon [candidate]="candidate"
+                           [size]="'md'"
+                           [color]="'primary'"
+                           [showLabel]="true"
+              ></app-cv-icon>
+            </tc-dropdown-item>
+
+            <tc-dropdown-item [href]="publicCvUrl()"
+                              target="_blank"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View public CV"
+              >
+                <i class="fas fa-users"></i>
+              </tc-icon>
+              View public CV
+            </tc-dropdown-item>
+
+            <tc-dropdown-item (itemSelect)="createTailoredCv()"
+                              [style.line-height]="'1rem'"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View tailored CV"
+              >
+                <i class="fas fa-users-gear"></i>
+              </tc-icon>
+              View tailored CV
+            </tc-dropdown-item>
+          </tc-dropdown-menu>
+        </tc-dropdown>
       </div>
+    </div>
+
+
+    <div class="col-sm-5">
+      <div *ngIf="isEditable()"
+           class="input-group status-editor ms-auto"
+      >
+        <input type="text"
+               class="form-control"
+               id="status"
+               title="{{candidate.candidateMessage}}"
+               value="{{candidate.status | titlecase}}"
+               disabled
+        >
+        <button class="btn btn-sm btn-secondary edit-status-btn" (click)="editCandidate()">
+          <i class="fas fa-edit fa-sm"></i>
+        </button>
+      </div>
+
+      <app-candidate-shareable-notes
+        [candidate]="candidate"
+        [editable] = "isEditable()"
+      ></app-candidate-shareable-notes>
+    </div>
 
   </div>
 
   <p class="small text-muted mb-1">Add candidate to a list - you can select from lists you created, global lists
     (like job lists) or lists that you have starred.</p>
-  <div class="d-flex align-items-center mb-4">
+  <div class="d-flex align-items-center mb-5">
     <div class="flex-grow-1">
       <ng-select
+        class="tc-select"
         [readonly]="!isEditable()"
         [items]="lists"
         [multiple]="true"
@@ -130,9 +207,14 @@
       </ng-select>
     </div>
 
-    <button class="btn btn-sm btn-primary ms-2" type="button"
-            (click)="onNewList()">+ New List
-    </button>
+    <tc-button class="ms-2 flex-shrink-0"
+               (onClick)="onNewList()"
+               [size]="'lg'"
+               [type]="'solid'"
+               [color]="'primary'"
+    >
+      + New List
+    </tc-button>
   </div>
 
   <div class="row">
@@ -314,22 +396,28 @@
               <ng-template #createChatButton>
                 <div *ngIf="!isReadOnlyUser()">
                   <div class="text-center mt-5 mb-4">
-                    <button class="btn btn-secondary mb-1" (click)="createChat()">
-                  <span *ngIf="loadingButton; else elseBlock">
-                    <i class="fas fa-spinner fa-spin"></i>
-                  </span>
+                    <tc-button class="mb-1"
+                               (onClick)="createChat()"
+                               [type]="'solid'"
+                               [color]="'primary'"
+                               [size]="'lg'"
+                    >
+                      <tc-loading [loading]="true"
+                                  *ngIf="loadingButton; else elseBlock"
+                      ></tc-loading>
                       <ng-template #elseBlock>
                         <i class="fa-regular fa-comment"></i>
                       </ng-template>
                       Create Chat
-                    </button>
+                    </tc-button>
                   </div>
                   <div class="text-muted fw-light text-center fs-6">
                     Click the button to create a chat with this candidate.
                     <br><br>
                     They will not see the chat until you have posted, at which point the Chat tab
-                    will appear on their candidate portal profile. Candidates are notified via email
-                    when new posts are added.
+                    will appear on their candidate portal profile.
+                    <br>
+                    Candidates are notified via email when new posts are added.
                   </div>
                 </div>
               </ng-template>
@@ -339,11 +427,16 @@
         </tc-tabs>
 
       </div>
-      <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} admin-panel">
+      <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} candidate-notes-panel">
         <div class="w-100">
           <div *ngIf="canToggleSizes()" class="float-end">
-            <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-              class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i></button>
+            <tc-button (onClick)="resizeSidePanel()"
+                       [type]="'outline'"
+                       [size]="'sm'"
+                       [color]="'primary'"
+            >
+              <i class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i>
+            </tc-button>
           </div>
           <app-view-candidate-note
             [candidate]="candidate"

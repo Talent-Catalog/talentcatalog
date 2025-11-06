@@ -13,28 +13,23 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-<div class="modal-header">
+<tc-modal heading="Tailor CV"
+          [showClose]="true"
+          [showAction]="false"
+          [showCancel]="false"
+>
 
-  <h4 class="modal-title">Tailor CV</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form *ngIf="!loading">
 
-      <label>Choose occupations to display on the tailored CV</label>
+      <label class="mb-2">Choose occupations to display on the tailored CV:</label>
       <table>
         <thead>
           <tr>
@@ -65,7 +60,8 @@
     </form>
 
   </div>
-</div>
+</tc-modal>
+
 <div class="modal-footer">
   <a target="_blank" [href]="publicCvLink" [class.disabled]="!publicCvLink">Open Public CV Link</a>
 </div>

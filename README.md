@@ -141,6 +141,15 @@ Download and install the latest of the following tools.
       ```shell
         docker-compose --version
       ```
+      
+      > IMPORTANT NOTE:
+      >
+      > This project assumes you are using Docker Compose V2. Container names differ from V1.
+      > 
+      > V1 used underscores (_) to separate parts of the container name, whereas V2 uses hyphens (-).
+      > 
+      > Commands in this README use V2 conventions. If you are using V1, you will need to adjust 
+        the commands, or upgrade to V2 (see [Docker's Official Guide](https://docs.docker.com/compose/releases/migrate/)).
 
 ### Clone the TC repository from Git ###
 

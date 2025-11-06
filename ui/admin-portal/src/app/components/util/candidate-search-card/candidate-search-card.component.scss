@@ -24,11 +24,12 @@
 .candidate-card {
   width: 100%;
   padding: 1.5em;
-  border: 1px solid #aaa;
+  border: 1px solid #ddd;
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  margin-bottom: 8px;
 }
 
 .candidate-header {

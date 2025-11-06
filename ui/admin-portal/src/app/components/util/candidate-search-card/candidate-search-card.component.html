@@ -131,8 +131,9 @@
             <app-candidate-general-tab
               [candidate]="candidate"
               [editable]="false"
-              [adminUser]="isAnAdmin()">
-            </app-candidate-general-tab>
+              [adminUser]="isAnAdmin()"
+              [compact]="true"
+            ></app-candidate-general-tab>
           </tc-tab-content>
         </tc-tab>
 
@@ -159,6 +160,16 @@
             </app-candidate-education-tab>
           </tc-tab-content>
         </tc-tab>
+                                                                                                     -
+        <!-- CV MATCHES -->
+        <tc-tab [id]="'cvMatches'">
+          <tc-tab-header>CV Matches</tc-tab-header>
+          <tc-tab-content>
+            <app-candidate-cv-text-tab
+              [candidate]="candidate">
+            </app-candidate-cv-text-tab>
+          </tc-tab-content>
+        </tc-tab>
 
         <!-- ADDITIONAL INFO -->
         <tc-tab [id]="'additional'">
@@ -167,8 +178,9 @@
             <app-candidate-additional-info-tab
               [candidate]="candidate"
               [editable]="false"
-              [canViewPrivateInfo]="canViewPrivateInfo()">
-            </app-candidate-additional-info-tab>
+              [canViewPrivateInfo]="canViewPrivateInfo()"
+              [compact]="true"
+            ></app-candidate-additional-info-tab>
           </tc-tab-content>
         </tc-tab>
 
