@@ -511,8 +511,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
 
     clearSelectionModal.componentInstance.title = "Your selections will be cleared";
-    clearSelectionModal.componentInstance.message = "Changing the search filters will clear any candidate's selected. " +
-      "If you would like to keep your selections please save selections to a list before searching. Or to proceed without saving selections just click OK.";
+    clearSelectionModal.componentInstance.message =
+      "Changing the search filters will clear any candidates selected. " +
+      "<br><br>If you would like to keep your selections please save selections to a list before searching. " +
+      "Or to proceed without saving selections just click OK.";
 
     return clearSelectionModal.result
       .then((confirmation) => {
