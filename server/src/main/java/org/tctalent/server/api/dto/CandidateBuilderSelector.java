@@ -178,6 +178,7 @@ public class CandidateBuilderSelector {
             .add("dob")
             .add("phone")
             .add("whatsapp")
+            .add("address1")
             .add("city")
             .add("state")
             .add("externalId")
