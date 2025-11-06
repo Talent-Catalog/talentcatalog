@@ -70,7 +70,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       if (this.candidate.fullIntakeCompletedBy != null) {
         user = this.candidate?.fullIntakeCompletedBy.firstName + " " + this.candidate?.fullIntakeCompletedBy.lastName;
       } else {
-        user = "external input, see notes for more details."
+        user = "external input - see Notes for more details"
       }
     }
     return user;

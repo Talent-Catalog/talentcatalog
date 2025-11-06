@@ -21,35 +21,45 @@
   <tc-alert type="danger">{{error}}</tc-alert>
 </div>
 
-
-
 <div *ngIf="!loading" id="MiniIntakeForm">
-  <div class="d-flex justify-content-between mb-3 ms-2 align-items-end">
+  <div class="d-flex justify-content-between align-items-end">
     <div class="d-flex flex-column justify-content-between">
-      <div class="mb-3 d-flex">
-        <h4>Mini Intake</h4><h6 *ngIf="miniIntakeComplete" class="ms-2 mb-1 text-success align-self-center">Completed
-        on {{candidate?.miniIntakeCompletedDate | date}} by {{miniIntakeCompletedBy}}</h6>
+      <div class="mb-3 d-flex flex-column">
+        <h4>Mini Intake</h4>
+        <p *ngIf="miniIntakeComplete" class="mb-1 intake-complete">
+          Completed on {{candidate?.miniIntakeCompletedDate | date}} by {{miniIntakeCompletedBy}}
+        </p>
       </div>
       <div class="d-flex">
-        <app-export-pdf [candidate]="candidate" [idToExport]="'MiniIntakeForm'"></app-export-pdf>
+        <app-export-pdf [candidate]="candidate"
+                        [idToExport]="'MiniIntakeForm'"
+        ></app-export-pdf>
       </div>
     </div>
     <div *ngIf="isEditable()" class="d-flex justify-content-between gap-2">
       <div *ngIf="miniIntakeComplete; else notComplete">
-        <tc-button color="warning" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
+        <tc-button color="warning"
+                   (onClick)="createIntakeNote('Mini Intake', 'update')"
+                   [disabled]="saving || clickedOldIntake"
+                   [size]="'sm'"
+        >
           Update
         </tc-button>
       </div>
       <ng-template #notComplete>
-        <tc-button color="warning"
-                (click)="inputOldIntake(false)"
-                [disabled]="saving">
+        <tc-button [color]="'warning'"
+                   (onClick)="inputOldIntake(false)"
+                   [disabled]="saving"
+                   [size]="'sm'"
+        >
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Input External Intake
         </tc-button>
-        <tc-button color="success"
-                (click)="completeIntake(false)"
-                [disabled]="candidate.miniIntakeCompletedDate != null">
+        <tc-button [color]="'success'"
+                   (onClick)="completeIntake(false)"
+                   [disabled]="candidate.miniIntakeCompletedDate != null"
+                   [size]="'sm'"
+        >
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Complete
         </tc-button>
@@ -57,7 +67,9 @@
     </div>
   </div>
 
-  <div>
+  <hr>
+
+  <div class="intake-accordion">
 
 <!--   Mini Intake  Accordion -->
     <tc-accordion [appReadOnlyInputs]="!isEditable()">
@@ -67,9 +79,10 @@
       <tc-accordion-item>
         <div custom-header class="d-flex justify-content-between align-items-center w-100 me-2">
           <span>Confirm General Information</span>
-          <tc-button (click)="editContactDetails($event)"
+          <tc-button (onClick)="editContactDetails($event)"
                      [type]="'solid'"
-                     [size]="'sm'">
+                     [size]="'sm'"
+          >
             <i class="fas fa-edit"></i>
           </tc-button>
         </div>
@@ -99,7 +112,7 @@
                 someone soon who will give you another citizenship?)</small>
             </div>
             <div *ngIf="isEditable()" class="col-1">
-              <tc-button (click)="addCitizenshipRecord($event)">
+              <tc-button (onClick)="addCitizenshipRecord($event)">
                 <i class="fas fa-plus"></i>
               </tc-button>
             </div>
@@ -218,7 +231,7 @@
               </div>
             </div>
             <div *ngIf="isEditable()" class="col-1">
-              <tc-button (click)="addExamRecord($event)">
+              <tc-button (onClick)="addExamRecord($event)">
                 <i class="fas fa-plus"></i>
               </tc-button>
             </div>
@@ -288,7 +301,7 @@
   </div>
   <div *ngIf="isEditable()" class="float-end mt-3">
     <div *ngIf="miniIntakeComplete; else notComplete" class="mb-2">
-      <tc-button (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
+      <tc-button (onClick)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
         Update
       </tc-button>
     </div>
