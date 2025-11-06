@@ -364,9 +364,15 @@
 
   </tc-accordion>
 
-  <div *ngIf="isEditable()" class="float-end mt-3">
+  <hr>
+
+  <div *ngIf="isEditable()" class="float-end">
     <div *ngIf="fullIntakeComplete; else notComplete" class="mb-2">
-      <tc-button (onClick)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
+      <tc-button (onClick)="createIntakeNote('Full Intake', 'update')"
+                 [disabled]="saving"
+                 [size]="'sm'"
+                 [color]="'warning'"
+      >
         Update
       </tc-button>
     </div>

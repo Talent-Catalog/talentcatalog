@@ -38,7 +38,7 @@
     </div>
     <div *ngIf="isEditable()" class="d-flex justify-content-between gap-2">
       <div *ngIf="miniIntakeComplete; else notComplete">
-        <tc-button color="warning"
+        <tc-button [color]="'warning'"
                    (onClick)="createIntakeNote('Mini Intake', 'update')"
                    [disabled]="saving || clickedOldIntake"
                    [size]="'sm'"
@@ -299,9 +299,16 @@
 
     </tc-accordion>
   </div>
-  <div *ngIf="isEditable()" class="float-end mt-3">
+
+  <hr>
+
+  <div *ngIf="isEditable()" class="float-end">
     <div *ngIf="miniIntakeComplete; else notComplete" class="mb-2">
-      <tc-button (onClick)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
+      <tc-button (onClick)="createIntakeNote('Mini Intake', 'update')"
+                 [disabled]="saving || clickedOldIntake"
+                 [color]="'warning'"
+                 [size]="'sm'"
+      >
         Update
       </tc-button>
     </div>
