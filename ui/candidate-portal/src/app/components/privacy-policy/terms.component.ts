@@ -14,6 +14,7 @@ export class TermsComponent implements OnInit {
   content: string;
   currentPrivacyPolicy: TermsInfoDto;
   error: any;
+  partnerEmail: string;
   partnerName: string;
   requestAcceptance: boolean;
   termsRead: boolean = false;
@@ -49,6 +50,7 @@ export class TermsComponent implements OnInit {
 
     //Store the name of the candidate's partner
     this.partnerName = candidate?.user?.partner?.name;
+    this.partnerEmail = candidate?.user?.partner?.notificationEmail;
     this.acceptedPrivacyPolicyId = candidate?.acceptedPrivacyPolicyId;
     this.acceptedPrivacyPolicyDate = candidate?.acceptedPrivacyPolicyDate;
     this.acceptedPrivacyPolicyPartner = candidate?.acceptedPrivacyPolicyPartner?.name || this.partnerName;
