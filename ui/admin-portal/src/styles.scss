@@ -280,3 +280,7 @@ tr.clickable:hover {
   @include background-color-light;
   margin: 10px 0;
 }
+
+.modal-content {
+  border-radius: 1rem;
+}

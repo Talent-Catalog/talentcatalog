@@ -75,6 +75,25 @@ export interface FamilyDocFormData {
   familyMembersJson: string;
 }
 
+
+export interface FamilyRsdEvidenceEntry {
+  memberKey: string;
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: string;
+  displayName?: string;
+  refugeeStatus?: string;
+  documentType?: string;
+  documentNumber?: string;
+  attachmentId?: number;
+  attachmentName?: string;
+  attachmentLocation?: string;
+}
+
+export interface FamilyRsdEvidenceFormData {
+  familyRsdEvidenceJson?: string;
+}
+
 export enum RsdRefugeeStatus {
   RecognizedByUnhcr = 'RECOGNIZED_BY_UNHCR',
   RecognizedByHostCountry = 'RECOGNIZED_BY_HOST_COUNTRY',
