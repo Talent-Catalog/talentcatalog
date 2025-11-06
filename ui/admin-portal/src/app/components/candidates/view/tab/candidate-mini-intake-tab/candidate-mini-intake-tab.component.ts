@@ -66,7 +66,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
       if (this.candidate.miniIntakeCompletedBy != null) {
         user = this.candidate?.miniIntakeCompletedBy.firstName + " " + this.candidate?.miniIntakeCompletedBy.lastName;
       } else {
-        user = "external intake input, see notes for more details."
+        user = "external input, see notes for more details."
       }
     }
     return user;

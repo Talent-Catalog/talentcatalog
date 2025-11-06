@@ -27,7 +27,10 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
@@ -67,7 +70,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       if (this.candidate.fullIntakeCompletedBy != null) {
         user = this.candidate?.fullIntakeCompletedBy.firstName + " " + this.candidate?.fullIntakeCompletedBy.lastName;
       } else {
-        user = "external intake input, see notes for more details."
+        user = "external input, see notes for more details."
       }
     }
     return user;
