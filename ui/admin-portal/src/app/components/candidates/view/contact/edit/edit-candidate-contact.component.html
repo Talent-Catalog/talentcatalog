@@ -14,10 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="'Edit Candidate'"
+<tc-modal heading="Edit Candidate"
           [showClose]="true"
           [showCancel]="true"
-          [actionText]="'Save'"
+          actionText="Save"
           (onAction)="onSave()"
           [disableAction]="candidateForm.invalid || loading || saving"
 >
@@ -120,10 +120,12 @@
         <!-- ADDRESS -->
         <div class="mb-3">
           <tc-field>
-            <tc-label [for]="'address1'">Address</tc-label>
+            <tc-label for="address1">
+              Address
+            </tc-label>
             <tc-input [type]="'text'"
-                      [id]="'address1'"
-                      [placeholder]="'Enter address (if have one)'"
+                      id="address1"
+                      placeholder="Enter address (if have one)"
                       [formControlName]="'address1'"
             ></tc-input>
           </tc-field>
@@ -132,7 +134,9 @@
         <!-- City -->
         <div class="mb-3">
           <tc-field>
-            <tc-label [for]="'city'">City</tc-label>
+            <tc-label for="city">
+              City
+            </tc-label>
             <tc-input [type]="'text'"
                       [id]="'city'"
                       [placeholder]="'Enter city'"
