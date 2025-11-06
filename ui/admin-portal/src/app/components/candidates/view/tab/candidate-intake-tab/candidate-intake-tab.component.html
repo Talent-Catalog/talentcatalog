@@ -97,7 +97,7 @@
       </app-rural>
     </tc-accordion-item>
 
-    <!--      CITIZENSHIP  -->
+    <!--      CITIZENSHIPS  -->
     <tc-accordion-item>
       <div custom-header class="container-fluid gx-0">
         <div class="row align-items-center">
@@ -106,7 +106,11 @@
             <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
           </div>
           <div *ngIf="isEditable()" class="col-1">
-            <tc-button (onClick)="addCitizenshipRecord($event)">
+            <tc-button (onClick)="addCitizenshipRecord($event)"
+                       [size]="'sm'"
+                       [type]="'solid'"
+                       [color]="'primary'"
+            >
               <i class="fas fa-plus"></i>
             </tc-button>
           </div>
@@ -116,8 +120,9 @@
       <app-citizenships
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [nationalities]="nationalities">
-      </app-citizenships>
+        [nationalities]="nationalities"
+        [editable]="true"
+      ></app-citizenships>
     </tc-accordion-item>
 
     <!--      EXAMS  -->
@@ -161,14 +166,21 @@
             </div>
           </div>
           <div *ngIf="isEditable()" class="col-1">
-            <tc-button (onClick)="addExamRecord($event)">
+            <tc-button (onClick)="addExamRecord($event)"
+                       [size]="'sm'"
+                       [type]="'solid'"
+                       [color]="'primary'"
+            >
               <i class="fas fa-plus"></i>
             </tc-button>
           </div>
         </div>
       </div>
 
-      <app-exams [candidate]="candidate" [candidateIntakeData]="candidateIntakeData"></app-exams>
+      <app-exams [candidate]="candidate"
+                 [candidateIntakeData]="candidateIntakeData"
+                 [editable]="true"
+      ></app-exams>
     </tc-accordion-item>
 
 
@@ -232,7 +244,11 @@
 
           </div>
           <div *ngIf="isEditable()" class="col-1">
-            <tc-button (onClick)="addDependantRecord($event)">
+            <tc-button (onClick)="addDependantRecord($event)"
+                       [size]="'sm'"
+                       [type]="'solid'"
+                       [color]="'primary'"
+            >
               <i class="fas fa-plus"></i>
             </tc-button>
           </div>

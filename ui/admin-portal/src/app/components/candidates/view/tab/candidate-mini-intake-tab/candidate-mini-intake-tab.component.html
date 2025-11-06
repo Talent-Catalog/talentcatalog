@@ -81,6 +81,7 @@
           <span>Confirm General Information</span>
           <tc-button (onClick)="editContactDetails($event)"
                      [type]="'solid'"
+                     [color]="'primary'"
                      [size]="'sm'"
           >
             <i class="fas fa-edit"></i>
@@ -102,7 +103,7 @@
         </app-avail-immediate>
       </tc-accordion-item>
 
-      <!--      CITIZENSHIP'S  -->
+      <!--      CITIZENSHIPS  -->
       <tc-accordion-item>
         <div custom-header class="container-fluid gx-0">
           <div class="row align-items-center">
@@ -112,7 +113,11 @@
                 someone soon who will give you another citizenship?)</small>
             </div>
             <div *ngIf="isEditable()" class="col-1">
-              <tc-button (onClick)="addCitizenshipRecord($event)">
+              <tc-button (onClick)="addCitizenshipRecord($event)"
+                         [type]="'solid'"
+                         [size]="'sm'"
+                         [color]="'primary'"
+              >
                 <i class="fas fa-plus"></i>
               </tc-button>
             </div>
@@ -231,7 +236,11 @@
               </div>
             </div>
             <div *ngIf="isEditable()" class="col-1">
-              <tc-button (onClick)="addExamRecord($event)">
+              <tc-button (onClick)="addExamRecord($event)"
+                         [size]="'sm'"
+                         [type]="'solid'"
+                         [color]="'primary'"
+              >
                 <i class="fas fa-plus"></i>
               </tc-button>
             </div>
