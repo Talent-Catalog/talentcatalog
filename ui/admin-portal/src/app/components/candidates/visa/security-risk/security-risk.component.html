@@ -19,12 +19,15 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label for="visaSecurityRisk">Meets security requirement? (e.g. military, prior visa cancellation)
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaSecurityRisk">
+          Meets security requirement? (e.g. military, prior visa cancellation)
+        </tc-label>
         <app-autosave-status
           [saving]="saving"
           [typing]="typing">
         </app-autosave-status>
-      </tc-label>
+      </div>
       <ng-select class="tc-select" id="visaSecurityRisk" [formControlName]="'visaSecurityRisk'"
                  [items]="securityRiskOptions" placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </tc-field>
