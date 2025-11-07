@@ -18,7 +18,7 @@
   <h5>Section 1: Visa Assessment - Australia</h5>
 
 <!-- ACCORDION VERSION OF FORM  -->
-  <tc-accordion [appReadOnlyInputs]="!isEditable()">
+  <tc-accordion [appReadOnlyInputs]="!isEditable()" [allowOverflow]="true">
 
     <tc-accordion-item id="visa-aus-confirm" header="Confirmation Details">
       <app-confirm-contact
@@ -165,7 +165,7 @@
 
   </tc-accordion>
 
-  <hr>
+  <hr class="mt-4">
 
   <h5 class="my-3">Section 2: Job Specific Assessment</h5>
 
@@ -178,7 +178,7 @@
 
   <!--  Generate all job entries - but only one is enabled at a time-->
   <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;"
-       [appReadOnlyInputs]="!isEditable()" class="mt-3">
+       [appReadOnlyInputs]="!isEditable()">
     <app-visa-job-check-au *ngIf="job.id == selectedJob.id"
                            [selectedJobCheck]="job"
                            [candidate]="candidate"
