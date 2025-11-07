@@ -34,8 +34,10 @@
 
 <div class="row" *ngIf="hasJobChecks">
   <form [formGroup]="form">
-    <div class="d-flex flex-column gap-3">
-      <div *ngFor="let visaJob of visaCheckRecord?.candidateVisaJobChecks; let i = index;">
+    <div class="d-flex flex-column">
+      <div *ngFor="let visaJob of visaCheckRecord?.candidateVisaJobChecks; let i = index;"
+           class="my-1 mx-3"
+      >
         <div>
           <tc-radio [value]="i"
                     name="jobIndex"

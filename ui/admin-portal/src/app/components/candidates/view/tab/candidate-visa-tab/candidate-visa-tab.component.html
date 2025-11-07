@@ -24,8 +24,10 @@
     </div>
     <div class="row">
       <form [formGroup]="form">
-        <div class="d-flex flex-column gap-3">
-          <div *ngFor="let visaCheck of visaChecks; let i = index">
+        <div class="d-flex flex-column">
+          <div *ngFor="let visaCheck of visaChecks; let i = index"
+               class="my-1 mx-3"
+          >
               <tc-radio [id]="'radio' + i"
                         name="visaCountry"
                         [value]="i"
