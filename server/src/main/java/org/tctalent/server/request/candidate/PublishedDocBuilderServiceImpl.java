@@ -75,10 +75,8 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
                     value = ".";
                 } else {
                     int dataIndex = expandingCount - 1;
-                    value = valueSource == null ? null
-                        : expandData.get(dataIndex, valueSource.getFieldName());
-                    link = linkSource == null ? null
-                        : expandData.get(dataIndex, linkSource.getFieldName());
+                    value = expandData.get(dataIndex, getSourceName(valueSource));
+                    link = expandData.get(dataIndex, getSourceName(linkSource));
                 }
             }
         }
@@ -90,6 +88,23 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
             String quotedValue = value instanceof String ? "\"" + value + "\"" : value.toString();
             return "=HYPERLINK(\"" + link + "\"," + quotedValue + ")";
         }
+    }
+
+    /**
+     * Returns fieldName of the given valueSource if it is not null, otherwise returns propertyName.
+     * @param valueSource Value source
+     * @return Name to use to access value in the valueSource or null if neither fieldName or
+     * propertyName is set.
+     */
+    private @Nullable String getSourceName(PublishedDocValueSource valueSource) {
+        String name = null;
+        if (valueSource != null) {
+            name = valueSource.getFieldName();
+            if (name == null) {
+                name = valueSource.getPropertyName();
+            }
+        }
+        return name;
     }
 
     public List<Object> buildRow(
