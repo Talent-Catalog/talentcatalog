@@ -96,8 +96,11 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
       relationship: [value?.relationship ?? DependantRelations.Partner, [Validators.required]],
       relationOther: [(value as any)?.relationOther ?? ''],
 
-      firstName: [value?.firstName ?? '', [Validators.required, Validators.maxLength(100)]],
-      lastName: [value?.lastName ?? '', [Validators.required, Validators.maxLength(100)]],
+      //Names have to match the TC published column fields for a normal (non dependant) candidate.
+      //todo jc - I have just converted these two fields. Some fields like "gender" are fine because
+      //they already match the published column fields.
+      'user.firstName': [value['user.firstName'] ?? '', [Validators.required, Validators.maxLength(100)]],
+      'user.lastName': [value['user.lastName'] ?? '', [Validators.required, Validators.maxLength(100)]],
       dateOfBirth: [value?.dateOfBirth ?? '', [Validators.required]],
       gender: [value?.gender ?? 'other', [Validators.required]],
       countryOfBirth: [value?.countryOfBirth ?? '', [Validators.required]],
@@ -221,8 +224,18 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
     this.error = null;
 
     const value = this.form.getRawValue();
-    const members = (value.noEligibleFamilyMembers ? [] :
+    let members = (value.noEligibleFamilyMembers ? [] :
       this.members.controls.map(c => c.getRawValue() as RelocatingFamilyMember));
+
+    // todo jc - This is just a hack to demonstrate how to process the gathered form data into a form
+    // that matches the JSON property names expected in order to match field names that are
+    // defined the TC published lists.
+    // Names in the JSON can't be anything. They need to match the names associated with
+    // Candidate published columns.
+    //
+    // So extracting the data from the form to be sent in the payload will be more complicated than
+    // the simple map used above.
+    members[0]['TRAVEL_DOC_TYPE'] = value.members[0].travelDoc?.docType;
 
     const payload: FamilyDocFormData = {
       noEligibleFamilyMembers: value.noEligibleFamilyMembers,
