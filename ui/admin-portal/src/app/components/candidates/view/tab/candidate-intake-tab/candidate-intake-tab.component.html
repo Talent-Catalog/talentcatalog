@@ -105,7 +105,7 @@
             <p class="mb-0">Citizenships</p>
             <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
           </div>
-          <div *ngIf="isEditable()" class="col-1">
+          <div *ngIf="isEditable()" class="col-1 d-flex justify-content-end me-2">
             <tc-button (onClick)="addCitizenshipRecord()"
                        [size]="'sm'"
                        [type]="'solid'"
@@ -137,35 +137,37 @@
               <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i = index">
                 <ng-container *ngIf="exam.exam === 'DETOfficial'; else otherExam">
                   <!-- DETOfficial Exam Section -->
-                  <span class="d-inline-flex align-items-center me-4" [title]="getExamInfo(exam.score).tooltip">
-                <img src="assets/images/duo-owl.png" alt="Duo Owl" class="duo-owl-icon" />
+                  <span class="d-inline-flex align-items-center me-4"
+                        [title]="getExamInfo(exam.score).tooltip"
+                  >
+                    <img src="assets/images/duo-owl.png" alt="Duo Owl" class="duo-owl-icon" />
 
-                <span class="me-1 ms-2" [ngClass]="getExamInfo(exam.score).className">
-                  {{ getExamLabel(exam) }}
-                </span>
+                    <span class="me-1 ms-2" [ngClass]="getExamInfo(exam.score).className">
+                      {{ getExamLabel(exam) }}
+                    </span>
 
-                <span class="text-info" [attr.title]="getExamInfo(exam.score).tooltip">
-                  {{ exam.score }}
-                </span>
-              </span>
+                    <span class="text-info" [attr.title]="getExamInfo(exam.score).tooltip">
+                      {{ exam.score }}
+                    </span>
+                  </span>
                 </ng-container>
 
                 <ng-template #otherExam>
-              <span *ngIf="exam.exam !== 'Other'; else otherExamName" [ngClass]="{'me-4': exam.exam != null}">
-                {{ exam.exam }} <span class="text-info">{{ exam.score }}</span>
-              </span>
+                  <span *ngIf="exam.exam !== 'Other'; else otherExamName" [ngClass]="{'me-4': exam.exam != null}">
+                    {{ exam.exam }} <span class="text-info">{{ exam.score }}</span>
+                  </span>
                 </ng-template>
 
                 <ng-template #otherExamName>
-              <span class="me-4">
-                {{ exam.otherExam }}
-                <span class="text-info">{{ exam.score }}</span>
-              </span>
+                  <span class="me-4">
+                    {{ exam.otherExam }}
+                    <span class="text-info">{{ exam.score }}</span>
+                  </span>
                 </ng-template>
               </ng-container>
             </div>
           </div>
-          <div *ngIf="isEditable()" class="col-1">
+          <div *ngIf="isEditable()" class="col-1 d-flex justify-content-end me-2">
             <tc-button (onClick)="addExamRecord()"
                        [size]="'sm'"
                        [type]="'solid'"
@@ -223,11 +225,11 @@
     <!--     DEPENDANTS  -->
     <tc-accordion-item>
       <div custom-header class="container-fluid gx-0">
-        <div class="row">
+        <div class="row align-items-center">
           <div class="col-3 border-end">
             <span>Family Members / Dependants</span>
           </div>
-          <div class="col d-flex justify-content-between">
+          <div class="col d-flex justify-content-between align-items-center">
             <div *ngIf="candidateIntakeData?.candidateDependants.length > 0" class="tag-light">
               <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
                 <span [class]="'fw-600 me-2'"
@@ -242,15 +244,15 @@
               <span class="ms-2">Health Issues</span>
             </div>
 
-          </div>
-          <div *ngIf="isEditable()" class="col-1">
-            <tc-button (onClick)="addDependantRecord()"
-                       [size]="'sm'"
-                       [type]="'solid'"
-                       [color]="'primary'"
-            >
-              <i class="fas fa-plus"></i>
-            </tc-button>
+            <div *ngIf="isEditable()" class="col-1 d-flex justify-content-end me-2">
+              <tc-button (onClick)="addDependantRecord()"
+                         [size]="'sm'"
+                         [type]="'solid'"
+                         [color]="'primary'"
+              >
+                <i class="fas fa-plus"></i>
+              </tc-button>
+            </div>
           </div>
         </div>
       </div>

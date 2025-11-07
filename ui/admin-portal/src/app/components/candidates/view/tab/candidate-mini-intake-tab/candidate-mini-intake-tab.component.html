@@ -111,7 +111,7 @@
               <small>Include any potential future citizenships (e.g. are you getting married to
                 someone soon who will give you another citizenship?)</small>
             </div>
-            <div *ngIf="isEditable()" class="col-1">
+            <div *ngIf="isEditable()" class="col-1 d-flex justify-content-end me-2">
               <tc-button (onClick)="addCitizenshipRecord()"
                          [type]="'solid'"
                          [size]="'sm'"
@@ -198,24 +198,24 @@
               <span>Language Exams</span>
             </div>
             <div class="col">
-              <div class="tag-light fw-600">
+              <div class="tag-light fw-600 d-flex">
                 <ng-container
                   *ngFor="let exam of candidateIntakeData?.candidateExams; let i = index">
                   <ng-container *ngIf="exam.exam === 'DETOfficial'; else otherExam">
                     <!-- DETOfficial Exam Section -->
                     <span class="d-inline-flex align-items-center me-4"
-                          [title]="getExamInfo(exam.score).tooltip">
-                                        <img src="assets/images/duo-owl.png" alt="Duo Owl"
-                                             class="duo-owl-icon"/>
+                          [title]="getExamInfo(exam.score).tooltip"
+                    >
+                      <img src="assets/images/duo-owl.png" alt="Duo Owl" class="duo-owl-icon"/>
 
-                            <span class="me-1 ms-2" [ngClass]="getExamInfo(exam.score).className">
-                              {{ getExamLabel(exam) }}
-                            </span>
+                      <span class="me-1 ms-2" [ngClass]="getExamInfo(exam.score).className">
+                        {{ getExamLabel(exam) }}
+                      </span>
 
-                            <span class="text-info" [attr.title]="getExamInfo(exam.score).tooltip">
-                              {{ exam.score }}
-                            </span>
-                          </span>
+                      <span class="text-info" [attr.title]="getExamInfo(exam.score).tooltip">
+                        {{ exam.score }}
+                      </span>
+                    </span>
                   </ng-container>
 
                   <ng-template #otherExam>
@@ -234,7 +234,7 @@
                 </ng-container>
               </div>
             </div>
-            <div *ngIf="isEditable()" class="col-1">
+            <div *ngIf="isEditable()" class="col-1 d-flex justify-content-end me-2">
               <tc-button (onClick)="addExamRecord()"
                          [size]="'sm'"
                          [type]="'solid'"
