@@ -24,9 +24,10 @@
     </label>
     <div class="float-end">
       <app-autosave-status
+        *ngIf="editable"
         [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
+        [typing]="typing"
+      ></app-autosave-status>
     </div>
     <ng-select class="tc-select" id="birthCountryId" [formControlName]="'birthCountryId'" [items]="countries" [closeOnSelect]="true"
                [clearOnBackspace]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>

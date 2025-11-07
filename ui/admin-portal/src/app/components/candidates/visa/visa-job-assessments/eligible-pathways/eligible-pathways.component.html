@@ -17,13 +17,15 @@
 <tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
   <tc-field>
-    <tc-label for="visaJobEligiblePathways">
-      Eligible immigration pathway(s)
+    <div class="d-flex justify-content-between">
+      <tc-label for="visaJobEligiblePathways">
+        Eligible immigration pathway(s)
+      </tc-label>
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </tc-label>
+    </div>
     <tc-textarea id="visaJobEligiblePathways" formControlName="visaJobEligiblePathways"></tc-textarea>
   </tc-field>
 </form>

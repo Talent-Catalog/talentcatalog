@@ -17,14 +17,20 @@
 <tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
   <tc-field *ngIf="editable">
-    <tc-label for="visaJobSalaryTsmit">Salary in line with
-      <a href="https://immi.homeaffairs.gov.au/visas/employing-and-sponsoring-someone/sponsoring-workers/nominating-a-position/salary-requirements"
-         target="_blank">TSMIT?</a> (minimum threshold: AUD53,900)
+    <div class="d-flex justify-content-between">
+      <tc-label for="visaJobSalaryTsmit">
+        Salary in line with
+        <a href="https://immi.homeaffairs.gov.au/visas/employing-and-sponsoring-someone/sponsoring-workers/nominating-a-position/salary-requirements"
+           target="_blank"
+        >
+          TSMIT?
+        </a> (minimum threshold: AUD53,900)
+      </tc-label>
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </tc-label>
+    </div>
     <ng-select class="tc-select" id="visaJobSalaryTsmit" [formControlName]="'visaJobSalaryTsmit'" [items]="salaryRequirementOptions"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </tc-field>

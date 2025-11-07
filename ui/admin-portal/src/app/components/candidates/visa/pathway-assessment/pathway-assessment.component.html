@@ -19,12 +19,15 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label for="visaPathwayAssessment">Meets refugee eligibility criteria of pathway? (eg. EMPP for Canada)
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaPathwayAssessment">
+          Meets refugee eligibility criteria of pathway? (eg. EMPP for Canada)
+        </tc-label>
         <app-autosave-status
           [saving]="saving"
           [typing]="typing">
         </app-autosave-status>
-      </tc-label>
+      </div>
       <ng-select id="visaPathwayAssessment" [formControlName]="'visaPathwayAssessment'" (clear)="setNoResponse('visaPathwayAssessment')"
                  [items]="assessmentOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>

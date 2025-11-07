@@ -22,9 +22,10 @@
     <label class="form-label" for="workPermit">Do you have a valid work permit?</label>
     <div class="float-end">
       <app-autosave-status
+        *ngIf="editable"
         [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
+        [typing]="typing"
+      ></app-autosave-status>
     </div>
     <ng-select class="tc-select" id="workPermit" [formControlName]="'workPermit'" (clear)="setNoResponse('workPermit')"
                [items]="workPermitOptions" [clearOnBackspace]="false"
