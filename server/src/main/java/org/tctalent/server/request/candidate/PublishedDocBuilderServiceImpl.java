@@ -67,6 +67,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
                 link = linkSource == null ? null : (String) fetchData(candidate, linkSource);
             }
         } else {
+            //TODO JC Make expandData a List
             HasMultipleRows expandData = getExpandingData(candidate, expandingColumnDef);
             if (expandData != null) {
                 if (expandingColumnDef != null
@@ -74,6 +75,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
                     //Indicate that this row is an expanded row from a row above.
                     value = ".";
                 } else {
+                    //TODO JC Call a method that loops through a List<HasMultipleRows>
                     int dataIndex = expandingCount - 1;
                     value = expandData.get(dataIndex, getSourceName(valueSource));
                     link = expandData.get(dataIndex, getSourceName(linkSource));
@@ -162,7 +164,8 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
                     .logError();
             } else {
                 try {
-                    // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
+                    // Get the list specific shareable CV or Doc if exists,
+                    // otherwise get the field name supplied.
                     if (fieldName.equals("shareableCv.url")
                         && candidate.getListShareableCv() != null) {
                         val = candidate.extractField("listShareableCv.url");
@@ -211,6 +214,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
         return val;
     }
 
+    //TODO JC return List<HasMultipleRows>
     /**
      * Retrieve the multi valued data value corresponding to the given PublishedDocColumnDef
      *
