@@ -41,7 +41,7 @@ themselves, reducing dependence on manual follow-up by TBB or UNHCR.
 3. Upload of RSD Evidence & Refugee ID
 4. Upload of RSD & Refugee ID for Family Members
 
-📝 Where documents or data are missing, Tasks guide candidates to complete what’s needed, only when 
+Where documents or data are missing, Tasks guide candidates to complete what’s needed, only when 
 it becomes necessary — not at registration.
 
 **📤 Improved Bulk Export for Government Submission**
