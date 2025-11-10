@@ -52,7 +52,9 @@ With around 150,000 candidates on the platform, all users must be informed and p
 the updated agreements. This will be done through:
 
 ✅ Social media announcements prompting logins and consent
+
 ✅ Targeted WhatsApp and comms to key candidate groups
+
 ✅ Email campaigns for broad coverage
 
 🧹 This also offers an opportunity for long-awaited data cleanup — removing stale accounts and 
