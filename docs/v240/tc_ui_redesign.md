@@ -115,3 +115,14 @@ Jobs tab - before and after:
     alt="UI Jobs Tab After " class="card-image">
 </div>
 
+Candidate profile - before and after:
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiCandidateProfileBefore.png" 
+    alt="UI Candidate Profile Before " class="card-image">
+</div>
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiCandidateProfileAfter.png" 
+    alt="UI Candidate Profile After " class="card-image">
+</div>
