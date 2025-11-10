@@ -95,11 +95,23 @@ Cases tab - before and after:
 
 <div class="card-image-container">
     <img src="./../assets/images/v240/UiCasesTabBefore.png" 
-    alt="UI Lists Before " class="card-image">
+    alt="UI Cases Tab Before " class="card-image">
 </div>
 
 <div class="card-image-container">
     <img src="./../assets/images/v240/UiCasesTabAfter.png" 
-    alt="UI Lists After " class="card-image">
+    alt="UI Cases Tab After " class="card-image">
+</div>
+
+Jobs tab - before and after:
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiJobsTabBefore.png" 
+    alt="UI Jobs Tab Before " class="card-image">
+</div>
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiJobsTabAfter.png" 
+    alt="UI Jobs Tab After " class="card-image">
 </div>
 
