@@ -5,9 +5,16 @@ sass:
   style: compressed
 ---
 
-## Phase 1 of Talent Catalog Redesign
-- Overview of phase 1 & phase 2 (see [phase 1](https://app.zenhub.com/workspaces/tc-engineering-646c91f0c3176e1ce584ec28/issues/gh/talent-catalog/talentcatalog/2245) 
-& [phase 2](https://app.zenhub.com/workspaces/tc-engineering-646c91f0c3176e1ce584ec28/issues/gh/talent-catalog/talentcatalog/2244) epics for details on each phase)
+## Introducing Our New UI: Cleaner, Sharper, and More Scalable
+The Talent Catalog just got a major visual refresh. 🚀
+Our new interface brings a fresh look and a stronger foundation for what’s coming next.
+Every color, icon, and layout choice has been carefully designed for a clean, modern and harmonious 
+user experience.
+
+The Talent Catalog’s redesign isn’t just about looks — it’s about building a scalable, maintainable,
+and user-centered foundation for the future.
+
+We’re excited to hear your impressions as you explore the new interface!
 
 ## Figma and Design Process
 - Explain the process (Figma, team workshopping, everything has reason behind it)
