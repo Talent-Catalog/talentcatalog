@@ -7,6 +7,7 @@ sass:
 
 ## Introducing Our New UI: Cleaner, Sharper, and More Scalable
 The Talent Catalog just got a major visual refresh. 🚀
+
 Our new interface brings a fresh look and a stronger foundation for what’s coming next.
 Every color, icon, and layout choice has been carefully designed for a clean, modern and harmonious 
 user experience.
@@ -33,6 +34,7 @@ helping us get there.
 Behind the new look is a process full of intention, this redesign was a true **team effort**.
 
 Our team worked extensively in Figma because it makes design a team sport.
+
 Everyone could see, comment, and contribute. We held multiple design workshops to explore visual 
 directions and usability improvements.
 
