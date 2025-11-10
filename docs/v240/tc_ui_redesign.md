@@ -16,9 +16,12 @@ and user-centered foundation for the future.
 
 We’re excited to hear your impressions as you explore the new interface!
 
-## Figma and Design Process
-- Explain the process (Figma, team workshopping, everything has reason behind it)
-- Screenshots of the figma designs and how we were able to turn those into code
+## What’s New in This Phase
+- **New color palette** aligned with the TC brand
+- **Reusable TC components** for buttons, inputs, tables, modals, and more
+- **Unified typography and spacing system** for improved readability
+- **Improved code maintainability** one change now updates across all pages
+- **Consistent user experience** across all admin portal pages
 
 ## Technical Benefits
 - Technical benefits of the new UI, shared components, consistency, easier to make changes
