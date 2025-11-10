@@ -50,7 +50,19 @@ Here are a few screenshots from our workshop sessions and voting system:
 Ideation workshops:
 
 <div class="card-image-container">
-    <img src="./../assets/images/v240/UiIdeationWorkshops.png.png" 
-    alt="New search icon on a job" class="card-image">
+    <img src="./../assets/images/v240/UiIdeationWorkshops.png" 
+    alt="UI Ideation Workshops" class="card-image">
+</div>
+
+Figma design files:
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiFigmaDesignFiles.png" 
+    alt="UI Figma Design Files 1 " class="card-image">
+</div>
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiFigmaDesignFiles2.png" 
+    alt="UI Figma Design Files 2 " class="card-image">
 </div>
 
