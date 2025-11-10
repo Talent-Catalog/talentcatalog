@@ -33,7 +33,7 @@ compliance with GDPR
 
 ## Key Updates in This Release
 
-1. Source Partner Privacy Policies
+**1. Source Partner Privacy Policies**
 
 Each source partner will now have a dedicated GDPR-compliant privacy notice displayed to 
 candidates during registration and accessible at any time.
@@ -43,7 +43,7 @@ These are based on the GDPR template: https://gdpr.eu/privacy-notice/
 💡 Every candidate is associated with one source partner — usually TBB or a UNHCR partner — which 
 determines which privacy notice they see.
 
-2. Candidate Notification and Consent Process
+**2. Candidate Notification and Consent Process**
 
 With this release the consent process has been transitioned from physical signatures to electronic 
 consent for ease of use and efficiency.
