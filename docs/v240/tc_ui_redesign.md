@@ -42,3 +42,8 @@ element has a clear role, and the final implementation stays true to the design 
 
 Here are a few screenshots from our workshop sessions and voting system:
 
+<div class="card-image-container-narrow">
+    <img class="card-image" src="./../assets/images/v240/UiVotingSystem.png" 
+        alt="UI Voting System Screenshot">
+</div>
+
