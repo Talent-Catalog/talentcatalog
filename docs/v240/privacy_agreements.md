@@ -28,6 +28,8 @@ Assist).
 - Did not distinguish between data controllers and processors, as required by GDPR.
 
 This upgrade resolves these issues with a more inclusive, transparent, and standardised approach.
+The new policies have been developed in consultation with legal experts to confirm full compliance 
+with GDPR
 
 ## Key Updates in This Release
 
