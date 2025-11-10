@@ -23,11 +23,22 @@ We’re excited to hear your impressions as you explore the new interface!
 - **Improved code maintainability** one change now updates across all pages
 - **Consistent user experience** across all admin portal pages
 
-## Technical Benefits
-- Technical benefits of the new UI, shared components, consistency, easier to make changes
+## From Visuals to Functionality
+While Phase 1 sets the foundation with consistent visuals and shared components, Phase 2 will focus 
+on functional improvements. We’ll be gathering feedback after this rollout of Phase 1 to ensure the 
+next UI update reflects our user's needs and experiences, your insights will play a major role in 
+helping us get there.
 
-## Feedback
-- Welcome feedback, and will be gathering more for phase 2. Do we create a public slack channel for 
-UI feedback? Or introduce a google survey in a couple of months?
+## Behind the Redesign
+Behind the new look is a process full of intention, this redesign was a true **team effort**.
 
-Include before & after images of key pages to show the transformation
+Our team worked extensively in Figma because it makes design a team sport.
+Everyone could see, comment, and contribute. We held multiple design workshops to explore visual 
+directions and usability improvements.
+
+Every decision from colors and typography to spacing and hierarchy, was made with purpose, ensuring 
+that the new UI feels cohesive, accessible, and aligned with modern web design standards. Each UI 
+element has a clear role, and the final implementation stays true to the design vision.
+
+Here are a few screenshots from our workshop sessions and voting system:
+
