@@ -126,3 +126,7 @@ Candidate profile - before and after:
     <img src="./../assets/images/v240/UiCandidateProfileAfter.png" 
     alt="UI Candidate Profile After " class="card-image">
 </div>
+
+Feel free to explore the updated interface yourself on the 
+[Talent Catalog staging environment](https://tctalent-test.org/admin-portal).
+
