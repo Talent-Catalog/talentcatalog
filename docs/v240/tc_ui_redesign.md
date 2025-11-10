@@ -66,3 +66,27 @@ Figma design files:
     alt="UI Figma Design Files 2 " class="card-image">
 </div>
 
+## From Figma to Code
+Once the designs were finalized in Figma, we brought them to life in code by creating reusable 
+Angular components that match the visual system one-to-one.
+
+By introducing shared components and centralized styling, we’ve built a system where design and code 
+stay in sync. This consistency makes it easier to maintain and update the interface, a single change 
+to a component or variable now applies across the entire platform.
+
+The result is a cleaner codebase, faster development cycles, and a UI that’s easier to scale as the 
+product grows.
+
+To wrap it all up, here’s a look at the transformation:
+
+Lists - before and after:
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiListsBefore.png" 
+    alt="UI Lists Before " class="card-image">
+</div>
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiListsAfter.png" 
+    alt="UI Lists After " class="card-image">
+</div>
