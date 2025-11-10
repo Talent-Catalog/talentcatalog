@@ -47,3 +47,10 @@ Here are a few screenshots from our workshop sessions and voting system:
         alt="UI Voting System Screenshot">
 </div>
 
+Ideation workshops:
+
+<div class="card-image-container">
+    <img src="./../assets/images/v240/UiIdeationWorkshops.png.png" 
+    alt="New search icon on a job" class="card-image">
+</div>
+
