@@ -12,7 +12,7 @@ sass:
   <a href="./v240/tc_ui_redesign" class="card">
     <img src="./assets/images/v240/UiJobsTabAfter.png" alt="UI Redesign" class="card-image">
     <div class="card-body">
-      <div class="card-title">User Interface Redesign -- Phase I</div>
+      <div class="card-title">Introducing Our New UI: Phase I</div>
       <div class="card-description">
         The Talent Catalog is getting a fresh new look! In this release we are introducing the first 
         phase of our UI redesign, incorporating the new TC styling across the Admin portals.
