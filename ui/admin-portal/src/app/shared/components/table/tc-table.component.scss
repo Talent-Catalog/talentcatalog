@@ -52,22 +52,24 @@
         vertical-align: middle;
       }
 
-      &.table-hover > tbody > tr:hover {
-        @include background-color-soft;
-        cursor: pointer;
-        background-color: color(primary, 50) !important;
-      }
+      &.clickable-rows {
+        &.table-hover > tbody > tr:hover {
+          @include background-color-soft;
+          cursor: pointer;
+          background-color: color(primary, 50) !important;
+        }
 
-      tr.current {
-        background-color: color(primary, 100) !important;
-      }
+        tr.current {
+          background-color: color(primary, 100) !important;
+        }
 
-      tr.selected {
-        background-color: color(primary, 100) !important;
-      }
+        tr.selected {
+          background-color: color(primary, 100) !important;
+        }
 
-      tr.clickable:hover {
-        cursor: pointer;
+        tr.clickable:hover {
+          cursor: pointer;
+        }
       }
 
       tr a {
