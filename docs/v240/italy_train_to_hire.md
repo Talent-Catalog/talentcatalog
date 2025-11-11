@@ -34,6 +34,11 @@ self-management by candidates, minimal redundant requests, and a single system o
 A structured task flow enables candidates to upload and verify the required documents and fields 
 themselves, reducing dependence on manual follow-up by TBB or UNHCR.
 
+> 🆕 This flow is powered by the new [Forms Tasks framework](forms_tasks.md), built specifically to 
+> support the complex data collection needs of the Italy train-to-hire program. Forms Tasks allow 
+> candidates to complete multi-field submissions directly within a task — improving accuracy, 
+> reducing friction, and streamlining future use cases.
+
 **Task Breakdown:**
 
 1. Candidate Travel Document Upload
