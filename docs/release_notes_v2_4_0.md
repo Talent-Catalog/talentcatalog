@@ -98,7 +98,7 @@ Helpful TC user guides:
 
 <div class="card-container">
 
-  <a href="./v240/forms_tasks.md" class="card">
+  <a href="./v240/forms_tasks" class="card">
     <img src="./assets/images/v240/ApiRevisions.png" alt="Form Tasks" class="card-image">
     <div class="card-body">
       <div class="card-title">Form Tasks Framework</div>
@@ -113,7 +113,7 @@ Helpful TC user guides:
     </div>
   </a>
 
-  <a href="./v240/casi_framework.md" class="card">
+  <a href="./v240/casi_framework" class="card">
     <img src="./assets/images/v240/CasiFramework.png" alt="CASI Framework" class="card-image">
     <div class="card-body">
       <div class="card-title">CASI Framework</div>
