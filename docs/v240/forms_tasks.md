@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-## Introducing Forms Tasks: Smarter Candidate Data Collection
+# Introducing Forms Tasks: Smarter Candidate Data Collection
 
 This release introduces a powerful new capability within the Talent Catalog: Forms Tasks — a 
 flexible, scalable framework that simplifies how we collect, update, and manage candidate data.
