@@ -26,7 +26,7 @@ sass:
   <a href="./v240/italy_train_to_hire" class="card">
     <img src="./assets/images/v240/ItalyFlag.png" alt="Supporting Italy’s Train-to-Hire Program" class="card-image">
     <div class="card-body">
-      <div class="card-title">Italy Train to Hire Support</div>
+      <div class="card-title">Supporting Italy’s Train-to-Hire Program</div>
       <div class="card-description">
         This release streamlines refugee document collection and verification for Italian 
         train-to-hire candidates, so that individuals can manage their own data while improving 
