@@ -31,7 +31,8 @@ These services could include:
 
 - 📍 **Candidate location mapping** using geo location mapping tools
 
-- 🧭 **Personalised candidate advice**
+- 🧭 **Personalised candidate advice** and information relevant to the candidate's present 
+circumstances
 
 ## What’s New in This Release
 
