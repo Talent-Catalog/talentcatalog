@@ -5,6 +5,23 @@ sass:
   style: compressed
 ---
 
+## Overview
+
+This release delivers a set of powerful improvements to the Talent Catalog’s matching engine, 
+helping users find the most relevant candidates faster and more accurately.
+
+Search results are now sorted by closeness of match, keyword matches are highlighted directly in 
+candidate CVs, and users can now generate searches directly from a job posting — with relevant 
+skills automatically extracted and used to find matching candidates.
+
+Behind the scenes, we've transitioned to using **PostgreSQL’s full-text search** to handle keyword 
+matching, replacing the need for a separate Elasticsearch service. This simplifies system 
+architecture, improves data consistency, and reduces operating costs.
+
+Together, these enhancements make matching more intuitive, responsive, and scalable — setting the 
+foundation for future capabilities like automated candidate outreach and intelligent job 
+recommendations.
+
 ## Prioritised Matching
 
 Results of a search that contains keywords logic is now sorted by closeness of match.
