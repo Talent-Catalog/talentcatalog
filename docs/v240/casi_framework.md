@@ -20,11 +20,17 @@ profile data.
 These services could include:
 
 - 🎓 **Language testing** (e.g., Duolingo)
+
 - 💬 Candidate engagement with **automated chats and follow-up communication**
+
 - 📊 **Opt-in/out job opportunity tracking**
+
 - 📌 **Automated engagement tasks**
+
 - 🛠 **Alumni community building and Pathway Club membership**
+
 - 📍 **Candidate location mapping** using geo location mapping tools
+
 - 🧭 **Personalised candidate advice**
 
 ## What’s New in This Release
@@ -37,8 +43,10 @@ it easier and faster for developers to build and deploy support tools for eligib
 
 - 🔌 **Decoupled from Task Logic:** Services like Duolingo can now be managed directly, and do not 
 need to be done using tasks.
+
 - ⚙️ **Automatic Task Generation:** Admins can assign services (e.g., language testing coupons) in 
 bulk, and CASI automatically handles task creation to track progress.
+
 - 🧱 **Built for Expansion:** Future CASI services can be layered onto this foundation, with 
 consistent APIs and lifecycle hooks.
 
