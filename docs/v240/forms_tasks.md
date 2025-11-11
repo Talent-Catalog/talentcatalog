@@ -20,7 +20,9 @@ multi-step candidate onboarding.
 Until now, candidate tasks were limited to:
 
 - 📎 Simple Upload Tasks (e.g., to upload a scan of a passport)
+
 - 💬 Question Tasks (e.g. to submit the answer to a single question -- just one piece of data)
+
 - ✅ Simple Acknowledgement Tasks (e.g., to confirm that an action has been taken)
 
 Forms Tasks build on this capability by supporting the collection of multiple fields and different
@@ -43,8 +45,10 @@ reducing delays, errors, and manual handling.
 ## What’s New in the Candidate Experience
 
 - 📄 **Integrated Forms**: Candidates see and complete forms directly within their task list 
+
 - 💾 **Save-as-you-go**: Forms support in-progress saving and later updates, similar to registration 
-and intakes 
+and intakes
+
 - 🧾 **Single source of truth**: Data collected via Forms Tasks can draw from and update both standard 
 candidate fields and custom properties
 
@@ -52,16 +56,13 @@ candidate fields and custom properties
 
 Forms Tasks lay the groundwork for a range of future use cases:
 
-- 🛂 Self-service intake processes
-  Enable structured out-of-band intakes for new candidates.
+- 🛂 Self-service intake processes: Enable structured out-of-band intakes for new candidates.
 
-- 📢 Proactive job opportunity outreach
-  Support recruiter workflows by sending select jobs to qualified candidates and collecting 
-  expressions of interest.
+- 📢 Proactive job opportunity outreach: Support recruiter workflows by sending select jobs to 
+qualified candidates and collecting expressions of interest.
 
-- 📊 Partner-initiated data requests
-  Enable UNHCR, IOM, and others to initiate structured outreach (e.g., RSD verification, resettlement 
-  readiness).
+- 📊 Partner-initiated data requests: Enable, for example, UNHCR, IOM, and others to initiate 
+structured outreach (e.g., RSD verification, resettlement readiness).
 
 These enhancements align with our goal of making the Talent Catalog the trusted, up-to-date source 
 of candidate data across diverse use cases.
