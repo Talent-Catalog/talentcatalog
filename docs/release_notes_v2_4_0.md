@@ -60,8 +60,9 @@ sass:
     <div class="card-body">
       <div class="card-title">Improved Matching</div>
       <div class="card-description">
-        Job match results are now sorted by relevance, helping admins focus on the best-fit 
-        candidates and speed up their review process.
+        Search results are now ranked by closeness of match, with keyword highlighting and skills 
+        extracted from job descriptions — making it faster and easier to identify top candidates.
+        Lays the groundwork for future AI-powered matching enhancements.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
