@@ -102,6 +102,10 @@ sass:
 Helpful TC user guides:
 <ul>
     <li>
+        <a href="https://tc-api.redocly.app/openapi" 
+        target="_blank">Talent Catalog API on Redoc</a>
+    </li>
+    <li>
         <a href="https://docs.google.com/document/d/1aI7dTq9wwucPmY7UMjpsjn9V5sLf1WWpYnhiA_9q43U/edit?usp=sharing" 
         target="_blank">Employer Access User Guide</a>
     </li>
