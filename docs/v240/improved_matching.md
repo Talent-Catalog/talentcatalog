@@ -43,6 +43,7 @@ Click on the search icon for any job...
 
 The TC will scan all text related to the job - uploaded job description, job summary, job intake etc 
 extracting skills from the text.
+
 We have a database of around 30,000 skills extracted from the [ESCO](https://esco.ec.europa.eu/en/about-esco/what-esco) 
 and [O*NET](https://www.onetcenter.org/taxonomy.html) collections.
 
