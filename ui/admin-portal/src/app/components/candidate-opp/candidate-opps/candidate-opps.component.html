@@ -185,9 +185,9 @@
         <app-chat-read-status
           [chats]="getChats(opp)"
         ></app-chat-read-status>
+        {{ opp.jobOpp.name }}
         <tc-icon type="link" color="gray" [routerLink]="['/opp',opp.id]">
-          {{ opp.jobOpp.name }} <i class="fas fa-address-book"
-                                   title="Case (candidate opportunity)"></i>
+          <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
         </tc-icon>
         <tc-icon type="link" color="gray" [routerLink]="['/job',opp.jobOpp.id]">
           <i class="fa-solid fa-briefcase" title="Job"></i>
