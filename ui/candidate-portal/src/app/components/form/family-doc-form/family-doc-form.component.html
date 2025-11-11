@@ -68,7 +68,7 @@
 
           <div class="col-md-4">
             <label class="form-label">{{"PROFILE.PERSONAL.DOB" | translate}}</label>
-            <input type="date" class="form-control" formControlName="dateOfBirth"
+            <input type="date" class="form-control" formControlName="dob"
                    [readonly]="readOnly">
             <div class="text-danger" *ngIf="m.touched && m.hasError('childAgeInvalid')">
               {{'FAMILY-DOC.LABEL.AGE-VALIDATION' | translate}}
@@ -86,7 +86,7 @@
 
           <div class="col-md-4">
             <label class="form-label">{{ "TRAVELDOC.LABEL.BIRTHCOUNTRY" | translate }}</label>
-            <input class="form-control" formControlName="countryOfBirth" [readonly]="readOnly">
+            <input class="form-control" formControlName="birthCountry.name" [readonly]="readOnly">
           </div>
 
           <div class="col-md-6">
@@ -157,11 +157,11 @@
         </div>
 
         <hr class="my-4">
-        <!-- travel doc -->
-        <div formGroupName="travelDoc" class="row g-3">
+
+        <div class="row g-3">
           <div class="col-md-4">
             <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }}</label>
-            <select class="form-select" formControlName="docType">
+            <select class="form-select" formControlName="TRAVEL_DOC_TYPE">
               <option [value]="TravelDocType.Passport">{{ 'TRAVELDOC.OPTION.PASSPORT' | translate }}</option>
               <option [value]="TravelDocType.NationalId">{{ 'TRAVELDOC.OPTION.NATIONALID' | translate }}</option>
               <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELDOC.OPTION.REFUGEE' | translate }}</option>
@@ -169,20 +169,20 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }}</label>
-            <input class="form-control" formControlName="docNumber" [readonly]="readOnly">
+            <input class="form-control" formControlName="TRAVEL_DOC_NUMBER" [readonly]="readOnly">
           </div>
           <div class="col-md-4">
             <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCISSUEDBY' | translate }}</label>
-            <input class="form-control" formControlName="issuer" [readonly]="readOnly">
+            <input class="form-control" formControlName="TRAVEL_DOC_ISSUED_BY" [readonly]="readOnly">
           </div>
           <div class="col-md-4">
             <label class="form-label">{{ 'TRAVELDOC.LABEL.ISSUEDATE' | translate }}</label>
-            <input type="date" class="form-control" formControlName="issuedOn"
+            <input type="date" class="form-control" formControlName="TRAVEL_DOC_ISSUE_DATE"
                    [readonly]="readOnly">
           </div>
           <div class="col-md-4">
             <label class="form-label">{{ 'TRAVELDOC.LABEL.EXPIRYDATE' | translate }}</label>
-            <input type="date" class="form-control" formControlName="expiresOn"
+            <input type="date" class="form-control" formControlName="TRAVEL_DOC_EXPIRY_DATE"
                    [readonly]="readOnly">
             <div class="text-danger"
                  *ngIf="m.get('travelDoc')?.touched && m.get('travelDoc')?.hasError('expiryTooSoon')">

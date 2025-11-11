@@ -41,32 +41,43 @@ export interface TravelDocFormData {
   travelDocExpiryDate: string;
 }
 
-export interface FamilyMemberDoc {
-  docType: TravelDocType;
-  docNumber: string;
-  issuer: string;
-  issuedOn: string;
-  expiresOn: string;
-}
-
+/**
+ * This is what the JSON is extracted into.
+ * The field names must match the field names in the JSON.
+ * And the field names in the JSON must match the field keys or property names
+ * in the allColumnInfosMap in the Angular PublishedDocColumnService.
+ *
+ * This is because when a list is published into columns, data is fetched from the JSON
+ * into each column based on the field key or property name of the column.
+ */
 export interface RelocatingFamilyMember {
   relationship: DependantRelations;
   dependantRelationOther?: string;
 
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
+  'user.firstName': string;
+  'user.lastName': string;
+  dob: string;
   gender: Gender;
-  countryOfBirth: string;
+  'birthCountry.name': string;
   placeOfBirth?: string;
 
+  //todo Where are these fields stored for normal candidates
+  //todo We can't display these values in a column without a defined column
+  //todo definition linked to a standard candidate field key or property
+  //todo Family members aren't special creatures - they are refugees like the primary candidate and
+  //todo they can't have special fields that aren't also applicable to any candidate
   healthConcerns?: 'Yes' | 'No' | null;
   healthNotes?: string;
   registered?: 'Yes' | 'No' | null;
   registeredNumber?: string;
   registeredNotes?: string;
 
-  travelDoc: FamilyMemberDoc;
+  TRAVEL_DOC_TYPE?: string,
+  TRAVEL_DOC_NUMBER: string,
+  TRAVEL_DOC_ISSUED_BY: string,
+  TRAVEL_DOC_ISSUE_DATE: string,
+  TRAVEL_DOC_EXPIRY_DATE: string
+
 }
 
 export interface FamilyDocFormData {

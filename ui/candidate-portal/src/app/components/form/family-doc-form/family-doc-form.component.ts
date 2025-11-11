@@ -11,12 +11,7 @@ import {
 import {NgForOf, NgIf} from "@angular/common";
 import {NgSelectModule} from '@ng-select/ng-select';
 
-import {
-  FamilyDocFormData,
-  FamilyMemberDoc,
-  RelocatingFamilyMember,
-  TravelDocType
-} from '../../../model/form';
+import {FamilyDocFormData, RelocatingFamilyMember, TravelDocType} from '../../../model/form';
 import {Candidate, DependantRelations} from "../../../model/candidate";
 import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
@@ -80,46 +75,39 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
     return this.form.get('members') as FormArray<FormGroup>;
   }
 
-  private newDocGroup(value?: Partial<FamilyMemberDoc>) {
-    return this.fb.nonNullable.group({
-      docType: [value?.docType ?? TravelDocType.Passport, [Validators.required]],
-      docNumber: [value?.docNumber ?? '', [Validators.required, Validators.maxLength(64)]],
-      issuer: [value?.issuer ?? '', [Validators.required, Validators.maxLength(128)]],
-      issuedOn: [value?.issuedOn ?? '', [Validators.required]],
-      expiresOn: [value?.expiresOn ?? '', [Validators.required]]
-    }, {validators: [this.expiryMinMonthsValidator(9)]});
-  }
-
-  // ✅ UPDATED: Added the new dependant-* fields
   private newMemberGroup(value?: Partial<RelocatingFamilyMember>) {
     const group = this.fb.nonNullable.group({
       relationship: [value?.relationship ?? DependantRelations.Partner, [Validators.required]],
       relationOther: [(value as any)?.relationOther ?? ''],
 
-      //Names have to match the TC published column fields for a normal (non dependant) candidate.
-      //todo jc - I have just converted these two fields. Some fields like "gender" are fine because
+      //Names must match the TC published column field keys/property names for a normal (non dependant) candidate.
       //they already match the published column fields.
-      'user.firstName': [value['user.firstName'] ?? '', [Validators.required, Validators.maxLength(100)]],
-      'user.lastName': [value['user.lastName'] ?? '', [Validators.required, Validators.maxLength(100)]],
-      dateOfBirth: [value?.dateOfBirth ?? '', [Validators.required]],
+      'user.firstName': [value?.['user.firstName'] ?? '', [Validators.required, Validators.maxLength(100)]],
+      'user.lastName': [value?.['user.lastName'] ?? '', [Validators.required, Validators.maxLength(100)]],
+      dob: [value?.dob ?? '', [Validators.required]],
       gender: [value?.gender ?? 'other', [Validators.required]],
-      countryOfBirth: [value?.countryOfBirth ?? '', [Validators.required]],
+      'birthCountry.name': [value?.['birthCountry.name'] ?? '', [Validators.required]],
       placeOfBirth: [value?.placeOfBirth ?? ''],
 
       // NEW fields
-      healthConcerns: [(value as any)?.healthConcerns ?? null],
-      healthNotes: [(value as any)?.healthNotes ?? ''],
-      registered: [(value as any)?.registered ?? null],
-      registeredNumber: [(value as any)?.registeredNumber ?? ''],
-      registeredNotes: [(value as any)?.registeredNotes ?? ''],
+      healthConcerns: [value?.healthConcerns ?? null],
+      healthNotes: [value?.healthNotes ?? ''],
+      registered: [value?.registered ?? null],
+      registeredNumber: [value?.registeredNumber ?? ''],
+      registeredNotes: [value?.registeredNotes ?? ''],
 
-      travelDoc: this.newDocGroup(value?.travelDoc)
+      TRAVEL_DOC_TYPE: [value?.TRAVEL_DOC_TYPE ?? '', [Validators.required]],
+      TRAVEL_DOC_NUMBER: [value?.TRAVEL_DOC_NUMBER ?? '', [Validators.required, Validators.maxLength(64)]],
+      TRAVEL_DOC_ISSUED_BY: [value?.TRAVEL_DOC_ISSUED_BY ?? '', [Validators.required, Validators.maxLength(128)]],
+      TRAVEL_DOC_ISSUE_DATE: [value?.TRAVEL_DOC_ISSUE_DATE ?? '', [Validators.required]],
+      TRAVEL_DOC_EXPIRY_DATE: [value?.TRAVEL_DOC_EXPIRY_DATE ?? '', [Validators.required]]
     }, {
       validators: [
         this.childAgeIfChildValidator(),
         this.otherRelationshipNotesIfOtherValidator(),
         this.requireNotesIfHealthConcernYesValidator(),
-        this.requireRegNumberIfRegisteredYesValidator()
+        this.requireRegNumberIfRegisteredYesValidator(),
+        this.expiryMinMonthsValidator(9)
       ]
     });
 
@@ -137,7 +125,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
   // --- validators ---
   private expiryMinMonthsValidator(months: number) {
     return (group: FormGroup) => {
-      const expiresOn = group.get('expiresOn')?.value as string;
+      const expiresOn = group.get('TRAVEL_DOC_EXPIRY_DATE')?.value as string;
       if (!expiresOn) return null;
       const now = new Date();
       const min = new Date(now);
@@ -150,7 +138,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
   private childAgeIfChildValidator() {
     return (group: AbstractControl): ValidationErrors | null => {
       const rel = group.get('relationship')?.value as DependantRelations;
-      const dob = group.get('dateOfBirth')?.value as string;
+      const dob = group.get('dob')?.value as string;
       if (rel !== DependantRelations.Child || !dob) return null;
       const birth = new Date(dob);
       const today = new Date();
@@ -212,7 +200,9 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
   }
 
   canSubmit(): boolean {
-    return this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
+    //todo Removed this.form.valid
+    // return this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
+    return !this.form.pending && !this.submitting && !this.readOnly;
   }
 
   onSubmit(): void {
@@ -226,16 +216,6 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
     const value = this.form.getRawValue();
     let members = (value.noEligibleFamilyMembers ? [] :
       this.members.controls.map(c => c.getRawValue() as RelocatingFamilyMember));
-
-    // todo jc - This is just a hack to demonstrate how to process the gathered form data into a form
-    // that matches the JSON property names expected in order to match field names that are
-    // defined the TC published lists.
-    // Names in the JSON can't be anything. They need to match the names associated with
-    // Candidate published columns.
-    //
-    // So extracting the data from the form to be sent in the payload will be more complicated than
-    // the simple map used above.
-    members[0]['TRAVEL_DOC_TYPE'] = value.members[0].travelDoc?.docType;
 
     const payload: FamilyDocFormData = {
       noEligibleFamilyMembers: value.noEligibleFamilyMembers,

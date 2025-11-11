@@ -144,9 +144,9 @@ export class FamilyRsdEvidenceFormComponent
     const displayName = this.composeDisplayName(member);
     return this.fb.nonNullable.group({
       memberKey: [key],
-      firstName: [member.firstName ?? ''],
-      lastName: [member.lastName ?? ''],
-      dateOfBirth: [member.dateOfBirth ?? ''],
+      firstName: [member['user.firstName'] ?? ''],
+      lastName: [member['user.lastName'] ?? ''],
+      dob: [member.dob ?? ''],
       displayName: [existing?.displayName ?? displayName],
       refugeeStatus: [existing?.refugeeStatus ?? '', [Validators.required]],
       documentType: [existing?.documentType ?? '', [Validators.required]],
@@ -155,16 +155,16 @@ export class FamilyRsdEvidenceFormComponent
   }
 
   private composeDisplayName(member: RelocatingFamilyMember): string {
-    const first = member.firstName?.trim() ?? '';
-    const last = member.lastName?.trim() ?? '';
+    const first = member['user.firstName']?.trim() ?? '';
+    const last = member['user.lastName']?.trim() ?? '';
     const fullName = `${first} ${last}`.trim();
     return fullName || member.relationship || 'Unnamed Member';
   }
 
   private computeMemberKey(member: RelocatingFamilyMember): string {
-    const first = (member.firstName ?? '').trim().toLowerCase();
-    const last = (member.lastName ?? '').trim().toLowerCase();
-    const dob = (member.dateOfBirth ?? '').trim();
+    const first = (member['user.firstName'] ?? '').trim().toLowerCase();
+    const last = (member['user.lastName'] ?? '').trim().toLowerCase();
+    const dob = (member.dob ?? '').trim();
     return `${first}|${last}|${dob}`;
   }
 }
