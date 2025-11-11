@@ -65,3 +65,10 @@ Forms Tasks lay the groundwork for a range of future use cases:
 
 These enhancements align with our goal of making the Talent Catalog the trusted, up-to-date source 
 of candidate data across diverse use cases.
+
+## What’s Next
+
+- Expanding use of the Forms Task library for different partner and program needs 
+- Improving form export capabilities (e.g., PDF snapshots for government use)
+- Supporting conditional logic in forms (e.g., show/hide fields based on earlier answers)
+- Exploring integration with [CASI](casi_framework.md) for automated candidate guidance
