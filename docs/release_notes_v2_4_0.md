@@ -71,32 +71,6 @@ sass:
 
 </div>
 
-<div class="card-container">
-  <div class="card">
-    <img src="./assets/images/v240/ApiRevisions.png" alt="TC API Revisions" class="card-image">
-    <div class="card-body">
-      <div class="card-title">TC API Revisions</div>
-      <div class="card-description">
-        This release enhances the TC API with improved batch process management, refined 
-        functionality, and increased alignment with international data standards.
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <img src="./assets/images/v240/CasiFramework.png" alt="CASI Framework" class="card-image">
-    <div class="card-body">
-      <div class="card-title">CASI Framework</div>
-      <div class="card-description">
-        This release delivers the backend framework for the Candidate Assistance Services Interface 
-        (CASI), enabling future partner-led, data-driven support and engagement for Talent Catalog 
-        candidates.
-      </div>
-    </div>
-  </div>
-
-</div>
-
 # User Guides
 
 Helpful TC user guides:
@@ -118,6 +92,42 @@ Helpful TC user guides:
         target="_blank">CASI (Candidate Assistance Services Interface) -- Developer Guide</a>
     </li>
 </ul>
+
+# Framework Updates
+
+<div class="card-container">
+
+  <a href="./v240/forms_tasks.md" class="card">
+    <img src="./assets/images/v240/ApiRevisions.png" alt="Form Tasks" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Form Tasks Framework</div>
+      <div class="card-description">
+        This release introduces Form Tasks — a flexible way to collect structured, multi-field data 
+        from candidates, enabling more powerful workflows like Italy Train-to-Hire and future 
+        self-service intakes.
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-sm">Learn more</button>
+      </div>
+    </div>
+  </a>
+
+  <a href="./v240/casi_framework.md" class="card">
+    <img src="./assets/images/v240/CasiFramework.png" alt="CASI Framework" class="card-image">
+    <div class="card-body">
+      <div class="card-title">CASI Framework</div>
+      <div class="card-description">
+        This release delivers the backend framework for the Candidate Assistance Services Interface 
+        (CASI), enabling future partner-led, data-driven support and engagement for Talent Catalog 
+        candidates.
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-sm">Learn more</button>
+      </div>
+    </div>
+  </a>
+
+</div>
 
 ## General Improvements
 
