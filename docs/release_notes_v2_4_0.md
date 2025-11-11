@@ -113,6 +113,10 @@ Helpful TC user guides:
         <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" 
         target="_blank">TC Chats Explainer Doc</a>
     </li>
+    <li>
+        <a href="https://github.com/Talent-Catalog/talentcatalog/blob/staging/server/src/main/java/org/tctalent/server/casi/README.md" 
+        target="_blank">CASI (Candidate Assistance Services Interface) -- Developer Guide</a>
+    </li>
 </ul>
 
 ## General Improvements
