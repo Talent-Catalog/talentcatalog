@@ -29,6 +29,9 @@ Forms Tasks build on this capability by supporting the collection of multiple fi
 types of information all in one go, creating much richer interactions with candidates and more 
 complex workflows — all within the familiar Tasks experience.
 
+The nice thing about tasks is that they have built-in tracking, time limits and reminders as well as 
+automated assignment through lists.
+
 ## First Application: Italy Train-to-Hire Program
 
 The first rollout of Forms Tasks supports the [Italy train-to-hire initiative](italy_train_to_hire.md), 
@@ -61,7 +64,7 @@ Forms Tasks lay the groundwork for a range of future use cases:
 - 📢 Proactive job opportunity outreach: Support recruiter workflows by sending select jobs to 
 qualified candidates and collecting expressions of interest.
 
-- 📊 Partner-initiated data requests: Enable, for example, UNHCR, IOM, and others to initiate 
+- 📊 Partner-initiated data requests: Enable, for example, TBB, and others to initiate 
 structured outreach (e.g., RSD verification, resettlement readiness).
 
 These enhancements align with our goal of making the Talent Catalog the trusted, up-to-date source 
