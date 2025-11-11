@@ -24,7 +24,7 @@ sass:
   </a>
 
   <a href="./v240/italy_train_to_hire" class="card">
-    <img src="./assets/images/v240/ItalyFlag4.jpg" alt="Supporting Italy’s Train-to-Hire Program" class="card-image">
+    <img src="./assets/images/v240/ItalyFlag5.jpg" alt="Supporting Italy’s Train-to-Hire Program" class="card-image">
     <div class="card-body">
       <div class="card-title">Supporting Italy’s Train-to-Hire Program</div>
       <div class="card-description">
