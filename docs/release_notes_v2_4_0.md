@@ -10,7 +10,7 @@ sass:
 
 <div class="card-container">
   <a href="./v240/tc_ui_redesign" class="card">
-    <img src="./assets/images/v240/UiVotingSystem.png" alt="UI Redesign" class="card-image">
+    <img src="./assets/images/v240/UiListsAfter.png" alt="UI Redesign" class="card-image">
     <div class="card-body">
       <div class="card-title">Introducing Our New UI: Phase I</div>
       <div class="card-description">
@@ -24,7 +24,7 @@ sass:
   </a>
 
   <a href="./v240/italy_train_to_hire" class="card">
-    <img src="./assets/images/v240/ItalyFlag5.jpg" alt="Supporting Italy’s Train-to-Hire Program" class="card-image">
+    <img src="./assets/images/v240/ItalyFlag3.jpg" alt="Supporting Italy’s Train-to-Hire Program" class="card-image">
     <div class="card-body">
       <div class="card-title">Supporting Italy’s Train-to-Hire Program</div>
       <div class="card-description">
@@ -41,7 +41,7 @@ sass:
 
 <div class="card-container">
   <a href="./v240/privacy_agreements" class="card">
-    <img src="./assets/images/v240/gdpr.webp" alt="Privacy Agreement Review" class="card-image">
+    <img src="./assets/images/v240/GDPR-web-image_0.png" alt="Privacy Agreement Review" class="card-image">
     <div class="card-body">
       <div class="card-title">Privacy Agreements Review - GDPR compliance</div>
       <div class="card-description">
@@ -56,7 +56,7 @@ sass:
   </a>
 
   <a href="./v240/improved_matching" class="card">
-    <img src="./assets/images/v240/es-or-ft-postgresql.png" alt="Improved Matching" class="card-image">
+    <img src="./assets/images/v240/hero.webp" alt="Improved Matching" class="card-image">
     <div class="card-body">
       <div class="card-title">Improved Matching</div>
       <div class="card-description">
