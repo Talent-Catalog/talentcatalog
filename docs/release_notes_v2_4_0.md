@@ -10,7 +10,7 @@ sass:
 
 <div class="card-container">
   <a href="./v240/tc_ui_redesign" class="card">
-    <img src="./assets/images/v240/UiRedesign.png" alt="UI Redesign" class="card-image">
+    <img src="./assets/images/v240/UiJobsTabAfter.png" alt="UI Redesign" class="card-image">
     <div class="card-body">
       <div class="card-title">User Interface Redesign -- Phase I</div>
       <div class="card-description">
