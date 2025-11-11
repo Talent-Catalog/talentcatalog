@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-## Overview
+# Smarter Search and Matching
 
 This release delivers a set of powerful improvements to the Talent Catalog’s matching engine, 
 helping users find the most relevant candidates faster and more accurately.
