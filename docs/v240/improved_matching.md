@@ -56,3 +56,21 @@ data...
     <img src="./../assets/images/v240/HighlightSearchKeywordInCv.png" 
     alt="New search icon on a job" class="card-image">
 </div>
+
+## Improved Text Search Infrastructure
+
+This release introduces the use of **PostgreSQL’s full-text search extensions** to power keyword 
+search logic within the Talent Catalog.  
+
+Postgres now handles text indexing and relevance scoring which can be used for more efficient 
+candidate profiles and uploaded CVs searches.
+
+Previously, text search was handled through **Elasticsearch**. By consolidating this capability 
+into Postgres, we can:
+
+- Simplify the system architecture by removing a separate Elasticsearch service
+- Reduce maintenance overhead and streamline data consistency
+- Save approximately **US $2,500 annually** in licensing and hosting costs
+
+This change is an important step toward **fully retiring Elasticsearch** in a future release, 
+and handling all core search capabilities natively within Postgres instead.
