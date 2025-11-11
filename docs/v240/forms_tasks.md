@@ -42,3 +42,12 @@ Rather than relying on spreadsheets or email follow-ups, candidates now complete
 Tasks that prompt them to upload documents and fill in related data directly in the platform — 
 reducing delays, errors, and manual handling.
 
+## What’s New in the Candidate Experience
+
+📄 **Integrated Forms**: Candidates see and complete forms directly within their task list
+
+💾 **Save-as-you-go**: Forms support in-progress saving and later updates, similar to registration and intakes
+
+🧾 **Single source of truth**: Data collected via Forms Tasks can draw from and update both standard 
+candidate fields and custom properties
+
