@@ -29,3 +29,16 @@ Forms Tasks build on this capability by supporting the collection of multiple fi
 types of information all in one go, creating much richer interactions with candidates and more 
 complex workflows — all within the familiar Tasks experience.
 
+## First Application: Italy Train-to-Hire Program
+
+The first rollout of Forms Tasks supports the [Italy train-to-hire initiative](italy_train_to_hire.md), 
+where candidates (and their relocating family members) must provide:
+
+- Travel document scans 
+- Refugee status and ID documents 
+- Key data fields extracted from each
+
+Rather than relying on spreadsheets or email follow-ups, candidates now complete structured Form 
+Tasks that prompt them to upload documents and fill in related data directly in the platform — 
+reducing delays, errors, and manual handling.
+
