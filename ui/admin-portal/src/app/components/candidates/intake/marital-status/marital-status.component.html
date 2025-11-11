@@ -28,10 +28,17 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select class="tc-select" id="maritalStatus" [formControlName]="'maritalStatus'" (clear)="setNoResponse('maritalStatus')"
-               [items]="maritalStatusOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-    <p class="small">
+    <ng-select class="tc-select"
+               id="maritalStatus"
+               [formControlName]="'maritalStatus'"
+               (clear)="setNoResponse('maritalStatus')"
+               [items]="maritalStatusOptions"
+               [clearOnBackspace]="false"
+               placeholder="Select"
+               bindLabel="stringValue"
+               bindValue="key"
+    ></ng-select>
+    <p class="small text-muted">
       Note: If you are planning on immigrating with your spouse, his or her professional information is also critical
       to your application. If you are eligible and decide to move forward with this process,
       we will also discuss in further detail the process related to family.</p>
@@ -42,9 +49,16 @@
       <label class="form-label" for="partnerRegistered">
         Is your partner registered with the Talent Catalog?
       </label>
-      <ng-select class="tc-select" id="partnerRegistered" [formControlName]="'partnerRegistered'" (clear)="setNoResponse('partnerRegistered')"
-                 [items]="partnerRegisteredOptions" [clearOnBackspace]="false"
-                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+      <ng-select class="tc-select"
+                 id="partnerRegistered"
+                 [formControlName]="'partnerRegistered'"
+                 (clear)="setNoResponse('partnerRegistered')"
+                 [items]="partnerRegisteredOptions"
+                 [clearOnBackspace]="false"
+                 placeholder="Select"
+                 bindLabel="stringValue"
+                 bindValue="key"
+      ></ng-select>
     </div>
     <div *ngIf="partnerRegistered === 'Yes'">
       <div class="mb-3">

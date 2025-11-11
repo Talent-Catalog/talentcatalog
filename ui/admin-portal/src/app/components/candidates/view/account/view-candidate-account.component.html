@@ -42,12 +42,16 @@
 
     <tc-description-item [label]="'Password:'">
       *********
-      <span  *ngIf="editable">
-        <br>
-        <a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">
-          reset
-        </a>
-      </span>
+      <div>
+        <tc-button *ngIf="editable"
+                   (onClick)="updatePassword(candidate.user)"
+                   [size]="'xs'"
+                   [type]="'outline'"
+                   [color]="'secondary'"
+        >
+          Reset
+        </tc-button>
+      </div>
     </tc-description-item>
 
   </tc-description-list>

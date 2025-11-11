@@ -112,7 +112,12 @@
     </form>
   </div>
 
-  <tc-table [results]="results" [loading]="loading" [(pageNumber)]="pageNumber" (pageChange)="search()">
+  <tc-table [results]="results"
+            [loading]="loading"
+            [(pageNumber)]="pageNumber"
+            (pageChange)="search()"
+            [clickableRows]="clickableRows"
+  >
     <!--          Header-->
     <thead>
     <tr>
@@ -177,7 +182,11 @@
            [routerLink]="['/list',opp.jobOpp.submissionList.id]">
           <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
         </tc-icon>
-        <tc-icon type="link" color="gray" *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)">
+        <tc-icon [type]="'link'"
+                 [color]="'gray'"
+                 *ngIf="opp.sfId && canAccessSalesforce()"
+                 [href]="getOppSfLink(opp.sfId)"
+        >
           <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
         </tc-icon>
       </td>
@@ -185,9 +194,9 @@
         <app-chat-read-status
           [chats]="getChats(opp)"
         ></app-chat-read-status>
+        {{ opp.jobOpp.name }}
         <tc-icon type="link" color="gray" [routerLink]="['/opp',opp.id]">
-          {{ opp.jobOpp.name }} <i class="fas fa-address-book"
-                                   title="Case (candidate opportunity)"></i>
+          <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
         </tc-icon>
         <tc-icon type="link" color="gray" [routerLink]="['/job',opp.jobOpp.id]">
           <i class="fa-solid fa-briefcase" title="Job"></i>

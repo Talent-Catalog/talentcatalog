@@ -18,12 +18,15 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label for="visaJobInterest">Candidate genuinely interested in the role and would move to accept offer?
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaJobInterest">
+          Candidate genuinely interested in the role and would move to accept offer?
+        </tc-label>
         <app-autosave-status
           [saving]="saving"
           [typing]="typing">
         </app-autosave-status>
-      </tc-label>
+      </div>
       <ng-select class="tc-select" id="visaJobInterest" [formControlName]="'visaJobInterest'" (clear)="setNoResponse('visaJobInterest')"
                  [items]="jobInterestOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>

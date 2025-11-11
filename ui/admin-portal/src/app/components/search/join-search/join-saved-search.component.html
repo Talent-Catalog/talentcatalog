@@ -35,7 +35,7 @@
                [inputFormatter]="renderSavedSearchRow"
                [readonly]="readonly"
                placeholder="Type the name of a base search..."/>
-          <tc-button color=warning *ngIf="this.selectedBaseSearch" class="btn btn-danger" (click)="deleteSearch()" >
+          <tc-button color=warning *ngIf="this.selectedBaseSearch" class="btn btn-danger" (onClick)="deleteSearch()" >
             Remove base search <i class="fas fa-xmark ms-2"></i>
           </tc-button>
       </div>
