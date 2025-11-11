@@ -41,7 +41,7 @@ sass:
 
 <div class="card-container">
   <a href="./v240/privacy_agreements" class="card">
-    <img src="./assets/images/v240/PrivacyAgreementReview.png" alt="Privacy Agreement Review" class="card-image">
+    <img src="./assets/images/v240/gdpr.webp" alt="Privacy Agreement Review" class="card-image">
     <div class="card-body">
       <div class="card-title">Privacy Agreements Review - GDPR compliance</div>
       <div class="card-description">
@@ -56,7 +56,7 @@ sass:
   </a>
 
   <a href="./v240/improved_matching" class="card">
-    <img src="./assets/images/v240/ImprovedMatching.png" alt="Improved Matching" class="card-image">
+    <img src="./assets/images/v240/es-or-ft-postgresql.png" alt="Improved Matching" class="card-image">
     <div class="card-body">
       <div class="card-title">Improved Matching</div>
       <div class="card-description">
