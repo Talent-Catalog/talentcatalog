@@ -77,7 +77,7 @@ skills comparability across job types.
 
 <div class="card-image-container-narrow">
     <img class="card-image" src="./../assets/images/v240/EscoLogo.png" alt="ESCO Logo" 
-       style="margin-right: 20px;">
+       style="margin-right: 40px; margin-bottom: 12px;">
     <img class="card-image" src="./../assets/images/v240/ONetLogo.png" alt="ONET Logo">
 </div>
 
