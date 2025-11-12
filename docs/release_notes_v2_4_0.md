@@ -197,8 +197,8 @@ available for all environments
 - Support for CEFR levels in candidate language skills via TC API - i.e. A1, A2, B1, B2, C1, C2
 - Python scripts to fetch anonymous candidate data from TC API for a given TC list for easy export
 to third-parties (e.g. Beamery)
-- New API endpoints for anonymised candidate data retrieval by TC public list IDs  - this will 
-extend to searches and will support 'tags' functionality in future updates
+- New API endpoints for anonymous data retrieval by TC public list IDs - will extend to searches and
+'tags' functionality in future updates
 - Map legacy SurveyType data onto HowHeardAboutUs enum in TC API models
 - Enhancements to support University of Hawaii API integration
 - Addition of 'includeEmployed' filter on API candidate searches to include/exclude currently 
