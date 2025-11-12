@@ -99,7 +99,7 @@ Helpful TC user guides:
 <div class="card-container">
 
   <a href="./v240/forms_tasks" class="card">
-    <img src="./assets/images/v240/ApiRevisions.png" alt="Form Tasks" class="card-image">
+    <img src="./assets/images/v240/FormsTasks.png" alt="Form Tasks" class="card-image">
     <div class="card-body">
       <div class="card-title">Form Tasks Framework</div>
       <div class="card-description">
