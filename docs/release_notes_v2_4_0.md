@@ -186,23 +186,24 @@ This release includes several enhancements to the TC API, including:
 
 - New API endpoints for triggering data migrations
 - Ability to manage data anonymisation migrations via TC admin console
-- "Try it out" functionality in the online [API docs](https://tc-api.redocly.app/openapi) is fully 
-functional for all environments
-- Auxiliary batch jobs for selectively run Mongo document or Aurora entity migrations
+- Full "Try it out" functionality in the online [API docs](https://tc-api.redocly.app/openapi) 
+available for all environments
+- Auxiliary batch jobs to support selective data migrations for Mongo or Aurora anonymised databases
 - Browse, stop and restart data migration jobs from TC admin portal
-- Support replay of candidate data anonymisation migrations from any TC list
+- Support replay of candidate data anonymisation from any TC list
 - API batch management commands, and other useful TC admin commands, documented in TC admin console 
 - TC admin console commands now clickable for easy execution
 - API data migrations will no longer auto-trigger when the service starts up
 - Support for CEFR levels in candidate language skills via TC API - i.e. A1, A2, B1, B2, C1, C2
 - Python scripts to fetch anonymous candidate data from TC API for a given TC list for easy export
-- Exposed retrieval by TC lists in TC API - this will extend to searches and tags functionality in 
-future updates
-- Map legacy SurveyType onto HowHeardAboutUs enum in TC API
-- API enhancements to support University of Hawaii integration
-- An 'includeEmployed' filter on candidate searches in TC API to include/exclude currently employed 
-candidates
-- API Key authentication in-memory caching using Caffeine to reduce DB load
+to third-parties (e.g. Beamery)
+- New API endpoints for anonymised candidate data retrieval by TC public list IDs  - this will 
+extend to searches and will support 'tags' functionality in future updates
+- Map legacy SurveyType data onto HowHeardAboutUs enum in TC API models
+- Enhancements to support University of Hawaii API integration
+- Addition of 'includeEmployed' filter on API candidate searches to include/exclude currently 
+employed candidates
+- API Key authentication uses in-memory caching (using Caffeine) to reduce DB and service load
 
 # Security Fixes
 
