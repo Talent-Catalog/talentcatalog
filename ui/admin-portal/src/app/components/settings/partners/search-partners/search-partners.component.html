@@ -73,9 +73,14 @@
         <i class="fas fa-edit" title="Change partner details"></i>
       </tc-icon>
     </td>
-    <td>{{partner.name}}
+    <td class="text-nowrap">
+      {{partner.name}}
       <a *ngIf="partner.sflink && canAccessSalesforce()" [href]="partner.sflink" target="_blank">
-        <i class="fab fa-salesforce" title="Show partner account in Salesforce"></i>
+        <tc-icon [size]="'sm'"
+                 ariaLabel="Show partner account in Salesforce"
+        >
+          <i class="fab fa-salesforce" title="Show partner account in Salesforce"></i>
+        </tc-icon>
       </a>
     </td>
     <td>{{partner.abbreviation}}</td>
