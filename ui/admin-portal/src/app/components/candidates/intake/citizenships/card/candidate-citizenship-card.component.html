@@ -24,15 +24,21 @@
     <form [formGroup]="form">
       <div class="mb-3">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label class="form-label" [for]="'nationality'+myRecordIndex">Country of Citizenship</label>
-          <div *ngIf="editable" class="float-end d-flex align-items-center">
+          <label class="form-label" [for]="'nationality' + myRecordIndex">
+            Country of Citizenship
+          </label>
+          <div *ngIf="editable" class="d-flex align-items-center gap-2">
             <app-autosave-status
               [saving]="saving"
               [typing]="typing">
             </app-autosave-status>
-            <button class="btn" (click)="doDelete()">
+            <tc-button (onClick)="doDelete()"
+                       [size]="'sm'"
+                       [type]="'plain'"
+                       [color]="'gray'"
+            >
                 <tc-icon [color]="'gray'"><i class="fas fa-trash"></i></tc-icon>
-            </button>
+            </tc-button>
           </div>
         </div>
         <ng-select class="tc-select" [id]="'nationality'+myRecordIndex" [formControlName]="'citizenNationalityId'"

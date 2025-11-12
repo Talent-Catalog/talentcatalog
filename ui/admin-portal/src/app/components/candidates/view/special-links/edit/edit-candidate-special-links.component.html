@@ -14,75 +14,80 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal heading="Edit Candidate's Special Links"
+          [showClose]="true"
+          [showCancel]="true"
+          [disableAction]="candidateForm.invalid || loading || saving"
+          actionText="Save"
+          (onAction)="onSave()"
+>
 
-  <h4 class="modal-title">Edit Candidate's Special Links</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="candidateForm">
-      <div class="mb-3">
-        <label class="form-label" for="linkedInLink">LinkedIn Profile</label>
+      <tc-field class="mb-4">
+        <tc-label for="linkedInLink">
+          LinkedIn Profile
+        </tc-label>
         <div>
           <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
         </div>
-        <input type="text" class="form-control" id="linkedInLink"
-               formControlName="linkedInLink"
-               placeholder="https://www.linkedin.com/in/..."
-        >
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="folderlink">Google Docs Folder</label>
-        <div>
-          <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
-        </div>
-        <input type="text" class="form-control" id="folderlink"
-               formControlName="folderlink"
-               placeholder="https://drive.google.com/drive/folders/..."
-        >
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="sflink">Salesforce Contact Page</label>
-        <div>
-          <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
-        </div>
-        <input type="text" class="form-control" id="sflink"
-               formControlName="sflink"
-               placeholder="{{sfUrlPlaceholder}}..."
-        >
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="videolink">One way video</label>
-        <div>
-          <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
-        </div>
-        <input type="text" class="form-control" id="videolink"
-               formControlName="videolink"
-               placeholder="https://hire.li/..."
-        >
-      </div>
+        <tc-input [type]="'text'"
+                  id="linkedInLink"
+                  [formControlName]="'linkedInLink'"
+                  [placeholder]="'https://www.linkedin.com/in/...'"
+        ></tc-input>
+      </tc-field>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="folderlink">
+          Google Docs Folder
+        </tc-label>
+        <div>
+          <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
+        </div>
+        <tc-input [type]="'text'"
+                  id="folderlink"
+                  [formControlName]="'folderlink'"
+                  [placeholder]="'https://drive.google.com/drive/folders/...'"
+        ></tc-input>
+      </tc-field>
+
+      <tc-field class="mb-4">
+        <tc-label for="sflink">
+          Salesforce Contact Page
+        </tc-label>
+        <div>
+          <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
+        </div>
+        <tc-input [type]="'text'"
+                  id="sflink"
+                  [formControlName]="'sflink'"
+                  [placeholder]="sfUrlPlaceholder + '...'"
+        ></tc-input>
+      </tc-field>
+
+      <tc-field class="mb-4">
+        <tc-label for="videolink">
+          One way video
+        </tc-label>
+        <div>
+          <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
+        </div>
+        <tc-input [type]="'text'"
+                  id="videolink"
+                  [formControlName]="'videolink'"
+                  [placeholder]="'https://hire.li/...'"
+        ></tc-input>
+      </tc-field>
     </form>
 
   </div>
-</div>
+
+</tc-modal>

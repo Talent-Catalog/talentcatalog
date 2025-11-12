@@ -8,6 +8,16 @@
   border-radius: 12px;
   padding: 32px 0 48px;
 
+  .table-responsive table.table {
+    tbody tr:nth-child(odd) {
+      @include background-color-white;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: color(gray, 50);
+    }
+  }
+
   .table-name {
     @include label-md;
     font-weight: 600;
@@ -42,22 +52,24 @@
         vertical-align: middle;
       }
 
-      &.table-hover > tbody > tr:hover {
-        @include background-color-soft;
-        cursor: pointer;
-        background-color: color(primary, 50) !important;
-      }
+      &.clickable-rows {
+        &.table-hover > tbody > tr:hover {
+          @include background-color-soft;
+          cursor: pointer;
+          background-color: color(primary, 50) !important;
+        }
 
-      tr.current {
-        background-color: color(primary, 100) !important;
-      }
+        tr.current {
+          background-color: color(primary, 100) !important;
+        }
 
-      tr.selected {
-        background-color: color(primary, 100) !important;
-      }
+        tr.selected {
+          background-color: color(primary, 100) !important;
+        }
 
-      tr.clickable:hover {
-        cursor: pointer;
+        tr.clickable:hover {
+          cursor: pointer;
+        }
       }
 
       tr a {
@@ -73,5 +85,13 @@
   .alert-warning {
     background-color: color(yellow, 50) !important;
     --bs-alert-bg:  color(yellow, 50);
+  }
+
+  .tc-icon {
+    color: color(secondary, 500) !important;
+  }
+
+  .tc-icon > i {
+    font-size: 1rem !important;
   }
 }

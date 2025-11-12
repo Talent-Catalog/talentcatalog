@@ -19,12 +19,15 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label for="visaCharacterAssessment">Meets character requirement? (e.g. no criminal record)
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaCharacterAssessment">
+          Meets character requirement? (e.g. no criminal record)
+        </tc-label>
         <app-autosave-status
           [saving]="saving"
           [typing]="typing">
         </app-autosave-status>
-      </tc-label>
+      </div>
       <ng-select class="tc-select" id="visaCharacterAssessment" [formControlName]="'visaCharacterAssessment'"
                  (clear)="setNoResponse('visaCharacterAssessment')"
                  [items]="characterAssessmentOptions" [clearOnBackspace]="false"

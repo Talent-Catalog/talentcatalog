@@ -116,8 +116,8 @@ export class ViewPostComponent implements OnInit, OnChanges {
         // Will fit below, won't fit above OR will fit either side - place below
         this.reactionPickerYPos = event.clientY;
       }
-      // Always place to the left of the button without concealing it
-      this.reactionPickerXPos = event.clientX - 370;
+      // Always place to the left of the button if there's space - ensures no x cut-off
+      this.reactionPickerXPos = event.clientX > 380 ? event.clientX - 370 : event.clientX;
       this.reactionPickerVisible = !this.reactionPickerVisible;
     }
   }

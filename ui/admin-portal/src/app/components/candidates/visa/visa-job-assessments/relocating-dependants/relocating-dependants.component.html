@@ -19,43 +19,47 @@
 </tc-alert>
 <form [formGroup]="form" class="mb-3">
   <div class="row align-items-center" [appReadOnlyInputs]="isReadOnly()">
-    <div class="col">
-      <tc-field>
-        <tc-label for="relocatingDependantIds">Which dependants hope to relocate with the candidate?
-          <app-autosave-status
-            *ngIf="!isReadOnly()"
-            [saving]="saving"
-            [typing]="typing">
-          </app-autosave-status>
+    <tc-field>
+      <div class="d-flex justify-content-between">
+        <tc-label for="relocatingDependantIds">
+          Which dependants hope to relocate with the candidate?
         </tc-label>
-        <ng-select
-          class="tc-select"
-          id="relocatingDependantIds"
-          [items]="dependants"
-          [multiple]="true"
-          placeholder="Select or type..."
-          bindValue="id"
-          bindLabel="relation"
-          [formControlName]="'relocatingDependantIds'">
-          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-            <div class="ng-value" *ngFor="let item of items">
-              <span class="ng-value-label">{{item?.relation}}<span *ngIf="item?.name">: {{item?.name}}</span></span>
-              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-            </div>
-          </ng-template>
-          <ng-template ng-option-tmp let-item="item">
-            <span>{{item?.relation}}<span *ngIf="item?.name">: {{item.name}}</span></span>
-          </ng-template>
-        </ng-select>
-        <tc-description>If a dependant isn't listed in the dropdown, you may need to add the dependant to the Dependants section under the Full Intake tab.</tc-description>
-      </tc-field>
-    </div>
+        <app-autosave-status
+          *ngIf="!isReadOnly()"
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </div>
+      <ng-select
+        class="tc-select"
+        id="relocatingDependantIds"
+        [items]="dependants"
+        [multiple]="true"
+        placeholder="Select or type..."
+        bindValue="id"
+        bindLabel="relation"
+        [formControlName]="'relocatingDependantIds'">
+        <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+          <div class="ng-value" *ngFor="let item of items">
+            <span class="ng-value-label">{{item?.relation}}<span *ngIf="item?.name">: {{item?.name}}</span></span>
+            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+          </div>
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item">
+          <span>{{item?.relation}}<span *ngIf="item?.name">: {{item.name}}</span></span>
+        </ng-template>
+      </ng-select>
+      <tc-description>If a dependant isn't listed in the dropdown, you may need to add the dependant to the Dependants section under the Full Intake tab.</tc-description>
+    </tc-field>
     <div *ngIf="!isReadOnly()" class="col-auto">
-      <tc-button type="outline" color="secondary" [disabled]="updatingSf || loading"
-              (onClick)="requestSfCaseRelocationInfoUpdate()">
+      <tc-button type="outline"
+                 color="secondary"
+                 [disabled]="updatingSf || loading"
+                 (onClick)="requestSfCaseRelocationInfoUpdate()"
+      >
         <span *ngIf="updatingSf; else elseBlock">
-            <i class="fas fa-spinner fa-spin"></i>
-          </span>
+          <i class="fas fa-spinner fa-spin"></i>
+        </span>
         <ng-template #elseBlock>
           <i class="fa-solid fa-chart-simple"></i>
         </ng-template>

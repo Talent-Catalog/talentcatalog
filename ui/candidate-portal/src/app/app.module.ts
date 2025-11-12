@@ -231,7 +231,7 @@ import {
 import {
   DuolingoComponent
 } from './components/profile/view/tab/services/duolingo/duolingo.component';
-import {CasiHeaderComponent} from './components/common/casi-header/casi-header.component';
+import {TabHeaderComponent} from './components/common/tab-header/tab-header.component';
 import {TermsComponent} from './components/privacy-policy/terms.component';
 import {
   RegistrationSubmitComponent
@@ -248,6 +248,11 @@ import {
   TaskSubmittedComponent
 } from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
 import { RsdEvidenceFormComponent } from './components/form/rsd-evidence-form/rsd-evidence-form.component';
+  FamilyRsdEvidenceFormComponent
+} from './components/form/family-rsd-evidence-form/family-rsd-evidence-form.component';
+import {
+  RsdEvidenceFormComponent
+} from './components/form/rsd-evidence-form/rsd-evidence-form.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -330,7 +335,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServicesComponent,
     DuolingoCouponComponent,
     DuolingoComponent,
-    CasiHeaderComponent,
+    TabHeaderComponent,
     TermsComponent,
     RegistrationSubmitComponent,
     ShowTermsComponent,
@@ -338,6 +343,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MyFirstFormComponent,
     TravelDocFormComponent,
     TaskSubmittedComponent,
+    FamilyRsdEvidenceFormComponent,
     RsdEvidenceFormComponent,
   ],
   imports: [

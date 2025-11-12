@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,14 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import '../../../../scss/_mixins.scss';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-.casi-header{
-  @include background-color('primary');
-  padding: 2rem;
-  color: white;
-  border-bottom-left-radius: 2rem;
-  border-bottom-right-radius: 2rem;
-  margin-bottom: 1rem;
-}
+import {TabHeaderComponent} from './tab-header.component';
 
+describe('TabHeaderComponent', () => {
+  let component: TabHeaderComponent;
+  let fixture: ComponentFixture<TabHeaderComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [TabHeaderComponent]
+    });
+    fixture = TestBed.createComponent(TabHeaderComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

@@ -17,14 +17,16 @@
 <tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
   <tc-field *ngIf="editable">
-    <tc-label for="visaJobRegional">In a designated regional area? (
-      <a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list/regional-postcodes"
-         target="_blank">Relevant postcodes</a>)
+    <div class="d-flex justify-content-between">
+      <tc-label for="visaJobRegional">In a designated regional area? (
+        <a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list/regional-postcodes"
+           target="_blank">Relevant postcodes</a>)
+      </tc-label>
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </tc-label>
+    </div>
     <ng-select class="tc-select" id="visaJobRegional" [formControlName]="'visaJobRegional'"
                [items]="regionalAreaOptions"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>

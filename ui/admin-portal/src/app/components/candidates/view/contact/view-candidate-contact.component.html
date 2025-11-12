@@ -29,7 +29,7 @@
     <div class="float-end" *ngIf="editable">
       <tc-button (onClick)="editContactDetails()"
                  [type]="'solid'"
-                 [color]="'secondary'"
+                 [color]="'primary'"
                  [size]="'sm'"
       >
         <i class="fas fa-edit"></i>
@@ -37,75 +37,80 @@
     </div>
   </tc-card-header>
 
-  <tc-description-list [direction]="'column'">
-
-    <tc-description-item [label]="'Address (Origin)'"
-                         [icon]="'fas fa-map-marker-alt'"
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
+    <tc-description-item label="Address (Origin)"
+                         icon="fas fa-map-marker-alt"
     >
-        <span class="field" *ngIf="candidate.address1"
-              [innerHtml]="candidate.address1 + ', '"
+        <span class="field"
+              *ngIf="candidate.address1"
+              [innerHtml]="candidate.address1"
               appHighlightSearch
         ></span>
 
 
         <span class="field"
               *ngIf="candidate.city"
-              [innerHtml]="candidate.city + ', '"
+              [innerHtml]="candidate.address1 ? ', ' + candidate.city : candidate.city"
               appHighlightSearch
         ></span>
 
 
-        <span class="field" *ngIf="candidate.state"
-              [innerHtml]="candidate.state + ', '"
+        <span class="field"
+              *ngIf="candidate.state"
+              [innerHtml]="candidate.address1 || candidate.city ?
+                ', ' + candidate.state : candidate.state"
               appHighlightSearch
         ></span>
 
         <span class="field"
               *ngIf="candidate.country"
-              [innerHtml]="candidate.country?.name"
+              [innerHtml]="candidate.address1 || candidate.city || candidate.state ?
+                ', ' + candidate.country?.name : candidate.country?.name"
               appHighlightSearch
         ></span>
     </tc-description-item>
 
-    <tc-description-item [label]="'Gender'"
-                         [icon]="'fas fa-user'"
+    <tc-description-item label="Gender"
+                         icon="fas fa-user"
     >
       <span [innerHtml]="candidate.gender" appHighlightSearch></span>
     </tc-description-item>
 
-    <tc-description-item [label]="'D.O.B.'"
-                         [icon]="'fas fa-gift'"
+    <tc-description-item label="D.O.B."
+                         icon="fas fa-gift"
     >
       {{candidate.dob | date}}
     </tc-description-item>
 
-    <tc-description-item [label]="'Phone'"
-                         [icon]="'fas fa-phone'"
+    <tc-description-item label="Phone"
+                         icon="fas fa-phone"
     >
       <span [innerHtml]="candidate.phone" appHighlightSearch></span>
     </tc-description-item>
 
-    <tc-description-item [label]="'WhatsApp'"
-                         [icon]="'fab fa-whatsapp'"
+    <tc-description-item label="WhatsApp"
+                         icon="fab fa-whatsapp"
     >
       <span [innerHtml]="candidate.whatsapp" appHighlightSearch></span>
     </tc-description-item>
 
-    <tc-description-item [label]="'Country of Nationality'"
-                         [icon]="'fas fa-globe'"
+    <tc-description-item label="Country of Nationality"
+                         icon="fas fa-globe"
     >
       <span [innerHtml]="candidate.nationality?.name" appHighlightSearch></span>
     </tc-description-item>
 
-    <tc-description-item [label]="'Year of arrival'"
-                         [icon]="'fas fa-calendar'"
+    <tc-description-item label="Year of arrival"
+                         icon="fas fa-calendar"
     >
       <span *ngIf="candidate.yearOfArrival; else notApplicable">{{candidate.yearOfArrival}}</span>
       <ng-template #notApplicable>n/a</ng-template>
     </tc-description-item>
 
-    <tc-description-item [label]="'Email'"
-                         [icon]="'fas fa-envelope'"
+    <tc-description-item label="Email"
+                         icon="fas fa-envelope"
                          class="text-break"
     >
       <span [innerHtml]="candidate.user.email" appHighlightSearch></span>
@@ -114,8 +119,8 @@
       </span>
     </tc-description-item>
 
-    <tc-description-item [label]="'Address (Relocated)'"
-                         [icon]="'fa-solid fa-house-circle-check'"
+    <tc-description-item label="Address (Relocated)"
+                         icon="fa-solid fa-house-circle-check"
     >
       <span class="field" *ngIf="candidate.relocatedAddress"
             [innerHtml]="candidate.relocatedAddress"
@@ -125,24 +130,26 @@
       <span class="comma"></span>
 
       <span class="field" *ngIf="candidate.relocatedCity"
-            [innerHtml]="candidate.relocatedCity"
+            [innerHtml]="candidate.relocatedAddress ? ', ' + candidate.relocatedCity : candidate.relocatedCity"
             appHighlightSearch
       ></span>
 
       <span class="comma"></span>
 
-      <span class="field" *ngIf="candidate.relocatedState"
-            [innerHtml]="candidate.relocatedState"
+      <span class="field"
+            *ngIf="candidate.relocatedState"
+            [innerHtml]="candidate.relocatedAddress || candidate.relocatedCity ?
+              ', ' + candidate.relocatedState : candidate.relocatedState"
             appHighlightSearch
       ></span>
 
       <span class="comma"></span>
 
       <span class="field" *ngIf="candidate.relocatedCountry"
-            [innerHtml]="candidate.relocatedCountry?.name"
+            [innerHtml]="candidate.relocatedAddress || candidate.relocatedCity || candidate.relocatedState ?
+              ', ' + candidate.relocatedCountry?.name : candidate.relocatedCountry?.name"
             appHighlightSearch
       ></span>
     </tc-description-item>
-
   </tc-description-list>
 </tc-card>

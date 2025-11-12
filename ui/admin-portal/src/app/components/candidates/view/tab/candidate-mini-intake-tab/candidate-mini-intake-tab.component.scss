@@ -14,12 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import 'src/scss/color-mixins';
+
 :host {
   display: block;
-  padding-top: 24px;
   padding-bottom: 24px;
 }
 
 :host ::ng-deep .read-only-white {
   background-color: white;
+}
+
+.intake-complete {
+  @include text-color-secondary
 }

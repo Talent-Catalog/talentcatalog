@@ -46,7 +46,6 @@ import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {concatMap, takeUntil} from "rxjs/operators";
 
-
 @Component({
   selector: 'app-view-candidate',
   templateUrl: './view-candidate.component.html',
@@ -66,6 +65,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   candidateChat: JobChat;
   candidateProspectTabVisible: boolean;
   loggedInUser: User;
+  uploadedCvAvailable: boolean = false;
 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
@@ -137,6 +137,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
           this.loading = false;
         } else {
           this.setCandidate(candidate);
+          this.updateUploadedCvAvailable();
           this.loadLists();
           this.generateToken();
           this.setChatAccess();
@@ -528,4 +529,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   onMuteToggled() {
     this.refreshCandidateProfile();
   }
+
+  private updateUploadedCvAvailable() {
+    this.uploadedCvAvailable =
+      !!this.candidate?.candidateAttachments?.some(att => att.cv);
+  }
+
 }

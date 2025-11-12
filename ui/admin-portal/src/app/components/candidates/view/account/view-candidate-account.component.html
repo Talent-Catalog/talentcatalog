@@ -28,7 +28,9 @@
     Account Information
   </tc-card-header>
 
-  <tc-description-list direction="column">
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
 
     <tc-description-item [label]="'Account Created:'">
       {{candidate.user.createdDate | date: 'customDateTime' }}
@@ -40,12 +42,16 @@
 
     <tc-description-item [label]="'Password:'">
       *********
-      <span  *ngIf="editable">
-        <br>
-        <a class="small" [routerLink]="[]" (click)="updatePassword(candidate.user)">
-          reset
-        </a>
-      </span>
+      <div>
+        <tc-button *ngIf="editable"
+                   (onClick)="updatePassword(candidate.user)"
+                   [size]="'xs'"
+                   [type]="'outline'"
+                   [color]="'secondary'"
+        >
+          Reset
+        </tc-button>
+      </div>
     </tc-description-item>
 
   </tc-description-list>

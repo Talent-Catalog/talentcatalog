@@ -961,5 +961,10 @@ const ALL_FIELDS = {
       "REFUGEE-STATUS": null,
       "RSD-VALIDATION":null
     }
+  },
+  "FAMILY-RSD":{
+      "LABEL":{
+        "NO-MEMBER": null
+      }
   }
 }

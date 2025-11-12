@@ -27,7 +27,10 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
@@ -67,7 +70,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       if (this.candidate.fullIntakeCompletedBy != null) {
         user = this.candidate?.fullIntakeCompletedBy.firstName + " " + this.candidate?.fullIntakeCompletedBy.lastName;
       } else {
-        user = "external intake input, see notes for more details."
+        user = "external input - see Notes for more details"
       }
     }
     return user;
@@ -77,9 +80,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
     return this.countryService.isPalestine(this.candidate?.nationality)
   }
 
-  addCitizenshipRecord(e: MouseEvent) {
-    // Stop the button from opening/closing the accordion
-    e.stopPropagation();
+  addCitizenshipRecord() {
     this.saving = true;
     const request: CreateCandidateCitizenshipRequest = {};
     this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
@@ -93,8 +94,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addExamRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addExamRecord() {
     this.saving = true;
     const request: CreateCandidateExamRequest = {};
     this.candidateExamService.create(this.candidate.id, request).subscribe(
@@ -108,8 +108,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addDependantRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addDependantRecord() {
     const request: CreateCandidateDependantRequest = {};
     this.candidateDependantService.create(this.candidate.id, request).subscribe(
       (dependant) => {
