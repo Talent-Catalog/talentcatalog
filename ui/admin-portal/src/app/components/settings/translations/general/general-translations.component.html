@@ -48,7 +48,10 @@
       </div>
     </div>
 
-    <tc-table [results]="fields" [loading]="loading">
+    <tc-table [results]="fields"
+              [loading]="loading"
+              [clickableRows]="false"
+    >
       <thead>
       <tr>
         <th>Field</th>

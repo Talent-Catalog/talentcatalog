@@ -59,7 +59,9 @@
           [loading]="loading"
           [paginationPosition]="'top'"
           [(pageNumber)]="pageNumber"
-          (pageChange)="search()">
+          (pageChange)="search()"
+          [clickableRows]="false"
+>
 
   <thead>
   <tr>
