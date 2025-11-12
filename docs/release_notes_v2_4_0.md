@@ -261,9 +261,8 @@ The codebase is now available in its own
 [Git repository](https://github.com/Talent-Catalog/tc-skills-extraction-service), enabling 
 independent development and future reuse in other parts of the platform.
 
-> 💡 This modular approach supports faster iteration, easier scaling, and better fault isolation for 
-> AI-driven services.
-
+> 💡 This modular approach will support faster iteration, easier scaling, and better fault isolation 
+> for future AI-driven services.
 
 
 ## New Tools and Standards
