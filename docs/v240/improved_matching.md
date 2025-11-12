@@ -75,6 +75,12 @@ relevant skills from job descriptions. This in turn drives AI-generated candidat
 based on consistent, structured skill data — improving search relevance and will assist in 
 skills comparability across job types.
 
+<div class="card-image-container-narrow">
+    <img class="card-image" src="./../assets/images/v240/EscoLogo.png" alt="ESCO Logo">
+    <img class="card-image" src="./../assets/images/v240/ONetLogo.png" alt="ONET Logo">
+</div>
+
+
 > 💡 In future releases, we’ll expand both the **skills base** and the use of AI — including support 
 > for skill extraction from candidate-submitted experience, and smarter prompts to help candidates 
 > describe their skills more effectively.
