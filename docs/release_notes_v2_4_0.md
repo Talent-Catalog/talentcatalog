@@ -236,6 +236,10 @@ marked as required but not actually required to proceed
 
 ## Code Refactoring
 
+- Introduced Candidate Forms and Form Tasks framework
+- Introduced CASI (Candidate Assistance Services Interface) framework
+- Introduced Postgres text search which will allow us to retire Elasticsearch in future
+- Criteria API specifications will be retired in future releases
 
 ## Continuous Integration & Deployment
 
