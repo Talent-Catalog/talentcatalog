@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-## Introducing Our New UI: Cleaner, Sharper, and More Scalable
+# Introducing Our New UI: Cleaner, Sharper, and More Scalable
 The Talent Catalog just got a major visual refresh. 🚀
 
 Our new interface brings a fresh look and a stronger foundation for what’s coming next.

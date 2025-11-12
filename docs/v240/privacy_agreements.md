@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-## Overview
+# Upgrading Privacy Agreements for GDPR Compliance
 To meet the evolving legal and operational needs of the Talent Catalog, this release delivers a 
 comprehensive upgrade of our data protection agreements and privacy policies, aligning them
 with the General Data Protection Regulation (GDPR) — the global benchmark for data privacy.
