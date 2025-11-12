@@ -76,7 +76,8 @@ based on consistent, structured skill data — improving search relevance and wi
 skills comparability across job types.
 
 <div class="card-image-container-narrow">
-    <img class="card-image" src="./../assets/images/v240/EscoLogo.png" alt="ESCO Logo">
+    <img class="card-image" src="./../assets/images/v240/EscoLogo.png" alt="ESCO Logo" 
+       style="margin-right: 20px;">
     <img class="card-image" src="./../assets/images/v240/ONetLogo.png" alt="ONET Logo">
 </div>
 
