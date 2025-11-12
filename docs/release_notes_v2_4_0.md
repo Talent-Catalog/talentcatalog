@@ -151,6 +151,7 @@ managing source partner (not just TBB)
 - Integrates with standard skills from sources including **ESCO** and **ONet**
 - Slovakia added to TC countries 
 - Email alert for failing scheduled background batch operations
+- Support for CEFR levels in candidate language skills - i.e. A1, A2, B1, B2, C1, C2
 
 # UI / UX Enhancements
 
@@ -174,8 +175,34 @@ entry
 - Ability of TC admin user to find candidate by public ID
 - Display candidate Exam results in admin portal candidate profile
 
-# Performance Improvements
+## TC API Enhancements
 
+The TC API was introduced in release 2.3.0 to provide programmatic access to Talent Catalog 
+anonymised data and functionality. The API was envisioned by TBB's Global Leadership Team as a key 
+component for enabling interoperability between Talent Catalog and other third-party systems, when 
+they met in Canada, October 2023.
+
+This release includes several enhancements to the TC API, including:
+
+- New API endpoints for triggering data migrations
+- Ability to manage data anonymisation migrations via TC admin console
+- "Try it out" functionality in the online [API docs](https://tc-api.redocly.app/openapi) is fully 
+functional for all environments
+- Auxiliary batch jobs for selectively run Mongo document or Aurora entity migrations
+- Browse, stop and restart data migration jobs from TC admin portal
+- Support replay of candidate data anonymisation migrations from any TC list
+- API batch management commands, and other useful TC admin commands, documented in TC admin console 
+- TC admin console commands now clickable for easy execution
+- API data migrations will no longer auto-trigger when the service starts up
+- Support for CEFR levels in candidate language skills via TC API - i.e. A1, A2, B1, B2, C1, C2
+- Python scripts to fetch anonymous candidate data from TC API for a given TC list for easy export
+- Exposed retrieval by TC lists in TC API - this will extend to searches and tags functionality in 
+future updates
+- Map legacy SurveyType onto HowHeardAboutUs enum in TC API
+- API enhancements to support University of Hawaii integration
+- An 'includeEmployed' filter on candidate searches in TC API to include/exclude currently employed 
+candidates
+- API Key authentication in-memory caching using Caffeine to reduce DB load
 
 # Security Fixes
 
@@ -216,6 +243,8 @@ responsible for
 - Candidate Portal registration: English ability and professional certification questions 
 marked as required but not actually required to proceed
 - Error accessing unknown fields on JPA entity during active session
+- API key sanitization to prevent leading/trailing spaces causing authentication failures from 
+Postman and Redoc "Try it out" feature
 
 # Developer Notes
 
@@ -245,6 +274,10 @@ marked as required but not actually required to proceed
 
 - Setup integration tests with Docker Testcontainers 
 - Support for integration test DB Dump in CI/CD
+- Added GitHub Actions workflow for building and deploying the TC API
+- Added GitHub Actions workflow for building and deploying the new Skills Extraction Service
+- Added Terraform workflow for deploying Skills Extraction Service infrastructure to AWS
+- tc-api, tc-api-spec, and tc-skills-extraction-service are all monitored in Slack
 
 ## Cloud Enhancements
 
