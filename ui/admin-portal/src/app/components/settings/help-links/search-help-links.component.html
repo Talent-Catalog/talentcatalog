@@ -44,10 +44,8 @@
 
   <thead>
   <tr>
-    <th *ngIf="!readOnly"></th>
-
     <th>
-      Label <app-help [request]="labelHelpRequest"></app-help>
+      Label <app-help [request]="labelHelpRequest" placement="right"></app-help>
     </th>
     <th>Link</th>
     <th>Country</th>
@@ -57,17 +55,12 @@
     <th>Next Step Name</th>
     <th>Next Step Text</th>
     <th>Next Step Days</th>
+    <th *ngIf="!readOnly"></th>
   </tr>
   </thead>
 
   <tbody>
   <tr *ngFor="let helpLink of results?.content">
-    <td>
-      <div *ngIf="!readOnly">
-        <tc-button type="plain" color="secondary" (onClick)="editHelpLink(helpLink)"><i
-          class="fas fa-edit" title="Change partner details"></i></tc-button>
-      </div>
-    </td>
     <td>{{helpLink.label}}</td>
     <td>
       <a [href]="helpLink.link" target="_blank"
@@ -80,6 +73,16 @@
     <td>{{helpLink?.nextStepInfo?.nextStepName}}</td>
     <td>{{helpLink?.nextStepInfo?.nextStepText}}</td>
     <td>{{helpLink?.nextStepInfo?.nextStepDays}}</td>
+    <td class="d-flex justify-content-end gap-3 me-3">
+      <div *ngIf="!readOnly">
+        <tc-button [type]="'plain'"
+                   [color]="'secondary'"
+                   (onClick)="editHelpLink(helpLink)"
+        >
+          <i class="fas fa-edit" title="Change partner details"></i>
+        </tc-button>
+      </div>
+    </td>
   </tr>
   </tbody>
 
