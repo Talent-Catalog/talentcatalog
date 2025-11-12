@@ -93,7 +93,7 @@ body {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-decoration: none;
-  color: #1c4679;
+  color: #0084D1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -102,7 +102,7 @@ body {
 .card:hover {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
   text-decoration: none;
-  border-bottom: 3px solid #1c4679;
+  border-bottom: 3px solid #0084D1;
 }
 
 a:hover .card-description {
@@ -110,7 +110,7 @@ a:hover .card-description {
 }
 
 a:hover .btn-sm {
-    background-color: #1c4679;
+    background-color: #0084D1;
 }
 
 a {
@@ -126,7 +126,7 @@ a {
   padding: 16px;
   background-color: #fff;
   text-decoration: none;
-  color: #1c4679;
+  color: #0084D1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -140,7 +140,7 @@ a {
   padding: 16px;
   background-color: #fff;
   text-decoration: none;
-  color: #1c4679;
+  color: #0084D1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -200,7 +200,7 @@ a .card-description {
   font-size: 0.75em;
   text-align: center;
   margin-top: 0.75em;
-  color: #1c4679;
+  color: #0084D1;
   flex-grow: 1;
 }
 
@@ -210,7 +210,7 @@ a .card-description {
 }
 
 .site-footer-owner a {
-  color: #1c4679;
+  color: #0084D1;
 }
 
 .no-shadow {
@@ -224,11 +224,11 @@ a .card-description {
     margin: 16px 0;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
     text-decoration: none;
-    border-bottom: 3px solid #1c4679;
+    border-bottom: 3px solid #0084D1;
   }
 
   .btn.btn-sm {
-    background-color: #1c4679;
+    background-color: #0084D1;
   }
 
   .site-footer {
