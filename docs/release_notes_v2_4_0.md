@@ -248,6 +248,23 @@ marked as required but not actually required to proceed
 
 ## Cloud Enhancements
 
+This release includes several backend and infrastructure updates aimed at improving scalability, 
+maintainability, and service integration across the Talent Catalog.
+
+### 🔧 New AI-Powered Skills Extraction Service
+
+A new microservice, `tc-skills-extraction`, has been deployed to AWS and added to our cloud 
+infrastructure. This service powers the automated extraction of relevant skills from job descriptions, 
+supporting the improved matching workflow and integration with global skills frameworks (ESCO and O*NET).
+
+The codebase is now available in its own 
+[Git repository](https://github.com/Talent-Catalog/tc-skills-extraction-service), enabling 
+independent development and future reuse in other parts of the platform.
+
+> 💡 This modular approach supports faster iteration, easier scaling, and better fault isolation for 
+> AI-driven services.
+
+
 
 ## New Tools and Standards
 
