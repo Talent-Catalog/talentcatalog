@@ -10,6 +10,9 @@ To meet the evolving legal and operational needs of the Talent Catalog, this rel
 comprehensive upgrade of our data protection agreements and privacy policies, aligning them
 with the General Data Protection Regulation (GDPR) — the global benchmark for data privacy.
 
+We are enthusiastic supporters of GDPR, whose principles of transparency, user control, and data 
+minimisation have aligned with Talent Catalog values since the very beginning.
+
 While GDPR originates from the European Union, its standards have been widely adopted worldwide. 
 GDPR compliance positions the Talent Catalog for responsible data handling across jurisdictions, 
 including the UK and USA.
