@@ -245,14 +245,14 @@ import {
   TravelDocFormComponent
 } from './components/form/italy-travel-document-form/travel-doc-form.component';
 import {
-  TaskSubmittedComponent
-} from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
-import { RsdEvidenceFormComponent } from './components/form/rsd-evidence-form/rsd-evidence-form.component';
   FamilyRsdEvidenceFormComponent
 } from './components/form/family-rsd-evidence-form/family-rsd-evidence-form.component';
 import {
   RsdEvidenceFormComponent
 } from './components/form/rsd-evidence-form/rsd-evidence-form.component';
+import {
+  TaskSubmittedComponent
+} from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
