@@ -69,13 +69,25 @@
       </div>
     </td>
     <td>
-      <div class="d-flex justify-content-evenly" *ngIf="(!loggedInUser.readOnly)">
-        <tc-button type="plain" color="info" (onClick)="doCopyLink(savedList)"><i
-          class="fas fa-link" title="Copy shareable link"></i></tc-button>
-        <tc-button type="plain" color="secondary" (onClick)="editLink(savedList)"><i
-          class="fas fa-edit"></i></tc-button>
-        <tc-button type="plain" color="gray" (onClick)="deleteLink(savedList)"><i
-          class="fas fa-trash"></i></tc-button>
+      <div class="d-flex justify-content-end gap-3 me-3" *ngIf="(!loggedInUser.readOnly)">
+        <tc-button [type]="'plain'"
+                   [color]="'secondary'"
+                   (onClick)="doCopyLink(savedList)"
+        >
+          <i class="fas fa-copy" title="Copy shareable link"></i>
+        </tc-button>
+        <tc-button [type]="'plain'"
+                   [color]="'secondary'"
+                   (onClick)="editLink(savedList)"
+        >
+          <i class="fas fa-edit"></i>
+        </tc-button>
+        <tc-button [type]="'plain'"
+                   [color]="'gray'"
+                   (onClick)="deleteLink(savedList)"
+        >
+          <i class="fas fa-trash"></i>
+        </tc-button>
       </div>
     </td>
   </tr>
