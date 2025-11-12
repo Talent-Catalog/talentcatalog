@@ -14,7 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="title" (onAction)="save()" [disableAction]="form?.invalid || working">
+<tc-modal [heading]="title"
+          (onAction)="save()"
+          [disableAction]="form?.invalid || working"
+          [showClose]="true"
+>
   <tc-alert *ngIf="error">{{error}}</tc-alert>
 
   <form [formGroup]="form">
@@ -24,12 +28,12 @@
         <tc-input id="name" formControlName="name"></tc-input>
       </tc-field>
 
-      <tc-field [checkbox]="true">
+      <tc-field [checkbox]="true" class="my-0">
         <tc-input type="checkbox" id="jobCreator" formControlName="jobCreator"></tc-input>
         <tc-label for="jobCreator">Job creator?</tc-label>
       </tc-field>
 
-      <tc-field [checkbox]="true">
+      <tc-field [checkbox]="true" class="my-0">
         <tc-input type="checkbox" id="sourcePartner" formControlName="sourcePartner"></tc-input>
         <tc-label class="form-check-label" for="sourcePartner">Source Partner?</tc-label>
         <tc-error-message *ngIf="form.errors?.['sourcePartnerIsJobCreator'] && (form.touched || form.dirty)"
@@ -38,12 +42,12 @@
         </tc-error-message>
       </tc-field>
 
-      <tc-field [checkbox]="true">
+      <tc-field [checkbox]="true" class="my-0">
         <tc-input type="checkbox" id="employerPartner" formControlName="employerPartner"></tc-input>
         <tc-label for="employerPartner">Employer Partner?</tc-label>
       </tc-field>
 
-      <tc-field [checkbox]="true">
+      <tc-field [checkbox]="true" class="mt-0">
         <tc-input type="checkbox" id="publicApiAccess" formControlName="publicApiAccess"></tc-input>
         <tc-label for="publicApiAccess">Public API access?</tc-label>
       </tc-field>
