@@ -178,9 +178,9 @@ entry
 # TC API Enhancements
 
 The TC API was introduced in release 2.3.0 to provide programmatic access to Talent Catalog 
-anonymised data and functionality. The API was envisioned by TBB's Global Leadership Team as a key 
-component for enabling interoperability between Talent Catalog and other third-party systems, when 
-they met in Canada, October 2023.
+anonymised data and functionality. The API was envisioned by TBB's Global Leadership Team in Canada, 
+October 2023, as a key component for enabling interoperability between Talent Catalog and other 
+third-party systems.
 
 This release includes several enhancements to the TC API, including:
 
