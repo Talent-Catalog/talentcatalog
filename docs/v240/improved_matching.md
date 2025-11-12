@@ -67,6 +67,12 @@ global standards:
 Qualifications and Occupations)
 - [O*NET](https://www.onetcenter.org/taxonomy.html) (Occupational Information Network, USA)
 
+<div class="card-image-container-narrow">
+    <img class="card-image" src="./../assets/images/v240/EscoLogo.png" alt="ESCO Logo" 
+       style="margin-right: 40px; margin-bottom: 12px;">
+    <img class="card-image" src="./../assets/images/v240/ONetLogo.png" alt="ONET Logo">
+</div>
+
 Together, these sources contribute over **30,000 standardised skills** used across industries and 
 professions, now integrated into the Talent Catalog.
 
@@ -74,13 +80,6 @@ An **AI-powered extraction service** has been introduced to automatically identi
 relevant skills from job descriptions. This in turn drives AI-generated candidate searches that are 
 based on consistent, structured skill data — improving search relevance and will assist in 
 skills comparability across job types.
-
-<div class="card-image-container-narrow">
-    <img class="card-image" src="./../assets/images/v240/EscoLogo.png" alt="ESCO Logo" 
-       style="margin-right: 40px; margin-bottom: 12px;">
-    <img class="card-image" src="./../assets/images/v240/ONetLogo.png" alt="ONET Logo">
-</div>
-
 
 > 💡 In future releases, we’ll expand both the **skills base** and the use of AI — including support 
 > for skill extraction from candidate-submitted experience, and smarter prompts to help candidates 
