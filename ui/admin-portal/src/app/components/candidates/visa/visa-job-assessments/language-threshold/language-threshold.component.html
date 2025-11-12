@@ -18,12 +18,15 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label for="visaJobLanguagesRequired">Select languages required for role
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaJobLanguagesRequired">
+          Select languages required for role
+        </tc-label>
         <app-autosave-status
           [saving]="saving"
           [typing]="typing">
         </app-autosave-status>
-      </tc-label>
+      </div>
       <ng-select
         class="tc-select"
         id="visaJobLanguagesRequired"

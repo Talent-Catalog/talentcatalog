@@ -49,6 +49,8 @@ export class TcTableComponent {
   @Input() hover: boolean = true;
   // Optional if pagination supported
   @Input() paginationPosition: 'top' | 'bottom' = 'bottom';
+  /** Pass false when rows are not intended to be clickable e.g. to display a summary card */
+  @Input() clickableRows: boolean = true;
 
   // Required inputs IF results are paged to support pagination
   @Input() pageNumber: number;
@@ -57,8 +59,9 @@ export class TcTableComponent {
 
   get classList() {
     return {
+      'clickable-rows': this.clickableRows,
       'table-striped': this.striped,
-      'table-hover': this.hover,
+      'table-hover': this.hover
     };
   }
 

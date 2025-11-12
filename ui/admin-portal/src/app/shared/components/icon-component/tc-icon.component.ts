@@ -79,6 +79,7 @@ export class TcIconComponent {
 
   @Input() type: 'link' | 'button' | 'span' = 'span';
   @Input() href?: string;
+  @Input() target: string = "_blank";
   @Input() routerLink?: any[] | string | null;
   @Input() onClick?: (e: MouseEvent) => void;
 

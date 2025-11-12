@@ -64,6 +64,8 @@ export class TcAccordionComponent implements AfterContentInit {
   @Input() firstOpen = false;
   /** Display the open all and close all panel buttons - default true */
   @Input() showOpenCloseAll: boolean = true;
+  /** Enables passing true when visible overflow is required (e.g. dropdown options cut off by next element */
+  @Input() allowOverflow = false;
 
   openIndexes: Set<number> = new Set();
 

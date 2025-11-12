@@ -19,12 +19,15 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label for="visaOverallRisk">Overall risk assessment? (health/character/security)
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaOverallRisk">
+          Overall risk assessment? (health/character/security)
+        </tc-label>
         <app-autosave-status
           [saving]="saving"
           [typing]="typing">
         </app-autosave-status>
-      </tc-label>
+      </div>
       <ng-select class="tc-select" id="visaOverallRisk" [formControlName]="'visaOverallRisk'" [items]="riskLevelOptions"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </tc-field>

@@ -18,7 +18,10 @@
   <h5>Section 1: Visa Assessment - UK</h5>
 
   <!-- ACCORDION VERSION OF FORM  -->
-  <tc-accordion [appReadOnlyInputs]="!isEditable()" [allOpen]="true">
+  <tc-accordion [appReadOnlyInputs]="!isEditable()"
+                [allOpen]="true"
+                [allowOverflow]="true"
+  >
     <tc-accordion-item id="visa-uk-destination" header="Destination">
       <app-destination-family
         [entity]="visaCheckRecord">
@@ -26,7 +29,9 @@
     </tc-accordion-item>
   </tc-accordion>
 
-  <h5>Job Specific Assessment</h5>
+  <hr class="mt-4">
+
+  <h5 class="my-3">Job Specific Assessment</h5>
 
   <app-candidate-visa-job
     [candidate]="candidate"
