@@ -207,6 +207,9 @@ candidates
 # Security Fixes
 
 - Discontinue TC->SF all-candidates sync
+- Implements HTTP interceptors for JWT auth expiration handling in the admin portal, preserving the 
+target URL when authentication expires and users are redirected to login page
+- Apply all Elasticache security patches and updates recommended by AWS
 
 # Bug Fixes
 
@@ -245,6 +248,9 @@ marked as required but not actually required to proceed
 - Error accessing unknown fields on JPA entity during active session
 - API key sanitization to prevent leading/trailing spaces causing authentication failures from 
 Postman and Redoc "Try it out" feature
+- Fixed codec date mapping issue causing errors when reading certain date fields from MongoDB
+- Publishing a list that exceeds google sheets api row limit will inform the user instead of failing
+silently
 
 # Developer Notes
 
@@ -267,6 +273,7 @@ Postman and Redoc "Try it out" feature
 - Introduced CASI (Candidate Assistance Services Interface) framework
 - Introduced Postgres text search which will allow us to retire Elasticsearch in future
 - Criteria API specifications will be retired in future releases
+- All DTO BuilderSelectors are now injected Spring Beans for better testability and autowiring
 
 ## Continuous Integration & Deployment
 
@@ -303,8 +310,18 @@ independent development and future reuse in other parts of the platform.
 - Spring Batch version of old BackgroundProcessor which adapts batch processing depending on
   how busy system is.
 - Additional reporting via Preset dashboard on candidate UTMs and params for TBB comms
-
-
+- Introduced requirement to obtain 2 PR reviews/approvals from core engineering team members before 
+merging new changes
+- Upgraded to a paid Redoc tier to support enhanced API documentation features, such as "Try It Out"
+- Renamed a few remaining configuration properties to the TC naming standard for consistency
+- Registered talentcatalog.net Sonatype account and Maven namespace for publishing shared artifacts
+- Deployed new shared Maven artifact: org.tctalent.tc-api-spec, for API schema reuse across TC 
+microservices and third-party integrations
+- Upgraded to RDS PostgresDB version 17 for improved performance, text search capabilities, and 
+vector search support for future AI enhancements
+- Standardise DNS names for RDS Aurora instances - aurora.db.tctalent.org and 
+test.aurora.db.tctalent.org
+- Clarify project Readme: we require Docker Compose v2 not v1
 
 ---
 
