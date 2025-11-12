@@ -58,6 +58,28 @@ You can add or remove skills if you wish. You can also modify the Keyword search
 construct boolean expressions - for example requiring this skill AND that skill.
 
 
+## Global Skills Standards and AI-Powered Extraction
+
+This release also marks the introduction of a new, structured skills framework based on two leading 
+global standards:
+
+- [ESCO](https://esco.ec.europa.eu/en/about-esco/what-esco) (European Skills, Competences, 
+Qualifications and Occupations)
+- [O*NET](https://www.onetcenter.org/taxonomy.html) (Occupational Information Network, USA)
+
+Together, these sources contribute over **30,000 standardised skills** used across industries and 
+professions, now integrated into the Talent Catalog.
+
+An **AI-powered extraction service** has been introduced to automatically identify and apply 
+relevant skills from job descriptions. This in turn drives AI-generated candidate searches that are 
+based on consistent, structured skill data — improving search relevance and will assist in 
+skills comparability across job types.
+
+> 💡 In future releases, we’ll expand both the **skills base** and the use of AI — including support 
+> for skill extraction from candidate-submitted experience, and smarter prompts to help candidates 
+> describe their skills more effectively.
+
+
 ## Highlight Search Keyword Matches in Uploaded CVs
 
 Keyword search matches are now not only shown highlighted in the entered Experience and Education 
