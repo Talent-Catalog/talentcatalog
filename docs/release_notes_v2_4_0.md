@@ -175,7 +175,7 @@ entry
 - Ability of TC admin user to find candidate by public ID
 - Display candidate Exam results in admin portal candidate profile
 
-## TC API Enhancements
+# TC API Enhancements
 
 The TC API was introduced in release 2.3.0 to provide programmatic access to Talent Catalog 
 anonymised data and functionality. The API was envisioned by TBB's Global Leadership Team as a key 
