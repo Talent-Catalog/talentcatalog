@@ -23,7 +23,7 @@
     <div class="card mb-3" *ngFor="let m of members.controls; let i = index" [formGroupName]="i">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-3"> {{'TASKS.FAMILY_DOC.FAMILY-MEMBER' | translate}} #{{ i + 1 }}</h5>
+          <h5 class="card-title mb-3"> {{'FAMILY-DOC.LABEL.FAMILY-MEMBER' | translate}} #{{ i + 1 }}</h5>
           <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeMember(i)"
                   [disabled]="readOnly"> {{"CHAT.LINK-REMOVE-BTN" | translate}}
           </button>

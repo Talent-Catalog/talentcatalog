@@ -12,7 +12,7 @@
   <ng-container formArrayName="members" *ngIf="!loadingMembers && members.length > 0">
     <div class="card mb-3" *ngFor="let group of members.controls; index as ix" [formGroupName]="ix">
       <div class="card-header">
-        <strong>{{'TASKS.FAMILY_DOC.FAMILY-MEMBER' | translate}} #{{ ix + 1 }}:</strong> {{ group.get('displayName')?.value }}
+        <strong>{{'FAMILY-DOC.LABEL.FAMILY-MEMBER' | translate}} #{{ ix + 1 }}:</strong> {{ group.get('displayName')?.value }}
       </div>
 
       <div class="card-body">
