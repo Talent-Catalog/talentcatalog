@@ -69,7 +69,7 @@ Qualifications and Occupations)
 
 <div class="card-image-container-narrow">
     <img class="card-image" src="./../assets/images/v240/EscoLogo.png" alt="ESCO Logo" 
-       style="margin-right: 40px; margin-bottom: 12px;">
+       style="margin-right: 60px; margin-bottom: 24px;">
     <img class="card-image" src="./../assets/images/v240/ONetLogo.png" alt="ONET Logo">
 </div>
 
