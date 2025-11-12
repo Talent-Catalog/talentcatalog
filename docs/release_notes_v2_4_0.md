@@ -261,8 +261,6 @@ Postman and Redoc "Try it out" feature
 - GDPR process verification
 - Testing: DuolingoApiServiceImpl
 
-- // TODO -- capture coverage stats as the coverage % has massively increased
-
 ## Code Refactoring
 
 - Introduced Candidate Forms and Form Tasks framework
