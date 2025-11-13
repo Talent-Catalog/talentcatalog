@@ -216,7 +216,10 @@
                   </div>
                 </div>
                 <div class="col-2 col-sm-auto" *ngIf="editable">
-                  <tc-button title="Upload the document from your computer" type="outline" (click)="uploadOffer()">
+                  <tc-button title="Upload the document from your computer"
+                             [type]="'outline'"
+                             (onClick)="uploadOffer()"
+                  >
                     Upload file <i class="fa-solid fa-upload ms-2"></i>
                   </tc-button>
                 </div>
