@@ -14,10 +14,12 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
+<tc-loading [type]="'page'" [loading]="loading"></tc-loading>
+
 <div *ngIf="opp">
   <div class="py-3">
     <p class="text-color-secondary heading-xs" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-1' : !showBreadcrumb}">
-      Candidate Opportunity Case Number {{opp.id}}
+      Candidate Opportunity Case #{{opp.id}}
     </p>
     <div class="d-flex align-items-center gap-3">
       <h2  [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
@@ -99,14 +101,14 @@
             <tc-card-header>
               Case details
               <div class="float-end" *ngIf="editable">
-                <i class="fas fa-spinner fa-spin" *ngIf="updating"></i>
                 <tc-button color="primary" title="Update progress"  [size]="'sm'" (onClick)="editOppProgress()">
                  <tc-icon color="white"> <i class="fas fa-edit"></i></tc-icon>
                 </tc-button>
               </div>
             </tc-card-header>
 
-            <div class="card-body">
+            <tc-loading [type]="'section'" [loading]="updating"></tc-loading>
+            <div class="card-body" *ngIf="!updating">
               <div class="row">
                 <tc-description-list direction="column">
                   <!-- Destination Country -->
@@ -140,24 +142,30 @@
                   <label class="form-label" for="closingComments">
                     Closing comments:
                   </label>
-                  <div class="col-12" id="closingComments" [innerHtml]="opp.closingComments">
-                  </div>
+                  <div class="col-12 mb-3"
+                       id="closingComments"
+                       [innerHtml]="opp.closingComments"
+                  ></div>
                 </div>
                 <hr/>
                 <div>
                   <label class="form-label" for="closingCommentsForCandidate">
                     Closing comments for candidate:
                   </label>
-                  <div class="col-12" id="closingCommentsForCandidate" [innerHtml]="opp.closingCommentsForCandidate">
-                  </div>
+                  <div class="col-12 mb-3"
+                       id="closingCommentsForCandidate"
+                       [innerHtml]="opp.closingCommentsForCandidate"
+                  ></div>
                 </div>
                 <hr/>
                 <div>
                   <label class="form-label" for="employerFeedback">
                     Employer feedback:
                   </label>
-                  <div class="col-12" id="employerFeedback" [innerHtml]="opp.employerFeedback">
-                  </div>
+                  <div class="col-12 mb-3"
+                       id="employerFeedback"
+                       [innerHtml]="opp.employerFeedback"
+                  ></div>
                 </div>
               </div>
             </div>
