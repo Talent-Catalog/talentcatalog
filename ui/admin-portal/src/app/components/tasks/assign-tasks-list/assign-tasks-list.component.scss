@@ -23,3 +23,8 @@
 .optional-task-bg {
   @include background-color-light;
 }
+
+.search-current {
+  position: relative;
+  top: 0.5rem;
+}

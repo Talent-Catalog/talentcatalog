@@ -237,55 +237,9 @@
 
   <div class="results-area">
 
-    <!--  List operation log - eg Save/Replace again, or Copied to list  -->
-    <div class="text-muted mt-2 mb-1" *ngIf="!searching">
-      <!-- Replace / Save Again to List -->
-      <div *ngIf="haveTargetList() && savedSelection"
-           class="d-flex align-items-center gap-2">
-        <tc-button [type]="'outline'"
-                   (onClick)="saveSelectionAgain()">
-          <i class="fas fa-spinner fa-spin" *ngIf="savingSelection"></i>
-          {{ targetListReplace ? 'Replace' : 'Save' }} Again
-        </tc-button>
-        <span class="d-flex align-items-center gap-sm-1">
-          <span>to</span>
-          <a [routerLink]="['/list', targetListId]" title="Show list">
-            {{ targetListName }}
-          </a>
-          <a target="_blank" [routerLink]="['/list', targetListId]">
-            <tc-icon [size]="'sm'"
-                     [color]="'gray'"
-                     [ariaLabel]="'Show list in new tab'">
-              <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
-            </tc-icon>
-          </a>
-        </span>
-      </div>
-      <!-- Copied to List -->
-      <div *ngIf="haveTargetList() && !savedSelection"
-           class="d-flex align-items-center">
-        <tc-icon [size]="'sm'"
-                 [color]="'gray'">
-          <i class="fas fa-copy"></i>
-        </tc-icon>
-        <span class="gap-sm-1">
-          <span>Copied to </span>
-          <a [routerLink]="['/list', targetListId]" title="Show list">
-            {{ targetListName }}
-          </a>
-        </span>
-        <a target="_blank" [routerLink]="['/list', targetListId]">
-          <tc-icon [size]="'sm'"
-                   [color]="'gray'"
-                   [ariaLabel]="'Show list in new tab'">
-            <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
-          </tc-icon>
-        </a>
-      </div>
-    </div>
 
     <!-- Review status -->
-    <div *ngIf="isReviewable()">
+    <div *ngIf="isReviewable()" class="mt-3">
       <form id="reviewStatuses" [formGroup]="searchInResultsForm">
 
         <!-- REVIEW STATUS FILTER -->
@@ -316,7 +270,8 @@
                  bindLabel="displayName"
                  [(ngModel)]="monitoredTask"
                  (ngModelChange)="doSearch(true)"
-                 placeholder="Tasks Monitor: Select a task that has been assigned to the list to monitor... (note: default task monitor will monitor all required tasks)">
+                 placeholder="Tasks Monitor: Select a task that has been assigned to the list to monitor... (note: default task monitor will monitor all required tasks)"
+      >
       </ng-select>
     </tc-field>
 
@@ -328,6 +283,57 @@
           <span>{{results?.totalElements}} candidates returned</span><br/>
           <span class="small">{{timestamp | date: 'customDateTime'}}</span>
         </div>
+      </div>
+    </div>
+
+    <!--  List operation log - eg Save/Replace again, or Copied to list  -->
+    <div class="text-muted my-3" *ngIf="!searching">
+      <!-- Replace / Save Again to List -->
+      <div *ngIf="haveTargetList() && savedSelection"
+           class="d-flex align-items-center gap-2"
+      >
+        <tc-button [type]="'outline'"
+                   (onClick)="saveSelectionAgain()"
+        >
+          <i class="fas fa-spinner fa-spin" *ngIf="savingSelection"></i>
+          {{ targetListReplace ? 'Replace' : 'Save' }} Again
+        </tc-button>
+        <span class="d-flex align-items-center gap-2">
+          <span>to</span>
+          <a [routerLink]="['/list', targetListId]" title="Show list">
+            {{ targetListName }}
+          </a>
+          <a target="_blank" [routerLink]="['/list', targetListId]">
+            <tc-icon [size]="'md'"
+                     [color]="'gray'"
+                     [ariaLabel]="'Show list in new tab'"
+            >
+              <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+            </tc-icon>
+          </a>
+        </span>
+      </div>
+      <!-- Copied to List -->
+      <div *ngIf="haveTargetList() && !savedSelection"
+           class="d-flex align-items-center gap-2"
+      >
+        <tc-icon [size]="'md'"
+                 [color]="'gray'">
+          <i class="fas fa-copy"></i>
+        </tc-icon>
+        <span class="gap-sm-1">
+          <span>Copied to </span>
+          <a [routerLink]="['/list', targetListId]" title="Show list">
+            {{ targetListName }}
+          </a>
+        </span>
+        <a target="_blank" [routerLink]="['/list', targetListId]">
+          <tc-icon [size]="'md'"
+                   [color]="'gray'"
+                   [ariaLabel]="'Show list in new tab'">
+            <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+          </tc-icon>
+        </a>
       </div>
     </div>
 
