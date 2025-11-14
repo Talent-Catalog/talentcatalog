@@ -52,4 +52,6 @@ export class TcDropdownComponent {
   @Input() placement: Placement = 'bottom-start';
   @Input() menuClass: any;
   @Input() align: 'start' | 'end' = 'start';
+  /** Set to false to stop an empty dropdown menu from appearing when there are no items */
+  @Input() hasItems: boolean = true;
 }

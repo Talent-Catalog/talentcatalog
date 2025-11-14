@@ -100,16 +100,22 @@
     <nav class="navbar sticky-top navbar-expand-md second-nav">
       <span class="navbar-brand">Stats for {{statsName}}</span>
         <ul class="navbar-nav ms-auto">
-          <tc-dropdown>
-            <tc-dropdown-button>
-              <tc-button>Go to stat <i class="fa-solid fa-hand-point-down"></i></tc-button>
+          <tc-dropdown [hasItems]="statReports?.length > 0">
+            <tc-dropdown-button [type]="'solid'"
+                                [disabled]="!statReports?.length > 0"
+            >
+              Go to stat <i class="fa-solid fa-hand-point-down"></i>
             </tc-dropdown-button>
             <tc-dropdown-menu>
               <tc-dropdown-item *ngFor="let statReport of statReports; let i = index" (click)="scroll(i)">{{statReport.name}}</tc-dropdown-item>
             </tc-dropdown-menu>
           </tc-dropdown>
 
-          <tc-button type="outline" class="float-end ms-2" [disabled]="!dataLoaded" (onClick)="exportStats()">
+          <tc-button [type]="'outline'"
+                     class="float-end ms-2"
+                     [disabled]="!dataLoaded"
+                     (onClick)="exportStats()"
+          >
             Export <i class="fas fa-file-excel"></i>
           </tc-button>
 
