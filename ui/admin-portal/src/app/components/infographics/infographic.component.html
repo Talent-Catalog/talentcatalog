@@ -54,11 +54,19 @@
         </tc-field>
         <tc-field class="col-12 col-lg-3">
           <tc-label for="dateFrom">Date From</tc-label>
-          <tc-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></tc-date-picker>
+          <tc-date-picker id="dateFrom"
+                          [control]="statsFilter.controls.dateFrom"
+                          [allowFuture]="false"
+                          [showHelpText]="false"
+          ></tc-date-picker>
         </tc-field>
         <tc-field class="col-12 col-lg-3">
             <tc-label for="dateTo">Date To</tc-label>
-            <tc-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></tc-date-picker>
+            <tc-date-picker id="dateTo"
+                            [control]="statsFilter.controls.dateTo"
+                            [allowFuture]="false"
+                            [showHelpText]="false"
+            ></tc-date-picker>
         </tc-field>
       </div>
 

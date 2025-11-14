@@ -46,7 +46,7 @@
     {{ d.day }}
   </span>
 </ng-template>
-<small class="text-muted d-block mt-2">
+<small *ngIf="showHelpText" class="text-muted d-block mt-2">
   If exact day or month unknown, use '01' to approximate, e.g., '2020-07-<b>01</b>'.
 </small>
 <tc-alert type="danger" *ngIf="error">
