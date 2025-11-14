@@ -67,14 +67,16 @@
             </tc-dropdown-item>
             <tc-dropdown-item *ngIf="job.sfId && canAccessSalesforce()"
                               [href]="getSalesforceJobLink(job.sfId)"
+                              target="_blank"
                               title="Show job in Salesforce">
               <tc-icon size="md">
                 <i class="fab fa-salesforce"></i>
               </tc-icon>
-              View job in Salesforce
+              View Job in Salesforce
             </tc-dropdown-item>
             <tc-dropdown-item *ngIf="job.submissionList?.folderjdlink && canSeeJobDetails()"
                               [href]="job.submissionList.folderjdlink"
+                              target="_blank"
                               title="Show Job's Google Drive folder">
               <tc-icon size="md">
                 <i class="fab fa-google-drive"></i>
