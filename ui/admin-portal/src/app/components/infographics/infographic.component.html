@@ -53,11 +53,11 @@
           </ng-select>
         </tc-field>
         <tc-field class="col-12 col-lg-3">
-          <tc-label for="dateFrom">Date From:</tc-label>
+          <tc-label for="dateFrom">Date From</tc-label>
           <tc-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></tc-date-picker>
         </tc-field>
         <tc-field class="col-12 col-lg-3">
-            <tc-label for="dateTo">Date To:</tc-label>
+            <tc-label for="dateTo">Date To</tc-label>
             <tc-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></tc-date-picker>
         </tc-field>
       </div>
@@ -83,7 +83,7 @@
         </tc-field>
         <tc-field class="col-12 col-lg-3 mb-0">
           <tc-button (onClick)="submitStatsRequest()" [disabled]="selectedStats.length == 0">
-            <i class="fas fa-calendar-alt"></i> Run stats
+            <i class="fas fa-calendar-alt"></i> Run Stats
           </tc-button>
         </tc-field>
       </div>
@@ -104,7 +104,7 @@
             <tc-dropdown-button [type]="'solid'"
                                 [disabled]="!statReports?.length > 1"
             >
-              Go to stat <i class="fa-solid fa-hand-point-down"></i>
+              Go to Stat <i class="fa-solid fa-hand-point-down"></i>
             </tc-dropdown-button>
             <tc-dropdown-menu>
               <tc-dropdown-item *ngFor="let statReport of statReports; let i = index" (click)="scroll(i)">{{statReport.name}}</tc-dropdown-item>
