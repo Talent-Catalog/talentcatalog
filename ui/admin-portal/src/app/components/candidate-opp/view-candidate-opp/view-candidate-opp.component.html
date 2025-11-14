@@ -190,12 +190,13 @@
           <tc-card>
 
             <tc-card-header>
-              Upload Job Offer
+              Job Offer
             </tc-card-header>
 
             <tc-loading [type]="'section'" [loading]="saving"></tc-loading>
 
             <div *ngIf="!saving" class="card-body">
+
               <tc-alert type="danger" *ngIf="error">
                 <div><strong>{{error}}</strong></div>
               </tc-alert>
@@ -211,8 +212,9 @@
                       <p class="text-accent-3 mb-0">No File Uploaded</p>
                     </div>
                     <div *ngIf="opp.fileOfferLink" class="form-control-plaintext">
-                      <a class="link-info" target="_blank" [href]="opp.fileOfferLink">
-                        <i class="fa-solid fa-link"></i> {{opp.fileOfferName ? opp.fileOfferName : opp.fileOfferLink}}</a>
+                      <a class="is-link" target="_blank" [href]="opp.fileOfferLink">
+                        <i class="fa-solid fa-link"></i>{{opp.fileOfferName ? opp.fileOfferName : opp.fileOfferLink}}
+                      </a>
                     </div>
                   </div>
                 </div>
