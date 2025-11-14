@@ -177,10 +177,9 @@
       <tc-tab id="Progress" description="Track the progress of the opportunity">
         <tc-tab-header>Progress</tc-tab-header>
         <tc-tab-content>
-          <app-opportunity-stage-next-step
-            [opp]="opp"
-            (oppProgressUpdated)="onOppProgressUpdated($event)">
-          </app-opportunity-stage-next-step>
+          <app-opportunity-stage-next-step [opp]="opp"
+                                           (oppProgressUpdated)="onOppProgressUpdated($event)"
+          ></app-opportunity-stage-next-step>
         </tc-tab-content>
       </tc-tab>
 
@@ -191,10 +190,12 @@
           <tc-card>
 
             <tc-card-header>
-              Upload Job Offer <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-              </tc-card-header>
+              Upload Job Offer
+            </tc-card-header>
 
-            <div class="card-body">
+            <tc-loading [type]="'section'" [loading]="saving"></tc-loading>
+
+            <div *ngIf="!saving" class="card-body">
               <tc-alert type="danger" *ngIf="error">
                 <div><strong>{{error}}</strong></div>
               </tc-alert>
