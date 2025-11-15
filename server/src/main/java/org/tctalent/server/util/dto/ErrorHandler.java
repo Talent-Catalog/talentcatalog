@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -159,6 +161,25 @@ public class ErrorHandler {
             .logError();
 
         return new ErrorDTO("unsupported_http_request", ex.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO processMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        LogBuilder.builder(log)
+            .action("MethodArgumentNotValidException")
+            .message("Processing validation error: " + ex.getMessage())
+            .logInfo();
+
+        // Get the first validation error message
+        String errorMessage = "Validation failed";
+        if (ex.getBindingResult().hasFieldErrors()) {
+            FieldError fieldError = ex.getBindingResult().getFieldErrors().get(0);
+            errorMessage = fieldError.getDefaultMessage();
+        }
+
+        return new ErrorDTO("validation_error", errorMessage);
     }
 
     @ExceptionHandler(NullPointerException.class)

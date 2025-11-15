@@ -97,12 +97,19 @@ export class ChatbotService implements OnDestroy {
       return;
     }
 
+    // Client-side validation: check message length
+    const trimmedMessage = message.trim();
+    if (trimmedMessage.length > 2000) {
+      this.errorSubject.next('Message cannot exceed 2000 characters.');
+      return;
+    }
+
     const sessionId = this.getSessionId();
 
     // Add user message immediately to UI
     const userMessage: ChatbotMessage = {
       id: this.generateId(),
-      message: message.trim(),
+      message: trimmedMessage,
       sender: 'user',
       timestamp: new Date()
     };
@@ -112,7 +119,7 @@ export class ChatbotService implements OnDestroy {
 
     // Send to backend with session ID
     this.http.post<ChatbotMessage>(`${this.apiUrl}/send`, { 
-      message: message.trim(),
+      message: trimmedMessage,
       sessionId: sessionId
     })
       .pipe(

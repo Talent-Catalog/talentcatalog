@@ -25,6 +25,7 @@ import org.tctalent.server.repository.db.ChatbotMessageRepository;
 import org.tctalent.server.service.ai.AnthropicService;
 import org.tctalent.server.service.db.ChatbotService;
 import org.tctalent.server.service.db.QAService;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -54,13 +55,16 @@ public class ChatbotServiceImpl implements ChatbotService {
             // Generate a question_id that will link the user question and bot answer
             UUID questionId = UUID.randomUUID();
             
+            // Sanitize user message before saving to database
+            String sanitizedMessage = HtmlSanitizer.sanitize(message);
+            
             // Save user message to database
             ChatbotMessage userMessage = new ChatbotMessage();
             userMessage.setId(UUID.randomUUID());
             userMessage.setSessionId(sessionUUID);
             userMessage.setQuestionId(questionId);
             userMessage.setSender(ChatbotMessage.ChatbotSender.user);
-            userMessage.setMessage(message);
+            userMessage.setMessage(sanitizedMessage);
             userMessage.setTimestamp(OffsetDateTime.now());
             chatbotMessageRepository.save(userMessage);
             log.debug("Saved user message to database with question_id: {}", questionId);
@@ -68,8 +72,8 @@ public class ChatbotServiceImpl implements ChatbotService {
             // Load QA context
             String qaContext = qaService.loadQAContext();
             
-            // Send message to AI service
-            String aiResponse = anthropicService.sendMessage(message, qaContext);
+            // Send sanitized message to AI service
+            String aiResponse = anthropicService.sendMessage(sanitizedMessage, qaContext);
             
             // Create and save bot response with the same question_id
             ChatbotMessage response = new ChatbotMessage();
