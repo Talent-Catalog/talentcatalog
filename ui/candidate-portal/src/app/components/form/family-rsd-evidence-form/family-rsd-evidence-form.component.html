@@ -28,7 +28,7 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }}</label>
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE' | translate }}</label>
             <select class="form-select" formControlName="documentType" [disabled]="readOnly">
               <option value="" disabled>Select document type</option>
               <option *ngFor="let type of (RsdEvidenceDocumentType | keyvalue)"
@@ -39,7 +39,7 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }}</label>
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCNUMBER' | translate }}</label>
             <input type="text" class="form-control" formControlName="documentNumber"
                    [readonly]="readOnly" maxlength="30">
           </div>
