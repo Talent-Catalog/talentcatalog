@@ -14,8 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal heading="Edit Task" (onAction)="onSave()"
-          [disableAction]="taskForm.invalid || loading || saving">
+<tc-modal heading="Edit Task"
+          (onAction)="onSave()"
+          [disableAction]="taskForm.invalid || loading || saving"
+          [showClose]="true"
+>
   <tc-loading [loading]="loading"></tc-loading>
   <tc-alert *ngIf="error">{{error}}</tc-alert>
   <div *ngIf="!loading">

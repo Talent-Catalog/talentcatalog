@@ -14,25 +14,25 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-card *ngIf="opp">
-  <tc-card-header>
-    Progress
-    <div class="float-end" *ngIf="editable">
-      <tc-button [title]="'Update progress'"
-                 (onClick)="editOppProgress()"
-                 [color]="'primary'"
-                 [type]="'solid'"
-                 [size]="'sm'"
-                 class="edit-opp-progress-btn"
-      >
-        <i class="fas fa-edit"></i>
-      </tc-button>
-    </div>
-  </tc-card-header>
+  <tc-card *ngIf="opp">
+    <tc-card-header>
+      Progress
+      <div class="float-end" *ngIf="editable">
+        <tc-button [title]="'Update progress'"
+                   (onClick)="editOppProgress()"
+                   [color]="'primary'"
+                   [type]="'solid'"
+                   [size]="'sm'"
+                   class="edit-opp-progress-btn"
+        >
+          <i class="fas fa-edit"></i>
+        </tc-button>
+      </div>
+    </tc-card-header>
 
-  <tc-alert type="danger" *ngIf="error">
-    <div><strong>{{error}}</strong></div>
-  </tc-alert>
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
   <tc-loading [type]="'section'" [loading]="updating"></tc-loading>
 
