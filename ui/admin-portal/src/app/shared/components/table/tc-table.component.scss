@@ -90,6 +90,7 @@
     --bs-alert-bg:  color(yellow, 50);
   }
 
+  /** Default styling for all icons */
   .tc-icon {
     color: color(secondary, 500) !important;
   }
@@ -97,4 +98,34 @@
   .tc-icon > i {
     font-size: 1rem !important;
   }
+
+  /** Exclude some icons */
+
+  /** All header icons */
+  th .tc-icon i {
+    @include text-color-secondary;
+  }
+
+  /** Specific icons */
+  .tc-icon {
+    /** Review statuses */
+    .fa-circle-question {
+      color: color(yellow, 500);
+    }
+
+    .fa-circle-check {
+      color: color(green, 500);
+    }
+
+    .fa-circle-xmark {
+      color: color(red, 500);
+    }
+
+    /** Potential duplicates */
+    .fa-person-circle-exclamation {
+      color: color(yellow, 500);
+    }
+  }
+
+
 }

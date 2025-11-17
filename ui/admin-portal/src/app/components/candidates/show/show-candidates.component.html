@@ -489,9 +489,7 @@
               </ng-container>
             </th>
             <th *ngIf="isReviewable()">
-              <tc-icon [size]="'sm'"
-                       [color]="'gray'"
-                       [ariaLabel]="'Review status'">
+              <tc-icon [ariaLabel]="'Review status'">
                 <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
               </tc-icon>
             </th>
@@ -576,21 +574,13 @@
               {{candidate.rank}}
             </td>
             <td *ngIf="isReviewable()">
-              <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
-                   (click)="review(candidate)">
-                <tc-icon [size]="'sm'"
-                         [color]="'success'"
-                         [ariaLabel]="'Verified'">
+              <div [ngSwitch]="getReviewStatus(candidate)"
+                   title="Review status. Click to change."
+                   (click)="review(candidate)"
+              >
+                <tc-icon>
                   <i *ngSwitchCase="ReviewStatus.verified" class="fa-solid fa-circle-check"></i>
-                </tc-icon>
-                <tc-icon [size]="'sm'"
-                         [color]="'error'"
-                         [ariaLabel]="'Rejected'">
                   <i *ngSwitchCase="ReviewStatus.rejected" class="fa-solid fa-circle-xmark"></i>
-                </tc-icon>
-                <tc-icon [size]="'sm'"
-                         [color]="'warning'"
-                         [ariaLabel]="'Unverified'">
                   <i *ngSwitchCase="ReviewStatus.unverified" class="fa-solid fa-circle-question"></i>
                 </tc-icon>
               </div>
