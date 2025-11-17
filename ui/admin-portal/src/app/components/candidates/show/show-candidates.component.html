@@ -600,42 +600,36 @@
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">{{candidate.candidateNumber}}</a>
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate in new tab'">
                     <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
                   </tc-icon>
                 </a>
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Candidate'">
                     <i class="fas fa-user" title="Candidate"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Case (candidate opportunity)'">
                     <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="isShowStage()" [routerLink]="['/job',this.candidateSource.sfJobOpp.id]">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Job'">
                     <i class="fa-solid fa-briefcase" title="Job"></i>
                   </tc-icon>
                 </a>
                 <a target="_blank" [href]="candidate.user.partner.websiteUrl">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Partner: ' + candidate.user.partner.name">
                     <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate in Salesforce'">
                     <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
                   </tc-icon>
@@ -644,21 +638,18 @@
                    [href]="candidate.folderlink"
                    target="_blank">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate Google Doc folder'">
                     <i class="fab fa-google-drive" title="Show candidate Google Doc folder"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate one-way video'">
                     <i class="fas fa-video" title="Show candidate one-way video"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate LinkedIn page'">
                     <i class="fab fa-linkedin" title="Show candidate LinkedIn page"></i>
                   </tc-icon>
@@ -667,21 +658,20 @@
                   *ngIf="isCandidateNameViewable()"
                   [candidate]="candidate"
                   [size]="'sm'"
-                  [color]="'primary'">
-                </app-cv-icon>
+                ></app-cv-icon>
                 <app-tasks-monitor
                   class="mx-2"
                   *ngIf="hasTaskAssignments(candidate)"
                   [candidate]="candidate"
                   [completedTasks]="getCompletedMonitoredTasks(candidate)"
                   [totalTasks]="getTotalMonitoredTasks(candidate)"
-                  [size]="'md'">
-                </app-tasks-monitor>
+                  [size]="'md'"
+                ></app-tasks-monitor>
                 <app-potential-duplicate-icon
                   [candidate]="candidate"
                   (refresh)="doSearch(true)"
-                  [size]="'sm'">
-                </app-potential-duplicate-icon>
+                  [size]="'sm'"
+                ></app-potential-duplicate-icon>
               </div>
             </td>
             <td *ngIf="isShowStage()">

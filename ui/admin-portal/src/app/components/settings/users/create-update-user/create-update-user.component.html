@@ -16,7 +16,9 @@
 <tc-modal [heading]="title"
           actionText="Save"
           (onAction)="onSave()"
-          [disableAction]="userForm.invalid || working">
+          [disableAction]="userForm.invalid || working"
+          [showClose]="true"
+>
 
   <tc-loading [loading]="working"></tc-loading>
 
@@ -70,7 +72,7 @@
         </tc-field>
 
         <tc-field *ngIf="!create">
-          <tc-label class="form-label" for="status">Status</tc-label>
+          <tc-label for="status">Status</tc-label>
           <ng-select id="status" class="tc-select" [formControlName]="'status'" placeholder="Select">
             <ng-option value="active">Active</ng-option>
             <ng-option value="inactive">Inactive</ng-option>
@@ -78,7 +80,7 @@
         </tc-field>
 
         <tc-field>
-          <tc-label class="form-label" for="role">Role *</tc-label>
+          <tc-label for="role">Role *</tc-label>
           <ng-select
             id="role"
             class="tc-select"
@@ -127,12 +129,12 @@
         <tc-field>
           <tc-label for="purpose">Purpose</tc-label>
           <tc-input type="text" id="purpose" formControlName="purpose"></tc-input>
-          <tc-description>And what is the reason for their TC use?</tc-description>
+          <tc-description>What is the reason for their TC use?</tc-description>
         </tc-field>
 
         <!-- SOURCE COUNTRIES  -->
         <tc-field>
-          <tc-label class="form-label">Source Country</tc-label>
+          <tc-label>Source Country</tc-label>
           <ng-select
             id="sourceCountry"
             class="tc-select"

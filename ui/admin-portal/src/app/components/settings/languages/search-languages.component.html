@@ -31,7 +31,10 @@ As we only have a few system languages the search isn't necessary, but can be ad
 <!--      </div>-->
 <!--    </form>-->
 
-<tc-table [results]="results" [loading]="loading">
+<tc-table [results]="results"
+          [loading]="loading"
+          [clickableRows]="false"
+>
   <thead>
     <tr>
       <th>Name</th>
