@@ -110,7 +110,7 @@
         <ul class="navbar-nav ms-auto">
           <tc-dropdown [hasItems]="statReports?.length > 1">
             <tc-dropdown-button [type]="'solid'"
-                                [disabled]="!statReports?.length > 1"
+                                [disabled]="!(statReports?.length > 1)"
             >
               Go to Stat <i class="fa-solid fa-hand-point-down"></i>
             </tc-dropdown-button>
