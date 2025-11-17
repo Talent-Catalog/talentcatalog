@@ -22,8 +22,8 @@
         <tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
         <div *ngIf="sourceType == CandidateSourceType.SavedList" class="flex-shrink-0 mb-3">
-          <tc-button
-                  (click)="onNewList()">+ New List
+          <tc-button (onClick)="onNewList()">
+            + New List
           </tc-button>
         </div>
         <form [formGroup]="searchForm" (ngSubmit)="search()">

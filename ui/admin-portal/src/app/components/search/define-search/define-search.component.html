@@ -23,11 +23,12 @@
 <!--  </nav>-->
   <div [hidden]="!showSearchRequest">
     <div>
-      <a class="link" (click)="showSearchRequest = false">
-        <ng-container>
-          <i class="fas fa-caret-right"></i> Hide search request
-        </ng-container>
-      </a>
+      <tc-button (onClick)="showSearchRequest = false"
+                 [type]="'plain'"
+                 [color]="'info'"
+      >
+        <i class="fas fa-caret-right"></i> Hide search request
+      </tc-button>
     </div>
 
     <div>
@@ -36,32 +37,48 @@
 <!--        <h3 class="m-0">Candidate Search</h3>-->
         <div class="d-flex mt-4 gap-2">
           <div class="d-flex flex-wrap gap-2">
-            <tc-button [hidden]="!savedSearch?.defaultSearch" color="warning"
-                    [disabled]="loading"
-                    (click)="clearForm()">Clear Search</tc-button>
-              <tc-button [hidden]="savedSearch?.defaultSearch" color="primary"
-                      [disabled]="loading"
-                      (click)="newSearch()">New Search</tc-button>
+            <tc-button [hidden]="!savedSearch?.defaultSearch"
+                       [color]="'warning'"
+                       [disabled]="loading"
+                       (onClick)="clearForm()"
+            >
+              Clear Search
+            </tc-button>
+              <tc-button [hidden]="savedSearch?.defaultSearch"
+                         [color]="'primary'"
+                         [disabled]="loading"
+                         (onClick)="newSearch()"
+              >
+                New Search
+              </tc-button>
           </div>
           <div class="d-flex flex-wrap gap-2">
-            <tc-button
-                    [hidden]="savedSearch?.defaultSearch"
-                    [disabled]="!canChangeSearchRequest()"
-                    (click)="updateSavedSearchModal()">
-              <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
-                 class="fas fa-lock"></i>
-              Update Search</tc-button>
-            <tc-button color="info"
-                    [hidden]="savedSearch?.defaultSearch"
-                    [disabled]="!canChangeSearchRequest()"
-                    (click)="deleteSavedSearchModal()">
-              <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
-                 class="fas fa-lock"></i>
-              Delete Search</tc-button>
-            <tc-button
-                    [hidden]="!savedSearch?.defaultSearch"
-                    (click)="createNewSavedSearchModal()">
-              Save Search</tc-button>
+            <tc-button [hidden]="savedSearch?.defaultSearch"
+                       [disabled]="!canChangeSearchRequest()"
+                       (onClick)="updateSavedSearchModal()"
+            >
+              <i *ngIf="!canChangeSearchRequest()"
+                 title="Fixed - can't change"
+                 class="fas fa-lock"
+              ></i>
+              Update Search
+            </tc-button>
+            <tc-button [color]="'info'"
+                       [hidden]="savedSearch?.defaultSearch"
+                       [disabled]="!canChangeSearchRequest()"
+                       (onClick)="deleteSavedSearchModal()"
+            >
+              <i *ngIf="!canChangeSearchRequest()"
+                 title="Fixed - can't change"
+                 class="fas fa-lock"
+              ></i>
+              Delete Search
+            </tc-button>
+            <tc-button [hidden]="!savedSearch?.defaultSearch"
+                       (onClick)="createNewSavedSearchModal()"
+            >
+              Save Search
+            </tc-button>
           </div>
         </div>
 
@@ -110,12 +127,15 @@
               <!-- providing 'placement' as an empty string makes the tooltip appear over the
               element in a suitable direction for the viewport -->
               <tc-label size="sm" class="form-label" for="simpleQueryString">Keyword Search</tc-label>
-              <tc-button type="plain" class="tool-tip-button"
-                      [ngbTooltip]="keywordSearchTip"
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips keyword"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         [ngbTooltip]="keywordSearchTip"
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <tc-input id="simpleQueryString" type="text"
                      placeholder="E.g. 'welder diesel+mechanic'" aria-label="Keyword Search"
@@ -125,13 +145,15 @@
             <!-- STATUS -->
             <div class="mb-3 col-md-3">
               <tc-label size="sm" class="form-label">Status</tc-label>
-              <tc-button type="plain" class="tool-tip-button"
-                      ngbTooltip="If nothing is specified here, the default is to exclude inactive
-                      statuses - e.g. 'draft', 'deleted' or 'ineligible'."
-                      triggers="click"
-                      tooltipClass="search-tips"
-                      placement="bottom top"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'."
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         placement="bottom top"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <ng-select
                 class="tc-select"
@@ -145,8 +167,17 @@
                 formControlName="statusesDisplay">
                 <ng-template ng-header-tmp>
                   <div class="d-flex justify-content-between m-2">
-                    <tc-button size="sm" (click)="onSelectAll(candidateStatusOptions, 'statusesDisplay'); $event.preventDefault()">Select All</tc-button>
-                    <tc-button size="sm" color="warning" (click)="onClearAll('statusesDisplay'); $event.preventDefault()">Clear All</tc-button>
+                    <tc-button [size]="'sm'"
+                               (onClick)="onSelectAll(candidateStatusOptions, 'statusesDisplay')"
+                    >
+                      Select All
+                    </tc-button>
+                    <tc-button [size]="'sm'"
+                               [color]="'warning'"
+                               (onClick)="onClearAll('statusesDisplay')"
+                    >
+                      Clear All
+                    </tc-button>
                   </div>
                 </ng-template>
 
@@ -504,12 +535,15 @@
             <!-- REFERRER -->
             <div *ngIf="!isEmployerPartner()" class="col-md-4" id="referrerFilter">
               <tc-label size="sm" class="form-label" for="referrer">Referrer</tc-label>
-              <tc-button type=plain class="tool-tip-button"
-                      [ngbTooltip]="referrerTooltip"
-                      triggers="click"
-                      tooltipClass="search-tips"
-                      placement="bottom top"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         [ngbTooltip]="referrerTooltip"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         placement="bottom top"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <ng-template #referrerTooltip>
                 <span class="search-tips-content">
@@ -528,13 +562,15 @@
                  value of exclusionListId -->
             <div *ngIf="!loading" class="col-md-4">
               <tc-label size="sm" class="form-label" for="exclusion">Exclusion list</tc-label>
-              <tc-button  type=plain class="tool-tip-button"
-                      ngbTooltip="Select from lists you created, global lists (e.g. job lists) or
-                      lists that you have starred."
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="Select from lists you created, global lists (e.g. job lists) or lists that you have starred."
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <app-find-candidate-source id="exclusion"
                 [single] = true
@@ -549,13 +585,18 @@
 
             <!-- PARTNERS  -->
             <div class="col-md-4">
-              <tc-label size="sm" class="form-label">Partners</tc-label>
-              <tc-button type=plain class="tool-tip-button"
-                      ngbTooltip="{{getPartnerDefaultMessage()}}"
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              <tc-label [size]="'sm'">
+                Partners
+              </tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="{{getPartnerDefaultMessage()}}"
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <ng-select
                 class="tc-select"
@@ -569,8 +610,19 @@
                 [formControlName]="'partners'">
                 <ng-template ng-header-tmp>
                   <div class="d-flex justify-content-between">
-                    <tc-button size="sm" class="btn btn-sm btn-link" (click)="onSelectAll(partners, 'partners'); $event.preventDefault()">Select All</tc-button>
-                    <tc-button size="sm" color="warning" class="btn btn-sm btn-link" (click)="onClearAll('partners'); $event.preventDefault()">Clear All</tc-button>
+                    <tc-button [size]="'sm'"
+                               class="btn btn-sm btn-link"
+                               (onClick)="onSelectAll(partners, 'partners')"
+                    >
+                      Select All
+                    </tc-button>
+                    <tc-button [size]="'sm'"
+                               [color]="'warning'"
+                               class="btn btn-sm btn-link"
+                               (onClick)="onClearAll('partners')"
+                    >
+                      Clear All
+                    </tc-button>
                   </div>
                 </ng-template>
                 <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
@@ -649,12 +701,15 @@
                         (click)="handleSearchTypeChange('listAnySearchType', 'not')">not any
                 </button>
               </div>
-              <tc-button type="plain" class="tool-tip-button"
-                      [ngbTooltip]="helpListAnyTooltip"
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         [ngbTooltip]="helpListAnyTooltip"
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <ng-template #helpListAnyTooltip>
                 <span class="search-tips-content">
@@ -692,12 +747,15 @@
                         (click)="handleSearchTypeChange('listAllSearchType', 'not')">not all
                 </button>
               </div>
-              <tc-button type="plain" class="tool-tip-button"
-                      [ngbTooltip]="helpListAllTooltip"
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         [ngbTooltip]="helpListAllTooltip"
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <ng-template #helpListAllTooltip>
                 <span class="search-tips-content">
@@ -730,12 +788,15 @@
              <!-- UTM: Campaign -->
               <div *ngIf="!isEmployerPartner()" class="col-md-4" id="campaignFilter">
                 <tc-label size="sm" class="form-label" for="campaignFilter">Campaign</tc-label>
-                <tc-button type="plain" class="tool-tip-button"
-                        [ngbTooltip]="campaignTooltip"
-                        triggers="click"
-                        tooltipClass="search-tips"
-                        placement="bottom top"
-                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                <tc-button [type]="'plain'"
+                           class="tool-tip-button"
+                           [ngbTooltip]="campaignTooltip"
+                           triggers="click"
+                           tooltipClass="search-tips"
+                           placement="bottom top"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
                 </tc-button>
                 <ng-template #campaignTooltip>
                   <span class="search-tips-content">
@@ -752,12 +813,15 @@
               <!-- UTM: Source -->
               <div *ngIf="!isEmployerPartner()" class="col-md-4" id="sourceFilter">
                 <tc-label size="sm" class="form-label" for="sourceFilter">Source</tc-label>
-                <tc-button type="plain" class="tool-tip-button"
-                        [ngbTooltip]="campaignTooltip"
-                        triggers="click"
-                        tooltipClass="search-tips"
-                        placement="bottom top"
-                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                <tc-button [type]="'plain'"
+                           class="tool-tip-button"
+                           [ngbTooltip]="campaignTooltip"
+                           triggers="click"
+                           tooltipClass="search-tips"
+                           placement="bottom top"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
                 </tc-button>
                 <ng-template #campaignTooltip>
                   <span class="search-tips-content">
@@ -774,12 +838,15 @@
               <!-- UTM: Medium -->
               <div *ngIf="!isEmployerPartner()" class="col-md-4" id="mediumFilter">
                 <tc-label size="sm" class="form-label" for="mediumFilter">Medium</tc-label>
-                <tc-button type="plain" class="tool-tip-button"
-                        [ngbTooltip]="mediumTooltip"
-                        triggers="click"
-                        tooltipClass="search-tips"
-                        placement="bottom top"
-                ><i class="fa-regular fa-circle-question fa-xs"></i>
+                <tc-button type="plain"
+                           class="tool-tip-button"
+                           [ngbTooltip]="mediumTooltip"
+                           triggers="click"
+                           tooltipClass="search-tips"
+                           placement="bottom top"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
                 </tc-button>
                 <ng-template #mediumTooltip>
                 <span class="search-tips-content">
@@ -843,15 +910,18 @@
                        (editSource)="updateSavedSearchModal()"
   >
     <!--Toggle search details-->
-    <div class="mb-3">
-      <a class="link" (click)="showSearchRequest = !showSearchRequest">
+    <div [ngClass]="showSearchRequest ? 'my-3' : ''">
+      <tc-button (onClick)="toggleSearchRequest()"
+                 [type]="'plain'"
+                 [color]="'info'"
+      >
         <ng-container *ngIf="!showSearchRequest">
           <i class="fas fa-caret-up"></i> Show search request
         </ng-container>
         <ng-container *ngIf="showSearchRequest">
           <i class="fas fa-caret-right"></i> Hide search request
         </ng-container>
-      </a>
+      </tc-button>
     </div>
   </app-show-candidates>
 </div>
@@ -861,7 +931,11 @@
   <div class="modal-header">
     <h4 class="modal-title">CSV download failed</h4>
 
-    <tc-button class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="d(false)"></tc-button>
+    <tc-button class="btn-close"
+               data-bs-dismiss="modal"
+               aria-label="Close"
+               (onClick)="d(false)"
+    ></tc-button>
 
   </div>
   <div class="modal-body">
@@ -874,7 +948,11 @@
 
   </div>
   <div class="modal-footer">
-    <tc-button class="btn btn-outline-dark" (click)="d(false)">Close</tc-button>
+    <tc-button class="btn btn-outline-dark"
+               (onClick)="d(false)"
+    >
+      Close
+    </tc-button>
   </div>
 </ng-template>
 

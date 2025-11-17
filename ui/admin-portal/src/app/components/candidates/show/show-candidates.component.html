@@ -237,55 +237,9 @@
 
   <div class="results-area">
 
-    <!--  List operation log - eg Save/Replace again, or Copied to list  -->
-    <div class="text-muted mt-2 mb-1" *ngIf="!searching">
-      <!-- Replace / Save Again to List -->
-      <div *ngIf="haveTargetList() && savedSelection"
-           class="d-flex align-items-center gap-2">
-        <tc-button [type]="'outline'"
-                   (onClick)="saveSelectionAgain()">
-          <i class="fas fa-spinner fa-spin" *ngIf="savingSelection"></i>
-          {{ targetListReplace ? 'Replace' : 'Save' }} Again
-        </tc-button>
-        <span class="d-flex align-items-center gap-sm-1">
-          <span>to</span>
-          <a [routerLink]="['/list', targetListId]" title="Show list">
-            {{ targetListName }}
-          </a>
-          <a target="_blank" [routerLink]="['/list', targetListId]">
-            <tc-icon [size]="'sm'"
-                     [color]="'gray'"
-                     [ariaLabel]="'Show list in new tab'">
-              <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
-            </tc-icon>
-          </a>
-        </span>
-      </div>
-      <!-- Copied to List -->
-      <div *ngIf="haveTargetList() && !savedSelection"
-           class="d-flex align-items-center">
-        <tc-icon [size]="'sm'"
-                 [color]="'gray'">
-          <i class="fas fa-copy"></i>
-        </tc-icon>
-        <span class="gap-sm-1">
-          <span>Copied to </span>
-          <a [routerLink]="['/list', targetListId]" title="Show list">
-            {{ targetListName }}
-          </a>
-        </span>
-        <a target="_blank" [routerLink]="['/list', targetListId]">
-          <tc-icon [size]="'sm'"
-                   [color]="'gray'"
-                   [ariaLabel]="'Show list in new tab'">
-            <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
-          </tc-icon>
-        </a>
-      </div>
-    </div>
 
     <!-- Review status -->
-    <div *ngIf="isReviewable()">
+    <div *ngIf="isReviewable()" class="mt-3">
       <form id="reviewStatuses" [formGroup]="searchInResultsForm">
 
         <!-- REVIEW STATUS FILTER -->
@@ -316,7 +270,8 @@
                  bindLabel="displayName"
                  [(ngModel)]="monitoredTask"
                  (ngModelChange)="doSearch(true)"
-                 placeholder="Tasks Monitor: Select a task that has been assigned to the list to monitor... (note: default task monitor will monitor all required tasks)">
+                 placeholder="Tasks Monitor: Select a task that has been assigned to the list to monitor... (note: default task monitor will monitor all required tasks)"
+      >
       </ng-select>
     </tc-field>
 
@@ -328,6 +283,57 @@
           <span>{{results?.totalElements}} candidates returned</span><br/>
           <span class="small">{{timestamp | date: 'customDateTime'}}</span>
         </div>
+      </div>
+    </div>
+
+    <!--  List operation log - eg Save/Replace again, or Copied to list  -->
+    <div class="text-muted my-3" *ngIf="!searching">
+      <!-- Replace / Save Again to List -->
+      <div *ngIf="haveTargetList() && savedSelection"
+           class="d-flex align-items-center gap-2"
+      >
+        <tc-button [type]="'outline'"
+                   (onClick)="saveSelectionAgain()"
+        >
+          <i class="fas fa-spinner fa-spin" *ngIf="savingSelection"></i>
+          {{ targetListReplace ? 'Replace' : 'Save' }} Again
+        </tc-button>
+        <span class="d-flex align-items-center gap-2">
+          <span>to</span>
+          <a [routerLink]="['/list', targetListId]" title="Show list">
+            {{ targetListName }}
+          </a>
+          <a target="_blank" [routerLink]="['/list', targetListId]">
+            <tc-icon [size]="'md'"
+                     [color]="'gray'"
+                     [ariaLabel]="'Show list in new tab'"
+            >
+              <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+            </tc-icon>
+          </a>
+        </span>
+      </div>
+      <!-- Copied to List -->
+      <div *ngIf="haveTargetList() && !savedSelection"
+           class="d-flex align-items-center gap-2"
+      >
+        <tc-icon [size]="'md'"
+                 [color]="'gray'">
+          <i class="fas fa-copy"></i>
+        </tc-icon>
+        <span class="gap-sm-1">
+          <span>Copied to </span>
+          <a [routerLink]="['/list', targetListId]" title="Show list">
+            {{ targetListName }}
+          </a>
+        </span>
+        <a target="_blank" [routerLink]="['/list', targetListId]">
+          <tc-icon [size]="'md'"
+                   [color]="'gray'"
+                   [ariaLabel]="'Show list in new tab'">
+            <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+          </tc-icon>
+        </a>
       </div>
     </div>
 
@@ -483,9 +489,7 @@
               </ng-container>
             </th>
             <th *ngIf="isReviewable()">
-              <tc-icon [size]="'sm'"
-                       [color]="'gray'"
-                       [ariaLabel]="'Review status'">
+              <tc-icon [ariaLabel]="'Review status'">
                 <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
               </tc-icon>
             </th>
@@ -570,21 +574,13 @@
               {{candidate.rank}}
             </td>
             <td *ngIf="isReviewable()">
-              <div [ngSwitch]="getReviewStatus(candidate)" title="Review status. Click to change."
-                   (click)="review(candidate)">
-                <tc-icon [size]="'sm'"
-                         [color]="'success'"
-                         [ariaLabel]="'Verified'">
+              <div [ngSwitch]="getReviewStatus(candidate)"
+                   title="Review status. Click to change."
+                   (click)="review(candidate)"
+              >
+                <tc-icon>
                   <i *ngSwitchCase="ReviewStatus.verified" class="fa-solid fa-circle-check"></i>
-                </tc-icon>
-                <tc-icon [size]="'sm'"
-                         [color]="'error'"
-                         [ariaLabel]="'Rejected'">
                   <i *ngSwitchCase="ReviewStatus.rejected" class="fa-solid fa-circle-xmark"></i>
-                </tc-icon>
-                <tc-icon [size]="'sm'"
-                         [color]="'warning'"
-                         [ariaLabel]="'Unverified'">
                   <i *ngSwitchCase="ReviewStatus.unverified" class="fa-solid fa-circle-question"></i>
                 </tc-icon>
               </div>
@@ -594,42 +590,36 @@
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">{{candidate.candidateNumber}}</a>
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate in new tab'">
                     <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
                   </tc-icon>
                 </a>
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Candidate'">
                     <i class="fas fa-user" title="Candidate"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Case (candidate opportunity)'">
                     <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="isShowStage()" [routerLink]="['/job',this.candidateSource.sfJobOpp.id]">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Job'">
                     <i class="fa-solid fa-briefcase" title="Job"></i>
                   </tc-icon>
                 </a>
                 <a target="_blank" [href]="candidate.user.partner.websiteUrl">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Partner: ' + candidate.user.partner.name">
                     <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate in Salesforce'">
                     <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
                   </tc-icon>
@@ -638,21 +628,18 @@
                    [href]="candidate.folderlink"
                    target="_blank">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate Google Doc folder'">
                     <i class="fab fa-google-drive" title="Show candidate Google Doc folder"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate one-way video'">
                     <i class="fas fa-video" title="Show candidate one-way video"></i>
                   </tc-icon>
                 </a>
                 <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
                   <tc-icon [size]="'sm'"
-                           [color]="'primary'"
                            [ariaLabel]="'Show candidate LinkedIn page'">
                     <i class="fab fa-linkedin" title="Show candidate LinkedIn page"></i>
                   </tc-icon>
@@ -661,21 +648,20 @@
                   *ngIf="isCandidateNameViewable()"
                   [candidate]="candidate"
                   [size]="'sm'"
-                  [color]="'primary'">
-                </app-cv-icon>
+                ></app-cv-icon>
                 <app-tasks-monitor
                   class="mx-2"
                   *ngIf="hasTaskAssignments(candidate)"
                   [candidate]="candidate"
                   [completedTasks]="getCompletedMonitoredTasks(candidate)"
                   [totalTasks]="getTotalMonitoredTasks(candidate)"
-                  [size]="'md'">
-                </app-tasks-monitor>
+                  [size]="'md'"
+                ></app-tasks-monitor>
                 <app-potential-duplicate-icon
                   [candidate]="candidate"
                   (refresh)="doSearch(true)"
-                  [size]="'sm'">
-                </app-potential-duplicate-icon>
+                  [size]="'sm'"
+                ></app-potential-duplicate-icon>
               </div>
             </td>
             <td *ngIf="isShowStage()">

@@ -65,20 +65,26 @@
 
 
 
-    <tc-table [results]="filteredTaskAssociations" [loading]="loading" name="Current Task Associations">
+    <tc-table [results]="filteredTaskAssociations"
+              [loading]="loading"
+              name="Current Task Associations"
+              [clickableRows]="false"
+    >
       <tc-loading [loading]="loading"></tc-loading>
       <thead>
       <tr>
         <th>Task</th>
         <th>Current Assignments</th>
-        <th>      <tc-field>
-          <tc-input [type]="'text'"
-                    [placeholder]="'Search current tasks...'"
-                    [ariaLabel]="'Search'"
-                    (keyup)="search($event.target)"
-                    [id]="'keyword'">
-          </tc-input>
-        </tc-field></th>
+        <th>
+          <tc-field class="search-current">
+            <tc-input [type]="'text'"
+                      [placeholder]="'Search current tasks...'"
+                      [ariaLabel]="'Search'"
+                      (keyup)="search($event.target)"
+                      [id]="'keyword'">
+            </tc-input>
+          </tc-field>
+        </th>
       </tr>
       </thead>
       <tbody *ngFor="let t of filteredTaskAssociations;">
