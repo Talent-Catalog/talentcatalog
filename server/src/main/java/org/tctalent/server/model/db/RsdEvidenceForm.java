@@ -25,8 +25,8 @@ import org.tctalent.server.service.db.CandidateService;
  */
 public class RsdEvidenceForm extends CandidateFormInstanceHelper {
   private static final String REFUGEE_STATUS_PROPERTY = "REFUGEE_STATUS";
-  private static final String DOCUMENT_TYPE_PROPERTY = "EVIDENCE_DOCUMENT_TYPE";
-  private static final String DOCUMENT_NUMBER_PROPERTY = "EVIDENCE_DOCUMENT_NUMBER";
+  private static final String EVIDENCE_DOCUMENT_TYPE_PROPERTY = "EVIDENCE_DOCUMENT_TYPE";
+  private static final String EVIDENCE_DOCUMENT_NUMBER_PROPERTY = "EVIDENCE_DOCUMENT_NUMBER";
 
   public RsdEvidenceForm(String formName, AuthService authService,
       CandidateService candidateService, CandidatePropertyService propertyService) {
@@ -47,20 +47,20 @@ public class RsdEvidenceForm extends CandidateFormInstanceHelper {
   }
 
   public RsdEvidenceDocumentType getDocumentType() {
-    String value = getProperty(DOCUMENT_TYPE_PROPERTY);
+    String value = getProperty(EVIDENCE_DOCUMENT_TYPE_PROPERTY);
     return value != null ? RsdEvidenceDocumentType.valueOf(value) : null;
   }
 
   public void setDocumentType(RsdEvidenceDocumentType documentType) {
-    setProperty(DOCUMENT_TYPE_PROPERTY, documentType != null ? documentType.name() : null);
+    setProperty(EVIDENCE_DOCUMENT_TYPE_PROPERTY, documentType != null ? documentType.name() : null);
   }
 
   public String getDocumentNumber() {
-    return getProperty(DOCUMENT_NUMBER_PROPERTY);
+    return getProperty(EVIDENCE_DOCUMENT_NUMBER_PROPERTY);
   }
 
   public void setDocumentNumber(String documentNumber) {
-    setProperty(DOCUMENT_NUMBER_PROPERTY, documentNumber);
+    setProperty(EVIDENCE_DOCUMENT_NUMBER_PROPERTY, documentNumber);
   }
 }
 

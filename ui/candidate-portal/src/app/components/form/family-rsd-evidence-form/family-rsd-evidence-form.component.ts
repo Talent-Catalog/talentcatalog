@@ -148,9 +148,9 @@ export class FamilyRsdEvidenceFormComponent
       lastName: [member['user.lastName'] ?? ''],
       dob: [member.dob ?? ''],
       displayName: [existing?.displayName ?? displayName],
-      refugeeStatus: [existing?.refugeeStatus ?? '', [Validators.required]],
-      documentType: [existing?.documentType ?? '', [Validators.required]],
-      documentNumber: [existing?.documentNumber ?? '', [Validators.required, Validators.maxLength(30)]],
+      REFUGEE_STATUS: [existing?.REFUGEE_STATUS ?? '', [Validators.required]],
+      EVIDENCE_DOCUMENT_TYPE: [existing?.EVIDENCE_DOCUMENT_TYPE ?? '', [Validators.required]],
+      EVIDENCE_DOCUMENT_NUMBER: [existing?.EVIDENCE_DOCUMENT_NUMBER ?? '', [Validators.required, Validators.maxLength(30)]],
     });
   }
 

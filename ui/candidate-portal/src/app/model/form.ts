@@ -93,9 +93,9 @@ export interface FamilyRsdEvidenceEntry {
   lastName?: string;
   dateOfBirth?: string;
   displayName?: string;
-  refugeeStatus?: string;
-  documentType?: string;
-  documentNumber?: string;
+  REFUGEE_STATUS?: string;
+  EVIDENCE_DOCUMENT_TYPE?: string;
+  EVIDENCE_DOCUMENT_NUMBER?: string;
   attachmentId?: number;
   attachmentName?: string;
   attachmentLocation?: string;
