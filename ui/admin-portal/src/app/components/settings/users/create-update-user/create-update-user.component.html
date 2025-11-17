@@ -27,9 +27,8 @@
       <tc-fieldset>
         <tc-field>
           <tc-label for="email">Email *</tc-label>
-          <tc-input type="email" id="email" formControlName="email" pattern="{{emailRegex}}"></tc-input>
-          <tc-error-message *ngIf="userForm.get('email').touched || userForm.get('email').dirty
-          && userForm.get('email').errors?.['pattern']">
+          <tc-input [type]="'email'" id="email" [formControlName]="'email'"></tc-input>
+          <tc-error-message *ngIf="(email.touched || email.dirty) && email.invalid">
             Please enter valid email address
           </tc-error-message>
         </tc-field>
