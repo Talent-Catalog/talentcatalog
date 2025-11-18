@@ -1,13 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {forkJoin, of} from 'rxjs';
-import {catchError} from 'rxjs/operators';
 import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
 import {
   FamilyDocFormData,
-  FamilyRsdEvidenceEntry,
-  FamilyRsdEvidenceFormData,
   RelocatingFamilyMember,
   RsdEvidenceDocumentType,
   RsdRefugeeStatus,
@@ -19,16 +15,19 @@ import {
   styleUrls: ['./family-rsd-evidence-form.component.scss'],
 })
 export class FamilyRsdEvidenceFormComponent
-  implements OnInit, ICandidateFormComponent<FamilyRsdEvidenceFormData> {
+  implements OnInit, ICandidateFormComponent<FamilyDocFormData> {
 
   @Input() readOnly = false;
   @Input() candidate: any | null = null;
-  @Output() submitted = new EventEmitter<FamilyRsdEvidenceFormData>();
+  @Output() submitted = new EventEmitter<FamilyDocFormData>();
 
   form: FormGroup;
   error: any = null;
   submitting = false;
   loadingMembers = true;
+
+  private familyDocFormData: FamilyDocFormData;
+  familyMembers: RelocatingFamilyMember[] = [];
 
   RsdRefugeeStatus = RsdRefugeeStatus;
   RsdEvidenceDocumentType = RsdEvidenceDocumentType;
@@ -63,12 +62,14 @@ export class FamilyRsdEvidenceFormComponent
     this.submitting = true;
     this.error = null;
 
-    const entries: FamilyRsdEvidenceEntry[] = this.members.controls.map(ctrl => ctrl.getRawValue());
-    const payload: FamilyRsdEvidenceFormData = {
-      familyRsdEvidenceJson: JSON.stringify(entries),
+    const entries: RelocatingFamilyMember[] = this.members.controls.map(ctrl => ctrl.getRawValue());
+    const payload: FamilyDocFormData = {
+      noEligibleFamilyMembers: this.familyDocFormData?.noEligibleFamilyMembers ?? true,
+      noEligibleNotes: this.familyDocFormData?.noEligibleNotes ?? '',
+      familyMembersJson: JSON.stringify(entries),
     };
 
-    this.candidateFormService.createOrUpdateFamilyRsdEvidenceForm(payload).subscribe({
+    this.candidateFormService.createOrUpdateFamilyDocsForm(payload).subscribe({
       next: saved => {
         this.submitted.emit(saved);
         this.form.markAsPristine();
@@ -85,86 +86,53 @@ export class FamilyRsdEvidenceFormComponent
   private loadData(): void {
     this.loadingMembers = true;
 
-    const familyDocs$ = this.candidateFormService.getFamilyDocsForm()
-    .pipe(catchError(() => of<FamilyDocFormData | null>(null)));
-    const rsd$ = this.candidateFormService.getFamilyRsdEvidenceForm()
-    .pipe(catchError(() => of<FamilyRsdEvidenceFormData>({familyRsdEvidenceJson: undefined})));
-
-    forkJoin({familyDocs: familyDocs$, rsd: rsd$}).subscribe({
-      next: ({familyDocs, rsd}) => {
-        const members = this.extractMembers(familyDocs);
-        const evidenceMap = this.parseEvidence(rsd?.familyRsdEvidenceJson);
-        this.members.clear();
-
-        members.forEach(member => {
-          const key = this.computeMemberKey(member);
-          const existing = evidenceMap.get(key);
-          this.members.push(this.buildMemberGroup(member, key, existing));
-        });
-
+    this.candidateFormService.getFamilyDocsForm().subscribe({
+      next: familyDocFormData => {
+        this.familyDocFormData = familyDocFormData;
+        this.createFormsFromFamilyMembers(familyDocFormData);
+        console.log('Family Docs Form Data:', familyDocFormData);
         this.loadingMembers = false;
       },
       error: err => {
+        console.error('Error fetching Family Docs Form Data:', err);
         this.error = err;
         this.loadingMembers = false;
-      },
-    });
+      }
+    })
   }
 
-  private extractMembers(data: FamilyDocFormData | null | undefined): RelocatingFamilyMember[] {
-    if (!data?.familyMembersJson) return [];
+
+  private createFormsFromFamilyMembers(familyDocFormData: FamilyDocFormData) {
+    const familyMembersJson = familyDocFormData?.familyMembersJson;
+    if (!familyMembersJson) return [];
     try {
-      return JSON.parse(data.familyMembersJson) as RelocatingFamilyMember[];
+      this.familyMembers = JSON.parse(familyMembersJson) as RelocatingFamilyMember[];
+      this.members.clear();
+
+      this.familyMembers.forEach(member => {
+        this.members.push(this.buildMemberGroup(member));
+      });
+
     } catch {
       console.error('Failed to parse relocating family members JSON');
-      return [];
     }
   }
 
-  private parseEvidence(json?: string): Map<string, FamilyRsdEvidenceEntry> {
-    const map = new Map<string, FamilyRsdEvidenceEntry>();
-    if (!json) return map;
-
-    try {
-      const parsed = JSON.parse(json) as FamilyRsdEvidenceEntry[];
-      parsed.forEach(entry => {
-        if (entry?.memberKey) map.set(entry.memberKey, entry);
-      });
-    } catch {
-      console.error('Failed to parse family RSD evidence JSON');
-    }
-    return map;
-  }
-
-  private buildMemberGroup(
-    member: RelocatingFamilyMember,
-    key: string,
-    existing?: FamilyRsdEvidenceEntry
-  ): FormGroup {
-    const displayName = this.composeDisplayName(member);
+  private buildMemberGroup(member: RelocatingFamilyMember): FormGroup {
     return this.fb.nonNullable.group({
-      memberKey: [key],
-      firstName: [member['user.firstName'] ?? ''],
-      lastName: [member['user.lastName'] ?? ''],
+      'user.firstName': [member['user.firstName'] ?? ''],
+      'user.lastName': [member['user.lastName'] ?? ''],
       dob: [member.dob ?? ''],
-      displayName: [existing?.displayName ?? displayName],
-      REFUGEE_STATUS: [existing?.REFUGEE_STATUS ?? '', [Validators.required]],
-      EVIDENCE_DOCUMENT_TYPE: [existing?.EVIDENCE_DOCUMENT_TYPE ?? '', [Validators.required]],
-      EVIDENCE_DOCUMENT_NUMBER: [existing?.EVIDENCE_DOCUMENT_NUMBER ?? '', [Validators.required, Validators.maxLength(30)]],
+      REFUGEE_STATUS: [member?.REFUGEE_STATUS ?? '', [Validators.required]],
+      EVIDENCE_DOCUMENT_TYPE: [member?.EVIDENCE_DOCUMENT_TYPE ?? '', [Validators.required]],
+      EVIDENCE_DOCUMENT_NUMBER: [member?.EVIDENCE_DOCUMENT_NUMBER ?? '', [Validators.required, Validators.maxLength(30)]],
     });
   }
 
-  private composeDisplayName(member: RelocatingFamilyMember): string {
+  public composeDisplayName(member: RelocatingFamilyMember): string {
     const first = member['user.firstName']?.trim() ?? '';
     const last = member['user.lastName']?.trim() ?? '';
     const fullName = `${first} ${last}`.trim();
     return fullName || member.relationship || 'Unnamed Member';
-  }
-
-  private computeMemberKey(member: RelocatingFamilyMember): string {
-    const first = (member['user.firstName'] ?? '').trim().toLowerCase();
-    const last = (member['user.lastName'] ?? '').trim().toLowerCase();
-    const dob = (member.dob ?? '').trim();
-    return `${first}|${last}|${dob}`;
   }
 }
