@@ -78,6 +78,9 @@ export interface RelocatingFamilyMember {
   TRAVEL_DOC_ISSUE_DATE: string,
   TRAVEL_DOC_EXPIRY_DATE: string
 
+  REFUGEE_STATUS?: string;
+  EVIDENCE_DOCUMENT_TYPE?: string;
+  EVIDENCE_DOCUMENT_NUMBER?: string;
 }
 
 export interface FamilyDocFormData {

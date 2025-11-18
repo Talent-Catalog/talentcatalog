@@ -29,7 +29,7 @@ import org.tctalent.server.service.db.CandidateService;
  */
 public class FamilyDocForm extends CandidateFormInstanceHelper {
 
-    private static final String FAMILY_MEMBERS_JSON = "DEPENDANTS_TRAVEL_INFO";
+    private static final String DEPENDANTS_TRAVEL_INFO = "DEPENDANTS_TRAVEL_INFO";
     private static final String NO_ELIGIBLE = "NO_ELIGIBLE_FAMILY_MEMBERS";
     private static final String NO_ELIGIBLE_NOTES = "NO_ELIGIBLE_NOTES";
 
@@ -44,11 +44,11 @@ public class FamilyDocForm extends CandidateFormInstanceHelper {
     }
 
     public String getFamilyMembersJson() {
-        return getProperty(FAMILY_MEMBERS_JSON);
+        return getProperty(DEPENDANTS_TRAVEL_INFO);
     }
 
     public void setFamilyMembersJson(String json) {
-        setProperty(FAMILY_MEMBERS_JSON, json);
+        setProperty(DEPENDANTS_TRAVEL_INFO, json);
     }
 
     public Boolean getNoEligibleFamilyMembers() {
