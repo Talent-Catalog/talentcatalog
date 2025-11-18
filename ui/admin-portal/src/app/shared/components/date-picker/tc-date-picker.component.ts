@@ -16,6 +16,9 @@ export class TcDatePickerComponent implements OnInit {
   // If don't want to allow selection of a past date, set to true.
   @Input() allowPast: boolean = true;
 
+  /** The help text supports users entering data, as opposed to e.g. filtering stats */
+  @Input() showHelpText: boolean = true;
+
   dateString: string;
   today: Date;
   maxDate: NgbDateStruct;
