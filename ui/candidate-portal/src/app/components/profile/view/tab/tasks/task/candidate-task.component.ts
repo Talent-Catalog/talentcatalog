@@ -27,6 +27,8 @@ import {
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {TaskAssignment} from "../../../../../../model/task-assignment";
 import {TaskType} from "../../../../../../model/task";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {TaskSubmittedComponent} from "./task-submitted/task-submitted.component";
 
 @Component({
   selector: 'app-candidate-task',
@@ -43,9 +45,12 @@ export class CandidateTaskComponent implements OnInit {
   saving: boolean;
   error;
 
-  constructor(private fb: UntypedFormBuilder,
-              private taskAssignmentService: TaskAssignmentService,
-              public sanitizer: DomSanitizer) { }
+  constructor(
+    private fb: UntypedFormBuilder,
+    private taskAssignmentService: TaskAssignmentService,
+    public sanitizer: DomSanitizer,
+    private modalService: NgbModal
+  ) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -144,10 +149,12 @@ export class CandidateTaskComponent implements OnInit {
         this.saving = false;
       }
     )
+    this.openTaskSubmittedModal()
   }
 
   completedUploadTask($event: TaskAssignment) {
     this.selectedTask = $event;
+    this.openTaskSubmittedModal();
   }
 
   submitTask() {
@@ -174,6 +181,24 @@ export class CandidateTaskComponent implements OnInit {
         this.updateAbandonedTask();
       }
     }
+    this.openTaskSubmittedModal()
+  }
+
+  openTaskSubmittedModal() {
+    const modalRef = this.modalService.open(TaskSubmittedComponent, {
+      centered: true,
+      backdrop: 'static',
+    })
+
+    modalRef.componentInstance.onReturnToTasksClick.subscribe(() => {
+      modalRef.close();
+      this.goBack()
+    })
+
+    modalRef.componentInstance.onStayOnTaskClick.subscribe(() => {
+      modalRef.close();
+      this.form.markAsPristine();
+    })
   }
 
   updateQuestionTask() {
