@@ -103,6 +103,7 @@ import {
 } from "../../../../util/det-score-validation/det-score-validation.component";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 import {DirectiveModule} from "../../../../../directives/directive.module";
+import {MockUser} from "../../../../../MockData/MockUser";
 
 const mockCitizenship: CandidateCitizenship = {
   id: 1,
@@ -164,8 +165,6 @@ describe('CandidateIntakeTabComponent', () => {
     const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const authorizationSpy = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate', 'canAccessSalesforce']);
 
-    authSpy.getLoggedInUser.and.returnValue(of({ id: 1, name: 'Test User' }));
-
     const citizenshipSpy = jasmine.createSpyObj('CandidateCitizenshipService', ['create']);
     citizenshipSpy.create.and.returnValue(of(null));
 
@@ -226,6 +225,7 @@ describe('CandidateIntakeTabComponent', () => {
     component.candidate = mockCandidate;
     component.candidateIntakeData = mockCandidateIntakeData;
     candidateCitizenshipServiceSpy.create.and.returnValue(of(mockCitizenship));
+    authServiceSpy.getLoggedInUser.and.returnValue(new MockUser());
     fixture.detectChanges();
   });
 
