@@ -34,20 +34,18 @@
       <div><strong>{{error}}</strong></div>
     </tc-alert>
 
-    <tc-loading [type]="'section'" [loading]="updating"></tc-loading>
+  <tc-loading [type]="'section'" [loading]="updating"></tc-loading>
 
-    <ng-container *ngIf="!updating">
-      <tc-description-list direction="column">
-        <tc-description-item label="Stage" icon="fa-solid fa-map-location-dot">
-          {{getOpportunityStageName(opp)}}
-        </tc-description-item>
-        <tc-description-item label="Next Step" icon="fa-solid fa-circle-arrow-right">
-          {{opp.nextStep}}
-        </tc-description-item>
-        <tc-description-item label="Next Step Due" icon="fa-regular fa-calendar-days">
-          {{opp.nextStepDueDate}}
-        </tc-description-item>
-      </tc-description-list>
-    </ng-container>
+  <tc-description-list *ngIf="!updating" direction="column">
+    <tc-description-item label="Stage" icon="fa-solid fa-map-location-dot">
+      {{getOpportunityStageName(opp)}}
+    </tc-description-item>
+    <tc-description-item label="Next Step" icon="fa-solid fa-circle-arrow-right">
+      {{opp.nextStep}}
+    </tc-description-item>
+    <tc-description-item label="Next Step Due" icon="fa-regular fa-calendar-days">
+      {{opp.nextStepDueDate}}
+    </tc-description-item>
+  </tc-description-list>
 
 </tc-card>
