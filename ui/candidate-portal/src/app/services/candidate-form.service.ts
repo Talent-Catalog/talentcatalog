@@ -4,7 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {FamilyDocFormComponent} from "../components/form/family-doc-form/family-doc-form.component";
 import {
-  FamilyDocFormData,
+  DependantsInfoFormData,
   MyFirstFormData,
   RsdEvidenceFormData,
   TravelDocFormData
@@ -59,12 +59,12 @@ export class CandidateFormService {
   getFormComponentByName(formName: string): any {
     return this.componentMap[formName];
   }
-  createOrUpdateFamilyDocsForm(request: FamilyDocFormData) {
-    return this.http.post<FamilyDocFormData>(`${this.apiUrl}/family-doc-form`, request);
+  createOrUpdateFamilyDocsForm(request: DependantsInfoFormData) {
+    return this.http.post<DependantsInfoFormData>(`${this.apiUrl}/family-doc-form`, request);
   }
 
-  getFamilyDocsForm() {
-    return this.http.get<FamilyDocFormData>(`${this.apiUrl}/family-doc-form`);
+  getDependantsInfoForm() {
+    return this.http.get<DependantsInfoFormData>(`${this.apiUrl}/dependants-info-form`);
   }
 
   createOrUpdateRsdEvidenceForm(request: RsdEvidenceFormData): Observable<RsdEvidenceFormData> {

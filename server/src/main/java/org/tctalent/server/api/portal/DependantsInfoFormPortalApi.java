@@ -25,21 +25,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.model.db.FamilyDocForm;
-import org.tctalent.server.request.form.FamilyDocFormData;
+import org.tctalent.server.model.db.DependantsInfoForm;
+import org.tctalent.server.request.form.DependantsInfoFormData;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
- * API endpoint for Family Document Form under the portal.
- * Matches the new route: /api/portal/form/family-doc-form
+ * API endpoint for Dependants Info Form under the portal.
  */
 @RestController
-@RequestMapping("/api/portal/form/family-doc-form")
+@RequestMapping("/api/portal/form/dependants-info-form")
 @RequiredArgsConstructor
-public class FamilyDocFormPortalApi {
+public class DependantsInfoFormPortalApi {
 
     private final AuthService authService;
     private final CandidateService candidateService;
@@ -47,26 +46,26 @@ public class FamilyDocFormPortalApi {
 
     @PostMapping
     @NotNull
-    public Map<String, Object> createOrUpdate(@Valid @RequestBody FamilyDocFormData request) {
-        FamilyDocForm form = new FamilyDocForm(
-            "FamilyDocForm", authService, candidateService, candidatePropertyService);
+    public Map<String, Object> createOrUpdate(@Valid @RequestBody DependantsInfoFormData request) {
+        DependantsInfoForm form = new DependantsInfoForm(
+            "DependantsInfoForm", authService, candidateService, candidatePropertyService);
 
         form.setFamilyMembersJson(request.getFamilyMembersJson());
         form.setNoEligibleFamilyMembers(request.getNoEligibleFamilyMembers());
         form.setNoEligibleNotes(request.getNoEligibleNotes());
 
-        return familyDocFormDto().build(form);
+        return dependantsInfoFormDto().build(form);
     }
 
     @GetMapping
     @NotNull
     public Map<String, Object> get() {
-        FamilyDocForm form = new FamilyDocForm(
-            "FamilyDocForm", authService, candidateService, candidatePropertyService);
-        return familyDocFormDto().build(form);
+        DependantsInfoForm form = new DependantsInfoForm(
+            "DependantsInfoForm", authService, candidateService, candidatePropertyService);
+        return dependantsInfoFormDto().build(form);
     }
 
-    private DtoBuilder familyDocFormDto() {
+    private DtoBuilder dependantsInfoFormDto() {
         return new DtoBuilder()
             .add("familyMembersJson")
             .add("noEligibleFamilyMembers")

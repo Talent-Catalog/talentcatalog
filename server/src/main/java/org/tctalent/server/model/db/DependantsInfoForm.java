@@ -24,31 +24,30 @@ import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 
 /**
- * Task 2 form: stores relocating family members (as JSON) and the "no eligible" toggle using
- * candidate properties.
+ * Common form used for loading dependants info.
  */
-public class FamilyDocForm extends CandidateFormInstanceHelper {
+public class DependantsInfoForm extends CandidateFormInstanceHelper {
 
-    private static final String DEPENDANTS_TRAVEL_INFO = "DEPENDANTS_TRAVEL_INFO";
+    private static final String DEPENDANTS_INFO = "DEPENDANTS_INFO";
     private static final String NO_ELIGIBLE = "NO_ELIGIBLE_FAMILY_MEMBERS";
     private static final String NO_ELIGIBLE_NOTES = "NO_ELIGIBLE_NOTES";
 
-    public FamilyDocForm(String formName, AuthService authService,
+    public DependantsInfoForm(String formName, AuthService authService,
         CandidateService candidateService,
         CandidatePropertyService propertyService) {
         super(formName, authService, candidateService, propertyService);
     }
 
     public String getFormName() {
-        return "FamilyDocForm";
+        return "DependantsInfoForm";
     }
 
     public String getFamilyMembersJson() {
-        return getProperty(DEPENDANTS_TRAVEL_INFO);
+        return getProperty(DEPENDANTS_INFO);
     }
 
     public void setFamilyMembersJson(String json) {
-        setProperty(DEPENDANTS_TRAVEL_INFO, json);
+        setProperty(DEPENDANTS_INFO, json);
     }
 
     public Boolean getNoEligibleFamilyMembers() {

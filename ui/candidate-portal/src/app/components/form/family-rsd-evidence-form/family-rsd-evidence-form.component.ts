@@ -3,7 +3,7 @@ import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
 import {
-  FamilyDocFormData,
+  DependantsInfoFormData,
   RelocatingFamilyMember,
   RsdEvidenceDocumentType,
   RsdRefugeeStatus,
@@ -15,18 +15,18 @@ import {
   styleUrls: ['./family-rsd-evidence-form.component.scss'],
 })
 export class FamilyRsdEvidenceFormComponent
-  implements OnInit, ICandidateFormComponent<FamilyDocFormData> {
+  implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {
 
   @Input() readOnly = false;
   @Input() candidate: any | null = null;
-  @Output() submitted = new EventEmitter<FamilyDocFormData>();
+  @Output() submitted = new EventEmitter<DependantsInfoFormData>();
 
   form: FormGroup;
   error: any = null;
   submitting = false;
   loadingMembers = true;
 
-  private familyDocFormData: FamilyDocFormData;
+  private dependantsInfoFormData: DependantsInfoFormData;
   familyMembers: RelocatingFamilyMember[] = [];
 
   RsdRefugeeStatus = RsdRefugeeStatus;
@@ -63,9 +63,9 @@ export class FamilyRsdEvidenceFormComponent
     this.error = null;
 
     const entries: RelocatingFamilyMember[] = this.members.controls.map(ctrl => ctrl.getRawValue());
-    const payload: FamilyDocFormData = {
-      noEligibleFamilyMembers: this.familyDocFormData?.noEligibleFamilyMembers ?? true,
-      noEligibleNotes: this.familyDocFormData?.noEligibleNotes ?? '',
+    const payload: DependantsInfoFormData = {
+      noEligibleFamilyMembers: this.dependantsInfoFormData?.noEligibleFamilyMembers ?? true,
+      noEligibleNotes: this.dependantsInfoFormData?.noEligibleNotes ?? '',
       familyMembersJson: JSON.stringify(entries),
     };
 
@@ -86,9 +86,9 @@ export class FamilyRsdEvidenceFormComponent
   private loadData(): void {
     this.loadingMembers = true;
 
-    this.candidateFormService.getFamilyDocsForm().subscribe({
+    this.candidateFormService.getDependantsInfoForm().subscribe({
       next: familyDocFormData => {
-        this.familyDocFormData = familyDocFormData;
+        this.dependantsInfoFormData = familyDocFormData;
         this.createFormsFromFamilyMembers(familyDocFormData);
         console.log('Family Docs Form Data:', familyDocFormData);
         this.loadingMembers = false;
@@ -102,7 +102,7 @@ export class FamilyRsdEvidenceFormComponent
   }
 
 
-  private createFormsFromFamilyMembers(familyDocFormData: FamilyDocFormData) {
+  private createFormsFromFamilyMembers(familyDocFormData: DependantsInfoFormData) {
     const familyMembersJson = familyDocFormData?.familyMembersJson;
     if (!familyMembersJson) return [];
     try {

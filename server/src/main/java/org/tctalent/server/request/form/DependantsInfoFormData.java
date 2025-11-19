@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class FamilyDocFormData {
+public class DependantsInfoFormData {
   private String familyMembersJson;
   private Boolean noEligibleFamilyMembers;
   private String noEligibleNotes;

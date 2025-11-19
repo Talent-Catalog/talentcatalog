@@ -11,7 +11,7 @@ import {
 import {NgForOf, NgIf} from "@angular/common";
 import {NgSelectModule} from '@ng-select/ng-select';
 
-import {FamilyDocFormData, RelocatingFamilyMember, TravelDocType} from '../../../model/form';
+import {DependantsInfoFormData, RelocatingFamilyMember, TravelDocType} from '../../../model/form';
 import {Candidate, DependantRelations} from "../../../model/candidate";
 import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
@@ -25,10 +25,10 @@ import {TranslateModule} from "@ngx-translate/core";
   imports: [ReactiveFormsModule, NgIf, NgForOf, NgSelectModule, TranslateModule],
   styleUrls: ['./family-doc-form.component.scss']
 })
-export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<FamilyDocFormData> {
+export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {
   @Input() readOnly = false;
   @Input() candidate: Candidate;
-  @Output() submitted = new EventEmitter<FamilyDocFormData>();
+  @Output() submitted = new EventEmitter<DependantsInfoFormData>();
 
   form: FormGroup;
   error: any = null;
@@ -65,7 +65,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
 
     // Load existing
     this.error = null;
-    this.candidateFormService.getFamilyDocsForm().subscribe({
+    this.candidateFormService.getDependantsInfoForm().subscribe({
       next: data => this.hydrateForm(data),
       error: () => this.form.reset({noEligibleFamilyMembers: false, noEligibleNotes: ''})
     });
@@ -177,7 +177,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
   }
 
   // --- load/save mapping ---
-  private hydrateForm(data: FamilyDocFormData) {
+  private hydrateForm(data: DependantsInfoFormData) {
     this.form.reset({
       noEligibleFamilyMembers: data.noEligibleFamilyMembers ?? false,
       noEligibleNotes: data.noEligibleNotes ?? ''
@@ -217,7 +217,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
     let members = (value.noEligibleFamilyMembers ? [] :
       this.members.controls.map(c => c.getRawValue() as RelocatingFamilyMember));
 
-    const payload: FamilyDocFormData = {
+    const payload: DependantsInfoFormData = {
       noEligibleFamilyMembers: value.noEligibleFamilyMembers,
       noEligibleNotes: value.noEligibleFamilyMembers ? value.noEligibleNotes ?? '' : '',
       familyMembersJson: JSON.stringify(members)
