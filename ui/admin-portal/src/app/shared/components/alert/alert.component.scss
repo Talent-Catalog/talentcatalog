@@ -27,6 +27,9 @@
     @include paragraph-md;
     flex: 1;
     line-height: 1.4;
+    word-wrap: break-word;      // ensures long words or URLs break
+    overflow-wrap: anywhere;    // allows breaking anywhere if needed
+    min-width: 0;
   }
 }
 

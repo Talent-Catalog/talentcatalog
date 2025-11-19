@@ -966,5 +966,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return !(this.currentSearchTerms && this.currentSearchTerms.length > 0);
   }
 
+  /** Hides/shows the search request and scrolls to top */
+  toggleSearchRequest() {
+    this.showSearchRequest = !this.showSearchRequest;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+
   public readonly CandidateSourceType = CandidateSourceType;
 }

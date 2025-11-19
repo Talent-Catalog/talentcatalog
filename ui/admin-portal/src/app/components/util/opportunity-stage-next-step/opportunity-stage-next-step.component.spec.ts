@@ -76,12 +76,12 @@ describe('OpportunityStageNextStepComponent', () => {
     expect(card).toBeTruthy();
   });
 
-  it('should display spinner when updating', () => {
+  it('should display tc-loading indicator when updating', () => {
     component.updating = true;
     authServiceSpy.canEditCandidateOpp.and.returnValue(true);
     fixture.detectChanges();
-    const spinner = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(spinner).toBeTruthy();
+    const loadingIndicator = fixture.debugElement.query(By.css('tc-loading'));
+    expect(loadingIndicator).toBeTruthy();
   });
 
   it('should display error message when error is set', () => {
