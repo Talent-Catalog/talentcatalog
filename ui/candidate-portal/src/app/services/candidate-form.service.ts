@@ -5,7 +5,6 @@ import {Observable} from "rxjs";
 import {FamilyDocFormComponent} from "../components/form/family-doc-form/family-doc-form.component";
 import {
   FamilyDocFormData,
-  FamilyRsdEvidenceFormData,
   MyFirstFormData,
   RsdEvidenceFormData,
   TravelDocFormData
@@ -38,7 +37,6 @@ export class CandidateFormService {
   }
 
   apiUrl: string = environment.apiUrl + '/form';
-  halApiUrl: string = environment.halApiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -75,12 +73,5 @@ export class CandidateFormService {
 
   getRsdEvidenceForm(): Observable<RsdEvidenceFormData> {
     return this.http.get<RsdEvidenceFormData>(`${this.apiUrl}/rsd-evidence-form`);
-  }
-  createOrUpdateFamilyRsdEvidenceForm(request: FamilyRsdEvidenceFormData) {
-    return this.http.post<FamilyRsdEvidenceFormData>(`${this.apiUrl}/family-rsd-evidence-form`, request);
-  }
-
-  getFamilyRsdEvidenceForm() {
-    return this.http.get<FamilyRsdEvidenceFormData>(`${this.apiUrl}/family-rsd-evidence-form`);
   }
 }

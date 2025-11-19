@@ -104,10 +104,6 @@ export interface FamilyRsdEvidenceEntry {
   attachmentLocation?: string;
 }
 
-export interface FamilyRsdEvidenceFormData {
-  familyRsdEvidenceJson?: string;
-}
-
 export enum RsdRefugeeStatus {
   RecognizedByUnhcr = 'RECOGNIZED_BY_UNHCR',
   RecognizedByHostCountry = 'RECOGNIZED_BY_HOST_COUNTRY',
