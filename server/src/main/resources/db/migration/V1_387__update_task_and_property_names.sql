@@ -18,7 +18,8 @@ DELETE FROM candidate_property_definition
 WHERE name = 'FAMILY_RSD_EVIDENCE_INFO';
 
 UPDATE candidate_property_definition
-SET name = 'DEPENDANTS_INFO', definition = 'Information about dependants of a candidate.'
+SET name = 'DEPENDANTS_INFO', definition = 'Information about dependants of a candidate.',
+    label = 'Dependants Info'
 WHERE name = 'DEPENDANTS_TRAVEL_INFO';
 
 UPDATE candidate_property_definition
