@@ -549,7 +549,7 @@
                       Download CV
                     </tc-dropdown-item>
                     <tc-dropdown-divider *ngIf="isCvDropDownAvailable()"></tc-dropdown-divider>
-                    <tc-dropdown-item (click)="openCandidateInNewTab(candidate.candidateNumber)">
+                    <tc-dropdown-item [routerLink]="['/candidate',candidate.candidateNumber]">
                       Open in new tab
                     </tc-dropdown-item>
                     <tc-dropdown-divider *ngIf="(!isSubmissionList() && isContentModifiable())
