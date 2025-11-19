@@ -16,6 +16,21 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
  * - Two styles of modal, with icon and without
  * - Outputs the save and dismiss events so the parent component can hook into the action.
  *
+ *   **Inputs**
+ *  - `heading: string` — title text shown in the modal header
+ *  - `actionText: string = 'Save'` — label for the action button
+ *  - `disableAction: boolean` — disables the action button
+ *  - `showCancel: boolean` — toggles the cancel button visibility
+ *  - `icon: string` — optional FontAwesome icon class
+ *  - `isError: boolean = false` — switches the modal to an error style (red header + red icon)
+ *  - `cancelText: string = 'Cancel'` — label for the cancel button
+ *  - `showClose: boolean = false` — toggles the top-right close “X”
+ *  - `message?: string` — plain message text for programmatic modals
+ *  - `showAction: boolean = true` — toggles the primary action button
+ *
+ *  **Outputs**
+ *  - `onAction` — emits when the action button is clicked
+ *
  * @example
  *
  *  **Usage in a template (with ng-content):**

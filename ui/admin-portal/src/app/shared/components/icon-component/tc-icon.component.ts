@@ -41,6 +41,8 @@ import {Component, Input} from '@angular/core';
  * - `routerLink?: any[] | string`
  *   Required when `type="link"`. Sets the target URL/route.
  *
+ *   - `target?: string` — sets the link target when using `href` (defaults to `"_blank"`).**
+ *
  * - `onClick?: (event: MouseEvent) => void`
  *   Optional click handler for `type="button"` or `type="span"`.
  *

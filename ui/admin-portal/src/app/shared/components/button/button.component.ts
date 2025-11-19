@@ -20,6 +20,8 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  *   Controls height and padding. Defaults to `'default'`.
  * - `type: 'primary' | 'secondary' | 'outline' | 'plain'`
  *   Visual style variant. Defaults to `'primary'`.
+ *   - `color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'`
+ *   Controls the button’s color scheme. Defaults to `'primary'`.
  * - `disabled: boolean`
  *   Disables the button and applies muted styling. Defaults to `false`.
  * - `ariaLabel?: string`
