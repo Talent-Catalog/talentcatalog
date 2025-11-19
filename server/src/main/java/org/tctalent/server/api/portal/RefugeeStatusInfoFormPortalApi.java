@@ -26,17 +26,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.model.db.RsdEvidenceForm;
-import org.tctalent.server.request.form.RsdEvidenceFormData;
+import org.tctalent.server.model.db.RefugeeStatusInfoForm;
+import org.tctalent.server.request.form.RefugeeStatusInfoFormData;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
-@RequestMapping("/api/portal/form/rsd-evidence-form")
+@RequestMapping("/api/portal/form/refugee-status-info-form")
 @RequiredArgsConstructor
-public class RsdEvidenceFormPortalApi {
+public class RefugeeStatusInfoFormPortalApi {
 
   private final AuthService authService;
   private final CandidateService candidateService;
@@ -45,29 +45,29 @@ public class RsdEvidenceFormPortalApi {
 
   @PostMapping
   @NotNull
-  public Map<String, Object> createOrUpdate(@Valid @RequestBody RsdEvidenceFormData request) {
+  public Map<String, Object> createOrUpdate(@Valid @RequestBody RefugeeStatusInfoFormData request) {
 
-    RsdEvidenceForm form = new RsdEvidenceForm(
-        "RsdEvidenceForm", authService, candidateService, candidatePropertyService);
+    RefugeeStatusInfoForm form = new RefugeeStatusInfoForm(
+        "RefugeeStatusInfoForm", authService, candidateService, candidatePropertyService);
 
     form.setRefugeeStatus(request.getRefugeeStatus());
     form.setDocumentType(request.getDocumentType());
     form.setDocumentNumber(request.getDocumentNumber());
     form.save();
 
-    return rsdEvidenceFormDto().build(form);
+    return refugeeStatusInfoFormDto().build(form);
   }
 
   @GetMapping
   @NotNull
   public Map<String, Object> get() {
-    RsdEvidenceForm form = new RsdEvidenceForm(
-        "RsdEvidenceForm", authService, candidateService, candidatePropertyService);
-    return rsdEvidenceFormDto().build(form);
+    RefugeeStatusInfoForm form = new RefugeeStatusInfoForm(
+        "RefugeeStatusInfoForm", authService, candidateService, candidatePropertyService);
+    return refugeeStatusInfoFormDto().build(form);
   }
 
 
-  private DtoBuilder rsdEvidenceFormDto() {
+  private DtoBuilder refugeeStatusInfoFormDto() {
     return new DtoBuilder()
         .add("refugeeStatus")
         .add("documentType")

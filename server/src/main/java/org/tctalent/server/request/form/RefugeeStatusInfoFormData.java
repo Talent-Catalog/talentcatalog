@@ -22,7 +22,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.RsdEvidenceDocumentType;
+import org.tctalent.server.model.db.RefugeeStatusEvidenceDocumentType;
 import org.tctalent.server.model.db.RsdRefugeeStatus;
 
 /**
@@ -30,12 +30,12 @@ import org.tctalent.server.model.db.RsdRefugeeStatus;
  */
 @Getter
 @Setter
-public class RsdEvidenceFormData {
+public class RefugeeStatusInfoFormData {
   @NotNull
   private RsdRefugeeStatus refugeeStatus;
 
   @NotNull
-  private RsdEvidenceDocumentType documentType;
+  private RefugeeStatusEvidenceDocumentType documentType;
 
   @NotBlank
   @Size(max = 30)

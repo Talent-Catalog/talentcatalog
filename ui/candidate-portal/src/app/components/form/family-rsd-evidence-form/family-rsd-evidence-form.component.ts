@@ -4,8 +4,8 @@ import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
 import {
   DependantsInfoFormData,
+  RefugeeStatusEvidenceDocumentType,
   RelocatingFamilyMember,
-  RsdEvidenceDocumentType,
   RsdRefugeeStatus,
 } from '../../../model/form';
 
@@ -30,7 +30,7 @@ export class FamilyRsdEvidenceFormComponent
   familyMembers: RelocatingFamilyMember[] = [];
 
   RsdRefugeeStatus = RsdRefugeeStatus;
-  RsdEvidenceDocumentType = RsdEvidenceDocumentType;
+  RsdEvidenceDocumentType = RefugeeStatusEvidenceDocumentType;
 
   constructor(
     private fb: FormBuilder,

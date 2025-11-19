@@ -17,9 +17,9 @@
 package org.tctalent.server.model.db;
 
 /**
- * Supported document types that can be uploaded as RSD evidence.
+ * Supported document types that can be uploaded as Refugee Status evidence.
  */
-public enum RsdEvidenceDocumentType {
+public enum RefugeeStatusEvidenceDocumentType {
   UNHCR_CERTIFICATE,
   HOST_COUNTRY_ID,
   OFFICIAL_CAMP_REGISTRATION

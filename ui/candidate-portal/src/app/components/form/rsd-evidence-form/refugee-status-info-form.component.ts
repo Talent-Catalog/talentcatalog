@@ -1,18 +1,22 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CandidateFormService} from "../../../services/candidate-form.service";
-import {RsdEvidenceDocumentType, RsdEvidenceFormData, RsdRefugeeStatus} from "../../../model/form";
+import {
+  RefugeeStatusEvidenceDocumentType,
+  RefugeeStatusInfoFormData,
+  RsdRefugeeStatus
+} from "../../../model/form";
 import {ICandidateFormComponent} from "../../../model/candidate-form";
 import {Candidate} from "../../../model/candidate";
 
 @Component({
-  selector: 'app-rsd-evidence-form',
-  templateUrl: './rsd-evidence-form.component.html'
+  selector: 'app-refugee-status-info-form',
+  templateUrl: './refugee-status-info-form.component.html'
 })
-export class RsdEvidenceFormComponent implements OnInit, ICandidateFormComponent<RsdEvidenceFormData> {
+export class RefugeeStatusInfoFormComponent implements OnInit, ICandidateFormComponent<RefugeeStatusInfoFormData> {
   @Input() readOnly = false;
   @Input() candidate :Candidate;
-  @Output() submitted = new EventEmitter<RsdEvidenceFormData>();
+  @Output() submitted = new EventEmitter<RefugeeStatusInfoFormData>();
 
   form: FormGroup;
   error: any = null;
@@ -25,9 +29,9 @@ export class RsdEvidenceFormComponent implements OnInit, ICandidateFormComponent
   ];
 
   readonly documentTypeOptions = [
-    { value: RsdEvidenceDocumentType.UnhcrCertificate, label: 'UNHCR Certificate of Recognition' },
-    { value: RsdEvidenceDocumentType.HostCountryId, label: 'Host Country Refugee ID or Residence Permit' },
-    { value: RsdEvidenceDocumentType.OfficialCampRegistration, label: 'Registration Document from Official Refugee Camp' }
+    { value: RefugeeStatusEvidenceDocumentType.UnhcrCertificate, label: 'UNHCR Certificate of Recognition' },
+    { value: RefugeeStatusEvidenceDocumentType.HostCountryId, label: 'Host Country Refugee ID or Residence Permit' },
+    { value: RefugeeStatusEvidenceDocumentType.OfficialCampRegistration, label: 'Registration Document from Official Refugee Camp' }
   ];
 
 
@@ -40,7 +44,7 @@ export class RsdEvidenceFormComponent implements OnInit, ICandidateFormComponent
   ngOnInit(): void {
     this.form = this.fb.group({
       refugeeStatus: [null as RsdRefugeeStatus | null, [Validators.required]],
-      documentType: [null as RsdEvidenceDocumentType | null, [Validators.required]],
+      documentType: [null as RefugeeStatusEvidenceDocumentType | null, [Validators.required]],
       documentNumber: ['', [Validators.required, Validators.maxLength(30)]]
     });
 
@@ -49,7 +53,7 @@ export class RsdEvidenceFormComponent implements OnInit, ICandidateFormComponent
     }
 
     this.error = null;
-    this.candidateFormService.getRsdEvidenceForm().subscribe({
+    this.candidateFormService.getRefugeeStatusInfoForm().subscribe({
       next: formData => this.form.reset(formData),
       error: () => this.form.reset()
     });
@@ -59,7 +63,7 @@ export class RsdEvidenceFormComponent implements OnInit, ICandidateFormComponent
     return this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
   }
 
-  hasError(ctrlName: keyof RsdEvidenceFormData, validationName: string): boolean {
+  hasError(ctrlName: keyof RefugeeStatusInfoFormData, validationName: string): boolean {
     const control = this.form.get(ctrlName);
     return !this.readOnly && !!control && control.touched && control.hasError(validationName);
   }
@@ -73,9 +77,9 @@ export class RsdEvidenceFormComponent implements OnInit, ICandidateFormComponent
     this.submitting = true;
     this.error = null;
 
-    const formData: RsdEvidenceFormData = this.form.getRawValue();
+    const formData: RefugeeStatusInfoFormData = this.form.getRawValue();
 
-    this.candidateFormService.createOrUpdateRsdEvidenceForm(formData).subscribe({
+    this.candidateFormService.createOrUpdateRefugeeStatusInfoForm(formData).subscribe({
       next: value => {
         this.submitted.emit(value);
         this.form.markAsPristine();

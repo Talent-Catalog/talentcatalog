@@ -1,16 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {TravelDocFormComponent} from './travel-doc-form.component';
+import {TravelInfoFormComponent} from './travel-info-form.component';
 
 describe('ItalyTravelDocumentFormComponent', () => {
-  let component: TravelDocFormComponent;
-  let fixture: ComponentFixture<TravelDocFormComponent>;
+  let component: TravelInfoFormComponent;
+  let fixture: ComponentFixture<TravelInfoFormComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TravelDocFormComponent]
+      declarations: [TravelInfoFormComponent]
     });
-    fixture = TestBed.createComponent(TravelDocFormComponent);
+    fixture = TestBed.createComponent(TravelInfoFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -242,14 +242,14 @@ import {
 } from './components/profile/view/tab/tasks/task/form/view-form-task.component';
 import {MyFirstFormComponent} from './components/form/my-first-form/my-first-form.component';
 import {
-  TravelDocFormComponent
-} from './components/form/italy-travel-document-form/travel-doc-form.component';
+  TravelInfoFormComponent
+} from './components/form/italy-travel-document-form/travel-info-form.component';
 import {
   FamilyRsdEvidenceFormComponent
 } from './components/form/family-rsd-evidence-form/family-rsd-evidence-form.component';
 import {
-  RsdEvidenceFormComponent
-} from './components/form/rsd-evidence-form/rsd-evidence-form.component';
+  RefugeeStatusInfoFormComponent
+} from './components/form/rsd-evidence-form/refugee-status-info-form.component';
 import {
   TaskSubmittedComponent
 } from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
@@ -341,10 +341,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     ShowTermsComponent,
     ViewFormTaskComponent,
     MyFirstFormComponent,
-    TravelDocFormComponent,
+    TravelInfoFormComponent,
     TaskSubmittedComponent,
     FamilyRsdEvidenceFormComponent,
-    RsdEvidenceFormComponent,
+    RefugeeStatusInfoFormComponent,
   ],
   imports: [
     BrowserModule,

@@ -6,19 +6,19 @@ import {FamilyDocFormComponent} from "../components/form/family-doc-form/family-
 import {
   DependantsInfoFormData,
   MyFirstFormData,
-  RsdEvidenceFormData,
-  TravelDocFormData
+  RefugeeStatusInfoFormData,
+  TravelInfoFormData
 } from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
 import {
-  TravelDocFormComponent
-} from "../components/form/italy-travel-document-form/travel-doc-form.component";
+  TravelInfoFormComponent
+} from "../components/form/italy-travel-document-form/travel-info-form.component";
 import {
   FamilyRsdEvidenceFormComponent
 } from "../components/form/family-rsd-evidence-form/family-rsd-evidence-form.component";
 import {
-  RsdEvidenceFormComponent
-} from "../components/form/rsd-evidence-form/rsd-evidence-form.component";
+  RefugeeStatusInfoFormComponent
+} from "../components/form/rsd-evidence-form/refugee-status-info-form.component";
 
 
 @Injectable({
@@ -31,9 +31,9 @@ export class CandidateFormService {
   private componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent,
     'FamilyDocForm': FamilyDocFormComponent,
-    'TravelDocForm': TravelDocFormComponent,
+    'TravelInfoForm': TravelInfoFormComponent,
     'FamilyRsdEvidenceForm': FamilyRsdEvidenceFormComponent,
-    'RsdEvidenceForm': RsdEvidenceFormComponent
+    'RsdEvidenceForm': RefugeeStatusInfoFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
@@ -48,12 +48,12 @@ export class CandidateFormService {
     return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
   }
 
-  createOrUpdateTravelDocumentForm(request: TravelDocFormData): Observable<TravelDocFormData> {
-    return this.http.post<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`, request);
+  createOrUpdateTravelInfoForm(request: TravelInfoFormData): Observable<TravelInfoFormData> {
+    return this.http.post<TravelInfoFormData>(`${this.apiUrl}/travel-info-form`, request);
   }
 
-  getTravelDocumentForm(): Observable<TravelDocFormData> {
-    return this.http.get<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`);
+  getTravelInfoForm(): Observable<TravelInfoFormData> {
+    return this.http.get<TravelInfoFormData>(`${this.apiUrl}/travel-info-form`);
   }
 
   getFormComponentByName(formName: string): any {
@@ -67,11 +67,11 @@ export class CandidateFormService {
     return this.http.get<DependantsInfoFormData>(`${this.apiUrl}/dependants-info-form`);
   }
 
-  createOrUpdateRsdEvidenceForm(request: RsdEvidenceFormData): Observable<RsdEvidenceFormData> {
-    return this.http.post<RsdEvidenceFormData>(`${this.apiUrl}/rsd-evidence-form`, request);
+  createOrUpdateRefugeeStatusInfoForm(request: RefugeeStatusInfoFormData): Observable<RefugeeStatusInfoFormData> {
+    return this.http.post<RefugeeStatusInfoFormData>(`${this.apiUrl}/refugee-status-info-form`, request);
   }
 
-  getRsdEvidenceForm(): Observable<RsdEvidenceFormData> {
-    return this.http.get<RsdEvidenceFormData>(`${this.apiUrl}/rsd-evidence-form`);
+  getRefugeeStatusInfoForm(): Observable<RefugeeStatusInfoFormData> {
+    return this.http.get<RefugeeStatusInfoFormData>(`${this.apiUrl}/refugee-status-info-form`);
   }
 }

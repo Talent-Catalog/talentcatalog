@@ -27,7 +27,7 @@ export enum TravelDocType {
   NationalId = 'NATIONAL_ID',
   RefugeeCertificate = 'REFUGEE_CERTIFICATE',
 }
-export interface TravelDocFormData {
+export interface TravelInfoFormData {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
@@ -95,14 +95,14 @@ export enum RsdRefugeeStatus {
   Pending = 'PENDING',
 }
 
-export enum RsdEvidenceDocumentType {
+export enum RefugeeStatusEvidenceDocumentType {
   UnhcrCertificate = 'UNHCR_CERTIFICATE',
   HostCountryId = 'HOST_COUNTRY_ID',
   OfficialCampRegistration = 'OFFICIAL_CAMP_REGISTRATION',
 }
 
-export interface RsdEvidenceFormData {
+export interface RefugeeStatusInfoFormData {
   refugeeStatus: RsdRefugeeStatus | null;
-  documentType: RsdEvidenceDocumentType | null;
+  documentType: RefugeeStatusEvidenceDocumentType | null;
   documentNumber: string;
 }
