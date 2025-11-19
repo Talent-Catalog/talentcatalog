@@ -22,9 +22,13 @@ SET name = 'DEPENDANTS_INFO', definition = 'Information about dependants of a ca
 WHERE name = 'DEPENDANTS_TRAVEL_INFO';
 
 UPDATE candidate_property_definition
-SET name = 'REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE', definition = 'Type of Refugee Staus evidence document (UNHCR Certificate, Host Country ID, etc.).'
+SET name = 'REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE',
+    definition = 'Type of Refugee Status evidence document (UNHCR Certificate, Host Country ID, etc.).',
+    label = 'Refugee Status Evidence Document Type'
 WHERE name = 'EVIDENCE_DOCUMENT_TYPE';
 
 UPDATE candidate_property_definition
-SET name = 'REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER', definition = 'Number printed on the Refugee Status evidence document.'
+SET name = 'REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER',
+    definition = 'Number printed on the Refugee Status evidence document.',
+    label = 'Refugee Status Evidence Document Number'
 WHERE name = 'EVIDENCE_DOCUMENT_NUMBER';
