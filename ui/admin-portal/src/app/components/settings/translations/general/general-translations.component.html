@@ -48,7 +48,10 @@
       </div>
     </div>
 
-    <tc-table [results]="fields" [loading]="loading">
+    <tc-table [results]="fields"
+              [loading]="loading"
+              [clickableRows]="false"
+    >
       <thead>
       <tr>
         <th>Field</th>
@@ -62,7 +65,9 @@
             {{field.path}}
           </td>
           <td>
-            <textarea rows="3" class="form-control form-control-sm" [(ngModel)]="field.value" [disabled]="loggedInUser.readOnly"></textarea>
+            <tc-textarea [(ngModel)]="field.value"
+                         [disabled]="loggedInUser.readOnly"
+            ></tc-textarea>
           </td>
         </tr>
       </ng-container>

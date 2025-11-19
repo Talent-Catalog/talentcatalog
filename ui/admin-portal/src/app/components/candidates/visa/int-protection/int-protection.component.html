@@ -18,13 +18,15 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label for="visaProtection">
-        Is the candidate in need of international protection?
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaProtection">
+          Is the candidate in need of international protection?
+        </tc-label>
         <app-autosave-status
           [saving]="saving"
           [typing]="typing">
         </app-autosave-status>
-      </tc-label>
+      </div>
       <ng-select class="tc-select" id="visaProtection" [formControlName]="'visaProtection'" [items]="visaProtectionOptions"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </tc-field>

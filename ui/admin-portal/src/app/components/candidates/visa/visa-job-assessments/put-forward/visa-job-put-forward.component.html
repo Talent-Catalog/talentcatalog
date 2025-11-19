@@ -17,12 +17,15 @@
 <tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
   <tc-field>
-    <tc-label for="visaJobPutForward">Put candidate forward to employer?
+    <div class="d-flex justify-content-between">
+      <tc-label for="visaJobPutForward">
+        Put candidate forward to employer?
+      </tc-label>
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </tc-label>
+    </div>
     <ng-select class="tc-select" id="visaJobPutForward" [formControlName]="'visaJobPutForward'"
                (clear)="setNoResponse('visaJobPutForward')"
                [items]="visaEligibilityOptions" [clearOnBackspace]="false"

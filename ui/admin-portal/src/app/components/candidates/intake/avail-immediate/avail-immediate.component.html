@@ -19,7 +19,15 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="interested">Are you interested in international employment opportunities?</label>
+    <label class="form-label" for="interested">
+      Are you interested in international employment opportunities?
+    </label>
+    <div class="float-end">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <ng-select class="tc-select" id="interested" [formControlName]="'interested'" (clear)="setNoResponse('interested')"
                [items]="interestedOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
@@ -37,12 +45,6 @@
   <div *ngIf="interested === 'Yes'">
     <div class="mb-3">
       <label class="form-label" for="availImmediate">Are you available for international employment opportunities now?</label>
-      <div class="float-end">
-        <app-autosave-status
-          [saving]="saving"
-          [typing]="typing">
-        </app-autosave-status>
-      </div>
       <ng-select class="tc-select" id="availImmediate" [formControlName]="'availImmediate'" (clear)="setNoResponse('availImmediate')"
                  [items]="availImmediateOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>

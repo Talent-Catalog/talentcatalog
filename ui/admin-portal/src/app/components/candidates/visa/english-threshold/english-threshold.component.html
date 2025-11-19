@@ -21,12 +21,12 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label for="visaEnglishThreshold">Meets English threshold?
-        <app-autosave-status
-          [saving]="saving"
-          [typing]="typing">
-        </app-autosave-status>
-      </tc-label>
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaEnglishThreshold">
+          Meets English threshold?
+        </tc-label>
+        <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
+      </div>
 
       <ng-select class="tc-select" id="visaEnglishThreshold" [formControlName]="'visaEnglishThreshold'"
                  (clear)="setNoResponse('visaEnglishThreshold')"

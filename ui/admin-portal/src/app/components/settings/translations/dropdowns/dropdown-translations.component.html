@@ -48,7 +48,9 @@
               [loading]="loading"
               [paginationPosition]="'top'"
               [(pageNumber)]="pageNumber"
-              (pageChange)="search()">
+              (pageChange)="search()"
+              [clickableRows]="false"
+    >
 
       <thead>
       <tr>
@@ -66,10 +68,16 @@
           <td>{{translation.status}}</td>
           <td>
             <div *ngIf="!loggedInUser.readOnly">
-              <input type="text" formControlName="value" (blur)="updateTranslation(index)"/>
+              <tc-input [type]="'text'"
+                        [formControlName]="'value'"
+                        (blur)="updateTranslation(index)"
+              ></tc-input>
             </div>
             <div *ngIf="loggedInUser.readOnly">
-              <input type="text" formControlName="value" [readOnly]="loggedInUser.readOnly"/>
+              <tc-input [type]="'text'"
+                        [formControlName]="'value'"
+                        [editable]="false"
+              ></tc-input>
             </div>
           </td>
       </tr>

@@ -130,6 +130,8 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Output() selectItem =
     new EventEmitter<NgbTypeaheadSelectItemEvent<any>>();
 
+  @Output() blur = new EventEmitter<InputComponent>();
+
   @ViewChild('inputEl', { static: false }) inputEl!: ElementRef<HTMLInputElement>;
 
   protected _value: string | boolean = '';
@@ -193,6 +195,7 @@ export class InputComponent implements ControlValueAccessor, OnInit {
 
   handleBlur() {
     this.onTouched();
+    this.blur.emit(this);
   }
 
   focus(): void {

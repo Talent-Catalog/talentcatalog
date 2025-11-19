@@ -61,6 +61,9 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
    */
   @Input() preview: boolean = false;
 
+  /** Pass false when the context doesn't require any clicked/selected table row behaviour/styling */
+  @Input() clickableRows: boolean = true;
+
   //Override text to replace "opps" text with "cases"
   myOppsOnlyLabel = "My cases only";
   myOppsOnlyTip = "Only show cases that I am the contact for";

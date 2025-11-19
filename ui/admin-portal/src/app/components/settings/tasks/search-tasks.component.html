@@ -41,7 +41,9 @@
           [loading]="loading"
           [paginationPosition]="'top'"
           [(pageNumber)]="pageNumber"
-          (pageChange)="search()">
+          (pageChange)="search()"
+          [clickableRows]="false"
+>
 
   <thead>
   <tr>
@@ -78,9 +80,12 @@
         </a>
       </div>
     </td>
-    <td class="align-middle">
-      <tc-button *ngIf="(!loggedInUser.readOnly)" type="plain" color="secondary"
-              (onClick)="editTask(ta)">
+    <td class="d-flex justify-content-end gap-3 me-3">
+      <tc-button *ngIf="(!loggedInUser.readOnly)"
+                 [type]="'plain'"
+                 [color]="'secondary'"
+                 (onClick)="editTask(ta)"
+      >
         <i class="fas fa-edit"></i>
       </tc-button>
     </td>

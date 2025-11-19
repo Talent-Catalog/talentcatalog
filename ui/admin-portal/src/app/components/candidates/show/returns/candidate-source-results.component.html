@@ -34,7 +34,11 @@
 <div *ngIf="results">
   <div *ngIf="timestamp" class="d-flex text-muted small align-items-center flex-wrap-reverse justify-content-between py-2" >
     <div>
-    <tc-button *ngIf="timestamp" (click)="onRefreshRequest()">Refresh <i class="fas fa-sync" title="Refresh data"></i></tc-button>
+    <tc-button *ngIf="timestamp"
+               (onClick)="onRefreshRequest()"
+    >
+      Refresh <i class="fas fa-sync" title="Refresh data"></i>
+    </tc-button>
     </div>
     <div>
    <span>{{results.totalElements}} results.</span><br/>  <span class="small">Timestamp {{timestamp | date: 'customDateTime'}} </span>
@@ -115,8 +119,8 @@
                target="_blank">
                   <tc-icon [size]="'sm'"
                            [color]="'primary'"
-                           [ariaLabel]="'Show candidate Google Doc folder'">
-              <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
+                           [ariaLabel]="'Show candidate Google Drive folder'">
+              <i class="fab fa-google-drive" title="Show candidate's Google Drive folder"></i>
                            </tc-icon>
             </a>
             <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">

@@ -21,31 +21,39 @@
   <div class="row align-items-center">
     <div class="col align-self-start">
       <h5 class="mb-3">Visa Eligibility Checks</h5>
-      <app-export-pdf *ngIf="visaChecks?.length > 0" [candidate]="candidate" [idToExport]="'VisaCheck'"></app-export-pdf>
     </div>
-    <div class="mx-auto col-10 col-md-8 col-lg-6">
+    <div class="row">
       <form [formGroup]="form">
-        <div *ngFor="let visaCheck of visaChecks; let i = index">
-            <tc-radio
-              [id]="'radio' + i"
-              name="visaCountry"
-              [value]="i"
-              [label]="visaCheck.country.name"
-              [formControlName]="'visaCountry'"
-              (change)="reloadAndSelectVisaCheck(i)">
-              <tc-icon *ngIf="canDeleteVisa() && isEditable()"
-                       type="button" color="gray"
-                       class="float-end"
-                       (click)="deleteRecord(i)">
-                <i class="fas fa-trash"></i>
-              </tc-icon>
-            </tc-radio>
+        <div class="d-flex flex-column">
+          <div *ngFor="let visaCheck of visaChecks; let i = index"
+               class="my-1 mx-3"
+          >
+              <tc-radio [id]="'radio' + i"
+                        name="visaCountry"
+                        [value]="i"
+                        [label]="visaCheck.country.name"
+                        [formControlName]="'visaCountry'"
+                        (change)="reloadAndSelectVisaCheck(i)"
+              >
+                <tc-icon *ngIf="canDeleteVisa() && isEditable()"
+                         type="button" color="gray"
+                         class="ms-3"
+                         (click)="deleteRecord(i)">
+                  <i class="fas fa-trash"></i>
+                </tc-icon>
+              </tc-radio>
+          </div>
         </div>
       </form>
     </div>
-    <div class="col align-self-start">
+    <div class="d-flex justify-content-end gap-2">
+      <app-export-pdf *ngIf="visaChecks?.length > 0"
+                      [candidate]="candidate"
+                      [idToExport]="'VisaCheck'"
+      ></app-export-pdf>
       <tc-button *ngIf="isEditable()" class="float-end" size="sm" (onClick)="addRecord()">
-        <i class="fas fa-plus"></i> Add Country
+        <i class="fas fa-plus"></i>
+        Add Country
       </tc-button>
     </div>
   </div>
@@ -55,7 +63,7 @@
   </div>
 </div>
 
-<hr *ngIf="visaChecks?.length > 0">
+<hr *ngIf="!loading && visaChecks?.length > 0">
 
 <div [ngSwitch]="selectedCountry" *ngIf="selectedVisaCheck != undefined && !loading" id="VisaCheck">
   <app-visa-check-au *ngSwitchCase="'Australia'"
