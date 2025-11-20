@@ -32,10 +32,10 @@ export class CandidateFormService {
   // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent,
-    'DependantsTravelInfoForm': DependantsTravelInfoFormComponent,
     'TravelInfoForm': TravelInfoFormComponent,
-    'DependantsRefugeeStatusInfoForm': DependantsRefugeeStatusInfoFormComponent,
-    'RefugeeStatusInfoForm': RefugeeStatusInfoFormComponent
+    'RefugeeStatusInfoForm': RefugeeStatusInfoFormComponent,
+    'DependantsTravelInfoForm': DependantsTravelInfoFormComponent,
+    'DependantsRefugeeStatusInfoForm': DependantsRefugeeStatusInfoFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
