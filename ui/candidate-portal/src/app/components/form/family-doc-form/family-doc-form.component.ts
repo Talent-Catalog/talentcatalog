@@ -223,7 +223,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<D
       familyMembersJson: JSON.stringify(members)
     };
 
-    this.candidateFormService.createOrUpdateFamilyDocsForm(payload).subscribe({
+    this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({
       next: saved => {
         this.submitted.emit(saved);
         this.form.markAsPristine();

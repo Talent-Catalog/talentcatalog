@@ -69,7 +69,7 @@ export class DependantsRefugeeStatusInfoFormComponent
       familyMembersJson: JSON.stringify(entries),
     };
 
-    this.candidateFormService.createOrUpdateFamilyDocsForm(payload).subscribe({
+    this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({
       next: saved => {
         this.submitted.emit(saved);
         this.form.markAsPristine();

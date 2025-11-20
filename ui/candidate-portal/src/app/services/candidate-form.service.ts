@@ -59,8 +59,8 @@ export class CandidateFormService {
   getFormComponentByName(formName: string): any {
     return this.componentMap[formName];
   }
-  createOrUpdateFamilyDocsForm(request: DependantsInfoFormData) {
-    return this.http.post<DependantsInfoFormData>(`${this.apiUrl}/family-doc-form`, request);
+  createOrUpdateDependantsInfoForm(request: DependantsInfoFormData) {
+    return this.http.post<DependantsInfoFormData>(`${this.apiUrl}/dependants-info-form`, request);
   }
 
   getDependantsInfoForm() {
