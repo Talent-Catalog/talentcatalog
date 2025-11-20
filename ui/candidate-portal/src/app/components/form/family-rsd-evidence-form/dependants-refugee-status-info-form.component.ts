@@ -10,11 +10,11 @@ import {
 } from '../../../model/form';
 
 @Component({
-  selector: 'app-family-rsd-evidence-form',
-  templateUrl: './family-rsd-evidence-form.component.html',
-  styleUrls: ['./family-rsd-evidence-form.component.scss'],
+  selector: 'app-dependants-refugee-status-info-form',
+  templateUrl: './dependants-refugee-status-info-form.component.html',
+  styleUrls: ['./dependants-refugee-status-info-form.component.scss'],
 })
-export class FamilyRsdEvidenceFormComponent
+export class DependantsRefugeeStatusInfoFormComponent
   implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {
 
   @Input() readOnly = false;

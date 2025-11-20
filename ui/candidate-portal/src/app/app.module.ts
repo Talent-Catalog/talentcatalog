@@ -245,8 +245,8 @@ import {
   TravelInfoFormComponent
 } from './components/form/italy-travel-document-form/travel-info-form.component';
 import {
-  FamilyRsdEvidenceFormComponent
-} from './components/form/family-rsd-evidence-form/family-rsd-evidence-form.component';
+  DependantsRefugeeStatusInfoFormComponent
+} from './components/form/family-rsd-evidence-form/dependants-refugee-status-info-form.component';
 import {
   RefugeeStatusInfoFormComponent
 } from './components/form/rsd-evidence-form/refugee-status-info-form.component';
@@ -343,7 +343,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MyFirstFormComponent,
     TravelInfoFormComponent,
     TaskSubmittedComponent,
-    FamilyRsdEvidenceFormComponent,
+    DependantsRefugeeStatusInfoFormComponent,
     RefugeeStatusInfoFormComponent,
   ],
   imports: [
