@@ -50,7 +50,7 @@ export interface TravelInfoFormData {
  * This is because when a list is published into columns, data is fetched from the JSON
  * into each column based on the field key or property name of the column.
  */
-export interface RelocatingFamilyMember {
+export interface RelocatingDependant {
   relationship: DependantRelations;
   dependantRelationOther?: string;
 
@@ -79,14 +79,14 @@ export interface RelocatingFamilyMember {
   TRAVEL_DOC_EXPIRY_DATE: string
 
   REFUGEE_STATUS?: string;
-  EVIDENCE_DOCUMENT_TYPE?: string;
-  EVIDENCE_DOCUMENT_NUMBER?: string;
+  REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE?: string;
+  REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER?: string;
 }
 
 export interface DependantsInfoFormData {
-  noEligibleFamilyMembers: boolean;
+  dependantsJson: string;
+  noEligibleDependants: boolean;
   noEligibleNotes?: string;
-  familyMembersJson: string;
 }
 
 export enum RsdRefugeeStatus {

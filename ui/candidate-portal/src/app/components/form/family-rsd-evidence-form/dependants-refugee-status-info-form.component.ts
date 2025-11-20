@@ -5,7 +5,7 @@ import {ICandidateFormComponent} from '../../../model/candidate-form';
 import {
   DependantsInfoFormData,
   RefugeeStatusEvidenceDocumentType,
-  RelocatingFamilyMember,
+  RelocatingDependant,
   RsdRefugeeStatus,
 } from '../../../model/form';
 
@@ -27,7 +27,7 @@ export class DependantsRefugeeStatusInfoFormComponent
   loadingMembers = true;
 
   private dependantsInfoFormData: DependantsInfoFormData;
-  familyMembers: RelocatingFamilyMember[] = [];
+  relocatingDependants: RelocatingDependant[] = [];
 
   RsdRefugeeStatus = RsdRefugeeStatus;
   RefugeeStatusEvidenceDocumentType = RefugeeStatusEvidenceDocumentType;
@@ -62,11 +62,11 @@ export class DependantsRefugeeStatusInfoFormComponent
     this.submitting = true;
     this.error = null;
 
-    const entries: RelocatingFamilyMember[] = this.members.controls.map(ctrl => ctrl.getRawValue());
+    const entries: RelocatingDependant[] = this.members.controls.map(ctrl => ctrl.getRawValue());
     const payload: DependantsInfoFormData = {
-      noEligibleFamilyMembers: this.dependantsInfoFormData?.noEligibleFamilyMembers ?? true,
+      noEligibleDependants: this.dependantsInfoFormData?.noEligibleDependants ?? true,
       noEligibleNotes: this.dependantsInfoFormData?.noEligibleNotes ?? '',
-      familyMembersJson: JSON.stringify(entries),
+      dependantsJson: JSON.stringify(entries),
     };
 
     this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({
@@ -103,13 +103,13 @@ export class DependantsRefugeeStatusInfoFormComponent
 
 
   private createFormsFromFamilyMembers(dependantsInfoFormData: DependantsInfoFormData) {
-    const familyMembersJson = dependantsInfoFormData?.familyMembersJson;
-    if (!familyMembersJson) return [];
+    const dependantsInfoJson = dependantsInfoFormData?.dependantsJson;
+    if (!dependantsInfoJson) return [];
     try {
-      this.familyMembers = JSON.parse(familyMembersJson) as RelocatingFamilyMember[];
+      this.relocatingDependants = JSON.parse(dependantsInfoJson) as RelocatingDependant[];
       this.members.clear();
 
-      this.familyMembers.forEach(member => {
+      this.relocatingDependants.forEach(member => {
         this.members.push(this.buildMemberGroup(member));
       });
 
@@ -118,18 +118,20 @@ export class DependantsRefugeeStatusInfoFormComponent
     }
   }
 
-  private buildMemberGroup(member: RelocatingFamilyMember): FormGroup {
+  private buildMemberGroup(member: RelocatingDependant): FormGroup {
     return this.fb.nonNullable.group({
       'user.firstName': [member['user.firstName'] ?? ''],
       'user.lastName': [member['user.lastName'] ?? ''],
       dob: [member.dob ?? ''],
       REFUGEE_STATUS: [member?.REFUGEE_STATUS ?? '', [Validators.required]],
-      EVIDENCE_DOCUMENT_TYPE: [member?.EVIDENCE_DOCUMENT_TYPE ?? '', [Validators.required]],
-      EVIDENCE_DOCUMENT_NUMBER: [member?.EVIDENCE_DOCUMENT_NUMBER ?? '', [Validators.required, Validators.maxLength(30)]],
+      REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE: [member?.REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE ?? '',
+        [Validators.required]],
+      REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER: [member?.REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER ?? '',
+        [Validators.required, Validators.maxLength(30)]],
     });
   }
 
-  public composeDisplayName(member: RelocatingFamilyMember): string {
+  public composeDisplayName(member: RelocatingDependant): string {
     const first = member['user.firstName']?.trim() ?? '';
     const last = member['user.lastName']?.trim() ?? '';
     const fullName = `${first} ${last}`.trim();

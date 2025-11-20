@@ -20,13 +20,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * DTO for Family Document Form data exchange.
- * Stores family member information and "no eligible" toggle/notes.
+ * DTO for Dependant Info data exchange.
+ * Stores dependant information and "no eligible" toggle/notes.
  */
 @Getter
 @Setter
 public class DependantsInfoFormData {
-  private String familyMembersJson;
-  private Boolean noEligibleFamilyMembers;
+  private String dependantsJson;
+  private Boolean noEligibleDependants;
   private String noEligibleNotes;
 }

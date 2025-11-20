@@ -11,7 +11,7 @@ import {
 import {NgForOf, NgIf} from "@angular/common";
 import {NgSelectModule} from '@ng-select/ng-select';
 
-import {DependantsInfoFormData, RelocatingFamilyMember, TravelDocType} from '../../../model/form';
+import {DependantsInfoFormData, RelocatingDependant, TravelDocType} from '../../../model/form';
 import {Candidate, DependantRelations} from "../../../model/candidate";
 import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
@@ -75,7 +75,7 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
     return this.form.get('members') as FormArray<FormGroup>;
   }
 
-  private newMemberGroup(value?: Partial<RelocatingFamilyMember>) {
+  private newMemberGroup(value?: Partial<RelocatingDependant>) {
     const group = this.fb.nonNullable.group({
       relationship: [value?.relationship ?? DependantRelations.Partner, [Validators.required]],
       relationOther: [(value as any)?.relationOther ?? ''],
@@ -114,7 +114,7 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
     return group;
   }
 
-  addMember(prefill?: Partial<RelocatingFamilyMember>) {
+  addMember(prefill?: Partial<RelocatingDependant>) {
     this.members.push(this.newMemberGroup(prefill));
   }
 
@@ -179,16 +179,16 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
   // --- load/save mapping ---
   private hydrateForm(data: DependantsInfoFormData) {
     this.form.reset({
-      noEligibleFamilyMembers: data.noEligibleFamilyMembers ?? false,
+      noEligibleFamilyMembers: data.noEligibleDependants ?? false,
       noEligibleNotes: data.noEligibleNotes ?? ''
     });
 
     this.members.clear();
 
-    let parsed: RelocatingFamilyMember[] = [];
-    if (data.familyMembersJson) {
+    let parsed: RelocatingDependant[] = [];
+    if (data.dependantsJson) {
       try {
-        parsed = JSON.parse(data.familyMembersJson) as RelocatingFamilyMember[];
+        parsed = JSON.parse(data.dependantsJson) as RelocatingDependant[];
       } catch { /* ignore bad payload */
       }
     }
@@ -215,12 +215,12 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
 
     const value = this.form.getRawValue();
     let members = (value.noEligibleFamilyMembers ? [] :
-      this.members.controls.map(c => c.getRawValue() as RelocatingFamilyMember));
+      this.members.controls.map(c => c.getRawValue() as RelocatingDependant));
 
     const payload: DependantsInfoFormData = {
-      noEligibleFamilyMembers: value.noEligibleFamilyMembers,
+      noEligibleDependants: value.noEligibleFamilyMembers,
       noEligibleNotes: value.noEligibleFamilyMembers ? value.noEligibleNotes ?? '' : '',
-      familyMembersJson: JSON.stringify(members)
+      dependantsJson: JSON.stringify(members)
     };
 
     this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({
