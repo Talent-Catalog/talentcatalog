@@ -22,7 +22,7 @@
       Candidate Opportunity Case #{{opp.id}}
     </p>
     <div class="d-flex align-items-center gap-3">
-      <h2  [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
+      <h2  [ngClass]="{'fs-5 fw-bold mb-3':!showBreadcrumb, 'mb-4': showBreadcrumb}">{{opp.name}}
       </h2>
         <tc-dropdown placement="bottom-start">
           <tc-dropdown-button type="solid" color="gray">
@@ -142,7 +142,7 @@
                   <label class="form-label" for="closingComments">
                     Closing comments:
                   </label>
-                  <div class="col-12 mb-3"
+                  <div class="col-12 mb-3 text-color-secondary"
                        id="closingComments"
                        [innerHtml]="opp.closingComments"
                   ></div>
@@ -152,7 +152,7 @@
                   <label class="form-label" for="closingCommentsForCandidate">
                     Closing comments for candidate:
                   </label>
-                  <div class="col-12 mb-3"
+                  <div class="col-12 mb-3 text-color-secondary"
                        id="closingCommentsForCandidate"
                        [innerHtml]="opp.closingCommentsForCandidate"
                   ></div>
@@ -162,7 +162,7 @@
                   <label class="form-label" for="employerFeedback">
                     Employer feedback:
                   </label>
-                  <div class="col-12 mb-3"
+                  <div class="col-12 mb-3 text-color-secondary"
                        id="employerFeedback"
                        [innerHtml]="opp.employerFeedback"
                   ></div>
