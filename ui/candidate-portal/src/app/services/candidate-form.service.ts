@@ -2,7 +2,9 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {FamilyDocFormComponent} from "../components/form/family-doc-form/family-doc-form.component";
+import {
+  DependantsTravelInfoFormComponent
+} from "../components/form/family-doc-form/dependants-travel-info-form.component";
 import {
   DependantsInfoFormData,
   MyFirstFormData,
@@ -30,7 +32,7 @@ export class CandidateFormService {
   // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent,
-    'FamilyDocForm': FamilyDocFormComponent,
+    'DependantsTravelInfoForm': DependantsTravelInfoFormComponent,
     'TravelInfoForm': TravelInfoFormComponent,
     'DependantsRefugeeStatusInfoForm': DependantsRefugeeStatusInfoFormComponent,
     'RefugeeStatusInfoForm': RefugeeStatusInfoFormComponent

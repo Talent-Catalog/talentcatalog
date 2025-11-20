@@ -87,10 +87,10 @@ export class DependantsRefugeeStatusInfoFormComponent
     this.loadingMembers = true;
 
     this.candidateFormService.getDependantsInfoForm().subscribe({
-      next: familyDocFormData => {
-        this.dependantsInfoFormData = familyDocFormData;
-        this.createFormsFromFamilyMembers(familyDocFormData);
-        console.log('Family Docs Form Data:', familyDocFormData);
+      next: dependantsInfoFormData => {
+        this.dependantsInfoFormData = dependantsInfoFormData;
+        this.createFormsFromFamilyMembers(dependantsInfoFormData);
+        console.log('Family Docs Form Data:', dependantsInfoFormData);
         this.loadingMembers = false;
       },
       error: err => {
@@ -102,8 +102,8 @@ export class DependantsRefugeeStatusInfoFormComponent
   }
 
 
-  private createFormsFromFamilyMembers(familyDocFormData: DependantsInfoFormData) {
-    const familyMembersJson = familyDocFormData?.familyMembersJson;
+  private createFormsFromFamilyMembers(dependantsInfoFormData: DependantsInfoFormData) {
+    const familyMembersJson = dependantsInfoFormData?.familyMembersJson;
     if (!familyMembersJson) return [];
     try {
       this.familyMembers = JSON.parse(familyMembersJson) as RelocatingFamilyMember[];

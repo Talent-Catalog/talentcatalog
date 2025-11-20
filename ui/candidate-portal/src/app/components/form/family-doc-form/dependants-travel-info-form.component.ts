@@ -19,13 +19,13 @@ import {EnumOption, enumOptions} from "../../util/enum";
 import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
-  selector: 'app-family-doc-form',
-  templateUrl: './family-doc-form.component.html',
+  selector: 'app-dependants-travel-info-form',
+  templateUrl: './dependants-travel-info-form.component.html',
   standalone: true,
   imports: [ReactiveFormsModule, NgIf, NgForOf, NgSelectModule, TranslateModule],
-  styleUrls: ['./family-doc-form.component.scss']
+  styleUrls: ['./dependants-travel-info-form.component.scss']
 })
-export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {
+export class DependantsTravelInfoFormComponent implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {
   @Input() readOnly = false;
   @Input() candidate: Candidate;
   @Output() submitted = new EventEmitter<DependantsInfoFormData>();
