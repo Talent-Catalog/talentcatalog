@@ -26,24 +26,18 @@
           (editSource)="onEditSource($event)"
           (copySource)="onCopySource($event)"
           (selectColumns)="onSelectColumns()"
-  >
-  </app-candidate-source>
+  ></app-candidate-source>
 </div>
 <tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
 <div *ngIf="results">
-  <div *ngIf="timestamp" class="d-flex text-muted small align-items-center flex-wrap-reverse justify-content-between py-2" >
-    <div>
-    <tc-button *ngIf="timestamp"
-               (onClick)="onRefreshRequest()"
-    >
+  <div *ngIf="timestamp" class="d-flex justify-content-between align-items-center my-3">
+    <tc-button (onClick)="onRefreshRequest()">
       Refresh <i class="fas fa-sync" title="Refresh data"></i>
     </tc-button>
+    <div class="small text-muted">
+      Timestamp {{timestamp | date: 'customDateTime'}}
     </div>
-    <div>
-   <span>{{results.totalElements}} results.</span><br/>  <span class="small">Timestamp {{timestamp | date: 'customDateTime'}} </span>
-    </div>
-
   </div>
 
   <div class="table-responsive">
