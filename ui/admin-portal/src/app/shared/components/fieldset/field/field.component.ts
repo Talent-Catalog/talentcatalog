@@ -13,6 +13,9 @@ import {Component, HostBinding, Input} from '@angular/core';
  * - Useful for composing complex form UIs with consistent alignment
  * - Pass [checkbox]="true" from the parent to adapt alignment for a checkbox and label
  *
+ * @inputs
+ *   - `checkbox: boolean = false` — adjusts layout for checkbox-style fields (label aligns beside control)
+ *
  * @example
  * ```html
  * <tc-field>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 /**
  * @component DescriptionComponent
@@ -8,6 +8,8 @@ import { Component } from '@angular/core';
  * for a form control.
  * Typically placed under an input or label to provide context, instructions,
  * or guidance to the user.
+ *
+ * Must be used inside a form context (e.g., `<tc-field>`, under a label, or alongside a form control).*
  *
  * **Features**
  * - Projects any text or markup using `<ng-content>`
