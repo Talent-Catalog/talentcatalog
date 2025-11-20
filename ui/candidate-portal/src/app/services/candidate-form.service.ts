@@ -33,7 +33,7 @@ export class CandidateFormService {
     'FamilyDocForm': FamilyDocFormComponent,
     'TravelInfoForm': TravelInfoFormComponent,
     'FamilyRsdEvidenceForm': FamilyRsdEvidenceFormComponent,
-    'RsdEvidenceForm': RefugeeStatusInfoFormComponent
+    'RefugeeStatusInfoForm': RefugeeStatusInfoFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
