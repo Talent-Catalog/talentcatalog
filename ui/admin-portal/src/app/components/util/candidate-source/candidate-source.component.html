@@ -21,9 +21,9 @@
         <div *ngIf="!loading">
 <!--          <strong>{{candidateSource?.name + ' (' + candidateSource?.id + ')'}} </strong>-->
 
-          <div class="flex d-flex gap-3 align-items-baseline">
+          <div class="d-flex gap-2 align-items-baseline">
           <h1 class="fs-5 fw-bold mb-2">{{candidateSource?.name + ' (' + candidateSource?.id + ')'}}</h1>
-            <div class="flex d-flex gap-1 align-items-baseline">
+            <div class="d-flex gap-2 align-items-center">
               <tc-icon type="button" color="warning" size="lg" (click)="doToggleStarred()" class="align-self-center">
                 <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
                 <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
@@ -153,14 +153,18 @@
             </div>
 
           </div>
-          <span class="d-flex align-items-baseline">
+          <div class="d-flex align-items-baseline gap-1">
             <tc-icon><i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i></tc-icon>
             <tc-icon><i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i></tc-icon>
             <tc-icon><i *ngIf="candidateSource?.fixed" title="Fixed - can't change" class="fas fa-lock"></i></tc-icon>
             <tc-icon><i *ngIf="candidateSource?.global" title="Global - all users can see" class="fas fa-globe"></i></tc-icon>
-            <tc-icon><i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i></tc-icon>
-            <span *ngIf="isShared()" class="small text-accent-1 fst-italic">Shared by: {{candidateSource?.createdBy?.firstName}} {{candidateSource?.createdBy?.lastName}}</span>
-          </span>
+            <tc-icon *ngIf="isShared()">
+              <i title="Shared" class="fas fa-gift"></i>
+            </tc-icon>
+            <span *ngIf="isShared()" class="small text-accent-1 fst-italic">
+              Shared by: {{candidateSource?.createdBy?.firstName}} {{candidateSource?.createdBy?.lastName}}
+            </span>
+          </div>
           <div *ngIf="truncatedSourceDescription()">
             {{truncatedSourceDescription()}}
           </div>
