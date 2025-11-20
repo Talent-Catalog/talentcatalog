@@ -522,12 +522,6 @@
         </thead>
 
         <tbody>
-          <!-- Special display for no results-->
-          <tr *ngIf="!searching && !results?.totalElements">
-            <td colspan="42">
-              <span class="text-muted">(no matching candidates)</span>
-            </td>
-          </tr>
 
           <!-- Candidate records -->
           <!-- MODEL: Highlighting current table record. See also scss file. -->
