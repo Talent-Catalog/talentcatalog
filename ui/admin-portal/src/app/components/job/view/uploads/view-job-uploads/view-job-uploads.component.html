@@ -17,13 +17,16 @@
 <tc-card>
 
   <tc-card-header>
-    Job related uploads <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+    Job related uploads
   </tc-card-header>
 
-  <div>
+  <tc-loading [type]="'section'" [loading]="saving"></tc-loading>
+
+  <div *ngIf="!saving">
     <div class="alert alert-danger" *ngIf="error">
       {{error}}
     </div>
+
 
     <div class="row">
 
