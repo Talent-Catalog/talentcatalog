@@ -41,14 +41,15 @@
   </div>
 
   <div class="table-responsive">
-    <tc-table
-      [results]="results"
-      [loading]="searching"
-      [(pageNumber)]="pageNumber"
-      (pageChange)="onPageChange()"
-      [paginationPosition]="'bottom'"
-      [hover]="true"
-      [striped]="false">
+    <tc-table [results]="results"
+              [loading]="searching"
+              [(pageNumber)]="pageNumber"
+              (pageChange)="onPageChange()"
+              [paginationPosition]="'bottom'"
+              [hover]="true"
+              [striped]="false"
+              [clickableRows]="false"
+    >
 
       <thead class="">
       <tr>
