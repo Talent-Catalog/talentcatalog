@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {RefugeeStatusInfoFormComponent} from './refugee-status-info-form.component';
 
-describe('RsdEvidenceFormComponent', () => {
+describe('RefugeeStatusEvidenceFormComponent', () => {
   let component: RefugeeStatusInfoFormComponent;
   let fixture: ComponentFixture<RefugeeStatusInfoFormComponent>;
 
