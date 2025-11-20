@@ -31,7 +31,7 @@
             <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE' | translate }}</label>
             <select class="form-select" formControlName="EVIDENCE_DOCUMENT_TYPE" [disabled]="readOnly">
               <option value="" disabled>Select document type</option>
-              <option *ngFor="let type of (RsdEvidenceDocumentType | keyvalue)"
+              <option *ngFor="let type of (RefugeeStatusEvidenceDocumentType | keyvalue)"
                       [ngValue]="type.value">
                 {{ type.value.replaceAll('_', ' ') }}
               </option>

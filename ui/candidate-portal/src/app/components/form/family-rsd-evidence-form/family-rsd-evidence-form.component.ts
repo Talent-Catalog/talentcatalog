@@ -30,7 +30,7 @@ export class FamilyRsdEvidenceFormComponent
   familyMembers: RelocatingFamilyMember[] = [];
 
   RsdRefugeeStatus = RsdRefugeeStatus;
-  RsdEvidenceDocumentType = RefugeeStatusEvidenceDocumentType;
+  RefugeeStatusEvidenceDocumentType = RefugeeStatusEvidenceDocumentType;
 
   constructor(
     private fb: FormBuilder,
