@@ -14,15 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
@@ -34,10 +26,7 @@ import {
   SavedSearchType,
   SearchSavedSearchRequest
 } from '../../../../model/saved-search';
-import {
-  SavedSearchService,
-  SavedSearchTypeSubInfo
-} from '../../../../services/saved-search.service';
+import {SavedSearchService, SavedSearchTypeSubInfo} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
@@ -53,12 +42,8 @@ import {CandidateSourceService} from '../../../../services/candidate-source.serv
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CreateUpdateListComponent} from '../../../list/create-update/create-update-list.component';
 import {SelectListComponent, TargetListSelection} from '../../../list/select/select-list.component';
-import {
-  CandidateSourceResultsCacheService
-} from '../../../../services/candidate-source-results-cache.service';
-import {
-  CreateUpdateSearchComponent
-} from '../../../search/create-update/create-update-search.component';
+import {CandidateSourceResultsCacheService} from '../../../../services/candidate-source-results-cache.service';
+import {CreateUpdateSearchComponent} from '../../../search/create-update/create-update-search.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {JobOpportunityStage} from "../../../../model/job";
 import {enumOptions} from "../../../../util/enum";
@@ -372,11 +357,13 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   onDeleteSource(source: CandidateSource) {
+    this.loading = true;
     if (this.authorizationService.isCandidateSourceMine(source)) {
       this.deleteOwnedSource(source)
       // If it's not mine I can't delete it.
     } else {
       this.error = 'You can not delete this saved search/list.';
+      this.loading = false;
     }
   }
 
@@ -512,7 +499,6 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     deleteCandidateSourceModal.result
       .then((result) => {
         if (result === true) {
-          this.loading = true;
           this.candidateSourceService.delete(source).subscribe(
             () => {
               //Refresh display which will remove source if displayed.
