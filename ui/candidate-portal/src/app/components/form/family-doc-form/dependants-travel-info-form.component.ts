@@ -186,9 +186,9 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
     this.members.clear();
 
     let parsed: RelocatingDependant[] = [];
-    if (data.dependantsJson) {
+    if (data.dependantsInfoJson) {
       try {
-        parsed = JSON.parse(data.dependantsJson) as RelocatingDependant[];
+        parsed = JSON.parse(data.dependantsInfoJson) as RelocatingDependant[];
       } catch { /* ignore bad payload */
       }
     }
@@ -220,7 +220,7 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
     const payload: DependantsInfoFormData = {
       noEligibleDependants: value.noEligibleFamilyMembers,
       noEligibleNotes: value.noEligibleFamilyMembers ? value.noEligibleNotes ?? '' : '',
-      dependantsJson: JSON.stringify(members)
+      dependantsInfoJson: JSON.stringify(members)
     };
 
     this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({

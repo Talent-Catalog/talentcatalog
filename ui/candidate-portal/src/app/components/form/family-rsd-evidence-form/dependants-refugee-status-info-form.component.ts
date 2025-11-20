@@ -66,7 +66,7 @@ export class DependantsRefugeeStatusInfoFormComponent
     const payload: DependantsInfoFormData = {
       noEligibleDependants: this.dependantsInfoFormData?.noEligibleDependants ?? true,
       noEligibleNotes: this.dependantsInfoFormData?.noEligibleNotes ?? '',
-      dependantsJson: JSON.stringify(entries),
+      dependantsInfoJson: JSON.stringify(entries),
     };
 
     this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({
@@ -103,7 +103,7 @@ export class DependantsRefugeeStatusInfoFormComponent
 
 
   private createFormsFromFamilyMembers(dependantsInfoFormData: DependantsInfoFormData) {
-    const dependantsInfoJson = dependantsInfoFormData?.dependantsJson;
+    const dependantsInfoJson = dependantsInfoFormData?.dependantsInfoJson;
     if (!dependantsInfoJson) return [];
     try {
       this.relocatingDependants = JSON.parse(dependantsInfoJson) as RelocatingDependant[];

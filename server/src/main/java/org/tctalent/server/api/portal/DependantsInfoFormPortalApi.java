@@ -50,8 +50,8 @@ public class DependantsInfoFormPortalApi {
         DependantsInfoForm form = new DependantsInfoForm(
             "DependantsInfoForm", authService, candidateService, candidatePropertyService);
 
-        form.setFamilyMembersJson(request.getDependantsJson());
-        form.setNoEligibleFamilyMembers(request.getNoEligibleDependants());
+        form.setDependantsInfoJson(request.getDependantsInfoJson());
+        form.setNoEligibleDependants(request.getNoEligibleDependants());
         form.setNoEligibleNotes(request.getNoEligibleNotes());
 
         return dependantsInfoFormDto().build(form);
@@ -67,8 +67,8 @@ public class DependantsInfoFormPortalApi {
 
     private DtoBuilder dependantsInfoFormDto() {
         return new DtoBuilder()
-            .add("familyMembersJson")
-            .add("noEligibleFamilyMembers")
+            .add("dependantsInfoJson")
+            .add("noEligibleDependants")
             .add("noEligibleNotes");
     }
 }

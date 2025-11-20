@@ -42,20 +42,20 @@ public class DependantsInfoForm extends CandidateFormInstanceHelper {
         return "DependantsInfoForm";
     }
 
-    public String getFamilyMembersJson() {
+    public String getDependantsInfoJson() {
         return getProperty(DEPENDANTS_INFO);
     }
 
-    public void setFamilyMembersJson(String json) {
+    public void setDependantsInfoJson(String json) {
         setProperty(DEPENDANTS_INFO, json);
     }
 
-    public Boolean getNoEligibleFamilyMembers() {
+    public Boolean getNoEligibleDependants() {
         String v = getProperty(NO_ELIGIBLE);
         return v == null ? null : Boolean.valueOf(v);
     }
 
-    public void setNoEligibleFamilyMembers(Boolean value) {
+    public void setNoEligibleDependants(Boolean value) {
         setProperty(NO_ELIGIBLE, value == null ? null : value.toString());
     }
 

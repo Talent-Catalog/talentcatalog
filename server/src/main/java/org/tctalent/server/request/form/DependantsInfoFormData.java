@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DependantsInfoFormData {
-  private String dependantsJson;
+  private String dependantsInfoJson;
   private Boolean noEligibleDependants;
   private String noEligibleNotes;
 }

@@ -84,7 +84,7 @@ export interface RelocatingDependant {
 }
 
 export interface DependantsInfoFormData {
-  dependantsJson: string;
+  dependantsInfoJson: string;
   noEligibleDependants: boolean;
   noEligibleNotes?: string;
 }
