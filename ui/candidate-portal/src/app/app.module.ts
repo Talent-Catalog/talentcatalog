@@ -250,9 +250,6 @@ import {
 import {
   RsdEvidenceFormComponent
 } from './components/form/rsd-evidence-form/rsd-evidence-form.component';
-import {
-  TaskSubmittedComponent
-} from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -342,7 +339,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     ViewFormTaskComponent,
     MyFirstFormComponent,
     TravelDocFormComponent,
-    TaskSubmittedComponent,
     FamilyRsdEvidenceFormComponent,
     RsdEvidenceFormComponent,
   ],
