@@ -9,6 +9,7 @@ import {Component, Input} from '@angular/core';
  * @description
  * Reuseable component that groups the pair of term (`<dt>`) and detail (`<dd>`). The input/s form
  * the term, and the component wraps the detail.
+ * Wraps both `<dt>` and `<dd>` inside a styled `.tc-description-item` container for consistent layout within `<tc-description-list>`.
  *
  * **Features**
  * - Wraps the (`<dt>` & `<dd>`) elements in a single component

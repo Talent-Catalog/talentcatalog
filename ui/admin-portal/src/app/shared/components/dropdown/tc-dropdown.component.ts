@@ -25,6 +25,7 @@ import {Placement} from '@ng-bootstrap/ng-bootstrap';
  * - `placement: Placement = 'bottom-start'` — where the menu appears relative to the toggle
  * - `align: 'start' | 'end' = 'start'` — adds `.dropdown-menu-start` or `.dropdown-menu-end`
  * - `menuClass: NgClass` — extra classes merged onto the menu container
+ * - `hasItems: boolean = true` — controls whether the dropdown menu renders; set to `false` to hide an empty menu
  *
  * @example Basic
  * ```html

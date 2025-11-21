@@ -17,6 +17,7 @@ import {TcAccordionComponent} from "../tc-accordion.component";
  *
  * **Inputs**
  * - Header: The text displayed in the accordion header
+ * - This component must be used inside a <tc-accordion>, as its open/close state is controlled by the parent using the item's index.
  *
  * @example
  * <!-- Simple text header -->

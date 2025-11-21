@@ -26,6 +26,22 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
  * - Emits `valueChange` when the value updates
  * - For checkbox styling pass [checkbox]="true" to the parent tc-field component
  *
+ * **Additional Inputs**
+ * - `id?: string` — applied to the underlying input element
+ * - `name?: string` — applied to the underlying input element
+ * - `ariaLabel?: string` — adds accessibility label support
+ * - `readonly: boolean = false` — makes the field non-editable but still focusable
+ * - `editable?: boolean` — used by ngbTypeahead to control whether typed text is allowed
+ * - `min?: number` — sets the native HTML `min` attribute (for numeric/date types)
+ * - `ngbTypeahead?: (text$: Observable<string>) => Observable<any[]>`
+ * - `resultTemplate?: TemplateRef<any>` — template for typeahead results
+ * - `inputFormatter?: (value: any) => string`
+ * - `resultFormatter?: (value: any) => string`
+ *
+ * **Additional Outputs**
+ * - `selectItem: EventEmitter<NgbTypeaheadSelectItemEvent<any>>` — emits on typeahead selection
+ * - `blur: EventEmitter<InputComponent>` — emits when the input loses focus
+ *
  * @example
  * ### Reactive Forms
  * ```html

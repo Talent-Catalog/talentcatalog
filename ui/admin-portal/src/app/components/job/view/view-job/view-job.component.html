@@ -49,14 +49,6 @@
               </tc-icon>
               Open Job
             </tc-dropdown-item>
-            <tc-dropdown-item *ngIf="!showBreadcrumb"
-                              [routerLink]="['/job',job.id]"
-                              title="Job (Same as Open)">
-              <tc-icon size="md">
-                <i class="fa-solid fa-briefcase"></i>
-              </tc-icon>
-              View Job (same as Open)
-            </tc-dropdown-item>
             <tc-dropdown-item *ngIf="job.submissionList && canSeeJobDetails()"
                               [routerLink]="['/list',job.submissionList.id]"
                               title="Submission list">

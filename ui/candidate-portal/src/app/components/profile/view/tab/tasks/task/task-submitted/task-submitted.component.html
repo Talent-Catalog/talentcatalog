@@ -1,24 +1,11 @@
-<div class="modal-content">
-  <div class="modal-header">
-    <h4 class="modal-title">{{ 'TASKS.TASK.SUBMITTED' | translate }}</h4>
-    <button type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-            (click)="stayOnTaskClick()"
-    ></button>
+<div class="d-sm-flex flex-column align-items-end mt-4">
+  <div>
+    <ng-container *ngIf="selectedTask?.completedDate">
+      <h5 class="text-success">{{ 'TASKS.TASK.COMPLETEDDATE' | translate }} {{selectedTask?.completedDate | date}}</h5>
+    </ng-container>
   </div>
-  <div class="modal-body">
-    <p>{{ 'TASKS.TASK.SUBMITTED-PARA' | translate }}</p>
-    <button class="btn btn-primary"
-            (click)="returnToTasksClick()"
-    >
-      {{ 'TASKS.TASK.RETURN' | translate }}
-    </button>
-    <button class="btn btn-secondary"
-            (click)="stayOnTaskClick()"
-    >
-      {{ 'TASKS.TASK.STAY-TASK' | translate }}
-    </button>
-  </div>
+
+  <button class="btn btn-sm btn-secondary" (click)="returnToTasksClicked()">
+    <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
+  </button>
 </div>
