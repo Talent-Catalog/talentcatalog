@@ -62,11 +62,16 @@ export class DependantsRefugeeStatusInfoFormComponent
     this.submitting = true;
     this.error = null;
 
+    //Get data from form
     const entries: RelocatingDependant[] = this.members.controls.map(ctrl => ctrl.getRawValue());
+    //Update the existing dependants with the new data
+    this.relocatingDependants.forEach(
+      (dep, index)=> Object.assign(dep, entries[index])
+    );
     const payload: DependantsInfoFormData = {
       noEligibleDependants: this.dependantsInfoFormData?.noEligibleDependants ?? true,
       noEligibleNotes: this.dependantsInfoFormData?.noEligibleNotes ?? '',
-      dependantsInfoJson: JSON.stringify(entries),
+      dependantsInfoJson: JSON.stringify(this.relocatingDependants),
     };
 
     this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({
@@ -89,12 +94,10 @@ export class DependantsRefugeeStatusInfoFormComponent
     this.candidateFormService.getDependantsInfoForm().subscribe({
       next: dependantsInfoFormData => {
         this.dependantsInfoFormData = dependantsInfoFormData;
-        this.createFormsFromFamilyMembers(dependantsInfoFormData);
-        console.log('Family Docs Form Data:', dependantsInfoFormData);
+        this.createDependantForms(dependantsInfoFormData);
         this.loadingMembers = false;
       },
       error: err => {
-        console.error('Error fetching Family Docs Form Data:', err);
         this.error = err;
         this.loadingMembers = false;
       }
@@ -102,7 +105,7 @@ export class DependantsRefugeeStatusInfoFormComponent
   }
 
 
-  private createFormsFromFamilyMembers(dependantsInfoFormData: DependantsInfoFormData) {
+  private createDependantForms(dependantsInfoFormData: DependantsInfoFormData) {
     const dependantsInfoJson = dependantsInfoFormData?.dependantsInfoJson;
     if (!dependantsInfoJson) return [];
     try {
