@@ -91,13 +91,6 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
       'birthCountry.name': [value?.['birthCountry.name'] ?? '', [Validators.required]],
       placeOfBirth: [value?.placeOfBirth ?? ''],
 
-      // NEW fields
-      healthConcerns: [value?.healthConcerns ?? null],
-      healthNotes: [value?.healthNotes ?? ''],
-      registered: [value?.registered ?? null],
-      registeredNumber: [value?.registeredNumber ?? ''],
-      registeredNotes: [value?.registeredNotes ?? ''],
-
       TRAVEL_DOC_TYPE: [value?.TRAVEL_DOC_TYPE ?? '', [Validators.required]],
       TRAVEL_DOC_NUMBER: [value?.TRAVEL_DOC_NUMBER ?? '', [Validators.required, Validators.maxLength(64)]],
       TRAVEL_DOC_ISSUED_BY: [value?.TRAVEL_DOC_ISSUED_BY ?? '', [Validators.required, Validators.maxLength(128)]],
@@ -107,8 +100,6 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
       validators: [
         this.childAgeIfChildValidator(),
         this.otherRelationshipNotesIfOtherValidator(),
-        this.requireNotesIfHealthConcernYesValidator(),
-        this.requireRegNumberIfRegisteredYesValidator(),
         this.expiryMinMonthsValidator(9)
       ]
     });
@@ -158,24 +149,6 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
       const other = group.get('relationOther')?.value as string;
       if (rel !== DependantRelations.Other) return null;
       return other && other.trim().length >= 2 ? null : {otherRelationshipRequired: true};
-    };
-  }
-
-  private requireNotesIfHealthConcernYesValidator() {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const hc = group.get('healthConcerns')?.value;
-      const notes = group.get('healthNotes')?.value as string;
-      if (hc !== 'yes') return null;
-      return notes && notes.trim().length > 0 ? null : {healthNotesRequired: true};
-    };
-  }
-
-  private requireRegNumberIfRegisteredYesValidator() {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const reg = group.get('registered')?.value;
-      const num = group.get('registeredNumber')?.value as string;
-      if (reg !== 'yes') return null;
-      return num && num.trim().length > 0 ? null : {registeredNumberRequired: true};
     };
   }
 

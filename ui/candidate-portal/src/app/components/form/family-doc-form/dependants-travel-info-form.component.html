@@ -96,67 +96,6 @@
         </div>
 
         <hr class="my-4">
-        <!-- EXTRA dependant fields -->
-        <div class="row g-3">
-          <!-- Health concerns -->
-          <div class="col-md-4">
-            <label class="form-label">{{'FAMILY-DOC.LABEL.HEALTH-CONCERN' | translate}}</label>
-            <select
-              class="form-select"
-              formControlName="healthConcerns"
-              [disabled]="readOnly">
-              <option value="yes">{{ 'CONFIRMATION.YES' | translate }}</option>
-              <option value="no">{{ 'CONFIRMATION.NO' | translate }}</option>
-            </select>
-          </div>
-
-          <div class="col-12" *ngIf="m.get('healthConcerns')?.value === 'yes'">
-            <label class="form-label">{{ "REGISTRATION.EXAM.LABEL.NOTES" | translate }}</label>
-            <textarea class="form-control" rows="3"
-                      formControlName="healthNotes"
-                      [readonly]="readOnly"></textarea>
-            <div class="text-danger" *ngIf="m.touched && m.hasError('healthNotesRequired')">
-              {{ "FORM.ERROR.REQUIRED" | translate }}
-            </div>
-          </div>
-
-          <!-- Registration -->
-          <div class="col-md-4">
-            <label class="form-label">{{ "FAMILY-DOC.LABEL.REGISTERED" | translate }}</label>
-            <select
-              class="form-select"
-              formControlName="registered"
-              [disabled]="readOnly">
-              <option value="yes">{{ 'CONFIRMATION.YES' | translate }}</option>
-              <option value="no">{{ 'CONFIRMATION.NO' | translate }}</option>
-            </select>
-          </div>
-
-          <div class="col-12" *ngIf="m.get('registered')?.value === 'yes'">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label">
-                 {{ "FAMILY-DOC.LABEL.REGISTRED-NUMBER" | translate }}
-                </label>
-                <input class="form-control" formControlName="registeredNumber"
-                       [readonly]="readOnly">
-                <div class="text-danger"
-                     *ngIf="m.touched && m.hasError('registeredNumberRequired')">
-                  {{ "FORM.ERROR.REQUIRED" | translate }}
-                </div>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">{{ "REGISTRATION.EXAM.LABEL.NOTES" | translate }}</label>
-                <textarea class="form-control" rows="3"
-                          formControlName="registeredNotes"
-                          [readonly]="readOnly"></textarea>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <hr class="my-4">
 
         <div class="row g-3">
           <div class="col-md-4">

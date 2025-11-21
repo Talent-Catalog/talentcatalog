@@ -61,17 +61,6 @@ export interface RelocatingDependant {
   'birthCountry.name': string;
   placeOfBirth?: string;
 
-  //todo Where are these fields stored for normal candidates
-  //todo We can't display these values in a column without a defined column
-  //todo definition linked to a standard candidate field key or property
-  //todo Family members aren't special creatures - they are refugees like the primary candidate and
-  //todo they can't have special fields that aren't also applicable to any candidate
-  healthConcerns?: 'Yes' | 'No' | null;
-  healthNotes?: string;
-  registered?: 'Yes' | 'No' | null;
-  registeredNumber?: string;
-  registeredNotes?: string;
-
   TRAVEL_DOC_TYPE?: string,
   TRAVEL_DOC_NUMBER: string,
   TRAVEL_DOC_ISSUED_BY: string,
