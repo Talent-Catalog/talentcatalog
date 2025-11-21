@@ -109,7 +109,11 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
 
   addMember(prefill?: Partial<RelocatingDependant>) {
     this.members.push(this.newMemberGroup(prefill));
-    this.relocatingDependants.push({});
+
+    //When this is called with no parameter we add a new empty member to the form.
+    if (!prefill) {
+      this.relocatingDependants.push({});
+    }
   }
 
   removeMember(ix: number) {
