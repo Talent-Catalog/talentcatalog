@@ -176,6 +176,7 @@ export class CandidateTaskComponent implements OnInit {
         this.updateAbandonedTask();
       }
     }
+    this.form.markAsPristine()
   }
 
   updateQuestionTask() {
