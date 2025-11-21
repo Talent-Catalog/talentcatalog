@@ -16,19 +16,17 @@
 
 package org.tctalent.server.request.form;
 
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Payload for the relocating family refugee status evidence form. The
- * application captures the per-family-member data as JSON to allow flexible
- * structures while keeping database schema changes to a minimum.
+ * DTO for Dependant Info data exchange.
+ * Stores dependant information and "no eligible" toggle/notes.
  */
 @Getter
 @Setter
-public class FamilyRsdEvidenceFormData {
-
-  @Size(max = 50000)
-  private String familyRsdEvidenceJson;
+public class DependantsInfoFormData {
+  private String dependantsInfoJson;
+  private Boolean noEligibleDependants;
+  private String noEligibleNotes;
 }

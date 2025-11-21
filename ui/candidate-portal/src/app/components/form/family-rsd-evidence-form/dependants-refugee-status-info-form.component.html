@@ -6,20 +6,25 @@
   </div>
 
   <div class="alert alert-info" *ngIf="!loadingMembers && members.length === 0">
-    {{ 'FAMILY-RSD.LABEL.NO-MEMBER' | translate }}
+    <div *ngIf="noEligibleDependants">
+      {{ 'FAMILY-RSD.LABEL.NOTHING-TO-DO' | translate }}
+    </div>
+    <div *ngIf="!noEligibleDependants">
+      {{ 'FAMILY-RSD.LABEL.NO-MEMBER' | translate }}
+    </div>
   </div>
 
   <ng-container formArrayName="members" *ngIf="!loadingMembers && members.length > 0">
     <div class="card mb-3" *ngFor="let group of members.controls; index as ix" [formGroupName]="ix">
       <div class="card-header">
-        <strong>{{'TASKS.FAMILY_DOC.FAMILY-MEMBER' | translate}} #{{ ix + 1 }}:</strong> {{ group.get('displayName')?.value }}
+        <strong>{{'FAMILY-DOC.LABEL.FAMILY-MEMBER' | translate}} #{{ ix + 1 }}:</strong> {{ composeDisplayName(relocatingDependants[ix]) }}
       </div>
 
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-4">
             <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.REFUGEE-STATUS' | translate }}</label>
-            <select class="form-select" formControlName="refugeeStatus" [disabled]="readOnly">
+            <select class="form-select" formControlName="REFUGEE_STATUS" [disabled]="readOnly">
               <option value="" disabled>Select refugee status</option>
               <option *ngFor="let status of (RsdRefugeeStatus | keyvalue)" [ngValue]="status.value">
                 {{ status.value.replaceAll('_', ' ') }}
@@ -28,10 +33,10 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }}</label>
-            <select class="form-select" formControlName="documentType" [disabled]="readOnly">
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE' | translate }}</label>
+            <select class="form-select" formControlName="REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE" [disabled]="readOnly">
               <option value="" disabled>Select document type</option>
-              <option *ngFor="let type of (RsdEvidenceDocumentType | keyvalue)"
+              <option *ngFor="let type of (RefugeeStatusEvidenceDocumentType | keyvalue)"
                       [ngValue]="type.value">
                 {{ type.value.replaceAll('_', ' ') }}
               </option>
@@ -39,8 +44,8 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }}</label>
-            <input type="text" class="form-control" formControlName="documentNumber"
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCNUMBER' | translate }}</label>
+            <input type="text" class="form-control" formControlName="REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER"
                    [readonly]="readOnly" maxlength="30">
           </div>
         </div>

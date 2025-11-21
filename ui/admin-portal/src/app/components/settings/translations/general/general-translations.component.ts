@@ -956,13 +956,16 @@ const ALL_FIELDS = {
   },
   "RSD-EVIDENCE":{
     "LABEL":{
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
       "REFUGEE-STATUS": null,
       "RSD-VALIDATION":null
     }
   },
   "FAMILY-RSD":{
       "LABEL":{
-        "NO-MEMBER": null
+        "NO-MEMBER": null,
+        "NOTHING-TO-DO": null
       }
   }
 }

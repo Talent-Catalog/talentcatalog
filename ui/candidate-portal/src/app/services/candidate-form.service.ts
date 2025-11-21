@@ -2,24 +2,25 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {FamilyDocFormComponent} from "../components/form/family-doc-form/family-doc-form.component";
 import {
-  FamilyDocFormData,
-  FamilyRsdEvidenceFormData,
+  DependantsTravelInfoFormComponent
+} from "../components/form/family-doc-form/dependants-travel-info-form.component";
+import {
+  DependantsInfoFormData,
   MyFirstFormData,
-  RsdEvidenceFormData,
-  TravelDocFormData
+  RefugeeStatusInfoFormData,
+  TravelInfoFormData
 } from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
 import {
-  TravelDocFormComponent
-} from "../components/form/italy-travel-document-form/travel-doc-form.component";
+  TravelInfoFormComponent
+} from "../components/form/italy-travel-document-form/travel-info-form.component";
 import {
-  FamilyRsdEvidenceFormComponent
-} from "../components/form/family-rsd-evidence-form/family-rsd-evidence-form.component";
+  DependantsRefugeeStatusInfoFormComponent
+} from "../components/form/family-rsd-evidence-form/dependants-refugee-status-info-form.component";
 import {
-  RsdEvidenceFormComponent
-} from "../components/form/rsd-evidence-form/rsd-evidence-form.component";
+  RefugeeStatusInfoFormComponent
+} from "../components/form/rsd-evidence-form/refugee-status-info-form.component";
 
 
 @Injectable({
@@ -31,14 +32,13 @@ export class CandidateFormService {
   // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent,
-    'FamilyDocForm': FamilyDocFormComponent,
-    'TravelDocForm': TravelDocFormComponent,
-    'FamilyRsdEvidenceForm': FamilyRsdEvidenceFormComponent,
-    'RsdEvidenceForm': RsdEvidenceFormComponent
+    'TravelInfoForm': TravelInfoFormComponent,
+    'RefugeeStatusInfoForm': RefugeeStatusInfoFormComponent,
+    'DependantsTravelInfoForm': DependantsTravelInfoFormComponent,
+    'DependantsRefugeeStatusInfoForm': DependantsRefugeeStatusInfoFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
-  halApiUrl: string = environment.halApiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -50,37 +50,30 @@ export class CandidateFormService {
     return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
   }
 
-  createOrUpdateTravelDocumentForm(request: TravelDocFormData): Observable<TravelDocFormData> {
-    return this.http.post<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`, request);
+  createOrUpdateTravelInfoForm(request: TravelInfoFormData): Observable<TravelInfoFormData> {
+    return this.http.post<TravelInfoFormData>(`${this.apiUrl}/travel-info-form`, request);
   }
 
-  getTravelDocumentForm(): Observable<TravelDocFormData> {
-    return this.http.get<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`);
+  getTravelInfoForm(): Observable<TravelInfoFormData> {
+    return this.http.get<TravelInfoFormData>(`${this.apiUrl}/travel-info-form`);
   }
 
   getFormComponentByName(formName: string): any {
     return this.componentMap[formName];
   }
-  createOrUpdateFamilyDocsForm(request: FamilyDocFormData) {
-    return this.http.post<FamilyDocFormData>(`${this.apiUrl}/family-doc-form`, request);
+  createOrUpdateDependantsInfoForm(request: DependantsInfoFormData) {
+    return this.http.post<DependantsInfoFormData>(`${this.apiUrl}/dependants-info-form`, request);
   }
 
-  getFamilyDocsForm() {
-    return this.http.get<FamilyDocFormData>(`${this.apiUrl}/family-doc-form`);
+  getDependantsInfoForm() {
+    return this.http.get<DependantsInfoFormData>(`${this.apiUrl}/dependants-info-form`);
   }
 
-  createOrUpdateRsdEvidenceForm(request: RsdEvidenceFormData): Observable<RsdEvidenceFormData> {
-    return this.http.post<RsdEvidenceFormData>(`${this.apiUrl}/rsd-evidence-form`, request);
+  createOrUpdateRefugeeStatusInfoForm(request: RefugeeStatusInfoFormData): Observable<RefugeeStatusInfoFormData> {
+    return this.http.post<RefugeeStatusInfoFormData>(`${this.apiUrl}/refugee-status-info-form`, request);
   }
 
-  getRsdEvidenceForm(): Observable<RsdEvidenceFormData> {
-    return this.http.get<RsdEvidenceFormData>(`${this.apiUrl}/rsd-evidence-form`);
-  }
-  createOrUpdateFamilyRsdEvidenceForm(request: FamilyRsdEvidenceFormData) {
-    return this.http.post<FamilyRsdEvidenceFormData>(`${this.apiUrl}/family-rsd-evidence-form`, request);
-  }
-
-  getFamilyRsdEvidenceForm() {
-    return this.http.get<FamilyRsdEvidenceFormData>(`${this.apiUrl}/family-rsd-evidence-form`);
+  getRefugeeStatusInfoForm(): Observable<RefugeeStatusInfoFormData> {
+    return this.http.get<RefugeeStatusInfoFormData>(`${this.apiUrl}/refugee-status-info-form`);
   }
 }

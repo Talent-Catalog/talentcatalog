@@ -24,39 +24,38 @@ import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 
 /**
- * Task 2 form: stores relocating family members (as JSON) and the "no eligible" toggle using
- * candidate properties.
+ * Common form used for loading dependants info.
  */
-public class FamilyDocForm extends CandidateFormInstanceHelper {
+public class DependantsInfoForm extends CandidateFormInstanceHelper {
 
-    private static final String FAMILY_MEMBERS_JSON = "DEPENDANTS_TRAVEL_INFO";
+    private static final String DEPENDANTS_INFO = "DEPENDANTS_INFO";
     private static final String NO_ELIGIBLE = "NO_ELIGIBLE_FAMILY_MEMBERS";
     private static final String NO_ELIGIBLE_NOTES = "NO_ELIGIBLE_NOTES";
 
-    public FamilyDocForm(String formName, AuthService authService,
+    public DependantsInfoForm(String formName, AuthService authService,
         CandidateService candidateService,
         CandidatePropertyService propertyService) {
         super(formName, authService, candidateService, propertyService);
     }
 
     public String getFormName() {
-        return "FamilyDocForm";
+        return "DependantsInfoForm";
     }
 
-    public String getFamilyMembersJson() {
-        return getProperty(FAMILY_MEMBERS_JSON);
+    public String getDependantsInfoJson() {
+        return getProperty(DEPENDANTS_INFO);
     }
 
-    public void setFamilyMembersJson(String json) {
-        setProperty(FAMILY_MEMBERS_JSON, json);
+    public void setDependantsInfoJson(String json) {
+        setProperty(DEPENDANTS_INFO, json);
     }
 
-    public Boolean getNoEligibleFamilyMembers() {
+    public Boolean getNoEligibleDependants() {
         String v = getProperty(NO_ELIGIBLE);
         return v == null ? null : Boolean.valueOf(v);
     }
 
-    public void setNoEligibleFamilyMembers(Boolean value) {
+    public void setNoEligibleDependants(Boolean value) {
         setProperty(NO_ELIGIBLE, value == null ? null : value.toString());
     }
 

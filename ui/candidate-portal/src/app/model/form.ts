@@ -27,7 +27,7 @@ export enum TravelDocType {
   NationalId = 'NATIONAL_ID',
   RefugeeCertificate = 'REFUGEE_CERTIFICATE',
 }
-export interface TravelDocFormData {
+export interface TravelInfoFormData {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
@@ -41,57 +41,41 @@ export interface TravelDocFormData {
   travelDocExpiryDate: string;
 }
 
-export interface FamilyMemberDoc {
-  docType: TravelDocType;
-  docNumber: string;
-  issuer: string;
-  issuedOn: string;
-  expiresOn: string;
-}
-
-export interface RelocatingFamilyMember {
-  relationship: DependantRelations;
+/**
+ * This is what the JSON is extracted into.
+ * The field names must match the field names in the JSON.
+ * And the field names in the JSON must match the field keys or property names
+ * in the allColumnInfosMap in the Angular PublishedDocColumnService.
+ *
+ * This is because when a list is published into columns, data is fetched from the JSON
+ * into each column based on the field key or property name of the column.
+ */
+export interface RelocatingDependant {
+  relationship?: DependantRelations;
   dependantRelationOther?: string;
 
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  gender: Gender;
-  countryOfBirth: string;
+  'user.firstName'?: string;
+  'user.lastName'?: string;
+  dob?: string;
+  gender?: Gender;
+  'birthCountry.name'?: string;
   placeOfBirth?: string;
 
-  healthConcerns?: 'Yes' | 'No' | null;
-  healthNotes?: string;
-  registered?: 'Yes' | 'No' | null;
-  registeredNumber?: string;
-  registeredNotes?: string;
+  TRAVEL_DOC_TYPE?: string,
+  TRAVEL_DOC_NUMBER?: string,
+  TRAVEL_DOC_ISSUED_BY?: string,
+  TRAVEL_DOC_ISSUE_DATE?: string,
+  TRAVEL_DOC_EXPIRY_DATE?: string
 
-  travelDoc: FamilyMemberDoc;
+  REFUGEE_STATUS?: string;
+  REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE?: string;
+  REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER?: string;
 }
 
-export interface FamilyDocFormData {
-  noEligibleFamilyMembers: boolean;
+export interface DependantsInfoFormData {
+  dependantsInfoJson: string;
+  noEligibleDependants: boolean;
   noEligibleNotes?: string;
-  familyMembersJson: string;
-}
-
-
-export interface FamilyRsdEvidenceEntry {
-  memberKey: string;
-  firstName?: string;
-  lastName?: string;
-  dateOfBirth?: string;
-  displayName?: string;
-  refugeeStatus?: string;
-  documentType?: string;
-  documentNumber?: string;
-  attachmentId?: number;
-  attachmentName?: string;
-  attachmentLocation?: string;
-}
-
-export interface FamilyRsdEvidenceFormData {
-  familyRsdEvidenceJson?: string;
 }
 
 export enum RsdRefugeeStatus {
@@ -100,14 +84,14 @@ export enum RsdRefugeeStatus {
   Pending = 'PENDING',
 }
 
-export enum RsdEvidenceDocumentType {
+export enum RefugeeStatusEvidenceDocumentType {
   UnhcrCertificate = 'UNHCR_CERTIFICATE',
   HostCountryId = 'HOST_COUNTRY_ID',
   OfficialCampRegistration = 'OFFICIAL_CAMP_REGISTRATION',
 }
 
-export interface RsdEvidenceFormData {
+export interface RefugeeStatusInfoFormData {
   refugeeStatus: RsdRefugeeStatus | null;
-  documentType: RsdEvidenceDocumentType | null;
+  documentType: RefugeeStatusEvidenceDocumentType | null;
   documentNumber: string;
 }

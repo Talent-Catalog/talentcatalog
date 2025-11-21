@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+
 package org.tctalent.server.api.portal;
 
 import jakarta.validation.Valid;
@@ -25,45 +26,52 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.model.db.FamilyRsdEvidenceForm;
-import org.tctalent.server.request.form.FamilyRsdEvidenceFormData;
+import org.tctalent.server.model.db.RefugeeStatusInfoForm;
+import org.tctalent.server.request.form.RefugeeStatusInfoFormData;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
-@RequestMapping("/api/portal/form/family-rsd-evidence-form")
+@RequestMapping("/api/portal/form/refugee-status-info-form")
 @RequiredArgsConstructor
-public class FamilyRsdEvidenceFormPortalApi {
+public class RefugeeStatusInfoFormPortalApi {
 
   private final AuthService authService;
   private final CandidateService candidateService;
   private final CandidatePropertyService candidatePropertyService;
 
+
   @PostMapping
   @NotNull
-  public Map<String, Object> createOrUpdate(
-      @Valid @RequestBody FamilyRsdEvidenceFormData request) {
+  public Map<String, Object> createOrUpdate(@Valid @RequestBody RefugeeStatusInfoFormData request) {
 
-    FamilyRsdEvidenceForm form = new FamilyRsdEvidenceForm(
-        "FamilyRsdEvidenceForm", authService, candidateService, candidatePropertyService);
+    RefugeeStatusInfoForm form = new RefugeeStatusInfoForm(
+        "RefugeeStatusInfoForm", authService, candidateService, candidatePropertyService);
 
-    form.setFamilyRsdEvidenceJson(request.getFamilyRsdEvidenceJson());
+    form.setRefugeeStatus(request.getRefugeeStatus());
+    form.setDocumentType(request.getDocumentType());
+    form.setDocumentNumber(request.getDocumentNumber());
+    form.save();
 
-    return familyRsdEvidenceDto().build(form);
+    return refugeeStatusInfoFormDto().build(form);
   }
 
   @GetMapping
   @NotNull
   public Map<String, Object> get() {
-    FamilyRsdEvidenceForm form = new FamilyRsdEvidenceForm(
-        "FamilyRsdEvidenceForm", authService, candidateService, candidatePropertyService);
-    return familyRsdEvidenceDto().build(form);
+    RefugeeStatusInfoForm form = new RefugeeStatusInfoForm(
+        "RefugeeStatusInfoForm", authService, candidateService, candidatePropertyService);
+    return refugeeStatusInfoFormDto().build(form);
   }
 
-  private DtoBuilder familyRsdEvidenceDto() {
+
+  private DtoBuilder refugeeStatusInfoFormDto() {
     return new DtoBuilder()
-        .add("familyRsdEvidenceJson");
+        .add("refugeeStatus")
+        .add("documentType")
+        .add("documentNumber");
   }
 }
+

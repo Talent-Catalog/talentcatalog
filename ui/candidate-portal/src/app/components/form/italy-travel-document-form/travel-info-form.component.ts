@@ -6,12 +6,12 @@ import {CandidateFormService} from '../../../services/candidate-form.service';
 import {CountryService} from '../../../services/country.service';
 import {profileMatchValidator} from '../../util/validators/profile-match-validator';
 
-import {TravelDocFormData, TravelDocType} from '../../../model/form';
+import {TravelDocType, TravelInfoFormData} from '../../../model/form';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
 import {Country} from '../../../model/country';
 
 /**
- * Candidate Travel Document Form (Italy)
+ * Candidate Travel Info Form (Italy)
  *
  * This component renders a form where candidates can enter and verify their
  * travel document details. It ensures consistency by comparing certain fields
@@ -19,12 +19,12 @@ import {Country} from '../../../model/country';
  * to update their profile before submitting.
  */
 @Component({
-  selector: 'app-travel-doc-form',
-  templateUrl: './travel-doc-form.component.html',
-  styleUrls: ['./travel-doc-form.component.scss'],
+  selector: 'app-travel-info-form',
+  templateUrl: './travel-info-form.component.html',
+  styleUrls: ['./travel-info-form.component.scss'],
 })
-export class TravelDocFormComponent
-  implements OnInit, ICandidateFormComponent<TravelDocFormData> {
+export class TravelInfoFormComponent
+  implements OnInit, ICandidateFormComponent<TravelInfoFormData> {
   /** When true, the form is read-only and cannot be submitted. */
   @Input() readOnly = false;
 
@@ -32,7 +32,7 @@ export class TravelDocFormComponent
   @Input() candidate: any | null = null;
 
   /** Emits after successful submission with saved form data. */
-  @Output() submitted = new EventEmitter<TravelDocFormData>();
+  @Output() submitted = new EventEmitter<TravelInfoFormData>();
 
   /** Holds the reactive form instance. */
   form: FormGroup | null = null;
@@ -111,7 +111,7 @@ export class TravelDocFormComponent
     );
 
     // Load previously saved data into form
-    this.candidateFormService.getTravelDocumentForm().subscribe({
+    this.candidateFormService.getTravelInfoForm().subscribe({
       next: (data) => {
         const match = this.countries.find((c) => c.id === data.birthCountry?.id);
         this.form?.patchValue({
@@ -175,7 +175,7 @@ export class TravelDocFormComponent
   }
 
   /** Check if control has a given validation error. */
-  hasError(ctrlName: keyof TravelDocFormData, validationName: string): boolean {
+  hasError(ctrlName: keyof TravelInfoFormData, validationName: string): boolean {
     if (!this.form) return false;
     const ctrl = this.form.get(ctrlName as string);
     return !this.readOnly && !!ctrl && ctrl.touched && ctrl.hasError(validationName);
@@ -197,9 +197,9 @@ export class TravelDocFormComponent
     this.submitting = true;
     this.error = null;
 
-    const data: TravelDocFormData = this.form!.getRawValue();
+    const data: TravelInfoFormData = this.form!.getRawValue();
 
-    this.candidateFormService.createOrUpdateTravelDocumentForm(data).subscribe({
+    this.candidateFormService.createOrUpdateTravelInfoForm(data).subscribe({
       next: (value) => {
         this.submitted.emit(value);
         this.form!.markAsPristine();
