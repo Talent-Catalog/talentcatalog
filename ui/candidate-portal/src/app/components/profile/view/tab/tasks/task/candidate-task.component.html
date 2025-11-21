@@ -57,8 +57,12 @@
     [form]="form"
     [candidate]="candidate"
     [selectedTask]="selectedTask"
-    (successfulUpload)="completedUploadTask($event)">
-  </app-view-upload-task>
+    (successfulUpload)="completedUploadTask($event)"
+  ></app-view-upload-task>
+  <app-task-submitted *ngIf="selectedTask?.completedDate"
+                      [selectedTask]="selectedTask"
+                      (onReturnToTasksClick)="goBack()"
+  ></app-task-submitted>
 </ng-container>
 
 <ng-container *ngIf="selectedTask.task.taskType === 'Form'">
@@ -66,8 +70,11 @@
     [taskAssignment]="selectedTask"
     [candidate]="candidate"
     (taskCompleted)="completedFormTask($event)"
-  >
-  </app-view-form-task>
+  ></app-view-form-task>
+  <app-task-submitted *ngIf="selectedTask?.completedDate"
+                      [selectedTask]="selectedTask"
+                      (onReturnToTasksClick)="goBack()"
+  ></app-task-submitted>
 </ng-container>
 
 <form [formGroup]="form" (submit)="submitTask()">
@@ -117,7 +124,7 @@
               type="submit"
               [disabled]="form.invalid || form.pristine"
       >
-        {{ 'TASKS.TASK.SUBMIT' | translate }}
+        {{ 'TASKS.TASK.SUBMIT-COMMENT' | translate }}
         <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
       </button>
 
