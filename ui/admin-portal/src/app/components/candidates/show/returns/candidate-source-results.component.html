@@ -26,46 +26,56 @@
           (editSource)="onEditSource($event)"
           (copySource)="onCopySource($event)"
           (selectColumns)="onSelectColumns()"
-  >
-  </app-candidate-source>
+  ></app-candidate-source>
 </div>
 <tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
 <div *ngIf="results">
-  <div *ngIf="timestamp" class="d-flex text-muted small align-items-center flex-wrap-reverse justify-content-between py-2" >
-    <div>
-    <tc-button *ngIf="timestamp"
-               (onClick)="onRefreshRequest()"
-    >
+  <div *ngIf="timestamp" class="d-flex justify-content-between align-items-center my-3">
+    <tc-button (onClick)="onRefreshRequest()">
       Refresh <i class="fas fa-sync" title="Refresh data"></i>
     </tc-button>
+    <div class="small text-muted">
+      Timestamp {{timestamp | date: 'customDateTime'}}
     </div>
-    <div>
-   <span>{{results.totalElements}} results.</span><br/>  <span class="small">Timestamp {{timestamp | date: 'customDateTime'}} </span>
-    </div>
-
   </div>
 
   <div class="table-responsive">
-    <tc-table
-      [results]="results"
-      [loading]="searching"
-      [(pageNumber)]="pageNumber"
-      (pageChange)="onPageChange()"
-      [paginationPosition]="'bottom'"
-      [hover]="true"
-      [striped]="false">
+    <tc-table [results]="results"
+              [loading]="searching"
+              [(pageNumber)]="pageNumber"
+              (pageChange)="onPageChange()"
+              [paginationPosition]="'bottom'"
+              [hover]="true"
+              [striped]="false"
+              [clickableRows]="false"
+    >
 
       <thead class="">
       <tr>
-        <th class="candidate-number-row" (click)="toggleSort('id')">
-          <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+        <th class="candidate-number-row sortable-column-header"
+            (click)="toggleSort('id')"
+        >
+          <app-sorted-by [column]="'id'"
+                         [sortColumn]="sortField"
+                         [sortDirection]="sortDirection"
+          ></app-sorted-by>
           #
         </th>
-        <th *ngFor="let field of selectedFields" (click)="toggleSort(field.fieldPath)">
-          <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
-                         [sortDirection]="sortDirection"></app-sorted-by>
-          {{field.displayName}}
+        <th *ngFor="let field of selectedFields">
+          <div *ngIf="field.sortable; else nonSortableFields"
+               (click)="toggleSort(field.fieldPath)"
+               class="sortable-column-header"
+          >
+            <app-sorted-by [column]="field.fieldPath"
+                           [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
+            ></app-sorted-by>
+            {{field.displayName}}
+          </div>
+          <ng-template #nonSortableFields>
+            {{field.displayName}}
+          </ng-template>
         </th>
       </tr>
       </thead>
@@ -150,13 +160,6 @@
           <span>
             {{field.getValue(candidate)}}
           </span>
-        </td>
-      </tr>
-
-      <!-- no results -->
-      <tr *ngIf="!searching && !results?.totalElements">
-        <td colspan="42">
-          <span class="text-muted">(no matching candidates)</span>
         </td>
       </tr>
 
