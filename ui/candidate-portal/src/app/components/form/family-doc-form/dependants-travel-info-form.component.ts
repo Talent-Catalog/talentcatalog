@@ -109,6 +109,7 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
 
   addMember(prefill?: Partial<RelocatingDependant>) {
     this.members.push(this.newMemberGroup(prefill));
+    this.relocatingDependants.push({});
   }
 
   removeMember(ix: number) {
