@@ -966,7 +966,8 @@ const ALL_FIELDS = {
   },
   "FAMILY-RSD":{
       "LABEL":{
-        "NO-MEMBER": null
+        "NO-MEMBER": null,
+        "NOTHING-TO-DO": null
       }
   }
 }

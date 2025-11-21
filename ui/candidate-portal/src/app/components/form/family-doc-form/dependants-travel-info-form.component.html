@@ -3,13 +3,13 @@
 
   <div class="form-check mb-3">
     <input type="checkbox" class="form-check-input" id="noEligible"
-           formControlName="noEligibleFamilyMembers" [disabled]="readOnly">
+           formControlName="noEligibleDependants" [disabled]="readOnly">
     <label class="form-check-label" for="noEligible">
       {{'FAMILY-DOC.LABEL.NO_ELIGIBLE' | translate}}
     </label>
   </div>
 
-  <div class="mb-3" *ngIf="form.get('noEligibleFamilyMembers')!.value">
+  <div class="mb-3" *ngIf="noEligibleDependants">
     <label class="form-label">{{"REGISTRATION.EXAM.LABEL.NOTES" | translate}}</label>
     <textarea class="form-control" rows="2" formControlName="noEligibleNotes"
               [readonly]="readOnly"></textarea>
@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <ng-container formArrayName="members" *ngIf="!form.get('noEligibleFamilyMembers')!.value">
+  <ng-container formArrayName="members" *ngIf="!noEligibleDependants">
     <div class="card mb-3" *ngFor="let m of members.controls; let i = index" [formGroupName]="i">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">

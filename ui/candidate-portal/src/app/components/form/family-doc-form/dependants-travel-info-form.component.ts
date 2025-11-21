@@ -37,6 +37,8 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
   // existing
   relationships: EnumOption[] = enumOptions(DependantRelations);
 
+  relocatingDependants: RelocatingDependant[] = [];
+
   constructor(
     private fb: FormBuilder,
     private candidateFormService: CandidateFormService
@@ -45,13 +47,13 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
 
   ngOnInit(): void {
     this.form = this.fb.nonNullable.group({
-      noEligibleFamilyMembers: [false, []],
+      noEligibleDependants: [false, []],
       noEligibleNotes: [{value: '', disabled: false}],
       members: this.fb.nonNullable.array([] as FormGroup[])
     });
 
     // "no eligible" toggle
-    this.form.get('noEligibleFamilyMembers')!.valueChanges.subscribe(checked => {
+    this.form.get('noEligibleDependants')!.valueChanges.subscribe(checked => {
       const members = this.members;
       const notesCtrl = this.form.get('noEligibleNotes')!;
       if (checked) {
@@ -67,7 +69,7 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
     this.error = null;
     this.candidateFormService.getDependantsInfoForm().subscribe({
       next: data => this.hydrateForm(data),
-      error: () => this.form.reset({noEligibleFamilyMembers: false, noEligibleNotes: ''})
+      error: () => this.form.reset({noEligibleDependants: false, noEligibleNotes: ''})
     });
   }
 
@@ -120,6 +122,7 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
 
   removeMember(ix: number) {
     this.members.removeAt(ix);
+    this.relocatingDependants.splice(ix, 1);
   }
 
   // --- validators ---
@@ -177,32 +180,40 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
   }
 
   // --- load/save mapping ---
-  private hydrateForm(data: DependantsInfoFormData) {
+  private hydrateForm(dependantsInfoFormData: DependantsInfoFormData) {
     this.form.reset({
-      noEligibleFamilyMembers: data.noEligibleDependants ?? false,
-      noEligibleNotes: data.noEligibleNotes ?? ''
+      noEligibleDependants: dependantsInfoFormData.noEligibleDependants ?? false,
+      noEligibleNotes: dependantsInfoFormData.noEligibleNotes ?? ''
     });
 
     this.members.clear();
 
-    let parsed: RelocatingDependant[] = [];
-    if (data.dependantsInfoJson) {
+    const dependantsInfoJson = dependantsInfoFormData?.dependantsInfoJson;
+    if (dependantsInfoJson) {
       try {
-        parsed = JSON.parse(data.dependantsInfoJson) as RelocatingDependant[];
+        this.relocatingDependants = JSON.parse(dependantsInfoJson) as RelocatingDependant[];
       } catch { /* ignore bad payload */
       }
     }
-    parsed.forEach(m => this.addMember(m));
+    this.relocatingDependants.forEach(m => this.addMember(m));
 
-    if (!this.form.get('noEligibleFamilyMembers')!.value && this.members.length === 0) {
+    if (!this.noEligibleDependants && this.members.length === 0) {
       this.addMember();
     }
   }
 
   canSubmit(): boolean {
-    //todo Removed this.form.valid
-    // return this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
-    return !this.form.pending && !this.submitting && !this.readOnly;
+    let ok =  this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
+    if (ok) {
+      if (this.members.length === 0 && !this.noEligibleDependants) {
+        ok = false
+      }
+    }
+    return ok;
+  }
+
+  get noEligibleDependants(): boolean {
+    return this.form.get('noEligibleDependants')!.value;
   }
 
   onSubmit(): void {
@@ -214,13 +225,23 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
     this.error = null;
 
     const value = this.form.getRawValue();
-    let members = (value.noEligibleFamilyMembers ? [] :
+    //Get data from form
+    let members = (value.noEligibleDependants ? [] :
       this.members.controls.map(c => c.getRawValue() as RelocatingDependant));
 
+    //Update the existing dependants with the new data
+    if (members.length == 0) {
+      this.relocatingDependants = [];
+    } else {
+      this.relocatingDependants.forEach(
+        (dep, index)=> Object.assign(dep, members[index])
+      );
+    }
+
     const payload: DependantsInfoFormData = {
-      noEligibleDependants: value.noEligibleFamilyMembers,
-      noEligibleNotes: value.noEligibleFamilyMembers ? value.noEligibleNotes ?? '' : '',
-      dependantsInfoJson: JSON.stringify(members)
+      noEligibleDependants: value.noEligibleDependants,
+      noEligibleNotes: value.noEligibleDependants ? value.noEligibleNotes ?? '' : '',
+      dependantsInfoJson: JSON.stringify(this.relocatingDependants)
     };
 
     this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({

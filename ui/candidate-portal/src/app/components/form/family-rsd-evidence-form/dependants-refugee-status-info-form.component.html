@@ -6,7 +6,12 @@
   </div>
 
   <div class="alert alert-info" *ngIf="!loadingMembers && members.length === 0">
-    {{ 'FAMILY-RSD.LABEL.NO-MEMBER' | translate }}
+    <div *ngIf="noEligibleDependants">
+      {{ 'FAMILY-RSD.LABEL.NOTHING-TO-DO' | translate }}
+    </div>
+    <div *ngIf="!noEligibleDependants">
+      {{ 'FAMILY-RSD.LABEL.NO-MEMBER' | translate }}
+    </div>
   </div>
 
   <ng-container formArrayName="members" *ngIf="!loadingMembers && members.length > 0">

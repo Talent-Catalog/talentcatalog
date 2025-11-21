@@ -49,6 +49,10 @@ export class DependantsRefugeeStatusInfoFormComponent
     return this.form.get('members') as FormArray<FormGroup>;
   }
 
+  get noEligibleDependants(): boolean {
+    return this.dependantsInfoFormData?.noEligibleDependants ?? true;
+  }
+
   canSubmit(): boolean {
     return this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
   }
@@ -88,13 +92,35 @@ export class DependantsRefugeeStatusInfoFormComponent
     });
   }
 
+  private nothingToDoAutoSubmit(): void {
+    this.submitting = true;
+    this.error = null;
+    this.candidateFormService.createOrUpdateDependantsInfoForm(this.dependantsInfoFormData).subscribe({
+      next: saved => {
+        this.submitted.emit(saved);
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+        this.submitting = false;
+      },
+      error: err => {
+        this.error = err;
+        this.submitting = false;
+      },
+    });
+  }
+
   private loadData(): void {
     this.loadingMembers = true;
 
     this.candidateFormService.getDependantsInfoForm().subscribe({
       next: dependantsInfoFormData => {
         this.dependantsInfoFormData = dependantsInfoFormData;
-        this.createDependantForms(dependantsInfoFormData);
+        if (dependantsInfoFormData.noEligibleDependants) {
+          //No dependants, so we can skip the form.
+          this.nothingToDoAutoSubmit();
+        } else {
+          this.createDependantForms(dependantsInfoFormData);
+        }
         this.loadingMembers = false;
       },
       error: err => {
