@@ -296,12 +296,22 @@ public abstract class CandidateSearchUtils {
      * table.table...table.field
      */
     private static @NonNull String mapPropertyNameToDbReference(String propertyName) {
+
         //Can assume that candidate and user tables are in select so sorting by those fields
         if (!propertyName.contains(".")) {
             propertyName = "candidate." + propertyName;
         }
 
-        propertyName = propertyName.replace("user.", "users.");
+        // Special-case replacements
+        Map<String, String> specialCases = Map.of(
+            "user.", "users.",
+            "maxEducationLevel.", "educationLevel."
+        );
+
+        for (var entry : specialCases.entrySet()) {
+            propertyName = propertyName.replace(entry.getKey(), entry.getValue());
+        }
+
 
         return RegexHelpers.camelToSnakeCase(propertyName);
     }
