@@ -28,6 +28,7 @@
 @mixin text-color-blue     { color: color(blue, 700); }
 @mixin text-color-purple   { color: color(purple, 700); }
 @mixin text-color-pink     { color: color(pink, 700); }
+@mixin text-color-teal     { color: color(secondary, 500); }
 
 // ==========================
   // BORDER COLOR MIXINS
