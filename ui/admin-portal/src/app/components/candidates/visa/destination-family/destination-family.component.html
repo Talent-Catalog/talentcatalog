@@ -18,15 +18,22 @@
 <form [formGroup]="form">
   <tc-fieldset>
     <tc-field>
-      <tc-label [for]="'visaDestinationFamily'">Do you have family in {{visaCheck?.country.name}} and if so what is the closest relative?
-        <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-        </app-autosave-status>
-      </tc-label>
-      <ng-select class="tc-select" [id]="'visaDestinationFamily'" [formControlName]="'visaDestinationFamily'" (clear)="setNoResponse('visaDestinationFamily')"
-                 [items]="destFamilyOptions" [clearOnBackspace]="false"
-                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+      <div class="d-flex justify-content-between">
+        <tc-label [for]="'visaDestinationFamily'">
+          Do you have family in {{visaCheck?.country.name}} and if so what is the closest relative?
+        </tc-label>
+        <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
+      </div>
+      <ng-select class="tc-select"
+                 [id]="'visaDestinationFamily'"
+                 [formControlName]="'visaDestinationFamily'"
+                 (clear)="setNoResponse('visaDestinationFamily')"
+                 [items]="destFamilyOptions"
+                 [clearOnBackspace]="false"
+                 placeholder="Select"
+                 bindLabel="stringValue"
+                 bindValue="key"
+      ></ng-select>
     </tc-field>
     <div  *ngIf="showLocation()">
       <tc-field>

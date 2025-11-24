@@ -15,8 +15,10 @@
   -->
 <tc-modal heading="Tailor CV"
           [showClose]="true"
-          [showAction]="false"
           [showCancel]="false"
+          actionText="Open Public CV Link"
+          [disableAction]="!publicCvLink"
+          (onAction)="window.open(publicCvLink, '_blank')"
 >
 
   <tc-loading [loading]="loading"></tc-loading>
@@ -61,7 +63,3 @@
 
   </div>
 </tc-modal>
-
-<div class="modal-footer">
-  <a target="_blank" [href]="publicCvLink" [class.disabled]="!publicCvLink">Open Public CV Link</a>
-</div>

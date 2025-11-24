@@ -20,6 +20,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
  *
  * @inputs
  * - `href?: string` — when provided, renders an `<a>` with `href`
+ * - `target?: string` — optional target attribute when `href` is used (e.g., `"_blank"` to open the link in a new tab)
  * - `routerLink?: string | any[]` — when provided, renders an `<a [routerLink]>`
  * - `disabled: boolean = false` — prevents selection and disables UI
  * - `itemClass: any = ''` — extra CSS classes applied to the rendered element

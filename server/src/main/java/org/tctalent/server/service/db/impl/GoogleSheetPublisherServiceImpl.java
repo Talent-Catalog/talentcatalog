@@ -60,6 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.HasMultipleRows;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocBuilderService;
 import org.tctalent.server.request.candidate.PublishedDocColumnDef;
@@ -152,15 +153,25 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         //gives alpha sort - eg 100 before 20
         candidates.sort(Comparator.comparing(Candidate::getId));
 
-        final PublishedDocColumnDef expandingColumnDef = request.findExpandingColumnDef();
-        //Add row for each candidate
+
+        final PublishedDocColumnDef expandingColumnDef =
+            publishedDocBuilderService.findExpandingColumnDef(request.getColumns());
+
+        //Add row(s) for each candidate
         for (Candidate candidate : candidates) {
             //Could be more than one row per candidate if, for example, dependants are being displayed
-            int nRows = publishedDocBuilderService.computeNumberOfRowsByCandidate(
-                candidate, expandingColumnDef);
+            HasMultipleRows expandingData = null;
+            if (expandingColumnDef != null) {
+                expandingData = publishedDocBuilderService
+                    .loadExpandingData(candidate, expandingColumnDef);
+            }
+            int nRows = 1;
+            if (expandingData != null) {
+                nRows += expandingData.nRows();
+            }
             for (int expandingCount = 0; expandingCount < nRows; expandingCount++) {
                 List<Object> candidateData = publishedDocBuilderService.buildRow(
-                    candidate, expandingColumnDef, expandingCount, columnInfos);
+                    candidate, expandingData, expandingCount, columnInfos);
                 publishedData.add(candidateData);
             }
         }
@@ -219,8 +230,19 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         @NonNull List<Candidate> candidates, @Nullable PublishedDocColumnDef expandingColumnDef) {
         int nRows = 0;
         for (Candidate candidate : candidates) {
-            nRows += publishedDocBuilderService.computeNumberOfRowsByCandidate(
-                candidate, expandingColumnDef);
+            //Load any expanding data
+            HasMultipleRows expandingData = null;
+            if (expandingColumnDef != null) {
+                expandingData = publishedDocBuilderService
+                    .loadExpandingData(candidate, expandingColumnDef);
+            }
+
+            //One row for the candidate
+            nRows += 1;
+            if (expandingData != null) {
+                //Plus extra rows for expanding data
+                nRows += expandingData.nRows();
+            }
         }
         return nRows;
     }
@@ -233,8 +255,12 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
         throws GeneralSecurityException, IOException {
 
+        //Fetch any expanding column
+        final PublishedDocColumnDef expandingColumnDef =
+            publishedDocBuilderService.findExpandingColumnDef(request.getColumns());
+
         //The number of data rows required plus 1 for the header
-        int nRowsData = computeNumberOfRows(candidates, request.findExpandingColumnDef()) + 1;
+        int nRowsData = computeNumberOfRows(candidates, expandingColumnDef) + 1;
 
         //Create copy of sheet from template
         GoogleFileSystemFile file = fileSystemService.copyFile(

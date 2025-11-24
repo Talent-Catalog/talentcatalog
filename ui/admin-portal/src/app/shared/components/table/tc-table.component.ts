@@ -14,6 +14,20 @@ import {SearchResults} from "../../../model/search-results";
  *
  * @selector tc-table
  *
+ *  **Inputs**
+ *  - `results: SearchResults<any> | any[]` — data source for the table
+ *  - `loading: boolean` — toggles loading state
+ *  - `name: string` — optional title displayed above the table**
+ *  - `striped: boolean` — enables Bootstrap striped table style**
+ *  - `hover: boolean` — enables hover styling on rows**
+ *  - `paginationPosition: 'top' | 'bottom'` — where pagination appears**
+ *  - `clickableRows: boolean` — toggles `.clickable-rows` class**
+ *  - `pageNumber: number` — current page (required for paged data)**
+ *
+ * **Outputs**
+ *  - `pageNumberChange: EventEmitter<number>` — enables two-way binding for `[(pageNumber)]`**
+ *  - `pageChange: EventEmitter<void>` — fired after pageNumber changes**
+ *
  * @example
  * ```html
  * <tc-table
@@ -49,6 +63,8 @@ export class TcTableComponent {
   @Input() hover: boolean = true;
   // Optional if pagination supported
   @Input() paginationPosition: 'top' | 'bottom' = 'bottom';
+  /** Pass false when rows are not intended to be clickable e.g. to display a summary card */
+  @Input() clickableRows: boolean = true;
 
   // Required inputs IF results are paged to support pagination
   @Input() pageNumber: number;
@@ -57,8 +73,9 @@ export class TcTableComponent {
 
   get classList() {
     return {
+      'clickable-rows': this.clickableRows,
       'table-striped': this.striped,
-      'table-hover': this.hover,
+      'table-hover': this.hover
     };
   }
 

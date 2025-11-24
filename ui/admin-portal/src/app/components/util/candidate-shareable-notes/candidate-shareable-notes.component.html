@@ -21,12 +21,12 @@
 
 <form [formGroup]="form">
 
-  <div class="mb-3 flex-fill" [appReadOnlyInputs]="!isEditable()">
+  <div class="mb-3 flex-fill">
 
     <tc-textarea id="shareableNotes"
-                 [disabled]="!editable"
                  [placeholder]="'Add general candidate notes, which may be shared with potential employers...'"
                  [formControlName]="'shareableNotes'"
+                 [disabled]="!editable"
     ></tc-textarea>
     <div class="d-flex align-items-center gap-2">
       <app-autosave-status [saving]="saving"

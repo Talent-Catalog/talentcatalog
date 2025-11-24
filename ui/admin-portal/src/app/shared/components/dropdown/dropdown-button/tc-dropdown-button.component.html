@@ -1,7 +1,8 @@
-<tc-button
-  [type]="type"
-  [color]="color"
-  [attr.aria-label]="ariaLabel"
-  [disabled]="disabled">
+<tc-button [type]="type"
+           [color]="color"
+           [attr.aria-label]="ariaLabel"
+           [disabled]="disabled"
+           [stopNativeClickPropagation]="false"
+>
   <ng-content></ng-content>
 </tc-button>

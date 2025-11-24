@@ -28,10 +28,17 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select class="tc-select" id="familyMove" [formControlName]="'familyMove'" (clear)="setNoResponse('familyMove')"
-               [items]="familyMoveOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-    <p class="small mb-0">Note: Explain what is possible with the visa pathway at hand if known, but also explain
+    <ng-select class="tc-select"
+               id="familyMove"
+               [formControlName]="'familyMove'"
+               (clear)="setNoResponse('familyMove')"
+               [items]="familyMoveOptions"
+               [clearOnBackspace]="false"
+               placeholder="Select"
+               bindLabel="stringValue"
+               bindValue="key"
+    ></ng-select>
+    <p class="small mb-0 text-muted">Note: Explain what is possible with the visa pathway at hand if known, but also explain
       that this will help us determine if other visa pathways are suitable should any opportunities arise.</p>
   </div>
   <div *ngIf="familyMove === 'Yes'" class="mb-3">

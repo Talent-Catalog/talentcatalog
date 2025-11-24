@@ -14,7 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal [heading]="title" (onAction)="save()" [disableAction]="form?.invalid || working">
+<tc-modal [heading]="title"
+          (onAction)="save()"
+          [disableAction]="form?.invalid || working"
+          [showClose]="true"
+>
   <tc-alert *ngIf="error">{{error}}</tc-alert>
   <form [formGroup]="form">
     <tc-fieldset>

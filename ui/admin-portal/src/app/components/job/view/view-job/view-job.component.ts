@@ -268,7 +268,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
       let mess = "At the minimum you need to supply a job summary, job description document " +
         "and job opportunity intake " +
         "before publishing a job. Otherwise our source colleagues won't have enough information to " +
-        "work with. Please consider providing more information than the absolute minimum " +
+        "work with.<br><br> Please consider providing more information than the absolute minimum " +
         "if you have it, as suggested in the preparation items. " +
         "The more information source has about the job, the better the results for employer and " +
         "candidates, and the less work for our source staff.";

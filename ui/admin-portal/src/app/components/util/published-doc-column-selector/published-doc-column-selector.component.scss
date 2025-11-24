@@ -56,3 +56,19 @@ label {
 .dropdown-toggle::after {
   display: none !important;
 }
+
+.scrollable-columns {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* smooth scrollbar look */
+.scrollable-columns::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-columns::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}

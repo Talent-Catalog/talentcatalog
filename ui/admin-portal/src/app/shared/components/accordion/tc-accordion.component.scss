@@ -3,6 +3,11 @@
   border-radius: 6px;
   overflow: hidden;
   background-color: #ffffff;
+
+  &.allow-overflow {
+    overflow: visible;
+  }
+
   .toggle-all-panels {
     display: flex;
     gap: 16px;

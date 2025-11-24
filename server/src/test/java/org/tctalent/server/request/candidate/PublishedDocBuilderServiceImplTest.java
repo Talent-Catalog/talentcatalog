@@ -18,6 +18,7 @@ package org.tctalent.server.request.candidate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateProperty;
+import org.tctalent.server.model.db.CandidatePropertyType;
+import org.tctalent.server.model.db.HasMultipleRows;
 import org.tctalent.server.model.db.User;
 
 class PublishedDocBuilderServiceImplTest {
@@ -88,8 +91,10 @@ class PublishedDocBuilderServiceImplTest {
         new PublishedDocConstantSource("cv"),
         new PublishedDocFieldSource("shareableCv.location"));
 
-    infoDependants = addColumn("dependants", "Dependants",
-        new PublishedDocPropertySource("dependants"));
+    final PublishedDocPropertySource dependantsSource =
+        new PublishedDocPropertySource("dependants");
+    dependantsSource.setPropertyType(CandidatePropertyType.JSON);
+    infoDependants = addColumn("dependants", "Dependants", dependantsSource);
 
     ObjectMapper mapper = new ObjectMapper();
     builder = new PublishedDocBuilderServiceImpl(null, mapper);
@@ -127,31 +132,34 @@ class PublishedDocBuilderServiceImplTest {
 
   @Test
   void buildRowWithExpandingColumn() {
-    List<Object> row = builder.buildRow(candidate, infoDependants, 0, columnInfos);
+
+    HasMultipleRows expandingData = builder.loadExpandingData(candidate, infoDependants);
+
+    List<Object> row = builder.buildRow(candidate, expandingData, 0, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     //Test that infoDependents unexpanded value is not shown
     assertEquals("...", row.get(5));
 
-    row = builder.buildRow(candidate, infoDependants, 1, columnInfos);
+    row = builder.buildRow(candidate, expandingData, 1, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     assertEquals("", row.get(1));
     assertEquals("John", row.get(2));
     assertEquals("john@gmail.com", row.get(3));
 
-    row = builder.buildRow(candidate, infoDependants, 2, columnInfos);
+    row = builder.buildRow(candidate, expandingData, 2, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     assertEquals("87654", row.get(1));
     assertEquals("Jane", row.get(2));
     assertEquals("jane@gmail.com", row.get(3));
 
-    row = builder.buildRow(candidate, infoDependants, 3, columnInfos);
+    row = builder.buildRow(candidate, expandingData, 3, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     assertEquals("", row.get(1));
     assertEquals("Jill", row.get(2));
     assertEquals("jill@gmail.com", row.get(3));
 
     //Getting non existing count returns empty string
-    row = builder.buildRow(candidate, infoDependants, 4, columnInfos);
+    row = builder.buildRow(candidate, expandingData, 4, columnInfos);
     assertEquals(columnInfos.size(), row.size());
     assertEquals("", row.get(1));
     assertEquals("", row.get(2));
@@ -164,9 +172,12 @@ class PublishedDocBuilderServiceImplTest {
   }
 
   @Test
-  void computeNumberOfRowsByCandidate() {
-    assertEquals(1, builder.computeNumberOfRowsByCandidate(candidate, null));
-    assertEquals(4, builder.computeNumberOfRowsByCandidate(candidate, infoDependants));
+  void loadExpandingDataByCandidate() {
+    assertNull(builder.loadExpandingData(candidate, null));
+
+    HasMultipleRows expandingData = builder.loadExpandingData(candidate, infoDependants);
+    assertNotNull(expandingData);
+    assertEquals(3, expandingData.nRows());
   }
 
   private PublishedDocColumnDef addColumn(String key, String header,

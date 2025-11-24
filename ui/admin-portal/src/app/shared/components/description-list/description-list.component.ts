@@ -9,6 +9,7 @@ import {Component, Input} from '@angular/core';
  * A reusable wrapper for semantic HTML `<dl>` elements, providing a consistent layout
  * for pairs of terms (`<dt>`) and details (`<dd>`).
  * Works as the parent container for the `tc-description-item` components.
+ * Automatically applies `.grid-row`, `.grid-column`, and optional `.compact` classes based on inputs to control layout and spacing.
  *
  * **Inputs**
  *  - `direction: 'row' | 'column'` — Layout direction of the list:

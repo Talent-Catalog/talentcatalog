@@ -29,8 +29,13 @@ export interface Tab {
  * - Contains the tabs
  * - Outputs event on tab change
  * - Sets with the active tab
+ * - Supports a `defaultTabId` to choose the initial tab when no active tab is provided**
  *
  * @selector tc-tabs
+ *
+ * **Inputs**
+ * - `activeTabId?: string` — The tab to activate initially or programmatically.
+ * - `defaultTabId?: string` — Fallback tab to activate when no activeTabId is provided.**
  *
  * @example
  * ```html
