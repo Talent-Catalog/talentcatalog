@@ -50,12 +50,15 @@ import org.tctalent.server.service.db.ExportColumnsService;
  * @author John Cameron
  */
 @MappedSuperclass
-public abstract class AbstractCandidateSource extends AbstractAuditableDomainObject<Long> {
+public abstract class AbstractCandidateSource extends AbstractAuditableDomainObject<Long>
+    implements HasPublicId {
 
     /**
      * The name given to the candidate source
      */
     private String name;
+
+    private String publicId;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -84,14 +87,14 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * The code allows for two different ways of displaying candidates of
      * a candidate source - a "long" one, and a more compact "short" one.
      */
-    @Convert(converter = DelimitedStringsConverter.class)
+    @Convert(converter = CommaDelimitedStringsConverter.class)
     @Nullable
     private List<String> displayedFieldsLong;
 
     /**
      * @see #displayedFieldsLong
      */
-    @Convert(converter = DelimitedStringsConverter.class)
+    @Convert(converter = CommaDelimitedStringsConverter.class)
     @Nullable
     private List<String> displayedFieldsShort;
 
@@ -134,7 +137,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * SavedList or SavedSearch implementations have slightly different ways of storing
      * export columns on the database - so the actual database mapping has to be done in those
      * subclasses.
-     * @return Set of columns. Note that the ordering is defined by the
+     * @return List of columns. Note that the ordering is defined by the
      * {@link ExportColumn#getIndex()} attribute in each ExportColumn.
      */
     @Nullable
@@ -213,6 +216,16 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         }
     }
 
+    @Override
+    public String getPublicId() {
+        return publicId;
+    }
+
+    @Override
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
+    }
+
     @Nullable
     public SalesforceJobOpp getSfJobOpp() {
         return sfJobOpp;
@@ -243,7 +256,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     /**
      * Extracts List of watching user ids from watcherIds String/
-     * @return List of user ids. Empty List if no watchers.
+     * @return Set of user ids. Empty List if no watchers.
      */
     @NotNull
     public Set<Long> getWatcherUserIds() {

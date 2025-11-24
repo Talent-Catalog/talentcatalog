@@ -14,37 +14,14 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Edit External Link</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
-
+<tc-modal heading="Edit External Link" (onAction)="onSave()" [disableAction]="form.invalid || saving">
+  <tc-alert *ngIf="error">{{error}}</tc-alert>
   <form [formGroup]="form">
     <div class="row mb-3">
-      <div class="col-form-label col-6 form-text">
-        <span class="small text-muted">{{publishUrl}}/</span>
-      </div>
+      <span class="col-form-label col-6 form-text">{{publishUrl}}/</span>
       <div class="col-6">
-        <input class="form-control" id="link" [formControlName]="'tbbShortName'">
+        <tc-input id="link" [formControlName]="'tcShortName'"></tc-input>
       </div>
     </div>
   </form>
-
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="onSave()"
-          [disabled]="form.invalid || saving">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    Save
-  </button>
-</div>
+</tc-modal>

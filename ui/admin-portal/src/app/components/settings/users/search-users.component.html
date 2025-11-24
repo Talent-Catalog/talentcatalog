@@ -14,55 +14,44 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div>
-  <div class="section">
-    <div class="float-end">
-      <div class="float-end">
-        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addUser()">Add</button>
-      </div>
+<tc-alert *ngIf="error" type="warning">
+  {{error}}
+</tc-alert>
+<form [formGroup]="searchForm" (ngSubmit)="search()">
+  <div class="row mb-3">
+    <div class="col-4">
+      <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                id="keyword"></tc-input>
     </div>
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
+
+    <div class="col-4">
+      <ng-select id="status" class="tc-select"
+                 [formControlName]="'status'"
+                 [clearable]="false"
+                 placeholder="Select">
+        <ng-option value="active">Active</ng-option>
+        <ng-option value="inactive">Inactive</ng-option>
+      </ng-select>
     </div>
-    <form [formGroup]="searchForm" (ngSubmit)="search()">
 
-      <div class="row">
-
-        <div class="mb-3 col-4">
-          <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
-                 id="keyword">
-        </div>
-
-        <div class="mb-3 col-4">
-          <ng-select id="status" [formControlName]="'status'" [clearable]="false" placeholder="Select">
-            <ng-option value="active">Active</ng-option>
-            <ng-option value="inactive">Inactive</ng-option>
-          </ng-select>
-        </div>
-
-      </div>
-    </form>
+    <div class="col-4 text-end">
+      <tc-button *ngIf="isAnAdmin() && !loggedInUser.readOnly"
+                 type="solid" color="primary" (onClick)="addUser()">
+        Add
+      </tc-button>
+    </div>
   </div>
+</form>
 
-  <div class="text-muted mb-2 align-middle">
+<tc-table [paginationPosition]="'top'"
+          [loading]="loading"
+          [results]="results"
+          [(pageNumber)]="pageNumber"
+          (pageChange)="search()"
+          [clickableRows]="false"
+>
 
-    <ngb-pagination class="float-end"
-                    [boundaryLinks]="true"
-                    [pageSize]="pageSize"
-                    [collectionSize]="results?.totalElements"
-                    [(page)]="pageNumber"
-                    [maxSize]="5"
-                    [ellipses]="true"
-                    [rotate]="true"
-                    (pageChange)="search()">
-    </ngb-pagination>
-
-    Found {{results?.totalElements}} users
-  </div>
-
-  <table class="table align-middle">
-
-    <thead class="table-primary">
+  <thead>
     <tr>
       <th></th>
       <th>#</th>
@@ -77,25 +66,28 @@
       <th>Purpose</th>
       <th>Read Only?</th>
       <th>Status</th>
+      <th>Email Verified</th>
     </tr>
-    </thead>
+  </thead>
 
-    <tbody>
+  <tbody>
     <tr *ngFor="let user of results?.content">
       <td>
-        <div *ngIf="!loggedInUser.readOnly && canEdit(user)" ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
-          <button class="btn btn-xs hide-after" ngbDropdownToggle>
-            <i class="fas fa-ellipsis-h"></i>
-          </button>
-          <ul ngbDropdownMenu>
-            <li ngbDropdownItem (click)="editUser(user)">Edit User</li>
-            <li ngbDropdownItem (click)="deleteUser(user)">Delete User</li>
-            <li class="dropdown-divider"></li>
-            <li ngbDropdownItem (click)="updatePassword(user)">Change Password</li>
-            <li class="dropdown-divider"></li>
-            <li ngbDropdownItem (click)="resetAuthentication(user)">Reset Authentication</li>
-          </ul>
-        </div>
+
+          <tc-dropdown *ngIf="!loggedInUser.readOnly && canEdit(user)" placement="bottom-start">
+            <tc-dropdown-button [type]="'plain'"
+                                [ariaLabel]="'Open actions menu for candidate'">
+              <i class="fas fa-ellipsis-h"></i>
+            </tc-dropdown-button>
+            <tc-dropdown-menu>
+              <tc-dropdown-item (itemSelect)="editUser(user)">Edit User</tc-dropdown-item>
+              <tc-dropdown-item (itemSelect)="deleteUser(user)">Delete User</tc-dropdown-item>
+              <tc-dropdown-divider></tc-dropdown-divider>
+              <tc-dropdown-item (itemSelect)="updatePassword(user)">Change Password</tc-dropdown-item>
+              <tc-dropdown-divider></tc-dropdown-divider>
+              <tc-dropdown-item (itemSelect)="resetAuthentication(user)">Reset Authentication</tc-dropdown-item>
+            </tc-dropdown-menu>
+          </tc-dropdown>
       </td>
       <td> {{user.id}}</td>
       <td> {{user.username}}</td>
@@ -111,25 +103,9 @@
       <td>{{user.purpose}}</td>
       <td>{{user.readOnly}}</td>
       <td>{{user.status}}</td>
+      <td>{{user.emailVerified}}</td>
     </tr>
 
-    <!-- loading -->
-    <tr *ngIf="loading">
-      <td colspan="42">
-        <i class="fas fa-spinner fa-spin"></i> Loading...
-      </td>
-    </tr>
+  </tbody>
 
-    <!-- no results -->
-    <tr *ngIf="!loading && !results?.totalElements">
-      <td colspan="42">
-        <span class="text-muted">(no matching users)</span>
-      </td>
-    </tr>
-
-    </tbody>
-
-  </table>
-
-</div>
-
+</tc-table>

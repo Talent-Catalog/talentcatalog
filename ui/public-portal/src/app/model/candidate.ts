@@ -28,6 +28,7 @@ export interface Candidate {
   id: number;
   user: User;
   candidateNumber: string;
+  publicId: string;
   phone: string;
   whatsapp: string;
   gender: string;
@@ -129,6 +130,7 @@ export enum CandidateStatus {
   incomplete = "incomplete",
   ineligible = "ineligible (inactive)",
   pending = "pending",
+  relocatedIndependently = "relocated independently (inactive)",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
 }

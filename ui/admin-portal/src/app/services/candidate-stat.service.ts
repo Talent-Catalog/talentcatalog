@@ -19,13 +19,14 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {StatReport} from "../model/stat-report";
+import {Stat} from "../model/stat";
 
 export interface CandidateStatsRequest {
-  runOldStats?: boolean;
   listId?: number;
   searchId?: number;
   dateFrom?: string;
   dateTo?: string;
+  selectedStats?: Stat[];
 }
 
 @Injectable({providedIn: 'root'})

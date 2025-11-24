@@ -83,6 +83,7 @@ export class SavedSearchService {
       {savedSearchSubtype: SavedSearchSubtype.ca, title: 'Canada'},
       {savedSearchSubtype: SavedSearchSubtype.uk, title: 'UK'},
     ];
+    // todo I dont think we search by roles and other anymore - think this is zombie code that can be simplied.
     this.savedSearchTypeInfos[SavedSearchType.profession] =
       {savedSearchType: SavedSearchType.profession,
         title: 'Occupations',

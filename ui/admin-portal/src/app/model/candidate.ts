@@ -38,6 +38,7 @@ import {CandidateLanguage} from "./candidate-language";
 import {CandidateOccupation} from "./candidate-occupation";
 import {CandidateSkill} from "./candidate-skill";
 import {CandidateNote} from "./candidate-note";
+import {Partner} from "./partner";
 
 export interface ShortCandidate {
   id: number;
@@ -47,8 +48,12 @@ export interface ShortCandidate {
 
 export interface Candidate extends HasId {
   id: number;
+  rank?: number;
+  pendingTerms?: boolean;
   candidateNumber: string;
+  publicId?: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -72,6 +77,7 @@ export interface Candidate extends HasId {
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
   linkedInLink: string;
+  muted: boolean;
   candidateMessage: string;
   maxEducationLevel: EducationLevel;
   folderlink: string;
@@ -101,6 +107,7 @@ export interface Candidate extends HasId {
   ieltsScore: string;
   numberDependants: number;
   englishAssessmentScoreIelts?: string;
+  englishAssessmentScoreDet?: number;
   frenchAssessmentScoreNclc?: number;
   candidateExams: CandidateExam[];
   candidateAttachments?: CandidateAttachment[];
@@ -123,6 +130,16 @@ export interface Candidate extends HasId {
   candidateSkills?: CandidateSkill[];
   candidateNotes?: CandidateNote[];
 
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
+
+  // privacy policy info
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: Partner;
 }
 
 export interface CandidateProperty {
@@ -184,6 +201,7 @@ export interface CandidateIntakeData {
 
   englishAssessment?: string;
   englishAssessmentScoreIelts?: string;
+  englishAssessmentScoreDet?: number;
 
   frenchAssessment?: string;
   frenchAssessmentScoreNclc?: number;
@@ -218,7 +236,6 @@ export interface CandidateIntakeData {
   militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   maritalStatusNotes?: string;
-  monitoringEvaluationConsent?: YesNo;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
@@ -401,6 +418,7 @@ export enum CandidateStatus {
   incomplete = "incomplete",
   ineligible = "ineligible (inactive)",
   pending = "pending",
+  relocatedIndependently = "relocated independently (inactive)",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
 }
@@ -446,6 +464,10 @@ export interface UpdateCandidateListOppsRequest {
   candidateOppParams?: CandidateOpportunityParams;
 }
 
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
+}
+
 export interface UpdateCandidateShareableNotesRequest {
   shareableNotes?: string;
 }
@@ -465,6 +487,10 @@ export interface UpdateCandidateStatusInfo {
 export interface UpdateCandidateStatusRequest {
   candidateIds: number[];
   info: UpdateCandidateStatusInfo;
+}
+
+export interface UpdateCandidateMutedRequest {
+  muted: boolean;
 }
 
 export enum FamilyRelations {
@@ -592,6 +618,7 @@ export enum Exam {
   IELTSGen = "IELTS General",
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
+  DETOfficial = "DETOfficial",
   Other = "Other"
 }
 

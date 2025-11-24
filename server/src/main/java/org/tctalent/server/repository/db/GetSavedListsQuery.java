@@ -18,6 +18,8 @@ package org.tctalent.server.repository.db;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.HashSet;
@@ -29,6 +31,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 
 /**
@@ -49,6 +52,9 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         }
 
         query.distinct(true);
+
+        // Default join is INNER so specify LEFT as we want to show lists without sfJobOpps also
+        Join<Object, Object> jobOpp = savedList.join("sfJobOpp", JoinType.LEFT);
 
         //Start with empty conjunction Predicate (which defaults to true)
         //We are going to build on this using cb.and and cb.or
@@ -78,28 +84,27 @@ public class GetSavedListsQuery implements Specification<SavedList> {
             conjunction = cb.and(conjunction, cb.equal(savedList.get("registeredJob"), true));
         }
 
-        //If sfOppIsClosed is specified, and sfJobOpp is not null, only supply saved list with
-        // matching job closed.
+        // If sfOppIsClosed is specified, only supply saved lists with job closed status matching the request
+        // and also want to show saved lists without job opps
         if (request.getSfOppClosed() != null) {
-            //Closed condition is only meaningful if sfJobOpp is present
-            conjunction = cb.and(conjunction, cb.isNotNull(savedList.get("sfJobOpp")));
-            conjunction = cb.and(conjunction, cb.equal(savedList.get("sfOppIsClosed"), request.getSfOppClosed()));
+            // Return lists without job opps as well as lists with job opps that match the closed status of the request
+            conjunction = cb.and(conjunction, cb.or(cb.isNull(savedList.get("sfJobOpp")), cb.equal(jobOpp.get("closed"), request.getSfOppClosed())));
         }
 
         //If short name is specified, only supply matching saved lists. If false, remove
         if (request.getShortName() != null) {
             if (request.getShortName()) {
                 conjunction = cb.and(conjunction,
-                    cb.isNotNull(savedList.get("tbbShortName"))
+                    cb.isNotNull(savedList.get("tcShortName"))
                 );
             } else {
                 conjunction = cb.and(conjunction,
-                    cb.isNull(savedList.get("tbbShortName"))
+                    cb.isNull(savedList.get("tcShortName"))
                 );
             }
         }
 
-        // (shared OR owned OR global)
+        // (shared OR owned OR global OR owned by partner)
         Predicate disjunction = cb.disjunction();
         if (request.getGlobal() != null && request.getGlobal()) {
             disjunction = cb.or(disjunction,
@@ -116,7 +121,17 @@ public class GetSavedListsQuery implements Specification<SavedList> {
                     sharedIDs.add(sharedList.getId());
                 }
                 disjunction = cb.or(disjunction,
-                        savedList.get("id").in( sharedIDs )
+                        savedList.get("id").in(sharedIDs)
+                );
+            }
+        }
+        //If saved list's job is owned by this user's partner
+        if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+            if (loggedInUser != null) {
+                Partner loggedInUserPartner = loggedInUser.getPartner();
+                // For reference: the default join type for a join is INNER
+                disjunction = cb.or(disjunction,
+                        cb.equal(jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
                 );
             }
         }

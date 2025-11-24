@@ -50,7 +50,6 @@ describe('CandidateStatService', () => {
       ];
 
       const requestPayload: CandidateStatsRequest = {
-        runOldStats: true,
         listId: 123,
         searchId: 456,
         dateFrom: '2021-01-01',
@@ -71,7 +70,6 @@ describe('CandidateStatService', () => {
 
     it('should handle empty response correctly', () => {
       const requestPayload: CandidateStatsRequest = {
-        runOldStats: true,
         listId: 123,
         searchId: 456,
         dateFrom: '2021-01-01',

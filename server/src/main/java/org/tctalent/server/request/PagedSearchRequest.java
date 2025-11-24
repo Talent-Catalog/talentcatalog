@@ -24,7 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.DtoType;
+import org.tctalent.server.api.dto.DtoType;
 
 /**
  * Request that may include paging and sorting fields.
@@ -43,6 +43,10 @@ public class PagedSearchRequest {
     private Integer pageSize;
     private Integer pageNumber;
     private Sort.Direction sortDirection;
+
+    /**
+     * Note that the TC only supports a single sort field even though this is an array.
+     */
     private String[] sortFields;
 
     public PagedSearchRequest(Sort.Direction sortDirection, String[] sortFields) {

@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {Candidate, CandidateStatus} from "../../../model/candidate";
+import {Candidate, CandidateStatus, isMuted} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
@@ -23,6 +23,11 @@ import {ChatPost, JobChat, JobChatType, JobChatUserInfo} from "../../../model/ch
 import {forkJoin, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {Location} from "@angular/common";
+import {ActivatedRoute} from "@angular/router";
+import {Status} from '../../../model/base';
+import {TaskAssignment, taskAssignmentSort} from "../../../model/task-assignment";
+import {CandidateOpportunity, CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-view-candidate',
@@ -32,9 +37,11 @@ import {LocalStorageService} from "../../../services/local-storage.service";
 export class ViewCandidateComponent implements OnInit {
 
   private lastTabKey: string = 'CandidateLastTab';
+  private defaultTabId: string = 'Profile';
   activeTabId: string;
   chatsForAllJobs: JobChat[];
   sourceChat: JobChat;
+  filteredOpps: CandidateOpportunity[];
 
   //Candidate only sees source chat if is not empty. That way they can't start posting themselves
   //until someone else has posted in the chat.
@@ -47,14 +54,22 @@ export class ViewCandidateComponent implements OnInit {
   loading: boolean;
   candidate: Candidate;
   usAfghan: boolean;
+  activeDuolingoTask: TaskAssignment;
 
   constructor(private candidateService: CandidateService,
               private chatService: ChatService,
-              private localStorageService: LocalStorageService) { }
+              private localStorageService: LocalStorageService,
+              private location: Location,
+              private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.fetchCandidate();
-    this.selectDefaultTab();
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      // If there is a tab param, set that as the active tab
+      // If there is no tab param, check the browser cache for the last active tab or if none get the default tab.
+      tab ? this.setActiveTabId(tab) : this.fetchCachedTab();
+    });
   }
 
   /**
@@ -70,11 +85,31 @@ export class ViewCandidateComponent implements OnInit {
     return canSee;
   }
 
+  /**
+   * Only candidates who have filtered opps can see the jobs tab
+   */
+  get canSeeJobTab(): boolean {
+    return this.filteredOpps?.length > 0;
+  }
+
+  /**
+   * Filter out prospect opportunities and closed due to "candidateMistakenProspect" stage
+   */
+  filterOppsToDisplay() {
+    this.filteredOpps = [];
+    if (this.candidate?.candidateOpportunities.length > 0) {
+      this.filteredOpps = this.candidate.candidateOpportunities.filter(
+        opp => CandidateOpportunityStage[opp.stage] != CandidateOpportunityStage.prospect &&
+          CandidateOpportunityStage[opp.stage] != CandidateOpportunityStage.candidateMistakenProspect)
+    }
+  }
+
   fetchCandidate() {
     this.candidateService.getProfile().subscribe(
       (candidate) => {
         this.setCandidate(candidate);
-        this.candidate = candidate;
+        this.activeDuolingoTask = this.getActiveDuolingoTask();
+        this.filterOppsToDisplay();
         this.usAfghan = candidate.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
         this.loading = false;
       },
@@ -84,18 +119,29 @@ export class ViewCandidateComponent implements OnInit {
       });
   }
 
-  private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+  private fetchCachedTab() {
+    const cachedActiveTabID: string = this.localStorageService.get(this.lastTabKey);
+    // If there isn't a cached active tab, set it to the defaultTabId
+    this.activeTabId = cachedActiveTabID != null ? cachedActiveTabID : this.defaultTabId;
+    this.setTabParam(this.activeTabId)
   }
 
   onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
+    this.setTabParam(event.nextId);
   }
 
   private setActiveTabId(id: string) {
     this.activeTabId = id;
     this.localStorageService.set(this.lastTabKey, id);
+  }
+
+  // Update the URL to include the tab param and the current active tab
+  setTabParam(activeTab: string) {
+    const currentUrl = this.location.path();
+    const baseUrl = currentUrl.split('?')[0];
+    const updatedUrl = `${baseUrl}?tab=${activeTab}`;
+    this.location.replaceState(updatedUrl);
   }
 
   private setCandidate(candidate: Candidate) {
@@ -104,12 +150,23 @@ export class ViewCandidateComponent implements OnInit {
     this.fetchAllOpportunityChats();
   }
 
+  private getActiveDuolingoTask(): TaskAssignment | null {
+    const task = this.candidate?.taskAssignments.find(t =>
+      (t.task.name === 'claimCouponButton' || t.task.name === 'duolingoTest'));
+    return task || null;
+  }
+
+
   private getCandidateProspectChat() {
     this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
       if (result) {
         this.setSourceChat(result);
       }
     })
+  }
+
+  isCandidateMuted() {
+    return isMuted(this.candidate);
   }
 
   private setSourceChat(chat:JobChat) {
@@ -197,4 +254,5 @@ export class ViewCandidateComponent implements OnInit {
   onMarkChatAsRead() {
     this.chatService.markChatAsRead(this.sourceChat);
   }
+
 }

@@ -14,15 +14,16 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav class="navbar navbar-expand-md navbar-dark fixed-top">
+<nav class="tc-navbar navbar navbar-expand-md fixed-top">
   <div class="container-fluid">
 
     <!-- LOGO -->
     <a class="navbar-brand" [href]="websiteUrl" target="_blank">
-      <img id="logo" *ngIf="logo && !isStagingEnv() && !isLocalEnv()" class="logo" [src]="logo" alt="Logo">
-      <div *ngIf="isStagingEnv()" class="px-3">PREVIEW</div>
-      <div *ngIf="isLocalEnv()" class="px-3">LOCAL</div>
+      <img id="logo" *ngIf="logo" class="logo" [src]="logo" alt="Logo">
+<!--      <div *ngIf="isStagingEnv()" class="px-3">PREVIEW</div>-->
+<!--      <div *ngIf="isLocalEnv()" class="px-3">LOCAL</div>-->
     </a>
+    <div class="navbar-divider"></div>
 
     <button class="navbar-toggler hidden-sm-up" type="button"
             (click)="isNavbarCollapsed = !isNavbarCollapsed"
@@ -31,72 +32,103 @@
     </button>
 
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
-      <ul class="nav nav-pills me-auto">
-        <li class="nav-item" >
-          <a title="Jobs available to Talent Catalog candidates"
-             class="nav-link" [routerLink]="'/jobs'" [routerLinkActive]="'active'">Jobs</a>
-        </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
-          <a title="Searches of Talent Catalog candidates"
-             class="nav-link" [routerLink]="'/searches'" [routerLinkActive]="'active'">Searches</a>
-        </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
-          <a title="Lists of Talent Catalog candidates"
-             class="nav-link" [routerLink]="'/lists'" [routerLinkActive]="'active'">Lists</a>
-        </li>
-        <li class="nav-item" [routerLinkActive]="'active'" *ngIf="!isEmployerPartner()">
-          <a title="Statistics about the Talent Catalog"
-             class="nav-link" [routerLink]="'/infographics'" [routerLinkActive]="'active'">Stats</a>
+      <div class="nav-items">
+        <ul class="nav nav-pills flex-column flex-md-row">
+          <li class="nav-item" >
+            <a title="Jobs available to Talent Catalog candidates"
+               class="nav-link" [routerLink]="'/jobs'" [routerLinkActive]="'active'">Jobs</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="'active'">
+            <a title="Searches of Talent Catalog candidates"
+               class="nav-link" [routerLink]="'/searches'" [routerLinkActive]="'active'">Searches</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="'active'">
+            <a title="Lists of Talent Catalog candidates"
+               class="nav-link" [routerLink]="'/lists'" [routerLinkActive]="'active'">Lists</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="'active'" *ngIf="!isEmployerPartner()">
+            <a title="Statistics about the Talent Catalog"
+               class="nav-link" [routerLink]="'/infographics'" [routerLinkActive]="'active'">
+              Stats
+            </a>
+          </li>
+          <li class="nav-item"
+              [routerLinkActive]="'active'"
+              *ngIf="canViewCandidateName() && !isEmployerPartner()">
+            <a title="Talent Catalog data exploration and visualisation"
+               class="nav-link"
+               [routerLink]="'/intelligence'"
+               [routerLinkActive]="'active'">
+              Intelligence
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-inputs">
+        <div *ngIf="canViewCandidateName() && !isEmployerPartner()">
+          <input id="quickExternalIdSearch"
+                 type="text" class="form-control" #input
+                 [ngbTypeahead]="doExternalIdSearch"
+                 [resultTemplate]="rt"
+                 [inputFormatter]="renderCandidateRow"
+                 [editable]="false"
+                 (selectItem)="selectSearchResult($event, input)"
+                 placeholder="External ID..."/>
+          <ng-template #rt let-r="result">
+            <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
+          </ng-template>
+        </div>
+
+        <div *ngIf="canViewCandidateName() && !isEmployerPartner()">
+          <input id="quickEmailPhoneOrWhatsappSearch"
+                 type="text" class="form-control" #input
+                 [ngbTypeahead]="doEmailPhoneOrWhatsappSearch"
+                 [resultTemplate]="rt"
+                 [inputFormatter]="renderCandidateRow"
+                 [editable]="false"
+                 (selectItem)="selectSearchResult($event, input)"
+                 placeholder="Email/phone/whatsapp..."/>
+          <ng-template #rt let-r="result">
+            <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
+          </ng-template>
+        </div>
+
+        <!-- New Public ID Search -->
+        <div *ngIf="canViewCandidateName() && !isEmployerPartner()">
+          <input id="quickPublicIdSearch"
+                 type="text" class="form-control" #input
+                 [ngbTypeahead]="doPublicIdSearch"
+                 [resultTemplate]="rt"
+                 [inputFormatter]="renderCandidateRow"
+                 [editable]="false"
+                 (selectItem)="selectSearchResult($event, input)"
+                 placeholder="Public ID..."/>
+          <ng-template #rt let-r="result">
+            <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
+          </ng-template>
+        </div>
+
+        <div *ngIf="!isEmployerPartner()">
+          <app-candidate-name-num-search></app-candidate-name-num-search>
+        </div>
+      </div>
+      <ul class="navbar-nav">
+        <li ngbDropdown class="nav-item">
+          <a href (click)="false" class="nav-link" ngbDropdownToggle>
+            <i class="fas fa-user fa-lg" [title]="loggedInUserInfo()"></i>
+          </a>
+          <div ngbDropdownMenu class="dropdown-menu-end">
+            <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
+            <div class="dropdown-divider"></div>
+            <div *ngIf="isAnAdmin()">
+              <a ngbDropdownItem [routerLink]="'/settings'">Settings</a>
+              <div class="dropdown-divider"></div>
+            </div>
+            <button ngbDropdownItem (click)="logout()">Logout</button>
+          </div>
         </li>
       </ul>
-
-      <div class="me-3" *ngIf="canViewCandidateName()">
-        <input id="quickExternalIdSearch"
-               type="text" class="form-control" #input
-               [ngbTypeahead]="doExternalIdSearch"
-               [resultTemplate]="rt"
-               [inputFormatter]="renderCandidateRow"
-               [editable]="false"
-               (selectItem)="selectSearchResult($event, input)"
-               placeholder="External ID..."/>
-        <ng-template #rt let-r="result">
-          <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
-        </ng-template>
-      </div>
-
-      <div class="me-3" *ngIf="canViewCandidateName()">
-        <input id="quickEmailOrPhoneSearch"
-               type="text" class="form-control" #input
-               [ngbTypeahead]="doEmailOrPhoneSearch"
-               [resultTemplate]="rt"
-               [inputFormatter]="renderCandidateRow"
-               [editable]="false"
-               (selectItem)="selectSearchResult($event, input)"
-               placeholder="Email or phone..."/>
-        <ng-template #rt let-r="result">
-          <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
-        </ng-template>
-      </div>
-
-      <div class="me-3">
-        <app-candidate-name-num-search></app-candidate-name-num-search>
-      </div>
     </div>
-    <ul class="navbar-nav">
-      <li ngbDropdown class="nav-item">
-        <a href (click)="false" class="nav-link" ngbDropdownToggle>
-          <i class="fas fa-user" [title]="loggedInUserInfo()"></i>
-        </a>
-        <div ngbDropdownMenu class="dropdown-menu-end">
-          <div ngbDropdownItem disabled>{{loggedInUserInfo()}}</div>
-          <div class="dropdown-divider"></div>
-          <div *ngIf="isAnAdmin()">
-            <a ngbDropdownItem [routerLink]="'/settings'">Settings</a>
-            <div class="dropdown-divider"></div>
-          </div>
-          <button ngbDropdownItem (click)="logout()">Logout</button>
-        </div>
-      </li>
-    </ul>
   </div>
 </nav>

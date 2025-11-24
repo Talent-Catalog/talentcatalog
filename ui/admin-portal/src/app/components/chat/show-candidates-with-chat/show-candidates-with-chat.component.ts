@@ -14,23 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  ElementRef,
-  EventEmitter, Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
 import {ChatService} from "../../../services/chat.service";
-import {BehaviorSubject, forkJoin, Observable, Subscription} from "rxjs";
+import {BehaviorSubject, forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 /**
  * Simple candidate view with support for showing read/unread status of their chats with source.
@@ -48,7 +42,9 @@ import {JobChat, JobChatUserInfo} from "../../../model/chat";
   templateUrl: './show-candidates-with-chat.component.html',
   styleUrls: ['./show-candidates-with-chat.component.scss']
 })
-export class ShowCandidatesWithChatComponent implements OnInit {
+export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
+  // Using takeUntil(destroy$) ensures all form-related streams terminate when the component is destroyed, allowing the instance to be garbage-collected and stopping further logs.
+  private destroy$ = new Subject<void>();
 
   @Output() candidateSelection = new EventEmitter<Candidate>();
 
@@ -62,7 +58,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
-  @ViewChild("searchFilter") searchFilter: ElementRef;
+  @ViewChild("searchFilter", {static: false}) searchFilter: InputComponent;
 
   error: any;
   loading: boolean;
@@ -89,9 +85,9 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   protected allChats: JobChat[] = [];
 
   /**
-   * Map of candidate id to chat
+   * Map of candidate id to array of chat(s)
    */
-  protected candidateChats: Map<number, JobChat> = new Map<number, JobChat>();
+  protected candidateChats: Map<number, JobChat[]> = new Map<number, JobChat[]>();
 
   /**
    * Subscription to all visible candidate chats
@@ -128,7 +124,8 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     this.searchForm.valueChanges
     .pipe(
       debounceTime(1000),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
     )
     .subscribe(() => {
       this.fetchCandidatesWithActiveChat(true);
@@ -176,8 +173,9 @@ export class ShowCandidatesWithChatComponent implements OnInit {
       this.results = results;
       this.candidates = results.content;
 
-    //Following the search, filter loses focus, so focus back on it again
-    setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
+    // todo fix this focus feature using the new tc-input component, currently throws angular error
+    // //Following the search, filter loses focus, so focus back on it again
+    // setTimeout(()=>{this.searchFilter?.focus()},0);
 
     this.fetchChats();
   }
@@ -212,15 +210,27 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   }
 
   public getCandidateChat(candidate: Candidate): JobChat[] {
-    return candidate ? [this.candidateChats.get(candidate.id)] : null;
+    return candidate ? this.candidateChats.get(candidate.id) : null;
   }
 
   /**
-   * Stores each candidate chat in this.candidateChats, indexed by the candidate id.
-   * This can be accessed by {@link getCandidateChat}.
-   * <p/>
-   * It also puts chats for all candidates into this.allChats.
-   * @param chatByCandidate chat for each candidate
+   * Initialises the `candidateChats` map with one array of chat(s) per candidate, keyed by
+   * candidate ID.
+   *
+   * Currently this component only handles Candidate Prospect chats, of which there will only ever
+   * be one per candidate.
+   *
+   * The array wrapper is required by the read-status component, so that it can handle multiple
+   * chats when required.
+   *
+   * Arrays are created eagerly (instead of lazily on lookup) so their references remain stable.
+   * This allows downstream consumers to compare array identity and avoid unnecessary actions.
+   *
+   * The map is accessed by {@link getCandidateChat}.
+   *
+   * In addition, this method populates {@link allChats} with every chat across all candidates.
+   *
+   * @param chatByCandidate the list of chats, aligned by index with {@link candidates}
    */
   protected processCandidateChats(chatByCandidate: JobChat[]) {
     //Recalculate all chats for new candidates
@@ -228,7 +238,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     for (let i = 0; i < this.candidates.length; i++) {
       const candidate = this.candidates[i];
       let chat = chatByCandidate[i];
-      this.candidateChats.set(candidate.id, chat);
+      this.candidateChats.set(candidate.id, [chat]);
       this.allChats.push(chat);
     }
 
@@ -239,7 +249,9 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   private subscribeToAllVisibleChats() {
     this.unsubscribe();
     //Construct a single observable for all visible chat's read statuses, and subscribe to it
-    const chatReadStatus$ = this.chatService.combineChatReadStatuses(this.allChats);
+    const chatReadStatus$ =
+      this.chatService.combineChatReadStatuses(this.allChats)
+      .pipe(distinctUntilChanged());
     console.log("Subscribed to chats " + this.allChats.map( chat => chat.id).join(','));
     this.subscription = chatReadStatus$.subscribe(
       {
@@ -292,6 +304,15 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     error => {
       this.error = error
     })
+  }
+
+  ngOnDestroy(): void {
+    // Existing: release combined chat subscription
+    this.unsubscribe();
+
+    // New: terminate form subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

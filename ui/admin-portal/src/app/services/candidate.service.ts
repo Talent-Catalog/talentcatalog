@@ -20,6 +20,8 @@ import {
   CandidateIntakeData,
   CandidateOpportunityParams,
   UpdateCandidateListOppsRequest,
+  UpdateCandidateMutedRequest,
+  UpdateCandidateNotificationPreferenceRequest,
   UpdateCandidateOppsRequest,
   UpdateCandidateShareableDocsRequest,
   UpdateCandidateShareableNotesRequest,
@@ -63,8 +65,8 @@ export class CandidateService implements IntakeService {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemail`, request);
   }
 
-  findByCandidateEmailOrPhone(request): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailorphone`, request);
+  findByCandidateEmailPhoneOrWhatsapp(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailphoneorwhatsapp`, request);
   }
 
   findByCandidateNumberOrName(request): Observable<SearchResults<Candidate>> {
@@ -73,6 +75,10 @@ export class CandidateService implements IntakeService {
 
   findByExternalId(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyexternalid`, request);
+  }
+
+  findByPublicId(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbypublicid`, request);
   }
 
   getByNumber(number: string): Observable<Candidate> {
@@ -91,6 +97,11 @@ export class CandidateService implements IntakeService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
   }
 
+  updateNotificationPreference(id: number, request: UpdateCandidateNotificationPreferenceRequest):
+    Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/${id}/notification`, request);
+  }
+
   updateShareableNotes(
     id: number, request: UpdateCandidateShareableNotesRequest): Observable<Candidate> {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/shareable-notes`, request);
@@ -105,12 +116,20 @@ export class CandidateService implements IntakeService {
     return this.http.put<void>(`${this.apiUrl}/status`, details);
   }
 
+  updateMuted(id: number, request: UpdateCandidateMutedRequest): Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/${id}/muted`, request);
+  }
+
   updateInfo(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/info`, details);
   }
 
   updateSurvey(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/survey`, details);
+  }
+
+  updateMaxEducationLevel(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/education`, details);
   }
 
   updateMedia(id: number, details): Observable<Candidate>  {

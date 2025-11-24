@@ -44,12 +44,22 @@ public interface CountryService {
     Country getCountry(long id) throws NoSuchObjectException;
 
     /**
+     * Find country matching given
+     * <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO code</a>.
+     * @param isoCode Country ISO code
+     * @return country
+     * @throws NoSuchObjectException if not found
+     */
+    @NonNull
+    Country findByIsoCode(String isoCode);
+
+    /**
      * Find country matching given name (case insensitive).
      * @param name Country name
      * @return country or null if none found
      */
     @Nullable
-    Country findCountryByName(String name);
+    Country findByName(String name);
 
     Country createCountry(UpdateCountryRequest request) throws EntityExistsException;
 
@@ -58,6 +68,13 @@ public interface CountryService {
     boolean deleteCountry(long id) throws EntityReferencedException;
 
     List<Country> getTCDestinations();
+
+    /**
+     * Check if the given country is a TC destination country
+     * @param countryId ID of country
+     * @return True if the given country is TC destination country
+     */
+    boolean isTCDestination(long countryId);
 
     DtoBuilder selectBuilder();
 

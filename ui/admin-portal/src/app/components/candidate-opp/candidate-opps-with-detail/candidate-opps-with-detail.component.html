@@ -27,7 +27,7 @@
 
     </div>
 
-    <div class="col-md-{{sidePanelColWidth}} detail-panel side-panel-color">
+    <div class="col-md-{{sidePanelColWidth}} detail-panel background-color-soft">
       <div class="floating-col">
         <div class="w-100">
           <div *ngIf="canToggleSizes()" class="float-end">
@@ -44,6 +44,7 @@
               [opp]="selectedOpp"
               [showBreadcrumb]="false"
               (candidateOppUpdated)="onCandidateOppUpdated($event)"
+              [fromUrl]="false"
             >
             </app-view-candidate-opp>
           </div>

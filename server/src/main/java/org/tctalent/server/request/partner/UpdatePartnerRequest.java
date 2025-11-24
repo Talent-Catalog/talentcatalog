@@ -16,10 +16,12 @@
 
 package org.tctalent.server.request.partner;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.Employer;
+import org.tctalent.server.model.db.PublicApiAuthority;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 
@@ -60,6 +62,10 @@ public class UpdatePartnerRequest {
 
     private String notificationEmail;
 
+    private boolean publicApiAccess;
+
+    private Set<PublicApiAuthority> publicApiAuthorities;
+
     private boolean sourcePartner;
 
     private Status status;
@@ -72,4 +78,11 @@ public class UpdatePartnerRequest {
 
     private Set<Long> sourceCountryIds;
 
+    private Long redirectPartnerId;
+
+    private String acceptedDataProcessingAgreementId;
+
+    private OffsetDateTime acceptedDataProcessingAgreementDate;
+
+    private OffsetDateTime firstDpaSeenDate;
 }

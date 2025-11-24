@@ -16,13 +16,20 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ShortJob} from "../../../../../../model/job";
-import {HasNameSelectorComponent} from "../../../../../util/has-name-selector/has-name-selector.component";
+import {
+  HasNameSelectorComponent
+} from "../../../../../util/has-name-selector/has-name-selector.component";
 import {
   CandidateVisaJobService,
   CreateCandidateVisaJobRequest
 } from "../../../../../../services/candidate-visa-job.service";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
-import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
+import {
+  Candidate,
+  CandidateIntakeData,
+  CandidateVisa,
+  CandidateVisaJobCheck
+} from "../../../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
@@ -73,7 +80,7 @@ export class CandidateVisaJobComponent implements OnInit {
     if (!this.hasJobChecks) {
       const ops = this.candidate.candidateOpportunities
         .map(co => co.jobOpp)
-        .filter(jo => jo.country.id == this.visaCheckRecord.country.id);
+        .filter(jo => jo?.country?.id == this.visaCheckRecord.country.id);
       return ops;
     } else {
       /**
@@ -187,5 +194,9 @@ export class CandidateVisaJobComponent implements OnInit {
       return this.candidate.candidateOpportunities.find(
         co => co.jobOpp.id === jobId).id;
     }
+  }
+
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
   }
 }

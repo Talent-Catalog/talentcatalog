@@ -1,0 +1,37 @@
+@import "../scss/typography-mixins";
+
+// =====================
+// Paragraph
+// =====================
+.paragraph-xs { @include paragraph-xs; }
+.paragraph-sm { @include paragraph-sm; }
+.paragraph-md { @include paragraph-md; }
+.paragraph-lg { @include paragraph-lg; }
+
+// =====================
+// Headings
+// =====================
+
+.heading-xs { @include heading-xs; }
+.heading-sm { @include heading-sm; }
+.heading-md { @include heading-md; }
+.heading-lg { @include heading-lg; }
+
+// =====================
+// Display
+// =====================
+
+.display-xs { @include display-xs; }
+.display-sm { @include display-sm; }
+.display-md { @include display-md; }
+.display-lg { @include display-lg; }
+.display-xl { @include display-xl; }
+
+// =====================
+// Labels
+// =====================
+
+.label-xs { @include label-xs; }
+.label-sm { @include label-sm; }
+.label-md { @include label-md; }
+.label-lg { @include label-lg; }

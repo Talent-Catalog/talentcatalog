@@ -190,5 +190,8 @@ export class CandidateVisaTabComponent implements OnInit {
     return this.authService.isSystemAdminOnly();
   }
 
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
+  }
 
 }

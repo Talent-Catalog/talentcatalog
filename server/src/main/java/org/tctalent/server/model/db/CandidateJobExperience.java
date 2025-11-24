@@ -16,6 +16,8 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,6 +42,22 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
+
+    /**
+     * Synchronizes the candidate field with the candidate obtained from the associated
+     * CandidateOccupation.
+     * <p>
+     * This method is automatically invoked before the entity is persisted or updated so that the
+     * candidate_id column in the candidate_job_experience table is correctly populated.
+     * </p>
+     */
+    @PrePersist
+    @PreUpdate
+    private void syncCandidate() {
+        if (this.candidateOccupation != null) {
+            this.candidate = this.candidateOccupation.getCandidate();
+        }
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")

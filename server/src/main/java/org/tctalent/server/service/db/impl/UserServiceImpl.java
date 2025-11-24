@@ -63,6 +63,7 @@ import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -71,6 +72,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
@@ -87,11 +89,16 @@ import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.qr.EncodedQrImage;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
@@ -119,6 +126,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
+        CandidateRepository candidateRepository,
         CountryRepository countryRepository,
         PasswordHelper passwordHelper,
         AuthenticationManager authenticationManager,
@@ -126,6 +134,7 @@ public class UserServiceImpl implements UserService {
         AuthService authService,
         EmailHelper emailHelper, PartnerService partnerService) {
         this.userRepository = userRepository;
+        this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
@@ -136,7 +145,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsernameAndRole(String username, Role role) {
+    public @Nullable User findByUsernameAndRole(String username, Role role) {
         return userRepository.findByUsernameAndRole(username, role);
     }
 
@@ -209,60 +218,8 @@ public class UserServiceImpl implements UserService {
         }
         user.setEmail(requestedEmail);
 
-        //Possibly update the user's source partner
-        Partner currentPartner = user.getPartner();
-        Long currentPartnerId = currentPartner == null ? null : currentPartner.getId();
-        Partner newSourcePartner = null;
-        Long partnerId = request.getPartnerId();
-        if (partnerId != null) {
-            //Partner specified - is it changing the existing partner?
-            if (!partnerId.equals(currentPartnerId)) {
-                if (creatingUser != null && currentPartnerId != null
-                    && creatingUser.getRole() != Role.systemadmin) {
-                    //Only system admins can change partners
-                    throw new InvalidRequestException("You don't have permission to change a partner.");
-                } else {
-                    //Changing partner -
-                    //or setting partner for the first time (currentPartnerId = null)
-                    newSourcePartner = partnerService.getPartner(partnerId);
-                }
-            }
-        } else {
-            //Throw an exception if no partner is specified
-            throw new InvalidRequestException("A partner must be specified.");
-        }
-        //If we have a new source partner, update it.
-        if (newSourcePartner != null) {
-            user.setPartner((PartnerImpl) newSourcePartner);
-        }
-
-        //Possibly update the user's approver
-        User currentApprover = user.getApprover();
-        Long currentApproverId = currentApprover == null ? null : currentApprover.getId();
-        User newApprover = null;
-        Long approverId = request.getApproverId();
-        if (approverId != null) {
-            //Approver specified - is it a new one?
-            if (!approverId.equals(currentApproverId)) {
-                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
-                    //Only system admins can change approver
-                    throw new InvalidRequestException("You don't have permission to assign an approver.");
-                } else {
-                    //Changing approver
-                    newApprover = getUser(approverId);
-                }
-            }
-        } else {
-            //If user does not already have an approver, assign one
-            if (currentApprover == null && creatingUser != null) {
-                newApprover = creatingUser.getApprover();
-            }
-        }
-        //If we have a new approver, update it.
-        if (newApprover != null) {
-            user.setApprover(newApprover);
-        }
-
+        reassignPartnerIfNeeded(user, request, creatingUser);
+        updateApproverIfNeeded(user, request, creatingUser);
         user.setReadOnly(request.getReadOnly());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -302,6 +259,70 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    private void reassignPartnerIfNeeded(User user, UpdateUserRequest request, User creatingUser) {
+        Partner currentPartner = user.getPartner();
+        Long currentPartnerId = currentPartner == null ? null : currentPartner.getId();
+        Partner newSourcePartner = null;
+        Long requestPartnerId = request.getPartnerId();
+        if (requestPartnerId != null) {
+            //Partner specified - is it changing the existing partner?
+            if (!requestPartnerId.equals(currentPartnerId)) {
+                if (creatingUser != null && currentPartnerId != null
+                    && creatingUser.getRole() != Role.systemadmin) {
+                    //Only system admins can change partners
+                    throw new InvalidRequestException("You don't have permission to change a partner.");
+                } else {
+                    //Changing partner -
+                    //or setting partner for the first time (currentPartnerId = null)
+                    newSourcePartner = partnerService.getPartner(requestPartnerId);
+                }
+            }
+        } else {
+            //Throw an exception if no partner is specified
+            throw new InvalidRequestException("A partner must be specified.");
+        }
+        //If we have a new source partner, update it.
+        if (newSourcePartner != null) {
+            user.setPartner((PartnerImpl) newSourcePartner);
+        }
+    }
+
+    private void updateApproverIfNeeded(User user, UpdateUserRequest request, User creatingUser) {
+        User currentApprover = user.getApprover();
+        Long currentApproverId = currentApprover == null ? null : currentApprover.getId();
+        User newApprover = null;
+        Long requestApproverId = request.getApproverId();
+        if (requestApproverId != null) {
+            //Approver specified - is it a new one?
+            if (!requestApproverId.equals(currentApproverId)) {
+                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
+                    //Only system admins can change approver
+                    throw new InvalidRequestException("You don't have permission to assign an approver.");
+                } else {
+                    //Changing approver
+                    newApprover = getUser(requestApproverId);
+                }
+            }
+        } else {
+            //If user does not already have an approver, assign the creating user's if they have one.
+            if (currentApprover == null && creatingUser != null) {
+                newApprover = creatingUser.getApprover();
+            }
+        }
+        //If we have a new approver, update the user.
+        if (newApprover != null) {
+            user.setApprover(newApprover);
+        }
+    }
+
+    private void checkAndResetEmailVerification(User user, String newEmail) {
+        if (user.getEmail() == null ? newEmail != null : !user.getEmail().equals(newEmail)) {
+            user.setEmailVerified(false);
+            user.setEmailVerificationToken(null);
+            user.setEmailVerificationTokenIssuedDate(null);
+        } 
+    }
+
     @Override
     @Transactional
     public User updateUser(long id, UpdateUserRequest request) throws UsernameTakenException, InvalidRequestException {
@@ -311,6 +332,7 @@ public class UserServiceImpl implements UserService {
 
         // Only update if logged in user role is admin OR source partner admin AND they created the user.
         if (authoriseAdminUser()) {
+            checkAndResetEmailVerification(user, request.getEmail());
             populateUserFields(user, request, loggedInUser);
             userRepository.save(user);
         } else {
@@ -506,6 +528,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByEmailVerificationToken(String token) throws NoSuchObjectException {
+        User user = userRepository.findByEmailVerificationToken(token);
+        if (user == null) {
+            throw new NoSuchObjectException("Invalid token");
+        }
+        return user;
+    }
+
+    @Override
     public Partner getLoggedInPartner() {
         Partner partner = null;
         User user = authService.getLoggedInUser().orElse(null);
@@ -520,6 +551,46 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getSystemAdminUser() {
         return findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.systemadmin);
+    }
+
+    @Override
+    @Transactional
+    public void sendVerifyEmailRequest(SendVerifyEmailRequest request) {
+        User user = userRepository.findByEmailIgnoreCase(request.getEmail());
+        if (user != null) {
+            user.setEmailVerificationToken(UUID.randomUUID().toString());
+            user.setEmailVerificationTokenIssuedDate(OffsetDateTime.now());
+            userRepository.save(user);
+
+            try {
+                emailHelper.sendVerificationEmail(user);
+            } catch (EmailSendFailedException e) {
+                LogBuilder.builder(log)
+                        .action("SendVerificationEmail")
+                        .message("Unable to send verification email for " + user.getEmail())
+                        .logError(e);
+            }
+        } else {
+            LogBuilder.builder(log)
+                    .action("GenerateVerificationToken")
+                    .message("Unable to send verification email for " + request.getEmail())
+                    .logError();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void verifyEmail(VerifyEmailRequest request) {
+        User user = userRepository.findByEmailVerificationToken(request.getToken());
+
+        if (user == null) {
+            throw new InvalidEmailVerificationTokenException();
+        } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(24))) {
+            throw new ExpiredEmailTokenException();
+        }
+
+        user.setEmailVerified(true);
+        userRepository.save(user);
     }
 
     /**
@@ -548,6 +619,15 @@ public class UserServiceImpl implements UserService {
         String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
         user.setPasswordEnc(passwordEnc);
         userRepository.save(user);
+
+        /* Update changePassword */
+        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
+            Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
+                .orElseThrow(
+                    () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
+            candidate.setChangePassword(false);
+            candidateRepository.save(candidate);
+        }
     }
 
     /**

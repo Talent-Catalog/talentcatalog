@@ -16,11 +16,11 @@
 
 package org.tctalent.server.request.task;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 @Getter
 @Setter
@@ -34,8 +34,12 @@ public class UpdateTaskRequest {
     @NotNull
     private Integer daysToComplete;
 
-    private String helpLink;
+    private String docLink;
 
     @NotNull
     private boolean optional;
+
+    public void setDescription(String description) {
+        this.description = HtmlSanitizer.sanitize(description);
+    }
 }

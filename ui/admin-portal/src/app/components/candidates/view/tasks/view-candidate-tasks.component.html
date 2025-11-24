@@ -14,164 +14,231 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error">
-  {{error}}
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
 
-<div class="card" *ngIf="!loading">
-  <div class="card-header d-flex align-items-center">
-    <span [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">Candidate Tasks: Ongoing</span>
-    <div class="d-flex flex-fill justify-content-between align-items-center">
-      <span class="small font-italic">Comment?</span>
-      <div *ngIf="editable">
-        <button class="btn btn-primary btn-sm" (click)="assignTask()">
-          <i class="fas fa-plus"></i> Assign task
-        </button>
-      </div>
-    </div>
-  </div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
 
-  <div class="card-body">
-    <div *ngIf="ongoingTasks?.length <= 0">
-      <p class="text-center text-muted small mb-0">No ongoing tasks</p>
-    </div>
-    <div *ngFor="let ta of ongoingTasks; let i = index;">
-      <div class="set-height d-flex justify-content-between">
-        <div [ngClass]="{'custom-flex-40 pe-3' : editable, 'custom-flex-75' : !editable}">
-          <p class="mb-0" [ngClass]="{'text-danger fw-bolder': isOverdue(ta)}">
-            <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
-            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ms-1"></i>
-            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ms-1"></i>
-          </p>
-          <div class="font-r80" [ngClass]="{'text-danger': isOverdue(ta)}">Due: {{ta.dueDate | date}}</div>
-        </div>
-
-        <div *ngIf="editable" class="d-flex flex-fill justify-content-between">
-          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body"
-               [disablePopover]="ta.candidateNotes?.length <=80">
-            <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 80}}
-              <span *ngIf="ta.candidateNotes?.length >=80">...</span>
-            </span>
-          </div>
-          <div class="d-flex float-end text-end">
-            <button class="btn btn-default" (click)="editTaskAssignment(ta)">
-              <i class="fas fa-edit fa-sm"></i></button>
-            <button class="btn btn-default" (click)="deleteTaskAssignment(ta)">
-              <i class="fas fa-trash fa-sm"></i></button>
-          </div>
-        </div>
-
-        <div *ngIf="!editable" class="d-flex flex-fill justify-content-end">
-          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body">
-            <i *ngIf="!editable && ta.candidateNotes" class="far fa-comment-dots hover-color"></i>
-          </div>
-        </div>
-
-      </div>
-      <hr>
-    </div>
-  </div>
-</div>
-
-<hr/>
-
-<div class="card" *ngIf="!loading">
-  <div class="card-header card-header d-flex align-items-center">
-    <span [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">Candidate Tasks: Completed
-        <ng-container *ngIf="loadingResponse">
-          <i class="fas fa-spinner fa-spin"></i>
-        </ng-container>
+<tc-card *ngIf="!loading">
+  <tc-card-header>
+    <span [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">
+      Candidate Tasks: Ongoing
     </span>
-    <span class="small font-italic custom-flex-25">Comment?</span>
-    <span *ngIf="editable" class="small font-italic custom-flex-25">Answer?</span>
+    <div class="d-flex flex-fill justify-content-between">
+      Comment?
+      <div *ngIf="editable" class="d-flex gap-2">
+        <div *ngIf="isDefaultSourcePartner()">
+          <app-duolingo-assignment [candidate]="candidate"
+                                   (errorOccurred)="handleError($event)"
+          ></app-duolingo-assignment>
+        </div>
+        <div>
+          <tc-button (onClick)="assignTask()"
+                     [type]="'solid'"
+                     [color]="'primary'"
+                     [size]="'sm'"
+          >
+            <i class="fas fa-plus"></i>
+            Assign task
+          </tc-button>
+        </div>
+      </div>
+    </div>
+  </tc-card-header>
+
+  <!-- NO TASKS ASSIGNED -->
+  <div *ngIf="ongoingTasks?.length <= 0">
+    <p class="text-center text-muted small mb-0">No ongoing tasks</p>
   </div>
 
-  <div class="card-body">
-    <div *ngIf="completedTasks?.length <= 0">
-      <p class="text-center text-muted small mb-0">No completed tasks</p>
-    </div>
-    <div *ngFor="let ta of completedTasks; let i = index;">
-      <div class="d-flex">
-
-        <div [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">
-          <p class="mb-0 pe-3">
-            <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
-            <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ms-1"></i>
-            <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ms-1"></i>
-          </p>
-          <!-- SEARCH CARD DISPLAY ANSWER -->
-          <div *ngIf="!editable && ta.answer" [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
-               [disablePopover]="ta.answer?.length <=40">
-            <i class="fas fa-angle-right"></i>
-            <span *ngIf="ta.answer" class="font-r80 font-italic font-weight-normal ms-1">{{ta.answer | slice: 0 : 40}}
-              <span *ngIf="ta.answer?.length >=40">...</span>
-            </span>
-          </div>
-          <div *ngIf="ta.completedDate && !ta.abandonedDate" class="text-success font-r80">Completed: {{ta.completedDate | date}}</div>
-          <div *ngIf="ta.abandonedDate && !ta.completedDate" class="text-warning font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
-          <div *ngIf="ta.abandonedDate < ta.completedDate" class="text-warning font-r80">Abandoned: {{ta.abandonedDate | date}}</div>
-          <div *ngIf="ta.completedDate && ta.abandonedDate" class="text-secondary font-r80">Resolved by partner: {{ta.completedDate | date}}</div>
+  <!-- ONGOING TASKS -->
+  <div *ngFor="let ta of ongoingTasks; let i = index;">
+    <span *ngIf="i > 0"><hr></span>
+    <div class="set-height d-flex gap-2">
+      <div [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">
+        <p class="mb-0" [ngClass]="{'text-danger fw-bolder': isOverdue(ta)}">
+          <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
+          <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'"
+             class="far fa-question-circle fa-sm ms-1"
+          ></i>
+          <i *ngIf="ta.task.taskType === 'Upload'"
+             class="far fa-file fa-sm ms-1"
+          ></i>
+        </p>
+        <div class="font-r80"
+             [ngClass]="{'text-danger': isOverdue(ta)}"
+        >
+          Due: {{ta.dueDate | date}}
         </div>
+      </div>
 
-        <!-- IF EDITABLE SHOW FULL RESULTS (COMMENTS, ANSWERS AND EDIT BUTTONS) -->
-        <ng-container *ngIf="editable">
-          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
-               [disablePopover]="ta.candidateNotes?.length <=40">
-            <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 40}}
-              <span *ngIf="ta.candidateNotes?.length >=40">...</span>
-            </span>
-          </div>
-          <div [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
-               [disablePopover]="ta.answer?.length <=40">
-          <span *ngIf="ta.answer" class="font-r80">{{ta.answer | slice: 0 : 40}}
+      <div *ngIf="editable" class="d-flex flex-fill justify-content-between">
+        <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body"
+             [disablePopover]="ta.candidateNotes?.length <=80">
+          <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 80}}
+            <span *ngIf="ta.candidateNotes?.length >=80">...</span>
+          </span>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+          <tc-button (onClick)="editTaskAssignment(ta)"
+                     [type]="'plain'"
+                     [color]="'secondary'"
+          >
+            <i class="fas fa-edit fa-sm"></i>
+          </tc-button>
+          <tc-button (onClick)="deleteTaskAssignment(ta)"
+                     [type]="'plain'"
+                     [color]="'gray'"
+          >
+            <i class="fas fa-trash fa-sm"></i>
+          </tc-button>
+        </div>
+      </div>
+
+      <div *ngIf="!editable" class="d-flex flex-fill justify-content-end">
+        <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body">
+          <i *ngIf="!editable && ta.candidateNotes" class="far fa-comment-dots hover-color"></i>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</tc-card>
+
+<!-- COMPLETED TASKS -->
+<tc-card *ngIf="!loading">
+  <tc-card-header>
+    <span [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">
+      Candidate Tasks: Completed
+      <ng-container *ngIf="loadingResponse">
+        <i class="fas fa-spinner fa-spin"></i>
+      </ng-container>
+    </span>
+    <div class="d-flex flex-fill justify-content-between">
+      Comment?
+    </div>
+    <div *ngIf="editable" class="custom-flex-25">
+      Answer?
+    </div>
+  </tc-card-header>
+
+  <!-- NO COMPLETED TASKS  -->
+  <div *ngIf="completedTasks?.length <= 0">
+    <p class="text-center text-muted small mb-0">No completed tasks</p>
+  </div>
+
+  <div *ngFor="let ta of completedTasks; let i = index;">
+
+    <span><hr *ngIf="i > 0"></span>
+
+    <div class="d-flex gap-2">
+      <div [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">
+        <p class="mb-0">
+          <span *ngIf="!ta.task.optional">*</span> {{ta.task.displayName}}
+          <i *ngIf="ta.task.taskType === 'Question' || ta.task.taskType === 'YesNoQuestion'" class="far fa-question-circle fa-sm ms-1"></i>
+          <i *ngIf="ta.task.taskType === 'Upload'" class="far fa-file fa-sm ms-1"></i>
+        </p>
+        <!-- SEARCH CARD DISPLAY ANSWER -->
+        <div *ngIf="!editable && ta.answer"
+             [ngbPopover]="ta.answer"
+             triggers="mouseenter:mouseleave"
+             container="body"
+             class="custom-flex-25 pe-3"
+             [disablePopover]="ta.answer?.length <=40"
+        >
+          <i class="fas fa-angle-right"></i>
+          <span *ngIf="ta.answer" class="font-r80 font-italic font-weight-normal ms-1">
+            {{ta.answer | slice: 0 : 40}}
             <span *ngIf="ta.answer?.length >=40">...</span>
           </span>
-          </div>
-          <div class="flex-fill text-end">
-            <button class="btn btn-default" title="Edit task" (click)="editTaskAssignment(ta)">
-              <i class="fas fa-edit fa-sm"></i></button>
-            <button class="btn btn-default" title="See response to task" (click)="viewResponse(ta)">
-              <i *ngIf="ta.task.taskType === 'Upload'" class="fas fa-link fa-sm" ></i>
-              <i *ngIf="ta.task.taskType === 'Question'" class="far fa-comment-dots fa-sm"></i>
-            </button>
-          </div>
-        </ng-container>
-
-        <!-- IF NOT EDITABLE (EG. THIS OCCURS WHEN IT IS SHOWN IN THE SEARCH CARD) ONLY SHOW COMMENTS -->
-        <div *ngIf="!editable" class="d-flex flex-fill justify-content-end">
-          <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body">
-            <i *ngIf="!editable && ta.candidateNotes" class="far fa-comment-dots hover-color"></i>
-          </div>
         </div>
-
+        <div *ngIf="ta.completedDate && !ta.abandonedDate"
+             class="text-success font-r80"
+        >
+          Completed: {{ta.completedDate | date}}
+        </div>
+        <div *ngIf="ta.abandonedDate && !ta.completedDate"
+             class="text-warning font-r80"
+        >
+          Abandoned: {{ta.abandonedDate | date}}
+        </div>
+        <div *ngIf="ta.abandonedDate < ta.completedDate"
+             class="text-warning font-r80"
+        >
+          Abandoned: {{ta.abandonedDate | date}}
+        </div>
+        <div *ngIf="ta.completedDate && ta.abandonedDate"
+             class="text-secondary font-r80"
+        >
+          Resolved by partner: {{ta.completedDate | date}}
+        </div>
       </div>
-      <hr>
+
+      <!-- IF EDITABLE SHOW FULL RESULTS (COMMENTS, ANSWERS AND EDIT BUTTONS) -->
+      <ng-container *ngIf="editable">
+        <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
+             [disablePopover]="ta.candidateNotes?.length <=40">
+          <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 40}}
+            <span *ngIf="ta.candidateNotes?.length >=40">...</span>
+          </span>
+        </div>
+        <div [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
+             [disablePopover]="ta.answer?.length <=40">
+        <span *ngIf="ta.answer" class="font-r80">{{ta.answer | slice: 0 : 40}}
+          <span *ngIf="ta.answer?.length >=40">...</span>
+        </span>
+        </div>
+        <div class="d-flex justify-content-end">
+          <tc-button title="Edit task"
+                     (onClick)="editTaskAssignment(ta)"
+                     [color]="'secondary'"
+                     [type]="'plain'"
+                     class="me-2"
+          >
+            <i class="fas fa-edit fa-sm"></i></tc-button>
+          <tc-button title="See response to task"
+                     (onClick)="viewResponse(ta)"
+                     [color]="'gray'"
+                     [type]="'plain'"
+          >
+            <i [ngClass]="ta.task.taskType === 'Upload' ? 'fas fa-link' : 'far fa-comment-dots'"></i>
+          </tc-button>
+        </div>
+      </ng-container>
+
+      <!-- IF NOT EDITABLE (EG. THIS OCCURS WHEN IT IS SHOWN IN THE SEARCH CARD) ONLY SHOW COMMENTS -->
+      <div *ngIf="!editable" class="d-flex flex-fill justify-content-end">
+        <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body">
+          <i *ngIf="!editable && ta.candidateNotes" class="far fa-comment-dots hover-color"></i>
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
+</tc-card>
 
-<hr/>
-
-<div class="card" *ngIf="!loading">
-  <div class="card-header">
+<!-- INACTIVE TASKS -->
+<tc-card *ngIf="!loading">
+  <tc-card-header>
     Candidate Tasks: Inactive
+  </tc-card-header>
+
+
+  <div *ngIf="inactiveTasks?.length <= 0">
+    <p class="text-center text-muted small mb-0">No inactive tasks</p>
+  </div>
+  <div *ngFor="let ta of inactiveTasks; let i = index;">
+    <div class="d-flex justify-content-between">
+      <div class="w-50">
+        <p class="mb-0">{{ta.task.displayName}}</p>
+        <div>Status: {{ta.status}}</div>
+      </div>
+    </div>
+    <hr>
   </div>
 
-  <div class="card-body">
-    <div *ngIf="inactiveTasks?.length <= 0">
-      <p class="text-center text-muted small mb-0">No inactive tasks</p>
-    </div>
-    <div *ngFor="let ta of inactiveTasks; let i = index;">
-      <div class="d-flex justify-content-between">
-        <div class="w-50">
-          <p class="mb-0">{{ta.task.displayName}}</p>
-          <div>Status: {{ta.status}}</div>
-        </div>
-      </div>
-      <hr>
-    </div>
-  </div>
-</div>
+</tc-card>

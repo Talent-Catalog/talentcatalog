@@ -29,6 +29,8 @@ export class MockPartner implements Partner {
   logo: string = "mock_logo.png";
   name: string = "Mock Partner";
   notificationEmail: string = "partner@example.com";
+  publicApiAccess: boolean = false;
+  publicApiAuthorities: string[] = [];
   registrationLandingPage: string = "https://example.com/register";
   sflink: string = "https://example.com/sf";
   sourcePartner: boolean = true;

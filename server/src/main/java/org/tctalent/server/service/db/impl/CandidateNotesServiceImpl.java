@@ -35,6 +35,7 @@ import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateNote;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.service.db.UserService;
 
 @Service
 public class CandidateNotesServiceImpl implements CandidateNoteService {
@@ -42,13 +43,15 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
     private final CandidateRepository candidateRepository;
     private final CandidateNoteRepository candidateNoteRepository;
     private final AuthService authService;
+    private final UserService userService;
 
     @Autowired
     public CandidateNotesServiceImpl(CandidateRepository candidateRepository, CandidateNoteRepository candidateNoteRepository,
-                                     AuthService authService) {
+                                     AuthService authService, UserService userService) {
         this.candidateRepository = candidateRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.authService = authService;
+        this.userService = userService;
     }
 
     @Override
@@ -59,8 +62,11 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
 
     @Override
     public CandidateNote createCandidateNote(CreateCandidateNoteRequest request) {
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        User user = userService.getLoggedInUser();
+        // Handles when candidate note is automated (e.g. stage updated from Salesforce sync)
+        if (user == null) {
+            user = userService.getSystemAdminUser();
+        }
 
         Candidate candidate = candidateRepository.findById(request.getCandidateId())
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));

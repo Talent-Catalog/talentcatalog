@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -24,13 +25,12 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
-
-import java.util.List;
 
 /**
  * Service for managing {@link Partner}
@@ -38,6 +38,25 @@ import java.util.List;
  * @author John Cameron
  */
 public interface PartnerService {
+
+
+    /**
+     * Finds the active partner associated with the given public api key, if any.
+     * @param apiKey Public API key
+     * @return DTO of matching partner, or null if none found
+     */
+    @Nullable
+    PublicApiPartnerDto findPublicApiPartnerDtoByKey(String apiKey);
+
+    /**
+     * Finds partner with the given public ID
+     *
+     * @param publicId ID of desired partner
+     * @return Partner
+     * @throws NoSuchObjectException if not found
+     */
+    @NonNull
+    Partner findByPublicId(String publicId);
 
     /**
      * Get the Partner with the given id.
@@ -78,7 +97,7 @@ public interface PartnerService {
 
     /**
      * Lists all active partners
-     * @return
+     * @return Active partners
      */
     List<PartnerImpl> listPartners();
 
@@ -87,7 +106,14 @@ public interface PartnerService {
      * appropriate request.
      * @return All active source partners
      */
-    List<PartnerImpl> listSourcePartners();
+    List<PartnerImpl> listActiveSourcePartners();
+
+    /**
+     * Convenience method which just delegates to {@link #search(SearchPartnerRequest)} with an
+     * appropriate request and returns ALL source partners of any status.
+     * @return All source partners
+     */
+    List<PartnerImpl> listAllSourcePartners();
 
     /**
      * Get the partners from search request
@@ -103,6 +129,8 @@ public interface PartnerService {
      */
     Page<PartnerImpl> searchPaged(SearchPartnerRequest request);
 
+
+
     /**
      * Create a partner.
      * @param request Request contains partner data
@@ -114,6 +142,8 @@ public interface PartnerService {
     @NonNull
     PartnerImpl create(UpdatePartnerRequest request)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException;
+
+    void setPublicIds(List<PartnerImpl> partners);
 
     /**
      * Update the partner with the given ID.
@@ -130,4 +160,26 @@ public interface PartnerService {
      * Update the given user contact for the given partner and job
      */
     void updateJobContact(Partner partner, SalesforceJobOpp job, User contactUser);
+
+    /**
+     * Marks the current partner as having accepted the DPA (Data Processing Agreement).
+     *
+     * @param acceptedDpaId the ID of the accepted DPA
+     * @return the updated {@link PartnerImpl} after acceptance
+     */
+    PartnerImpl updateAcceptedDpa(String acceptedDpaId);
+
+    /**
+     * Records that the current partner has seen the DPA for the first time.
+     *
+     * @return the updated {@link PartnerImpl} with first DPA seen timestamp
+     */
+    PartnerImpl setFirstDpaSeen();
+
+    /**
+     * Checks whether the DPA acceptance is required for the current partner.
+     *
+     * @return true if DPA acceptance is required, false otherwise
+     */
+    boolean requiresDpaAcceptance();
 }

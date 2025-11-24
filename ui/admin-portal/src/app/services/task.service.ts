@@ -26,7 +26,7 @@ export interface UpdateTaskRequest {
   displayName: string;
   description: string;
   daysToComplete: number;
-  helpLink: string;
+  docLink: string;
   optional: boolean;
 
 }

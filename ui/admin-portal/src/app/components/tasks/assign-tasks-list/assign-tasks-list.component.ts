@@ -23,6 +23,7 @@ import {TaskService} from "../../../services/task.service";
 import {TaskAssignmentService, TaskListRequest} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
 import {SavedListService} from "../../../services/saved-list.service";
+import {DuolingoCouponService} from "../../../services/duolingo-coupon.service";
 
 @Component({
   selector: 'app-assign-tasks-list',
@@ -43,6 +44,7 @@ export class AssignTasksListComponent implements OnInit {
               private modalService: NgbModal,
               private savedListService: SavedListService,
               private taskService: TaskService,
+              private duolingoCouponService: DuolingoCouponService,
               private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
@@ -95,6 +97,7 @@ export class AssignTasksListComponent implements OnInit {
         //todo This should really do a search with the current filter. Can we make the search
         //part of the component so we can access the filter data in this code.
         this.filteredTaskAssociations = result.tasks;
+        this.assignForm.reset();
       }, (error) => {
         this.error = error;
       }
@@ -112,16 +115,29 @@ export class AssignTasksListComponent implements OnInit {
       savedListId: this.savedList.id,
       taskId: task.id,
     }
-    this.taskAssignmentService.assignTaskToList(request).subscribe(
-      () => {
-        this.refreshTaskAssociations();
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      }
-    );
+    if(task.name === 'claimCouponButton') {
+      this.duolingoCouponService.assignCouponToList(this.savedList.id).subscribe(
+        () => {
+          this.refreshTaskAssociations();
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      )
+    } else {
+      this.taskAssignmentService.assignTaskToList(request).subscribe(
+        () => {
+          this.refreshTaskAssociations();
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      );
+    }
   }
 
   close() {
@@ -129,9 +145,9 @@ export class AssignTasksListComponent implements OnInit {
   }
 
   removeTask(task: Task) {
-    const confirmationModal = this.modalService.open(ConfirmationComponent, {scrollable: true});
+    const confirmationModal = this.modalService.open(ConfirmationComponent, {scrollable: true, size: 'lg'});
     confirmationModal.componentInstance.title =
-      "Are you sure you want to remove " + task.displayName + " from the associated list " + this.savedList.name + "?";
+      "Are you sure you want to remove '" + task.displayName + "' from the associated list '" + this.savedList.name + "'?";
     confirmationModal.componentInstance.message =
       "Note: Removing this task association will make the task inactive for any candidates within the list who have not completed the task. "
 

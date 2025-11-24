@@ -15,210 +15,171 @@
   -->
 
 <div id="VisaCanada">
-  <div class="row my-4">
-    <div class="col-6">
-      <h5>Section 1: Visa Assessment - Canada</h5>
-    </div>
+  <h5>Section 1: Visa Assessment - Canada</h5>
 
-    <div class="col-6">
-      <div class="row">
-        <div class="col text-end">
-          <button (click)="visaCanada.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-          <button (click)="visaCanada.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+  <tc-accordion [appReadOnlyInputs]="!isEditable()" [allowOverflow]="true">
+
+    <tc-accordion-item id="visa-ca-confirm" header="Confirmation Details">
+      <app-confirm-contact
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-confirm-contact>
+    </tc-accordion-item>
+
+    <tc-accordion-item id="visa-ca-destination" header="Destination">
+      <app-destination-family
+        [entity]="visaCheckRecord">
+      </app-destination-family>
+    </tc-accordion-item>
+
+    <tc-accordion-item id="visa-ca-tbb" header="Assessing TC Eligibility">
+      <div>
+        <app-int-protection
+          [entity]="visaCheckRecord">
+        </app-int-protection>
+      </div>
+      <hr>
+      <div class="card card-body intake-data">
+        <app-left-home-reason
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-left-home-reason>
+        <app-return-home-safe
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-return-home-safe>
+        <app-host-challenges
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-host-challenges>
+      </div>
+    </tc-accordion-item>
+
+    <tc-accordion-item id="visa-ca-eligibility" header="Assessing Canada Visa Eligibility">
+      <div>
+        <app-pathway-assessment
+          [entity]="visaCheckRecord">
+        </app-pathway-assessment>
+      </div>
+      <hr>
+      <div class="card card-body intake-data">
+        <app-host-entry
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-host-entry>
+        <app-host-challenges
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-host-challenges>
+        <app-work-permit
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-work-permit>
+        <app-work-status
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-work-status>
+      </div>
+    </tc-accordion-item>
+
+    <tc-accordion-item id="visa-ca-health" header="Health Assessment" class="intake-data">
+      <app-health-assessment
+        [entity]="visaCheckRecord">
+      </app-health-assessment>
+      <hr>
+      <div class="card card-body intake-data">
+        <app-health-issues
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-health-issues>
+        <div>
+          <label class="form-label mb-1">Do any dependants have health concerns?</label>
+          <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
+            <p>No dependants entered</p>
+          </div>
+          <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
+            <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}
+              <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>
+          </ul>
         </div>
       </div>
-    </div>
-  </div>
+    </tc-accordion-item>
 
-  <div>
-    <!-- ACCORDION VERSION OF FORM  -->
-    <ngb-accordion #visaCanada="ngbAccordion" [destroyOnHide]="false">
-
-      <ngb-panel id="visa-ca-confirm" title="Confirmation Details">
-        <ng-template ngbPanelContent>
-          <div class="card card-body intake-data">
-            <app-confirm-contact
-              [candidate]="candidate"
-              [candidateIntakeData]="candidateIntakeData">
-            </app-confirm-contact>
-          </div>
-        </ng-template>
-      </ngb-panel>
-
-      <ngb-panel id="visa-ca-destination" title="Destination">
-        <ng-template ngbPanelContent>
-          <app-destination-family
-            [entity]="visaCheckRecord">
-          </app-destination-family>
-        </ng-template>
-      </ngb-panel>
-
-      <ngb-panel id="visa-ca-tbb" title="Assessing TC Eligibility">
-        <ng-template ngbPanelContent>
-          <div>
-            <app-int-protection
-              [entity]="visaCheckRecord">
-            </app-int-protection>
-          </div>
-          <hr>
-          <div class="card card-body intake-data">
-            <app-left-home-reason
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-left-home-reason>
-            <app-return-home-safe
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-return-home-safe>
-            <app-host-challenges
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-host-challenges>
-          </div>
-        </ng-template>
-      </ngb-panel>
-
-      <ngb-panel id="visa-ca-eligibility" title="Assessing Canada Visa Eligibility">
-        <ng-template ngbPanelContent>
-          <div>
-            <app-pathway-assessment
-              [entity]="visaCheckRecord">
-            </app-pathway-assessment>
-          </div>
-          <hr>
-          <div class="card card-body intake-data">
-            <app-host-entry
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-host-entry>
-            <app-host-challenges
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-host-challenges>
-            <app-work-permit
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-work-permit>
-            <app-work-status
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-work-status>
-          </div>
-        </ng-template>
-      </ngb-panel>
-
-      <ngb-panel id="visa-ca-health" title="Health Assessment" class="intake-data">
-        <ng-template ngbPanelContent>
-          <app-health-assessment
-            [entity]="visaCheckRecord">
-          </app-health-assessment>
-          <hr>
-          <div class="card card-body intake-data">
-            <app-health-issues
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-health-issues>
-            <div>
-              <label class="form-label mb-1">Do any dependants have health concerns?</label>
-              <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
-                <p>No dependants entered</p>
-              </div>
-              <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
-                <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}
-                  <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>
-              </ul>
-            </div>
-          </div>
-        </ng-template>
-      </ngb-panel>
-
-      <ngb-panel id="visa-ca-character" title="Character Assessment" class="intake-data">
-        <ng-template ngbPanelContent>
-          <app-character-assessment
-            [entity]="visaCheckRecord">
-          </app-character-assessment>
-          <hr>
-          <div class="card card-body intake-data">
-            <app-crime
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-crime>
-          </div>
-        </ng-template>
-      </ngb-panel>
-
-      <ngb-panel id="visa-ca-security" title="Security Assessment" class="intake-data">
-        <ng-template ngbPanelContent>
-          <app-security-risk
-            [entity]="visaCheckRecord">
-          </app-security-risk>
-          <hr>
-          <div class="card card-body intake-data">
-            <app-military-service
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-military-service>
-            <app-visa-reject
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-visa-reject>
-            <app-visa-issues
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData"
-              [editable]="false">
-            </app-visa-issues>
-          </div>
-        </ng-template>
-      </ngb-panel>
-
-      <ngb-panel id="visa-ca-risk" title="Overall Risk Assessment" class="intake-data">
-        <ng-template ngbPanelContent>
-          <app-risk-assessment
-            [entity]="visaCheckRecord">
-          </app-risk-assessment>
-        </ng-template>
-      </ngb-panel>
-
-    </ngb-accordion>
-
-    <div class="row my-4">
-      <div class="col-6">
-        <h5>Section 2: Job Specific Assessment</h5>
+    <tc-accordion-item id="visa-ca-character" header="Character Assessment" class="intake-data">
+      <app-character-assessment
+        [entity]="visaCheckRecord">
+      </app-character-assessment>
+      <hr>
+      <div class="card card-body intake-data">
+        <app-crime
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-crime>
       </div>
-    </div>
+    </tc-accordion-item>
 
-    <app-candidate-visa-job
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [visaCheckRecord]="visaCheckRecord"
-      [(selectedJob)]="selectedJob">
-    </app-candidate-visa-job>
-    <!-- todo could I make selected job a two way input? Also select the first job on default so could send in first index, then
-     the output will be reflected without a method? -->
+    <tc-accordion-item id="visa-ca-security" header="Security Assessment" class="intake-data">
+      <app-security-risk
+        [entity]="visaCheckRecord">
+      </app-security-risk>
+      <hr>
+      <div class="card card-body intake-data">
+        <app-military-service
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-military-service>
+        <app-visa-reject
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-visa-reject>
+        <app-visa-issues
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [editable]="false">
+        </app-visa-issues>
+      </div>
+    </tc-accordion-item>
 
-    <hr *ngIf="visaCheckRecord.candidateVisaJobChecks.length > 0"/>
+    <tc-accordion-item id="visa-ca-risk" header="Overall Risk Assessment" class="intake-data">
+      <app-risk-assessment
+        [entity]="visaCheckRecord">
+      </app-risk-assessment>
+    </tc-accordion-item>
+  </tc-accordion>
 
-    <!--  Generate all job entries - but only one is enabled and loaded at a time. Reloaded with selectedJobIndex changes.-->
-    <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
-      <app-visa-job-check-ca *ngIf="job.id == selectedJob.id"
-                             [selectedJobCheck]="job"
-                             [candidate]="candidate"
-                             [candidateIntakeData]="candidateIntakeData"
-                             [visaCheckRecord]="visaCheckRecord"
-      ></app-visa-job-check-ca>
-    </div>
+  <hr class="mt-4">
 
+  <h5 class="my-3">Section 2: Job Specific Assessment</h5>
+
+  <app-candidate-visa-job
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [visaCheckRecord]="visaCheckRecord"
+    [(selectedJob)]="selectedJob">
+  </app-candidate-visa-job>
+
+  <!--  Generate all job entries - but only one is enabled and loaded at a time. Reloaded with selectedJobIndex changes.-->
+  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;"
+       [appReadOnlyInputs]="!isEditable()"
+       class="mt-3"
+  >
+    <app-visa-job-check-ca *ngIf="job.id == selectedJob.id"
+                           [selectedJobCheck]="job"
+                           [candidate]="candidate"
+                           [candidateIntakeData]="candidateIntakeData"
+                           [visaCheckRecord]="visaCheckRecord"
+    ></app-visa-job-check-ca>
   </div>
 
 </div>

@@ -24,11 +24,12 @@ class AllowedQuestionTaskAnswer {
 export interface Task extends Auditable {
   id: number;
   name: string;
+  candidateForm?: CandidateForm;
   daysToComplete: number;
   description: string;
   displayName: string;
   optional: boolean;
-  helpLink: string;
+  docLink: string;
   taskType: TaskType;
   uploadType: UploadType;
   uploadSubfolderName: string;
@@ -38,7 +39,13 @@ export interface Task extends Auditable {
 
 }
 
+export interface CandidateForm {
+  name: string;
+  description: string;
+}
+
 export enum TaskType {
+  Form = "Form",
   Question = "Question",
   Simple = "Simple",
   Upload = "Upload",

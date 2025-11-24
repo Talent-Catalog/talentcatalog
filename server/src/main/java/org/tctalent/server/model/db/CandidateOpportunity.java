@@ -16,9 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -27,6 +24,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
@@ -73,8 +73,8 @@ public class CandidateOpportunity extends AbstractOpportunity {
     SalesforceJobOpp jobOpp;
 
     /**
-     * Last active stage of opportunity.
-     * Defaults to prospect.
+     * Last active stage of opportunity - it is there for closed opportunities to know how far a candidate opportunity
+     * got before it was closed. Defaults to prospect.
      */
     @Enumerated(EnumType.STRING)
     CandidateOpportunityStage lastActiveStage = CandidateOpportunityStage.prospect;

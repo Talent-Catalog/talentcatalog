@@ -32,7 +32,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -42,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -121,11 +121,13 @@ import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.CandidateSearchService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.EducationMajorService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -146,10 +148,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CandidateService candidateService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
+    private final CandidateSearchService candidateSearchService;
     private final CountryService countryService;
     private final PartnerService partnerService;
     private final ElasticsearchService esService;
     private final EmailHelper emailHelper;
+    private final PublicIDService publicIDService;
     private final UserRepository userRepository;
     private final UserService userService;
     private final SalesforceJobOppService salesforceJobOppService;
@@ -175,15 +179,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * specified.
      * Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
      */
-    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>(
-        EnumSet.complementOf(EnumSet.of(
-            CandidateStatus.autonomousEmployment,
-            CandidateStatus.deleted,
-            CandidateStatus.draft,
-            CandidateStatus.employed,
-            CandidateStatus.ineligible,
-            CandidateStatus.withdrawn
-        )));
+    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>();
+
+    @PostConstruct
+    void init() {
+        for (CandidateStatus candidateStatus : CandidateStatus.values()) {
+            if (!candidateStatus.isInactive()) {
+                defaultSearchStatuses.add(candidateStatus);
+            }
+        }
+    }
 
     @Override
     public List<SavedSearch> search(IdsRequest request) {
@@ -408,6 +413,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
+    @Transactional
+    @Override
+    public void setPublicIds(List<SavedSearch> savedSearches) {
+        for (SavedSearch savedSearch : savedSearches) {
+            if (savedSearch.getPublicId() == null) {
+                savedSearch.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!savedSearches.isEmpty()) {
+            savedSearchRepository.saveAll(savedSearches);
+        }
+    }
+
     @Override
     public SearchCandidateRequest loadSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(id)
@@ -556,6 +574,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private SavedSearch createSavedSearchBase(
         UpdateSavedSearchRequest request, @Nullable SavedSearch template) {
         SavedSearch savedSearch = convertToSavedSearch(template, request);
+
+        //Set PublicId
+        savedSearch.setPublicId(publicIDService.generatePublicID());
+
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
@@ -1046,7 +1068,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         //Exclude given candidates
-        if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
+        if (!ObjectUtils.isEmpty(excludedCandidates)) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
             nq = esService.makeTermsQuery("masterId", candidateIds);
@@ -1139,7 +1161,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Nationalities
         final List<Long> nationalityIds = request.getNationalityIds();
-        if (nationalityIds != null) {
+        if (!ObjectUtils.isEmpty(nationalityIds)) {
             //Look up names from ids.
             List<Object> reqNationalities = new ArrayList<>();
             for (Long id : nationalityIds) {
@@ -1158,7 +1180,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Partners
         final List<Long> partnerIds = request.getPartnerIds();
-        if (partnerIds != null) {
+        if (!ObjectUtils.isEmpty(partnerIds)) {
             //Look up names from ids.
             List<Object> reqPartners = new ArrayList<>();
             for (Long id : partnerIds) {
@@ -1171,7 +1193,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Statuses
         List<CandidateStatus> statuses = request.getStatuses();
-        if (statuses != null) {
+        if (!ObjectUtils.isEmpty(statuses)) {
             //Extract names from enums
             List<Object> reqStatuses = new ArrayList<>();
             for (CandidateStatus status : statuses) {
@@ -1183,7 +1205,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //UNHCR Statuses
         List<UnhcrStatus> unhcrStatuses = request.getUnhcrStatuses();
-        if (unhcrStatuses != null) {
+        //Empty or null means nothing to check
+        if (!ObjectUtils.isEmpty(unhcrStatuses)) {
             //Extract names from enums
             List<Object> reqUnhcrStatuses = new ArrayList<>();
             for (UnhcrStatus unhcrStatus : unhcrStatuses) {
@@ -1219,7 +1242,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Educations
         final List<Long> educationMajorIds = request.getEducationMajorIds();
-        if (educationMajorIds != null) {
+        if (!ObjectUtils.isEmpty(educationMajorIds)) {
             //Look up names from ids.
             List<Object> reqEducations = new ArrayList<>();
             for (Long id : educationMajorIds) {
@@ -1288,7 +1311,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         // Survey types
         final List<Long> surveyTypeIds = request.getSurveyTypeIds();
-        if (surveyTypeIds != null) {
+        if (!ObjectUtils.isEmpty(surveyTypeIds)) {
             List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
             nq = esService.makeTermsQuery("surveyType", surveyTypeObjList);
             esService.addAnd(boolQueryBuilder, nq);
@@ -1666,6 +1689,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
                     getListAsString(request.getEducationMajorIds()));
+            savedSearch.setIncludePendingTermsCandidates(request.getIncludePendingTermsCandidates());
             savedSearch.setMiniIntakeCompleted(request.getMiniIntakeCompleted());
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
             savedSearch.setPotentialDuplicate(request.getPotentialDuplicate());
@@ -1744,6 +1768,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxAge(search.getMaxAge());
         searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
+        searchCandidateRequest.setIncludePendingTermsCandidates(search.getIncludePendingTermsCandidates());
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
         searchCandidateRequest.setPotentialDuplicate(search.getPotentialDuplicate());
@@ -1815,10 +1840,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 !searchRequest.getSearchJoinRequests().isEmpty();
 
         String simpleQueryString = searchRequest.getSimpleQueryString();
+        boolean haveSimpleQueryString = simpleQueryString != null && !simpleQueryString.isEmpty();
 
-        //TODO JC Reconsider this logic of forcing all searches based on other searches to be
-        //elastic searches.
-        if ((simpleQueryString != null && !simpleQueryString.isEmpty()) || hasBaseSearch) {
+        boolean useOldSearch = searchRequest.isUseOldSearch();
+        if (!useOldSearch) {
+            //New search is Postgres SQL only - no elastic search and no CandidateSepecification
+            candidates = candidateSearchService.searchCandidates(searchRequest, excludedCandidates);
+        } else if (haveSimpleQueryString || hasBaseSearch) {
+            //TODO JC Reconsider this logic of forcing all searches based on other searches to be
+            //elastic searches.
             // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
@@ -1859,6 +1889,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         } else {
             //Compute the non-elastic query
             Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
+
+            //The above query generates the sorting so it does not need to be passed in here.
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
         }
         LogBuilder.builder(log)
@@ -1915,7 +1947,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     request.setPartnerIds(List.of(partner.getId()));
                 } else {
                     //Every one else defaults to seeing candidates from all partners
-                    List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    List<PartnerImpl> sourcePartners = partnerService.listAllSourcePartners();
                     List<Long> partnerIds =
                             sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
                     request.setPartnerIds(partnerIds);
@@ -1952,4 +1984,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         return boolQueryBuilder;
     }
+
+    public void updateSuggestedSearchesNames(SalesforceJobOpp job, String oldJobName) {
+        Set<SavedSearch> suggestedSearches = job.getSuggestedSearches();
+
+        for (SavedSearch search : suggestedSearches) {
+            String oldSearchName = search.getName();
+            String newSearchName = oldSearchName.replace(oldJobName, job.getName());
+            search.setName(newSearchName);
+            savedSearchRepository.save(search);
+        }
+    }
+
 }

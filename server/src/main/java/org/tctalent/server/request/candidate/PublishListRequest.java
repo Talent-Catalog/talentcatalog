@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.CandidatePropertyType;
 import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.SavedList;
 
@@ -42,6 +44,27 @@ public class PublishListRequest {
    * the job.
    */
   private Boolean publishClosedOpps;
+
+
+  /**
+   * Searches for a {@link PublishedDocColumnDef} which can supply a second dimension
+   * to the candidate data to be published.
+   * This could mean that a single candidate could generate more than one row in the published doc.
+   * <p>
+   * An example is a column related to a candidate's dependants. If a candidate has dependants, then
+   * we can publish a row for each dependant in addition to the row for the candidate themselves.
+   */
+  @Nullable
+  public PublishedDocColumnDef findExpandingColumnDef() {
+    //Expanding columns must have JSON type values.
+    return columns.stream()
+        .map(PublishedDocColumnConfig::getColumnDef)
+        .filter(columnDef ->
+            columnDef.getContent().getValue() != null)
+        .filter(columnDef ->
+            CandidatePropertyType.JSON == columnDef.getContent().getValue().getPropertyType())
+        .findFirst().orElse(null);
+  }
 
   /**
    * This extracts the corresponding ExportColumn information - this is what is stored on the

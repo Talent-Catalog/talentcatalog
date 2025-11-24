@@ -21,48 +21,64 @@
 <!--        {{getBreadcrumb()}}-->
 <!--    </h3>-->
 <!--  </nav>-->
-
   <div [hidden]="!showSearchRequest">
     <div>
-      <a class="link" (click)="showSearchRequest = false">
-        <ng-container>
-          <i class="fas fa-caret-right"></i> Hide search request
-        </ng-container>
-      </a>
+      <tc-button (onClick)="showSearchRequest = false"
+                 [type]="'plain'"
+                 [color]="'info'"
+      >
+        <i class="fas fa-caret-right"></i> Hide search request
+      </tc-button>
     </div>
 
     <div>
       <div class="d-flex justify-content-between mb-4">
 
 <!--        <h3 class="m-0">Candidate Search</h3>-->
-        <div class="d-flex mt-4">
-          <div>
-            <button [hidden]="!savedSearch?.defaultSearch" type="button" class="btn btn-warning"
-                    [disabled]="loading"
-                    (click)="clearForm()">Clear Search</button>
-              <button [hidden]="savedSearch?.defaultSearch" type="button" class="btn btn-success"
-                      [disabled]="loading"
-                      (click)="newSearch()">New Search</button>
+        <div class="d-flex mt-4 gap-2">
+          <div class="d-flex flex-wrap gap-2">
+            <tc-button [hidden]="!savedSearch?.defaultSearch"
+                       [color]="'warning'"
+                       [disabled]="loading"
+                       (onClick)="clearForm()"
+            >
+              Clear Search
+            </tc-button>
+              <tc-button [hidden]="savedSearch?.defaultSearch"
+                         [color]="'primary'"
+                         [disabled]="loading"
+                         (onClick)="newSearch()"
+              >
+                New Search
+              </tc-button>
           </div>
-          <div>
-            <button type="button" class="ms-2 btn btn-secondary"
-                    [hidden]="savedSearch?.defaultSearch"
-                    [disabled]="!canChangeSearchRequest()"
-                    (click)="updateSavedSearchModal()">
-              <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
-                 class="fas fa-lock"></i>
-              Update Search</button>
-            <button type="button" class="ms-2 btn btn-danger"
-                    [hidden]="savedSearch?.defaultSearch"
-                    [disabled]="!canChangeSearchRequest()"
-                    (click)="deleteSavedSearchModal()">
-              <i *ngIf="!canChangeSearchRequest()" title="Fixed - can't change"
-                 class="fas fa-lock"></i>
-              Delete Search</button>
-            <button type="button" class="ms-2 btn btn-primary"
-                    [hidden]="!savedSearch?.defaultSearch"
-                    (click)="createNewSavedSearchModal()">
-              Save Search</button>
+          <div class="d-flex flex-wrap gap-2">
+            <tc-button [hidden]="savedSearch?.defaultSearch"
+                       [disabled]="!canChangeSearchRequest()"
+                       (onClick)="updateSavedSearchModal()"
+            >
+              <i *ngIf="!canChangeSearchRequest()"
+                 title="Fixed - can't change"
+                 class="fas fa-lock"
+              ></i>
+              Update Search
+            </tc-button>
+            <tc-button [color]="'info'"
+                       [hidden]="savedSearch?.defaultSearch"
+                       [disabled]="!canChangeSearchRequest()"
+                       (onClick)="deleteSavedSearchModal()"
+            >
+              <i *ngIf="!canChangeSearchRequest()"
+                 title="Fixed - can't change"
+                 class="fas fa-lock"
+              ></i>
+              Delete Search
+            </tc-button>
+            <tc-button [hidden]="!savedSearch?.defaultSearch"
+                       (onClick)="createNewSavedSearchModal()"
+            >
+              Save Search
+            </tc-button>
           </div>
         </div>
 
@@ -70,11 +86,11 @@
 
       </div>
 
-      <div class="alert alert-danger" *ngIf="getError()">
+      <tc-alert type="danger" *ngIf="error">
         {{getError()}}
-      </div>
+      </tc-alert>
 
-      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="checkSelectionsAndApply()" #formWrapper>
+      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="onSubmit()" #formWrapper>
         <ng-template #keywordSearchTip>
           <span class="search-tips-content">
             Search candidate CVs using these tips to create powerful queries:
@@ -110,31 +126,37 @@
             <div class="mb-3 col-md-6">
               <!-- providing 'placement' as an empty string makes the tooltip appear over the
               element in a suitable direction for the viewport -->
-              <label class="form-label" for="simpleQueryString">Keyword Search</label>
-              <button class="tool-tip-button"
-                      [ngbTooltip]="keywordSearchTip"
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips keyword"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
-              </button>
-              <input id="simpleQueryString" type="text" class="form-control"
+              <tc-label size="sm" class="form-label" for="simpleQueryString">Keyword Search</tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         [ngbTooltip]="keywordSearchTip"
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
+              <tc-input id="simpleQueryString" type="text"
                      placeholder="E.g. 'welder diesel+mechanic'" aria-label="Keyword Search"
-                     formControlName="simpleQueryString" (keyup.enter)="apply()">
+                        formControlName="simpleQueryString" (keyup.enter)="apply()"></tc-input>
             </div>
 
             <!-- STATUS -->
             <div class="mb-3 col-md-3">
-              <label class="form-label">Status</label>
-              <button class="tool-tip-button"
-                      ngbTooltip="If nothing is specified here, the default is to exclude inactive
-                      statuses - e.g. 'draft', 'deleted' or 'ineligible'."
-                      triggers="click"
-                      tooltipClass="search-tips"
-                      placement="bottom top"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
-              </button>
+              <tc-label size="sm" class="form-label">Status</tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'."
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         placement="bottom top"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <ng-select
+                class="tc-select"
                 id="statuses"
                 [items]="candidateStatusOptions"
                 [multiple]="true"
@@ -142,11 +164,20 @@
                 [clearSearchOnAdd]="true"
                 placeholder="Select or type..."
                 bindLabel="stringValue"
-                [formControlName]="'statusesDisplay'">
+                formControlName="statusesDisplay">
                 <ng-template ng-header-tmp>
-                  <div class="d-flex justify-content-between">
-                    <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateStatusOptions, 'statusesDisplay'); $event.preventDefault()">Select All</button>
-                    <button class="btn btn-sm btn-link" (click)="onClearAll('statusesDisplay'); $event.preventDefault()">Clear All</button>
+                  <div class="d-flex justify-content-between m-2">
+                    <tc-button [size]="'sm'"
+                               (onClick)="onSelectAll(candidateStatusOptions, 'statusesDisplay')"
+                    >
+                      Select All
+                    </tc-button>
+                    <tc-button [size]="'sm'"
+                               [color]="'warning'"
+                               (onClick)="onClearAll('statusesDisplay')"
+                    >
+                      Clear All
+                    </tc-button>
                   </div>
                 </ng-template>
 
@@ -171,7 +202,7 @@
 
             <!-- ENGLISH LANGUAGE -->
             <div class="mb-3 col-12 col-md-3">
-              <label class="form-label">English</label>
+              <tc-label size="sm" class="form-label">English</tc-label>
               <app-language-level-form-control #englishLanguage
                                                [model]="englishLanguageModel"
                                                [languages]="languages"
@@ -196,8 +227,9 @@
 
                 <!-- OCCUPATION MULTISELECT -->
                 <div class="col">
-                  <label class="form-label">Occupation</label>
+                  <tc-label size="sm" class="form-label">Occupation</tc-label>
                   <ng-select
+                    class="tc-select"
                     id="occupationIds"
                     [items]="candidateOccupations"
                     [multiple]="true"
@@ -224,16 +256,16 @@
 
                   <!-- MIN AGE -->
                   <div class="col-6">
-                    <label class="form-label" for="minYrs">Min Years Experience</label>
-                    <input id="minYrs" type="number" class="form-control" name="minYrs"
-                           [formControlName]="'minYrs'" [placeholder]="'Select'">
+                    <tc-label size="sm" class="form-label" for="minYrs">Min Years Experience</tc-label>
+                    <tc-input id="minYrs" type="number" name="minYrs"
+                              [formControlName]="'minYrs'" [placeholder]="'Select'"></tc-input>
                   </div>
 
                   <!-- MAX AGE -->
                   <div class="col-6">
-                    <label class="form-label" for="maxYrs">Max Years Experience</label>
-                    <input id="maxYrs" type="number" class="form-control" name="maxYrs"
-                           [formControlName]="'maxYrs'" [placeholder]="'Select'">
+                    <tc-label size="sm" class="form-label" for="maxYrs">Max Years Experience</tc-label>
+                    <tc-input id="maxYrs" type="number" name="maxYrs"
+                              [formControlName]="'maxYrs'" [placeholder]="'Select'"></tc-input>
                   </div>
                 </div>
 
@@ -248,22 +280,22 @@
                     <!-- MIN AGE -->
                   <div class="row">
                     <div class="col-6">
-                      <label class="form-label" for="minAge">Min Age</label>
-                      <input id="minAge" type="number" class="form-control" name="minAge"
-                             [formControlName]="'minAge'" [placeholder]="'Select'">
+                      <tc-label size="sm" class="form-label" for="minAge">Min Age</tc-label>
+                      <tc-input id="minAge" type="number" name="minAge"
+                                [formControlName]="'minAge'" [placeholder]="'Select'"></tc-input>
                     </div>
                     <!-- MAX AGE -->
                     <div class="col-6">
-                      <label class="form-label" for="maxAge">Max Age</label>
-                      <input id="maxAge" type="number" class="form-control" name="maxAge"
-                             [formControlName]="'maxAge'" [placeholder]="'Select'">
+                      <tc-label size="sm"  class="form-label" for="maxAge">Max Age</tc-label>
+                      <tc-input id="maxAge" type="number" name="maxAge"
+                                [formControlName]="'maxAge'" [placeholder]="'Select'"></tc-input>
                     </div>
                   </div>
                 </div>
 
                 <!-- UNHCR STATUS -->
-                <div class="col-md-6">
-                  <label class="form-label">UNHCR Status</label>
+                <div *ngIf="!isEmployerPartner()" class="col-md-6" id="uncrStatusFilter">
+                  <tc-label size="sm" class="form-label">UNHCR Status</tc-label>
                   <ng-select
                     id="unhcrStatusOptions"
                     [items]="unhcrStatusOptions"
@@ -292,18 +324,19 @@
 
                 <!-- MODIFIED BETWEEN -->
                 <div class="col-md-3">
-                  <label class="form-label">Last Modified</label>
-                  <app-date-range-picker
+                  <tc-label size="sm" class="form-label">Last Modified</tc-label>
+                  <tc-date-range-picker
                     #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
-                  </app-date-range-picker>
+                  </tc-date-range-picker>
                 </div>
               </div>
 
               <div class="row gy-3">
                 <!-- GENDER -->
                 <div class="col-md-2">
-                  <label class="form-label" for="gender">Gender</label>
+                  <tc-label size="sm" class="form-label" for="gender">Gender</tc-label>
                   <ng-select
+                    class="tc-select"
                     id="gender"
                     [items]="genderOptions"
                     [searchable]="false"
@@ -327,8 +360,9 @@
                 <!--                </select>-->
                 <!--              </div>-->
                 <div class="col-md-5">
-                  <label class="form-label">Education Level (minimum)</label>
+                  <tc-label size="sm" class="form-label">Education Level (minimum)</tc-label>
                   <ng-select
+                    class="tc-select"
                     id="minEducationLevel"
                     [items]="educationLevels"
                     placeholder="Select or type..."
@@ -338,10 +372,24 @@
                   </ng-select>
                 </div>
 
+                <div class="col-md-5">
+                  <tc-label size="sm" class="form-label">Education Level (maximum)</tc-label>
+                  <ng-select
+                    class="tc-select"
+                    id="maxEducationLevel"
+                    [items]="educationLevels"
+                    placeholder="Select or type..."
+                    bindLabel="name"
+                    bindValue="level"
+                    [formControlName]="'maxEducationLevel'">
+                  </ng-select>
+                </div>
+
                 <!-- EDUCATION MAJOR -->
                 <div class="col-md-5">
-                  <label class="form-label">Education major</label>
+                  <tc-label size="sm" class="form-label">Education major</tc-label>
                   <ng-select
+                    class="tc-select"
                     id="educationMajorIds"
                     [items]="educationMajors"
                     [multiple]="true"
@@ -374,7 +422,7 @@
 
             <!-- OTHER LANGUAGE -->
             <div class="col-md-4">
-              <label class="form-label">Other Language</label>
+              <tc-label size="sm" class="form-label">Other Language</tc-label>
               <app-language-level-form-control #otherLanguage
                                                [languages]="languages"
                                                [languageLevels]="languageLevels"
@@ -385,7 +433,7 @@
 
             <!-- NATIONALITY -->
             <div class="col-md-4">
-              <label class="form-label">Nationality (Country)</label>
+              <tc-label size="sm" class="form-label">Nationality (Country)</tc-label>
 
               <div class="operator">
                 <button class="btn btn-link" type="button"
@@ -399,6 +447,7 @@
               </div>
 
               <ng-select
+                class="tc-select"
                 id="selectedNationalities"
                 [items]="nationalities"
                 [multiple]="true"
@@ -422,7 +471,7 @@
 
           <!-- COUNTRIES  -->
           <div class="col-md-4">
-            <label class="form-label">Location (Country)</label>
+            <tc-label size="sm" class="form-label">Location (Country)</tc-label>
 
             <div class="operator">
               <button class="btn btn-link" type="button"
@@ -436,6 +485,7 @@
             </div>
 
               <ng-select
+                class="tc-select"
                 id="country"
                 [items]="countries"
                 [multiple]="true"
@@ -457,9 +507,10 @@
               </ng-select>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Survey Type</label>
+            <div *ngIf="!isEmployerPartner()" class="col-md-4">
+              <tc-label size="sm" class="form-label">Survey Type</tc-label>
               <ng-select
+                class="tc-select"
                 id="surveyType"
                 [items]="surveyTypes"
                 [multiple]="true"
@@ -482,15 +533,18 @@
             </div>
 
             <!-- REFERRER -->
-            <div class="col-md-4">
-              <label class="form-label" for="referrer">Referrer</label>
-              <button class="tool-tip-button"
-                      [ngbTooltip]="referrerTooltip"
-                      triggers="click"
-                      tooltipClass="search-tips"
-                      placement="bottom top"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
-              </button>
+            <div *ngIf="!isEmployerPartner()" class="col-md-4" id="referrerFilter">
+              <tc-label size="sm" class="form-label" for="referrer">Referrer</tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         [ngbTooltip]="referrerTooltip"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         placement="bottom top"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <ng-template #referrerTooltip>
                 <span class="search-tips-content">
                   Search ignores upper or lower case so don't worry about case.
@@ -499,23 +553,25 @@
                   with <code>irc</code> appearing anywhere in the name.
                 </span>
               </ng-template>
-              <input id="referrer" class="form-control"
-                     name="referrer" [formControlName]="'regoReferrerParam'" appLowercase>
+              <tc-input id="referrer"
+                        name="referrer" [formControlName]="'regoReferrerParam'" appLowercase></tc-input>
             </div>
 
             <!-- EXCLUSION LIST -->
             <!-- Don't display component until loading has completed - including any existing
                  value of exclusionListId -->
             <div *ngIf="!loading" class="col-md-4">
-              <label class="form-label" for="exclusion">Exclusion list</label>
-              <button class="tool-tip-button"
-                      ngbTooltip="Select from lists you created, global lists (e.g. job lists) or
-                      lists that you have starred."
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
-              </button>
+              <tc-label size="sm" class="form-label" for="exclusion">Exclusion list</tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="Select from lists you created, global lists (e.g. job lists) or lists that you have starred."
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <app-find-candidate-source id="exclusion"
                 [single] = true
                 [sourceType]="CandidateSourceType.SavedList"
@@ -529,15 +585,21 @@
 
             <!-- PARTNERS  -->
             <div class="col-md-4">
-              <label class="form-label">Partners</label>
-              <button class="tool-tip-button"
-                      ngbTooltip="{{getPartnerDefaultMessage()}}"
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
-              </button>
+              <tc-label [size]="'sm'">
+                Partners
+              </tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="{{getPartnerDefaultMessage()}}"
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <ng-select
+                class="tc-select"
                 id="partner"
                 [items]="partners"
                 [multiple]="true"
@@ -548,8 +610,19 @@
                 [formControlName]="'partners'">
                 <ng-template ng-header-tmp>
                   <div class="d-flex justify-content-between">
-                    <button class="btn btn-sm btn-link" (click)="onSelectAll(partners, 'partners'); $event.preventDefault()">Select All</button>
-                    <button class="btn btn-sm btn-link" (click)="onClearAll('partners'); $event.preventDefault()">Clear All</button>
+                    <tc-button [size]="'sm'"
+                               class="btn btn-sm btn-link"
+                               (onClick)="onSelectAll(partners, 'partners')"
+                    >
+                      Select All
+                    </tc-button>
+                    <tc-button [size]="'sm'"
+                               [color]="'warning'"
+                               class="btn btn-sm btn-link"
+                               (onClick)="onClearAll('partners')"
+                    >
+                      Clear All
+                    </tc-button>
                   </div>
                 </ng-template>
                 <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
@@ -569,15 +642,15 @@
             <div class="col-md-4">
               <div class="row row-cols-2">
                 <div>
-                  <label for="miniIntakeCompleted" class="form-label">Mini Intake completed?</label>
-                  <ng-select id="miniIntakeCompleted" placeholder="Select or type..." [formControlName]="'miniIntakeCompleted'">
+                  <tc-label size="sm" for="miniIntakeCompleted" class="form-label">Mini Intake completed?</tc-label>
+                  <ng-select class="tc-select" id="miniIntakeCompleted" placeholder="Select or type..." [formControlName]="'miniIntakeCompleted'">
                     <ng-option [value]="true">Yes</ng-option>
                     <ng-option [value]="false">No</ng-option>
                   </ng-select>
                 </div>
                 <div>
-                  <label for="fullIntakeCompleted" class="form-label">Full Intake completed?</label>
-                  <ng-select id="fullIntakeCompleted" placeholder="Select or type..." [formControlName]="'fullIntakeCompleted'">
+                  <tc-label size="sm" for="fullIntakeCompleted" class="form-label">Full Intake completed?</tc-label>
+                  <ng-select class="tc-select" id="fullIntakeCompleted" placeholder="Select or type..." [formControlName]="'fullIntakeCompleted'">
                     <ng-option [value]="true">Yes</ng-option>
                     <ng-option [value]="false">No</ng-option>
                   </ng-select>
@@ -586,9 +659,9 @@
             </div>
 
             <!-- POTENTIAL DUPLICATE -->
-            <div *ngIf="!searchIsElastic && canViewCandidateName()" class="col-md-2">
-              <label class="form-label" for="potentialDuplicate">Potential Duplicate</label>
-              <ng-select id="potentialDuplicate"
+            <div *ngIf="!searchIsElastic && canViewCandidateName() && !isEmployerPartner()" class="col-md-2">
+              <tc-label size="sm" class="form-label" for="potentialDuplicate">Potential Duplicate</tc-label>
+              <ng-select class="tc-select" id="potentialDuplicate"
                          placeholder="Select"
                          [formControlName]="'potentialDuplicate'"
               >
@@ -597,6 +670,17 @@
               </ng-select>
             </div>
 
+            <!-- SHOW CANDIDATES WHO HAVE NOT ACCEPTED TERMS -->
+            <div class="col-md-2">
+              <tc-label size="sm" class="form-label" for="includePendingTermsCandidates">Show even if terms not accepted?</tc-label>
+              <ng-select class="tc-select" id="includePendingTermsCandidates"
+                         placeholder="Select"
+                         formControlName="includePendingTermsCandidates"
+              >
+                <ng-option [value]="true">Yes</ng-option>
+                <ng-option [value]="false">No</ng-option>
+              </ng-select>
+            </div>
           </div>
         </div>
 
@@ -606,7 +690,7 @@
 
             <!-- LIST ANY -->
             <div *ngIf="!loading" class="mb-6 col-md-6">
-              <label class="form-label">List </label>
+              <tc-label size="sm" class="form-label">List </tc-label>
               <div class="operator">
                 <button class="btn btn-link" type="button"
                         [class.active]="searchForm.value.listAnySearchType !== 'not'"
@@ -617,13 +701,16 @@
                         (click)="handleSearchTypeChange('listAnySearchType', 'not')">not any
                 </button>
               </div>
-              <button class="tool-tip-button"
-                      [ngbTooltip]="helpListAnyTooltip"
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
-              </button>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         [ngbTooltip]="helpListAnyTooltip"
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <ng-template #helpListAnyTooltip>
                 <span class="search-tips-content">
                   <p>
@@ -649,7 +736,7 @@
 
             <!-- LIST ALL -->
             <div *ngIf="!loading" class="mb-6 col-md-6">
-              <label class="form-label">List </label>
+              <tc-label size="sm" class="form-label">List </tc-label>
               <div class="operator">
                 <button class="btn btn-link" type="button"
                         [class.active]="searchForm.value.listAllSearchType !== 'not'"
@@ -660,13 +747,16 @@
                         (click)="handleSearchTypeChange('listAllSearchType', 'not')">not all
                 </button>
               </div>
-              <button class="tool-tip-button"
-                      [ngbTooltip]="helpListAllTooltip"
-                      placement="bottom top"
-                      triggers="click"
-                      tooltipClass="search-tips"
-              ><i class="fa-regular fa-circle-question fa-xs"></i>
-              </button>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         [ngbTooltip]="helpListAllTooltip"
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <ng-template #helpListAllTooltip>
                 <span class="search-tips-content">
                   <p>
@@ -690,6 +780,86 @@
               ></app-find-candidate-source>
             </div>
           </div>
+
+        </div>
+        <hr class="w-100">
+        <div class="container-fluid">
+          <div class="row">
+             <!-- UTM: Campaign -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="campaignFilter">
+                <tc-label size="sm" class="form-label" for="campaignFilter">Campaign</tc-label>
+                <tc-button [type]="'plain'"
+                           class="tool-tip-button"
+                           [ngbTooltip]="campaignTooltip"
+                           triggers="click"
+                           tooltipClass="search-tips"
+                           placement="bottom top"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+                <ng-template #campaignTooltip>
+                  <span class="search-tips-content">
+                    Search ignores upper or lower case so don't worry about case.
+                    Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                    campaigns beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                    with <code>irc</code> appearing anywhere in the name.
+                  </span>
+                </ng-template>
+                <tc-input id="campaign"
+                          name="campaign" [formControlName]="'regoUtmCampaign'" appLowercase></tc-input>
+              </div>
+
+              <!-- UTM: Source -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="sourceFilter">
+                <tc-label size="sm" class="form-label" for="sourceFilter">Source</tc-label>
+                <tc-button [type]="'plain'"
+                           class="tool-tip-button"
+                           [ngbTooltip]="campaignTooltip"
+                           triggers="click"
+                           tooltipClass="search-tips"
+                           placement="bottom top"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+                <ng-template #campaignTooltip>
+                  <span class="search-tips-content">
+                    Search ignores upper or lower case so don't worry about case.
+                    Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                    sources beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                    with <code>irc</code> appearing anywhere in the name.
+                  </span>
+                </ng-template>
+                <tc-input id="source"
+                          name="source" [formControlName]="'regoUtmSource'" appLowercase></tc-input>
+              </div>
+
+              <!-- UTM: Medium -->
+              <div *ngIf="!isEmployerPartner()" class="col-md-4" id="mediumFilter">
+                <tc-label size="sm" class="form-label" for="mediumFilter">Medium</tc-label>
+                <tc-button type="plain"
+                           class="tool-tip-button"
+                           [ngbTooltip]="mediumTooltip"
+                           triggers="click"
+                           tooltipClass="search-tips"
+                           placement="bottom top"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+                <ng-template #mediumTooltip>
+                <span class="search-tips-content">
+                  Search ignores upper or lower case so don't worry about case.
+                  Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                  mediums beginning with <code>ab</code>. Or <code>%irc%</code> will find any
+                  with <code>irc</code> appearing anywhere in the name.
+                </span>
+                </ng-template>
+                <tc-input id="medium"
+                          name="medium" [formControlName]="'regoUtmMedium'" appLowercase></tc-input>
+              </div>
+            </div>
         </div>
 
         <hr class="w-100">
@@ -708,7 +878,14 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col text-center">
-              <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || searchForm.invalid || searchForm.pristine"><i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search</button>
+              <tc-button
+                      [disabled]="loading || searchForm.invalid || searchForm.pristine">
+                <i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search
+              </tc-button>
+            </div>
+            <div class="col text-center">
+              <input type="checkbox" [checked]="useOldSearch"
+                     (change)="useOldSearch = !useOldSearch"> Use old way of searching
             </div>
           </div>
         </div>
@@ -720,6 +897,8 @@
   </div>
 
   <app-show-candidates *ngIf="!error && !loading"
+                       [useOldSearch]="useOldSearch"
+                       [showTextMatchRank]="!isEmptySearchTerms()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"
@@ -731,25 +910,32 @@
                        (editSource)="updateSavedSearchModal()"
   >
     <!--Toggle search details-->
-    <div class="mb-3">
-      <a class="link" (click)="showSearchRequest = !showSearchRequest">
+    <div [ngClass]="showSearchRequest ? 'my-3' : ''">
+      <tc-button (onClick)="toggleSearchRequest()"
+                 [type]="'plain'"
+                 [color]="'info'"
+      >
         <ng-container *ngIf="!showSearchRequest">
           <i class="fas fa-caret-up"></i> Show search request
         </ng-container>
         <ng-container *ngIf="showSearchRequest">
           <i class="fas fa-caret-right"></i> Hide search request
         </ng-container>
-      </a>
+      </tc-button>
     </div>
   </app-show-candidates>
 </div>
 
 <!-- Modals -->
-<ng-template #downloadCsvErrorModal let-c="close" let-d="dismiss">
+<ng-template #downloadCsvErrorModal let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title">CSV download failed</h4>
 
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="d(false)"></button>
+    <tc-button class="btn-close"
+               data-bs-dismiss="modal"
+               aria-label="Close"
+               (onClick)="d(false)"
+    ></tc-button>
 
   </div>
   <div class="modal-body">
@@ -762,7 +948,11 @@
 
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="d(false)">Close</button>
+    <tc-button class="btn btn-outline-dark"
+               (onClick)="d(false)"
+    >
+      Close
+    </tc-button>
   </div>
 </ng-template>
 

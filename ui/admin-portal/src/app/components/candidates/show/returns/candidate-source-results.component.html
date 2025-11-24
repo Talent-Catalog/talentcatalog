@@ -29,39 +29,34 @@
   >
   </app-candidate-source>
 </div>
-<div *ngIf="error">
-  Error: {{error}}
-</div>
-
-<div class="text-muted my-2 align-middle" *ngIf="!searching">
-  <ngb-pagination
-    [boundaryLinks]="true"
-    [pageSize]="pageSize"
-    [collectionSize]="results?.totalElements"
-    [(page)]="pageNumber"
-    (pageChange)="onPageChange()"
-    [maxSize]="5"
-    [ellipses]="true"
-    [rotate]="true"
-  >
-  </ngb-pagination>
-</div>
+<tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
 <div *ngIf="results">
-  <div *ngIf="timestamp">
-    <button class="btn" *ngIf="timestamp" (click)="onRefreshRequest()"><i class="fas fa-sync" title="Refresh data"></i></button>
-    {{results.totalElements}} results. Timestamp {{timestamp | date: 'customDateTime'}}
-  </div>
+  <div *ngIf="timestamp" class="d-flex text-muted small align-items-center flex-wrap-reverse justify-content-between py-2" >
+    <div>
+    <tc-button *ngIf="timestamp"
+               (onClick)="onRefreshRequest()"
+    >
+      Refresh <i class="fas fa-sync" title="Refresh data"></i>
+    </tc-button>
+    </div>
+    <div>
+   <span>{{results.totalElements}} results.</span><br/>  <span class="small">Timestamp {{timestamp | date: 'customDateTime'}} </span>
+    </div>
 
-  <!-- loading -->
-  <div *ngIf="searching">
-      <i class="fas fa-spinner fa-spin"></i> Loading...
   </div>
 
   <div class="table-responsive">
-    <table class="table">
+    <tc-table
+      [results]="results"
+      [loading]="searching"
+      [(pageNumber)]="pageNumber"
+      (pageChange)="onPageChange()"
+      [paginationPosition]="'bottom'"
+      [hover]="true"
+      [striped]="false">
 
-      <thead class="table-primary">
+      <thead class="">
       <tr>
         <th class="candidate-number-row" (click)="toggleSort('id')">
           <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
@@ -79,39 +74,76 @@
 
       <tr *ngFor="let candidate of results?.content">
         <td>
+          <div  class="d-flex align-items-center gap-1">
           <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
             {{candidate.candidateNumber}}
           </a>
           <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+            <tc-icon [size]="'sm'"
+                     [color]="'primary'"
+                     [ariaLabel]="'Show candidate in new tab'">
             <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+            </tc-icon>
           </a>
           <a [routerLink]="['/candidate',candidate.candidateNumber]">
+            <tc-icon [size]="'sm'"
+                     [color]="'primary'"
+                     [ariaLabel]="'Candidate'">
             <i class="fas fa-user" title="Candidate"></i>
+            </tc-icon>
           </a>
           <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
+            <tc-icon [size]="'sm'"
+                     [color]="'primary'"
+                     [ariaLabel]="'Case (candidate opportunity)'">
             <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+            </tc-icon>
           </a>
-          <span *ngIf="showSourceDetails">
+          <span *ngIf="showSourceDetails" class="d-flex align-items-center gap-1">
             <a target="_blank" [href]="candidate.user.partner.websiteUrl">
+              <tc-icon [size]="'sm'"
+                       [color]="'primary'"
+                       [ariaLabel]="'Partner: ' + candidate.user.partner.name">
               <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
+              </tc-icon>
             </a>
             <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
+                  <tc-icon [size]="'sm'"
+                           [color]="'primary'"
+                           [ariaLabel]="'Show candidate in Salesforce'">
               <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
+                 </tc-icon>
             </a>
-            <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
-              <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
+            <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
+               [href]="candidate.folderlink"
+               target="_blank">
+                  <tc-icon [size]="'sm'"
+                           [color]="'primary'"
+                           [ariaLabel]="'Show candidate Google Drive folder'">
+              <i class="fab fa-google-drive" title="Show candidate's Google Drive folder"></i>
+                           </tc-icon>
             </a>
             <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
+                     <tc-icon [size]="'sm'"
+                              [color]="'primary'"
+                              [ariaLabel]="'Show candidate\'s one way video'">
               <i class="fas fa-video" title="Show candidate's one way video"></i>
+              </tc-icon>
             </a>
             <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+                <tc-icon [size]="'sm'"
+                         [color]="'primary'"
+                         [ariaLabel]="'Show candidate\'s LinkedIn page'">
               <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
+                    </tc-icon>
             </a>
             <app-cv-icon
+              [size]="'sm'"
               *ngIf="isCandidateNameViewable()"
               [candidate]="candidate">
             </app-cv-icon>
           </span>
+          </div>
         </td>
 
         <td *ngFor="let field of selectedFields">
@@ -130,7 +162,7 @@
 
       </tbody>
 
-    </table>
+    </tc-table>
   </div>
 
 </div>
@@ -139,5 +171,5 @@
 </div>
 <!-- loading -->
 <div *ngIf="searching">
-  <i class="fas fa-spinner fa-spin"></i> Loading...
+  <tc-loading [loading]="searching"></tc-loading>
 </div>

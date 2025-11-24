@@ -1,8 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ImportDuolingoCouponsComponent} from './import-duolingo-coupons.component';
 import {DuolingoCouponService} from '../../../services/duolingo-coupon.service';
-import {throwError} from 'rxjs';
-import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {of, throwError} from 'rxjs';
+import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('ImportDuolingoCouponsComponent', () => {
   let component: ImportDuolingoCouponsComponent;
@@ -10,16 +10,18 @@ describe('ImportDuolingoCouponsComponent', () => {
   let mockDuolingoCouponService: jasmine.SpyObj<DuolingoCouponService>;
 
   beforeEach(async () => {
-    mockDuolingoCouponService = jasmine.createSpyObj('DuolingoCouponService', ['importCoupons']);
+    mockDuolingoCouponService = jasmine.createSpyObj('DuolingoCouponService', ['importCoupons','countAvailableCoupons']);
 
     await TestBed.configureTestingModule({
+      imports: [NgbPaginationModule],
       declarations: [ImportDuolingoCouponsComponent],
-      providers: [{provide: DuolingoCouponService, useValue: mockDuolingoCouponService}],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA], // Add this only if absolutely necessary
+      providers: [{provide: DuolingoCouponService, useValue: mockDuolingoCouponService}]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ImportDuolingoCouponsComponent);
     component = fixture.componentInstance;
+    mockDuolingoCouponService.countAvailableProctoredCoupons = jasmine.createSpy('countAvailableProctoredCoupons').and.returnValue(of(100)); // Mock the return value if needed
+
     fixture.detectChanges();
   });
 

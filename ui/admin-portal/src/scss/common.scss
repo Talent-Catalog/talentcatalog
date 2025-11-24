@@ -41,7 +41,7 @@
     text-decoration: $link-hover-decoration;
   }
 }
-
+// TODO REMOVE THIS PAGINATION CSS ONCE MOVED OVER TO NEW STYLE
 .page-link {
   position: relative;
   display: block;
@@ -77,26 +77,6 @@
     border-color: $light;
     // Opinionated: remove the "hand" cursor set previously for .page-link
     cursor: auto;
-  }
-}
-
-table {
-  background-color: $white;
-  border: $white;
-  border-radius: 5px;
-  td {
-    white-space: nowrap;
-    a {
-      > i {
-        color: $info;
-        &:hover {
-          color: $accent1;
-        }
-      }
-      &:hover {
-        color: $secondary;
-      }
-    }
   }
 }
 
@@ -147,7 +127,7 @@ table {
 //// The right hand side panels showing more detail of selected item
 .detail-panel {
   border-radius: 5px;
-  padding: 1rem;
+  padding: 2.5rem 2rem;
 }
 
 .side-panel-color {
@@ -164,4 +144,22 @@ table {
 
 .fw-600 {
   font-weight: 600;
+}
+
+// Custom css to make ng-select appear disabled, applied in the read only directive
+ng-select.read-only {
+  .ng-select-container {
+    pointer-events: none;
+    background-color: #e9ecef;
+  }
+}
+
+// Custom css to make ngx-wig appear disabled, applied in the read only directive
+ngx-wig.read-only {
+  .ng-wig {
+    pointer-events: none;
+  }
+  .nw-editor {
+    background-color: #e9ecef;
+  }
 }

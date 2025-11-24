@@ -17,6 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -46,4 +47,6 @@ public interface LanguageLevelRepository extends JpaRepository<LanguageLevel, Lo
     @Query(" select distinct l from LanguageLevel l "
             + " where l.status = 'active'" )
     List<LanguageLevel> findAllActive();
+
+    Optional<LanguageLevel> findByLevel(int level);
 }

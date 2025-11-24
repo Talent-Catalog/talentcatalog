@@ -16,25 +16,15 @@
 
 package org.tctalent.server.request.candidate;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Setter
+@Getter
+@ToString
 public class UpdateCandidateAdditionalInfoRequest {
 
     private String additionalInfo;
-    private String linkedInLink;
-    private Boolean submit;
 
-    public String getAdditionalInfo() { return additionalInfo; }
-
-    public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
-
-    public String getLinkedInLink() { return linkedInLink; }
-
-    public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
-
-    public Boolean getSubmit() {
-        return submit;
-    }
-
-    public void setSubmit(Boolean submit) {
-        this.submit = submit;
-    }
 }

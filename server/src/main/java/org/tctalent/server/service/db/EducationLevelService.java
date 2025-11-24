@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -40,4 +39,5 @@ public interface EducationLevelService {
 
     boolean deleteEducationLevel(long id) throws EntityReferencedException;
 
+    EducationLevel findByLevel(int level);
 }

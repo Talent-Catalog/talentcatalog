@@ -1,0 +1,37 @@
+<div class="container-fluid step-header">
+  <div class="container">
+    <h3>
+      Privacy Policy with {{getPartnerDescription(false)}}
+    </h3>
+    <p [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS' | translate:{partner: getPartnerDescription(true)}"
+       class="explain"></p>
+
+    <div class="step-progress">
+      <div class="step-progress-bar" *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; let i = index;"
+           [class.selected]="11 === i + 1"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container step-body">
+  <app-loading [loading]="loading"></app-loading>
+
+  <div [innerHTML]="'REGISTRATION.SUBMIT.CONSENT_INTRODUCTION' | translate"></div>
+
+  <app-show-terms
+    [requestTermsRead] = true
+    (termsRead)="setReadTerms()"
+  >
+    <div [innerHtml]=currentPrivacyPolicy?.content></div>
+  </app-show-terms>
+
+  <app-error [error]="error"></app-error>
+
+  <button class="btn btn-success" (click)="submit()"
+          [disabled]="!readTerms"
+  >
+    <!--  todo new text-->
+    {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
+  </button>
+</div>
+

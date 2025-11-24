@@ -36,6 +36,7 @@ import {getExternalHref} from "../util/url";
 import {CandidateReviewStatusItem} from "./candidate-review-status-item";
 import {TaskAssignment} from "./task-assignment";
 import {Job} from "./job";
+import {Partner} from "./partner";
 
 export interface ShortCandidate {
   id: number;
@@ -46,7 +47,12 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: Partner;
+  publicId: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -87,6 +93,8 @@ export interface Candidate extends HasId {
   shareableDoc: CandidateAttachment;
   listShareableCv: CandidateAttachment;
   listShareableDoc: CandidateAttachment;
+  muted: boolean;
+  changePassword: boolean;
   shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
@@ -107,6 +115,11 @@ export interface Candidate extends HasId {
   candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
 
   //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];
@@ -390,6 +403,7 @@ export enum CandidateStatus {
   incomplete = "incomplete",
   ineligible = "ineligible (inactive)",
   pending = "pending",
+  relocatedIndependently = "relocated independently (inactive)",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
 }
@@ -423,6 +437,10 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   contactConsentPartners?: string;
 }
 
+export class SubmitRegistrationRequest {
+  acceptedPrivacyPolicyId?: string;
+}
+
 export interface UpdateCandidateOppsRequest {
   candidateIds: number[];
   sfJobOppId: string;
@@ -453,6 +471,10 @@ export interface UpdateCandidateStatusInfo {
 export interface UpdateCandidateStatusRequest {
   candidateIds: number[];
   info: UpdateCandidateStatusInfo;
+}
+
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
 }
 
 export enum FamilyRelations {
@@ -578,6 +600,7 @@ export enum Exam {
   IELTSGen = "IELTS General",
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
+  DETOfficial = "DETOfficial",
   Other = "Other"
 }
 
@@ -678,6 +701,19 @@ export function hasIeltsExam(candidate: Candidate): boolean {
   } else {
     return false;
   }
+}
+
+export function isMuted(candidate: Candidate): boolean {
+  //Default is to treat as muted if the candidate or muted attribute is not defined
+  let isMuted = true;
+  if (candidate) {
+    //Candidate is defined
+    if (candidate.muted != null) {
+      //Muted attribute is defined - so just use it
+      isMuted = candidate.muted;
+    }
+  }
+  return isMuted;
 }
 
 export function checkIeltsScoreType(candidate: Candidate): string {

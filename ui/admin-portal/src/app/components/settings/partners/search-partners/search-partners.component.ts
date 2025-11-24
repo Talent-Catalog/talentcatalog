@@ -19,7 +19,6 @@ import {AuthorizationService} from "../../../../services/authorization.service";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SearchResults} from "../../../../model/search-results";
 import {Partner, sourceCountriesAsString} from "../../../../model/partner";
 import {PartnerService} from "../../../../services/partner.service";
 import {SearchPartnerRequest} from "../../../../model/base";
@@ -27,6 +26,8 @@ import {
   CreateUpdatePartnerComponent
 } from "../create-update-partner/create-update-partner.component";
 import {User} from "../../../../model/user";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {SearchResults} from "../../../../model/search-results";
 
 /*
    MODEL - Delegate all authentication logic to authService
@@ -108,7 +109,7 @@ export class SearchPartnersComponent implements OnInit {
     });
 
     addPartnerModal.result
-    .then((result) => this.search())
+    .then((partner: Partner) => this.postProcessPartner(partner))
     .catch(() => {});
   }
 
@@ -121,8 +122,33 @@ export class SearchPartnersComponent implements OnInit {
     editPartnerModal.componentInstance.partner = partner;
 
     editPartnerModal.result
-    .then((result) => this.search())
+    .then((partner: Partner) => this.postProcessPartner(partner))
     .catch(() => {});
+  }
+
+  /**
+   * Called following add or update of a partner
+   * @param partner Partner that has just been added or updated.
+   * @private
+   */
+  private postProcessPartner(partner: Partner): void {
+    //Display publicApiKey if there is one
+    if (partner.publicApiKey != null) {
+      //Pop up api key display
+      const confirmationModal = this.modalService.open(ConfirmationComponent);
+      confirmationModal.componentInstance.title = "Copy partner's public API key";
+      confirmationModal.componentInstance.showCancel = false;
+      confirmationModal.componentInstance.message =
+        "This public API key, " + partner.publicApiKey + " should be provided to the partner." +
+        " It should not be saved anywhere." +
+        " It will not be displayed again.";
+      confirmationModal.result
+      .then((result) => {})
+      .catch(() => {});
+
+      console.log(partner.publicApiKey);
+    }
+    this.search();
   }
 
   sourceCountries(partner: Partner) {

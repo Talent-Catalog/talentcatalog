@@ -23,7 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {JobsWithDetailComponent} from "../jobs-with-detail/jobs-with-detail.component";
-import { Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {JobsComponent} from "../jobs/jobs.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
@@ -55,6 +55,7 @@ describe('JobHomeComponent', () => {
         { provide: JobService, useValue: jobServiceSpy },
         { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: UntypedFormBuilder, useClass: UntypedFormBuilder },
+        { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
         { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') }}
       ]
     })

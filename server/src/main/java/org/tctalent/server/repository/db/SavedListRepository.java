@@ -49,6 +49,11 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
     Optional<SavedList> findByIdLoadCandidates(@Param("id") long id);
 
     @Query(" select distinct s from SavedList s " +
+        " where s.global = true and s.name = 'PendingTermsAcceptance"
+        + "' ")
+    Optional<SavedList> findPendingTermsAcceptanceList();
+
+    @Query(" select distinct s from SavedList s " +
             " where s.createdBy.id = :userId " +
             " and s.savedSearch.id = :savedSearchId" )
     Optional<SavedList> findSelectionList(
@@ -61,8 +66,8 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
     Optional<SavedList> findRegisteredJobList(@Param("sfId") String sfJoblink);
 
     @Query(" select distinct s from SavedList s "
-            + " where lower(s.tbbShortName) = lower(:tbbShortName)")
-    Optional<SavedList> findByShortNameIgnoreCase(@Param("tbbShortName") String tbbShortName);
+            + " where lower(s.tcShortName) = lower(:tcShortName)")
+    Optional<SavedList> findByShortNameIgnoreCase(@Param("tcShortName") String tcShortName);
 
     @Query(" select s from SavedList s where s.sfJobOpp is not null and s.status != 'deleted'")
     List<SavedList> findListsWithJobs();
@@ -73,4 +78,25 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
     @Query(value = "select csl.candidate_id from candidate_saved_list csl "
         + "where csl.saved_list_id in (:listIds)", nativeQuery = true)
     Set<Long> findUnionOfCandidates(@Param("listIds") List<Long> listIds);
+
+    @Query(value = """
+        select c.public_id
+        from candidate_saved_list csl
+        join saved_list sl on csl.saved_list_id = sl.id
+        join candidate c on csl.candidate_id = c.id
+        where sl.public_id in (:publicListIds)
+        """, nativeQuery = true)
+    Set<String> findCandidatePublicIdsBySavedListPublicIds(@Param("publicListIds") List<String> publicListIds);
+
+    /**
+     * Retrieves a SavedList by its public ID.
+     * <p/>
+     * No explicit query is needed here — Spring Data JPA will automatically generate the query
+     * based on the method name.
+     *
+     * @param publicId the public ID of the SavedList
+     * @return Optional containing the SavedList if found
+     */
+    Optional<SavedList> findByPublicId(String publicId);
+
 }

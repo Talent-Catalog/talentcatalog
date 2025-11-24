@@ -27,6 +27,8 @@ import {
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {TaskAssignment} from "../../../../../../model/task-assignment";
 import {TaskType} from "../../../../../../model/task";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {TaskSubmittedComponent} from "./task-submitted/task-submitted.component";
 
 @Component({
   selector: 'app-candidate-task',
@@ -43,9 +45,12 @@ export class CandidateTaskComponent implements OnInit {
   saving: boolean;
   error;
 
-  constructor(private fb: UntypedFormBuilder,
-              private taskAssignmentService: TaskAssignmentService,
-              public sanitizer: DomSanitizer) { }
+  constructor(
+    private fb: UntypedFormBuilder,
+    private taskAssignmentService: TaskAssignmentService,
+    public sanitizer: DomSanitizer,
+    private modalService: NgbModal
+  ) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -55,8 +60,8 @@ export class CandidateTaskComponent implements OnInit {
 
     this.addRequiredFormControls();
 
-    if (this.selectedTask.task.helpLink && this.selectedTask.task.taskType == "Simple") {
-      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.helpLink);
+    if (this.selectedTask.task.docLink) {
+      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.docLink);
     }
 
     // todo this validation seems very messy! May be a better way to handle this. Perhaps use seperate forms?
@@ -126,8 +131,30 @@ export class CandidateTaskComponent implements OnInit {
     return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
   }
 
+  /**
+   * This is called when the form of a form task has been submitted
+   */
+  completedFormTask($event: TaskAssignment) {
+    this.saving = true;
+    const request: UpdateTaskAssignmentRequest = {
+      completed: true,
+      abandoned: false
+    }
+    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+    this.openTaskSubmittedModal()
+  }
+
   completedUploadTask($event: TaskAssignment) {
     this.selectedTask = $event;
+    this.openTaskSubmittedModal();
   }
 
   submitTask() {
@@ -138,17 +165,40 @@ export class CandidateTaskComponent implements OnInit {
       this.updateTaskComment();
     } else {
       if (!this.abandonedTask) {
-        if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-          this.updateQuestionTask();
-        } else if (this.selectedTask.task.taskType === TaskType.Simple) {
-          this.updateSimpleTask();
-        } else {
-          this.updateUploadTask();
+        switch (this.selectedTask.task.taskType) {
+          case TaskType.Question:
+          case TaskType.YesNoQuestion:
+            this.updateQuestionTask();
+            break;
+          case TaskType.Simple:
+            this.updateSimpleTask();
+            break;
+          case TaskType.Upload:
+            this.updateUploadTask();
+            break;
         }
       } else {
         this.updateAbandonedTask();
       }
     }
+    this.openTaskSubmittedModal()
+  }
+
+  openTaskSubmittedModal() {
+    const modalRef = this.modalService.open(TaskSubmittedComponent, {
+      centered: true,
+      backdrop: 'static',
+    })
+
+    modalRef.componentInstance.onReturnToTasksClick.subscribe(() => {
+      modalRef.close();
+      this.goBack()
+    })
+
+    modalRef.componentInstance.onStayOnTaskClick.subscribe(() => {
+      modalRef.close();
+      this.form.markAsPristine();
+    })
   }
 
   updateQuestionTask() {

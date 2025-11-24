@@ -85,6 +85,7 @@ public class CandidateEs {
             "dob",
             "maxEducationLevel",
             "ieltsScore",
+            "englishAssessmentScoreDet",
             "residenceStatus",
             "numberDependants",
     };
@@ -167,6 +168,10 @@ public class CandidateEs {
     }
 
     private String regoReferrerParam;
+    private String regoUtmCampaign;
+    private String regoUtmSource;
+    private String regoUtmMedium;
+
 
     private Long updated;
 
@@ -206,9 +211,6 @@ public class CandidateEs {
     }
 
     @Field(type = FieldType.Text)
-    private String migrationOccupation;
-
-    @Field(type = FieldType.Text)
     private List<String> skills;
 
     @Enumerated(EnumType.STRING)
@@ -221,6 +223,9 @@ public class CandidateEs {
 
     @Field(type = FieldType.Double)
     private BigDecimal ieltsScore;
+
+    @Field(type = FieldType.Long)
+    private Long englishAssessmentScoreDet;
 
     @Field(type = FieldType.Long)
     private Long numberDependants;
@@ -280,6 +285,10 @@ public class CandidateEs {
         this.partner = candidate.getUser() == null ? null
                 : candidate.getUser().getPartner().getAbbreviation();
         this.regoReferrerParam = candidate.getRegoReferrerParam();
+        this.regoUtmCampaign = candidate.getRegoUtmCampaign();
+        this.regoUtmSource = candidate.getRegoUtmSource();
+        this.regoUtmMedium = candidate.getRegoUtmMedium();
+
         this.status = candidate.getStatus();
 
         this.phone = candidate.getPhone();
@@ -289,6 +298,7 @@ public class CandidateEs {
         this.dob = candidate.getDob();
         this.residenceStatus = candidate.getResidenceStatus();
         this.ieltsScore = candidate.getIeltsScore();
+        this.englishAssessmentScoreDet = candidate.getEnglishAssessmentScoreDet();
         this.numberDependants = candidate.getNumberDependants();
 
 
@@ -371,8 +381,6 @@ public class CandidateEs {
             }
         }
 
-        //Education major can also come from the candidate's special migrationEducationMajor field
-        addEducationMajor(candidate.getMigrationEducationMajor());
 
         this.jobExperiences = new ArrayList<>();
         List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
@@ -400,7 +408,6 @@ public class CandidateEs {
         }
 
         this.occupations = new ArrayList<>();
-        this.migrationOccupation = null;
         List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
         if (candidateOccupations != null) {
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
@@ -414,10 +421,6 @@ public class CandidateEs {
                             occupation.setYearsExperience(yearsExperience);
                         }
                         occupations.add(occupation);
-                    }
-
-                    if (candidateOccupation.getMigrationOccupation() != null) {
-                        this.migrationOccupation = candidateOccupation.getMigrationOccupation();
                     }
                 }
             }
@@ -490,7 +493,7 @@ public class CandidateEs {
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields
                 //that are not keyword fields (eg numeric fields).
-                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore",
+                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel","englishAssessmentScoreDet", "ieltsScore",
                     "numberDependants", "dob"};
 
                 boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);

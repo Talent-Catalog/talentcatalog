@@ -54,7 +54,7 @@ import org.tctalent.server.util.locale.LocaleHelper;
 @Slf4j
 public class CountryServiceImpl implements CountryService, InitializingBean {
 
-    @Value("${tbb.destinations}")
+    @Value("${tc.destinations}")
     private String[] tcDestinations;
     private List<Country> tcDestinationCountries;
 
@@ -84,7 +84,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
             if (country == null) {
                 LogBuilder.builder(log)
                     .action("CountryServiceImpl")
-                    .message("Error in application.yml file. See tbb.destinations. " +
+                    .message("Error in application.yml file. See tc.destinations. " +
                             "No country found called " + tcDestination)
                     .logError();
             } else {
@@ -114,7 +114,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
         if (restricted) {
             // Restrict access if there are source countries associated to admin user
-            if(user != null && user.getSourceCountries().size() > 0 ){
+            if(user != null && !user.getSourceCountries().isEmpty()){
                 countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
             } else {
                 //Note: Can't use cache because translationService modifies it adding
@@ -133,6 +133,11 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     @Override
     public List<Country> getTCDestinations() {
         return tcDestinationCountries;
+    }
+
+    @Override
+    public boolean isTCDestination(long countryId) {
+        return tcDestinationCountries.stream().anyMatch(c -> c.getId() == countryId);
     }
 
     @Override
@@ -163,8 +168,15 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
         return country;
     }
 
+    @NonNull
     @Override
-    public Country findCountryByName(String name) {
+    public Country findByIsoCode(String isoCode) {
+        return countryRepository.findByIsoCode(isoCode)
+            .orElseThrow(() ->new NoSuchObjectException(Country.class, isoCode));
+    }
+
+    @Override
+    public Country findByName(String name) {
         return countryRepository.findByNameIgnoreCase(name);
     }
 
@@ -237,7 +249,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
             final String name = country.getName().trim();
             String code = nameToCode.get(name);
             if (code == null) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                    sb.append(",");
                 }
                 sb.append(name);

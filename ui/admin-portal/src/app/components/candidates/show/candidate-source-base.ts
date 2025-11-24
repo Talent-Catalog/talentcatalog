@@ -38,6 +38,7 @@ import {Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
+import {isNullOrEmpty} from "../../../util/string";
 
 @Directive()
 export class CandidateSourceBaseComponent {
@@ -54,6 +55,8 @@ export class CandidateSourceBaseComponent {
   reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
   @Input() candidateSource: CandidateSource;
+  //Temporary - todo to be removed when we no longer use Elasticsearch or CandidateSpecifications
+  @Input() useOldSearch: boolean;
 
   selectedFields: CandidateFieldInfo[] = [];
 
@@ -140,14 +143,22 @@ export class CandidateSourceBaseComponent {
 
     this.searching = true;
 
-    // todo Is this the best place to do the defaulting?
-    //  Need do defaulting in search request, then pick up actual info from returned results.
-    //  Currently server sends back used page number and size but does not echo back sort info.
-    //  It should be changed to do so.
     this.pageNumber = this.pageNumber || 1;
     this.pageSize = this.pageSize || defaultPageSize;
-    this.sortField = this.sortField || 'id';
-    this.sortDirection = this.sortDirection || 'DESC';
+
+    //Use candidateSource to default sort based on whether or not there is a query string
+    let defaultSortField = 'id';
+    let defaultSortDirection = 'DESC';
+    if (isSavedSearch(this.candidateSource)) {
+      if (this.useOldSearch == null || !this.useOldSearch) {
+        if (!isNullOrEmpty(this.candidateSource.simpleQueryString)) {
+          defaultSortField = 'text_match'
+        }
+      }
+    }
+
+    this.sortField = this.sortField || defaultSortField;
+    this.sortDirection = this.sortDirection || defaultSortDirection;
 
     //Create the appropriate request
     const request = this.createSearchRequest(keyword, showClosedOpps);
@@ -287,6 +298,10 @@ export class CandidateSourceBaseComponent {
 
   canAccessSalesforce(): boolean {
     return this.authorizationService.canAccessSalesforce();
+  }
+
+  canAccessGoogleDrive(): boolean {
+    return this.authorizationService.canAccessGoogleDrive();
   }
 
   isSalesforceUpdatable(): boolean {

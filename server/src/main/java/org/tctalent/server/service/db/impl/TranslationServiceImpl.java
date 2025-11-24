@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,7 @@ import org.tctalent.server.request.translation.UpdateTranslationRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
@@ -51,14 +53,23 @@ public class TranslationServiceImpl implements TranslationService {
     private final TranslationRepository translationRepository;
     private final S3ResourceHelper s3ResourceHelper;
     private final AuthService authService;
+    private final Environment environment;
+
+    private Map<String, Object> englishS3Translations;
 
     @Autowired
     public TranslationServiceImpl(TranslationRepository translationRepository,
                                   S3ResourceHelper s3ResourceHelper,
+                                  Environment environment,
                                   AuthService authService) {
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
+        this.environment = environment;
         this.translationRepository = translationRepository;
+        // Skip S3 call in test profile
+        if (!List.of(environment.getActiveProfiles()).contains("test")) {
+            englishS3Translations = getTranslationFile("en");
+        }
     }
 
     public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> entities,
@@ -94,8 +105,10 @@ public class TranslationServiceImpl implements TranslationService {
 
     @Override
     public Translation createTranslation(User user, CreateTranslationRequest request) {
+        String sanitizedValue = HtmlSanitizer.sanitize(request.getValue());
+
         Translation translation = new Translation(user, request.getObjectId(), request.getObjectType(),
-            request.getLanguage(), request.getValue());
+            request.getLanguage(), sanitizedValue);
         Translation existing = translationRepository.findByObjectIdTypeLang(request.getObjectId(), request.getObjectType(), request.getLanguage()).orElse(null);
         if (existing != null){
             throw new EntityExistsException("translation");
@@ -118,9 +131,10 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     @Transactional
     public Translation updateTranslation(long id, UpdateTranslationRequest request) throws EntityExistsException {
+        String sanitizedValue = HtmlSanitizer.sanitize(request.getValue());
         Translation translation = this.translationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Translation.class, id));
-        translation.setValue(request.getValue());
+        translation.setValue(sanitizedValue);
         return translationRepository.save(translation);
     }
 
@@ -148,12 +162,20 @@ public class TranslationServiceImpl implements TranslationService {
             this.s3ResourceHelper.uploadFile(this.s3ResourceHelper.getS3Bucket(), json,
                     "translations/" + language + ".json", "text/json");
 
+            if ("en".equals(language)) {
+                englishS3Translations = translations;
+            }
         } catch (JsonProcessingException e) {
             throw new ServiceException("invalid_json", "The translation data could not be converted to JSON", e);
         } catch (FileUploadException e) {
             throw new ServiceException("file_upload", "The JSON file could not be uploaded to s3", e);
         }
 
+    }
+
+    @Override
+    public String translateToEnglish(String... keys) {
+        return englishS3Translations == null ? null : translate(englishS3Translations, keys);
     }
 
     @Override

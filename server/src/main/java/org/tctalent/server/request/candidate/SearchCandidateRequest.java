@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.candidate;
 
+import static org.tctalent.server.configuration.SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,9 +35,10 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -45,63 +47,15 @@ import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.repository.db.CandidateQueryHelper;
 import org.tctalent.server.request.PagedSearchRequest;
-
-/*
-  TODO Fix this whole messy confusion around the relationships between SavedSearch
-  SavedSearchRequest and what is transmitted up to the browser and received from the browser
-  when transferring those objects in each direction.
-
-  Here are some of the messiest parts of the code:
-
-  * All the Transient fields in SavedSearch - which are populated by the getSavedSearch method
-    in SavedSearchServiceImpl. Instead of all that copying and Transient fields, the SavedSearch
-    should not be storing ids, but other entities. Ids can be transferred in the Dto
-    (if necessary for performance reasons)
-    and populated using browser look ups of id to values from those static lists (eg of countries).
-  * Static lists should be uploaded to the browser once on login, then accessed in services.
-    On the rare occasions when static lists change - eg new occupation, users are asked to logout
-    and in again. Or - a failed local lookup could trigger an automatic reload before failing hard.
-  * The addition of the above transient fields in the savedSearchDtoExtended method of SavedSearchAdminApi
-  * convertToSearchCandidateRequest method on SavedSearchServiceImpl, and its cloned version
-    in CandidateServiceImpl
-  * The only partially successful attempt to impose some type checking on the browser by including
-    a SavedSearch type which extends SearchCandidateRequest. The problem being that
-    SavedSearchRequest data sent from the browser is different to SavedSearchRequest data
-    sent up to the browser.
-  * One of the key anomalies at the moment is the difference between the server and browser versions
-    of the SearchCandidateRequest class. On the server, it has minimal fields - reflecting the
-    data that is actually stored in the data base - as fields on the SavedSearch class (entity).
-    On the browser the class has a whole bunch of redundant fields corresponding to the
-    transient fields of SavedSearch.
-  * On the browser, the SavedSearch class extends the SearchCandidateRequest class, but on the
-    server it doesn't. Instead SavedSearch should contain SearchCandidateRequest as a property
-    (@Embedded in the @Entity) in both browser and server. That avoids a lot of pointless field
-    copying.
-  * The redundant fields are on the browser version of SearchCandidateRequest because the
-    inheriting browser SavedSearch makes use of those redundant fields (names instead of ids).
-    But the browser version of SearchCandidateRequest probably doesn't need them in the Define
-    Search screen for example. It would be good to find another way of supplying those extra fields
-    to SavedSearch - maybe as methods which fetch names by looking up from the SS id through
-    a local browser service. Or a subclassed SavedSearchEnriched object which adds them.
-    Ideally we would have a basic SavedSearch object that extended a basic SearchCandidateRequest
-    identical on both server and browser. Then add extra fields as needed as subclasses or
-    methods.
-
-  Approach:
-
-    1. Figure out exactly what data needs to travel in both directions
-    2. Make that data transfer type safe and consistent on browser and server.
-    3. Do all the extra creation of redundant data (eg names from ids etc) in a single logical
-       place - eg in DTO code on the server, or lookup services on the browser.
-
- */
+import org.tctalent.server.util.CandidateSearchUtils;
 
 @Getter
 @Setter
 @ToString(callSuper = true)
 public class SearchCandidateRequest extends PagedSearchRequest {
+
+    private boolean useOldSearch;
 
     private String simpleQueryString;
     @NotNull
@@ -142,19 +96,21 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Integer minAge;
     private Integer maxAge;
     private Integer minEducationLevel;
+    private Integer maxEducationLevel;
     private List<Long> educationMajorIds;
 
+    private Boolean includePendingTermsCandidates;
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
     private Boolean potentialDuplicate;
     private String regoReferrerParam;
     private List<ReviewStatus> reviewStatusFilter;
-
-    //TODO JC I don't think is used - possible Zombie code
-    private Boolean includeUploadedFiles;
     private LocalDate fromDate;
     private List<SearchJoinRequest> searchJoinRequests;
 
+    private String regoUtmCampaign;
+    private String regoUtmSource;
+    private String regoUtmMedium;
     /**
      * If specified, requests display of candidates whose candidate opportunities (if any) match
      * the filter.
@@ -174,18 +130,94 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         super(Sort.Direction.DESC, new String[]{"id"});
     }
 
-    /**
-     * Extracts the database query SQL corresponding to the given search request.
-     *
-     * @param nativeQuery True if native database SQL is required, otherwise JPQL is returned
-     * @return String containing the SQL or JPQL
-     */
-    public String extractSQL(boolean nativeQuery,
-        @Nullable User user,
-        @Nullable Collection<Candidate> excludedCandidates) {
+    public String extractCountSQL(
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
 
+        String joinAndWhereSql = extractJoinAndWhereSQL(user, excludedCandidates, false);
+        String selectSql = extractCountSelectSql();
+        return selectSql + joinAndWhereSql;
+    }
+
+    /**
+     * @see #extractFetchSQL(User, Collection, boolean)
+     */
+    public String extractFetchSQL() {
+        return extractFetchSQL(null, null, false);
+    }
+
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     *     If ordered is true, there will also be an ORDER BY clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
+     *
+     * @param ordered If true the generated sql will return ordered data as specified in the request.
+     * @return String containing the SQL
+     */
+    public String extractFetchSQL(
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(user, excludedCandidates, ordered);
+
+        String selectSql = extractFetchSelectSql(ordered);
+
+        String sql = selectSql + joinAndWhereSql;
+
+        if (ordered) {
+            Sort sort = getSort();
+            String orderBySql = CandidateSearchUtils.buildOrderByClause(sort);
+            sql += orderBySql;
+        }
+
+        return sql;
+    }
+
+    private String extractCountSelectSql() {
+        return "select count(distinct candidate.id) from candidate";
+    }
+
+    private String extractFetchSelectSql(boolean ordered) {
+        String sql;
+        if (!ordered) {
+            sql = "select distinct candidate.id from candidate";
+        } else {
+            Sort sort = getSort();
+
+            sql = "select distinct candidate.id";
+            String nonIdSortFields = CandidateSearchUtils.buildNonIdFieldList(sort, getSimpleQueryString());
+            if (!nonIdSortFields.isEmpty()) {
+                sql += "," + nonIdSortFields;
+            }
+            sql += " from candidate";
+        }
+        return sql;
+    }
+
+    private String extractJoinAndWhereSQL(
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
+
+        //Uses a LinkedHashSet so that ordering is predictable - which helps unit testing
         Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
+
+        //Text search
+        if (StringUtils.hasText(getSimpleQueryString())) {
+            joins.add("candidate_job_experience");
+            String to_tsquery = CandidateSearchUtils.buildToTsQueryFunction(getSimpleQueryString());
+            String clause = CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD + " @@ " + to_tsquery;
+            ands.add(clause);
+        }
 
         // STATUS SEARCH
         if (!ObjectUtils.isEmpty(getStatuses())) {
@@ -196,7 +228,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // Occupations SEARCH
         if (!ObjectUtils.isEmpty(getOccupationIds())) {
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE);
+            joins.add("candidate_occupation");
             String values = getOccupationIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("candidate_occupation.occupation_id in (" + values + ")");
@@ -214,7 +246,17 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             String values = excludedCandidates.stream()
                 .map(candidate -> candidate.getId().toString())
                 .collect(Collectors.joining(","));
-            ands.add("not candidate.id in (" + values + ")");
+            ands.add("candidate.id not in (" + values + ")");
+        }
+
+        // Exclude candidates belonging to the PENDING_TERMS_ACCEPTANCE_LIST unless specifically
+        // asked to include them.
+        boolean excludePendingTermsCandidates
+            = includePendingTermsCandidates == null || !includePendingTermsCandidates;
+        if (excludePendingTermsCandidates) {
+            ands.add("candidate.id not in"
+                + " (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = " + PENDING_TERMS_ACCEPTANCE_LIST_ID + ")");
         }
 
         // NATIONALITY SEARCH
@@ -249,7 +291,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // PARTNER SEARCH
         if (!ObjectUtils.isEmpty(getPartnerIds())) {
-            joins.add(CandidateQueryHelper.CANDIDATE__USER__JOIN__NATIVE);
+            joins.add("users");
             String values = getPartnerIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("users.partner_id in (" + values + ")");
@@ -267,6 +309,27 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             getRegoReferrerParam() == null ? null : getRegoReferrerParam().trim().toLowerCase();
         if (referrerParam != null && !referrerParam.isEmpty()) {
             ands.add("lower(candidate.rego_referrer_param) like '" + referrerParam + "'");
+        }
+
+        // UTM: Campaign
+        final String utmCampaigns =
+            getRegoUtmCampaign() == null ? null : getRegoUtmCampaign().trim().toLowerCase();
+        if (utmCampaigns != null && !utmCampaigns.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_campaign) like '" + utmCampaigns + "'");
+        }
+
+        // UTM: Sources
+        final String regoUtmSources =
+            getRegoUtmSource() == null ? null : getRegoUtmSource().trim().toLowerCase();
+        if (regoUtmSources != null && !regoUtmSources.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_source) like '" + regoUtmSources + "'");
+        }
+
+        // UTM: MEDIUM
+        final String regoUtmMedium =
+            getRegoUtmMedium() == null ? null : getRegoUtmMedium().trim().toLowerCase();
+        if (regoUtmMedium != null && !regoUtmMedium.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_medium) like '" + regoUtmMedium + "'");
         }
 
         // GENDER SEARCH
@@ -304,9 +367,14 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         // EDUCATION LEVEL SEARCH
-        if (getMinEducationLevel() != null) {
-            joins.add(CandidateQueryHelper.CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE);
-            ands.add("education_level.level >= " + getMinEducationLevel());
+        if (getMinEducationLevel() != null || getMaxEducationLevel() != null) {
+            joins.add("education_level");
+            if (getMinEducationLevel() != null) {
+                ands.add("education_level.level >= " + getMinEducationLevel());
+            }
+            if (getMaxEducationLevel() != null) {
+                ands.add("education_level.level <= " + getMaxEducationLevel());
+            }
         }
 
         // MINI INTAKE COMPLETE
@@ -324,16 +392,15 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         // POTENTIAL DUPLICATE
         if (getPotentialDuplicate() != null) {
             boolean potentialDuplicate = getPotentialDuplicate();
-            ands.add("potentialDuplicate = " + potentialDuplicate);
+            ands.add("candidate.potential_duplicate = " + potentialDuplicate);
         }
 
         // MAJOR SEARCH
         if (!ObjectUtils.isEmpty(getEducationMajorIds())) {
             String values = getEducationMajorIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE);
-            ands.add("(major_id in (" + values + ") "
-                + "or migration_education_major_id in (" + values + "))");
+            joins.add("candidate_education");
+            ands.add("major_id in (" + values + ")");
         }
 
         // LANGUAGE SEARCH
@@ -341,48 +408,91 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             || getOtherLanguageId() != null
             || getOtherMinSpokenLevel() != null || getOtherMinWrittenLevel() != null) {
 
-            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE);
-            joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE);
+            joins.add("candidate_language");
+            joins.add("language");
 
             if (getEnglishMinSpokenLevel() != null && getEnglishMinWrittenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                joins.add("spoken_level");
+                joins.add("written_level");
                 ands.add("lower(language.name) = 'english'");
                 ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
                 ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
             } else if (getEnglishMinSpokenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                joins.add("spoken_level");
                 ands.add("lower(language.name) = 'english'");
                 ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
             } else if (getEnglishMinWrittenLevel() != null) {
-                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                joins.add("written_level");
                 ands.add("lower(language.name) = 'english'");
                 ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
             }
 
             if (getOtherLanguageId() != null) {
                 if (getOtherMinSpokenLevel() != null && getOtherMinWrittenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                    joins.add("spoken_level");
+                    joins.add("written_level");
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
                     ands.add("written_level.level >= " + getOtherMinWrittenLevel());
                 } else if (getOtherMinSpokenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                    joins.add("spoken_level");
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
                 } else if (getOtherMinWrittenLevel() != null) {
-                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                    joins.add("written_level");
                     ands.add("candidate_language.language_id = " + getOtherLanguageId());
                     ands.add("written_level.level >= " + getOtherMinWrittenLevel());
                 }
             }
         }
 
-        String joinClause = String.join(" left join ", joins);
+        //LIST ANY
+        SearchType listAnySearchType = getListAnySearchType();
+        final List<Long> listAnyIds = getListAnyIds();
+        if (!ObjectUtils.isEmpty(listAnyIds)) {
+            String values = listAnyIds.stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            String clause = "candidate.id in"
+                + " (select candidate_id from candidate_saved_list"
+                + " where saved_list_id in (" + values + "))";
+            if (SearchType.not.equals(listAnySearchType)) {
+                clause = "not (" + clause + ")";
+            }
+            ands.add(clause);
+        }
+
+        //LIST ALL
+        SearchType listAllSearchType = getListAllSearchType();
+        final List<Long> listAllIds = getListAllIds();
+        if (!ObjectUtils.isEmpty(listAllIds)) {
+            List<String> clauses = new ArrayList<>();
+            for (Long listAllId : listAllIds) {
+                clauses.add("candidate.id in"
+                    + " (select candidate_id from candidate_saved_list"
+                    + " where saved_list_id = " + listAllId + ")");
+            }
+            //All clauses must be true so and together.
+            String clause = String.join(" and ", clauses);
+            if (SearchType.not.equals(listAllSearchType)) {
+                clause = "not (" + clause + ")";
+            }
+            ands.add(clause);
+        }
+
+        if (ordered) {
+            List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(getSort());
+            if (!tableSet.isEmpty()) {
+                joins.addAll(tableSet);
+            }
+        }
+
+        String joinClause = joins.stream()
+            .map(CandidateSearchUtils::getTableJoin)
+            .collect(Collectors.joining(" left join "));
+
         String whereClause = String.join(" and ", ands);
 
-        String query = "select distinct candidate.id from candidate";
+        String query = "";
         if (!joinClause.isEmpty()) {
             query += " left join " + joinClause;
         }
@@ -391,13 +501,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         return query;
-    }
-
-    /**
-     * @see #extractSQL(boolean, User, Collection)
-     */
-    public String extractSQL(boolean nativeQuery) {
-        return extractSQL(nativeQuery, null, null);
     }
 
     /**

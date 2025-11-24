@@ -16,23 +16,28 @@
 
 package org.tctalent.server.api.admin;
 
-import java.util.List;
-import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -110,7 +115,15 @@ public class PartnerAdminApi implements
         request.setEmployer(employer);
 
         Partner partner = partnerService.update(id, request);
+
         return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_SYSTEMADMIN')")
+    @GetMapping("public-api-key/{api-key}")
+    public ResponseEntity<PublicApiPartnerDto> findPartnerByPublicApiKey(@PathVariable("api-key") String apiKey) {
+        PublicApiPartnerDto partner = partnerService.findPublicApiPartnerDtoByKey(apiKey);
+        return ResponseEntity.ok(partner);
     }
 
     @PutMapping("{id}/update-job-contact")
@@ -134,6 +147,39 @@ public class PartnerAdminApi implements
             employer = employerService.findOrCreateEmployerFromSalesforceLink(employerSflink);
         }
         return employer;
+    }
+
+    /**
+     * Marks the partner as having accepted the Data Processing Agreement (DPA).
+     *
+     * @param id The partner ID
+     * @return The updated partner information
+     */
+    @PutMapping("{id}/accept-dpa")
+    public Map<String, Object> acceptDpa(@PathVariable("id") String id) {
+        Partner partner = partnerService.updateAcceptedDpa(id);
+        return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    /**
+     * Records the first time the partner has seen the Data Processing Agreement (DPA).
+     *
+     * @return The updated partner information
+     */
+    @PutMapping("/dpa-seen")
+    public Map<String, Object> setFirstDpaSeen() {
+        PartnerImpl partner = partnerService.setFirstDpaSeen();
+        return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    /**
+     * Checks whether the partner still needs to accept the Data Processing Agreement (DPA).
+     *
+     * @return true if the partner is required to accept the DPA, false otherwise
+     */
+    @GetMapping("/requires-dpa")
+    public boolean requiresDpaAcceptance() {
+        return partnerService.requiresDpaAcceptance();
     }
 
 }

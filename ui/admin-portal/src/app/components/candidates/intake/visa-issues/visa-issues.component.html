@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="visaIssues">Is there anything else about your background that could
@@ -27,7 +27,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="visaIssues" [formControlName]="'visaIssues'" (clear)="setNoResponse('visaIssues')"
+    <ng-select class="tc-select" id="visaIssues" [formControlName]="'visaIssues'" (clear)="setNoResponse('visaIssues')"
                [items]="visaIssueOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
@@ -35,9 +35,9 @@
   <div *ngIf="hasNotes">
     <div class="mb-3">
       <label class="form-label" for="visaIssuesNotes">Please explain concerns further</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+      <tc-textarea type="text" rows="4"
                 id="visaIssuesNotes" [formControlName]="'visaIssuesNotes'"
-                placeholder=""></textarea>
+                placeholder=""></tc-textarea>
     </div>
   </div>
 </form>

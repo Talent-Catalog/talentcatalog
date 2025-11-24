@@ -66,4 +66,26 @@ export class DuolingoCouponService {
     return this.http.get<DuolingoCouponResponse>(`${this.apiBaseUrl}/find/${couponCode}`);
   }
 
+  /**
+   * Assign coupons to a list of candidates
+   * @param listId - Id of the list to assign coupons to
+   */
+  assignCouponToList(listId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiBaseUrl}/assign-to-list`, listId);
+  }
+
+  /**
+   * Get the count of all available coupons
+   */
+  countAllAvailableCoupons(): Observable<any> {
+    return this.http.get<any>(`${this.apiBaseUrl}/count-all`);
+  }
+
+  /**
+   * Get the count of available proctored coupons
+   */
+  countAvailableProctoredCoupons(): Observable<any> {
+    return this.http.get<any>(`${this.apiBaseUrl}/count-proctored`);
+  }
+
 }

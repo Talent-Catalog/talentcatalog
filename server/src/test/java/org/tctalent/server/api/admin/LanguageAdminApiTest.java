@@ -58,6 +58,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.LanguageTestData.getLanguage;
+import static org.tctalent.server.data.LanguageTestData.getLanguageList;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguageList;
 
 /**
  * Unit tests for Candidate Occupation Admin Api endpoints.
@@ -75,10 +79,10 @@ class LanguageAdminApiTest extends ApiTestBase {
     private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
     private static final String SEARCH_PATH = "/search";
 
-    private static final List<Language> languageList = AdminApiTestUtil.getLanguageList();
-    private static final Language language = AdminApiTestUtil.getLanguage();
-    private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
-    private static final List<SystemLanguage> systemLanguageList = AdminApiTestUtil.getSystemLanguageList();
+    private static final List<Language> languageList = getLanguageList();
+    private static final Language language = getLanguage();
+    private static final SystemLanguage systemLanguage = getSystemLanguage();
+    private static final List<SystemLanguage> systemLanguageList = getSystemLanguageList();
 
     private final Page<Language> languagePage =
             new PageImpl<>(

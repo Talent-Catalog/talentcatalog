@@ -47,35 +47,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory.CandidateBatchJobBuilder;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
-import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -86,8 +80,10 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -99,6 +95,7 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.repository.db.JobChatUserRepository;
+import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
@@ -106,15 +103,20 @@ import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.response.DuolingoDashboardResponse;
 import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.api.TcApiService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
+import org.tctalent.server.service.db.BatchJobService;
+import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.DuolingoApiService;
+import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
@@ -126,11 +128,6 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
-import org.tctalent.server.service.db.impl.DuolingoApiServiceImpl;
-import org.tctalent.server.util.background.BackProcessor;
-import org.tctalent.server.util.background.BackRunner;
-import org.tctalent.server.util.background.IdContext;
-import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -147,6 +144,7 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateOpportunityRepository candidateOpportunityRepository;
@@ -167,18 +165,21 @@ public class SystemAdminApi {
     private final JobChatRepository jobChatRepository;
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
+    private final PartnerRepository partnerRepository;
     private final S3ResourceHelper s3ResourceHelper;
     private final CacheService cacheService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final Map<Integer, Integer> countryForGeneralCountry;
+    final Map<Integer, Integer> countryForGeneralCountry;
 
     private final GoogleDriveConfig googleDriveConfig;
-    private final TaskScheduler taskScheduler;
     private final BackgroundProcessingService backgroundProcessingService;
+    private final BatchJobService batchJobService;
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
+    private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
+    private final TcApiService tcApiService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -204,15 +205,16 @@ public class SystemAdminApi {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Value("${environment}")
-    private String environment;
     private final DuolingoApiService duolingoApiService;
+    private final DuolingoCouponService duolingoCouponService;
 
     @Autowired
     public SystemAdminApi(
             DataSharingService dataSharingService,
             AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
+            PartnerRepository partnerRepository,
+        CandidateBatchJobFactory candidateBatchJobFactory,
             CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
         CandidateOpportunityRepository candidateOpportunityRepository,
@@ -228,11 +230,16 @@ public class SystemAdminApi {
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-        SavedSearchService savedSearchService, PartnerService partnerService, DuolingoApiService duolingoApiService) {
+        BackgroundProcessingService backgroundProcessingService,
+        BatchJobService batchJobService,
+        SavedSearchService savedSearchService, PartnerService partnerService,
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoCouponService duolingoCouponService,
+        TcApiService tcApiService
+        ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
         this.candidateOpportunityRepository = candidateOpportunityRepository;
@@ -256,36 +263,142 @@ public class SystemAdminApi {
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
-        this.taskScheduler = taskScheduler;
       this.backgroundProcessingService = backgroundProcessingService;
-      this.savedSearchService = savedSearchService;
+        this.batchJobService = batchJobService;
+        this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
+      this.partnerRepository = partnerRepository;
+      this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
+      this.duolingoCouponService = duolingoCouponService;
+      this.tcApiService = tcApiService;
     }
 
     /**
-     * todo The intention is that this can be used to implement a operations which do not
-     * max out the TC's CPU.
-     * @see BackRunner
+     * Clears the firstDpaSeenDate field for the partner with the given ID.
+     * @param partnerId The ID of the partner
      */
-    @GetMapping("export_search/{id}")
-    public void exportSearch() {
-        BackRunner<IdContext> backRunner = new BackRunner<>();
-        BackProcessor<IdContext> backProcessor = new BackProcessor<>() {
-            @Override
-            public boolean process(IdContext ctx) {
-                long startId = ctx.getLastProcessedId() == null ? 0 : ctx.getLastProcessedId()+1;
-                System.out.println("Processing " + ctx.getNumToProcess() + " ids starting from "
-                    + (startId == 0 ? "beginning " : startId) );
-                long lastProcessed = startId + ctx.getNumToProcess() - 1;
-                ctx.setLastProcessedId(lastProcessed);
-                return lastProcessed+1 >= 50;
-            }
+    @GetMapping("partner/clear-first-dpa-seen/{partnerId}")
+    public void clearFirstDpaSeen(@PathVariable("partnerId") Long partnerId) {
+        // Fetch the partner by ID
+        PartnerImpl partner = (PartnerImpl) partnerService.getPartner(partnerId);
+
+        // Clear the firstDpaSeenDate field
+        partner.setFirstDpaSeenDate(null);
+
+        // Save the updated partner back to the repository
+        partnerRepository.save(partner);
+    }
+
+    @GetMapping("set_candidate_text/cpu-{cpu}")
+    public ResponseEntity<String> setCandidateText(
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("", 0, cpu);
+    }
+
+    @GetMapping("set_candidate_text/search-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateTextBySearch(
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("search", sourceId, cpu);
+    }
+
+    @GetMapping("set_candidate_text/list-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateTextByList(
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("list", sourceId, cpu);
+    }
+
+    private ResponseEntity<String> setCandidateTextCommon(
+        @PathVariable("candidateSource") String candidateSource,
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+
+        ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
+            candidate -> {
+                candidate.updateText();
+                return candidate;
+            };
+
+        CandidateBatchJobBuilder jobBuilder;
+        if (candidateSource.equals("list")) {
+            SavedList savedList = savedListService.get(sourceId);
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", savedList, candidateUpdateTextProcessor);
+        } else if (candidateSource.equals("search")) {
+            SavedSearch search = savedSearchService.getSavedSearch(sourceId);
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", search, candidateUpdateTextProcessor);
+        } else {
+            //If no source is specified, generate a default search request which processes all
+            //candidates except deleted or withdrawn
+            SearchCandidateRequest request = new SearchCandidateRequest();
+            EnumSet<CandidateStatus> includedStatuses = EnumSet.complementOf(
+                EnumSet.of(CandidateStatus.deleted, CandidateStatus.withdrawn));
+            request.setStatuses(new ArrayList<>(includedStatuses));
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", request, candidateUpdateTextProcessor);
+        }
+
+        Job candidateUpdateTextJob= jobBuilder
+            .percentageOfCpu(cpu)
+            .build();
+
+        String response = batchJobService.launchJob(candidateUpdateTextJob, false);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("set_public_ids")
+    public void setPublicIds() {
+        backgroundProcessingService.setCandidatePublicIds();
+        backgroundProcessingService.setPartnerPublicIds();
+        backgroundProcessingService.setSavedListPublicIds();
+        backgroundProcessingService.setSavedSearchPublicIds();
+    }
+
+    @GetMapping("run_api_migration")
+    public ResponseEntity<String> runApiMigration() {
+        String response = tcApiService.runApiMigration();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("run_api_migration/list/{listId}")
+    public ResponseEntity<String> runApiMigrationByListId(@PathVariable("listId") long listId) {
+        String response = tcApiService.runApiMigrationByListId(listId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("run_api_migration/{name}")
+    public ResponseEntity<String> runApiMigration(@PathVariable("name") String name) {
+        if (name == null || name.isBlank()) {
+            return ResponseEntity.badRequest().body("Migration name cannot be null or empty");
+        }
+
+        return switch (name.toLowerCase()) {
+            case "mongo" -> ResponseEntity.ok(tcApiService.runMongoMigration());
+            case "aurora" -> ResponseEntity.ok(tcApiService.runAuroraMigration());
+            default -> ResponseEntity.badRequest().body("Invalid migration name: " + name);
         };
-        ScheduledFuture<?> scheduledFuture =
-            backRunner.start(taskScheduler, backProcessor, new IdContext(0L, 10),
-                20);
+    }
+
+    @GetMapping("list_api_migrations")
+    public ResponseEntity<String> listApiMigrations() {
+        String response = tcApiService.listApiMigrations();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("stop_api_migration/{id}")
+    public ResponseEntity<String> stopApiMigration(@PathVariable("id") long id) {
+        String response = tcApiService.stopApiMigration(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("restart_api_migration/{id}")
+    public ResponseEntity<String> restartApiMigration(@PathVariable("id") long id) {
+        String response = tcApiService.restartApiMigration(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("fix_null_case_sfids")
@@ -345,6 +458,31 @@ public class SystemAdminApi {
         @RequestParam String birthdate) {
         return duolingoApiService.verifyScore(certificateId, birthdate);
     }
+
+    /**
+     * Reassigns a new Duolingo coupon to a candidate and marks any previously assigned coupons as redeemed.
+     *
+     * @param candidateNumber The ID of the candidate to whom the new coupon will be assigned.
+     * @return A ResponseEntity containing the details of the newly assigned coupon.
+     * @throws NoSuchObjectException If the candidate or available coupons are not found.
+     */
+    @GetMapping("reassign-duolingo-coupon/{candidateNumber}")
+    public ResponseEntity<DuolingoCouponResponse> reassignDuolingoCoupon(@PathVariable("candidateNumber") String candidateNumber) {
+        try {
+            User user = authService.getLoggedInUser()
+                .orElseThrow(() -> new NoSuchObjectException("No authenticated user found"));
+            DuolingoCouponResponse response = duolingoCouponService.reassignProctoredCouponToCandidate(candidateNumber, user);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchObjectException e) {
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("ReassignDuolingoCoupon")
+                .message("Failed to reassign coupon for candidate " + candidateNumber + ": " + e.getMessage())
+                .logError();
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @GetMapping("flush_user_cache")
     public void flushUserCache() {
         cacheService.flushUserCache();
@@ -355,9 +493,9 @@ public class SystemAdminApi {
             .logInfo();
     }
 
-    @GetMapping("notifyOfChatsWithNewPosts")
+    @GetMapping("notifyOfChatsWithNewUnreadPosts")
     public void notifyOfNewChatPosts() {
-        notificationService.notifyUsersOfChatsWithNewPosts();
+        notificationService.notifyUsersOfChatsWithNewUnreadPosts();
     }
 
     /**
@@ -427,25 +565,72 @@ public class SystemAdminApi {
             .logInfo();
     }
 
-    @GetMapping("load_candidate_ops")
-    public void loadCandidateOpportunities() {
-        //Get all job opps known to TC
-        List<SavedList> listsWithJobs = savedListService.findListsAssociatedWithJobs();
-
-        //Extract their distinct ids
-        String[] jobIds = listsWithJobs.stream()
-            .filter(sl -> sl.getSfJobOpp() != null)
-            .map(sl -> sl.getSfJobOpp().getSfId())
-            .distinct()
-            .toArray(String[]::new);
-        candidateOpportunityService.loadCandidateOpportunities(jobIds);
-    }
+  // This method was written for the initial migration of opps from SF to the TC. It may have some
+  // future utility so is only commented out for the time being, but it should only be used again
+  // advisedly and probably with some modification for the current purpose.
+//    @GetMapping("load_candidate_ops")
+//    public void loadCandidateOpportunities() {
+//        //Get all job opps known to TC
+//        List<SavedList> listsWithJobs = savedListService.findListsAssociatedWithJobs();
+//
+//        //Extract their distinct ids
+//        String[] jobIds = listsWithJobs.stream()
+//            .filter(sl -> sl.getSfJobOpp() != null)
+//            .map(sl -> sl.getSfJobOpp().getSfId())
+//            .distinct()
+//            .toArray(String[]::new);
+//        candidateOpportunityService.loadCandidateOpportunities(jobIds);
+//    }
 
     @GetMapping("sf-sync-open-jobs")
-    public String sfSyncOpenJobs() {
-        jobService.updateOpenJobs();
-        return "started";
+    ResponseEntity<?> sfSyncOpenJobs() {
+      try {
+        LogBuilder.builder(log)
+            .action("Sync Open Jobs From SF")
+            .message("Manually triggered")
+            .logInfo();
+
+        jobService.initiateOpenJobSyncFromSf();
+
+        return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+      } catch(Exception e) {
+        LogBuilder.builder(log)
+            .action("Sync Open Jobs From SF")
+            .message("Manually triggered operation failed")
+            .logInfo();
+
+        // Return 500 Internal Server Error including error in body for display on frontend
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+      }
     }
+
+  /**
+   * Manual trigger for method that updates TC Candidate Opportunities from their Salesforce
+   * equivalents.
+   * @return ResponseEntity indicating success or failure
+   */
+  @GetMapping("sf-sync-open-cases")
+  ResponseEntity<?> sfSyncOpenCases() {
+    try {
+      LogBuilder.builder(log)
+          .action("Sync Open Cases From SF")
+          .message("Manually triggered")
+          .logInfo();
+
+      candidateOppBackgroundProcessingService.initiateBackgroundCaseUpdate();
+
+      return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+    } catch(Exception e) {
+      LogBuilder.builder(log)
+          .action("Sync Open Cases From SF")
+          .message("Manually triggered operation failed")
+          .logInfo();
+
+      // Return 500 Internal Server Error including error in body for display on frontend
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+    }
+  }
 
     /**
      * Move candidate to the current candidate data drive.
@@ -1320,7 +1505,6 @@ public class SystemAdminApi {
 
     @GetMapping("migrate/extract")
     public void migrateExtract() {
-        TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
         Long userId = 1L;
         if (authService != null) {
             User loggedInUser = authService.getLoggedInUser().orElse(null);
@@ -1330,8 +1514,8 @@ public class SystemAdminApi {
         }
 
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
-        extractTextFromMigratedFiles(textExtractHelper, types);
-        extractTextFromNewFiles(textExtractHelper, types);
+        extractTextFromMigratedFiles(types);
+        extractTextFromNewFiles(types);
     }
 
 //    @GetMapping("es-to-db/unhcr-status")
@@ -1339,7 +1523,7 @@ public class SystemAdminApi {
         populateElasticsearchService.populateCandidateFromElastic();
     }
 
-    private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {
+    private void extractTextFromMigratedFiles(List<String> types) {
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
         int count = 0;
         int success = 0;
@@ -1348,7 +1532,7 @@ public class SystemAdminApi {
                 String uniqueFilename = file.getLocation();
                 String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
                 if(StringUtils.isNotBlank(extractedText)) {
                     file.setTextExtract(extractedText);
                     candidateAttachmentRepository.save(file);
@@ -1372,7 +1556,7 @@ public class SystemAdminApi {
         }
     }
 
-    private void extractTextFromNewFiles(TextExtractHelper textExtractHelper, List<String> types) {
+    private void extractTextFromNewFiles(List<String> types) {
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
         int count = 0;
         int success = 0;
@@ -1381,7 +1565,7 @@ public class SystemAdminApi {
                 String uniqueFilename = file.getLocation();
                 String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
                 if (StringUtils.isNotBlank(extractedText)) {
                     file.setTextExtract(extractedText);
                     candidateAttachmentRepository.save(file);
@@ -2554,7 +2738,7 @@ public class SystemAdminApi {
     }
 
     private Long checkReference(int value,
-                                Set<Long> referenceIds) {
+        Set<Long> referenceIds) {
         // null values coming from source db are converted to integer 0 which would be incorrectly linked to "unknown", so treat as null
         Long lookupVal = value > 0 ? (long) value : null;
         if (referenceIds.contains(lookupVal)) {
@@ -2722,8 +2906,8 @@ public class SystemAdminApi {
     }
 
     private Date getDate(ResultSet result,
-                         String columnName,
-                         Long candidateId) {
+        String columnName,
+        Long candidateId) {
         try {
             Date date = result.getDate(columnName);
             if (date != null && !"1970-01-01".equals(date.toString())) {
@@ -2822,114 +3006,6 @@ public class SystemAdminApi {
 
     public void setTargetPwd(String targetPwd) {
         this.targetPwd = targetPwd;
-    }
-
-    /**
-     * Stub for manual call to sync active candidates to SF
-     * @param noOfPagesRequested total no of pages (containing up to 200 candidates max) to be
-     *                           synced. NB: passing <code>0</code> will sync full search results.
-     */
-    @GetMapping("sf-sync-candidates/{noOfPagesRequested}")
-    public ResponseEntity<?> sfSyncCandidates(
-        @PathVariable("noOfPagesRequested") long noOfPagesRequested
-    ) {
-        try {
-            // 0 syncs all results
-            if (noOfPagesRequested == 0) {
-                initiateSfCandidateSync(null);
-            } else {
-                initiateSfCandidateSync(noOfPagesRequested);
-            }
-
-            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
-
-        } catch(Exception e) {
-            LogBuilder.builder(log)
-                .action("sfSyncCandidates")
-                .message("TC-SF candidate sync failed.")
-                .logError(e);
-
-            // Return 500 Internal Server Error including error in body for display on frontend
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
-        }
-    }
-
-    /**
-     * Sets up search parameters and scheduled background processing for SF candidate sync.
-     * @param noOfPagesRequested no of pages requested to be synced - if null, all results will sync
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    private void initiateSfCandidateSync(@Nullable Long noOfPagesRequested)
-        throws SalesforceException, WebClientException {
-
-        LogBuilder.builder(log)
-            .action("initiateSfCandidateSync")
-            .message("Initiating TC-SF candidate sync")
-            .logInfo();
-
-        // Obtain and log search results metrics
-        Pageable pageable = PageRequest.of(
-            0, 200, Sort.by("id").ascending()
-        );
-
-        // Candidates with an 'active' status or already uploaded to SF
-        final List<CandidateStatus> statuses = new ArrayList<>(
-            EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
-                CandidateStatus.incomplete));
-
-        Page<Candidate> candidatePage = candidateRepository
-            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
-
-        LogBuilder.builder(log)
-            .action("initiateSfCandidateSync")
-            .message(candidatePage.getTotalElements() + " candidates meet the criteria")
-            .logInfo();
-
-        // Set total page count - if requested amount is null, defers to total pages in results
-        long totalNoOfPages =
-            Optional.ofNullable(noOfPagesRequested).orElse((long) candidatePage.getTotalPages());
-
-        LogBuilder.builder(log)
-            .action("initiateSfCandidateSync")
-            .message("This request will process " + totalNoOfPages + " pages of 200 candidates.")
-            .logInfo();
-
-        // Implement background processing
-        BackProcessor<PageContext> backProcessor =
-            backgroundProcessingService.createSfSyncBackProcessor(statuses, totalNoOfPages);
-
-        // Schedule background processing
-        BackRunner<PageContext> backRunner = new BackRunner<>();
-
-        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-            new PageContext(null, 1), 20);
-    }
-
-    /**
-     * Scheduled TC -> SF sync of all active candidates
-     */
-    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-        lockAtMostFor = "PT23H")
-    public void scheduledSfProdCandidateSync() {
-        if (environment.equalsIgnoreCase(Environment.prod.name())) {
-            // Passing null means all results will be processed
-            initiateSfCandidateSync(null);
-        }
-    }
-
-    /**
-     * Scheduled TC staging -> SF sandbox sync
-     */
-    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-        lockAtMostFor = "PT23H")
-    public void scheduledSfSandboxCandidateSync() {
-        // Scaled-down replica of prod for testing purposes (4,000 candidates)
-        if (environment.equalsIgnoreCase(Environment.staging.name())) {
-            initiateSfCandidateSync(20L);
-        }
     }
 
     @GetMapping("delete-job/{jobId}")

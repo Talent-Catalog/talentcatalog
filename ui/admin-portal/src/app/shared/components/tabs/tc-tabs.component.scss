@@ -1,0 +1,30 @@
+@import 'src/scss/color-mixins';
+@import 'src/scss/support-colors';
+
+.nav.nav-tabs {
+  border-bottom: 1px solid;
+  border-color: color(gray, 200);
+  .nav-link {
+    @include text-color-secondary;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: inherit;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 2px solid transparent;
+    &:hover {
+      border-bottom: 2px solid;
+      @include border-color-base-dark;
+    }
+  }
+  .nav-link.active {
+    border-bottom: 2px solid;
+    @include border-color-primary;
+    @include text-color-primary;
+  }
+}
+
+.tab-content {
+  margin-top: 2rem;
+}

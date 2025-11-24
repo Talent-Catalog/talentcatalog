@@ -165,6 +165,7 @@ export interface Auditable extends HasId {
 }
 
 export interface CandidateSource extends Auditable {
+  publicId?: string;
   name: string;
   description?: string;
   displayedFieldsLong?: string[];
@@ -224,6 +225,10 @@ export class PagedSearchRequest {
 export class PagedFilteredSearchRequest extends PagedSearchRequest {
   keyword?: string;
   status?: string;
+}
+
+export class KeywordPagedSearchRequest extends PagedSearchRequest {
+  keyword?: string;
 }
 
 export class SearchPartnerRequest extends PagedFilteredSearchRequest {

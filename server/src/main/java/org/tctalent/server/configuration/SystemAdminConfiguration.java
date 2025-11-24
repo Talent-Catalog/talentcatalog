@@ -22,6 +22,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.Role;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
@@ -36,10 +37,19 @@ import org.tctalent.server.service.db.UserService;
  */
 @Component
 public class SystemAdminConfiguration {
+  public final static String TEST_CANDIDATE_LIST_NAME = "TestCandidates";
+  public static long TEST_CANDIDATE_LIST_ID;
+  public final static String PENDING_TERMS_ACCEPTANCE_LIST_NAME = "PendingTermsAcceptance";
+  public static long PENDING_TERMS_ACCEPTANCE_LIST_ID;
 
   public final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
   public final static String[] GLOBAL_LIST_NAMES = new String[] {
-      "TestCandidates"
+
+      //Tags candidates as test candidates
+      TEST_CANDIDATE_LIST_NAME,
+
+      //Tags candidates who have been asked to accept our latest terms but who have not yet done so
+      PENDING_TERMS_ACCEPTANCE_LIST_NAME
   };
 
   private final SavedListService savedListService;
@@ -79,14 +89,25 @@ public class SystemAdminConfiguration {
 
     //Create global lists
     for (String listName : GLOBAL_LIST_NAMES) {
+      SavedList savedList = savedListService.get(systemAdmin, listName);
       //Don't create if already exists.
-      if (savedListService.get(systemAdmin, listName) == null) {
+      if (savedList == null) {
         //Create the global list
         UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
         req.setGlobal(true);
         req.setFixed(true);
         req.setName(listName);
-        savedListService.createSavedList(systemAdmin, req);
+        savedList = savedListService.createSavedList(systemAdmin, req);
+      }
+
+      //For some global lists we store their ids for convenience.
+
+      if (listName.equals(TEST_CANDIDATE_LIST_NAME)) {
+        TEST_CANDIDATE_LIST_ID = savedList.getId();
+      }
+
+      if (listName.equals(PENDING_TERMS_ACCEPTANCE_LIST_NAME)) {
+        PENDING_TERMS_ACCEPTANCE_LIST_ID = savedList.getId();
       }
     }
   }

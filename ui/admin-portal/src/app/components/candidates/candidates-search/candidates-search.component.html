@@ -23,6 +23,7 @@
 </div>
 
 <app-define-search *ngIf="!error && !loading"
+                     [jobId]="jobId"
                      [savedSearch]="savedSearch"
                      [pageNumber]="pageNumber"
                      [pageSize]="pageSize"

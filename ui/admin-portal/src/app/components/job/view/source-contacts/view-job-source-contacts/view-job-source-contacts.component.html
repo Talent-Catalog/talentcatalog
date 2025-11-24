@@ -17,46 +17,39 @@
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>
-<div class="table-responsive">
-  <table class="table" [ngClass]="{'table-hover' : selectable}">
 
-    <thead class="table-primary">
-    <tr>
-      <th></th>
-      <th></th>
-      <th>Source Partner</th>
-      <th>Contact for Job</th>
-      <th>Email</th>
-    </tr>
-    </thead>
+<tc-loading [loading]="loading"></tc-loading>
 
-    <tbody>
-    <tr *ngFor="let partner of sourcePartners" (click)="selectCurrent(partner)"
-        [ngClass]="{'current': currentSourcePartner?.id == partner.id && selectable}">
-      <td>
-        <div class="btn-group" *ngIf="isEditable(partner)">
-          <button type="button" class="btn btn-default" (click)="editPartnerContact(partner)"><i
-            class="fas fa-edit" title="Change partner details"></i></button>
-        </div>
-      </td>
-      <td>
-        <app-chat-read-status *ngIf="isShowReadStatus(partner)"
-          [chats]="[partner._jobChat]"
-        >
-        </app-chat-read-status>
-      </td>
-      <td>{{partner.name}} {{sourceCountries(partner)}}</td>
-      <td>{{jobContact(partner)?.firstName}} {{jobContact(partner)?.lastName}}</td>
-      <td>{{jobContact(partner)?.email}}</td>
-    </tr>
+<tc-table *ngIf="!loading" [ngClass]="{'table-hover' : selectable}">
+  <thead>
+  <tr>
+    <th></th>
+    <th></th>
+    <th>Source Partner</th>
+    <th>Contact for Job</th>
+    <th>Email</th>
+  </tr>
+  </thead>
 
-    <!-- loading -->
-    <tr *ngIf="loading">
-      <td colspan="42">
-        <i class="fas fa-spinner fa-spin"></i> Loading...
-      </td>
-    </tr>
-    </tbody>
-  </table>
-</div>
+  <tbody>
+  <tr *ngFor="let partner of sourcePartners" (click)="selectCurrent(partner)"
+      [ngClass]="{'current': currentSourcePartner?.id == partner.id && selectable, 'clickable': selectable}">
+    <td class="text-center">
+      <tc-icon *ngIf="isEditable(partner)" title="Change partner details" size="sm" color="gray"
+               (click)="editPartnerContact(partner)">
+        <i class="fas fa-edit"></i>
+      </tc-icon>
+    </td>
+    <td>
+      <app-chat-read-status *ngIf="isShowReadStatus(partner)"
+                            [chats]="[partner._jobChat]"
+      >
+      </app-chat-read-status>
+    </td>
+    <td>{{partner.name}} {{sourceCountries(partner)}}</td>
+    <td>{{jobContact(partner)?.firstName}} {{jobContact(partner)?.lastName}}</td>
+    <td>{{jobContact(partner)?.email}}</td>
+  </tr>
+  </tbody>
+</tc-table>
 

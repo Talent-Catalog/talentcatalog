@@ -16,6 +16,10 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -23,9 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import jakarta.persistence.PersistenceException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +41,6 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateSubfolderType;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
@@ -50,20 +50,27 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.LoginRequest;
-import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
+import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tctalent.server.request.candidate.RegisterCandidateRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SelfRegistrationRequest;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -128,11 +135,13 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
-    Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request);
+    Page<Candidate> searchCandidates(CandidateEmailPhoneOrWhatsappSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
+
+    Page<Candidate> searchCandidates(CandidatePublicIdSearchRequest request);
 
     /**
      * Returns a set of the ids of all candidates resulting from the given SQL query.
@@ -149,6 +158,14 @@ public interface CandidateService {
     List<Candidate> getSavedListCandidatesUnpaged(SavedList savedList, SavedListGetRequest request);
 
     Candidate getCandidate(long id) throws NoSuchObjectException;
+
+    /**
+     * Sets the transient answer field on Question Task Assignments, these come from various places either the candidate
+     * property table (stored as task name and answer values) or it's stored in a field on the candidate object.
+     * This method allows us to pass in the page of candidates from a search/list of candidates and then populate the fields.
+     * @param candidates: page of candidates from a search paged method (saved search or saved list)
+     */
+    void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates);
 
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
 
@@ -167,6 +184,8 @@ public interface CandidateService {
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
 
     void updateCandidateStatus(SavedList savedList, UpdateCandidateStatusInfo info);
+
+    void updateMutedStatus(long id, UpdateCandidateMutedRequest request);
 
     Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request);
 
@@ -214,7 +233,22 @@ public interface CandidateService {
      * @param httpRequest HTTP request for registration
      * @return A login request generated for the newly created candidate.
      */
-    LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest);
+    LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest);
+
+    /**
+     * Create (ie register) a candidate from registration information supplied by a partner
+     * (eg UNHCR).
+     * @param request Request containing the candidate data needed to register a candidate.
+     * @return The registered candidate
+     */
+    Candidate registerByPartner(RegisterCandidateByPartnerRequest request);
+
+    /**
+     * Updates the privacy policy that the candidate has accepted.
+     * @param acceptedPrivacyPolicyId ID of policy that candidate has accepted
+     * @return The updated candidate
+     */
+    Candidate updateAcceptedPrivacyPolicy(String acceptedPrivacyPolicyId);
 
     Candidate updateContact(UpdateCandidateContactRequest request);
 
@@ -222,15 +256,26 @@ public interface CandidateService {
 
     Candidate updateEducation(UpdateCandidateEducationRequest request);
 
-    Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
+    Candidate updateOtherInfo(UpdateCandidateOtherInfoRequest request);
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
+    /**
+     * Updates the maximum education level of a candidate.
+     *
+     * @param id the ID of the candidate to update
+     * @param request the request object containing the new max education level
+     * @return the updated {@link Candidate} entity with the new education level
+     * @throws EntityNotFoundException if no candidate is found with the given ID
+     * @throws IllegalArgumentException if the request is invalid or incomplete
+     */
+    Candidate updateCandidateMaxEducationLevel(long id, UpdateCandidateMaxEducationLevelRequest request);
 
     /**
-     * Returns a candidate once they have completed their registration
+     * Submits a candidate's completed registration.
      * <p/>
+     * Returns a candidate once they have completed their registration
      */
-    Candidate submitRegistration();
+    Candidate submitRegistration(SubmitRegistrationRequest submitRegistrationRequest);
 
     /**
      * Returns the currently logged in candidate entity preloaded with
@@ -320,6 +365,16 @@ public interface CandidateService {
     Candidate findByCandidateNumber(String candidateNumber);
 
     /**
+     * Finds candidate with the given public ID.
+     *
+     * @param publicId ID of desired candidate
+     * @return Candidate
+     * @throws NoSuchObjectException if not found
+     */
+    @NonNull
+    Candidate findByPublicId(String publicId);
+
+    /**
      * Return candidates by their ids
      * @param ids The ids to be looked up. If an id does not correspond to any candidate,
      *            it is ignored and no candidate is returned.
@@ -375,6 +430,8 @@ public interface CandidateService {
      */
     void setCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type,
         @Nullable String link);
+
+    void setPublicIds(List<Candidate> candidates);
 
     void exportToCsv(SavedList savedList, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException;
@@ -450,6 +507,13 @@ public interface CandidateService {
     Candidate save(Candidate candidate, boolean updateCandidateEs);
 
     /**
+     * Allows for automatic updating of the candidate text before saving the candidate.
+     * @see #save(Candidate, boolean)
+     * @return Candidate object as returned by {@link CandidateRepository#save}
+     */
+    Candidate save(Candidate candidate, boolean updateCandidateEs, boolean updateCandidateText);
+
+    /**
      * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.
      * <p/>
      * If a link to the folder or subfolders are already recorded for the candidate, does nothing.
@@ -501,6 +565,15 @@ public interface CandidateService {
      * @throws NoSuchObjectException if no candidate is found with that id
      */
     void updateIntakeData(long id, CandidateIntakeDataUpdate data)
+        throws NoSuchObjectException;
+
+    /**
+     * Updates a candidate's notification preferences
+     * @param id ID of candidate
+     * @param request Request containing notification preferences
+     * @throws NoSuchObjectException if no candidate is found with that id
+     */
+    void updateNotificationPreference(long id, UpdateCandidateNotificationPreferenceRequest request)
         throws NoSuchObjectException;
 
     /**
@@ -593,17 +666,6 @@ public interface CandidateService {
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
 
     /**
-     * Processes a single page for the TC-SF candidate sync.
-     * @param startPage page to process (zero-based index)
-     * @param statuses types of {@link CandidateStatus} to filter for in search
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    void processSfCandidateSyncPage(
-        long startPage, List<CandidateStatus> statuses
-    ) throws SalesforceException, WebClientException;
-
-    /**
      * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in
      * user's partner organisation, if they contain posts unread by same user.
      * @return list of IDs of Job Chats matching the criteria
@@ -649,4 +711,20 @@ public interface CandidateService {
      * Again, annotated @Transactional to rollback incomplete confusing results.
      */
     void cleanUpResolvedDuplicates();
+
+    /**
+     * Compares the current and requested values of the relocated location fields (address, city, state, country) and
+     * if they differ creates a candidate note for audit purposes. This helps to know how recent and relevant this
+     * relocated data is. We can't pass in the full request object, as depending on which portal the update comes from
+     * it will have a different request object. So each request field is passed in individually.
+     * @param candidate the candidate whose relocated data we are check if it's changed
+     * @param requestRelocatedAddress the relocated address field that comes from the request
+     * @param requestRelocatedCity the relocated city field that comes from the request
+     * @param requestRelocatedState the relocated state field that comes from the request
+     * @param requestRelocatedCountryName the relocated country name field that comes from the request
+     */
+    void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
+                                                  @Nullable String requestRelocatedCity, @Nullable String requestRelocatedState,
+                                                  @Nullable String requestRelocatedCountryName);
+
 }

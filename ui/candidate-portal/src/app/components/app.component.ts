@@ -106,6 +106,7 @@ export class AppComponent implements OnInit {
    *
    * See, for example, https://blog.mestwin.net/add-google-analytics-to-angular-application-in-3-easy-steps
    */
+  
   trackPageViews() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {

@@ -15,105 +15,104 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="card">
+<tc-card >
 
   <!-- HEADER -->
-  <div class="card-header justify-content-between">
-
-    <span>Attachments <span *ngIf="loading">
-        <i class="fas fa-spinner fa-spin"></i> loading...
-      </span>
-    </span>
-
-    <div class="float-end" *ngIf="editable">
-      <!-- HIDDEN BUTTON NEED TO REMOVE REST OF CODE -->
-<!--      <button class="btn btn-sm btn-primary" (click)="addAttachment('link')">-->
-<!--        <i class="fas fa-plus"></i> Link-->
-<!--      </button>-->
-
-      <button class="btn btn-sm btn-primary ms-2" (click)="addAttachment('file')">
+  <tc-card-header>
+    Attachments
+    <div class="d-flex justify-content-end" *ngIf="editable">
+      <tc-button type="solid"
+                 color="primary"
+                 size="sm"
+                 (onClick)="addAttachment('file')">
         <i class="fas fa-plus"></i> File
-      </button>
+      </tc-button>
     </div>
 
-  </div>
+  </tc-card-header>
 
   <!-- BODY -->
-  <div class="card-body">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
-    <!-- EMPTY STATE -->
-    <div *ngIf="!candidate.candidateAttachments?.length">
-      <p >
-        No files have been uploaded by the candidate.
-      </p>
-    </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
-    <div *ngIf="candidate.candidateAttachments.length">
-      <div class="mb-4">
-        <app-shareable-docs
-          [candidate]="candidate">
-        </app-shareable-docs>
-      </div>
-
-      <div class="card-title">All attachments</div>
-
-      <!-- ATTACHMENTS -->
-      <div class="row mb-3" *ngFor="let attachment of candidate.candidateAttachments; let i = index">
-
-        <div class="col-10 col-sm">
-          <!-- NAME -->
-          <!-- Non Google files - ie links and AWS files -
-           we can just follow their urls-->
-          <a *ngIf="attachment.type!==AttachmentType.googlefile"
-             target="_blank" [href]="attachment.url" class="link-info">
-            {{attachment.name}}
-          </a>
-          <!-- With Google files we can't link to the Google Shared Drive
-           because Google's security prevents that.
-           So instead, we download a copy of the file to the browser computer
-           and show that-->
-          <a *ngIf="attachment.type===AttachmentType.googlefile"
-             (click)="downloadCandidateAttachment(attachment)"
-             target="_blank" class="link-info">
-            {{attachment.name}}
-          </a>
-          <span class="small text-dark"> - {{attachment.type}}</span>
-          <div class="d-inline ms-2" *ngIf="attachment.cv">
-            <app-cv-icon
-              [candidate]="candidate"
-              [attachment]="attachment"
-              (loadingStatus)="loading = $event"
-            >
-            </app-cv-icon>
-          </div>
-
-          <!-- AUDIT DATA -->
-          <div *ngIf="attachment">
-            <app-updated-by [object]="attachment"></app-updated-by>
-          </div>
-        </div>
-
-        <!-- EDIT -->
-        <div class="col-2 col-sm-auto" *ngIf="editable">
-          <div class="float-end">
-            <button class="btn btn-sm btn-outline-secondary me-2" (click)="editCandidateAttachment(attachment)">
-              <i class="fas fa-edit"></i>
-            </button>
-
-            <button class="btn btn-sm btn-outline-danger " (click)="deleteCandidateAttachment(attachment)">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
+  <!-- EMPTY STATE -->
+  <div *ngIf="!candidate.candidateAttachments?.length">
+    <p >
+      No files have been uploaded by the candidate.
+    </p>
   </div>
 
-</div>
+  <div *ngIf="candidate.candidateAttachments.length">
+    <div class="mb-3">
+      <app-shareable-docs
+        [candidate]="candidate">
+      </app-shareable-docs>
+    </div>
+
+    <h6>All Attachments</h6>
+
+    <!-- ATTACHMENTS -->
+    <div class="row mb-3" *ngFor="let attachment of candidate.candidateAttachments; let i = index">
+
+      <div class="col-10 col-sm">
+        <!-- NAME -->
+        <!-- Non Google files - ie links and AWS files -
+         we can just follow their urls-->
+        <a *ngIf="attachment.type!==AttachmentType.googlefile"
+           target="_blank" [href]="attachment.url" class="link-info">
+          {{attachment.name}}
+        </a>
+        <!-- With Google files we can't link to the Google Shared Drive
+         because Google's security prevents that.
+         So instead, we download a copy of the file to the browser computer
+         and show that-->
+        <a *ngIf="attachment.type===AttachmentType.googlefile"
+           (click)="downloadCandidateAttachment(attachment)"
+           target="_blank" class="link-info">
+          {{attachment.name}}
+        </a>
+        <span class="small text-dark"> - {{attachment.type}}</span>
+        <div class="d-inline ms-2" *ngIf="attachment.cv">
+          <app-cv-icon
+            [candidate]="candidate"
+            [attachment]="attachment"
+            (loadingStatus)="loading = $event"
+            [color]="'secondary'"
+            [size]="'md'"
+          >
+          </app-cv-icon>
+        </div>
+
+        <!-- AUDIT DATA -->
+        <div *ngIf="attachment">
+          <app-updated-by [object]="attachment"></app-updated-by>
+        </div>
+      </div>
+
+      <!-- EDIT -->
+      <div class="col-2 col-sm-auto" *ngIf="editable">
+        <div class="d-flex justify-content-end gap-2">
+          <tc-button type="plain"
+                     color="secondary"
+                     (onClick)="editCandidateAttachment(attachment)">
+            <i class="fas fa-edit"></i>
+          </tc-button>
+
+          <tc-button type="plain"
+                     color="gray"
+                     (onClick)="deleteCandidateAttachment(attachment)"
+          >
+            <i class="fas fa-trash"></i>
+          </tc-button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</tc-card>
 
 
 

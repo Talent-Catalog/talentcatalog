@@ -24,7 +24,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
-import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
 import {AuthorizationService} from "../../../../services/authorization.service";
@@ -72,6 +72,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
    * detail display of a selected job
    */
   @Input() showBreadcrumb: boolean = true;
+
+  /**
+   * True if the view job comes from the viewJobFromUrl component, false if the job comes from the jobsWithDetail component.
+   * Depending where it comes from will depending how the chat view appears (as chat is much smaller on side panel).
+   */
+  @Input() fromUrl: boolean;
+
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;
@@ -242,8 +249,8 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     this.activeTabId = defaultActiveTabID;
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   private setActiveTabId(id: string) {
@@ -261,7 +268,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
       let mess = "At the minimum you need to supply a job summary, job description document " +
         "and job opportunity intake " +
         "before publishing a job. Otherwise our source colleagues won't have enough information to " +
-        "work with. Please consider providing more information than the absolute minimum " +
+        "work with.<br><br> Please consider providing more information than the absolute minimum " +
         "if you have it, as suggested in the preparation items. " +
         "The more information source has about the job, the better the results for employer and " +
         "candidates, and the less work for our source staff.";
@@ -314,7 +321,8 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     showReport.componentInstance.title = "Published job: " + this.job.name;
     showReport.componentInstance.showCancel = false;
     let mess =
-      "Job has been updated to 'Candidate Search' if it wasn't already at that stage or later.";
+      "Job has been set to 'Candidate Search' or 'Visa Eligibility' (if 'Skip candidate search' " +
+      "was selected) if it was previously at an earlier stage.";
 
     if (this.authorizationService.isDefaultJobCreator()) {
       mess += " Also posted to Slack."
@@ -330,6 +338,11 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
       (job: Job) => {this.job = job; this.loading = false},
       (error) => {this.error = error; this.loading = false}
     )
+  }
+
+  doSearchSkills() {
+    //Route to NewSearch Page with the job id as a parameter.
+    this.router.navigate(['/searches'], {queryParams: {tab: 'NewSearch', job: this.job.id}});
   }
 
   isStarred(): boolean {
@@ -367,5 +380,4 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
-
 }

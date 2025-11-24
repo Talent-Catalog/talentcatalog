@@ -15,9 +15,9 @@
   -->
 
 <!-- EXISTING RECORDS -->
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <div *ngIf="candidateIntakeData.candidateExams.length == 0">
   <p class="mb-0">No Exams Added</p>
 </div>
@@ -25,6 +25,7 @@
   <app-candidate-exam-card
     [entity]="candidate"
     [candidateIntakeData]="candidateIntakeData"
+    [editable]="editable"
     [myRecordIndex]="i"
     (delete)="deleteRecord(i)">
   </app-candidate-exam-card>

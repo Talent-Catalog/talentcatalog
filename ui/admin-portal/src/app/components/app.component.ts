@@ -22,6 +22,9 @@ import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
+import { UserService} from "../services/user.service";
+import {environment} from "../../environments/environment";
+import Clarity from '@microsoft/clarity';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +34,9 @@ import {ChatService} from "../services/chat.service";
 export class AppComponent implements OnInit {
 
   showHeader: boolean;
+  emailVerified: boolean;
+  user: User;
+  showToast: boolean = false;
   private loggedInUserSubcription: Subscription;
 
   constructor(
@@ -38,15 +44,22 @@ export class AppComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private chatService: ChatService,
     private router: Router,
-    private titleService: Title
+    private titleService: Title,
+    private userService: UserService
   ) {
   }
 
   ngOnInit(): void {
+    this.trackPageViews();
+    this.trackClarityViews();
 
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
         this.onChangedLogin(user);
+        this.user = user;
+        if (this.user?.id) {
+          this.isEmailVerified(this.user.id);
+        }
       }
     )
 
@@ -57,8 +70,15 @@ export class AppComponent implements OnInit {
     //Only show standard header if logged on (ie loggedInUser is not null)
     this.showHeader = user != null
 
-    //If logged out...
-    if (user == null) {
+    if (user != null) {
+      // If user is logged in, identify them in Clarity
+      // Catching the user's information
+      Clarity.identify(
+        String(user.id),             // custom-id
+        user.username || 'NoName'   // friendly-name
+      );
+    } else {
+      // If logged out...
       this.onLogout();
     }
   }
@@ -101,4 +121,59 @@ export class AppComponent implements OnInit {
       }
     );
   }
+
+  private isEmailVerified(userId: number): any {
+    this.userService.get(userId).subscribe(
+      (user) => {
+        this.emailVerified = user.emailVerified;
+        if (this.emailVerified === false) {
+          this.showToast = true;
+        }
+      }
+    );
+  }
+
+  private trackClarityViews() {
+    // Initialize Clarity with your Project ID
+    Clarity.init(environment.clarityProjectId);
+
+    // Track page views on router changes
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // Track page views manually
+        Clarity.event('PageView');
+      }
+    });
 }
+
+
+  /**
+   * Tracks page views in a Single Page Application (SPA) context using Google Analytics.
+   *
+   * In traditional websites, navigation between pages naturally triggers a page load,
+   * which Google Analytics uses to track page views. However, in SPAs like those built with Angular,
+   * navigation changes the content dynamically without reloading the entire page. This function
+   * subscribes to Angular Router events to detect when navigation ends and a new "page" is viewed,
+   * manually sending page view information to Google Analytics.
+   *
+   * The `NavigationEnd` event indicates a successful route change, at which point we use the
+   * `gtag` function with the 'config' command to send the current page path to Google Analytics.
+   *
+   * Additionally, console logs are included for testing purposes.
+   *
+   * See, for example, https://blog.mestwin.net/add-google-analytics-to-angular-application-in-3-easy-steps
+   */
+  private trackPageViews() {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        gtag('config', environment.googleAnalyticsId, {
+          'page_path': event.urlAfterRedirects
+        });
+        // console.log('Sending Google Analytics tracking for: ', event.urlAfterRedirects);
+        // console.log('Google Analytics property ID: ', environment.googleAnalyticsId);
+      }
+    });
+  }
+}
+
+declare let gtag: Function;

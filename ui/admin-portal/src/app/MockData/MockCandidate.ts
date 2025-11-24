@@ -36,6 +36,8 @@ import {CandidateLanguage} from "../model/candidate-language";
 import {CandidateOccupation} from "../model/candidate-occupation";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {Status} from "../model/base";
+import {Partner} from "../model/partner";
+import {MockPartner} from "./MockPartner";
 
 const mockUser = new MockUser();
 export class MockCandidate implements Candidate {
@@ -43,6 +45,8 @@ export class MockCandidate implements Candidate {
   id: number = 1;
   candidateNumber: string = "123456";
   status: string = "active";
+  allNotifications = false;
+  muted: boolean = false;
   gender: string = Gender.male;
   dob: Date = new Date('1990-01-01');
   address1: string = "123 Main St";
@@ -94,6 +98,10 @@ export class MockCandidate implements Candidate {
   unhcrStatus: UnhcrStatus = UnhcrStatus.RegisteredAsylum;
   ieltsScore: string = "7.5";
   numberDependants: number = 2;
+  relocatedAddress: string = "123 Sesame Street"
+  relocatedCity: string = "Melbourne"
+  relocatedState: string = "Victoria"
+  relocatedCountry: any = { id: 1, name: "Australia", status: "active", translatedName: "Australia" }
   candidateExams: any[] = [
     { id: 1, exam: Exam.IELTSGen, score: "7.5", year: 2020 }
   ];
@@ -144,7 +152,7 @@ export class MockCandidate implements Candidate {
         description: 'Submit your latest CV.',
         displayName: 'CV Submission',
         optional: false,
-        helpLink: 'http://example.com/cv-help',
+        docLink: 'http://example.com/cv-help',
         taskType: TaskType.Upload,
         uploadType: UploadType.cv,
         uploadSubfolderName: 'cvs',
@@ -167,7 +175,7 @@ export class MockCandidate implements Candidate {
         description: 'Answer the provided questions.',
         displayName: 'Questionnaire',
         optional: false,
-        helpLink: 'http://example.com/questionnaire-help',
+        docLink: 'http://example.com/questionnaire-help',
         taskType: TaskType.Question,
         uploadType: UploadType.other,
         uploadSubfolderName: '',
@@ -190,7 +198,7 @@ export class MockCandidate implements Candidate {
         description: 'Upload a scan of your passport.',
         displayName: 'Passport Upload',
         optional: true,
-        helpLink: 'http://example.com/passport-help',
+        docLink: 'http://example.com/passport-help',
         taskType: TaskType.Upload,
         uploadType: UploadType.passport,
         uploadSubfolderName: 'passports',
@@ -272,12 +280,14 @@ export class MockCandidate implements Candidate {
         id: 1,
         name: "Fluent",
         level: 3,
+        cefrLevel: "C2",
         status: "Active"
       },
       writtenLevel: {
         id: 2,
         name: "Advanced",
         level: 1,
+        cefrLevel: "C1",
         status: "Active"
       },
       migrationLanguage: "French"
@@ -329,7 +339,10 @@ export class MockCandidate implements Candidate {
       notes: "I do not like Toronto."
     },
   ];
-
+  // privacy policy info
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: MockPartner;
 
   constructor() {}
 }

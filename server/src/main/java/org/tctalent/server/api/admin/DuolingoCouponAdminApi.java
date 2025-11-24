@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -31,10 +31,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.DuolingoCoupon;
-import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
+import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.duolingo.UpdateDuolingoCouponStatusRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.DuolingoCouponService;
 
 @RestController
@@ -42,10 +47,14 @@ import org.tctalent.server.service.db.DuolingoCouponService;
 @Slf4j
 public class DuolingoCouponAdminApi {
 
+  private final AuthService authService;
   private final DuolingoCouponService couponService;
 
+
   @Autowired
-  public DuolingoCouponAdminApi(DuolingoCouponService couponService) {
+  public DuolingoCouponAdminApi(DuolingoCouponService couponService,
+      AuthService authService) {
+    this.authService = authService;
     this.couponService = couponService;
   }
 
@@ -73,19 +82,6 @@ public class DuolingoCouponAdminApi {
     }
   }
 
-  // Endpoint to assign an available coupon to a candidate
-  @PostMapping("{candidateId}/assign")
-  public DuolingoCouponResponse assignCouponToCandidate(@PathVariable("candidateId") Long candidateId) {
-    DuolingoCoupon coupon = couponService.assignCouponToCandidate(candidateId);
-    return new DuolingoCouponResponse(
-        coupon.getId(),
-        coupon.getCouponCode(),
-        coupon.getExpirationDate(),
-        coupon.getDateSent(),
-        coupon.getCouponStatus()
-    );
-  }
-  
   // Endpoint to retrieve all coupons assigned to a candidate
   @GetMapping("{candidateId}")
   public List<DuolingoCouponResponse> getCouponsForCandidate(
@@ -118,5 +114,46 @@ public class DuolingoCouponAdminApi {
     );
   }
 
+  @PostMapping("{candidateId}/assign")
+  public DuolingoCouponResponse assignCouponToCandidate(@PathVariable("candidateId") Long candidateId)
+      throws InvalidSessionException, NoSuchObjectException, EntityExistsException {
+
+    User user = authService.getLoggedInUser()
+        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+    return couponService.assignCouponToCandidate(candidateId, user);
+  }
+
+  @PostMapping("assign-to-list")
+  public void assignCouponsToList(@Valid @RequestBody Long listId)
+      throws NoSuchObjectException, InvalidSessionException {
+
+    User user = authService.getLoggedInUser()
+        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+    couponService.assignCouponsToList(listId, user);
+  }
+
+  // Endpoint to count the number of available coupons.
+  @GetMapping("count-all")
+  public Map<String, Object> countAllAvailableCoupons() {
+    try {
+      int count = couponService.countAllAvailableCoupons();
+      return Map.of("status", "success", "count", count);
+    } catch (RuntimeException e) {
+      return Map.of("status", "failure", "message", "Failed to count available coupons.");
+    }
+  }
+
+  // Endpoint to count the number of available coupons.
+  @GetMapping("count-proctored")
+  public Map<String, Object> countAvailableCoupons() {
+    try {
+      int count = couponService.countAvailableProctoredCoupons();
+      return Map.of("status", "success", "count", count);
+    } catch (RuntimeException e) {
+      return Map.of("status", "failure", "message", "Failed to count available proctored coupons.");
+    }
+  }
 
 }

@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
@@ -46,13 +47,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Saved Search Candidate Admin Api endpoints
@@ -71,21 +71,17 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
 
   private final Page<Candidate> candidatePage =
       new PageImpl<>(
-          AdminApiTestUtil.listOfCandidates(),
+          getListOfCandidates(),
           PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
 
   @MockBean
-  CandidateOpportunityService candidateOpportunityService;
-  @MockBean
-  CountryService countryService;
-  @MockBean
-  OccupationService occupationService;
-  @MockBean
   SavedSearchService savedSearchService;
   @MockBean
-  UserService userService;
+  CandidateService candidateService;
+  @MockBean
+  CandidateBuilderSelector candidateBuilderSelector;
 
   @Autowired
   MockMvc mockMvc;
@@ -97,6 +93,14 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   @BeforeEach
   void setUp() {
     configureAuthentication();
+
+    // Minimal builder for Candidate
+    DtoBuilder candidateDto = new DtoBuilder()
+        .add("id")
+        .add("selected")
+        .add("status");
+
+    given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
   }
 
   @Test

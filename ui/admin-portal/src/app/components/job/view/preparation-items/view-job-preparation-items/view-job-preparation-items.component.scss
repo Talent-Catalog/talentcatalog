@@ -14,8 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 .selected {
-  background-color: fade-out(red, 0.7)
+  @include background-color-red;
+}
+
+i {
+  @include text-color-green;
+}
+
+.prep-items {
+  cursor: pointer;
 }

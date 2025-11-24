@@ -14,28 +14,34 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 
-<div class="card">
+<tc-card [header]=false>
   <div class="card-body">
 
     <form [formGroup]="form">
       <div class="mb-3">
         <div class="exam d-flex align-items-baseline justify-content-between">
           <label class="form-label" [for]="'exam'+myRecordIndex">Exam</label>
-          <div class="float-end d-flex align-items-center">
+          <div *ngIf="editable" class="d-flex align-items-center gap-2">
             <app-autosave-status
               [saving]="saving"
               [typing]="typing">
             </app-autosave-status>
-            <button class="btn" (click)="doDelete()">
+            <tc-button (onClick)="doDelete()"
+                       [size]="'sm'"
+                       [type]="'plain'"
+                       [color]="'gray'"
+            >
+              <tc-icon color="gray">
                 <i class="fas fa-trash"></i>
-            </button>
+              </tc-icon>
+            </tc-button>
           </div>
         </div>
-        <ng-select [id]="'examType'+myRecordIndex" [formControlName]="'examType'" (clear)="setNoResponse('examType')"
+        <ng-select class="tc-select" [id]="'examType'+myRecordIndex" [formControlName]="'examType'" (clear)="setNoResponse('examType')"
                    [items]="examOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
@@ -43,7 +49,7 @@
       <div *ngIf="isOtherExam">
         <div class="mb-3">
           <label class="form-label" [for]="'otherExam'+myRecordIndex">Other Exam Name</label>
-          <input type="text" class="form-control" [id]="'otherExam'+myRecordIndex" [formControlName]="'otherExam'">
+          <tc-input [id]="'otherExam'+myRecordIndex" [formControlName]="'otherExam'"></tc-input>
         </div>
       </div>
 
@@ -62,17 +68,17 @@
           <label class="form-label" [for]="'examYear'+myRecordIndex">
             In what year did you take the test?
           </label>
-          <ng-select [id]="'examYear'+myRecordIndex" [formControlName]="'examYear'" [items]="years"
+          <ng-select class="tc-select" [id]="'examYear'+myRecordIndex" [formControlName]="'examYear'" [items]="years"
                      [clearOnBackspace]="false" placeholder="Select"></ng-select>
         </div>
         <div class="mb-3">
           <label class="form-label" [for]="'examNotes'+myRecordIndex">Notes</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+          <tc-textarea rows="3"
                     [id]="'examNotes'+myRecordIndex" [formControlName]="'examNotes'"
-                    placeholder=""></textarea>
+                    placeholder=""></tc-textarea>
         </div>
       </div>
     </form>
   </div>
-</div>
+</tc-card>
 

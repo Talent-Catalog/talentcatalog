@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {DuolingoCouponService} from "../../../services/duolingo-coupon.service";
 import {User} from "../../../model/user";
 
@@ -7,14 +7,15 @@ import {User} from "../../../model/user";
   templateUrl: './import-duolingo-coupons.component.html',
   styleUrls: ['./import-duolingo-coupons.component.scss'],
 })
-export class ImportDuolingoCouponsComponent {
+export class ImportDuolingoCouponsComponent implements OnInit{
   error: string | null = null;
   working = false;
   csvHeaders: string[] = [];
   csvData: string[][] = [];
   paginatedData: string[][] = [];
   selectedFile: File | null = null;
-
+  availableProctoredCouponsCount: number = 0;
+  csvImported = false;
   currentPage = 1;
   pageSize = 30; // Number of items per page
   // List of required columns
@@ -23,6 +24,9 @@ export class ImportDuolingoCouponsComponent {
 
   constructor(private duolingoCouponService: DuolingoCouponService) {}
 
+  ngOnInit() {
+    this.getAvailableProctoredCouponsCount();
+  }
 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -90,6 +94,8 @@ export class ImportDuolingoCouponsComponent {
     this.duolingoCouponService.importCoupons(this.selectedFile).subscribe({
       next: (response) => {
         this.working = false;
+        this.getAvailableProctoredCouponsCount();
+        this.csvImported = true;
         alert('CSV data imported successfully!');
       },
       error: (error) => {
@@ -109,5 +115,16 @@ export class ImportDuolingoCouponsComponent {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.paginatedData = this.csvData.slice(startIndex, endIndex);
+  }
+
+  getAvailableProctoredCouponsCount(): void {
+    this.duolingoCouponService.countAvailableProctoredCoupons().subscribe(
+      (response) => {
+        this.availableProctoredCouponsCount = response.count;
+      },
+      (error) => {
+        console.error('Error fetching available proctored coupons count', error);
+      }
+    );
   }
 }

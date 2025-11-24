@@ -64,12 +64,26 @@ public class PartnerDtoHelper {
             .add("logo")
             .add("name")
             .add("notificationEmail")
+            .add("publicApiAccess")
+            .add("publicApiAuthorities")
+            .add("publicApiKey")
+            .add("publicId")
             .add("sourcePartner")
             .add("status")
             .add("websiteUrl")
             .add("registrationLandingPage")
             .add("sflink")
             .add("sourceCountries", countryDto())
+            .add("redirectPartner", shortPartnerDto())
+            .add("acceptedDataProcessingAgreementId")
+            .add("acceptedDataProcessingAgreementDate")
+            .add("firstDpaSeenDate")
+            ;
+    }
+
+    private static DtoBuilder publicApiAuthorityDto() {
+        return new DtoBuilder()
+            .add("name")
             ;
     }
 
@@ -97,6 +111,15 @@ public class PartnerDtoHelper {
             .add("firstName")
             .add("lastName")
             .add("email")
+            ;
+    }
+
+    private static DtoBuilder shortPartnerDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("abbreviation")
+            .add("websiteUrl")
             ;
     }
 

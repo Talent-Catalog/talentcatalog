@@ -15,185 +15,137 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error" class="error-message">
-  {{error}}
-</div>
-<div *ngIf="!loading">
-  <div class="d-flex justify-content-between">
-    <h5 class="mb-4">Job Opportunity Intake (JOI)</h5>
-  </div>
+<tc-loading [loading]="loading"></tc-loading>
+<tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
-  <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false" activeIds="employer-details, position-details, immigration-considerations">
+<tc-accordion *ngIf="!loading" [allOpen]="true">
+  <tc-accordion-item [header]="'Employer Details: ' + job.employerEntity?.name">
+    <tc-description-list *ngIf="canViewEmployerDetails()" direction="column">
+      <tc-description-item label="Destination">
+        {{job.country?.name}}
+      </tc-description-item>
+      <tc-description-item label="Company website">
+        <a [href]="job.employerEntity?.website" target="_blank">{{job.employerEntity.website}}</a>
+      </tc-description-item>
+      <tc-description-item label="Opportunity Score">
+        {{job.opportunityScore}}
+      </tc-description-item>
+      <tc-description-item label="Hiring commitment">
+        {{job.hiringCommitment}}
+      </tc-description-item>
+      <tc-description-item label="Have they hired from abroad before?">
+        {{job.employerEntity?.hasHiredInternationally}}
+      </tc-description-item>
+      <tc-description-item label="Employer description">
+        {{job.employerEntity?.description}}
+      </tc-description-item>
+    </tc-description-list>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.RECRUITMENT_PROCESS"
+      formFieldName="recruitmentProcess"
+      richText="true">
+    </app-joi-component>
+    <app-cost-commit-employer
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      (intakeChanged)="onIntakeChanged($event)"
+    >
+    </app-cost-commit-employer>
+  </tc-accordion-item>
 
-    <!-- EMPLOYER DETAILS -->
-    <ngb-panel id="employer-details" title="Employer Details: {{job.employerEntity?.name}}">
-      <ng-template ngbPanelContent>
-        <div *ngIf="canViewEmployerDetails()">
-          <div class="row cols-3 mb-2">
-            <div class="col">
-              <label>Destination: </label>
-              <span>{{job.country?.name}}</span>
-            </div>
-            <div class="col">
-              <label>Company website: </label>
-              <span><a [href]="job.employerEntity?.website" target="_blank">{{job.employerEntity.website}}</a></span>
-            </div>
-            <div class="col">
-              <label>Opportunity Score: </label>
-              <span>{{job.opportunityScore}}</span>
-            </div>
-          </div>
-          <div class="row cols-3 mb-2">
-            <div class="col">
-              <label>Hiring commitment: </label>
-              <span>{{job.hiringCommitment}}</span>
-            </div>
-            <div class="col">
-              <label>Have they hired from abroad before? </label>
-              <span>{{job.employerEntity?.hasHiredInternationally}}</span>
-            </div>
-            <div class="col"></div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label>Employer description:</label>
-              <span>{{job.employerEntity?.description}}</span>
-            </div>
-          </div>
-          <hr>
-        </div>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.RECRUITMENT_PROCESS"
-          formFieldName="recruitmentProcess"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-cost-commit-employer
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly"
-          (intakeChanged)="onIntakeChanged($event)"
-        >
-        </app-cost-commit-employer>
-      </ng-template>
-    </ngb-panel>
+  <tc-accordion-item [header]="'Position Details: ' + job.name">
+    <div class="row mb-3">
+      <div class="col">
+        <label>Job Description: </label>
+        <span *ngIf="job.submissionList?.fileJdLink; else noJd">
+            <a target="_blank" href="{{job.submissionList.fileJdLink}}">
+              {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
+            <div class="form-text">You update this in the Job Summary - see top of page</div>
+          </span>
+        <ng-template #noJd>
+          <span>Please upload or provide link under Job Uploads tab</span>
+        </ng-template>
+      </div>
+    </div>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.SALARY_RANGE"
+      formFieldName="salaryRange">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.LOCATION"
+      formFieldName="location">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.LOCATION_DETAILS"
+      formFieldName="locationDetails"
+      richText="true">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.BENEFITS"
+      formFieldName="benefits"
+      richText="true">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.LANGUAGE_REQUIREMENTS"
+      formFieldName="languageRequirements"
+      richText="true">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.EMPLOYMENT_EXPERIENCE"
+      formFieldName="employmentExperience"
+      richText="true">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.EDUCATION_REQUIREMENTS"
+      formFieldName="educationRequirements"
+      richText="true">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.SKILL_REQUIREMENTS"
+      formFieldName="skillRequirements"
+      richText="true">
+    </app-joi-component>
+  </tc-accordion-item>
 
-<!-- POSITION DETAILS   -->
-    <ngb-panel id="position-details" title="Position Details: {{job.name}}">
-      <ng-template ngbPanelContent>
-        <div class="row mb-3">
-          <div class="col">
-            <label>Job Description: </label>
-            <span *ngIf="job.submissionList?.fileJdLink; else noJd">
-              <a target="_blank" href="{{job.submissionList.fileJdLink}}">
-                {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
-              <div class="form-text">You update this in the Job Summary - see top of page</div>
-            </span>
-            <ng-template #noJd>
-              <span>Please upload or provide link under Job Uploads tab</span>
-            </ng-template>
-          </div>
-        </div>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.SALARY_RANGE"
-          formFieldName="salaryRange"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.LOCATION"
-          formFieldName="location"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.LOCATION_DETAILS"
-          formFieldName="locationDetails"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.BENEFITS"
-          formFieldName="benefits"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.LANGUAGE_REQUIREMENTS"
-          formFieldName="languageRequirements"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.EMPLOYMENT_EXPERIENCE"
-          formFieldName="employmentExperience"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.EDUCATION_REQUIREMENTS"
-          formFieldName="educationRequirements"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.SKILL_REQUIREMENTS"
-          formFieldName="skillRequirements"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-      </ng-template>
-    </ngb-panel>
-
-    <ngb-panel id="immigration-considerations" title="Immigration Considerations">
-      <ng-template ngbPanelContent>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.VISA_PATHWAYS"
-          formFieldName="visaPathways"
-          required="true"
-          richText="true"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.OCCUPATION_CODE"
-          formFieldName="occupationCode"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-        <app-joi-component
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.MIN_SALARY"
-          formFieldName="minSalary"
-          inputType="number"
-          [editable]="!loggedInUser.readOnly">
-        </app-joi-component>
-      </ng-template>
-    </ngb-panel>
-
-  </ngb-accordion>
-
-
-</div>
+  <tc-accordion-item [header]="'Immigration Considerations'">
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.VISA_PATHWAYS"
+      formFieldName="visaPathways"
+      required="true"
+      richText="true">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.OCCUPATION_CODE"
+      formFieldName="occupationCode">
+    </app-joi-component>
+    <app-joi-component
+      [entity]="job"
+      [jobIntakeData]="jobIntakeData"
+      componentKey="JOI.MIN_SALARY"
+      formFieldName="minSalary"
+      inputType="number">
+    </app-joi-component>
+  </tc-accordion-item>
+</tc-accordion>

@@ -33,6 +33,7 @@ import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
+import {AuthorizationService} from "../../../../services/authorization.service";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -54,6 +55,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   constructor(private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService,
+              private authorizationService: AuthorizationService,
               private taskAssignmentService: TaskAssignmentService,
               private modalService: NgbModal) { }
 
@@ -102,6 +104,10 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   }
 
+  handleError(error: any) {
+    this.error = error;
+  }
+
   editTaskAssignment(ta: TaskAssignment) {
     const editTaskAssignmentModal = this.modalService.open(EditTaskAssignmentComponent, {
       centered: true,
@@ -146,7 +152,6 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   }
 
   viewResponse(ta: TaskAssignment) {
-    // todo in future it might be the answer to a question, display this answer in a modal?
     if (ta.task.taskType === TaskType.Upload) {
       const request: ListByUploadTypeRequest = {
         candidateId: this.candidate.id,
@@ -187,5 +192,9 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       })
       .catch(() => { /* Isn't possible */
       });
+  }
+
+  isDefaultSourcePartner() {
+    return this.authorizationService.isDefaultSourcePartner();
   }
 }

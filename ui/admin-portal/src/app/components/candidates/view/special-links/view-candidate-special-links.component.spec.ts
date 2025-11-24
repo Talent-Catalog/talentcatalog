@@ -34,7 +34,7 @@ describe('ViewCandidateSpecialLinksComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['createCandidateFolder', 'createUpdateLiveCandidate', 'updateCandidate']);
-    const authServiceSpy = jasmine.createSpyObj('AuthorizationService', ['canAccessSalesforce']);
+    const authServiceSpy = jasmine.createSpyObj('AuthorizationService', ['canAccessSalesforce', 'canAccessGoogleDrive']);
     const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
 
     await TestBed.configureTestingModule({
@@ -136,5 +136,12 @@ describe('ViewCandidateSpecialLinksComponent', () => {
 
     expect(component.canAccessSalesforce()).toBe(true);
     expect(authService.canAccessSalesforce).toHaveBeenCalled();
+  });
+
+  it('should check Google Drive access', () => {
+    authService.canAccessGoogleDrive.and.returnValue(true);
+
+    expect(component.canAccessGoogleDrive()).toBe(true);
+    expect(authService.canAccessGoogleDrive).toHaveBeenCalled();
   });
 });

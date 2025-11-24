@@ -13,26 +13,22 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-
-<form [formGroup]="form">
-  <div class="modal-header">
-    <div class="modal-title">
-      <h5>{{label}}</h5>
-    </div>
-  </div>
-  <div class="modal-body">
-    <ng-select id="hasName" [formControlName]="'hasNameIndex'"
+<tc-modal [heading]="label"
+          (onAction)="onSelect()"
+          [actionText]="select"
+          [cancelText]="cancel">
+  <form [formGroup]="form">
+    <ng-select id="hasName" [formControlName]="'hasNameIndex'" class="tc-select"
                placeholder="Select" [clearable]="false">
       <ng-option *ngFor="let hasName of hasNames; let i=index" [value]="i">
         {{hasName?.name}}</ng-option>
     </ng-select>
-  </div>
-</form>
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="onSelect()">
-    {{select}}
-  </button>
-  <button type="button" class="btn btn-secondary" (click)="onCancel()">
-    {{cancel}}
-  </button>
-</div>
+  </form>
+</tc-modal>
+
+
+
+
+
+
+

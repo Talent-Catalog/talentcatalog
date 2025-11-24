@@ -121,7 +121,7 @@ export class SearchIndustriesComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteIndustryModal.componentInstance.message = 'Are you sure you want to delete '+ industry.name;
+    deleteIndustryModal.componentInstance.message = 'Are you sure you want to delete ' + industry.name;
 
     deleteIndustryModal.result
       .then((result) => {

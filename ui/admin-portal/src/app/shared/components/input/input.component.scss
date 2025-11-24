@@ -1,0 +1,59 @@
+@import '../../../../scss/color-mixins';
+@import '../../../../scss/support-colors';
+@import '../../../../scss/typography-mixins';
+@import '../../../../scss/dropdown-styles';
+
+.form-input {
+  @include paragraph-md;
+  width: 100%;
+  @include border-color-base;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  transition: border-color 0.2s;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  &:focus {
+    outline: none;
+    @include border-color-info;
+    box-shadow: 0 0 0 1px color(blue, 500);
+    &[readonly] {
+      @include border-color-base-dark;
+      box-shadow: 0 0 0 1px color(gray, 500);
+    }
+  }
+
+  &:disabled {
+    @include background-color-disabled;
+    @include text-color-disabled;
+    cursor: not-allowed;
+  }
+
+  &.input--invalid {
+    @include border-color-error;
+  }
+
+  &.input--invalid:focus {
+    @include border-color-info;
+    box-shadow: 0 0 0 1px color(blue, 500);
+  }
+}
+
+.form-input[type='checkbox'] {
+  width: auto;
+  min-width: 0.8rem;
+  height: 0.8rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  vertical-align: middle;
+  position: relative;
+  top: -0.35rem;
+}
+
+// NgbTypeAhead dropdown, which Angular renders as a sibling of the input:
+::ng-deep {
+  @include dropdown-styles;
+}

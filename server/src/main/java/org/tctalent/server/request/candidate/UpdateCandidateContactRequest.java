@@ -16,6 +16,14 @@
 
 package org.tctalent.server.request.candidate;
 
-public class UpdateCandidateContactRequest extends BaseCandidateContactRequest {
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+public class UpdateCandidateContactRequest extends BaseCandidateContactRequest {
+    private String relocatedAddress;
+    private String relocatedCity;
+    private String relocatedState;
+    private Long relocatedCountryId;
 }

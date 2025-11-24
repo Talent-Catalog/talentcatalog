@@ -101,6 +101,7 @@ public class CvPublicApi {
             return new DtoBuilder()
                     .add("id")
                     .add("candidateNumber")
+                    .add("publicId")
                     .add("country", countryService.selectBuilder())
                     .add("candidateOccupations", candidateOccupationDto())
                     .add("candidateJobExperiences", candidateJobExperienceDto())
@@ -158,7 +159,6 @@ public class CvPublicApi {
         private DtoBuilder candidateLanguageDto() {
             return new DtoBuilder()
                     .add("id")
-                    .add("migrationLanguage")
                     .add("language", languageDto())
                     .add("writtenLevel", languageLevelDto())
                     .add("spokenLevel", languageLevelDto())

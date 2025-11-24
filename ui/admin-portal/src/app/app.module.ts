@@ -460,9 +460,6 @@ import {
   QualificationRelevantComponent
 } from "./components/candidates/visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
 import {
-  VisaFinalAssessmentComponent
-} from "./components/candidates/visa/visa-job-assessments/visa-final-assessment/visa-final-assessment.component";
-import {
   JobOccupationComponent
 } from "./components/candidates/visa/visa-job-assessments/job-occupation/job-occupation.component";
 import {
@@ -737,9 +734,6 @@ import {
 import {
   LanguageThresholdComponent
 } from './components/candidates/visa/visa-job-assessments/language-threshold/language-threshold.component';
-import {
-  MonitoringEvaluationConsentComponent
-} from './components/candidates/intake/monitoring-evaluation-consent/monitoring-evaluation-consent.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {
   UserChangePasswordComponent
@@ -806,6 +800,44 @@ import {
 import {
   ImportDuolingoCouponsComponent
 } from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
+import {
+  DetScoreValidationComponent
+} from './components/util/det-score-validation/det-score-validation.component';
+import {
+  DuolingoAssignmentComponent
+} from './components/util/duolingo-assignment/duolingo-assignment.component';
+import {VerifyEmailComponent} from './components/account/verify-email/verify-email.component';
+import {
+  VerifyEmailToastComponent
+} from './components/account/verify-email-toast/verify-email-toast.component';
+import {PresetEmbedComponent} from './components/intelligence/preset-embed/preset-embed.component';
+import {
+  LoadingIndicatorComponent
+} from './components/util/loading-indicator/loading-indicator.component';
+import {ErrorDisplayComponent} from './components/util/error-display/error-display.component';
+import {IntelligenceComponent} from './components/intelligence/intelligence.component';
+import {
+  OfferToAssistComponent
+} from './components/settings/offer-to-assist/offer-to-assist.component';
+import {
+  IntlPhoneInputComponent
+} from './components/util/intl-phone-input/intl-phone-input.component';
+import {
+  EditMaxEducationLevelComponent
+} from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
+import {SharedModule} from "./shared/shared.module";
+import {PartnerDpaComponent} from './components/util/partner-dpa/partner-dpa.component';
+import {SafeHtmlPipe} from './pipes/safehtml.pipe';
+import {
+  ChatMuteToggleButtonComponent
+} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
+import {
+  ViewPrivacyPolicyInfoComponent
+} from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
+import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
+import {
+  CandidateCvTextTabComponent
+} from './components/candidates/view/tab/candidate-cv-text-tab/candidate-cv-text-tab.component';
 
 @NgModule({
   declarations: [
@@ -978,7 +1010,6 @@ import {
     SecurityRiskComponent,
     TravelDocumentComponent,
     RiskAssessmentComponent,
-    VisaFinalAssessmentComponent,
     JobOccupationComponent,
     SalaryTsmitComponent,
     RegionalAreaComponent,
@@ -1102,7 +1133,6 @@ import {
     ChatReadStatusComponent,
     ListHomeComponent,
     LanguageThresholdComponent,
-    MonitoringEvaluationConsentComponent,
     ResetPasswordComponent,
     UserChangePasswordComponent,
     NclcScoreValidationComponent,
@@ -1129,7 +1159,24 @@ import {
     FindCandidateSourceComponent,
     PotentialDuplicateIconComponent,
     DuplicatesDetailComponent,
-    ImportDuolingoCouponsComponent
+    ImportDuolingoCouponsComponent,
+    DetScoreValidationComponent,
+    DuolingoAssignmentComponent,
+    VerifyEmailComponent,
+    VerifyEmailToastComponent,
+    DuolingoAssignmentComponent,
+    PresetEmbedComponent,
+    LoadingIndicatorComponent,
+    ErrorDisplayComponent,
+    IntelligenceComponent,
+    OfferToAssistComponent,
+    IntlPhoneInputComponent,
+    EditMaxEducationLevelComponent,
+    ChatMuteToggleButtonComponent,
+    ViewPrivacyPolicyInfoComponent,
+    PartnerDpaComponent,
+    SafeHtmlPipe,
+    CandidateCvTextTabComponent
   ],
   imports: [
     BrowserModule,
@@ -1143,6 +1190,7 @@ import {
     NgxWigModule,
     NgSelectModule,
     DirectiveModule,
+    SharedModule,
     DragulaModule.forRoot(),
     QuillModule.forRoot(),
     PickerModule,
@@ -1157,6 +1205,7 @@ import {
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {

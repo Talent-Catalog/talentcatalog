@@ -14,84 +14,92 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error">
-  {{error}}
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
 
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
 <div *ngIf="!accordion">
-  <div class="card" *ngIf="!loading">
+  <tc-card *ngIf="!loading">
     <!-- HEADER -->
-    <div class="card-header">Languages
+    <tc-card-header>
+      Languages
       <div class="float-end" *ngIf="editable">
-        <button class="btn btn-primary btn-sm" (click)="createCandidateLanguage()">
+        <tc-button (onClick)="createCandidateLanguage()"
+                   [color]="'primary'"
+                   [size]="'sm'"
+                   [type]="'solid'"
+        >
           <i class="fas fa-plus"></i>
-        </button>
+        </tc-button>
       </div>
-    </div>
+    </tc-card-header>
     <!-- BODY -->
-    <div class="card-body">
-      <!-- EMPTY STATE -->
-      <p *ngIf="!candidate.candidateLanguages?.length" class="m-1">
-        No language data has been entered by this candidate.
-      </p>
-      <!-- LANGUAGE CARDS -->
-      <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
-        <div class="row">
-          <div class="col-10 mb-2"
-               [innerHtml]="language.language.name"
-               appHighlightSearch>
-          </div>
-          <div class="col-2" *ngIf="editable">
-            <div class="btn-group float-end">
-              <button class="btn btn-default"
-                      (click)="editCandidateLanguage(language)">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-default"
-                      *ngIf="adminUser"
-                      (click)="deleteCandidateLanguage(language)">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
+    <!-- EMPTY STATE -->
+    <p *ngIf="!candidate.candidateLanguages?.length">
+      No language data has been entered by this candidate.
+    </p>
+    <!-- LANGUAGE CARDS -->
+    <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
+      <div class="row">
+        <div class="col-10 my-2"
+             [innerHtml]="language.language?.name"
+             appHighlightSearch>
+        </div>
+        <div class="col-2" *ngIf="editable">
+          <div class="d-flex justify-content-end gap-2">
+            <tc-button (onClick)="editCandidateLanguage(language)"
+                       [color]="'secondary'"
+                       [type]="'plain'"
+            >
+              <i class="fas fa-edit"></i>
+            </tc-button>
+            <tc-button *ngIf="adminUser"
+                       (onClick)="deleteCandidateLanguage(language)"
+                       [color]="'gray'"
+                       [type]="'plain'"
+            >
+              <i class="fas fa-trash"></i>
+            </tc-button>
           </div>
         </div>
-        <div class="row">
-          <div class="col-12" *ngIf="language.migrationLanguage"
-               [innerHtml]="'Migrated Language:' + language.migrationLanguage"
-               appHighlightSearch>
-          </div>
-          <div class="col-sm-12 col-md-6">
-            <span>Speaking:
-              <i [innerHtml]="language.spokenLevel.name" appHighlightSearch></i>
-            </span>
-          </div>
-          <div class="col-sm-12 col-md-6">
-            <span>Reading and Writing:
-              <i [innerHtml]="language.writtenLevel.name" appHighlightSearch></i>
-            </span>
-          </div>
+      </div>
+      <div class="row">
+        <div class="col-12" *ngIf="language.migrationLanguage"
+             [innerHtml]="'Migrated Language:' + language.migrationLanguage"
+             appHighlightSearch>
         </div>
-        <hr *ngIf="i < candidate.candidateLanguages?.length - 1">
-      </ng-container>
-      <ng-container *ngIf="candidate?.ieltsScore || candidate?.englishAssessmentScoreIelts">
-        <hr>
-        <div class="row">
-          <div class="col-10 mb-2">
-            IELTS Score
-          </div>
-          <div *ngIf="hasIelts(candidate)" class="col-sm-12 col-md-6">
-            <span>Ielts General: <i>{{candidate.ieltsScore}}</i></span>
-          </div>
-          <div *ngIf="candidate?.englishAssessmentScoreIelts" class="col-sm-12 col-md-6">
-            <span>Language Assessment Score: <i>{{candidate.englishAssessmentScoreIelts}}</i></span>
-          </div>
+        <div class="col-sm-12 col-md-6">
+          <span>Speaking:
+            <i [innerHtml]="language.spokenLevel.name" appHighlightSearch></i>
+          </span>
         </div>
-      </ng-container>
-    </div>
-  </div>
+        <div class="col-sm-12 col-md-6">
+          <span>Reading and Writing:
+            <i [innerHtml]="language.writtenLevel.name" appHighlightSearch></i>
+          </span>
+        </div>
+      </div>
+      <hr *ngIf="i < candidate.candidateLanguages?.length - 1">
+    </ng-container>
+    <ng-container *ngIf="candidate?.ieltsScore || candidate?.englishAssessmentScoreIelts">
+      <hr>
+      <div class="row">
+        <div class="col-10 mb-2">
+          IELTS Score
+        </div>
+        <div *ngIf="hasIelts(candidate)" class="col-sm-12 col-md-6">
+          <span>Ielts General: <i>{{candidate.ieltsScore}}</i></span>
+        </div>
+        <div *ngIf="candidate?.englishAssessmentScoreIelts" class="col-sm-12 col-md-6">
+          <span>Language Assessment Score: <i>{{candidate.englishAssessmentScoreIelts}}</i></span>
+        </div>
+      </div>
+    </ng-container>
+  </tc-card>
 </div>
 
 <div *ngIf="accordion">

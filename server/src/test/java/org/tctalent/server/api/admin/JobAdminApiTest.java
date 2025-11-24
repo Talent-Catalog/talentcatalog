@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -46,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +56,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.request.job.JobIntakeData;
@@ -70,6 +74,7 @@ import org.tctalent.server.service.db.JobService;
  */
 @WebMvcTest(JobAdminApi.class)
 @AutoConfigureMockMvc
+@Import({SavedListBuilderSelector.class, ExportColumnsBuilderSelector.class})
 class JobAdminApiTest extends ApiTestBase {
 
     private static final long JOB_ID = 99L;
@@ -88,7 +93,7 @@ class JobAdminApiTest extends ApiTestBase {
     private static final String UPLOAD_JOI = "/{id}/upload/joi";
     private static final String UPLOAD_INTERVIEW_GUIDANCE = "/{id}/upload/interview";
     private static final String SEARCH_PATH = "/search-paged";
-    private static final SalesforceJobOpp job = AdminApiTestUtil.getJob();
+    private static final SalesforceJobOpp job = getSalesforceJobOppExtended();
 
     private final Page<SalesforceJobOpp> jobPage =
             new PageImpl<>(
@@ -143,7 +148,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.contactUser.firstName", is("contact")))
                 .andExpect(jsonPath("$.contactUser.lastName", is("user")))
                 .andExpect(jsonPath("$.contactUser.email", is("test.contact@tbb.org")))
-                .andExpect(jsonPath("$.country.name", is("Australia")))
+                .andExpect(jsonPath("$.country.name", is("Canada")))
                 .andExpect(jsonPath("$.employerEntity.name", is("ABC Accounts")))
                 .andExpect(jsonPath("$.employerEntity.website", is("www.ABCAccounts.com")))
                 .andExpect(jsonPath("$.employerEntity.hasHiredInternationally", is(true)))
@@ -151,7 +156,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.hiringCommitment", is(1)))
                 .andExpect(jsonPath("$.opportunityScore", is("Opp Score")))
                 .andExpect(jsonPath("$.name", is("Opp Name")))
-                .andExpect(jsonPath("$.nextStep", is("Next Step")))
+                .andExpect(jsonPath("$.nextStep", is("This is the next step.")))
                 .andExpect(jsonPath("$.nextStepDueDate", is("2020-01-01")))
                 .andExpect(jsonPath("$.publishedDate", is("2023-10-30T12:30:00+02:00")))
                 .andExpect(jsonPath("$.stage", is("cvReview")))
@@ -182,11 +187,11 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.contactUser.lastName", is("user")))
                 .andExpect(jsonPath("$.contactUser.email", is("test.contact@tbb.org")))
 
-                .andExpect(jsonPath("$.country.name", is("Australia")))
+                .andExpect(jsonPath("$.country.name", is("Canada")))
 
                 .andExpect(jsonPath("$.createdBy.firstName", is("test")))
                 .andExpect(jsonPath("$.createdBy.lastName", is("user")))
-                .andExpect(jsonPath("$.createdBy.email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.createdBy.email", is("audit.user@ngo.org")))
 
                 .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
                 .andExpect(jsonPath("$.employerEntity.name", is("ABC Accounts")))
@@ -198,24 +203,24 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.exclusionList", notNullValue()))
                 .andExpect(jsonPath("$.jobSummary", is("This is a job summary.")))
                 .andExpect(jsonPath("$.name", is("Opp Name")))
-                .andExpect(jsonPath("$.nextStep", is("Next Step")))
+                .andExpect(jsonPath("$.nextStep", is("This is the next step.")))
                 .andExpect(jsonPath("$.nextStepDueDate", is("2020-01-01")))
 
                 .andExpect(jsonPath("$.publishedBy.firstName", is("test")))
                 .andExpect(jsonPath("$.publishedBy.lastName", is("user")))
-                .andExpect(jsonPath("$.publishedBy.email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.publishedBy.email", is("audit.user@ngo.org")))
 
                 .andExpect(jsonPath("$.publishedDate", is("2023-10-30T12:30:00+02:00")))
 
-                .andExpect(jsonPath("$.jobCreator.name", is("Partner")))
-                .andExpect(jsonPath("$.jobCreator.abbreviation", is("prt")))
-                .andExpect(jsonPath("$.jobCreator.websiteUrl", is("www.partner.com")))
+                .andExpect(jsonPath("$.jobCreator.name", is("TC Partner")))
+                .andExpect(jsonPath("$.jobCreator.abbreviation", is("TCP")))
+                .andExpect(jsonPath("$.jobCreator.websiteUrl", is("website_url")))
 
                 .andExpect(jsonPath("$.stage", is("cvReview")))
 
                 .andExpect(jsonPath("$.starringUsers[0].firstName", is("test")))
                 .andExpect(jsonPath("$.starringUsers[0].lastName", is("user")))
-                .andExpect(jsonPath("$.starringUsers[0].email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.starringUsers[0].email", is("audit.user@ngo.org")))
 
                 .andExpect(jsonPath("$.submissionDueDate", is("2020-01-01")))
                 .andExpect(jsonPath("$.submissionList", notNullValue()))
@@ -224,7 +229,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.suggestedSearches[0].name", is("My Search")))
                 .andExpect(jsonPath("$.updatedBy.firstName", is("test")))
                 .andExpect(jsonPath("$.updatedBy.lastName", is("user")))
-                .andExpect(jsonPath("$.updatedBy.email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.updatedBy.email", is("audit.user@ngo.org")))
                 .andExpect(jsonPath("$.updatedDate", is("2023-10-30T12:30:00+02:00")))
 
                 .andExpect(jsonPath("$.jobOppIntake.id", is(99)))
@@ -271,11 +276,11 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.contactUser.lastName", is("user")))
                 .andExpect(jsonPath("$.contactUser.email", is("test.contact@tbb.org")))
 
-                .andExpect(jsonPath("$.country.name", is("Australia")))
+                .andExpect(jsonPath("$.country.name", is("Canada")))
 
                 .andExpect(jsonPath("$.createdBy.firstName", is("test")))
                 .andExpect(jsonPath("$.createdBy.lastName", is("user")))
-                .andExpect(jsonPath("$.createdBy.email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.createdBy.email", is("audit.user@ngo.org")))
 
                 .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
                 .andExpect(jsonPath("$.employerEntity.name", is("ABC Accounts")))
@@ -287,24 +292,24 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.exclusionList", notNullValue()))
                 .andExpect(jsonPath("$.jobSummary", is("This is a job summary.")))
                 .andExpect(jsonPath("$.name", is("Opp Name")))
-                .andExpect(jsonPath("$.nextStep", is("Next Step")))
+                .andExpect(jsonPath("$.nextStep", is("This is the next step.")))
                 .andExpect(jsonPath("$.nextStepDueDate", is("2020-01-01")))
 
                 .andExpect(jsonPath("$.publishedBy.firstName", is("test")))
                 .andExpect(jsonPath("$.publishedBy.lastName", is("user")))
-                .andExpect(jsonPath("$.publishedBy.email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.publishedBy.email", is("audit.user@ngo.org")))
 
                 .andExpect(jsonPath("$.publishedDate", is("2023-10-30T12:30:00+02:00")))
 
-                .andExpect(jsonPath("$.jobCreator.name", is("Partner")))
-                .andExpect(jsonPath("$.jobCreator.abbreviation", is("prt")))
-                .andExpect(jsonPath("$.jobCreator.websiteUrl", is("www.partner.com")))
+                .andExpect(jsonPath("$.jobCreator.name", is("TC Partner")))
+                .andExpect(jsonPath("$.jobCreator.abbreviation", is("TCP")))
+                .andExpect(jsonPath("$.jobCreator.websiteUrl", is("website_url")))
 
                 .andExpect(jsonPath("$.stage", is("cvReview")))
 
                 .andExpect(jsonPath("$.starringUsers[0].firstName", is("test")))
                 .andExpect(jsonPath("$.starringUsers[0].lastName", is("user")))
-                .andExpect(jsonPath("$.starringUsers[0].email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.starringUsers[0].email", is("audit.user@ngo.org")))
 
                 .andExpect(jsonPath("$.submissionDueDate", is("2020-01-01")))
                 .andExpect(jsonPath("$.submissionList", notNullValue()))
@@ -313,7 +318,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.suggestedSearches[0].name", is("My Search")))
                 .andExpect(jsonPath("$.updatedBy.firstName", is("test")))
                 .andExpect(jsonPath("$.updatedBy.lastName", is("user")))
-                .andExpect(jsonPath("$.updatedBy.email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.updatedBy.email", is("audit.user@ngo.org")))
                 .andExpect(jsonPath("$.updatedDate", is("2023-10-30T12:30:00+02:00")))
 
                 .andExpect(jsonPath("$.jobOppIntake.id", is(99)))
@@ -378,7 +383,7 @@ class JobAdminApiTest extends ApiTestBase {
 
                 .andExpect(jsonPath("$.publishedBy.firstName", is("test")))
                 .andExpect(jsonPath("$.publishedBy.lastName", is("user")))
-                .andExpect(jsonPath("$.publishedBy.email", is("test.user@tbb.org")))
+                .andExpect(jsonPath("$.publishedBy.email", is("audit.user@ngo.org")))
 
                 .andExpect(jsonPath("$.publishedDate", is("2023-10-30T12:30:00+02:00")));
 

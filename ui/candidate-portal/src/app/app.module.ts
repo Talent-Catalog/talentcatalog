@@ -22,6 +22,7 @@ import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
 import {
+  NgbCollapseModule,
   NgbDateAdapter,
   NgbDateParserFormatter,
   NgbDatepickerConfig,
@@ -31,9 +32,6 @@ import {
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
 
-import {
-  RegistrationLandingComponent
-} from './components/register/landing/registration-landing.component';
 import {
   RegistrationContactComponent
 } from './components/register/contact/registration-contact.component';
@@ -122,11 +120,14 @@ import {
   faChevronUp,
   faEdit,
   faEllipsisH,
+  faEnvelope,
+  faEnvelopeOpen,
   faExternalLinkAlt,
   faFaceSmile,
   faFileUpload,
   faFolderOpen,
   faGlobe,
+  faHandshake,
   faLink,
   faListCheck,
   faMessage,
@@ -134,6 +135,7 @@ import {
   faQuestion,
   faQuestionCircle,
   faTimes,
+  faTriangleExclamation,
   faUser,
   faXmark
 } from '@fortawesome/free-solid-svg-icons';
@@ -221,6 +223,36 @@ import {
 import {
   DestinationComponent
 } from "./components/register/destinations/destination/destination.component";
+import {ServicesComponent} from './components/profile/view/tab/services/services.component';
+import {VerifyEmailComponent} from './components/account/verify-email/verify-email.component';
+import {
+  DuolingoCouponComponent
+} from './components/profile/view/tab/services/duolingo/duolingo-coupon/duolingo-coupon.component';
+import {
+  DuolingoComponent
+} from './components/profile/view/tab/services/duolingo/duolingo.component';
+import {TabHeaderComponent} from './components/common/tab-header/tab-header.component';
+import {TermsComponent} from './components/privacy-policy/terms.component';
+import {
+  RegistrationSubmitComponent
+} from './components/register/submit/registration-submit.component';
+import {ShowTermsComponent} from './components/util/accept-terms/show-terms.component';
+import {
+  ViewFormTaskComponent
+} from './components/profile/view/tab/tasks/task/form/view-form-task.component';
+import {MyFirstFormComponent} from './components/form/my-first-form/my-first-form.component';
+import {
+  TravelDocFormComponent
+} from './components/form/italy-travel-document-form/travel-doc-form.component';
+import {
+  FamilyRsdEvidenceFormComponent
+} from './components/form/family-rsd-evidence-form/family-rsd-evidence-form.component';
+import {
+  RsdEvidenceFormComponent
+} from './components/form/rsd-evidence-form/rsd-evidence-form.component';
+import {
+  TaskSubmittedComponent
+} from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -234,7 +266,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     HeaderComponent,
     LandingComponent,
-    RegistrationLandingComponent,
     RegistrationContactComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,
@@ -299,7 +330,21 @@ export function HttpLoaderFactory(http: HttpClient) {
     RegistrationCandidateExamComponent,
     DeleteExamComponent,
     RegistrationDestinationsComponent,
-    DestinationComponent
+    DestinationComponent,
+    VerifyEmailComponent,
+    ServicesComponent,
+    DuolingoCouponComponent,
+    DuolingoComponent,
+    TabHeaderComponent,
+    TermsComponent,
+    RegistrationSubmitComponent,
+    ShowTermsComponent,
+    ViewFormTaskComponent,
+    MyFirstFormComponent,
+    TravelDocFormComponent,
+    TaskSubmittedComponent,
+    FamilyRsdEvidenceFormComponent,
+    RsdEvidenceFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -308,6 +353,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
+    NgbCollapseModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
@@ -380,7 +426,11 @@ export class AppModule {
       faUser,
       faListCheck,
       faBriefcase,
-      faMessage
+      faMessage,
+      faHandshake,
+      faEnvelope,
+      faEnvelopeOpen,
+      faTriangleExclamation
     );
   }
 }

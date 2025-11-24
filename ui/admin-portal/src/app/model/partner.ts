@@ -34,6 +34,9 @@ export interface PartnerSimpleAttributes {
   logo: string;
   name: string;
   notificationEmail: string;
+  publicApiAccess: boolean;
+  publicApiAuthorities: string[];
+  publicApiKey?: string;
   registrationLandingPage: string;
   sflink: string;
   sourcePartner: boolean;
@@ -44,6 +47,15 @@ export interface PartnerSimpleAttributes {
   //value in a type safe way. See other MODEL's for details.
   status: string;
   websiteUrl: string;
+  redirectPartner?: ShortPartner;
+}
+
+export enum PublicApiAuthority {
+  READ_CANDIDATE_DATA = "READ_CANDIDATE_DATA",
+  SUBMIT_JOB_MATCHES = "SUBMIT_JOB_MATCHES",
+  OFFER_CANDIDATE_SERVICES = "OFFER_CANDIDATE_SERVICES",
+  REGISTER_CANDIDATES = "REGISTER_CANDIDATES",
+  ADMIN = "ADMIN"
 }
 
 export interface Employer {
@@ -74,13 +86,17 @@ export interface Partner extends PartnerSimpleAttributes {
   //The underscore naming is a convention to distinguish this field from those that are
   //uploaded from the server - not set according to context on the browser.
   _jobChat?: JobChat;
+  // DPA fields for versioned acceptance management
+  acceptedDataProcessingAgreementId?: string;
+  acceptedDataProcessingAgreementDate?: string;
+  firstDpaSeenDate?: string;
 }
 
 export function sourceCountriesAsString(partner: Partner): string {
   let s = '';
   const countries: Country[] = partner.sourceCountries;
   if (countries != null) {
-    s = countries.map(c => c.name).join(",");
+    s = countries.map(c => c.name).join(", ");
   }
   return s;
 }
@@ -88,6 +104,7 @@ export function sourceCountriesAsString(partner: Partner): string {
 export interface UpdatePartnerRequest extends PartnerSimpleAttributes {
   defaultContactId?: number,
   sourceCountryIds: number[];
+  redirectPartnerId?: number;
 }
 
 export interface UpdatePartnerJobContactRequest {

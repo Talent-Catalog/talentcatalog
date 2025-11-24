@@ -70,4 +70,13 @@ public interface CandidateOpportunityRepository extends JpaRepository<CandidateO
 
     @Query(" select op from CandidateOpportunity op where op.jobOpp.createdBy.partner.id = :partnerId")
     List<CandidateOpportunity> findPartnerOpps(@Param("partnerId") Long partnerId);
+
+    @Query(
+        "SELECT co.sfId " +
+        "FROM CandidateOpportunity co " +
+        "WHERE co.closed = false " +
+        "AND co.sfId IS NOT NULL"
+    )
+    List<String> findAllNonNullSfIdsByClosedFalse();
+
 }

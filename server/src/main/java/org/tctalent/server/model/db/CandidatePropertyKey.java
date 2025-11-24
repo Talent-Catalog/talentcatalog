@@ -16,6 +16,7 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -27,7 +28,8 @@ import org.springframework.lang.NonNull;
 /**
  * Primary key for {@link CandidateProperty}. Needed because we have a composite private key.
  * <p/>
- * See https://www.baeldung.com/jpa-composite-primary-keys
+ * See <a href="https://www.baeldung.com/jpa-composite-primary-keys">
+ *     www.baeldung.com/jpa-composite-primary-keys</a>
  * <p/>
  * Note that hashcode and equals of Candidate is based on its id - like all entities that extend
  * {@link AbstractDomainObject}.
@@ -39,6 +41,7 @@ import org.springframework.lang.NonNull;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Embeddable
 public class CandidatePropertyKey implements Serializable {
 
     @NonNull

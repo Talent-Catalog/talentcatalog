@@ -32,8 +32,8 @@ describe('ChatsComponent', () => {
   const mockJobChat = new MockJobChat();
   beforeEach(async () => {
     const chatServiceSpy = jasmine.createSpyObj('ChatService',
-      ['getChatInfoParticipantsKey','getChatInfoPurposeKey','getJobChatUserInfo',
-        'getChatIsRead$']);
+      ['getChatHeadingKey', 'getChatInfoParticipantsKey','getChatInfoPurposeKey',
+        'getJobChatUserInfo', 'getChatIsRead$']);
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsComponent,ViewChatComponent,ChatReadStatusComponent ],
@@ -60,9 +60,10 @@ describe('ChatsComponent', () => {
   it('should render loading spinner when loading is true', () => {
     component.loading = true;
     fixture.detectChanges();
-    const spinnerElement = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(spinnerElement).toBeTruthy();
-    expect(fixture.nativeElement.textContent).toContain('loading...');
+
+    const loaderElement = fixture.debugElement.query(By.css('tc-loading'));
+    expect(loaderElement).toBeTruthy();
+    expect(loaderElement.nativeElement.textContent).toContain('Loading');
   });
 
   it('should render error message when error is present', () => {

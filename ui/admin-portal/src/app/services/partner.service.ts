@@ -19,7 +19,7 @@ import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {SearchPartnerRequest, Status} from "../model/base";
+import {DtoType, SearchPartnerRequest, Status} from "../model/base";
 import {Partner, UpdatePartnerJobContactRequest, UpdatePartnerRequest} from "../model/partner";
 import {Job} from "../model/job";
 
@@ -65,5 +65,22 @@ export class PartnerService {
 
   updateJobContact(id: number, request: UpdatePartnerJobContactRequest): Observable<Partner>  {
     return this.http.put<Partner>(`${this.apiUrl}/${id}/update-job-contact`, request);
+  }
+
+  getPartner(id: number, dtoType: DtoType): Observable<Partner> {
+    return this.http.get<Partner>(`${this.apiUrl}/${id}?dtoType=${dtoType}`);
+  }
+  
+  updateAcceptedDpa(dpaId: string):
+    Observable<Partner>  {
+    return this.http.put<Partner>(`${this.apiUrl}/${dpaId}/accept-dpa`, null);
+  }
+
+  setFirstDpaSeen(): Observable<Partner>  {
+    return this.http.put<Partner>(`${this.apiUrl}/dpa-seen`,null);
+  }
+
+  requiresDpaAcceptance(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/requires-dpa`);
   }
 }

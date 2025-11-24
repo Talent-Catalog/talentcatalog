@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="hostChallenges">What have been the major challenges for you in {{candidate.country.name}}? </label>
@@ -26,9 +26,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+    <tc-textarea type="text" rows="4"
               id="hostChallenges" [formControlName]="'hostChallenges'"
-              placeholder=""></textarea>
+              placeholder=""></tc-textarea>
   </div>
 </form>
 

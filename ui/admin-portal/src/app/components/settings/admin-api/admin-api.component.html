@@ -15,17 +15,67 @@
   -->
 
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="apicall">API call</label>
-    <input id="apicall" type="text" class="form-control" formControlName="apicall">
-  </div>
+  <tc-field>
+    <tc-label for="apicall">API call</tc-label>
+    <tc-input id="apicall" type="text" formControlName="apicall"></tc-input>
+  </tc-field>
 </form>
-<button type="button" class="btn btn-primary" (click)="send()">
+<tc-button (onClick)="send()">
   Send
-</button>
-<div *ngIf="ack">
-  {{ack}}
+</tc-button>
+
+<!-- Admin Command List -->
+<div class="mt-4">
+  <hr>
+  <div class="row">
+    <!-- Left column: General Admin Commands -->
+    <div class="col-md-4">
+      <h5>General Admin Commands</h5>
+      <ul class="list-unstyled">
+        <li *ngFor="let cmd of adminCommands">
+          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+            <code>{{ cmd.command }}</code>
+          </a>
+          – {{ cmd.description }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Middle column: Migration Commands -->
+    <div class="col-md-4">
+      <h5>API Migration Commands</h5>
+      <ul class="list-unstyled">
+        <li *ngFor="let cmd of migrationCommands">
+          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+            <code>{{ cmd.command }}</code>
+          </a>
+          – {{ cmd.description }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Right column: Duolingo Commands -->
+    <div class="col-md-4">
+      <h5>Duolingo API Commands</h5>
+      <ul class="list-unstyled">
+        <li *ngFor="let cmd of duolingoCommands">
+          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+            <code>{{ cmd.command }}</code>
+          </a>
+          – {{ cmd.description }}
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
-<div *ngIf="error">
-  {{error}}
+
+
+<!-- Display command response -->
+<div class="mt-4" *ngIf="ack">
+  <hr>
+  <pre >{{ack}}</pre>
+</div>
+<div class="mt-4" *ngIf="error">
+  <hr>
+  <pre>{{error}}</pre>
 </div>

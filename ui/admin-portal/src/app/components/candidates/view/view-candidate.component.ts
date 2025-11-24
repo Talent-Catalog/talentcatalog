@@ -17,12 +17,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   Candidate,
+  UpdateCandidateNotificationPreferenceRequest,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
@@ -45,7 +46,6 @@ import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {concatMap, takeUntil} from "rxjs/operators";
 
-
 @Component({
   selector: 'app-view-candidate',
   templateUrl: './view-candidate.component.html',
@@ -65,6 +65,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   candidateChat: JobChat;
   candidateProspectTabVisible: boolean;
   loggedInUser: User;
+  uploadedCvAvailable: boolean = false;
 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
@@ -136,6 +137,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
           this.loading = false;
         } else {
           this.setCandidate(candidate);
+          this.updateUploadedCvAvailable();
           this.loadLists();
           this.generateToken();
           this.setChatAccess();
@@ -207,8 +209,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       candidateIds: [this.candidate.id],
       info: info
     };
-    this.candidateService.updateStatus(request).subscribe(
-      () => {
+    this.candidateService.updateStatus(request).pipe(
+      concatMap(() => this.candidateService.getByNumber(this.candidate.candidateNumber))
+    ).subscribe(
+      (candidate) => {
+        this.setCandidate(candidate);
         this.loading = false;
         //Update candidate with new status
         this.candidate.status = info.status;
@@ -283,12 +288,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+    this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   publicCvUrl() {
@@ -442,6 +446,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     return this.authorizationService.canAccessSalesforce();
   }
 
+  canAccessGoogleDrive(): boolean {
+    return this.authorizationService.canAccessGoogleDrive();
+  }
+
   createTailoredCv() {
     const createTailoredCvModal = this.modalService.open(TailoredCvComponent, {
       centered: true,
@@ -473,4 +481,58 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
   }
+
+  public computeNotificationButtonLabel() {
+    return "Notification " + (this.candidate?.allNotifications ? "Opt Out": "Opt In");
+  }
+
+  public toggleNotificationPreferences() {
+    //Ask user if they are sure. Normally this should be changed by candidate only.
+    const areYouSure = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    areYouSure.componentInstance.title = "Override candidate's chat notification preferences?";
+    areYouSure.componentInstance.message =
+      "The candidate can opt into receiving detailed chat notifications. " +
+      " The default is that they don't - but normally we should respect" +
+      " whatever decision they have made.";
+
+    areYouSure.result
+    .then((result) => {
+      if (result == true) {
+        this.doToggleNotificationPreferences()
+      }
+    })
+    .catch(() => {});
+  }
+
+  private doToggleNotificationPreferences() {
+    this.error = null;
+    const request: UpdateCandidateNotificationPreferenceRequest = {
+      allNotifications: !this.candidate.allNotifications
+    };
+    this.candidateService.updateNotificationPreference(this.candidate.id, request).subscribe(
+      () => {
+        //Update candidate with new preference
+        this.candidate.allNotifications = request.allNotifications;
+
+        //Refresh to get new candidate notes.
+        this.refreshCandidateProfile();
+      },
+      (error) => {
+        this.error = error;
+      });
+  }
+
+  onMuteToggled() {
+    this.refreshCandidateProfile();
+  }
+
+  private updateUploadedCvAvailable() {
+    this.uploadedCvAvailable =
+      !!this.candidate?.candidateAttachments?.some(att => att.cv);
+  }
+
 }

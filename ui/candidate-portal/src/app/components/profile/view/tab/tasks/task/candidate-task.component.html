@@ -22,7 +22,7 @@
         <span class="fw-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span>
         <span class="fw-bolder font-italic" *ngIf="selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.OPTIONAL' | translate }}</span>
       </h4>
-      <div *ngIf="selectedTask.task.taskType !== 'Question'">{{selectedTask?.task?.description}}</div>
+      <div *ngIf="selectedTask.task.taskType !== 'Question'" [innerHtml]="selectedTask?.task?.description"></div>
     </div>
 
     <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">
@@ -40,9 +40,6 @@
   </div>
 
   <div class="mt-4 mx-3 text-center flex-shrink-0">
-    <div class="mb-2" *ngIf="selectedTask?.task?.helpLink">
-      <a class="btn btn-sm btn-primary" target="_blank" [href]="selectedTask?.task?.helpLink">{{ 'TASKS.TASK.VIEWHELP' | translate }} <fa-icon class="ms-1" icon="question-circle"></fa-icon></a>
-    </div>
     <button class="btn btn-sm btn-secondary" (click)="goBack()">
       <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
     </button>
@@ -50,7 +47,7 @@
 </div>
 
 <!-- DISPLAY DOC IF PRESENT -->
-<ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
+<ng-container *ngIf="selectedTask.task.docLink != null">
   <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
 </ng-container>
 
@@ -62,6 +59,15 @@
     [selectedTask]="selectedTask"
     (successfulUpload)="completedUploadTask($event)">
   </app-view-upload-task>
+</ng-container>
+
+<ng-container *ngIf="selectedTask.task.taskType === 'Form'">
+  <app-view-form-task
+    [taskAssignment]="selectedTask"
+    [candidate]="candidate"
+    (taskCompleted)="completedFormTask($event)"
+  >
+  </app-view-form-task>
 </ng-container>
 
 <form [formGroup]="form" (submit)="submitTask()">
@@ -88,32 +94,37 @@
     <div class="section-heading">
       <h5>{{ 'TASKS.COMMENT.HEADER' | translate }}</h5>
     </div>
-    <div class="card">
-        <div *ngIf="!completedTask" class="mb-3">
-          <div class="form-check-inline">
-            <label class="form-check-label mb-0 me-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</label>
-            <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
-          </div>
-          <div>
-            <small class="text-muted">{{ 'TASKS.COMMENT.ABANDONED.NOTE' | translate }}</small>
-          </div>
+    <div class="card d-flex">
+      <div *ngIf="!completedTask" class="mb-3">
+        <div class="form-check-inline">
+          <label class="form-check-label mb-0 me-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</label>
+          <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
         </div>
+        <div>
+          <small class="text-muted">{{ 'TASKS.COMMENT.ABANDONED.NOTE' | translate }}</small>
+        </div>
+      </div>
 
-        <div class="mb-3">
-          <label class="fw-bold form-label" for="comment">
-            {{ 'TASKS.COMMENT.LABEL' | translate }}
-          </label>
-          <textarea id="comment" class="md-textarea-auto form-control" rows="5"
-                    [formControlName]="'comment'"></textarea>
-        </div>
+      <div class="mb-3">
+        <label class="fw-bold form-label" for="comment">
+          {{ 'TASKS.COMMENT.LABEL' | translate }}
+        </label>
+        <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                  [formControlName]="'comment'"></textarea>
+      </div>
+
+      <button class="btn btn-primary mt-2 align-self-start"
+              type="submit"
+              [disabled]="form.invalid || form.pristine"
+      >
+        {{ 'TASKS.TASK.SUBMIT' | translate }}
+        <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+      </button>
+
     </div>
+
   </section>
 
-  <button class="btn btn-primary mt-2" type="submit"
-          [disabled]="form.invalid || form.pristine">
-    {{ 'TASKS.TASK.SUBMIT' | translate }}
-    <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
-  </button>
 </form>
 
 

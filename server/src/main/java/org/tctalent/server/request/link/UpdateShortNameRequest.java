@@ -26,5 +26,5 @@ public class UpdateShortNameRequest {
     private Long savedListId;
 
     @Nullable
-    private String tbbShortName;
+    private String tcShortName;
 }

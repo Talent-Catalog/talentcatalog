@@ -16,7 +16,7 @@
 
 import {ViewCandidateOppComponent} from "./view-candidate-opp.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {NgbModal, NgbNavChangeEvent, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -133,10 +133,40 @@ describe('ViewCandidateOppComponent', () => {
   }));
 
   it('should update active tab ID when the user changes tabs', () => {
-    const mockNavChangeEvent: NgbNavChangeEvent = { activeId:1, nextId: 'Progress', preventDefault: () => {} };
+    const activeTabId: string = 'Progress';
     // Trigger tab change
-    component.onTabChanged(mockNavChangeEvent);
+    component.onTabChanged(activeTabId);
     // Expectations
-    expect(component.activeTabId).toBe(mockNavChangeEvent.nextId);
+    expect(component.activeTabId).toBe(activeTabId);
   });
+
+  it('should not upload offer if modal is dismissed', fakeAsync(() => {
+    const modalRef = {
+      componentInstance: { maxFiles: 1 },
+      result: Promise.reject('Modal dismissed')
+    };
+    mockModalService.open.and.returnValue(modalRef);
+
+    component.uploadOffer();
+    tick();
+
+    expect(mockCandidateOpportunityService.uploadOffer).not.toHaveBeenCalled();
+    expect(component.saving).toBe(undefined);
+  }));
+
+
+  it('should not crash if opp is null in ngOnChanges', fakeAsync(() => {
+    component.opp = null!;
+    component.ngOnChanges({
+      opp: {
+        currentValue: null,
+        previousValue: mockCandidateOpportunity,
+        firstChange: false,
+        isFirstChange: () => false
+      }
+    });
+    tick();
+    expect(component.loading).toBeFalse();
+  }));
+
 });

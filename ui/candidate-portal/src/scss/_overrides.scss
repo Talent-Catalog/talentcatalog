@@ -62,3 +62,19 @@
   @include color("text-inactive");
   margin-bottom: 8px;
 }
+
+.tab-header {
+  .text-muted {
+    color: white !important;
+  }
+  .btn {
+    color: black;
+    background-color: white;
+  }
+}
+
+.alert-text-duolingo {
+  color:#ff4b4b;
+  font-weight: bold;
+}
+

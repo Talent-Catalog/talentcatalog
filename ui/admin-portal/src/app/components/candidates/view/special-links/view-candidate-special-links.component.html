@@ -14,76 +14,93 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
 
-<div class="card">
-  <div class="card-header">
+<tc-card>
+  <tc-card-header>
     Special links
-    <span *ngIf="loading">
-        <i class="fas fa-spinner fa-spin"></i>
-    </span>
-    <div class="float-end" *ngIf="editable">
-      <button *ngIf="canAccessSalesforce()" class="btn btn-primary me-2"
-              (click)="createUpdateSalesforce()">
+    <div class="d-flex gap-2 justify-content-end" *ngIf="editable">
+      <tc-button [type]="'outline'"
+                 [color]="'primary'"
+                 [size]="'sm'"
+                 *ngIf="canAccessSalesforce()"
+                 (onClick)="createUpdateSalesforce()"
+      >
         <i class="fab fa-salesforce"></i> Create/update Salesforce
-      </button>
-      <button *ngIf="!candidate.folderlink" class="btn btn-primary me-2"
-              (click)="createCandidateFolder()">
-        <i class="fab fa-google-drive"></i> Create Google Docs Folder
-      </button>
-      <button class="btn btn-sm btn-secondary" (click)="editSpecialLinks()">
+      </tc-button>
+
+      <tc-button *ngIf="!candidate.folderlink && canAccessGoogleDrive()"
+                 (onClick)="createCandidateFolder()"
+                 [size]="'sm'"
+                 [type]="'outline'"
+                 [color]="'primary'"
+      >
+        <i class="fab fa-google-drive"></i> Create Google Drive Folder
+      </tc-button>
+
+      <tc-button (onClick)="editSpecialLinks()"
+                 [size]="'sm'"
+                 [type]="'solid'"
+                 [color]="'primary'"
+      >
         <i class="fas fa-edit"></i>
-      </button>
+      </tc-button>
+
     </div>
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
-
-    <div class="col-sm-12">
-      <span *ngIf="candidate.linkedInLink">Candidate's LinkedIn:
-        <a [href]="candidate.linkedInLink" target="_blank">
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
+    <tc-description-item>
+      <span *ngIf="candidate.linkedInLink">
+        <a [href]="candidate.linkedInLink" target="_blank" class="no-underline">
           <i class="fab fa-linkedin"></i>
+          LinkedIn
         </a>
       </span>
-      <span *ngIf="!candidate.linkedInLink" class="alert-danger">
-          Please add link to candidate's LinkedIn.
+      <span *ngIf="!candidate.linkedInLink" class="text-color-warning">
+        No LinkedIn
       </span>
-    </div>
+    </tc-description-item>
 
-    <div class="col-sm-12">
-      <span *ngIf="candidate.folderlink">Candidate's Google Docs Folder:
-        <a [href]="candidate.folderlink" target="_blank">
+    <tc-description-item>
+      <span *ngIf="candidate.folderlink">
+        <a [href]="candidate.folderlink" target="_blank" class="no-underline">
           <i class="fab fa-google-drive"></i>
+          Google Drive
         </a>
       </span>
-      <span *ngIf="!candidate.folderlink" class="alert-danger">
-          Please add link to candidate's folder on Google Docs.
+      <span *ngIf="!candidate.folderlink" class="text-color-warning">
+        No Google Drive
       </span>
-    </div>
+    </tc-description-item>
 
-    <div class="col-sm-12">
-      <span *ngIf="candidate.sflink && canAccessSalesforce()">Candidate on Salesforce:
-        <a [href]="candidate.sflink" target="_blank">
+    <tc-description-item>
+      <span *ngIf="candidate.sflink && canAccessSalesforce()">
+        <a [href]="candidate.sflink" target="_blank" class="no-underline">
           <i class="fab fa-salesforce"></i>
+          Salesforce
         </a>
       </span>
-      <span *ngIf="!candidate.sflink" class="alert-danger">
-          Please add link to candidate contact on Salesforce.
+      <span *ngIf="!candidate.sflink" class="text-color-warning">
+        No Salesforce
       </span>
-    </div>
+    </tc-description-item>
 
-    <div class="col-sm-12">
-      <span *ngIf="candidate.videolink">Candidate's one way video:
-        <a [href]="candidate.videolink" target="_blank">
+    <tc-description-item>
+      <span *ngIf="candidate.videolink">
+        <a [href]="candidate.videolink" target="_blank" class="no-underline">
           <i class="fas fa-video"></i>
+          One-way video
         </a>
       </span>
-      <span *ngIf="!candidate.videolink" class="alert-danger">
-          Please add link to candidate's one way video.
+      <span *ngIf="!candidate.videolink" class="text-color-warning">
+        No one-way video
       </span>
-    </div>
-  </div>
+    </tc-description-item>
+  </tc-description-list>
 
-</div>
+</tc-card>

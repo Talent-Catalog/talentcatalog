@@ -38,7 +38,7 @@ export const MockJob: Job = {
     folderlink: 'example.com/folder',
     folderjdlink: 'example.com/folder/jd',
     publishedDocLink: 'example.com/published',
-    tbbShortName: 'TBB',
+    tcShortName: 'TC',
     sfJobCountry: 'USA',
     sfJobStage: 'Prospect',
     fixed: true,
@@ -54,7 +54,7 @@ export const MockJob: Job = {
       description: 'Task description',
       displayName: 'Task 1',
       optional: false,
-      helpLink: 'example.com/help',
+      docLink: 'example.com/help',
       taskType: TaskType.Question,
       uploadType: UploadType.degree,
       uploadSubfolderName: 'subfolder',
@@ -89,7 +89,8 @@ export const MockJob: Job = {
     usingMfa: true,
     mfaConfigured: true,
     partner: null,
-    name: 'John Doe'
+    name: 'John Doe',
+    emailVerified: false,
   },
   country: { id: 1, name: 'USA', status: 'Active', translatedName: 'United States' },
   employerEntity: { id: 1, name: 'ABC Company', description: 'Some description', hasHiredInternationally: true, sfId: '123', website: 'https://example.com' },
@@ -106,7 +107,7 @@ export const MockJob: Job = {
     folderlink: 'example.com/folder',
     folderjdlink: 'example.com/folder/jd',
     publishedDocLink: 'example.com/published',
-    tbbShortName: 'TBB',
+    tcShortName: 'TC',
     sfJobCountry: 'USA',
     sfJobStage: 'Prospect',
     fixed: true, // Adding fixed property
@@ -122,7 +123,7 @@ export const MockJob: Job = {
       description: 'Task description',
       displayName: 'Task 1',
       optional: false,
-      helpLink: 'example.com/help',
+      docLink: 'example.com/help',
       taskType: TaskType.Question,
       uploadType: UploadType.degree,
       uploadSubfolderName: 'subfolder',
@@ -151,14 +152,16 @@ export const MockJob: Job = {
     usingMfa: false,
     mfaConfigured: true,
     partner: null,
-    name: 'Jane Smith'
+    name: 'Jane Smith',
+    emailVerified: false,
   },
   publishedDate: new Date(),
   jobCreator: { id: 3, name: 'XYZ Partner', abbreviation: 'XYZ', websiteUrl: 'https://xyzpartner.com' },
   stage: JobOpportunityStage.prospect,
-  starringUsers: [{ id: 4, username: 'alicejohnson', firstName: 'Alice', lastName: 'Johnson', email: 'alicejohnson@example.com', role: 'limited', jobCreator: false, approver: null, purpose: 'Some purpose', readOnly: false, sourceCountries: [], status: 'Active', createdDate: Date.now(), createdBy: null, updatedDate: Date.now(), lastLogin: Date.now(), usingMfa: true, mfaConfigured: false, partner: null, name: 'Alice Johnson' }],
+  starringUsers: [{ id: 4, username: 'alicejohnson', firstName: 'Alice', lastName: 'Johnson', email: 'alicejohnson@example.com', role: 'limited', jobCreator: false, approver: null, purpose: 'Some purpose', readOnly: false, sourceCountries: [], status: 'Active', createdDate: Date.now(), createdBy: null, updatedDate: Date.now(), lastLogin: Date.now(), usingMfa: true, mfaConfigured: false, partner: null, name: 'Alice Johnson',emailVerified: false,}],
   submissionDueDate: new Date(),
-   jobOppIntake: { employerCostCommitment: 'High', recruitmentProcess: 'Some process', minSalary: 50000, occupationCode: '123', salaryRange: '50k - 100k', locationDetails: 'Some location details', location: 'Some location', visaPathways: 'Some pathways', benefits: 'Some benefits', educationRequirements: 'Some education requirements', languageRequirements: 'Some language requirements', employmentExperience: 'Some employment experience', skillRequirements: 'Some skill requirements' }
+   jobOppIntake: { employerCostCommitment: 'High', recruitmentProcess: 'Some process', minSalary: 50000, occupationCode: '123', salaryRange: '50k - 100k', locationDetails: 'Some location details', location: 'Some location', visaPathways: 'Some pathways', benefits: 'Some benefits', educationRequirements: 'Some education requirements', languageRequirements: 'Some language requirements', employmentExperience: 'Some employment experience', skillRequirements: 'Some skill requirements' },
+  createdBy: new MockUser()
 };
 
 

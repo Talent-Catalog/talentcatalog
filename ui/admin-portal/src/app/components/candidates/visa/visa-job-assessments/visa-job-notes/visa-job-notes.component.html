@@ -14,20 +14,18 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="visaJobNotes">Overall Visa Notes</label>
-    <div class="float-end">
+  <tc-field>
+    <div class="d-flex justify-content-between">
+      <tc-label for="visaJobNotes">
+        Overall Visa Notes
+      </tc-label>
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaJobNotes" formControlName="visaJobNotes"
-              placeholder="" ></textarea>
-  </div>
+    <tc-textarea id="visaJobNotes" formControlName="visaJobNotes"></tc-textarea>
+  </tc-field>
 </form>

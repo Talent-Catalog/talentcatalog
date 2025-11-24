@@ -33,6 +33,7 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
 
   @Input() job: Job;
   @Input() editable: boolean;
+  @Input() fromUrl: boolean;
 
   chatHeader: string;
   error: any;
@@ -59,6 +60,14 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
 
       //Selection can't change
       this.selectable = false;
+    }
+
+    /** If this component is viewed from the side panel (not from a URL view) then we want to stack the panels so that
+     * the chat and table have full width for better UI experience.
+     */
+    if (!this.fromUrl) {
+      this.mainPanelColWidth = 12;
+      this.sidePanelColWidth = 12;
     }
   }
 

@@ -52,8 +52,8 @@ class BackRunnerTest {
     @Test
     void testFixedScheduling() throws InterruptedException {
         ScheduledFuture<?> scheduledFuture =
-            backRunner.start(taskScheduler, backProcessor, new IdContext(null, 10),
-                Duration.ofSeconds(1));
+            backRunner.start(taskScheduler, backProcessor, new IdContext(null, 10, null),
+                Duration.ofSeconds(1), "Test");
         assertFalse(scheduledFuture.isDone());
         Thread.sleep(5000);
         assertTrue(scheduledFuture.isDone());
@@ -62,8 +62,8 @@ class BackRunnerTest {
     @Test
     void testVariableScheduling() throws InterruptedException {
         ScheduledFuture<?> scheduledFuture =
-            backRunner.start(taskScheduler, backProcessor, new IdContext(null, 10),
-                50);
+            backRunner.start(taskScheduler, backProcessor, new IdContext(null, 10, null),
+                50, "Test");
         assertFalse(scheduledFuture.isDone());
         Thread.sleep(5000);
         assertTrue(scheduledFuture.isDone());

@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -159,6 +160,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
         return new DtoBuilder()
             .add("id")
             .add("candidateNumber")
+            .add("publicId")
             .add("user", shortUserDto())
             ;
     }

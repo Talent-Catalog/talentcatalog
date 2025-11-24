@@ -16,28 +16,47 @@
 
 <div class="row">
   <div class="col-12 col-md-4">
-      <label class="form-label" for="savedSearch">Base Search</label>
+      <tc-label size="sm" class="form-label" for="savedSearch">Base Search</tc-label>
+      <tc-button [type]="'plain'"
+                 class="tool-tip-button"
+                 [ngbTooltip]="baseSearchTooltip"
+                 placement="bottom top"
+                 triggers="click"
+                 tooltipClass="search-tips"
+                 [stopNativeClickPropagation]="false"
+      >
+        <i class="fa-regular fa-circle-question fa-xs"></i>
+      </tc-button>
       <div class="input-group">
-        <input id="savedSearch"
-               type="text" class="form-control"
+        <tc-input id="savedSearch"
+               type="text"
                (selectItem)="selected($event.item.id)"
                [ngbTypeahead]="doSavedSearchSearch"
                [resultTemplate]="rt"
                placement="bottom-left"
                [value]="this.selectedBaseSearch?.name"
                [inputFormatter]="renderSavedSearchRow"
-               [readOnly]="readonly"
+               [readonly]="readonly"
                placeholder="Type the name of a base search..."/>
-          <button *ngIf="this.selectedBaseSearch" type="button" class="btn btn-danger" (click)="deleteSearch()" >
+          <tc-button color=warning *ngIf="this.selectedBaseSearch" class="btn btn-danger" (onClick)="deleteSearch()" >
             Remove base search <i class="fas fa-xmark ms-2"></i>
-          </button>
+          </tc-button>
       </div>
       <ng-template #rt let-r="result" let-t="term">
         <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
       </ng-template>
     </div>
 
-
+  <ng-template #baseSearchTooltip>
+    <p>
+      Use this field to select another saved search whose criteria will be applied <i>in addition</i>
+      to whatever you specify in this search.
+    </p>
+    <p>
+      E.g., you could build a few saved searches that each apply the criteria of a given immigration
+      pathway, and use them interchangeably underneath your current skills/education search.
+    </p>
+  </ng-template>
 
   <div *ngIf="this.selectedBaseSearch" class="col-auto">
       <app-candidate-source

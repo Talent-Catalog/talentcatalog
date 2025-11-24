@@ -16,6 +16,7 @@
 
 package org.tctalent.server.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 /*
  * DuolingoDashboardResponse:
@@ -30,89 +31,118 @@ import lombok.Data;
 public class DuolingoDashboardResponse {
 
   // The date the test was taken
-  private String test_date;
+  @JsonProperty("test_date")
+  private String testDate;
 
   // The unique coupon ID associated with the test
-  private String coupon_id;
+  @JsonProperty("coupon_id")
+  private String couponId;
 
   // The language of the test
+  @JsonProperty("language")
   private String language;
 
   // The email address of the applicant
+  @JsonProperty("email")
   private String email;
 
   // The full name of the applicant
-  private String full_name;
+  @JsonProperty("full_name")
+  private String fullName;
 
   // The birthdate of the applicant
+  @JsonProperty("birthdate")
   private String birthdate;
 
   // The first name of the applicant
-  private String first_name;
+  @JsonProperty("first_name")
+  private String firstName;
 
   // The last name of the applicant
-  private String last_name;
+  @JsonProperty("last_name")
+  private String lastName;
 
   // The middle names of the applicant
-  private String middle_names;
+  @JsonProperty("middle_names")
+  private String middleNames;
 
   // The given names of the applicant
-  private String given_names;
+  @JsonProperty("given_names")
+  private String givenNames;
 
   // The surnames of the applicant
+  @JsonProperty("surnames")
   private String surnames;
 
   // The country of the applicant
+  @JsonProperty("country")
   private String country;
 
   // The unique user ID in the Duolingo system
-  private String user_id;
+  @JsonProperty("user_id")
+  private String userId;
 
   // The session ID for the test session
-  private String session_id;
+  @JsonProperty("session_id")
+  private String sessionId;
 
   // The URL to the certificate if the applicant is certified
-  private String certificate_url;
+  @JsonProperty("certificate_url")
+  private String certificateUrl;
 
   // The applicant's unique applicant ID
-  private String applicant_id;
+  @JsonProperty("applicant_id")
+  private String applicantId;
 
   // A list of applicant IDs, possibly for associated candidates
-  private Object applicant_ids;
+  @JsonProperty("applicant_ids")
+  private Object applicantIds;
 
   // The overall score of the applicant on the test
-  private int overall_score;
+  @JsonProperty("overall_score")
+  private int overallScore;
 
   // The interview URL if available
-  private String interview_url;
+  @JsonProperty("interview_url")
+  private String interviewUrl;
 
   // The embedded URL for sharing the test results
-  private String embed_url;
+  @JsonProperty("embed_url")
+  private String embedUrl;
 
   // The date when the test results were verified
-  private String verification_date;
+  @JsonProperty("verification_date")
+  private String verificationDate;
 
   // The date when the test results were shared
-  private String share_date;
+  @JsonProperty("share_date")
+  private String shareDate;
 
   // A flag indicating whether the applicant is certified
+  @JsonProperty("certified")
   private boolean certified;
 
   // The percentage score achieved by the applicant
-  private int percent_score;
+  @JsonProperty("percent_score")
+  private int percentScore;
 
   // The score scale used in the test
+  @JsonProperty("scale")
   private int scale;
 
   // The literacy subscore of the applicant
-  private int literacy_subscore;
+  @JsonProperty("literacy_subscore")
+  private int literacySubscore;
 
   // The conversation subscore of the applicant
-  private int conversation_subscore;
+  @JsonProperty("conversation_subscore")
+  private int conversationSubscore;
 
   // The comprehension subscore of the applicant
-  private int comprehension_subscore;
+  @JsonProperty("comprehension_subscore")
+  private int comprehensionSubscore;
 
   // The production subscore of the applicant
-  private int production_subscore;
+  @JsonProperty("production_subscore")
+  private int productionSubscore;
 }

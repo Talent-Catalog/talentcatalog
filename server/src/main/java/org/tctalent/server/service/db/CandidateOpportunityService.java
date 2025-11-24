@@ -43,7 +43,11 @@ public interface CandidateOpportunityService {
      * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp
      * is not null, indicating that these candidates are associated with a job opportunity,
      * this will also create/update the associated candidate opportunities associated with that
-     * job on both Salesforce and on the local database.
+     * job on both Salesforce and on the TC.
+     * <p/>
+     * Note that it may be necessary to create contact records on Salesforce because Salesforce
+     * is designed to only store contact records for candidate who have opportunities - not ALL
+     * contacts registered on the TC.
      *
      * @param candidates Candidates to update
      * @param sfJobOpp If not null candidate opportunities are created/updated
@@ -181,4 +185,19 @@ public interface CandidateOpportunityService {
      */
     CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request)
         throws NoSuchObjectException;
+
+    /**
+     * Processes a batch update of TC Opps from their Salesforce equivalents. Iterates through the
+     * provided Salesforce Opps, fetching the TC equivalent and updating accordingly.
+     * @param oppBatch List of Opportunities fetched from Salesforce
+     * @return updates - int count of TC Opps actually updated
+     */
+    int processCaseUpdateBatch(List<Opportunity> oppBatch);
+
+    /**
+     * Finds all open TC Candidate Opps with a linked SF Opp
+     * @return List of sfIds for all Candidate Opps matching the query criteria
+     */
+    List<String> findAllNonNullSfIdsByClosedFalse();
+
 }

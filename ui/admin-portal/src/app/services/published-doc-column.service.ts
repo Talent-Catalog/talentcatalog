@@ -26,6 +26,8 @@ import {
   PublishedDocValueSource
 } from "../model/saved-list";
 import {PublishedDocColumnType, PublishedDocColumnWidth} from "../model/base";
+import {CandidatePropertyDefinitionService} from "./candidate-property-definition.service";
+import {CandidatePropertyDefinition} from "../model/candidate-property-definition";
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +36,7 @@ export class PublishedDocColumnService {
 
   private allColumnInfosMap = new Map<string, PublishedDocColumnDef>();
 
-  constructor() {
+  constructor(private candidatePropertyDefinitionService: CandidatePropertyDefinitionService) {
     //Keep empty column first, so we know the index and can sort at the end.
     this.addColumn("emptyColumn", "Empty Column", null);
 
@@ -224,6 +226,32 @@ export class PublishedDocColumnService {
       new PublishedDocConstantSource("folder"),
       new PublishedDocFieldSource("folderlinkRegistration"))
     .width = PublishedDocColumnWidth.Narrow;
+
+    this.loadDynamicProperties();
+  }
+
+  private loadDynamicProperties() {
+    //We want to load all properties, but Spring Data Rest only provides paged access.
+    //So to get them simply in one go, I am just setting a huge page size.
+    //Alternately, you could use "expand" in a "pipe" to keep calling "get" repeatedly with a normal
+    //page size. But the code for that is a bit cryptic, and this is good enough.
+    //We don't expect to have a huge number of properties.
+    this.candidatePropertyDefinitionService.get(0,100000).subscribe({
+      next: page =>
+          this.processDynamicProperties(page._embedded?.candidatePropertyDefinitions),
+      error: err => console.log("Error getting dynamic properties: " + err)
+    })
+  }
+
+  private processDynamicProperties(defs: CandidatePropertyDefinition[]) {
+    if (defs != null) {
+      defs.forEach(def => {
+        //Use name as the label if we don't have a label
+        let propertySource = new PublishedDocPropertySource(def.name);
+        propertySource.propertyType = def.type;
+        this.addColumn(def.name, def.label ? def.label : def.name, propertySource);
+      })
+    }
   }
 
   getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {

@@ -93,7 +93,6 @@ export class SearchUsersComponent implements OnInit {
     this.search();
   }
 
-
 /* SEARCH FORM */
   search() {
     this.loading = true;
@@ -148,7 +147,7 @@ export class SearchUsersComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteUserModal.componentInstance.message = 'Are you sure you want to delete ' + user.username;
+    deleteUserModal.componentInstance.message = 'Are you sure you want to delete ' + user.username + '?';
 
     deleteUserModal.result
       .then((result) => {

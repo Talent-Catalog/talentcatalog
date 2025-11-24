@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.PdfGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.util.html.HtmlSanitizer;
 import org.tctalent.server.util.html.StringSanitizer;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -76,6 +77,9 @@ public class PdfHelper {
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
 
+            if (Boolean.TRUE.equals(showContact)) {
+                cleanCandidateContactInfo(candidate);
+            }
             cleanCandidateJobDescriptions(candidate);
 
             Context context = new Context();
@@ -102,14 +106,30 @@ public class PdfHelper {
         }
 
     }
+    private static void cleanCandidateContactInfo(Candidate candidate) {
+        if (candidate.getPhone() != null) {
+            candidate.setPhone(StringSanitizer.sanitizeContactField(candidate.getPhone()));
+        }
+
+        if (candidate.getWhatsapp() != null) {
+            candidate.setWhatsapp(StringSanitizer.sanitizeContactField(candidate.getWhatsapp()));
+        }
+    }
+
 
     private static void cleanCandidateJobDescriptions(Candidate candidate) {
-        candidate.getCandidateJobExperiences().forEach(jobExperience ->
-            jobExperience.setDescription(
-                StringSanitizer.replaceLsepWithBr(jobExperience.getDescription())
-            )
-        );
+        candidate.getCandidateJobExperiences().forEach(jobExperience -> {
+            jobExperience.setRole(StringSanitizer.normalizeUnicodeText(jobExperience.getRole()));
+            jobExperience.setCompanyName(
+                StringSanitizer.normalizeUnicodeText(jobExperience.getCompanyName()));
+
+            String description = StringSanitizer.normalizeUnicodeText(jobExperience.getDescription());
+            String sanitizedDescription = HtmlSanitizer.sanitize(description);
+            sanitizedDescription = StringSanitizer.replaceLsepWithBr(sanitizedDescription);
+            jobExperience.setDescription(sanitizedDescription);
+        });
     }
+
 
     private static String convertToXhtml(String html) {
         Tidy tidy = new Tidy();

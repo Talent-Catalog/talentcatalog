@@ -21,8 +21,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.Status;
 
 /**
@@ -30,7 +32,6 @@ import org.tctalent.server.model.db.Status;
  * <p/>
  * See {@link #findSourcePartnerByAutoassignableCountry(Country)} - noting join with sourceCountries attribute
  */
-
 public interface PartnerRepository extends CacheEvictingRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
 
     @Query("select p from Partner p where p.defaultSourcePartner = :defaultSourcePartner")
@@ -39,6 +40,17 @@ public interface PartnerRepository extends CacheEvictingRepository<PartnerImpl, 
     @Query("select p from Partner p where lower(p.abbreviation) = lower(:abbreviation)")
     Optional<PartnerImpl> findByAbbreviation(@Param("abbreviation") String abbreviation);
 
+    /**
+     * Return dtos for all active partners with public API keys.
+     * @return Possibly empty list of all partners with a non-null public API key hash
+     */
+    @NonNull
+    @Query(value =
+        "select new org.tctalent.server.model.db.PublicApiPartnerDto("
+            + "p.name, p.id, p.publicApiAuthorities, p.publicApiKeyHash) from Partner p "
+            + "where p.publicApiKeyHash is not null and p.status = 'active'" )
+    List<PublicApiPartnerDto> findPublicApiPartnerDtos();
+
     @Query("select p from Partner p join p.sourceCountries c "
         + "where c = :country and p.autoAssignable = true and p.status = 'active'")
     List<PartnerImpl> findSourcePartnerByAutoassignableCountry(@Param("country") Country country);
@@ -46,6 +58,8 @@ public interface PartnerRepository extends CacheEvictingRepository<PartnerImpl, 
     @Query(" select p.name from Partner p "
         + " where p.id in (:ids) order by p.name asc" )
     List<String> getNamesForIds(@Param("ids") List<Long> ids);
+
+    Optional<PartnerImpl> findByPublicId(String publicId);
 
     List<PartnerImpl> findByStatusOrderByName(Status status);
 }

@@ -67,7 +67,7 @@ describe('CandidateAttachmentRequest', () => {
     const request = new CandidateAttachmentRequest();
     request.candidateId = 1;
     request.type = AttachmentType.googlefile;
-    request.name = 'Google Doc';
+    request.name = 'Google Drive';
     request.location = 'google-drive-link';
     request.cv = true;
     request.uploadType = UploadType.englishExam;
@@ -76,7 +76,7 @@ describe('CandidateAttachmentRequest', () => {
 
     expect(request.candidateId).toBe(1);
     expect(request.type).toBe(AttachmentType.googlefile);
-    expect(request.name).toBe('Google Doc');
+    expect(request.name).toBe('Google Drive');
     expect(request.location).toBe('google-drive-link');
     expect(request.cv).toBe(true);
     expect(request.uploadType).toBe(UploadType.englishExam);

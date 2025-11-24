@@ -22,6 +22,7 @@ import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {getCandidateSourceType} from "../../../model/saved-search";
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-context-note',
@@ -33,10 +34,10 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
 
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
-  @Input() editable: boolean;
 
   constructor(private fb: UntypedFormBuilder,
-              private candidateSourceService: CandidateSourceService) {
+              private candidateSourceService: CandidateSourceService,
+              private authService: AuthorizationService) {
     super(null);
   }
 
@@ -63,8 +64,8 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
   }
 
   get title(): string {
-    return "Context notes for " + this.candidate.user.firstName + " in " + this.candidateSource.name +
-      " " + getCandidateSourceType(this.candidateSource);
+    return "Context notes for " + this.candidate.user.firstName + " in '" + this.candidateSource.name +
+      "' " + getCandidateSourceType(this.candidateSource);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -75,5 +76,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
     }
   }
 
-
+  isEditable(): boolean {
+    return this.authService.canEditCandidateSource(this.candidateSource);
+  }
 }

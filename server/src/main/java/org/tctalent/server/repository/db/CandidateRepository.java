@@ -151,22 +151,6 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
             + " where c.status in (:statuses)")
     List<Candidate> findByStatuses(@Param("statuses") List<CandidateStatus> statuses);
 
-    /**
-     * Gets candidates for the nightly TC-SF candidate sync: we only really need active candidates
-     * on SF — but adding the sfLink condition ensures that active-inactive status changes are
-     * reflected on SF while still bypassing candidates in draft stage or who were inactive at time
-     * of implementation. SF reports will need to filter for active/desired stages.
-     * @param statuses provided by the CandidateStatus enum — 'active' defined here as incl active,
-     *                pending, incomplete
-     * @return candidate list
-     */
-    @Query(" select c from Candidate c "
-            + " where c.status in (:statuses)"
-            + " or c.sflink is not null")
-    Page<Candidate> findByStatusesOrSfLinkIsNotNull(
-        @Param("statuses") List<CandidateStatus> statuses, Pageable pageable);
-
-
     @Query("select c from Candidate c "
         + "join CandidateReviewStatusItem cri "
         + "on c.id = cri.candidate.id "
@@ -201,11 +185,15 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
                                          Pageable pageable);
 
-    @Query(" select distinct c from Candidate c left join c.user u "
-        + " where lower(u.firstName) like lower(:candidateName)"
-        + " or lower(u.lastName) like lower(:candidateName)"
-        + excludeDeleted
-        + sourceCountryRestriction)
+    @Query("""
+      select distinct c 
+      from Candidate c 
+      left join c.user u 
+      where lower(u.firstName) like lower(:candidateName)
+         or lower(u.lastName) like lower(:candidateName) 
+         or lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)
+         or lower(concat(u.lastName, ' ', u.firstName)) like lower(:candidateName)
+      """ + excludeDeleted + sourceCountryRestriction)
     Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
         Pageable pageable);
@@ -230,18 +218,26 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         Pageable pageable);
 
     @Query(" select distinct c from Candidate c left join c.user u "
-        + " where (lower(c.phone) like lower(:emailOrPhone) "
-        + " or lower(u.email) like lower(:emailOrPhone)) "
+        + " where (lower(c.phone) like lower(:emailPhoneOrWhatsapp) "
+        + " or lower(c.whatsapp) like lower(:emailPhoneOrWhatsapp) "
+        + " or lower(u.email) like lower(:emailPhoneOrWhatsapp)) "
         + excludeDeleted
         + sourceCountryRestriction)
-    Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
-        @Param("userSourceCountries") Set<Country> userSourceCountries,
-        Pageable pageable);
+    Page<Candidate> searchCandidateEmailPhoneOrWhatsapp(@Param("emailPhoneOrWhatsapp") String emailPhoneOrWhatsapp,
+                                                        @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                                        Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
         + " where lower(c.externalId) like lower(:externalId) "
         + sourceCountryRestriction)
     Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+        + " where lower(c.publicId) like lower(:publicId) "
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidatePublicId(@Param("publicId") String publicId,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
         Pageable pageable);
 
@@ -267,6 +263,8 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
 
     Candidate findByCandidateNumber(String candidateNumber);
+
+    Optional<Candidate> findByPublicId(String publicId);
 
     /**
      * ADMIN PORTAL INFOGRAPHICS METHODS: includes source country restrictions.
@@ -849,7 +847,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(
         value =
             """
-            SELECT DISTINCT c FROM Candidate c
+            SELECT c FROM Candidate c
              JOIN c.user u
              JOIN JobChat jc ON c.id = jc.candidate.id
              JOIN ChatPost cp ON jc.id = cp.jobChat.id
@@ -859,6 +857,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                  OR LOWER(u.firstName) LIKE :keyword
                  OR LOWER(u.lastName) LIKE :keyword
                  OR c.candidateNumber LIKE :keyword)
+             GROUP BY c.id
             """
     )
     Page<Candidate> findCandidatesWithActiveChat(
@@ -917,6 +916,10 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
      * @return paged search result of candidates who match the criteria
      */
     Page<Candidate> findByIdIn(Collection<Long> candidateIds, Pageable pageable);
+
+    //TODO JC Doc
+    @Query(value = "select * from candidate where id in :idsSql", nativeQuery = true)
+    Page<Candidate> findByIdIn(@Param("idsSql") String idsSql, Pageable pageable);
 
     @Query(
         value =

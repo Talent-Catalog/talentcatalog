@@ -60,7 +60,7 @@ export class AuthorizationService {
     //For now only TBB can do this.
     //Todo Need to make this more broadly available. It gets complicated when assigning tasks
     //to a list - if that list has candidates from multiple partners.
-    return this.isDefaultSourcePartner();
+    return this.isDefaultSourcePartner() && !this.isReadOnly();
   }
 
   canViewCandidateCountry(): boolean {
@@ -283,6 +283,13 @@ export class AuthorizationService {
   }
 
   /**
+   * Can they see and click on links to take them to candidate Google Drive folders
+   */
+  canAccessGoogleDrive(): boolean {
+    return this.isDefaultSourcePartner();
+  }
+
+  /**
    * True if the currently logged in user is permitted to change a candidate's status.
    */
   canUpdateCandidateStatus(): boolean {
@@ -362,12 +369,18 @@ export class AuthorizationService {
   /**
    * Return true if currently logged-in user is viewing the TC as a source person.
    * <p/>
+   * <p>
    * This is more complicated that just asking whether the user works for a source partner because
    * of TBB special status where it is both a source partner and a destination partner.
+   * </p>
+   * <p>
+   * With the third condition check we also allow for a user who is not themselves designated a job
+   * creator, but who works for an employer partner. Otherwise, they would be designated source by
+   * this check.
    */
   isViewingAsSource(): boolean {
-    //View as source partner as long as user is not a job creator.
-    return this.isSourcePartner() && !this.isJobCreatorUser();
+    //View as source partner as long as user is not a job creator or belonging to an employer org.
+    return this.isSourcePartner() && !this.isJobCreatorUser() && !this.isEmployerPartner();
   }
 
   /**
@@ -468,6 +481,14 @@ export class AuthorizationService {
   }
 
   /**
+   * True if the currently logged-in user can edit the given job opp.
+   * @param jobOpp Job Opp
+   */
+  canEditJobOpp(jobOpp: Job) {
+    return !this.isReadOnly() && this.isPartnerAdminOrGreater() && this.isJobOurs(jobOpp as ShortJob);
+  }
+
+  /**
    * True if the currently logged-in user can edit the given candidate source.
    * @param candidateSource Candidate source - ie SavedList or SavedSearch
    * @return true if can be edited, false if source is null
@@ -501,6 +522,19 @@ export class AuthorizationService {
       }
     }
     return result;
+  }
+
+  /**
+   * Only a System Admin or the user who created a Job can change its name.
+   * @param job
+   */
+  canChangeJobName(job: Job) {
+      let result: boolean = false;
+      const loggedInUser = this.authenticationService.getLoggedInUser();
+      if ((loggedInUser.id === job.createdBy.id) || this.isSystemAdminOnly()) {
+        result = true;
+      }
+      return result;
   }
 
 }

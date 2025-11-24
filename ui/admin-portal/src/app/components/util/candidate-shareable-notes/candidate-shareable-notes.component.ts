@@ -20,6 +20,7 @@ import {Candidate, UpdateCandidateShareableNotesRequest} from "../../../model/ca
 import {UntypedFormBuilder} from "@angular/forms";
 import {Observable} from "rxjs";
 import {CandidateService} from "../../../services/candidate.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-shareable-notes',
@@ -32,7 +33,9 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
-  constructor(private fb: UntypedFormBuilder, private candidateService: CandidateService) {
+  constructor(private fb: UntypedFormBuilder,
+              private candidateService: CandidateService,
+              private authService: AuthorizationService) {
     super(candidateService);
   }
 
@@ -58,12 +61,13 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //Replace the form value with the new candidates data when
-    //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      if (this.editable) {
-        this.form.controls['shareableNotes'].patchValue(this.candidate.shareableNotes, {emitEvent: false});
-      }
+      // Update value
+      this.form.controls['shareableNotes'].patchValue(
+        this.candidate.shareableNotes,
+        { emitEvent: false }
+      );
     }
   }
+
 }

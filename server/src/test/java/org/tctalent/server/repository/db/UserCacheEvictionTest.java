@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -151,7 +151,7 @@ class UserCacheEvictionTest {
 
   private void createSharedLists() {
     SavedList savedList = new SavedList();
-    savedList.setTbbShortName("TestList");
+    savedList.setTcShortName("TestList");
     savedList.setName("TestList");
     savedList.setDescription("TestDescription");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -159,7 +159,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(savedList);
 
     savedList = new SavedList();
-    savedList.setTbbShortName("TestList2");
+    savedList.setTcShortName("TestList2");
     savedList.setName("TestList2");
     savedList.setDescription("TestDescription2");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -167,7 +167,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(savedList);
 
     savedList = new SavedList();
-    savedList.setTbbShortName("TestList3");
+    savedList.setTcShortName("TestList3");
     savedList.setName("TestList3");
     savedList.setDescription("TestDescription3");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -246,7 +246,6 @@ class UserCacheEvictionTest {
     candidate.setCreatedBy(candidateUser);
     candidate.setCreatedDate(OffsetDateTime.now());
     candidate.setUser(candidateUser);
-    candidate.setContactConsentPartners(true);
     candidate.setContactConsentRegistration(true);
     candidate.setStatus(CandidateStatus.active);
     candidateRepository.save(candidate);
@@ -977,7 +976,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(list);
 
     // Verify that the saved list updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -995,7 +994,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAll(List.of(list));
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -1013,7 +1012,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAndFlush(list);
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -1031,7 +1030,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAllAndFlush(List.of(list));
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 

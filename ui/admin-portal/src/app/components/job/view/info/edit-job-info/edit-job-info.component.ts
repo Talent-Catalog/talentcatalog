@@ -42,7 +42,11 @@ export class EditJobInfoComponent implements OnInit {
   saving: boolean;
 
   evergreenTip = "An evergreen job is always looking for candidates";
-  skipCandidateSearchTip = "If 'Yes' partners will not search for candidates";
+  skipCandidateSearchTip = "If checked, partners will not search for candidates";
+  nameTip = "Only the user who created a job can change its name. Contact a TC admin if " +
+    "this presents an issue.";
+  submissionDueDateTip = "All prospective candidates should be submitted so that " +
+    "recruitment can proceed by given date."
 
   constructor(private activeModal: NgbActiveModal,
               private fb: UntypedFormBuilder,
@@ -72,6 +76,7 @@ export class EditJobInfoComponent implements OnInit {
 
   private createForm() {
     this.jobForm = this.fb.group({
+      name: [this.job.name],
       submissionDueDate: [this.job.submissionDueDate],
       contactUser: [this.job.contactUser?.id],
       evergreen: [this.job.evergreen],
@@ -95,6 +100,13 @@ export class EditJobInfoComponent implements OnInit {
     return this.jobForm?.value.submissionDueDate;
   }
 
+  /**
+   * Returns null unless changed in form.
+   */
+  get jobName(): string {
+    return this.jobForm?.value.name === this.job.name ? null : this.jobForm.value.name;
+  }
+
   onSave() {
     this.error = null;
     this.saving = true;
@@ -103,7 +115,8 @@ export class EditJobInfoComponent implements OnInit {
       contactUserId: this.contactUser,
       evergreen: this.evergreen,
       skipCandidateSearch: this.skipCandidateSearch,
-      submissionDueDate: this.submissionDueDate
+      submissionDueDate: this.submissionDueDate,
+      jobName: this.jobName,
     }
 
     this.jobService.update(this.job.id, request).subscribe(
@@ -127,5 +140,9 @@ export class EditJobInfoComponent implements OnInit {
 
   canChangeJobStage() {
     return this.authService.canChangeJobStage(this.job);
+  }
+
+  canChangeJobName() {
+    return this.authService.canChangeJobName(this.job);
   }
 }

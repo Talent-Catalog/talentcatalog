@@ -25,6 +25,8 @@ import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
 import {SavedSearchService} from "../../services/saved-search.service";
 import {saveBlob} from "../../util/file";
+import {EnumOption, enumOptions} from "../../util/enum";
+import {Stat} from "../../model/stat";
 
 @Component({
   selector: 'app-infographic',
@@ -32,6 +34,8 @@ import {saveBlob} from "../../util/file";
   styleUrls: ['./infographic.component.scss']
 })
 export class InfographicComponent implements OnInit {
+
+  public statOptions: EnumOption[] = enumOptions(Stat);
 
   loading: boolean = false;
   dataLoaded: boolean = false;
@@ -57,7 +61,8 @@ export class InfographicComponent implements OnInit {
       savedList: [null],
       savedSearch: [null],
       dateFrom: ['', [Validators.required]],
-      dateTo: ['', [Validators.required]]
+      dateTo: ['', [Validators.required]],
+      selectedStats: [[]]
     });
 
     this.loadListsAndSearches();
@@ -74,6 +79,9 @@ export class InfographicComponent implements OnInit {
     const savedSearch: SavedSearch = this.statsFilter.value.savedSearch;
     //Control always returns an object
     return savedSearch;
+  }
+  get selectedStats(): Stat[] {
+    return this.statsFilter.value.selectedStats;
   }
 
   private loadListsAndSearches() {
@@ -120,7 +128,7 @@ export class InfographicComponent implements OnInit {
           this.savedSearchService.get(id).subscribe(
             (savedSearch) => {
               this.statsFilter.controls['savedSearch'].patchValue(savedSearch);
-              this.submitStatsRequest(false);
+              this.submitStatsRequest();
             }, error => {
               this.error = error;
             });
@@ -129,7 +137,7 @@ export class InfographicComponent implements OnInit {
           this.savedListService.get(id).subscribe(
             (savedList) => {
               this.statsFilter.controls['savedList'].patchValue(savedList);
-              this.submitStatsRequest(false);
+              this.submitStatsRequest();
             }, error => {
               this.error = error;
           });
@@ -138,16 +146,16 @@ export class InfographicComponent implements OnInit {
     });
   }
 
-  submitStatsRequest(runOldStats: boolean){
+  submitStatsRequest(){
     this.loading = true;
     this.error = null;
 
     const request: CandidateStatsRequest = {
-      runOldStats: runOldStats,
       listId: this.savedList == null ? null : this.savedList.id,
       searchId: this.savedSearch == null ? null : this.savedSearch.id,
       dateFrom: this.dateFrom,
-      dateTo: this.dateTo
+      dateTo: this.dateTo,
+      selectedStats: this.selectedStats
     }
 
     if (this.savedList) {

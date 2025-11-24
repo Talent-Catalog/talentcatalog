@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,9 +33,7 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
-
-import java.io.IOException;
-import java.util.List;
+import org.tctalent.server.service.api.SkillName;
 
 /**
  * Service for managing {@link SalesforceJobOpp}
@@ -75,6 +75,15 @@ public interface JobService {
      */
     @NonNull
     SalesforceJobOpp getJob(long id) throws NoSuchObjectException;
+
+    /**
+     * Get the skills associated with the job with the given id.
+     * @param id Job id
+     * @param lang Language code for the skill names - eg "en" or "de"
+     * @return List of skill names
+     */
+    @NonNull
+    List<SkillName> getSkills(long id, @NonNull String lang);
 
     /**
      * Creates a suggested saved search for the job with the given id.
@@ -252,7 +261,7 @@ public interface JobService {
     /**
      * Updates all open Jobs from their corresponding records on Salesforce
      */
-    void updateOpenJobs();
+    void initiateOpenJobSyncFromSf();
 
     /**
      * Uploads the given file to the JobDescription subfolder of the folder associated with the
