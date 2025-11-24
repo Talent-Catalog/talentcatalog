@@ -29,6 +29,11 @@
       </p>
       <div class="job-name-container">
         <h2 [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}</h2>
+        <tc-icon type="button" color="warning" size="lg" *ngIf="!showBreadcrumb"
+                 [routerLink]="['/job',job.id]"
+                 title="Open Job">
+          <i class="fas fa-expand"></i>
+        </tc-icon>
         <tc-icon type="button" color="warning" size="lg" (click)="doToggleStarred()">
           <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
           <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
@@ -41,14 +46,6 @@
             <i class="fas fa-angle-down"></i>
           </tc-dropdown-button>
           <tc-dropdown-menu>
-            <tc-dropdown-item *ngIf="!showBreadcrumb"
-                              [routerLink]="['/job',job.id]"
-                              title="Open">
-              <tc-icon color="primary" size="md">
-                <i class="fas fa-expand"></i>
-              </tc-icon>
-              Open Job
-            </tc-dropdown-item>
             <tc-dropdown-item *ngIf="job.submissionList && canSeeJobDetails()"
                               [routerLink]="['/list',job.submissionList.id]"
                               title="Submission list">

@@ -24,6 +24,11 @@
           <div class="d-flex gap-2 align-items-baseline">
           <h1 class="fs-5 fw-bold mb-2">{{candidateSource?.name + ' (' + candidateSource?.id + ')'}}</h1>
             <div class="d-flex gap-2 align-items-center">
+
+              <!--      Open Job        -->
+                <tc-icon type="button"  color="warning" size="lg" *ngIf="showOpen" (click)="doOpenSource()" title="Open in new window">
+                  <i class="fas fa-expand"></i>
+                </tc-icon>
               <tc-icon type="button" color="warning" size="lg" (click)="doToggleStarred()" class="align-self-center">
                 <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
                 <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
@@ -37,14 +42,6 @@
                   <i class="fas fa-angle-down"></i>
                 </tc-dropdown-button>
                 <tc-dropdown-menu>
-
-                  <!--      Open Job        -->
-                  <tc-dropdown-item *ngIf="showOpen" (click)="doOpenSource()" title="Open">
-                    <tc-icon color="primary" size="md">
-                      <i class="fas fa-expand"></i>
-                    </tc-icon>
-                    Open Source
-                  </tc-dropdown-item>
 
                   <!--      Copy shareable link        -->
                   <tc-dropdown-item *ngIf="showLink" (click)="doCopyLink()" title="Copy Shareable Link">
