@@ -28,8 +28,9 @@
       {{ 'REGISTRATION.HEADER.EXPLANATION' | translate }}
     </p>
 
-    <p *ngIf="registrationService?.currentStep?.section === 0" class="explain">
-      {{ 'REGISTRATION.HEADER.ACCOUNT.EXPLANATION' | translate }}
+    <p *ngIf="registrationService?.currentStep?.section === 0" class="explain"
+       [innerHTML]="'REGISTRATION.HEADER.ACCOUNT.EXPLANATION' | translate"
+    >
     </p>
 
   </div>
