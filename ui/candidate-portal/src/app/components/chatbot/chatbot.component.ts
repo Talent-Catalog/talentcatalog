@@ -35,6 +35,9 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   isUnavailable = false;
 
   private subscriptions: Subscription[] = [];
+  private touchStartY = 0;
+  private touchStartX = 0;
+  private readonly SWIPE_THRESHOLD = 100; // Minimum distance to trigger swipe
 
   constructor(private chatbotService: ChatbotService) { }
 
@@ -114,5 +117,39 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   formatTime(timestamp: Date): string {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  onTouchStart(event: TouchEvent): void {
+    if (event.touches.length > 0) {
+      this.touchStartY = event.touches[0].clientY;
+      this.touchStartX = event.touches[0].clientX;
+    }
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    // Allow default scrolling behavior if user is scrolling within the messages container
+    const target = event.target as HTMLElement;
+    if (target.closest('.chatbot-messages')) {
+      return;
+    }
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    if (event.changedTouches.length > 0 && this.touchStartY > 0) {
+      const touchEndY = event.changedTouches[0].clientY;
+      const touchEndX = event.changedTouches[0].clientX;
+      const deltaY = touchEndY - this.touchStartY;
+      const deltaX = Math.abs(touchEndX - this.touchStartX);
+
+      // Check if it's a downward swipe (not a horizontal swipe)
+      // Only close if swiping down more than threshold and vertical movement is greater than horizontal
+      if (deltaY > this.SWIPE_THRESHOLD && deltaY > deltaX) {
+        this.closeChatbot();
+      }
+
+      // Reset touch start position
+      this.touchStartY = 0;
+      this.touchStartX = 0;
+    }
   }
 }

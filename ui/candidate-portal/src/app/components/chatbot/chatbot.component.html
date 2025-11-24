@@ -16,6 +16,7 @@
 
 <!-- Floating Chatbot Icon -->
 <div class="chatbot-icon" 
+     [class.open]="isOpen"
      (click)="toggleChatbot()"
      [attr.aria-label]="isOpen ? 'Close chatbot' : 'Open chatbot'"
      role="button"
@@ -29,7 +30,13 @@
 <div class="chatbot-panel" 
      [class.open]="isOpen"
      role="dialog"
-     aria-labelledby="chatbot-title">
+     aria-labelledby="chatbot-title"
+     (touchstart)="onTouchStart($event)"
+     (touchmove)="onTouchMove($event)"
+     (touchend)="onTouchEnd($event)">
+
+  <!-- Drag Handle (Mobile Only) -->
+  <div class="chatbot-drag-handle"></div>
 
   <!-- Panel Header -->
   <div class="chatbot-header">
