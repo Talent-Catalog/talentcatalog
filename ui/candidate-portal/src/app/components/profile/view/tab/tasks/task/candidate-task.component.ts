@@ -97,12 +97,16 @@ export class CandidateTaskComponent implements OnInit {
     }
   }
 
-  get formAbandoned() {
+  get formAbandoned(): boolean {
     return this.form.get('abandoned').value;
   }
 
   get abandonedTask() {
     return this.selectedTask?.abandonedDate != null;
+  }
+
+  get abandoned() {
+    return this.formAbandoned || this.abandonedTask;
   }
 
   get completedTask() {
@@ -154,12 +158,13 @@ export class CandidateTaskComponent implements OnInit {
 
   submitTask() {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
-    // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
+    // If it is an upload task the task is completed separately on file upload, the submit button
+    // will then add a comment or if abandoned to the upload task.
     // If it is an already completed task, only can update the comment field.
     if (this.completedTask) {
       this.updateTaskComment();
     } else {
-      if (!this.abandonedTask) {
+      if (!this.abandoned) {
         switch (this.selectedTask.task.taskType) {
           case TaskType.Question:
           case TaskType.YesNoQuestion:

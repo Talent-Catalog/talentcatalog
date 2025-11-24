@@ -79,8 +79,9 @@
 
 <form [formGroup]="form" (submit)="submitTask()">
   <!-- OTHER ACTIONS -->
-  <!-- Only show these containers if the task is NOT abandoned. If the task is abandoned we want to hide these containers until the task is un-abandoned. -->
-  <ng-container *ngIf="!formAbandoned && !abandonedTask">
+  <!-- Only show these containers if the task is NOT abandoned.
+  If the task is abandoned we want to hide these containers until the task is un-abandoned. -->
+  <ng-container *ngIf="!abandoned">
     <ng-container *ngIf="selectedTask.task.taskType === 'Simple'">
       <app-view-simple-task
         [form]="form"
