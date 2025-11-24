@@ -386,6 +386,7 @@ public class SavedSearchAdminApi implements
             .add("users", userDto())
             .add("watcherUserIds")
             .add("createdBy", userDto())
+            .add("global")
             ;
     }
 
