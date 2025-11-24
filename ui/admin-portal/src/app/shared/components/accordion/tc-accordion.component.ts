@@ -12,6 +12,7 @@ import {TcAccordionItemComponent} from "./accordion-item/tc-accordion-item.compo
  * - Wraps the TcAccordionItem components
  * - Sets the default open/close state of the panels
  * - Keeps track of which panels are opened and closed on click
+ * - Each <tc-accordion-item> inside this component is automatically assigned an index, which is used to control its open/close state.
  *
  * **Inputs**
  * - allOpen: if true initializes accordion with all panels opened, defaults to false.
@@ -64,6 +65,8 @@ export class TcAccordionComponent implements AfterContentInit {
   @Input() firstOpen = false;
   /** Display the open all and close all panel buttons - default true */
   @Input() showOpenCloseAll: boolean = true;
+  /** Enables passing true when visible overflow is required (e.g. dropdown options cut off by next element */
+  @Input() allowOverflow = false;
 
   openIndexes: Set<number> = new Set();
 

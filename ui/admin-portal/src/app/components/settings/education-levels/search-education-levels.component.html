@@ -65,7 +65,9 @@
             [loading]="loading"
             [paginationPosition]="'top'"
             [(pageNumber)]="pageNumber"
-            (pageChange)="search()">
+            (pageChange)="search()"
+            [clickableRows]="false"
+  >
 
     <thead>
     <tr>
@@ -84,7 +86,7 @@
       <td>{{educationLevel.status}}</td>
       <td></td>
       <td>
-        <div class="d-flex justify-content-evenly" *ngIf="(!loggedInUser.readOnly)">
+        <div class="d-flex justify-content-end gap-3 me-3" *ngIf="(!loggedInUser.readOnly)">
           <tc-button type="plain" color="secondary" (onClick)="editEducationLevel(educationLevel)">
             <i class="fas fa-edit"></i></tc-button>
           <tc-button type="plain" color="gray" (onClick)="deleteEducationLevel(educationLevel)">

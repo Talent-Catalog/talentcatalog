@@ -57,8 +57,12 @@
     [form]="form"
     [candidate]="candidate"
     [selectedTask]="selectedTask"
-    (successfulUpload)="completedUploadTask($event)">
-  </app-view-upload-task>
+    (successfulUpload)="completedUploadTask($event)"
+  ></app-view-upload-task>
+  <app-task-submitted *ngIf="selectedTask?.completedDate"
+                      [selectedTask]="selectedTask"
+                      (onReturnToTasksClick)="goBack()"
+  ></app-task-submitted>
 </ng-container>
 
 <ng-container *ngIf="selectedTask.task.taskType === 'Form'">
@@ -66,8 +70,11 @@
     [taskAssignment]="selectedTask"
     [candidate]="candidate"
     (taskCompleted)="completedFormTask($event)"
-  >
-  </app-view-form-task>
+  ></app-view-form-task>
+  <app-task-submitted *ngIf="selectedTask?.completedDate"
+                      [selectedTask]="selectedTask"
+                      (onReturnToTasksClick)="goBack()"
+  ></app-task-submitted>
 </ng-container>
 
 <form [formGroup]="form" (submit)="submitTask()">
@@ -94,32 +101,37 @@
     <div class="section-heading">
       <h5>{{ 'TASKS.COMMENT.HEADER' | translate }}</h5>
     </div>
-    <div class="card">
-        <div *ngIf="!completedTask" class="mb-3">
-          <div class="form-check-inline">
-            <label class="form-check-label mb-0 me-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</label>
-            <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
-          </div>
-          <div>
-            <small class="text-muted">{{ 'TASKS.COMMENT.ABANDONED.NOTE' | translate }}</small>
-          </div>
+    <div class="card d-flex">
+      <div *ngIf="!completedTask" class="mb-3">
+        <div class="form-check-inline">
+          <label class="form-check-label mb-0 me-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</label>
+          <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
         </div>
+        <div>
+          <small class="text-muted">{{ 'TASKS.COMMENT.ABANDONED.NOTE' | translate }}</small>
+        </div>
+      </div>
 
-        <div class="mb-3">
-          <label class="fw-bold form-label" for="comment">
-            {{ 'TASKS.COMMENT.LABEL' | translate }}
-          </label>
-          <textarea id="comment" class="md-textarea-auto form-control" rows="5"
-                    [formControlName]="'comment'"></textarea>
-        </div>
+      <div class="mb-3">
+        <label class="fw-bold form-label" for="comment">
+          {{ 'TASKS.COMMENT.LABEL' | translate }}
+        </label>
+        <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                  [formControlName]="'comment'"></textarea>
+      </div>
+
+      <button class="btn btn-primary mt-2 align-self-start"
+              type="submit"
+              [disabled]="form.invalid || form.pristine"
+      >
+        {{ 'TASKS.TASK.SUBMIT-COMMENT' | translate }}
+        <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+      </button>
+
     </div>
+
   </section>
 
-  <button class="btn btn-primary mt-2" type="submit"
-          [disabled]="form.invalid || form.pristine">
-    {{ 'TASKS.TASK.SUBMIT' | translate }}
-    <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
-  </button>
 </form>
 
 

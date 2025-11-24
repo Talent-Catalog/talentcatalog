@@ -63,19 +63,21 @@
       <hr/>
 
       <!-- searches -->
-      <div class="row mb-3" *ngFor="let search of searches; let i = index">
+      <div class="d-flex align-items-center mb-3 gap-3" *ngFor="let search of searches; let i = index">
 
         <!-- NAME -->
-        <div class="col-10 col-sm" [class.edit-padding]="editable">
-          <i class="fas fa-search"></i>
-          <a [routerLink]="['/search',search.id]">
-            {{search.name}}
+        <div [class.edit-padding]="editable">
+          <a [routerLink]="['/search',search.id]" class="is-link">
+            <i class="fas fa-search"></i>{{search.name}}
           </a>
         </div>
 
-        <!-- EDIT -->
-        <div class="col-2 col-sm-auto" *ngIf="editable">
-          <tc-button type="plain" color="gray" (onClick)="removeSearch(search)">
+        <!-- DELETE -->
+        <div *ngIf="editable">
+          <tc-button [type]="'plain'"
+                     [color]="'gray'"
+                     (onClick)="removeSearch(search)"
+          >
             <i class="fas fa-trash"></i>
           </tc-button>
         </div>

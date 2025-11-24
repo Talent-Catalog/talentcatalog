@@ -33,7 +33,7 @@
           *ngIf="request"
           [ngbTooltip]="helpTipContent"
           (shown)="fetchHelp()"
-          placement="bottom"
+          [placement]="placement"
           triggers="click"
           tooltipClass="help-tips">
     <i class="fa-regular fa-circle-question fa-xs"></i>

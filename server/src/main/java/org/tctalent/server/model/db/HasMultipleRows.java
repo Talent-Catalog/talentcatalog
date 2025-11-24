@@ -39,8 +39,8 @@ public interface HasMultipleRows {
      * @param name Specifies which element of the row to fetch
      *
      * @return Data - can be null if there is no such data or if the index or name is not
-     * recognized.
+     * recognized or the name is null.
      */
     @Nullable
-    String get(int n, String name);
+    String get(int n, @Nullable String name);
 }

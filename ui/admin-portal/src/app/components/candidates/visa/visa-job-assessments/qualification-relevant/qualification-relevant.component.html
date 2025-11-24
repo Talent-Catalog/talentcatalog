@@ -18,12 +18,15 @@
 <form [formGroup]="form">
   <tc-fieldset *ngIf="editable">
     <tc-field>
-      <tc-label for="visaJobQualification">Relevant qualifications?
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaJobQualification">
+          Relevant qualifications?
+        </tc-label>
         <app-autosave-status
           [saving]="saving"
           [typing]="typing">
         </app-autosave-status>
-      </tc-label>
+      </div>
       <ng-select class="tc-select" id="visaJobQualification" [formControlName]="'visaJobQualification'"
                  [items]="relevantQualificationOptions"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>

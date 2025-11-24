@@ -14,7 +14,11 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-modal heading="Edit Langauge Level" (onAction)="onSave()" [disableAction]="languageLevelForm?.invalid || loading || saving">
+<tc-modal heading="Edit Language Level"
+          (onAction)="onSave()"
+          [disableAction]="languageLevelForm?.invalid || loading || saving"
+          [showClose]="true"
+>
   <tc-loading [loading]="loading"></tc-loading>
   <div *ngIf="!loading">
     <tc-alert *ngIf="error">{{error}}</tc-alert>

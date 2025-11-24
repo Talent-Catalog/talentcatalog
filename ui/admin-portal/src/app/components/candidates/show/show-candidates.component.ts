@@ -1548,6 +1548,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
             candidate.status = info.status;
           }
           this.updatingStatuses = false;
+          this.doSearch(true);
         },
         (error) => {
           this.error = error;

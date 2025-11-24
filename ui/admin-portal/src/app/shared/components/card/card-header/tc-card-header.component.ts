@@ -29,6 +29,7 @@ import {Component} from '@angular/core';
  * - Flexible layout: left-aligned title, right-aligned actions
  * - Rounded top corners to visually connect with the card container
  * - Uses `<ng-content>` so you can project any custom markup
+ * - Renders a wrapping `<div>` with the `.tc-card-header` class to apply Talent Catalog's card-header styling.
  *
  * **Usage**
  * Must be used inside a `<tc-card>`. Not intended for standalone use.

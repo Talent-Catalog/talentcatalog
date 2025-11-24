@@ -17,12 +17,15 @@
 <div class="row">
   <div class="col-12 col-md-4">
       <tc-label size="sm" class="form-label" for="savedSearch">Base Search</tc-label>
-      <tc-button type="plain" class="tool-tip-button"
-              [ngbTooltip]="baseSearchTooltip"
-              placement="bottom top"
-              triggers="click"
-              tooltipClass="search-tips"
-      ><i class="fa-regular fa-circle-question fa-xs"></i>
+      <tc-button [type]="'plain'"
+                 class="tool-tip-button"
+                 [ngbTooltip]="baseSearchTooltip"
+                 placement="bottom top"
+                 triggers="click"
+                 tooltipClass="search-tips"
+                 [stopNativeClickPropagation]="false"
+      >
+        <i class="fa-regular fa-circle-question fa-xs"></i>
       </tc-button>
       <div class="input-group">
         <tc-input id="savedSearch"
@@ -35,7 +38,7 @@
                [inputFormatter]="renderSavedSearchRow"
                [readonly]="readonly"
                placeholder="Type the name of a base search..."/>
-          <tc-button color=warning *ngIf="this.selectedBaseSearch" class="btn btn-danger" (click)="deleteSearch()" >
+          <tc-button color=warning *ngIf="this.selectedBaseSearch" class="btn btn-danger" (onClick)="deleteSearch()" >
             Remove base search <i class="fas fa-xmark ms-2"></i>
           </tc-button>
       </div>

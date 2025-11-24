@@ -21,12 +21,15 @@
 
   </tc-fieldset>
   <tc-field>
-    <tc-label for="visaValidTravelDocs">Has valid travel document?
+    <div class="d-flex justify-content-between">
+      <tc-label for="visaValidTravelDocs">
+        Has valid travel document?
+      </tc-label>
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </tc-label>
+    </div>
     <ng-select class="tc-select" id="visaValidTravelDocs" [formControlName]="'visaValidTravelDocs'"
                (clear)="setNoResponse('visaValidTravelDocs')"
                [items]="travelDocumentOptions" [clearOnBackspace]="false"

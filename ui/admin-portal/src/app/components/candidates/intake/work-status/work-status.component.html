@@ -22,9 +22,10 @@
     <label class="form-label" for="workDesired">Are you currently working in your desired field?</label>
     <div class="float-end">
       <app-autosave-status
+        *ngIf="editable"
         [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
+        [typing]="typing"
+      ></app-autosave-status>
     </div>
     <ng-select class="tc-select" id="workDesired" [formControlName]="'workDesired'" (clear)="setNoResponse('workDesired')"
                [items]="workDesiredOptions" [clearOnBackspace]="false"

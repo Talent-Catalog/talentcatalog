@@ -11,6 +11,7 @@ import {Component, Input} from '@angular/core';
  * **Features**
  * - Projects `<tc-dropdown-item>` and `<tc-dropdown-divider>`
  * - Optional `menuClass` to style the parent menu container (width, padding, etc.)
+ * - Does not create DOM wrappers; styling always applies to the parent `.dropdown-menu`
  *
  * @selector tc-dropdown-menu
  *

@@ -2,6 +2,6 @@
         [ngClass]="classList"
         [disabled]="disabled"
         [attr.aria-label]="ariaLabel"
-        (click)="clicked()">
+        (click)="clicked($event)">
   <ng-content></ng-content>
 </button>

@@ -29,7 +29,10 @@ import {LanguageLevel} from '../../../model/language-level';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
+import {
+  CandidateNoteService,
+  CreateCandidateNoteRequest
+} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -386,10 +389,10 @@ export abstract class IntakeComponentTabBase implements OnInit {
     })
 
     let intake = full ? 'Full' : 'Mini'
-    completeIntakeModal.componentInstance.title = "Mark the " + intake + " Intake as complete?";
+    completeIntakeModal.componentInstance.title = "Mark " + intake + " Intake Complete?";
     completeIntakeModal.componentInstance.message =
       "This will mark the candidate as having had the intake completed and store the audit data of " +
-      "completion (who & when). Note: An intake can only be completed ONCE. " +
+      "completion (who & when).<br><br> Note: An intake can only be completed ONCE. " +
       "Once completed, updates can be made to the intakes anytime, just click the Update Intake " +
       "button to keep track of who/when completed the update.";
 

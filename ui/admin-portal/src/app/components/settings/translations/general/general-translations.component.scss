@@ -27,7 +27,7 @@
   margin: 20px 0;
 }
 
-.is-blank {
+tr.is-blank td {
   @include background-color-red;
 }
 
