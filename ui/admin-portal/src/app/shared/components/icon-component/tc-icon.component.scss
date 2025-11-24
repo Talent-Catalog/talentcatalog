@@ -62,3 +62,8 @@
 button.tc-icon {
   all: unset;
 }
+
+// No hover-over effect for non-interactive icon type
+span.tc-icon:hover {
+  filter: none;
+}

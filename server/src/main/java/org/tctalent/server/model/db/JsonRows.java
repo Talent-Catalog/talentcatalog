@@ -17,6 +17,7 @@
 package org.tctalent.server.model.db;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.lang.Nullable;
 
 /**
  * Json implementation of HasMultipleRows.
@@ -42,9 +43,9 @@ public class JsonRows implements HasMultipleRows {
     }
 
     @Override
-    public String get(int n, String name) {
+    public String get(int n, @Nullable String name) {
         String s = null;
-        if (jsonNode.isArray()) {
+        if (name != null && jsonNode.isArray()) {
             final JsonNode element = jsonNode.get(n);
             if (element != null) {
                 JsonNode node = element.get(name);

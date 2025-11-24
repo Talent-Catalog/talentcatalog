@@ -14,6 +14,20 @@ import {SearchResults} from "../../../model/search-results";
  *
  * @selector tc-table
  *
+ *  **Inputs**
+ *  - `results: SearchResults<any> | any[]` — data source for the table
+ *  - `loading: boolean` — toggles loading state
+ *  - `name: string` — optional title displayed above the table**
+ *  - `striped: boolean` — enables Bootstrap striped table style**
+ *  - `hover: boolean` — enables hover styling on rows**
+ *  - `paginationPosition: 'top' | 'bottom'` — where pagination appears**
+ *  - `clickableRows: boolean` — toggles `.clickable-rows` class**
+ *  - `pageNumber: number` — current page (required for paged data)**
+ *
+ * **Outputs**
+ *  - `pageNumberChange: EventEmitter<number>` — enables two-way binding for `[(pageNumber)]`**
+ *  - `pageChange: EventEmitter<void>` — fired after pageNumber changes**
+ *
  * @example
  * ```html
  * <tc-table

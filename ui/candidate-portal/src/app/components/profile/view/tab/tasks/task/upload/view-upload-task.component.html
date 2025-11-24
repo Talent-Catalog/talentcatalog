@@ -30,7 +30,9 @@
         {{ 'TASKS.UPLOAD.LOADING' | translate }} <fa-icon  [spin]="true" icon="spinner"></fa-icon>
       </div>
       <div *ngFor="let file of filesUploaded; let i = index;">
-        <p>{{ 'TASKS.UPLOAD.SUCCESS' | translate }} {{getFileName(file.name)}}!</p>
+        <p class="text-success">
+          {{ 'TASKS.UPLOAD.SUCCESS' | translate }} {{getFileName(file.name)}}
+        </p>
       </div>
     </div>
   </div>

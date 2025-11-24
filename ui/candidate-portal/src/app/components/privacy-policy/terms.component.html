@@ -8,6 +8,9 @@
           <div
             [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS'| translate:{partner: partnerName} ">
           </div>
+          <div *ngIf="partnerEmail">
+            {{('PROFILE.CONTACT.EMAIL'| translate) + ': ' + partnerEmail }}
+          </div>
         </div>
         <button class="btn btn-sm btn-secondary" [routerLink]="'/profile'">
           <fa-icon class="me-1" icon="arrow-left"></fa-icon> Back
@@ -58,7 +61,7 @@
     </div>
 
     <div *ngIf="requestAcceptance">
-      <div *ngIf="termsRead">
+      <div>
 
         <button class="btn btn-success" (click)="acceptTerms()"
         >

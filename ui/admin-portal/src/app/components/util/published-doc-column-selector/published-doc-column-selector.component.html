@@ -51,7 +51,7 @@
       <div class="small mb-3 text-muted text-center">
         Drag away to remove | Click to rename
       </div>
-      <div dragula="COLUMNS" [(dragulaModel)]="selectedColumns" class="dragula-container">
+      <div dragula="COLUMNS" [(dragulaModel)]="selectedColumns" class="dragula-container scrollable-columns">
         <div *ngIf="!selectedColumns.length" class="text-center small mt-3">No Columns Selected</div>
         <div *ngFor="let field of selectedColumns; let i = index">
           <div ngbDropdown container="body" #dropdown=ngbDropdown class="d-flex">

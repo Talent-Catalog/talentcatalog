@@ -83,11 +83,13 @@
         [ngClass]="{'current': currentCandidate?.id == candidate.id}"
     >
       <td>
-        <a class="fw-bold" target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
-          {{candidate.candidateNumber}}
-        </a>
-        <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
-          <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+        <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]" class="d-flex gap-2">
+          <span class="fw-bold">
+            {{candidate.candidateNumber}}
+          </span>
+          <span class="text-decoration-none">
+            <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+          </span>
         </a>
       </td>
       <td>

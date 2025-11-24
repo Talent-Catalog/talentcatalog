@@ -43,9 +43,11 @@ export class CandidateTaskComponent implements OnInit {
   saving: boolean;
   error;
 
-  constructor(private fb: UntypedFormBuilder,
-              private taskAssignmentService: TaskAssignmentService,
-              public sanitizer: DomSanitizer) { }
+  constructor(
+    private fb: UntypedFormBuilder,
+    private taskAssignmentService: TaskAssignmentService,
+    public sanitizer: DomSanitizer
+  ) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -174,6 +176,7 @@ export class CandidateTaskComponent implements OnInit {
         this.updateAbandonedTask();
       }
     }
+    this.form.markAsPristine()
   }
 
   updateQuestionTask() {

@@ -22,6 +22,7 @@
   <tc-icon [color]="color"
            [size]="size"
            ariaLabel="Opens/DLs uploaded CV(s)"
+           *ngIf="!loading"
   >
     <i class="fas fa-address-card" title="Open/download uploaded CV(s)"></i>
   </tc-icon>

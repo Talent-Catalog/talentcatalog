@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 /**
  * @component ErrorMessageComponent
@@ -7,6 +7,8 @@ import { Component } from '@angular/core';
  * A simple, reusable component for displaying form validation error messages.
  * Provides a consistent `.form-error` class for styling and uses content projection
  * to display any error text or markup passed into it.
+ *
+ * Intended to be used inside a form field context (e.g., within `<tc-field>` and below an input).
  *
  * **Features**
  * - Projects arbitrary error text or elements using `<ng-content>`

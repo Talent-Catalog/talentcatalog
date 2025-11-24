@@ -47,7 +47,9 @@
           [loading]="loading"
           [results]="results"
           [(pageNumber)]="pageNumber"
-          (pageChange)="search()">
+          (pageChange)="search()"
+          [clickableRows]="false"
+>
 
   <thead>
     <tr>
