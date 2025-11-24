@@ -63,6 +63,8 @@ public abstract class CandidateSearchUtils {
             "language_level as written_level on candidate_language.written_level_id = written_level_id");
         tableJoins.put("users",
             "users on candidate.user_id = users.id");
+        tableJoins.put("survey_type",
+            "survey_type on candidate.survey_type_id = survey_type.id");
     }
 
     public static final String CANDIDATE_TS_TEXT_FIELD = "candidate.ts_text";
@@ -296,7 +298,6 @@ public abstract class CandidateSearchUtils {
      * table.table...table.field
      */
     private static @NonNull String mapPropertyNameToDbReference(String propertyName) {
-
         //Can assume that candidate and user tables are in select so sorting by those fields
         if (!propertyName.contains(".")) {
             propertyName = "candidate." + propertyName;
