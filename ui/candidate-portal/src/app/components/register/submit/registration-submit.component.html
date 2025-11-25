@@ -18,19 +18,28 @@
 
   <div [innerHTML]="'REGISTRATION.SUBMIT.CONSENT_INTRODUCTION' | translate"></div>
 
-  <app-show-terms
-    [requestTermsRead] = true
-    (termsRead)="setReadTerms()"
-  >
-    <div [innerHtml]=currentPrivacyPolicy?.content></div>
-  </app-show-terms>
+  <div *ngIf="currentPrivacyPolicy.content.length == 0">
+    <p>
+      <a target="_blank" href="https://www.talentbeyondboundaries.org/privacy-and-data-protection-policy">
+        www.talentbeyondboundaries.org/privacy-and-data-protection-policy
+      </a>
+    </p>
+  </div>
+
+  <div *ngIf="currentPrivacyPolicy.content.length > 0">
+    <app-show-terms
+      [requestTermsRead] = true
+      (termsRead)="setReadTerms()"
+    >
+      <div [innerHtml]=currentPrivacyPolicy?.content></div>
+    </app-show-terms>
+
+  </div>
 
   <app-error [error]="error"></app-error>
 
   <button class="btn btn-success" (click)="submit()"
-          [disabled]="!readTerms"
   >
-    <!--  todo new text-->
     {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
   </button>
 </div>

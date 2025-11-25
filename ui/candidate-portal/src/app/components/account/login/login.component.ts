@@ -111,8 +111,9 @@ export class LoginComponent implements OnInit {
     //Remember status
     this.authenticationService.setCandidateStatus(CandidateStatus[candidate.status]);
 
-    //Check if candidate has accepted latest terms
-    if (currentPolicy.id != candidate.acceptedPrivacyPolicyId) {
+
+    //Check if the latest terms exist and whether the candidate has accepted the latest terms
+    if (currentPolicy.content.length > 0 && currentPolicy.id != candidate.acceptedPrivacyPolicyId) {
       //Candidate needs to accept current policy. Ignore any returnUrl and send for normal
       //"home" processing which will prompt them to accept the policy.
       this.router.navigateByUrl("/home");

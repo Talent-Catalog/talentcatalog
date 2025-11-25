@@ -56,7 +56,8 @@ export class TermsComponent implements OnInit {
     this.acceptedPrivacyPolicyPartner = candidate?.acceptedPrivacyPolicyPartner?.name || this.partnerName;
 
     //Check if candidate has accepted the current policy. If not they need to accept it.
-    this.setRequestAcceptance(currentPolicy.id != candidate.acceptedPrivacyPolicyId)
+    this.setRequestAcceptance(
+      currentPolicy.content.length > 0 && currentPolicy.id != candidate.acceptedPrivacyPolicyId)
   }
 
   private setCurrentPolicy(termsInfo: TermsInfoDto) {
