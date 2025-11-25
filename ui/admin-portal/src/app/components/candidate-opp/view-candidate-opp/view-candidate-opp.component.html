@@ -21,8 +21,8 @@
     <p class="text-color-secondary heading-xs" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-1' : !showBreadcrumb}">
       Candidate Opportunity Case #{{opp.id}}
     </p>
-    <div class="d-flex align-items-baseline gap-3">
-      <h2  [ngClass]="{'fs-5 fw-bold mb-3':!showBreadcrumb, 'mb-4': showBreadcrumb}">{{opp.name}}
+    <div class="d-flex align-items-center gap-3">
+      <h2  [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-4': showBreadcrumb}">{{opp.name}}
       </h2>
       <tc-icon type="button" color="warning" size="lg" *ngIf="!showBreadcrumb"
                [routerLink]="['/opp',opp.id]"

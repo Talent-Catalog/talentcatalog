@@ -21,9 +21,9 @@
         <div *ngIf="!loading">
 <!--          <strong>{{candidateSource?.name + ' (' + candidateSource?.id + ')'}} </strong>-->
 
-          <div class="d-flex gap-2 align-items-baseline">
+          <div class="d-flex gap-3 align-items-baseline">
           <h1 class="fs-5 fw-bold mb-2">{{candidateSource?.name + ' (' + candidateSource?.id + ')'}}</h1>
-            <div class="d-flex gap-2 align-items-center">
+            <div class="d-flex gap-3 align-items-center">
 
               <!--      Open Job        -->
                 <tc-icon type="button"  color="warning" size="lg" *ngIf="showOpen" (click)="doOpenSource()" title="Open in new window">
