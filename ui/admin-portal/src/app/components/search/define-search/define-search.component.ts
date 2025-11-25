@@ -302,15 +302,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         //showing the default search (ie an unsaved search).
         this.showSearchRequest = this.savedSearch.defaultSearch;
       }
-
-      if (this.jobId) {
-        //Load the job skills
-        this.jobService.getSkills(this.jobId).subscribe({
-          next: (skills) => this.initializeQueryStringWithJobSkills(skills),
-          error: (error) => this.error = error
-        })
-      }
-
     }, error => {
       this.loading = false;
       this.error = error;
@@ -322,6 +313,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm.valueChanges.subscribe(() => {
       this.onFormChange.emit(this.searchForm.dirty);
     });
+  }
+
+  private runSearchWithSkills(skills: SkillName[]) {
+    this.clearForm();
+    this.initializeQueryStringWithJobSkills(skills);
+    this.onSubmit();
   }
 
   private initializeQueryStringWithJobSkills(skills: SkillName[]) {
@@ -361,7 +358,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         if (this.savedSearch) {
           this.savedSearchId = this.savedSearch.id;
 
-          //The very first change will be loaded after ngInit finishes.
+          //The very first change will be loaded after ngOnInit finishes.
           if (!changes.savedSearch.isFirstChange()) {
             this.loadSavedSearch(this.savedSearchId);
           }
@@ -558,6 +555,17 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.savedSearchService.load(id).subscribe(
       (request) => {
         this.populateFormWithSavedSearch(request);
+
+        //If this a new search generated from a job, clear any existing search params and
+        //automatically run a search using the job skills.
+        //We don't want to keep any previous search details from earlier searches.
+        if (this.jobId) {
+          //Load the job skills
+          this.jobService.getSkills(this.jobId).subscribe({
+            next: (skills) => this.runSearchWithSkills(skills),
+            error: (error) => this.error = error
+          })
+        }
         this.loading = false;
       },
       error => {
