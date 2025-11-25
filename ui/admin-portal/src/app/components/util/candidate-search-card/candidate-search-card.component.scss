@@ -15,21 +15,36 @@
  */
 
 @import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 :host {
   font-size: 0.80rem;
-  background-color: $white;
+  @include background-color-soft;
+  border-radius: 1rem;
+  margin-right:2rem;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.12);
+  @include shadow-lg;
+}
+
+/* smooth scrollbar look */
+:host::-webkit-scrollbar {
+  width: 8px;
+}
+
+:host::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
 }
 
 .candidate-card {
   width: 100%;
   padding: 1.5em;
-  border: 1px solid #ddd;
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100%;
   margin-bottom: 8px;
+  border-radius: 1rem;
 }
 
 .candidate-header {
