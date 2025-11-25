@@ -69,6 +69,7 @@
   <app-view-form-task
     [taskAssignment]="selectedTask"
     [candidate]="candidate"
+    [readOnly]="abandoned"
     (taskCompleted)="completedFormTask($event)"
   ></app-view-form-task>
   <app-task-submitted *ngIf="selectedTask?.completedDate"

@@ -97,11 +97,11 @@ export class CandidateTaskComponent implements OnInit {
     }
   }
 
-  get formAbandoned(): boolean {
+  private get formAbandoned(): boolean {
     return this.form.get('abandoned').value;
   }
 
-  get abandonedTask() {
+  private get abandonedTask() {
     return this.selectedTask?.abandonedDate != null;
   }
 
