@@ -63,6 +63,10 @@
                       [selectedTask]="selectedTask"
                       (onReturnToTasksClick)="goBack()"
   ></app-task-submitted>
+  <app-task-abandoned *ngIf="selectedTask?.abandonedDate"
+                      [selectedTask]="selectedTask"
+                      (onReturnToTasksClick)="goBack()"
+  ></app-task-abandoned>
 </ng-container>
 
 <ng-container *ngIf="selectedTask.task.taskType === 'Form'">
@@ -76,6 +80,10 @@
                       [selectedTask]="selectedTask"
                       (onReturnToTasksClick)="goBack()"
   ></app-task-submitted>
+  <app-task-abandoned *ngIf="selectedTask?.abandonedDate"
+                      [selectedTask]="selectedTask"
+                      (onReturnToTasksClick)="goBack()"
+  ></app-task-abandoned>
 </ng-container>
 
 <form [formGroup]="form" (submit)="submitTask()">
