@@ -11,6 +11,7 @@
 @mixin text-color-caption { color: color(gray, 400); } //  For tertiary text like captions, timestamps and placeholders. On dark backgrounds, can be used as muted text.
 @mixin text-color-white   { color: color(core, white); } // Use on dark backgrounds for maximum legibility and contrast.
 @mixin text-color-primary  { color: color(primary, 500); } //  For primary text like highlighted text in nav tabs
+@mixin text-color-brand-secondary  { color: color(secondary, 500); }
 
 // --- Semantic Text Colors ---
 @mixin text-color-success  { color: color(green, 700); }
@@ -28,7 +29,6 @@
 @mixin text-color-blue     { color: color(blue, 700); }
 @mixin text-color-purple   { color: color(purple, 700); }
 @mixin text-color-pink     { color: color(pink, 700); }
-@mixin text-color-teal     { color: color(secondary, 500); }
 
 // ==========================
   // BORDER COLOR MIXINS
