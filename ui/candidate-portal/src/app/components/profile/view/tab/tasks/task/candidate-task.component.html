@@ -63,24 +63,34 @@
                       [selectedTask]="selectedTask"
                       (onReturnToTasksClick)="goBack()"
   ></app-task-submitted>
+  <app-task-abandoned *ngIf="selectedTask?.abandonedDate"
+                      [selectedTask]="selectedTask"
+                      (onReturnToTasksClick)="goBack()"
+  ></app-task-abandoned>
 </ng-container>
 
 <ng-container *ngIf="selectedTask.task.taskType === 'Form'">
   <app-view-form-task
     [taskAssignment]="selectedTask"
     [candidate]="candidate"
+    [readOnly]="abandoned"
     (taskCompleted)="completedFormTask($event)"
   ></app-view-form-task>
   <app-task-submitted *ngIf="selectedTask?.completedDate"
                       [selectedTask]="selectedTask"
                       (onReturnToTasksClick)="goBack()"
   ></app-task-submitted>
+  <app-task-abandoned *ngIf="selectedTask?.abandonedDate"
+                      [selectedTask]="selectedTask"
+                      (onReturnToTasksClick)="goBack()"
+  ></app-task-abandoned>
 </ng-container>
 
 <form [formGroup]="form" (submit)="submitTask()">
   <!-- OTHER ACTIONS -->
-  <!-- Only show these containers if the task is NOT abandoned. If the task is abandoned we want to hide these containers until the task is un-abandoned. -->
-  <ng-container *ngIf="!formAbandoned && !abandonedTask">
+  <!-- Only show these containers if the task is NOT abandoned.
+  If the task is abandoned we want to hide these containers until the task is un-abandoned. -->
+  <ng-container *ngIf="!abandoned">
     <ng-container *ngIf="selectedTask.task.taskType === 'Simple'">
       <app-view-simple-task
         [form]="form"

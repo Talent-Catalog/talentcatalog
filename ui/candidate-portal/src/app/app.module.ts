@@ -253,6 +253,9 @@ import {
 import {
   TaskSubmittedComponent
 } from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
+import {
+  TaskAbandonedComponent
+} from './components/profile/view/tab/tasks/task/task-abandoned/task-abandoned.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -345,6 +348,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TaskSubmittedComponent,
     DependantsRefugeeStatusInfoFormComponent,
     RefugeeStatusInfoFormComponent,
+    TaskAbandonedComponent,
   ],
   imports: [
     BrowserModule,
