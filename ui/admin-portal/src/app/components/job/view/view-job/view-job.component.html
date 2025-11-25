@@ -21,14 +21,13 @@
   <tc-alert *ngIf="error" type="danger" >
     {{error}}
   </tc-alert>
-
   <div class="d-flex justify-content-between align-items-center">
     <div class="job-header-container">
       <p class="text-color-secondary heading-xs" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-1' : !showBreadcrumb}">
         Job Opportunity #{{job.id}}
       </p>
       <div class="job-name-container">
-        <h2 [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}</h2>
+        <h2 class="mb-0" [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}</h2>
         <tc-icon type="button" color="warning" size="lg" *ngIf="!showBreadcrumb"
                  [routerLink]="['/job',job.id]"
                  title="Open Job">
