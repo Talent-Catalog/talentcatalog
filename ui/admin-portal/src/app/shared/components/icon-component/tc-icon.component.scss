@@ -61,6 +61,8 @@
 
 button.tc-icon {
   all: unset;
+  display: flex;
+  justify-content: center;
 }
 
 // No hover-over effect for non-interactive icon type
