@@ -27,7 +27,9 @@ export interface TermsInfoDto {
   id: string;
 
   /**
-   * HTML content
+   * HTML content.
+   *
+   * Empty content indicates that no terms have been set yet (legacy behavior)
    */
   content: string;
 }

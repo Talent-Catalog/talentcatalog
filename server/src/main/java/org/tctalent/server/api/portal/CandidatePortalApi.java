@@ -249,6 +249,7 @@ public class CandidatePortalApi {
             .add("name")
             .add("notificationEmail")
             .add("websiteUrl")
+            .add("defaultSourcePartner")
             ;
     }
 

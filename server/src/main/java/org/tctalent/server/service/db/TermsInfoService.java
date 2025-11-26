@@ -33,7 +33,7 @@ public interface TermsInfoService {
     TermsInfo get(String id) throws NoSuchObjectException;
 
     /**
-     * Get the TermsInfo of the most recent terms of the given type
+     * Get the most recent TermsInfo of the given type
      * @param termsType Type of terms
      * @return TermsInfo
      * @throws NoSuchObjectException if there are no terms of that type
