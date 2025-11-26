@@ -191,7 +191,10 @@ export class AssignTasksListComponent implements OnInit {
 
   // Allow to search for either a task display name or a task type.
   searchTypeOrName = (searchTerm: string, item: any) => {
-    return item.taskType.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || item.displayName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+    const term = searchTerm.trim().toLowerCase();
+    const type = item.taskType?.toLowerCase() ?? '';
+    const name = item.displayName?.toLowerCase() ?? '';
+    return type.includes(term) || name.includes(term);
   }
 
   monitorTask(t: Task) {
