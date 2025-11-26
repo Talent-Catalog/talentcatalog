@@ -14,6 +14,7 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  * - Disabled state styling & pointer-lock
  * - Focus-visible outline for keyboard accessibility
  * - Optional `ariaLabel` for icon-only buttons
+ * - Optional Angular `routerLink` support for navigation
  *
  * **Inputs**
  * - `size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'`
@@ -26,6 +27,10 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  *   Disables the button and applies muted styling. Defaults to `false`.
  * - `ariaLabel?: string`
  *   Accessible label for icon-only or ambiguous buttons.
+ *    * - `routerLink?: string | any[]`
+ *  *   Optional Angular Router `routerLink`. When provided, the internal `<button>`
+ *  *   also receives `[routerLink]`, allowing `<tc-button>` to be used as a
+ *  *   navigation trigger:
  *
  * **Outputs**
  * - `(onClick)`
@@ -65,6 +70,7 @@ export class ButtonComponent {
   @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
   @Input() disabled = false;
   @Input() ariaLabel?: string;
+  @Input() routerLink?: string | any[];
   /**
    * Whether to prevent the native `click` event from bubbling up the DOM.
    *
