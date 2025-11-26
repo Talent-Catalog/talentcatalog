@@ -38,7 +38,7 @@
 
   <app-error [error]="error"></app-error>
 
-  <button class="btn btn-success" (click)="submit()"
+  <button [disabled]="loading" class="btn btn-success" (click)="submit()"
   >
     {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
   </button>
