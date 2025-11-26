@@ -86,16 +86,16 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
       //they already match the published column fields.
       'user.firstName': [value?.['user.firstName'] ?? '', [Validators.required, Validators.maxLength(100)]],
       'user.lastName': [value?.['user.lastName'] ?? '', [Validators.required, Validators.maxLength(100)]],
-      dob: [value?.dob ?? '', [Validators.required]],
-      gender: [value?.gender ?? 'other', [Validators.required]],
-      'birthCountry.name': [value?.['birthCountry.name'] ?? '', [Validators.required]],
-      placeOfBirth: [value?.placeOfBirth ?? ''],
+      dob: [value?.dob ?? '', Validators.required],
+      gender: value?.gender ?? 'other',
+      'birthCountry.name': value?.['birthCountry.name'] ?? '',
+      placeOfBirth: value?.placeOfBirth ?? '',
 
-      TRAVEL_DOC_TYPE: [value?.TRAVEL_DOC_TYPE ?? '', [Validators.required]],
+      TRAVEL_DOC_TYPE: [value?.TRAVEL_DOC_TYPE ?? '', Validators.required],
       TRAVEL_DOC_NUMBER: [value?.TRAVEL_DOC_NUMBER ?? '', [Validators.required, Validators.maxLength(64)]],
-      TRAVEL_DOC_ISSUED_BY: [value?.TRAVEL_DOC_ISSUED_BY ?? '', [Validators.required, Validators.maxLength(128)]],
-      TRAVEL_DOC_ISSUE_DATE: [value?.TRAVEL_DOC_ISSUE_DATE ?? '', [Validators.required]],
-      TRAVEL_DOC_EXPIRY_DATE: [value?.TRAVEL_DOC_EXPIRY_DATE ?? '', [Validators.required]]
+      TRAVEL_DOC_ISSUED_BY: [value?.TRAVEL_DOC_ISSUED_BY ?? '', Validators.maxLength(128)],
+      TRAVEL_DOC_ISSUE_DATE: value?.TRAVEL_DOC_ISSUE_DATE ?? '',
+      TRAVEL_DOC_EXPIRY_DATE: value?.TRAVEL_DOC_EXPIRY_DATE ?? ''
     }, {
       validators: [
         this.childAgeIfChildValidator(),

@@ -43,9 +43,9 @@ export class RefugeeStatusInfoFormComponent implements OnInit, ICandidateFormCom
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      refugeeStatus: [null as RsdRefugeeStatus | null, [Validators.required]],
-      documentType: [null as RefugeeStatusEvidenceDocumentType | null, [Validators.required]],
-      documentNumber: ['', [Validators.required, Validators.maxLength(30)]]
+      refugeeStatus: [null as RsdRefugeeStatus | null, Validators.required],
+      documentType: [null as RefugeeStatusEvidenceDocumentType | null, Validators.required],
+      documentNumber: ['', Validators.maxLength(30)]
     });
 
     if (this.readOnly) {
