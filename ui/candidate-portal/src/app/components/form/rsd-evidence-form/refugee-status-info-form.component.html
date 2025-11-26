@@ -4,7 +4,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="refugeeStatus">{{ 'RSD-EVIDENCE.LABEL.REFUGEE-STATUS' | translate }}</label>
+    <label class="form-label" for="refugeeStatus">{{ 'RSD-EVIDENCE.LABEL.REFUGEE-STATUS' | translate }} *</label>
     <select
       id="refugeeStatus"
       class="form-select"
@@ -22,7 +22,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="documentType">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE'| translate}}</label>
+    <label class="form-label" for="documentType">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE'| translate}} *</label>
     <select
       id="documentType"
       class="form-select"
@@ -50,9 +50,6 @@
       [readonly]="readOnly"
       placeholder="Enter document number"
     />
-    <div class="text-danger small" *ngIf="hasError('documentNumber', 'required')">
-      {{ 'FORM.ERROR.REQUIRED' | translate }}
-    </div>
     <div class="text-danger small" *ngIf="hasError('documentNumber', 'maxlength')">
       {{ 'RSD-EVIDENCE.LABEL.RSD-VALIDATION' }}
     </div>
