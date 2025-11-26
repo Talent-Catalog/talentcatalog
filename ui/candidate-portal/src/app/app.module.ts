@@ -256,6 +256,9 @@ import {
 import {
   TaskAbandonedComponent
 } from './components/profile/view/tab/tasks/task/task-abandoned/task-abandoned.component';
+import {
+  IntlPhoneInputComponent
+} from './components/util/intl-phone-input/intl-phone-input.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -349,6 +352,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     DependantsRefugeeStatusInfoFormComponent,
     RefugeeStatusInfoFormComponent,
     TaskAbandonedComponent,
+    IntlPhoneInputComponent,
   ],
   imports: [
     BrowserModule,
