@@ -18,6 +18,7 @@
 @import 'bootstrap/scss/bootstrap-reboot';
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap/scss/pagination';
+@import "src/scss/color-mixins";
 
 .section {
   padding: 10px 0;
@@ -126,12 +127,12 @@
 
 //// The right hand side panels showing more detail of selected item
 .detail-panel {
-  border-radius: 5px;
+  border-radius: 1.5rem;
   padding: 2.5rem 2rem;
 }
 
 .side-panel-color {
-  background-color: fade-out($accent3, 0.7);
+  @include background-color-soft;
 }
 
 .text-female {
