@@ -19,5 +19,4 @@
   Loading ...
 </ng-container>
 <router-outlet *ngIf="!loading"></router-outlet>
-<app-chatbot></app-chatbot>
-
+<app-chatbot *ngIf="isTBBPartner"></app-chatbot>
