@@ -499,6 +499,7 @@ const ALL_FIELDS = {
         }
       },
       "SUBMIT": {
+        "INTRODUCTION": null,
         "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
@@ -509,6 +510,7 @@ const ALL_FIELDS = {
           "LABEL": null,
           "WARN": null
         },
+        "NO_POLICY_ACCEPTANCE_TEXT": null,
         "POLICY_ACCEPTANCE_TEXT": null,
         "YOUR_PARTNER_IS": null,
       },
