@@ -32,7 +32,7 @@
         <!-- basic fields -->
         <div class="row g-3">
           <div class="col-md-4">
-            <label class="form-label">  {{'FAMILY-DOC.LABEL.RELATIONSHIP' | translate}}</label>
+            <label class="form-label">  {{'FAMILY-DOC.LABEL.RELATIONSHIP' | translate}} *</label>
             <ng-select formControlName="relationship"
                        [readonly]="readOnly"
                        [items]="relationships"
@@ -57,17 +57,17 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{"PROFILE.PERSONAL.FIRSTNAME" | translate}}</label>
+            <label class="form-label">{{"PROFILE.PERSONAL.FIRSTNAME" | translate}} *</label>
             <input class="form-control" formControlName="user.firstName" [readonly]="readOnly">
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{"PROFILE.PERSONAL.LASTNAME" | translate}}</label>
+            <label class="form-label">{{"PROFILE.PERSONAL.LASTNAME" | translate}} *</label>
             <input class="form-control" formControlName="user.lastName" [readonly]="readOnly">
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{"PROFILE.PERSONAL.DOB" | translate}}</label>
+            <label class="form-label">{{"PROFILE.PERSONAL.DOB" | translate}} *</label>
             <input type="date" class="form-control" formControlName="dob"
                    [readonly]="readOnly">
             <div class="text-danger" *ngIf="m.touched && m.hasError('childAgeInvalid')">
@@ -99,7 +99,7 @@
 
         <div class="row g-3">
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }}</label>
+            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }} *</label>
             <select class="form-select" formControlName="TRAVEL_DOC_TYPE">
               <option [value]="TravelDocType.Passport">{{ 'TRAVELDOC.OPTION.PASSPORT' | translate }}</option>
               <option [value]="TravelDocType.NationalId">{{ 'TRAVELDOC.OPTION.NATIONALID' | translate }}</option>
@@ -107,7 +107,7 @@
             </select>
           </div>
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }}</label>
+            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }} *</label>
             <input class="form-control" formControlName="TRAVEL_DOC_NUMBER" [readonly]="readOnly">
           </div>
           <div class="col-md-4">
