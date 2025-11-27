@@ -60,6 +60,12 @@
         </tc-icon>
       </a>
 
+      <a target="_blank" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
+        <tc-icon [size]="'xl'" [ariaLabel]="'Show published sheet'">
+          <i class="fas fa-globe" title="Show published sheet"></i>
+        </tc-icon>
+      </a>
+
       <tc-dropdown placement="bottom-start">
         <tc-dropdown-button type="solid" color="gray">
           <i class="fas fa-angle-down"></i>
@@ -135,13 +141,6 @@
               <i class="fab fa-google-drive" title="Create/show Google folder"></i>
             </tc-icon>
             Create/show Google folder
-          </tc-dropdown-item>
-
-          <tc-dropdown-item target="_blank" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
-            <tc-icon [size]="'md'" [ariaLabel]="'Show published sheet'">
-              <i class="fas fa-globe" title="Show published sheet"></i>
-            </tc-icon>
-            Show published sheet
           </tc-dropdown-item>
 
           <tc-dropdown-item target="_blank" *ngIf="timestamp" (click)="doSearch(true)">
