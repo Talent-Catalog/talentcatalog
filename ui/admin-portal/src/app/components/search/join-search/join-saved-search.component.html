@@ -14,64 +14,66 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="row">
-  <div class="col-12 col-md-4">
-      <tc-label size="sm" class="form-label" for="savedSearch">Base Search</tc-label>
-      <tc-button [type]="'plain'"
-                 class="tool-tip-button"
-                 [ngbTooltip]="baseSearchTooltip"
-                 placement="bottom top"
-                 triggers="click"
-                 tooltipClass="search-tips"
-                 [stopNativeClickPropagation]="false"
-      >
-        <i class="fa-regular fa-circle-question fa-xs"></i>
-      </tc-button>
-      <div class="input-group">
-        <tc-input id="savedSearch"
-               type="text"
-               (selectItem)="selected($event.item.id)"
-               [ngbTypeahead]="doSavedSearchSearch"
-               [resultTemplate]="rt"
-               placement="bottom-left"
-               [value]="this.selectedBaseSearch?.name"
-               [inputFormatter]="renderSavedSearchRow"
-               [readonly]="readonly"
-               placeholder="Type the name of a base search..."/>
-          <tc-button color=warning *ngIf="this.selectedBaseSearch" class="btn btn-danger" (onClick)="deleteSearch()" >
-            Remove base search <i class="fas fa-xmark ms-2"></i>
-          </tc-button>
-      </div>
-      <ng-template #rt let-r="result" let-t="term">
-        <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
-      </ng-template>
-    </div>
-
-  <ng-template #baseSearchTooltip>
-    <p>
-      Use this field to select another saved search whose criteria will be applied <i>in addition</i>
-      to whatever you specify in this search.
-    </p>
-    <p>
-      E.g., you could build a few saved searches that each apply the criteria of a given immigration
-      pathway, and use them interchangeably underneath your current skills/education search.
-    </p>
-  </ng-template>
-
-  <div *ngIf="this.selectedBaseSearch" class="col-auto">
-      <app-candidate-source
-        [candidateSource]="selectedBaseSearch"
-        [seeMore]="true"
-        [canLoad]="false"
-        [showWatch]="false"
-        [showOpen]="false"
-        [showSelect]="false"
-        [showLink]="false"
-        [showMore]="false">
-      </app-candidate-source>
+<div class="col-12 col-md-4">
+  <tc-label [size]="'sm'"
+            [for]="'savedSearch'">
+    Base Search
+  </tc-label>
+  <tc-button [type]="'plain'"
+             class="tool-tip-button"
+             [ngbTooltip]="baseSearchTooltip"
+             placement="bottom top"
+             triggers="click"
+             tooltipClass="search-tips"
+             [stopNativeClickPropagation]="false"
+  >
+    <i class="fa-regular fa-circle-question fa-xs"></i>
+  </tc-button>
+  <div>
+    <tc-input id="savedSearch"
+              [type]="'text'"
+              (selectItem)="selected($event.item.id)"
+              [ngbTypeahead]="doSavedSearchSearch"
+              [resultTemplate]="rt"
+              [value]="this.selectedBaseSearch?.name"
+              [inputFormatter]="renderSavedSearchRow"
+              [readonly]="readonly"
+              placeholder="Type the name of a base search..."
+    ></tc-input>
   </div>
-
+  <div *ngIf="selectedBaseSearch" id="baseSearchSelectionContainer">
+    <tc-button (onClick)="deleteSearch()"
+               [type]="'outline'"
+               [color]="'gray'"
+               [size]="'sm'"
+               id="removeBaseSearchBtn"
+    >
+      Remove <i class="fas fa-xmark ms-1"></i>
+    </tc-button>
+    <app-candidate-source
+      [candidateSource]="selectedBaseSearch"
+      [seeMore]="true"
+      [canLoad]="false"
+      [showWatch]="false"
+      [showOpen]="false"
+      [showSelect]="false"
+      [showLink]="false"
+      [showMore]="false">
+    </app-candidate-source>
+  </div>
 </div>
 
+<ng-template #rt let-r="result" let-t="term">
+  <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
+</ng-template>
 
-
+<ng-template #baseSearchTooltip>
+  <p>
+    Use this field to select another saved search whose criteria will be applied <i>in addition</i>
+    to whatever you specify in this search.
+  </p>
+  <p>
+    E.g., you could build a few saved searches that each apply the criteria of a given immigration
+    pathway, and use them interchangeably underneath your current skills/education search.
+  </p>
+</ng-template>
