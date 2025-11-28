@@ -23,20 +23,33 @@
 
           <div class="d-flex gap-3 align-items-center">
           <h1 class="fs-5 fw-bold mb-0">{{candidateSource?.name + ' (' + candidateSource?.id + ')'}}</h1>
-            <div class="d-flex gap-3 align-items-center">
+            <div class="d-flex gap-3 align-items-center heading-row">
 
               <!--      Open Job        -->
-                <tc-icon type="button"  color="warning" size="lg" *ngIf="showOpen" (click)="doOpenSource()" title="Open in new window">
-                  <i class="fas fa-expand"></i>
-                </tc-icon>
-              <tc-icon type="button" color="warning" size="lg" (click)="doToggleStarred()" class="align-self-center">
+              <tc-icon [color]="'warning'"
+                       [size]="'lg'"
+                       *ngIf="showOpen"
+                       (click)="doOpenSource()"
+                       title="Open"
+              >
+                <i class="fas fa-expand"></i>
+              </tc-icon>
+              <tc-icon [color]="'warning'"
+                       [size]="'lg'"
+                       (click)="doToggleStarred()"
+              >
                 <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
                 <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
               </tc-icon>
-              <tc-icon type="button" color="success" size="lg" *ngIf="showWatch && savedSearch" (click)="doToggleWatch()" class="align-self-center">
-                <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
-                <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
+              <tc-icon [size]="'lg'"
+                       [color]="'secondary'"
+                       *ngIf="showWatch && savedSearch"
+                       (click)="doToggleWatch()"
+              >
+                <i *ngIf="isWatching()" class="fas fa-eye" title="Unwatch"></i>
+                <i *ngIf="!isWatching()" class="far fa-eye" title="Watch"></i>
               </tc-icon>
+
               <tc-dropdown placement="bottom-end">
                 <tc-dropdown-button type="solid" color="gray">
                   <i class="fas fa-angle-down"></i>
