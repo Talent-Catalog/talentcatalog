@@ -176,6 +176,17 @@
       />
     </div>
 
+    <!-- Travel Info Comment -->
+    <div class="col-md-6">
+      <label class="form-label">{{ '???TRAVELDOC.LABEL.EXPIRYDATE' | translate }}</label>
+      <input
+        type="text"
+        class="form-control"
+        [readonly]="readOnly"
+        formControlName="travelInfoComment"
+      />
+    </div>
+
     <!-- Submit Button -->
     <div class="col-12 text-end">
       <button type="submit" class="btn btn-primary" [disabled]="!canSubmit()">

@@ -39,6 +39,7 @@ export interface TravelInfoFormData {
   travelDocIssuedBy: string;
   travelDocIssueDate: string;
   travelDocExpiryDate: string;
+  travelInfoComment: string;
 }
 
 /**
