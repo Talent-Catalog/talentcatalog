@@ -15,235 +15,220 @@
   -->
 
 <div class="candidate-source-card">
-<!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
   <div class="card-body d-flex min-height-150 align-items-center">
       <div class="w-75 align-self-center ps-2">
         <div *ngIf="!loading">
-<!--          <strong>{{candidateSource?.name + ' (' + candidateSource?.id + ')'}} </strong>-->
-
-          <div class="d-flex gap-3 align-items-center">
-          <h1 class="fs-5 fw-bold mb-0">{{candidateSource?.name + ' (' + candidateSource?.id + ')'}}</h1>
-            <div class="d-flex gap-3 align-items-center heading-row">
-
-              <!--      Open Job        -->
-              <tc-icon [color]="'warning'"
-                       [size]="'lg'"
-                       *ngIf="showOpen"
-                       (click)="doOpenSource()"
-                       title="Open"
-              >
-                <i class="fas fa-expand"></i>
-              </tc-icon>
-              <tc-icon [color]="'warning'"
-                       [size]="'lg'"
-                       (click)="doToggleStarred()"
-              >
-                <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
-                <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
-              </tc-icon>
-              <tc-icon [size]="'lg'"
-                       [color]="'secondary'"
-                       *ngIf="showWatch && savedSearch"
-                       (click)="doToggleWatch()"
-              >
-                <i *ngIf="isWatching()" class="fas fa-eye" title="Unwatch"></i>
-                <i *ngIf="!isWatching()" class="far fa-eye" title="Watch"></i>
-              </tc-icon>
-
-              <tc-dropdown placement="bottom-end">
-                <tc-dropdown-button type="solid" color="gray">
-                  <i class="fas fa-angle-down"></i>
-                </tc-dropdown-button>
-                <tc-dropdown-menu>
-
-                  <!--      Copy shareable link        -->
-                  <tc-dropdown-item *ngIf="showLink" (click)="doCopyLink()" title="Copy Shareable Link">
-                    <tc-icon color="primary" size="md">
-                      <i class="fas fa-link"></i>
-                    </tc-icon>
-                    Copy shareable link
-                  </tc-dropdown-item>
-
-                  <!--      Show Search        -->
-                  <tc-dropdown-item *ngIf="showOpen && hasSavedSearchSource()" (click)="doShowSearch()" title="Show Search">
-                    <tc-icon color="primary" size="md">
-                      <i class="fas fa-search" title="Show Search"></i>
-                    </tc-icon>
-                    Show Search
-                  </tc-dropdown-item>
-
-                  <!--      Rename        -->
-                  <tc-dropdown-item *ngIf="showEdit && isEditable()" (click)="doEditSource()" title="Rename">
-                    <tc-icon color="primary" size="md">
-                      <i class="fas fa-edit" title="Rename"></i>
-                    </tc-icon>
-                    Rename
-                  </tc-dropdown-item>
-
-                  <!--      Select columns to display        -->
-                  <tc-dropdown-item *ngIf="showEdit && isEditable()" (click)="doSelectColumns()" title="Select columns to display">
-                    <tc-icon color="primary" size="md">
-                      <i class="fas fa-columns" title="Select columns to display"></i>
-                    </tc-icon>
-                    Select columns to display
-                  </tc-dropdown-item>
-
-                  <!--      Associated Job        -->
-                  <tc-dropdown-item *ngIf="candidateSource?.sfJobOpp" [routerLink]="['/job',candidateSource.sfJobOpp.id]" title="Associated Job">
-                    <tc-icon color="primary" size="md">
-                      <i class="fa-solid fa-briefcase" title="Associated Job"></i>
-                    </tc-icon>
-                    Associated Job
-                  </tc-dropdown-item>
-
-                  <!--      Associated Job        -->
-                  <tc-dropdown-item *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()" [href]="salesforceService.joblink(candidateSource)" target="_blank" title="Associated Job Opportunity on Salesforce">
-                    <tc-icon color="primary" size="md">
-                      <i class="fa-solid fa-briefcase" title="Associated Job Opportunity on Salesforce"></i>
-                    </tc-icon>
-                    Associated Job Opportunity on Salesforce
-                  </tc-dropdown-item>
-
-                  <!--      Create/show Google folder        -->
-                  <tc-dropdown-item *ngIf="isSavedList() && !isReadOnly" (click)="doShowListFolder()" title="Create/show Google folder">
-                    <tc-icon color="primary" size="md">
-                      <i class="fab fa-google-drive" title="Create/show Google folder"></i>
-                    </tc-icon>
-                    Create/show Google folder
-                  </tc-dropdown-item>
-
-                  <!--      Create/show Google folder        -->
-                  <tc-dropdown-item *ngIf="showRunStats" (click)="doRunStats()" title="Run stats">
-                    <tc-icon color="primary" size="md">
-                      <i class="fas fa-chart-bar" title="Run stats"></i>
-                    </tc-icon>
-                    Run stats
-                  </tc-dropdown-item>
-
-                  <!--         todo - Copy Source for Saved Searches should be implemented-->
-
-                  <!-- Copy Source -->
-                  <tc-dropdown-item *ngIf="showCopy" (click)="doCopySource()" title="Copy">
-                    <tc-icon color="primary" size="md">
-                      <i class="fas fa-clone" title="Copy"></i>
-                    </tc-icon>
-                    Copy
-                  </tc-dropdown-item>
-
-                  <!-- Select Source -->
-                  <tc-dropdown-item *ngIf="showSelect" (click)="doSelectSource()" title="Select">
-                    <tc-icon color="primary" size="md">
-                      <i class="far fa-hand-pointer" title="Select"></i>
-                    </tc-icon>
-                    Select
-                  </tc-dropdown-item>
-
-                  <!-- Delete Source -->
-                  <tc-dropdown-item *ngIf="showDelete && isRemovable()" (click)="doDeleteSource()" title="Delete">
-                    <tc-icon color="error" size="md">
-                      <i class="fas fa-trash" title="Delete"></i>
-                    </tc-icon>
-                    Delete
-                  </tc-dropdown-item>
-
-                  <!-- View Details -->
-                  <tc-dropdown-item *ngIf="showMore && isSavedSearch()"
-                                    (click)="toggleSeeMore()"
-                                    [title]="this.seeMore ? 'Hide details' : 'View details'"
-                  >
-                    <tc-icon color="primary" size="md">
-                      <i class="fas fa-ellipsis-h" title="View details"></i>
-                    </tc-icon>
-                    {{ this.seeMore ? 'Hide details' : 'View details' }}
-                  </tc-dropdown-item>
-
-                </tc-dropdown-menu>
-              </tc-dropdown>
-
-
-
-
-            </div>
-
-          </div>
-          <div class="d-flex align-items-baseline gap-1">
-            <tc-icon><i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i></tc-icon>
-            <tc-icon><i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i></tc-icon>
-            <tc-icon><i *ngIf="candidateSource?.fixed" title="Fixed - can't change" class="fas fa-lock"></i></tc-icon>
-            <tc-icon><i *ngIf="candidateSource?.global" title="Global - all users can see" class="fas fa-globe"></i></tc-icon>
-            <tc-icon *ngIf="isShared()">
-              <i title="Shared" class="fas fa-gift"></i>
+          <div class="d-flex gap-3 align-items-center heading-row">
+            <h1 class="fs-5 fw-bold mb-0">{{candidateSource?.name + ' (' + candidateSource?.id + ')'}}</h1>
+            <tc-icon [color]="'warning'"
+                     [size]="'lg'"
+                     *ngIf="showOpen"
+                     (click)="doOpenSource()"
+                     title="Open"
+                     class="open-icon"
+            >
+              <i class="fas fa-expand"></i>
             </tc-icon>
-            <span *ngIf="isShared()" class="small text-accent-1 fst-italic">
-              Shared by: {{candidateSource?.createdBy?.firstName}} {{candidateSource?.createdBy?.lastName}}
-            </span>
-          </div>
-          <div *ngIf="truncatedSourceDescription()">
-            {{truncatedSourceDescription()}}
+            <tc-icon [color]="'warning'"
+                     [size]="'lg'"
+                     (click)="doToggleStarred()"
+            >
+              <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
+              <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
+            </tc-icon>
+            <tc-icon [size]="'lg'"
+                     [color]="'secondary'"
+                     *ngIf="showWatch && savedSearch"
+                     (click)="doToggleWatch()"
+            >
+              <i *ngIf="isWatching()" class="fas fa-eye" title="Unwatch"></i>
+              <i *ngIf="!isWatching()" class="far fa-eye" title="Watch"></i>
+            </tc-icon>
+
+            <tc-dropdown placement="bottom-end">
+              <tc-dropdown-button type="solid" color="gray">
+                <i class="fas fa-angle-down"></i>
+              </tc-dropdown-button>
+              <tc-dropdown-menu>
+
+                <!--      Copy shareable link        -->
+                <tc-dropdown-item *ngIf="showLink" (click)="doCopyLink()" title="Copy Shareable Link">
+                  <tc-icon color="primary" size="md">
+                    <i class="fas fa-link"></i>
+                  </tc-icon>
+                  Copy shareable link
+                </tc-dropdown-item>
+
+                <!--      Show Search        -->
+                <tc-dropdown-item *ngIf="showOpen && hasSavedSearchSource()" (click)="doShowSearch()" title="Show Search">
+                  <tc-icon color="primary" size="md">
+                    <i class="fas fa-search" title="Show Search"></i>
+                  </tc-icon>
+                  Show Search
+                </tc-dropdown-item>
+
+                <!--      Rename        -->
+                <tc-dropdown-item *ngIf="showEdit && isEditable()" (click)="doEditSource()" title="Rename">
+                  <tc-icon color="primary" size="md">
+                    <i class="fas fa-edit" title="Rename"></i>
+                  </tc-icon>
+                  Rename
+                </tc-dropdown-item>
+
+                <!--      Select columns to display        -->
+                <tc-dropdown-item *ngIf="showEdit && isEditable()" (click)="doSelectColumns()" title="Select columns to display">
+                  <tc-icon color="primary" size="md">
+                    <i class="fas fa-columns" title="Select columns to display"></i>
+                  </tc-icon>
+                  Select columns to display
+                </tc-dropdown-item>
+
+                <!--      Associated Job        -->
+                <tc-dropdown-item *ngIf="candidateSource?.sfJobOpp" [routerLink]="['/job',candidateSource.sfJobOpp.id]" title="Associated Job">
+                  <tc-icon color="primary" size="md">
+                    <i class="fa-solid fa-briefcase" title="Associated Job"></i>
+                  </tc-icon>
+                  Associated Job
+                </tc-dropdown-item>
+
+                <!--      Associated Job        -->
+                <tc-dropdown-item *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()" [href]="salesforceService.joblink(candidateSource)" target="_blank" title="Associated Job Opportunity on Salesforce">
+                  <tc-icon color="primary" size="md">
+                    <i class="fa-solid fa-briefcase" title="Associated Job Opportunity on Salesforce"></i>
+                  </tc-icon>
+                  Associated Job Opportunity on Salesforce
+                </tc-dropdown-item>
+
+                <!--      Create/show Google folder        -->
+                <tc-dropdown-item *ngIf="isSavedList() && !isReadOnly" (click)="doShowListFolder()" title="Create/show Google folder">
+                  <tc-icon color="primary" size="md">
+                    <i class="fab fa-google-drive" title="Create/show Google folder"></i>
+                  </tc-icon>
+                  Create/show Google folder
+                </tc-dropdown-item>
+
+                <!--      Create/show Google folder        -->
+                <tc-dropdown-item *ngIf="showRunStats" (click)="doRunStats()" title="Run stats">
+                  <tc-icon color="primary" size="md">
+                    <i class="fas fa-chart-bar" title="Run stats"></i>
+                  </tc-icon>
+                  Run stats
+                </tc-dropdown-item>
+
+                <!--         todo - Copy Source for Saved Searches should be implemented-->
+
+                <!-- Copy Source -->
+                <tc-dropdown-item *ngIf="showCopy" (click)="doCopySource()" title="Copy">
+                  <tc-icon color="primary" size="md">
+                    <i class="fas fa-clone" title="Copy"></i>
+                  </tc-icon>
+                  Copy
+                </tc-dropdown-item>
+
+                <!-- Select Source -->
+                <tc-dropdown-item *ngIf="showSelect" (click)="doSelectSource()" title="Select">
+                  <tc-icon color="primary" size="md">
+                    <i class="far fa-hand-pointer" title="Select"></i>
+                  </tc-icon>
+                  Select
+                </tc-dropdown-item>
+
+                <!-- Delete Source -->
+                <tc-dropdown-item *ngIf="showDelete && isRemovable()" (click)="doDeleteSource()" title="Delete">
+                  <tc-icon color="error" size="md">
+                    <i class="fas fa-trash" title="Delete"></i>
+                  </tc-icon>
+                  Delete
+                </tc-dropdown-item>
+
+                <!-- View Details -->
+                <tc-dropdown-item *ngIf="showMore && isSavedSearch()"
+                                  (click)="toggleSeeMore()"
+                                  [title]="this.seeMore ? 'Hide details' : 'View details'"
+                >
+                  <tc-icon color="primary" size="md">
+                    <i class="fas fa-ellipsis-h" title="View details"></i>
+                  </tc-icon>
+                  {{ this.seeMore ? 'Hide details' : 'View details' }}
+                </tc-dropdown-item>
+              </tc-dropdown-menu>
+            </tc-dropdown>
           </div>
         </div>
-        <div *ngIf="publishedLink()" class="position-absolute mt-2">
-          <span  class="small">Fixed Public Doc Link: <a target="_blank" [href]=publishedLink()>{{publishedLink()}}</a></span>
-          <div *ngIf="!publishedDoc()" class="text-muted small">
-            <i class="fas fa-exclamation-circle"></i>
-            No published doc associated with list, link will not go anywhere.
-          </div>
+        <div class="d-flex align-items-baseline gap-1">
+          <tc-icon><i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i></tc-icon>
+          <tc-icon><i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i></tc-icon>
+          <tc-icon><i *ngIf="candidateSource?.fixed" title="Fixed - can't change" class="fas fa-lock"></i></tc-icon>
+          <tc-icon><i *ngIf="candidateSource?.global" title="Global - all users can see" class="fas fa-globe"></i></tc-icon>
+          <tc-icon *ngIf="isShared()">
+            <i title="Shared" class="fas fa-gift"></i>
+          </tc-icon>
+          <span *ngIf="isShared()" class="small text-accent-1 fst-italic">
+            Shared by: {{candidateSource?.createdBy?.firstName}} {{candidateSource?.createdBy?.lastName}}
+          </span>
         </div>
-        <div class="w-100 mt-2" *ngIf="seeMore && isSavedSearch()">
-          <div *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
-          <div *ngIf="savedSearch.simpleQueryString">Elasticsearch: {{savedSearch.simpleQueryString}},</div>
-          <div *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
-          <div *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
-          <div *ngIf="savedSearch.vettedOccupationNames">Vetted Occupations: <span
-            *ngFor="let name of savedSearch.vettedOccupationNames">{{name}},</span></div>
-          <div *ngIf="savedSearch.englishMinWrittenLevel">English Written: {{savedSearch.englishWrittenLevel}}
-            ,
-          </div>
-          <div *ngIf="savedSearch.englishMinSpokenLevel">English Spoken: {{savedSearch.englishSpokenLevel}},
-          </div>
-          <div *ngIf="savedSearch.occupationNames">Occupations: <span
-            *ngFor="let name of savedSearch.occupationNames">{{name}},</span></div>
-          <div *ngIf="savedSearch.orProfileKeyword">Or Keyword: {{savedSearch.orProfileKeyword}},</div>
-          <div *ngIf="savedSearch.minAge || savedSearch.maxAge">Age: {{savedSearch.minAge}}
-            -  {{savedSearch.maxAge}},
-          </div>
-          <div *ngIf="savedSearch.createdFrom">Registered: {{savedSearch.createdFrom}}
-            - {{savedSearch.createdTo}},
-          </div>
-          <div *ngIf="savedSearch.lastModifiedFrom">Modified: {{savedSearch.lastModifiedFrom}}
-            - {{savedSearch.lastModifiedTo}},
-          </div>
-          <div *ngIf="savedSearch.countryNames">Countries: <span
-            *ngFor="let name of savedSearch.countryNames">{{name}}, </span></div>
-          <div *ngIf="savedSearch.minEducationLevel">Min Education
-            Level: {{savedSearch.minEducationLevelName}},
-          </div>
-          <div *ngIf="savedSearch.educationMajors">Education Majors: <span
-            *ngFor="let name of savedSearch.educationMajors">{{name}},</span></div>
-          <div *ngIf="savedSearch.otherLanguageId">Other Language: {{savedSearch.otherLanguageId}}
-            <span *ngIf="savedSearch.otherSpokenLevel">Spoken:{{savedSearch.otherSpokenLevel}}</span>
-            <span *ngIf="savedSearch.otherWrittenLevel">Written:{{savedSearch.otherWrittenLevel}}</span>
-          </div>
-          <div *ngIf="savedSearch.partnerNames">Partners: <span
-            *ngFor="let name of savedSearch.partnerNames">{{name}},</span></div>
-          <div *ngIf="savedSearch.nationalityNames">Nationalities: <span
-            *ngFor="let name of savedSearch.nationalityNames">{{name}},</span></div>
-          <div *ngIf="savedSearch.gender">Gender: {{savedSearch.gender}},</div>
-          <div *ngIf="savedSearch.searchJoins">
-            <div *ngFor="let join of savedSearch.searchJoins">
-              <span><strong>{{join.searchType}} {{join.childSavedSearch.name}}</strong></span>
-            </div>
-          </div>
-
-
+        <div *ngIf="truncatedSourceDescription()">
+          {{truncatedSourceDescription()}}
         </div>
       </div>
-    </div>
-  <div class="card-footer" *ngIf="seeMore">
-    <div class="w-100">
-      <app-updated-by [object]="candidateSource"></app-updated-by>
-    </div>
+      <div *ngIf="publishedLink()" class="position-absolute mt-2">
+        <span  class="small">Fixed Public Doc Link: <a target="_blank" [href]=publishedLink()>{{publishedLink()}}</a></span>
+        <div *ngIf="!publishedDoc()" class="text-muted small">
+          <i class="fas fa-exclamation-circle"></i>
+          No published doc associated with list, link will not go anywhere.
+        </div>
+      </div>
+      <div class="w-100 mt-2" *ngIf="seeMore && isSavedSearch()">
+        <div *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
+        <div *ngIf="savedSearch.simpleQueryString">Elasticsearch: {{savedSearch.simpleQueryString}},</div>
+        <div *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
+        <div *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
+        <div *ngIf="savedSearch.vettedOccupationNames">Vetted Occupations: <span
+          *ngFor="let name of savedSearch.vettedOccupationNames">{{name}},</span></div>
+        <div *ngIf="savedSearch.englishMinWrittenLevel">English Written: {{savedSearch.englishWrittenLevel}}
+          ,
+        </div>
+        <div *ngIf="savedSearch.englishMinSpokenLevel">English Spoken: {{savedSearch.englishSpokenLevel}},
+        </div>
+        <div *ngIf="savedSearch.occupationNames">Occupations: <span
+          *ngFor="let name of savedSearch.occupationNames">{{name}},</span></div>
+        <div *ngIf="savedSearch.orProfileKeyword">Or Keyword: {{savedSearch.orProfileKeyword}},</div>
+        <div *ngIf="savedSearch.minAge || savedSearch.maxAge">Age: {{savedSearch.minAge}}
+          -  {{savedSearch.maxAge}},
+        </div>
+        <div *ngIf="savedSearch.createdFrom">Registered: {{savedSearch.createdFrom}}
+          - {{savedSearch.createdTo}},
+        </div>
+        <div *ngIf="savedSearch.lastModifiedFrom">Modified: {{savedSearch.lastModifiedFrom}}
+          - {{savedSearch.lastModifiedTo}},
+        </div>
+        <div *ngIf="savedSearch.countryNames">Countries: <span
+          *ngFor="let name of savedSearch.countryNames">{{name}}, </span></div>
+        <div *ngIf="savedSearch.minEducationLevel">Min Education
+          Level: {{savedSearch.minEducationLevelName}},
+        </div>
+        <div *ngIf="savedSearch.educationMajors">Education Majors: <span
+          *ngFor="let name of savedSearch.educationMajors">{{name}},</span></div>
+        <div *ngIf="savedSearch.otherLanguageId">Other Language: {{savedSearch.otherLanguageId}}
+          <span *ngIf="savedSearch.otherSpokenLevel">Spoken:{{savedSearch.otherSpokenLevel}}</span>
+          <span *ngIf="savedSearch.otherWrittenLevel">Written:{{savedSearch.otherWrittenLevel}}</span>
+        </div>
+        <div *ngIf="savedSearch.partnerNames">Partners: <span
+          *ngFor="let name of savedSearch.partnerNames">{{name}},</span></div>
+        <div *ngIf="savedSearch.nationalityNames">Nationalities: <span
+          *ngFor="let name of savedSearch.nationalityNames">{{name}},</span></div>
+        <div *ngIf="savedSearch.gender">Gender: {{savedSearch.gender}},</div>
+        <div *ngIf="savedSearch.searchJoins">
+          <div *ngFor="let join of savedSearch.searchJoins">
+            <span><strong>{{join.searchType}} {{join.childSavedSearch.name}}</strong></span>
+          </div>
+        </div>
+      </div>
   </div>
+</div>
 
-
+<div class="card-footer" *ngIf="seeMore">
+  <div class="w-100">
+    <app-updated-by [object]="candidateSource"></app-updated-by>
+  </div>
 </div>

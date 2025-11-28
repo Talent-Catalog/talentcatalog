@@ -52,6 +52,18 @@ button.btn.btn-default.btn-gray.btn-solid {
   padding: 0.375rem;
 }
 
-.heading-row tc-icon {
-  cursor: pointer;
+.heading-row {
+  & tc-icon {
+    cursor: pointer;
+  }
+
+  & .open-icon {
+    position: relative;
+    top: 0.1rem;
+  }
+
+  & tc-dropdown-button {
+    position: relative;
+    top: -0.1rem;
+  }
 }
