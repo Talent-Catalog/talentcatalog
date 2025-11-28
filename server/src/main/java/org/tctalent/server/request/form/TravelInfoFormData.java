@@ -13,7 +13,7 @@ import org.tctalent.server.model.db.TravelDocType;
 
 @Getter
 @Setter
-public class TravelDocFormData {
+public class TravelInfoFormData {
   private String firstName;
   private String lastName;
   private LocalDate dateOfBirth;

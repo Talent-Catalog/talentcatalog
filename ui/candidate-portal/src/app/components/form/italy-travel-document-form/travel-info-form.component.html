@@ -32,7 +32,7 @@
 
     <!-- First Name -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'PROFILE.PERSONAL.FIRSTNAME' | translate }}</label>
+      <label class="form-label">{{ 'PROFILE.PERSONAL.FIRSTNAME' | translate }} *</label>
       <input
         type="text"
         class="form-control"
@@ -47,7 +47,7 @@
 
     <!-- Last Name -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'PROFILE.PERSONAL.LASTNAME' | translate }}</label>
+      <label class="form-label">{{ 'PROFILE.PERSONAL.LASTNAME' | translate }} *</label>
       <input
         type="text"
         class="form-control"
@@ -62,7 +62,7 @@
 
     <!-- Date of Birth -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'PROFILE.PERSONAL.DOB' | translate }}</label>
+      <label class="form-label">{{ 'PROFILE.PERSONAL.DOB' | translate }} *</label>
       <input
         type="date"
         class="form-control"
@@ -87,9 +87,6 @@
         <option value="female">{{ 'GENDER.FEMALE' | translate }}</option>
         <option value="other">{{ 'GENDER.OTHER' | translate }}</option>
       </select>
-      <div class="text-danger small" *ngIf="hasError('gender', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
     </div>
 
     <!-- Country of Birth -->
@@ -106,9 +103,6 @@
           {{ c.name }}
         </option>
       </select>
-      <div class="text-danger small" *ngIf="hasError('birthCountry', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
     </div>
 
     <!-- Place of Birth -->
@@ -120,14 +114,11 @@
         [readonly]="readOnly"
         formControlName="placeOfBirth"
       />
-      <div class="text-danger small" *ngIf="hasError('placeOfBirth', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
     </div>
 
     <!-- Travel Document Type -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }}</label>
+      <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }} *</label>
       <select class="form-select" formControlName="travelDocType">
         <option [value]="TravelDocType.Passport">{{ 'TRAVELDOC.OPTION.PASSPORT' | translate }}</option>
         <option [value]="TravelDocType.NationalId">{{ 'TRAVELDOC.OPTION.NATIONALID' | translate }}</option>
@@ -140,7 +131,7 @@
 
     <!-- Travel Document Number -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }}</label>
+      <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }} *</label>
       <input
         type="text"
         class="form-control"
@@ -161,9 +152,6 @@
         [readonly]="readOnly"
         formControlName="travelDocIssuedBy"
       />
-      <div class="text-danger small" *ngIf="hasError('travelDocIssuedBy', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
     </div>
 
     <!-- Travel Document Issue Date -->
@@ -175,9 +163,6 @@
         [readonly]="readOnly"
         formControlName="travelDocIssueDate"
       />
-      <div class="text-danger small" *ngIf="hasError('travelDocIssueDate', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
     </div>
 
     <!-- Travel Document Expiry Date -->
@@ -189,9 +174,6 @@
         [readonly]="readOnly"
         formControlName="travelDocExpiryDate"
       />
-      <div class="text-danger small" *ngIf="hasError('travelDocExpiryDate', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
     </div>
 
     <!-- Submit Button -->

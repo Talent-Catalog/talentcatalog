@@ -284,3 +284,49 @@ tr.clickable:hover {
 .modal-content {
   border-radius: 1rem;
 }
+
+ngx-wig {
+  .nw-editor-container {
+    @include paragraph-md;
+    width: 100%;
+    @include border-color-base;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 0 0 8px 8px; // only bottom corners - line between editor and toolbar seamless
+    overflow: hidden; // keeps toolbar + editor unified
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: border-color 0.2s;
+  }
+
+  /* Toolbar */
+  .nw-toolbar {
+    background: color(gray, 100);
+    border-radius: 8px 8px 0 0; // only top corners - line between editor and toolbar seamless
+    border-bottom: none !important;
+
+    button {
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+
+      &.nw-list-ul {
+        border-radius: 8px 0 0 0; // first button needs top-left-hand radius to match toolbar
+      }
+
+      &:hover {
+        background: color(gray, 200);
+      }
+    }
+  }
+
+  /* Editable area */
+  .nw-editor {
+    padding: 0.75rem;
+    line-height: 1.5;
+    min-height: 180px;
+    outline: none;
+  }
+}

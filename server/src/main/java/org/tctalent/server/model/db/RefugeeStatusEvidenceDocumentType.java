@@ -14,30 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-
-package org.tctalent.server.request.form;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.model.db.RsdEvidenceDocumentType;
-import org.tctalent.server.model.db.RsdRefugeeStatus;
+package org.tctalent.server.model.db;
 
 /**
- * Payload captured by the RSD evidence form.
+ * Supported document types that can be uploaded as Refugee Status evidence.
  */
-@Getter
-@Setter
-public class RsdEvidenceFormData {
-  @NotNull
-  private RsdRefugeeStatus refugeeStatus;
-
-  @NotNull
-  private RsdEvidenceDocumentType documentType;
-
-  @NotBlank
-  @Size(max = 30)
-  private String documentNumber;
+public enum RefugeeStatusEvidenceDocumentType {
+  UNHCR_CERTIFICATE,
+  HOST_COUNTRY_ID,
+  OFFICIAL_CAMP_REGISTRATION
 }

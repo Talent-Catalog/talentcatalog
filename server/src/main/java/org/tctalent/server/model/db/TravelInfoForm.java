@@ -19,9 +19,9 @@ import org.tctalent.server.service.db.CandidateService;
  */
 @Getter
 @Setter
-public class TravelDocForm extends CandidateFormInstanceHelper {
+public class TravelInfoForm extends CandidateFormInstanceHelper {
 
-    public TravelDocForm(String formName, AuthService authService,
+    public TravelInfoForm(String formName, AuthService authService,
         CandidateService candidateService,
         CandidatePropertyService propertyService) {
         super(formName, authService, candidateService, propertyService);
@@ -35,7 +35,7 @@ public class TravelDocForm extends CandidateFormInstanceHelper {
     private static final String DOC_EXPIRY_DATE_PROP = "TRAVEL_DOC_EXPIRY_DATE";
 
     public String getFormName() {
-        return "TravelDocForm";
+        return "TravelInfoForm";
     }
 
     // Existing TC fields (direct access - update candidate if needed)

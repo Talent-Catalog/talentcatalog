@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateProperty;
+import org.tctalent.server.model.db.CandidatePropertyType;
 import org.tctalent.server.model.db.HasMultipleRows;
 import org.tctalent.server.model.db.JsonRows;
 import org.tctalent.server.security.CandidateTokenProvider;
@@ -48,7 +49,16 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
     private final ObjectMapper jsonObjectMapper;
 
     //Exposed as package private for testing
-    Object buildCell(Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef,
+    /**
+     * Builds the cell contents of the given column for the given candidate, taking into account
+     * the given expandingData and the given expansion count.
+     * @param candidate Candidate associated with cell
+     * @param expandingData Expanding data, null if none
+     * @param expandingCount Expansion count
+     * @param columnInfo column info
+     * @return Content of cell
+     */
+    Object buildCell(Candidate candidate, @Nullable HasMultipleRows expandingData,
         int expandingCount, PublishedDocColumnDef columnInfo) {
 
         PublishedDocColumnContent columnContent = columnInfo.getContent();
@@ -59,26 +69,21 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
         String link = null;
         if (expandingCount == 0) {
             value = valueSource == null ? null : fetchData(candidate, valueSource);
-            if (expandingColumnDef != null
-                && expandingColumnDef.getKey().equals(columnInfo.getKey())) {
+            if (isExpandingColumn(columnInfo)) {
                 //Don't show unexpanded value if we are expanding it
                 value = value == null ? "" : "...";
             } else {
                 link = linkSource == null ? null : (String) fetchData(candidate, linkSource);
             }
         } else {
-            HasMultipleRows expandData = getExpandingData(candidate, expandingColumnDef);
-            if (expandData != null) {
-                if (expandingColumnDef != null
-                    && expandingColumnDef.getKey().equals(columnInfo.getKey())) {
+            if (expandingData != null) {
+                if (isExpandingColumn(columnInfo)) {
                     //Indicate that this row is an expanded row from a row above.
                     value = ".";
                 } else {
                     int dataIndex = expandingCount - 1;
-                    value = valueSource == null ? null
-                        : expandData.get(dataIndex, valueSource.getFieldName());
-                    link = linkSource == null ? null
-                        : expandData.get(dataIndex, linkSource.getFieldName());
+                    value = expandingData.get(dataIndex, getSourceName(valueSource));
+                    link = expandingData.get(dataIndex, getSourceName(linkSource));
                 }
             }
         }
@@ -92,12 +97,29 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
         }
     }
 
+    /**
+     * Returns fieldName of the given valueSource if it is not null, otherwise returns propertyName.
+     * @param valueSource Value source
+     * @return Name to use to access value in the valueSource or null if neither fieldName or
+     * propertyName is set.
+     */
+    private @Nullable String getSourceName(PublishedDocValueSource valueSource) {
+        String name = null;
+        if (valueSource != null) {
+            name = valueSource.getFieldName();
+            if (name == null) {
+                name = valueSource.getPropertyName();
+            }
+        }
+        return name;
+    }
+
     public List<Object> buildRow(
-        Candidate candidate, @Nullable PublishedDocColumnDef expandingColumnDef,
+        Candidate candidate, @Nullable HasMultipleRows expandingData,
         int expandingCount, List<PublishedDocColumnDef> columnInfos) {
         List<Object> candidateData = new ArrayList<>();
         for (PublishedDocColumnDef columnInfo : columnInfos) {
-            Object obj = buildCell(candidate, expandingColumnDef, expandingCount, columnInfo);
+            Object obj = buildCell(candidate, expandingData, expandingCount, columnInfo);
             candidateData.add(obj);
         }
         return candidateData;
@@ -109,21 +131,6 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
             title.add(columnInfo.getHeader());
         }
         return title;
-    }
-
-    @Override
-    public int computeNumberOfRowsByCandidate(@NonNull Candidate candidate,
-        @Nullable PublishedDocColumnDef expandingColumnDef) {
-
-        //Always one row for the candidate
-        int nRows = 1;
-
-        //Look at value to check if it has multiple values
-        HasMultipleRows obj = getExpandingData(candidate, expandingColumnDef);
-        if (obj != null) {
-            nRows += obj.nRows();
-        }
-        return nRows;
     }
 
     /**
@@ -147,7 +154,8 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
                     .logError();
             } else {
                 try {
-                    // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
+                    // Get the list specific shareable CV or Doc if exists,
+                    // otherwise get the field name supplied.
                     if (fieldName.equals("shareableCv.url")
                         && candidate.getListShareableCv() != null) {
                         val = candidate.extractField("listShareableCv.url");
@@ -197,14 +205,15 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
     }
 
     /**
-     * Retrieve the multi valued data value corresponding to the given PublishedDocColumnDef
+     * Retrieve the multivalued data value corresponding to the given PublishedDocColumnDef
      *
      * @param candidate Candidate
      * @param columnDef Column definition
-     * @return the multi valued data or null if no such data is found.
+     * @return the multivalued data or null if no such data is found.
      */
+    @Override
     @Nullable
-    private HasMultipleRows getExpandingData(
+    public HasMultipleRows loadExpandingData(
         @NonNull Candidate candidate, @Nullable PublishedDocColumnDef columnDef) {
         HasMultipleRows obj = null;
         if (columnDef != null) {
@@ -222,5 +231,28 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
             }
         }
         return obj;
+    }
+
+    /**
+     * True if the given column contains expanding (multivalue) data.
+     * @param columnDef Definition of column
+     * @return True if it is an expanding column
+     */
+    private boolean isExpandingColumn(PublishedDocColumnDef columnDef) {
+        boolean expanding = false;
+        final PublishedDocValueSource value = columnDef.getContent().getValue();
+        if (value != null) {
+            expanding = CandidatePropertyType.JSON == value.getPropertyType();
+        }
+        return expanding;
+    }
+
+    @Override
+    public PublishedDocColumnDef findExpandingColumnDef(
+        List<PublishedDocColumnConfig> columnConfigs) {
+        return columnConfigs.stream()
+            .map(PublishedDocColumnConfig::getColumnDef)
+            .filter(this::isExpandingColumn)
+            .findFirst().orElse(null);
     }
 }

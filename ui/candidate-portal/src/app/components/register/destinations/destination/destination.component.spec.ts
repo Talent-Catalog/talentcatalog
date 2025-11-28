@@ -36,7 +36,9 @@ describe('DestinationComponent', () => {
   const mockCountry: Country = {
     id: 101,
     name: 'Canada',
-    code: 'CA'
+    isoCode: 'CA',
+    status: 'active',
+    translatedName: null
   };
 
   beforeEach(async () => {

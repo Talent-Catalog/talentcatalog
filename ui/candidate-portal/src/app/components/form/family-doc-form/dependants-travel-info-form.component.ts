@@ -11,12 +11,7 @@ import {
 import {NgForOf, NgIf} from "@angular/common";
 import {NgSelectModule} from '@ng-select/ng-select';
 
-import {
-  FamilyDocFormData,
-  FamilyMemberDoc,
-  RelocatingFamilyMember,
-  TravelDocType
-} from '../../../model/form';
+import {DependantsInfoFormData, RelocatingDependant, TravelDocType} from '../../../model/form';
 import {Candidate, DependantRelations} from "../../../model/candidate";
 import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
@@ -24,16 +19,16 @@ import {EnumOption, enumOptions} from "../../util/enum";
 import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
-  selector: 'app-family-doc-form',
-  templateUrl: './family-doc-form.component.html',
+  selector: 'app-dependants-travel-info-form',
+  templateUrl: './dependants-travel-info-form.component.html',
   standalone: true,
   imports: [ReactiveFormsModule, NgIf, NgForOf, NgSelectModule, TranslateModule],
-  styleUrls: ['./family-doc-form.component.scss']
+  styleUrls: ['./dependants-travel-info-form.component.scss']
 })
-export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<FamilyDocFormData> {
+export class DependantsTravelInfoFormComponent implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {
   @Input() readOnly = false;
   @Input() candidate: Candidate;
-  @Output() submitted = new EventEmitter<FamilyDocFormData>();
+  @Output() submitted = new EventEmitter<DependantsInfoFormData>();
 
   form: FormGroup;
   error: any = null;
@@ -41,6 +36,8 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
 
   // existing
   relationships: EnumOption[] = enumOptions(DependantRelations);
+
+  relocatingDependants: RelocatingDependant[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -50,13 +47,13 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
 
   ngOnInit(): void {
     this.form = this.fb.nonNullable.group({
-      noEligibleFamilyMembers: [false, []],
+      noEligibleDependants: [false, []],
       noEligibleNotes: [{value: '', disabled: false}],
       members: this.fb.nonNullable.array([] as FormGroup[])
     });
 
     // "no eligible" toggle
-    this.form.get('noEligibleFamilyMembers')!.valueChanges.subscribe(checked => {
+    this.form.get('noEligibleDependants')!.valueChanges.subscribe(checked => {
       const members = this.members;
       const notesCtrl = this.form.get('noEligibleNotes')!;
       if (checked) {
@@ -70,9 +67,9 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
 
     // Load existing
     this.error = null;
-    this.candidateFormService.getFamilyDocsForm().subscribe({
+    this.candidateFormService.getDependantsInfoForm().subscribe({
       next: data => this.hydrateForm(data),
-      error: () => this.form.reset({noEligibleFamilyMembers: false, noEligibleNotes: ''})
+      error: () => this.form.reset({noEligibleDependants: false, noEligibleNotes: ''})
     });
   }
 
@@ -80,61 +77,54 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
     return this.form.get('members') as FormArray<FormGroup>;
   }
 
-  private newDocGroup(value?: Partial<FamilyMemberDoc>) {
-    return this.fb.nonNullable.group({
-      docType: [value?.docType ?? TravelDocType.Passport, [Validators.required]],
-      docNumber: [value?.docNumber ?? '', [Validators.required, Validators.maxLength(64)]],
-      issuer: [value?.issuer ?? '', [Validators.required, Validators.maxLength(128)]],
-      issuedOn: [value?.issuedOn ?? '', [Validators.required]],
-      expiresOn: [value?.expiresOn ?? '', [Validators.required]]
-    }, {validators: [this.expiryMinMonthsValidator(9)]});
-  }
-
-  // ✅ UPDATED: Added the new dependant-* fields
-  private newMemberGroup(value?: Partial<RelocatingFamilyMember>) {
+  private newMemberGroup(value?: Partial<RelocatingDependant>) {
     const group = this.fb.nonNullable.group({
       relationship: [value?.relationship ?? DependantRelations.Partner, [Validators.required]],
       relationOther: [(value as any)?.relationOther ?? ''],
 
-      firstName: [value?.firstName ?? '', [Validators.required, Validators.maxLength(100)]],
-      lastName: [value?.lastName ?? '', [Validators.required, Validators.maxLength(100)]],
-      dateOfBirth: [value?.dateOfBirth ?? '', [Validators.required]],
-      gender: [value?.gender ?? 'other', [Validators.required]],
-      countryOfBirth: [value?.countryOfBirth ?? '', [Validators.required]],
-      placeOfBirth: [value?.placeOfBirth ?? ''],
+      //Names must match the TC published column field keys/property names for a normal (non dependant) candidate.
+      //they already match the published column fields.
+      'user.firstName': [value?.['user.firstName'] ?? '', [Validators.required, Validators.maxLength(100)]],
+      'user.lastName': [value?.['user.lastName'] ?? '', [Validators.required, Validators.maxLength(100)]],
+      dob: [value?.dob ?? '', Validators.required],
+      gender: value?.gender ?? 'other',
+      'birthCountry.name': value?.['birthCountry.name'] ?? '',
+      placeOfBirth: value?.placeOfBirth ?? '',
 
-      // NEW fields
-      healthConcerns: [(value as any)?.healthConcerns ?? null],
-      healthNotes: [(value as any)?.healthNotes ?? ''],
-      registered: [(value as any)?.registered ?? null],
-      registeredNumber: [(value as any)?.registeredNumber ?? ''],
-      registeredNotes: [(value as any)?.registeredNotes ?? ''],
-
-      travelDoc: this.newDocGroup(value?.travelDoc)
+      TRAVEL_DOC_TYPE: [value?.TRAVEL_DOC_TYPE ?? '', Validators.required],
+      TRAVEL_DOC_NUMBER: [value?.TRAVEL_DOC_NUMBER ?? '', [Validators.required, Validators.maxLength(64)]],
+      TRAVEL_DOC_ISSUED_BY: [value?.TRAVEL_DOC_ISSUED_BY ?? '', Validators.maxLength(128)],
+      TRAVEL_DOC_ISSUE_DATE: value?.TRAVEL_DOC_ISSUE_DATE ?? '',
+      TRAVEL_DOC_EXPIRY_DATE: value?.TRAVEL_DOC_EXPIRY_DATE ?? ''
     }, {
       validators: [
         this.childAgeIfChildValidator(),
         this.otherRelationshipNotesIfOtherValidator(),
-        this.requireNotesIfHealthConcernYesValidator(),
-        this.requireRegNumberIfRegisteredYesValidator()
+        this.expiryMinMonthsValidator(9)
       ]
     });
 
     return group;
   }
 
-  addMember(prefill?: Partial<RelocatingFamilyMember>) {
+  addMember(prefill?: Partial<RelocatingDependant>) {
     this.members.push(this.newMemberGroup(prefill));
+
+    //When this is called with no parameter we add a new empty member to the form.
+    if (!prefill) {
+      this.relocatingDependants.push({});
+    }
   }
 
   removeMember(ix: number) {
     this.members.removeAt(ix);
+    this.relocatingDependants.splice(ix, 1);
   }
 
   // --- validators ---
   private expiryMinMonthsValidator(months: number) {
     return (group: FormGroup) => {
-      const expiresOn = group.get('expiresOn')?.value as string;
+      const expiresOn = group.get('TRAVEL_DOC_EXPIRY_DATE')?.value as string;
       if (!expiresOn) return null;
       const now = new Date();
       const min = new Date(now);
@@ -147,7 +137,7 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
   private childAgeIfChildValidator() {
     return (group: AbstractControl): ValidationErrors | null => {
       const rel = group.get('relationship')?.value as DependantRelations;
-      const dob = group.get('dateOfBirth')?.value as string;
+      const dob = group.get('dob')?.value as string;
       if (rel !== DependantRelations.Child || !dob) return null;
       const birth = new Date(dob);
       const today = new Date();
@@ -167,49 +157,41 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
     };
   }
 
-  private requireNotesIfHealthConcernYesValidator() {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const hc = group.get('healthConcerns')?.value;
-      const notes = group.get('healthNotes')?.value as string;
-      if (hc !== 'yes') return null;
-      return notes && notes.trim().length > 0 ? null : {healthNotesRequired: true};
-    };
-  }
-
-  private requireRegNumberIfRegisteredYesValidator() {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const reg = group.get('registered')?.value;
-      const num = group.get('registeredNumber')?.value as string;
-      if (reg !== 'yes') return null;
-      return num && num.trim().length > 0 ? null : {registeredNumberRequired: true};
-    };
-  }
-
   // --- load/save mapping ---
-  private hydrateForm(data: FamilyDocFormData) {
+  private hydrateForm(dependantsInfoFormData: DependantsInfoFormData) {
     this.form.reset({
-      noEligibleFamilyMembers: data.noEligibleFamilyMembers ?? false,
-      noEligibleNotes: data.noEligibleNotes ?? ''
+      noEligibleDependants: dependantsInfoFormData.noEligibleDependants ?? false,
+      noEligibleNotes: dependantsInfoFormData.noEligibleNotes ?? ''
     });
 
     this.members.clear();
 
-    let parsed: RelocatingFamilyMember[] = [];
-    if (data.familyMembersJson) {
+    const dependantsInfoJson = dependantsInfoFormData?.dependantsInfoJson;
+    if (dependantsInfoJson) {
       try {
-        parsed = JSON.parse(data.familyMembersJson) as RelocatingFamilyMember[];
+        this.relocatingDependants = JSON.parse(dependantsInfoJson) as RelocatingDependant[];
       } catch { /* ignore bad payload */
       }
     }
-    parsed.forEach(m => this.addMember(m));
+    this.relocatingDependants.forEach(m => this.addMember(m));
 
-    if (!this.form.get('noEligibleFamilyMembers')!.value && this.members.length === 0) {
+    if (!this.noEligibleDependants && this.members.length === 0) {
       this.addMember();
     }
   }
 
   canSubmit(): boolean {
-    return this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
+    let ok =  this.form.valid && !this.form.pending && !this.submitting && !this.readOnly;
+    if (ok) {
+      if (this.members.length === 0 && !this.noEligibleDependants) {
+        ok = false
+      }
+    }
+    return ok;
+  }
+
+  get noEligibleDependants(): boolean {
+    return this.form.get('noEligibleDependants')!.value;
   }
 
   onSubmit(): void {
@@ -221,16 +203,26 @@ export class FamilyDocFormComponent implements OnInit, ICandidateFormComponent<F
     this.error = null;
 
     const value = this.form.getRawValue();
-    const members = (value.noEligibleFamilyMembers ? [] :
-      this.members.controls.map(c => c.getRawValue() as RelocatingFamilyMember));
+    //Get data from form
+    let members = (value.noEligibleDependants ? [] :
+      this.members.controls.map(c => c.getRawValue() as RelocatingDependant));
 
-    const payload: FamilyDocFormData = {
-      noEligibleFamilyMembers: value.noEligibleFamilyMembers,
-      noEligibleNotes: value.noEligibleFamilyMembers ? value.noEligibleNotes ?? '' : '',
-      familyMembersJson: JSON.stringify(members)
+    //Update the existing dependants with the new data
+    if (members.length == 0) {
+      this.relocatingDependants = [];
+    } else {
+      this.relocatingDependants.forEach(
+        (dep, index)=> Object.assign(dep, members[index])
+      );
+    }
+
+    const payload: DependantsInfoFormData = {
+      noEligibleDependants: value.noEligibleDependants,
+      noEligibleNotes: value.noEligibleDependants ? value.noEligibleNotes ?? '' : '',
+      dependantsInfoJson: JSON.stringify(this.relocatingDependants)
     };
 
-    this.candidateFormService.createOrUpdateFamilyDocsForm(payload).subscribe({
+    this.candidateFormService.createOrUpdateDependantsInfoForm(payload).subscribe({
       next: saved => {
         this.submitted.emit(saved);
         this.form.markAsPristine();

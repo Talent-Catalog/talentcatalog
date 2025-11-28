@@ -1,0 +1,47 @@
+<div *ngIf="!loading" id="intl-phone-input">
+  <div class="d-flex w-100">
+    <div class="flex-shrink-0 me-2" style="flex-basis: 20%;">
+      <ng-select
+        class="tc-select"
+        id="isoCodeSelect"
+        [items]="countries"
+        bindLabel="name"
+        bindValue="isoCode"
+        [(ngModel)]="isoCode"
+        [placeholder]="'Country (code)'"
+        [clearable]="false"
+        [searchable]="true"
+        [searchFn]="searchCountry"
+        (change)="checkForValidity()"
+      >
+        <ng-template ng-label-tmp let-item="item">
+          {{ item.countryCode }}
+        </ng-template>
+
+        <ng-template ng-option-tmp let-item="item">
+            {{ item.isoCode ? getFlag(item.isoCode) : item.name}} {{ item.name }} {{ item.countryCode }}
+        </ng-template>
+      </ng-select>
+    </div>
+
+    <!-- Phone number input -->
+    <div class="flex-grow-1" style="flex-basis: 80%;">
+      <input
+        [type]="'tel'"
+        [(ngModel)]="number"
+        placeholder="Enter phone number"
+        (ngModelChange)="checkForValidity()"
+      >
+    </div>
+  </div>
+
+  <div id="codeRequired" *ngIf="countryCodeRequired" class="text-danger small">
+    Please enter a country code for the phone number entered.
+  </div>
+
+  <!-- Validation message -->
+  <div id="invalidNumber" *ngIf="isInvalidNumber" class="text-danger mt-1 small">
+    Invalid phone number for selected country. Make sure area code included if applicable.
+    Example for country: {{getExampleNumberForCountry()}}
+  </div>
+</div>

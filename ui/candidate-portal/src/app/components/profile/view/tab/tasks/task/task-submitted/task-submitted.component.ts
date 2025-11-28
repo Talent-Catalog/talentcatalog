@@ -1,21 +1,16 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {TaskAssignment} from "../../../../../../../model/task-assignment";
 
 @Component({
-  selector: 'app-task-submitted-modal',
+  selector: 'app-task-submitted',
   templateUrl: './task-submitted.component.html',
   styleUrls: ['./task-submitted.component.scss']
 })
 export class TaskSubmittedComponent {
-  constructor() {}
+  @Input() selectedTask: TaskAssignment;
+  @Output() onReturnToTasksClick = new EventEmitter();
 
-  @Output() onReturnToTasksClick = new EventEmitter<void>();
-  @Output() onStayOnTaskClick = new EventEmitter<void>();
-
-  returnToTasksClick(): void {
+  public returnToTasksClicked() {
     this.onReturnToTasksClick.emit();
-  }
-
-  stayOnTaskClick(): void {
-    this.onStayOnTaskClick.emit();
   }
 }

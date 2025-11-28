@@ -22,24 +22,19 @@
       Candidate Opportunity Case #{{opp.id}}
     </p>
     <div class="d-flex align-items-center gap-3">
-      <h2  [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
+      <h2  class="mb-0" [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-4': showBreadcrumb}">{{opp.name}}
       </h2>
+      <tc-icon type="button" color="warning" size="lg" *ngIf="!showBreadcrumb"
+               [routerLink]="['/opp',opp.id]"
+               title="Open Candidate Opportunity Case">
+        <i class="fas fa-expand"></i>
+      </tc-icon>
         <tc-dropdown placement="bottom-start">
           <tc-dropdown-button type="solid" color="gray">
             <i class="fas fa-angle-down"></i>
           </tc-dropdown-button>
 
           <tc-dropdown-menu>
-            <tc-dropdown-item *ngIf="!showBreadcrumb"
-                              [routerLink]="['/opp',opp.id]"
-                              [style.line-height]="'1rem'">
-              <tc-icon [color]="'primary'"
-                       [size]="'md'">
-                <i class="fas fa-expand" title="Open"></i>
-              </tc-icon>
-              Open
-            </tc-dropdown-item>
-
             <tc-dropdown-item [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
               <tc-icon [color]="'primary'"
                        [size]="'md'">
@@ -142,7 +137,7 @@
                   <label class="form-label" for="closingComments">
                     Closing comments:
                   </label>
-                  <div class="col-12 mb-3"
+                  <div class="col-12 mb-3 text-color-secondary"
                        id="closingComments"
                        [innerHtml]="opp.closingComments"
                   ></div>
@@ -152,7 +147,7 @@
                   <label class="form-label" for="closingCommentsForCandidate">
                     Closing comments for candidate:
                   </label>
-                  <div class="col-12 mb-3"
+                  <div class="col-12 mb-3 text-color-secondary"
                        id="closingCommentsForCandidate"
                        [innerHtml]="opp.closingCommentsForCandidate"
                   ></div>
@@ -162,7 +157,7 @@
                   <label class="form-label" for="employerFeedback">
                     Employer feedback:
                   </label>
-                  <div class="col-12 mb-3"
+                  <div class="col-12 mb-3 text-color-secondary"
                        id="employerFeedback"
                        [innerHtml]="opp.employerFeedback"
                   ></div>

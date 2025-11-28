@@ -23,18 +23,18 @@ import org.tctalent.server.service.db.CandidateService;
 /**
  * Candidate form that captures refugee status determination evidence details.
  */
-public class RsdEvidenceForm extends CandidateFormInstanceHelper {
+public class RefugeeStatusInfoForm extends CandidateFormInstanceHelper {
   private static final String REFUGEE_STATUS_PROPERTY = "REFUGEE_STATUS";
-  private static final String DOCUMENT_TYPE_PROPERTY = "EVIDENCE_DOCUMENT_TYPE";
-  private static final String DOCUMENT_NUMBER_PROPERTY = "EVIDENCE_DOCUMENT_NUMBER";
+  private static final String REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE_PROPERTY = "REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE";
+  private static final String REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER_PROPERTY = "REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER";
 
-  public RsdEvidenceForm(String formName, AuthService authService,
+  public RefugeeStatusInfoForm(String formName, AuthService authService,
       CandidateService candidateService, CandidatePropertyService propertyService) {
     super(formName, authService, candidateService, propertyService);
   }
   @Override
   public String getFormName() {
-    return "RsdEvidenceForm";
+    return "RefugeeStatusInfoForm";
   }
 
   public RsdRefugeeStatus getRefugeeStatus() {
@@ -46,21 +46,22 @@ public class RsdEvidenceForm extends CandidateFormInstanceHelper {
     setProperty(REFUGEE_STATUS_PROPERTY, refugeeStatus != null ? refugeeStatus.name() : null);
   }
 
-  public RsdEvidenceDocumentType getDocumentType() {
-    String value = getProperty(DOCUMENT_TYPE_PROPERTY);
-    return value != null ? RsdEvidenceDocumentType.valueOf(value) : null;
+  public RefugeeStatusEvidenceDocumentType getDocumentType() {
+    String value = getProperty(REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE_PROPERTY);
+    return value != null ? RefugeeStatusEvidenceDocumentType.valueOf(value) : null;
   }
 
-  public void setDocumentType(RsdEvidenceDocumentType documentType) {
-    setProperty(DOCUMENT_TYPE_PROPERTY, documentType != null ? documentType.name() : null);
+  public void setDocumentType(RefugeeStatusEvidenceDocumentType documentType) {
+    setProperty(
+        REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE_PROPERTY, documentType != null ? documentType.name() : null);
   }
 
   public String getDocumentNumber() {
-    return getProperty(DOCUMENT_NUMBER_PROPERTY);
+    return getProperty(REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER_PROPERTY);
   }
 
   public void setDocumentNumber(String documentNumber) {
-    setProperty(DOCUMENT_NUMBER_PROPERTY, documentNumber);
+    setProperty(REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER_PROPERTY, documentNumber);
   }
 }
 

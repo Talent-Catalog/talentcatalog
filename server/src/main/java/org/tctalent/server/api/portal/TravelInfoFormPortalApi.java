@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.model.db.TravelDocForm;
-import org.tctalent.server.request.form.TravelDocFormData;
+import org.tctalent.server.model.db.TravelInfoForm;
+import org.tctalent.server.request.form.TravelInfoFormData;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateService;
@@ -34,9 +34,9 @@ import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
-@RequestMapping("/api/portal/form/travel-doc-form")
+@RequestMapping("/api/portal/form/travel-info-form")
 @RequiredArgsConstructor
-public class TravelDocFormPortalApi {
+public class TravelInfoFormPortalApi {
 
     private final AuthService authService;
     private final CandidateService candidateService;
@@ -45,9 +45,9 @@ public class TravelDocFormPortalApi {
 
     @PostMapping
     @NotNull
-    public Map<String, Object> createOrUpdate(@Valid @RequestBody TravelDocFormData request) {
-        TravelDocForm form = new TravelDocForm(
-            "TravelDocForm", authService, candidateService, candidatePropertyService);
+    public Map<String, Object> createOrUpdate(@Valid @RequestBody TravelInfoFormData request) {
+        TravelInfoForm form = new TravelInfoForm(
+            "TravelInfoForm", authService, candidateService, candidatePropertyService);
 
         form.setFirstName(request.getFirstName());
         form.setLastName(request.getLastName());
@@ -61,18 +61,18 @@ public class TravelDocFormPortalApi {
         form.setTravelDocIssueDate(request.getTravelDocIssueDate());
         form.setTravelDocExpiryDate(request.getTravelDocExpiryDate());
 
-        return travelDocFormDto().build(form);
+        return travelInfoFormDto().build(form);
     }
 
     @GetMapping
     @NotNull
     public Map<String, Object> get() {
-        TravelDocForm form = new TravelDocForm(
-            "TravelDocForm", authService, candidateService, candidatePropertyService);
-        return travelDocFormDto().build(form);
+        TravelInfoForm form = new TravelInfoForm(
+            "TravelInfoForm", authService, candidateService, candidatePropertyService);
+        return travelInfoFormDto().build(form);
     }
 
-    private DtoBuilder travelDocFormDto() {
+    private DtoBuilder travelInfoFormDto() {
         return new DtoBuilder()
             .add("firstName")
             .add("lastName")

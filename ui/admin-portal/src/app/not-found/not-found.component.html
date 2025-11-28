@@ -14,12 +14,18 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="container">
-  <h1>Page not found</h1>
-  <p>
+<div class="container flex justify-content-center align-content-center text-center">
+<div>
+  <h1 class="text-color-brand-secondary my-3">404</h1>
+  <h3>
+    Page not found
+  </h3>
+  <p class="text-color-secondary my-3">
     Sorry, that page does not exist. Please check you have the correct URL, or contact support if the problem exists.
   </p>
-  <p>
-    <button class="btn btn-outline-primary" routerLink="/">Return to home page</button>
-  </p>
+  <div class="flex justify-content-baseline gap-3 mt-4">
+    <tc-button color="secondary" routerLink="/">Return to home page</tc-button>
+  </div>
 </div>
+</div>
+

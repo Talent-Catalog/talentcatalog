@@ -2,9 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {Candidate, CandidateStatus, SubmitRegistrationRequest} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {TermsInfoDto, TermsType} from "../../../model/terms-info-dto";
 import {TermsInfoService} from "../../../services/terms-info.service";
+
+/**
+ * Note that this component is optionally displayed as part of the registration step=complete
+ * See register.component.html for the conditional display of this component.
+ */
 
 @Component({
   selector: 'app-registration-submit',
@@ -42,6 +46,15 @@ export class RegistrationSubmitComponent implements OnInit {
         error: err => this.error = err
       }
     )
+  }
+
+  get consentRequired(): boolean {
+    //The only time consent isn't required is when we have no policy content and the candidate
+    //is not managed by TBB (the default source partner). If they are managed by TBB, they are
+    //required to consent to the legacy policy on the TBB website.
+    const havePolicy = this.currentPrivacyPolicy?.content.length > 0;
+    const managedByTBB = this.candidate?.user?.partner?.defaultSourcePartner;
+    return havePolicy || managedByTBB;
   }
 
   //Final registration step method

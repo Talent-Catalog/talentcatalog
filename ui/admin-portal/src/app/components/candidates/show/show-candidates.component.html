@@ -60,6 +60,12 @@
         </tc-icon>
       </a>
 
+      <a target="_blank" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
+        <tc-icon [size]="'xl'" [ariaLabel]="'Show published sheet'">
+          <i class="fas fa-globe" title="Show published sheet"></i>
+        </tc-icon>
+      </a>
+
       <tc-dropdown placement="bottom-start">
         <tc-dropdown-button type="solid" color="gray">
           <i class="fas fa-angle-down"></i>
@@ -135,13 +141,6 @@
               <i class="fab fa-google-drive" title="Create/show Google folder"></i>
             </tc-icon>
             Create/show Google folder
-          </tc-dropdown-item>
-
-          <tc-dropdown-item target="_blank" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
-            <tc-icon [size]="'md'" [ariaLabel]="'Show published sheet'">
-              <i class="fas fa-globe" title="Show published sheet"></i>
-            </tc-icon>
-            Show published sheet
           </tc-dropdown-item>
 
           <tc-dropdown-item target="_blank" *ngIf="timestamp" (click)="doSearch(true)">
@@ -504,13 +503,16 @@
               <i class="far fa-hand-pointer" title="Select candidates"></i>
             </th>
             <th *ngFor="let field of selectedFields">
-              <ng-container *ngIf="field.sortable; else nonSortableFields" (click)="toggleSort(field.fieldPath)">
-                <div (click)="toggleSort(field.fieldPath)" class="sortable-column-header">
-                  <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
-                                 [sortDirection]="sortDirection"></app-sorted-by>
-                  {{field.displayName}}
-                </div>
-              </ng-container>
+              <div *ngIf="field.sortable; else nonSortableFields"
+                   (click)="toggleSort(field.fieldPath)"
+                   class="sortable-column-header"
+              >
+                <app-sorted-by [column]="field.fieldPath"
+                               [sortColumn]="sortField"
+                               [sortDirection]="sortDirection"
+                ></app-sorted-by>
+                {{field.displayName}}
+              </div>
               <ng-template #nonSortableFields>
                 {{field.displayName}}
               </ng-template>
@@ -519,12 +521,6 @@
         </thead>
 
         <tbody>
-          <!-- Special display for no results-->
-          <tr *ngIf="!searching && !results?.totalElements">
-            <td colspan="42">
-              <span class="text-muted">(no matching candidates)</span>
-            </td>
-          </tr>
 
           <!-- Candidate records -->
           <!-- MODEL: Highlighting current table record. See also scss file. -->
@@ -549,7 +545,7 @@
                       Download CV
                     </tc-dropdown-item>
                     <tc-dropdown-divider *ngIf="isCvDropDownAvailable()"></tc-dropdown-divider>
-                    <tc-dropdown-item (click)="openCandidateInNewTab(candidate.candidateNumber)">
+                    <tc-dropdown-item [routerLink]="['/candidate',candidate.candidateNumber]">
                       Open in new tab
                     </tc-dropdown-item>
                     <tc-dropdown-divider *ngIf="(!isSubmissionList() && isContentModifiable())

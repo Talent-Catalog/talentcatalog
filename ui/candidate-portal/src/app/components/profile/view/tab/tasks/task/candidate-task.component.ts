@@ -27,8 +27,6 @@ import {
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {TaskAssignment} from "../../../../../../model/task-assignment";
 import {TaskType} from "../../../../../../model/task";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {TaskSubmittedComponent} from "./task-submitted/task-submitted.component";
 
 @Component({
   selector: 'app-candidate-task',
@@ -48,8 +46,7 @@ export class CandidateTaskComponent implements OnInit {
   constructor(
     private fb: UntypedFormBuilder,
     private taskAssignmentService: TaskAssignmentService,
-    public sanitizer: DomSanitizer,
-    private modalService: NgbModal
+    public sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -100,12 +97,16 @@ export class CandidateTaskComponent implements OnInit {
     }
   }
 
-  get formAbandoned() {
+  private get formAbandoned(): boolean {
     return this.form.get('abandoned').value;
   }
 
-  get abandonedTask() {
+  private get abandonedTask() {
     return this.selectedTask?.abandonedDate != null;
+  }
+
+  get abandoned() {
+    return this.formAbandoned || this.abandonedTask;
   }
 
   get completedTask() {
@@ -149,22 +150,21 @@ export class CandidateTaskComponent implements OnInit {
         this.saving = false;
       }
     )
-    this.openTaskSubmittedModal()
   }
 
   completedUploadTask($event: TaskAssignment) {
     this.selectedTask = $event;
-    this.openTaskSubmittedModal();
   }
 
   submitTask() {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
-    // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
+    // If it is an upload task the task is completed separately on file upload, the submit button
+    // will then add a comment or if abandoned to the upload task.
     // If it is an already completed task, only can update the comment field.
     if (this.completedTask) {
       this.updateTaskComment();
     } else {
-      if (!this.abandonedTask) {
+      if (!this.abandoned) {
         switch (this.selectedTask.task.taskType) {
           case TaskType.Question:
           case TaskType.YesNoQuestion:
@@ -181,24 +181,7 @@ export class CandidateTaskComponent implements OnInit {
         this.updateAbandonedTask();
       }
     }
-    this.openTaskSubmittedModal()
-  }
-
-  openTaskSubmittedModal() {
-    const modalRef = this.modalService.open(TaskSubmittedComponent, {
-      centered: true,
-      backdrop: 'static',
-    })
-
-    modalRef.componentInstance.onReturnToTasksClick.subscribe(() => {
-      modalRef.close();
-      this.goBack()
-    })
-
-    modalRef.componentInstance.onStayOnTaskClick.subscribe(() => {
-      modalRef.close();
-      this.form.markAsPristine();
-    })
+    this.form.markAsPristine()
   }
 
   updateQuestionTask() {

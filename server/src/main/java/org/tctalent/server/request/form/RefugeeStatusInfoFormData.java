@@ -14,19 +14,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+
 package org.tctalent.server.request.form;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.RefugeeStatusEvidenceDocumentType;
+import org.tctalent.server.model.db.RsdRefugeeStatus;
 
 /**
- * DTO for Family Document Form data exchange.
- * Stores family member information and "no eligible" toggle/notes.
+ * Payload captured by the RSD evidence form.
  */
 @Getter
 @Setter
-public class FamilyDocFormData {
-  private String familyMembersJson;
-  private Boolean noEligibleFamilyMembers;
-  private String noEligibleNotes;
+public class RefugeeStatusInfoFormData {
+  @NotNull
+  private RsdRefugeeStatus refugeeStatus;
+
+  @NotNull
+  private RefugeeStatusEvidenceDocumentType documentType;
+
+  @NotBlank
+  @Size(max = 30)
+  private String documentNumber;
 }

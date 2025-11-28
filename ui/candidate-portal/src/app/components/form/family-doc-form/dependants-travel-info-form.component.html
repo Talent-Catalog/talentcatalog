@@ -3,13 +3,13 @@
 
   <div class="form-check mb-3">
     <input type="checkbox" class="form-check-input" id="noEligible"
-           formControlName="noEligibleFamilyMembers" [disabled]="readOnly">
+           formControlName="noEligibleDependants" [disabled]="readOnly">
     <label class="form-check-label" for="noEligible">
-      {{'FAMILY-DOC.LABEL.NO-ELIGIBLE' | translate}}
+      {{'FAMILY-DOC.LABEL.NO_ELIGIBLE' | translate}}
     </label>
   </div>
 
-  <div class="mb-3" *ngIf="form.get('noEligibleFamilyMembers')!.value">
+  <div class="mb-3" *ngIf="noEligibleDependants">
     <label class="form-label">{{"REGISTRATION.EXAM.LABEL.NOTES" | translate}}</label>
     <textarea class="form-control" rows="2" formControlName="noEligibleNotes"
               [readonly]="readOnly"></textarea>
@@ -19,11 +19,11 @@
     </div>
   </div>
 
-  <ng-container formArrayName="members" *ngIf="!form.get('noEligibleFamilyMembers')!.value">
+  <ng-container formArrayName="members" *ngIf="!noEligibleDependants">
     <div class="card mb-3" *ngFor="let m of members.controls; let i = index" [formGroupName]="i">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-3"> {{'TASKS.FAMILY_DOC.FAMILY-MEMBER' | translate}} #{{ i + 1 }}</h5>
+          <h5 class="card-title mb-3"> {{'FAMILY-DOC.LABEL.FAMILY-MEMBER' | translate}} #{{ i + 1 }}</h5>
           <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeMember(i)"
                   [disabled]="readOnly"> {{"CHAT.LINK-REMOVE-BTN" | translate}}
           </button>
@@ -32,7 +32,7 @@
         <!-- basic fields -->
         <div class="row g-3">
           <div class="col-md-4">
-            <label class="form-label">  {{'FAMILY-DOC.LABEL.RELATIONSHIP' | translate}}</label>
+            <label class="form-label">  {{'FAMILY-DOC.LABEL.RELATIONSHIP' | translate}} *</label>
             <ng-select formControlName="relationship"
                        [readonly]="readOnly"
                        [items]="relationships"
@@ -57,18 +57,18 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{"PROFILE.PERSONAL.FIRSTNAME" | translate}}</label>
-            <input class="form-control" formControlName="firstName" [readonly]="readOnly">
+            <label class="form-label">{{"PROFILE.PERSONAL.FIRSTNAME" | translate}} *</label>
+            <input class="form-control" formControlName="user.firstName" [readonly]="readOnly">
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{"PROFILE.PERSONAL.LASTNAME" | translate}}</label>
-            <input class="form-control" formControlName="lastName" [readonly]="readOnly">
+            <label class="form-label">{{"PROFILE.PERSONAL.LASTNAME" | translate}} *</label>
+            <input class="form-control" formControlName="user.lastName" [readonly]="readOnly">
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{"PROFILE.PERSONAL.DOB" | translate}}</label>
-            <input type="date" class="form-control" formControlName="dateOfBirth"
+            <label class="form-label">{{"PROFILE.PERSONAL.DOB" | translate}} *</label>
+            <input type="date" class="form-control" formControlName="dob"
                    [readonly]="readOnly">
             <div class="text-danger" *ngIf="m.touched && m.hasError('childAgeInvalid')">
               {{'FAMILY-DOC.LABEL.AGE-VALIDATION' | translate}}
@@ -86,7 +86,7 @@
 
           <div class="col-md-4">
             <label class="form-label">{{ "TRAVELDOC.LABEL.BIRTHCOUNTRY" | translate }}</label>
-            <input class="form-control" formControlName="countryOfBirth" [readonly]="readOnly">
+            <input class="form-control" formControlName="birthCountry.name" [readonly]="readOnly">
           </div>
 
           <div class="col-md-6">
@@ -96,93 +96,32 @@
         </div>
 
         <hr class="my-4">
-        <!-- EXTRA dependant fields -->
+
         <div class="row g-3">
-          <!-- Health concerns -->
           <div class="col-md-4">
-            <label class="form-label">{{'FAMILY-DOC.LABEL.HEALTH-CONCERN' | translate}}</label>
-            <select
-              class="form-select"
-              formControlName="healthConcerns"
-              [disabled]="readOnly">
-              <option value="yes">{{ 'CONFIRMATION.YES' | translate }}</option>
-              <option value="no">{{ 'CONFIRMATION.NO' | translate }}</option>
-            </select>
-          </div>
-
-          <div class="col-12" *ngIf="m.get('healthConcerns')?.value === 'yes'">
-            <label class="form-label">{{ "REGISTRATION.EXAM.LABEL.NOTES" | translate }}</label>
-            <textarea class="form-control" rows="3"
-                      formControlName="healthNotes"
-                      [readonly]="readOnly"></textarea>
-            <div class="text-danger" *ngIf="m.touched && m.hasError('healthNotesRequired')">
-              {{ "FORM.ERROR.REQUIRED" | translate }}
-            </div>
-          </div>
-
-          <!-- Registration -->
-          <div class="col-md-4">
-            <label class="form-label">{{ "FAMILY-DOC.LABEL.REGISTERED" | translate }}</label>
-            <select
-              class="form-select"
-              formControlName="registered"
-              [disabled]="readOnly">
-              <option value="yes">{{ 'CONFIRMATION.YES' | translate }}</option>
-              <option value="no">{{ 'CONFIRMATION.NO' | translate }}</option>
-            </select>
-          </div>
-
-          <div class="col-12" *ngIf="m.get('registered')?.value === 'yes'">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label">
-                 {{ "FAMILY-DOC.LABEL.REGISTRED-NUMBER" | translate }}
-                </label>
-                <input class="form-control" formControlName="registeredNumber"
-                       [readonly]="readOnly">
-                <div class="text-danger"
-                     *ngIf="m.touched && m.hasError('registeredNumberRequired')">
-                  {{ "FORM.ERROR.REQUIRED" | translate }}
-                </div>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">{{ "REGISTRATION.EXAM.LABEL.NOTES" | translate }}</label>
-                <textarea class="form-control" rows="3"
-                          formControlName="registeredNotes"
-                          [readonly]="readOnly"></textarea>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <hr class="my-4">
-        <!-- travel doc -->
-        <div formGroupName="travelDoc" class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }}</label>
-            <select class="form-select" formControlName="docType">
+            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }} *</label>
+            <select class="form-select" formControlName="TRAVEL_DOC_TYPE">
               <option [value]="TravelDocType.Passport">{{ 'TRAVELDOC.OPTION.PASSPORT' | translate }}</option>
               <option [value]="TravelDocType.NationalId">{{ 'TRAVELDOC.OPTION.NATIONALID' | translate }}</option>
               <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELDOC.OPTION.REFUGEE' | translate }}</option>
             </select>
           </div>
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }}</label>
-            <input class="form-control" formControlName="docNumber" [readonly]="readOnly">
+            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }} *</label>
+            <input class="form-control" formControlName="TRAVEL_DOC_NUMBER" [readonly]="readOnly">
           </div>
           <div class="col-md-4">
             <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCISSUEDBY' | translate }}</label>
-            <input class="form-control" formControlName="issuer" [readonly]="readOnly">
+            <input class="form-control" formControlName="TRAVEL_DOC_ISSUED_BY" [readonly]="readOnly">
           </div>
           <div class="col-md-4">
             <label class="form-label">{{ 'TRAVELDOC.LABEL.ISSUEDATE' | translate }}</label>
-            <input type="date" class="form-control" formControlName="issuedOn"
+            <input type="date" class="form-control" formControlName="TRAVEL_DOC_ISSUE_DATE"
                    [readonly]="readOnly">
           </div>
           <div class="col-md-4">
             <label class="form-label">{{ 'TRAVELDOC.LABEL.EXPIRYDATE' | translate }}</label>
-            <input type="date" class="form-control" formControlName="expiresOn"
+            <input type="date" class="form-control" formControlName="TRAVEL_DOC_EXPIRY_DATE"
                    [readonly]="readOnly">
             <div class="text-danger"
                  *ngIf="m.get('travelDoc')?.touched && m.get('travelDoc')?.hasError('expiryTooSoon')">
