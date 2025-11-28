@@ -53,6 +53,7 @@ public class RefugeeStatusInfoFormPortalApi {
     form.setRefugeeStatus(request.getRefugeeStatus());
     form.setDocumentType(request.getDocumentType());
     form.setDocumentNumber(request.getDocumentNumber());
+    form.setRefugeeStatusComment(request.getRefugeeStatusComment());
     form.save();
 
     return refugeeStatusInfoFormDto().build(form);
@@ -71,7 +72,8 @@ public class RefugeeStatusInfoFormPortalApi {
     return new DtoBuilder()
         .add("refugeeStatus")
         .add("documentType")
-        .add("documentNumber");
+        .add("documentNumber")
+        .add("refugeeStatusComment");
   }
 }
 

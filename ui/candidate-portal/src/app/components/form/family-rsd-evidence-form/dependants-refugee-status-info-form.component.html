@@ -22,9 +22,9 @@
 
       <div class="card-body">
         <div class="row g-3">
-          <div class="col-md-4">
+          <div class="col-md-12">
             <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.REFUGEE-STATUS' | translate }} *</label>
-            <select class="form-select" formControlName="REFUGEE_STATUS" [disabled]="readOnly">
+            <select class="form-select" formControlName="TTH_IT$REFUGEE_STATUS" [disabled]="readOnly">
               <option value="" disabled>Select refugee status</option>
               <option *ngFor="let status of (RsdRefugeeStatus | keyvalue)" [ngValue]="status.value">
                 {{ status.value.replaceAll('_', ' ') }}
@@ -32,9 +32,9 @@
             </select>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-12">
             <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE' | translate }} *</label>
-            <select class="form-select" formControlName="REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE" [disabled]="readOnly">
+            <select class="form-select" formControlName="TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE" [disabled]="readOnly">
               <option value="" disabled>Select document type</option>
               <option *ngFor="let type of (RefugeeStatusEvidenceDocumentType | keyvalue)"
                       [ngValue]="type.value">
@@ -43,10 +43,16 @@
             </select>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-12">
             <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCNUMBER' | translate }}</label>
-            <input type="text" class="form-control" formControlName="REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER"
+            <input type="text" class="form-control" formControlName="TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER"
                    [readonly]="readOnly" maxlength="30">
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.COMMENT' | translate }}</label>
+            <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                      [readonly]="readOnly" formControlName="TTH_IT$REFUGEE_STATUS_COMMENT" ></textarea>
           </div>
         </div>
       </div>

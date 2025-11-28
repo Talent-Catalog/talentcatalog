@@ -69,9 +69,10 @@ export interface RelocatingDependant {
   TTH_IT$TRAVEL_DOC_EXPIRY_DATE?: string
   TTH_IT$TRAVEL_INFO_COMMENT?: string
 
-  REFUGEE_STATUS?: string;
-  REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE?: string;
-  REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER?: string;
+  TTH_IT$REFUGEE_STATUS?: string;
+  TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE?: string;
+  TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER?: string;
+  TTH_IT$REFUGEE_STATUS_COMMENT?: string;
 }
 
 export interface DependantsInfoFormData {
@@ -96,4 +97,5 @@ export interface RefugeeStatusInfoFormData {
   refugeeStatus: RsdRefugeeStatus | null;
   documentType: RefugeeStatusEvidenceDocumentType | null;
   documentNumber: string;
+  refugeeStatusComment: string;
 }

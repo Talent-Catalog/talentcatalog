@@ -152,11 +152,12 @@ export class DependantsRefugeeStatusInfoFormComponent
       'user.firstName': [member['user.firstName'] ?? ''],
       'user.lastName': [member['user.lastName'] ?? ''],
       dob: [member.dob ?? ''],
-      REFUGEE_STATUS: [member?.REFUGEE_STATUS ?? '', Validators.required],
-      REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE: [member?.REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE ?? '',
+      TTH_IT$REFUGEE_STATUS: [member?.TTH_IT$REFUGEE_STATUS ?? '', Validators.required],
+      TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE: [member?.TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE ?? '',
         Validators.required],
-      REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER: [member?.REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER ?? '',
+      TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER: [member?.TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER ?? '',
         Validators.maxLength(30)],
+      TTH_IT$REFUGEE_STATUS_COMMENT: [member?.TTH_IT$REFUGEE_STATUS_COMMENT ?? ''],
     });
   }
 

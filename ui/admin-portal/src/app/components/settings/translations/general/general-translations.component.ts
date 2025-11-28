@@ -959,6 +959,7 @@ const ALL_FIELDS = {
   },
   "RSD-EVIDENCE":{
     "LABEL":{
+      "COMMENT": null,
       "DOCTYPE": null,
       "DOCNUMBER": null,
       "REFUGEE-STATUS": null,

@@ -40,4 +40,6 @@ public class RefugeeStatusInfoFormData {
   @NotBlank
   @Size(max = 30)
   private String documentNumber;
+
+  private String refugeeStatusComment;
 }
