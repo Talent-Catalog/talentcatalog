@@ -1,9 +1,9 @@
 insert into candidate_property_definition (name, label, definition, type)
 values
-    ('TTH_IT$TRAVEL_DOC_COMMENT', 'TTH IT: Travel document comment',
-        'Optional comment related to Italian Train to Hire travel document information.',NULL),
+    ('TTH_IT$TRAVEL_INFO_COMMENT', 'TTH IT: Travel info comment',
+        'Optional comment related to travel information (Italian Train to Hire).',NULL),
     ('TTH_IT$REFUGEE_STATUS_COMMENT', 'TTH IT: Refugee status comment',
-        'Optional comment related to Italian Train to Hire Refugee status information.',NULL);
+        'Optional comment related to refugee status information (Italian Train to Hire).',NULL);
 
 update candidate_property_definition
 set name = 'TTH_IT$TRAVEL_DOC_TYPE',
