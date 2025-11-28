@@ -16,15 +16,15 @@
     <div class="col-12" *ngIf="hasProfileMismatch">
       <div class="alert alert-warning d-flex justify-content-between align-items-center">
         <div>
-          <strong>{{ 'TRAVELDOC.MISMATCH.TITLE' | translate }}</strong><br />
-          {{ 'TRAVELDOC.MISMATCH.DESCRIPTION' | translate }}
+          <strong>{{ 'TRAVELINFO.MISMATCH.TITLE' | translate }}</strong><br />
+          {{ 'TRAVELINFO.MISMATCH.DESCRIPTION' | translate }}
           <span class="text-danger">{{ mismatchFields.join(', ') }}</span>.
           <br />
-          {{ 'TRAVELDOC.MISMATCH.INSTRUCTION' | translate }}
+          {{ 'TRAVELINFO.MISMATCH.INSTRUCTION' | translate }}
         </div>
         <div class="ms-3">
           <button class="btn btn-sm btn-primary" (click)="goToProfile()">
-            {{ 'TRAVELDOC.BUTTON.UPDATEPROFILE' | translate }}
+            {{ 'TRAVELINFO.BUTTON.UPDATEPROFILE' | translate }}
           </button>
         </div>
       </div>
@@ -91,14 +91,14 @@
 
     <!-- Country of Birth -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.BIRTHCOUNTRY' | translate }}</label>
+      <label class="form-label">{{ 'TRAVELINFO.LABEL.BIRTHCOUNTRY' | translate }}</label>
       <select
         class="form-select"
         formControlName="birthCountry"
         [compareWith]="compareCountry"
         [ngClass]="{ 'is-invalid': controlHasProfileMismatch('birthCountry') }"
       >
-        <option [ngValue]="null">{{ 'TRAVELDOC.OPTION.SELECTCOUNTRY' | translate }}</option>
+        <option [ngValue]="null">{{ 'TRAVELINFO.OPTION.SELECTCOUNTRY' | translate }}</option>
         <option *ngFor="let c of countries" [ngValue]="c">
           {{ c.name }}
         </option>
@@ -107,7 +107,7 @@
 
     <!-- Place of Birth -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.PLACEOFBIRTH' | translate }}</label>
+      <label class="form-label">{{ 'TRAVELINFO.LABEL.PLACEOFBIRTH' | translate }}</label>
       <input
         type="text"
         class="form-control"
@@ -118,11 +118,11 @@
 
     <!-- Travel Document Type -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }} *</label>
+      <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCTYPE' | translate }} *</label>
       <select class="form-select" formControlName="travelDocType">
-        <option [value]="TravelDocType.Passport">{{ 'TRAVELDOC.OPTION.PASSPORT' | translate }}</option>
-        <option [value]="TravelDocType.NationalId">{{ 'TRAVELDOC.OPTION.NATIONALID' | translate }}</option>
-        <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELDOC.OPTION.REFUGEE' | translate }}</option>
+        <option [value]="TravelDocType.Passport">{{ 'TRAVELINFO.OPTION.PASSPORT' | translate }}</option>
+        <option [value]="TravelDocType.NationalId">{{ 'TRAVELINFO.OPTION.NATIONALID' | translate }}</option>
+        <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELINFO.OPTION.REFUGEE' | translate }}</option>
       </select>
       <div class="text-danger small" *ngIf="hasError('travelDocType', 'required')">
         {{ 'FORM.ERROR.REQUIRED' | translate }}
@@ -131,7 +131,7 @@
 
     <!-- Travel Document Number -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }} *</label>
+      <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCNUMBER' | translate }} *</label>
       <input
         type="text"
         class="form-control"
@@ -145,7 +145,7 @@
 
     <!-- Travel Document Issued By -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCISSUEDBY' | translate }}</label>
+      <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCISSUEDBY' | translate }}</label>
       <input
         type="text"
         class="form-control"
@@ -156,7 +156,7 @@
 
     <!-- Travel Document Issue Date -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.ISSUEDATE' | translate }}</label>
+      <label class="form-label">{{ 'TRAVELINFO.LABEL.ISSUEDATE' | translate }}</label>
       <input
         type="date"
         class="form-control"
@@ -167,7 +167,7 @@
 
     <!-- Travel Document Expiry Date -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELDOC.LABEL.EXPIRYDATE' | translate }}</label>
+      <label class="form-label">{{ 'TRAVELINFO.LABEL.EXPIRYDATE' | translate }}</label>
       <input
         type="date"
         class="form-control"
@@ -177,14 +177,10 @@
     </div>
 
     <!-- Travel Info Comment -->
-    <div class="col-md-6">
-      <label class="form-label">{{ '???TRAVELDOC.LABEL.EXPIRYDATE' | translate }}</label>
-      <input
-        type="text"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="travelInfoComment"
-      />
+    <div class="col-md-12">
+      <label class="form-label">{{ 'TRAVELINFO.LABEL.COMMENT' | translate }}</label>
+      <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                [readonly]="readOnly" formControlName="travelInfoComment" ></textarea>
     </div>
 
     <!-- Submit Button -->

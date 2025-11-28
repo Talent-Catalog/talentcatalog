@@ -91,11 +91,12 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
       'birthCountry.name': value?.['birthCountry.name'] ?? '',
       placeOfBirth: value?.placeOfBirth ?? '',
 
-      TRAVEL_DOC_TYPE: [value?.TRAVEL_DOC_TYPE ?? '', Validators.required],
-      TRAVEL_DOC_NUMBER: [value?.TRAVEL_DOC_NUMBER ?? '', [Validators.required, Validators.maxLength(64)]],
-      TRAVEL_DOC_ISSUED_BY: [value?.TRAVEL_DOC_ISSUED_BY ?? '', Validators.maxLength(128)],
-      TRAVEL_DOC_ISSUE_DATE: value?.TRAVEL_DOC_ISSUE_DATE ?? '',
-      TRAVEL_DOC_EXPIRY_DATE: value?.TRAVEL_DOC_EXPIRY_DATE ?? ''
+      TTH_IT$TRAVEL_DOC_TYPE: [value?.TTH_IT$TRAVEL_DOC_TYPE ?? '', Validators.required],
+      TTH_IT$TRAVEL_DOC_NUMBER: [value?.TTH_IT$TRAVEL_DOC_NUMBER ?? '', [Validators.required, Validators.maxLength(64)]],
+      TTH_IT$TRAVEL_DOC_ISSUED_BY: [value?.TTH_IT$TRAVEL_DOC_ISSUED_BY ?? '', Validators.maxLength(128)],
+      TTH_IT$TRAVEL_DOC_ISSUE_DATE: value?.TTH_IT$TRAVEL_DOC_ISSUE_DATE ?? '',
+      TTH_IT$TRAVEL_DOC_EXPIRY_DATE: value?.TTH_IT$TRAVEL_DOC_EXPIRY_DATE ?? '',
+      TTH_IT$TRAVEL_INFO_COMMENT: value?.TTH_IT$TRAVEL_INFO_COMMENT ?? ''
     }, {
       validators: [
         this.childAgeIfChildValidator(),

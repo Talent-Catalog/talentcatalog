@@ -62,11 +62,12 @@ export interface RelocatingDependant {
   'birthCountry.name'?: string;
   placeOfBirth?: string;
 
-  TRAVEL_DOC_TYPE?: string,
-  TRAVEL_DOC_NUMBER?: string,
-  TRAVEL_DOC_ISSUED_BY?: string,
-  TRAVEL_DOC_ISSUE_DATE?: string,
-  TRAVEL_DOC_EXPIRY_DATE?: string
+  TTH_IT$TRAVEL_DOC_TYPE?: string,
+  TTH_IT$TRAVEL_DOC_NUMBER?: string,
+  TTH_IT$TRAVEL_DOC_ISSUED_BY?: string,
+  TTH_IT$TRAVEL_DOC_ISSUE_DATE?: string,
+  TTH_IT$TRAVEL_DOC_EXPIRY_DATE?: string
+  TTH_IT$TRAVEL_INFO_COMMENT?: string
 
   REFUGEE_STATUS?: string;
   REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE?: string;
