@@ -134,11 +134,14 @@
                   </tc-dropdown-item>
 
                   <!-- View Details -->
-                  <tc-dropdown-item *ngIf="showMore && isSavedSearch()" (click)="toggleSeeMore()" title="View details">
+                  <tc-dropdown-item *ngIf="showMore && isSavedSearch()"
+                                    (click)="toggleSeeMore()"
+                                    [title]="this.seeMore ? 'Hide details' : 'View details'"
+                  >
                     <tc-icon color="primary" size="md">
                       <i class="fas fa-ellipsis-h" title="View details"></i>
                     </tc-icon>
-                    View details
+                    {{ this.seeMore ? 'Hide details' : 'View details' }}
                   </tc-dropdown-item>
 
                 </tc-dropdown-menu>
