@@ -18,9 +18,8 @@
 (ie resizing themselves to make room for selected candidate details.-->
 <div [hidden]="loading"
      [class.split]="manageScreenSplits && !!currentCandidate">
-
-  <!-- Full-page loading animation while searching -->
-  <tc-loading [loading]="searching" type="page"></tc-loading>
+  
+  <tc-loading [loading]="searching"></tc-loading>
 
   <ng-content></ng-content>
 
