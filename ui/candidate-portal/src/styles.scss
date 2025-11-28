@@ -45,6 +45,14 @@
 
 }
 
+//Links on tab headers need contrasting colours
+.tab-header a {
+  color: white;
+  &:hover {
+    color: grey;
+  }
+}
+
 /* FONT AWESOME */
 label > i.fa {
   margin-right: 8px;
