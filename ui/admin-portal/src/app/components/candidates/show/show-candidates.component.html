@@ -703,8 +703,9 @@ arrays with more than one value display in drop down
                                  [savedSearchSelectionChange]="savedSearchSelectionChange"
                                  (onSearchCardRendered)="setSearchCardScrollTop()"
                                  (closeEvent)="setCurrentCandidate(null)"
-                                 (candidateUpdated)="updatedCandidate($event)">
-      </app-candidate-search-card>
+                                 (candidateUpdated)="updatedCandidate($event)"
+                                 [isKeywordSearch]="isKeywordSearch"
+      ></app-candidate-search-card>
 
     </div>
   </div>

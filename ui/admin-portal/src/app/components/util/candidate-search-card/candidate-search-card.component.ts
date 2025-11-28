@@ -49,6 +49,7 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
   @Input() sourceType: String;
   @Input() defaultSearch: boolean;
   @Input() savedSearchSelectionChange: boolean;
+  @Input() isKeywordSearch: boolean;
 
   @Output() closeEvent = new EventEmitter();
   @Output() onSearchCardRendered = new EventEmitter();
