@@ -16,10 +16,10 @@
 
 <!--Only split if someone else (parent) is not managing splits
 (ie resizing themselves to make room for selected candidate details.-->
-<div [hidden]="loading"
-     [class.split]="manageScreenSplits && !!currentCandidate">
-  
-  <tc-loading [loading]="searching"></tc-loading>
+
+<tc-loading class="mt-5 d-block" [loading]="searching"></tc-loading>
+
+<div [hidden]="loading" [class.split]="manageScreenSplits && !!currentCandidate">
 
   <ng-content></ng-content>
 
