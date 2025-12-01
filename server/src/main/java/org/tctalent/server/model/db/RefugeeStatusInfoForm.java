@@ -24,9 +24,10 @@ import org.tctalent.server.service.db.CandidateService;
  * Candidate form that captures refugee status determination evidence details.
  */
 public class RefugeeStatusInfoForm extends CandidateFormInstanceHelper {
-  private static final String REFUGEE_STATUS_PROPERTY = "REFUGEE_STATUS";
-  private static final String REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE_PROPERTY = "REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE";
-  private static final String REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER_PROPERTY = "REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER";
+  private static final String REFUGEE_STATUS_PROPERTY = "TTH_IT$REFUGEE_STATUS";
+  private static final String REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE_PROPERTY = "TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE";
+  private static final String REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER_PROPERTY = "TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER";
+  private static final String REFUGEE_STATUS_COMMENT_PROPERTY = "TTH_IT$REFUGEE_STATUS_COMMENT";
 
   public RefugeeStatusInfoForm(String formName, AuthService authService,
       CandidateService candidateService, CandidatePropertyService propertyService) {
@@ -54,6 +55,14 @@ public class RefugeeStatusInfoForm extends CandidateFormInstanceHelper {
   public void setDocumentType(RefugeeStatusEvidenceDocumentType documentType) {
     setProperty(
         REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE_PROPERTY, documentType != null ? documentType.name() : null);
+  }
+
+  public String getRefugeeStatusComment() {
+    return getProperty(REFUGEE_STATUS_COMMENT_PROPERTY);
+  }
+
+  public void setRefugeeStatusComment(String comment) {
+    setProperty(REFUGEE_STATUS_COMMENT_PROPERTY, comment);
   }
 
   public String getDocumentNumber() {

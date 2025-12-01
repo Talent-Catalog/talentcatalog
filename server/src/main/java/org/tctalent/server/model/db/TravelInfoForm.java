@@ -28,11 +28,12 @@ public class TravelInfoForm extends CandidateFormInstanceHelper {
     }
 
     // Constants for property names
-    private static final String DOC_TYPE_PROP = "TRAVEL_DOC_TYPE";
-    private static final String DOC_NUMBER_PROP = "TRAVEL_DOC_NUMBER";
-    private static final String DOC_ISSUED_BY_PROP = "TRAVEL_DOC_ISSUED_BY";
-    private static final String DOC_ISSUE_DATE_PROP = "TRAVEL_DOC_ISSUE_DATE";
-    private static final String DOC_EXPIRY_DATE_PROP = "TRAVEL_DOC_EXPIRY_DATE";
+    private static final String DOC_TYPE_PROP = "TTH_IT$TRAVEL_DOC_TYPE";
+    private static final String DOC_NUMBER_PROP = "TTH_IT$TRAVEL_DOC_NUMBER";
+    private static final String DOC_ISSUED_BY_PROP = "TTH_IT$TRAVEL_DOC_ISSUED_BY";
+    private static final String DOC_ISSUE_DATE_PROP = "TTH_IT$TRAVEL_DOC_ISSUE_DATE";
+    private static final String DOC_EXPIRY_DATE_PROP = "TTH_IT$TRAVEL_DOC_EXPIRY_DATE";
+    private static final String INFO_COMMENT_PROP = "TTH_IT$TRAVEL_INFO_COMMENT";
 
     public String getFormName() {
         return "TravelInfoForm";
@@ -131,5 +132,13 @@ public class TravelInfoForm extends CandidateFormInstanceHelper {
 
     public void setTravelDocExpiryDate(LocalDate date) {
         setProperty(DOC_EXPIRY_DATE_PROP, date != null ? date.toString() : null);
+    }
+
+    public String getTravelInfoComment() {
+        return getProperty(INFO_COMMENT_PROP);
+    }
+
+    public void setTravelInfoComment(String comment) {
+        setProperty(INFO_COMMENT_PROP, comment);
     }
 }

@@ -45,7 +45,8 @@ export class RefugeeStatusInfoFormComponent implements OnInit, ICandidateFormCom
     this.form = this.fb.group({
       refugeeStatus: [null as RsdRefugeeStatus | null, Validators.required],
       documentType: [null as RefugeeStatusEvidenceDocumentType | null, Validators.required],
-      documentNumber: ['', Validators.maxLength(30)]
+      documentNumber: ['', Validators.maxLength(30)],
+      refugeeStatusComment: ['']
     });
 
     if (this.readOnly) {
