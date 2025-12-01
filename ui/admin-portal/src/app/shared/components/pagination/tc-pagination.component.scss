@@ -21,7 +21,7 @@
         }
         .page-link {
           background-color: transparent;
-          @include text-color-secondary;
+          @include text-color-body;
         }
       }
     }
