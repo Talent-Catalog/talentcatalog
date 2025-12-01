@@ -53,8 +53,7 @@
   <app-registration-contact *ngSwitchCase="'contact'">
   </app-registration-contact>
 
-  <app-registration-personal *ngSwitchCase="'personal'"
-                             (onPartnerAssignment)="setPartnerName()">
+  <app-registration-personal *ngSwitchCase="'personal'">
   </app-registration-personal>
 
   <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
@@ -91,7 +90,7 @@
       <div class="container text-center">
         <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
 
-        <p>{{ 'REGISTRATION.COMPLETE.PARA1' | translate:{partner: getPartnerName()} }}</p>
+        <p>{{ 'REGISTRATION.COMPLETE.PARA1' | translate:{partner: partnerName} }}</p>
 
         <div class="text-center my-4">
           <a class="btn btn-primary" [routerLink]="'/profile'">

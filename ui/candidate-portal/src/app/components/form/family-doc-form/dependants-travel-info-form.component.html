@@ -85,12 +85,12 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">{{ "TRAVELDOC.LABEL.BIRTHCOUNTRY" | translate }}</label>
+            <label class="form-label">{{ "TRAVELINFO.LABEL.BIRTHCOUNTRY" | translate }}</label>
             <input class="form-control" formControlName="birthCountry.name" [readonly]="readOnly">
           </div>
 
           <div class="col-md-6">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.PLACEOFBIRTH' | translate }}</label>
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.PLACEOFBIRTH' | translate }}</label>
             <input class="form-control" formControlName="placeOfBirth" [readonly]="readOnly">
           </div>
         </div>
@@ -99,34 +99,39 @@
 
         <div class="row g-3">
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCTYPE' | translate }} *</label>
-            <select class="form-select" formControlName="TRAVEL_DOC_TYPE">
-              <option [value]="TravelDocType.Passport">{{ 'TRAVELDOC.OPTION.PASSPORT' | translate }}</option>
-              <option [value]="TravelDocType.NationalId">{{ 'TRAVELDOC.OPTION.NATIONALID' | translate }}</option>
-              <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELDOC.OPTION.REFUGEE' | translate }}</option>
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCTYPE' | translate }} *</label>
+            <select class="form-select" formControlName="TTH_IT$TRAVEL_DOC_TYPE">
+              <option [value]="TravelDocType.Passport">{{ 'TRAVELINFO.OPTION.PASSPORT' | translate }}</option>
+              <option [value]="TravelDocType.NationalId">{{ 'TRAVELINFO.OPTION.NATIONALID' | translate }}</option>
+              <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELINFO.OPTION.REFUGEE' | translate }}</option>
             </select>
           </div>
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCNUMBER' | translate }} *</label>
-            <input class="form-control" formControlName="TRAVEL_DOC_NUMBER" [readonly]="readOnly">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCNUMBER' | translate }} *</label>
+            <input class="form-control" formControlName="TTH_IT$TRAVEL_DOC_NUMBER" [readonly]="readOnly">
           </div>
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.DOCISSUEDBY' | translate }}</label>
-            <input class="form-control" formControlName="TRAVEL_DOC_ISSUED_BY" [readonly]="readOnly">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCISSUEDBY' | translate }}</label>
+            <input class="form-control" formControlName="TTH_IT$TRAVEL_DOC_ISSUED_BY" [readonly]="readOnly">
           </div>
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.ISSUEDATE' | translate }}</label>
-            <input type="date" class="form-control" formControlName="TRAVEL_DOC_ISSUE_DATE"
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.ISSUEDATE' | translate }}</label>
+            <input type="date" class="form-control" formControlName="TTH_IT$TRAVEL_DOC_ISSUE_DATE"
                    [readonly]="readOnly">
           </div>
           <div class="col-md-4">
-            <label class="form-label">{{ 'TRAVELDOC.LABEL.EXPIRYDATE' | translate }}</label>
-            <input type="date" class="form-control" formControlName="TRAVEL_DOC_EXPIRY_DATE"
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.EXPIRYDATE' | translate }}</label>
+            <input type="date" class="form-control" formControlName="TTH_IT$TRAVEL_DOC_EXPIRY_DATE"
                    [readonly]="readOnly">
             <div class="text-danger"
                  *ngIf="m.get('travelDoc')?.touched && m.get('travelDoc')?.hasError('expiryTooSoon')">
               {{'FAMILY-DOC.LABEL.DOC-VALIDATION' | translate}}
             </div>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.COMMENT' | translate }}</label>
+            <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                      [readonly]="readOnly" formControlName="TTH_IT$TRAVEL_INFO_COMMENT" ></textarea>
           </div>
         </div>
       </div>

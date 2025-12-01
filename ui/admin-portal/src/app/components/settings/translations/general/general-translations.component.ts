@@ -916,7 +916,7 @@ const ALL_FIELDS = {
         "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
       }
   },
-  "TRAVELDOC": {
+  "TRAVELINFO": {
     "MISMATCH": {
       "TITLE": null,
       "DESCRIPTION": null,
@@ -933,7 +933,8 @@ const ALL_FIELDS = {
       "DOCNUMBER": null,
       "DOCISSUEDBY": null,
       "ISSUEDATE": null,
-      "EXPIRYDATE": null
+      "EXPIRYDATE": null,
+      "COMMENT": null
     },
     "OPTION": {
       "SELECTCOUNTRY": null,
@@ -958,6 +959,7 @@ const ALL_FIELDS = {
   },
   "RSD-EVIDENCE":{
     "LABEL":{
+      "COMMENT": null,
       "DOCTYPE": null,
       "DOCNUMBER": null,
       "REFUGEE-STATUS": null,

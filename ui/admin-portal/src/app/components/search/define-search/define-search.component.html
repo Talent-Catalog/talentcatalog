@@ -137,9 +137,13 @@
               >
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
-              <tc-input id="simpleQueryString" type="text"
-                     placeholder="E.g. 'welder diesel+mechanic'" aria-label="Keyword Search"
-                        formControlName="simpleQueryString" (keyup.enter)="apply()"></tc-input>
+              <tc-input id="simpleQueryString"
+                        type="text"
+                        placeholder="E.g. 'welder diesel+mechanic'"
+                        aria-label="Keyword Search"
+                        formControlName="simpleQueryString"
+                        (keyup.enter)="runKeywordSearchOnEnter($event)"
+              ></tc-input>
             </div>
 
             <!-- STATUS -->

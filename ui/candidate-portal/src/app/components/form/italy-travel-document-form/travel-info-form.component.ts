@@ -106,6 +106,7 @@ export class TravelInfoFormComponent
         travelDocIssuedBy: {value: '', disabled: this.readOnly},
         travelDocIssueDate: {value: '', disabled: this.readOnly},
         travelDocExpiryDate: {value: '', disabled: this.readOnly},
+        travelInfoComment: {value: '', disabled: this.readOnly},
       },
       {validators: groupValidator}
     );

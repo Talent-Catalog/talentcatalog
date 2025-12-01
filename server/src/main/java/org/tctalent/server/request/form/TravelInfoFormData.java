@@ -25,4 +25,5 @@ public class TravelInfoFormData {
   private String travelDocIssuedBy;
   private LocalDate travelDocIssueDate;
   private LocalDate travelDocExpiryDate;
+  private String travelInfoComment;
 }

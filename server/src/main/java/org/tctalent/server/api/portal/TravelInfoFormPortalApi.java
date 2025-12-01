@@ -60,6 +60,7 @@ public class TravelInfoFormPortalApi {
         form.setTravelDocIssuedBy(request.getTravelDocIssuedBy());
         form.setTravelDocIssueDate(request.getTravelDocIssueDate());
         form.setTravelDocExpiryDate(request.getTravelDocExpiryDate());
+        form.setTravelInfoComment(request.getTravelInfoComment());
 
         return travelInfoFormDto().build(form);
     }
@@ -84,7 +85,8 @@ public class TravelInfoFormPortalApi {
             .add("travelDocNumber")
             .add("travelDocIssuedBy")
             .add("travelDocIssueDate")
-            .add("travelDocExpiryDate");
+            .add("travelDocExpiryDate")
+            .add("travelInfoComment");
     }
 
 }

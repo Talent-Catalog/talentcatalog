@@ -55,6 +55,12 @@
     </div>
   </div>
 
+  <div class="mb-12">
+    <label class="form-label" for="comment">{{ 'RSD-EVIDENCE.LABEL.COMMENT' | translate }}</label>
+    <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+              [readonly]="readOnly" formControlName="refugeeStatusComment" ></textarea>
+  </div>
+
   <!-- Submit Button -->
   <div class="col-12 text-end">
     <button type="submit" class="btn btn-primary" [disabled]="!canSubmit()">
