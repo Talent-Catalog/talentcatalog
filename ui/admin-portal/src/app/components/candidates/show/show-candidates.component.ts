@@ -133,7 +133,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
-  @Input() showTextMatchRank: boolean = false;
+  @Input() isKeywordSearch: boolean = false;
   @Input() declare pageNumber: number;
   @Input() declare pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
@@ -834,7 +834,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   displayTextMatchRank(): boolean {
-    return this.isSavedSearch() && !this.useOldSearch && this.showTextMatchRank;
+    return this.isSavedSearch() && !this.useOldSearch && this.isKeywordSearch;
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {

@@ -162,7 +162,7 @@
         </tc-tab>
                                                                                                      -
         <!-- CV MATCHES -->
-        <tc-tab [id]="'cvMatches'">
+        <tc-tab [id]="'cvMatches'" *ngIf="isKeywordSearch">
           <tc-tab-header>CV Matches</tc-tab-header>
           <tc-tab-content>
             <app-candidate-cv-text-tab

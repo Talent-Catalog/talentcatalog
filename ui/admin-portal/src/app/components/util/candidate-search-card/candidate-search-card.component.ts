@@ -49,6 +49,7 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
   @Input() sourceType: String;
   @Input() defaultSearch: boolean;
   @Input() savedSearchSelectionChange: boolean;
+  @Input() isKeywordSearch: boolean;
 
   @Output() closeEvent = new EventEmitter();
   @Output() onSearchCardRendered = new EventEmitter();
@@ -163,8 +164,14 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
   }
 
   private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.setActiveTabId(defaultActiveTabID == null ? "general" : defaultActiveTabID);
+    let localStorageActiveTabId: string = this.localStorageService.get(this.lastTabKey);
+
+    // CV Matches tab only displayed with keyword search — so otherwise discard stored tab ID
+    if (!this.isKeywordSearch && localStorageActiveTabId === "cvMatches") {
+      localStorageActiveTabId = null;
+    }
+
+    this.setActiveTabId(localStorageActiveTabId == null ? "general" : localStorageActiveTabId);
 
     let defaultActiveContextTabID: string = this.localStorageService.get(this.lastContextTabKey);
 
