@@ -78,8 +78,4 @@ export class ViewUploadTaskComponent implements OnInit {
     );
   }
 
-  getFileName(fileName: string): string {
-    return this.candidate?.candidateNumber + "-" + this.selectedTask?.task?.uploadType + "-" + fileName;
-  }
-
 }
