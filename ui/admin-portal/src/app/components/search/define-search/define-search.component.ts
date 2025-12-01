@@ -402,6 +402,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  runKeywordSearchOnEnter(event: KeyboardEvent) {
+    event.preventDefault(); // Stop unintended effect (Keyword Search tooltip opening)
+    this.apply();
+  }
+
   apply() {
     //Initialize a search request from the modified formData
     const request: SearchCandidateRequestPaged =

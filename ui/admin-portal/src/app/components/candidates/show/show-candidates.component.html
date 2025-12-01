@@ -25,7 +25,7 @@
   <ng-content></ng-content>
 
   <div class="d-flex flex-column">
-    <div class="d-flex align-items-center gap-2 mb-2 mt-3">
+    <div class="d-flex align-items-center gap-2 mb-2 mt-3 heading-row">
       <h2 class="heading-sm mb-0">
         <!-- Submission list / list / search icon-->
         <ng-container *ngIf="isSubmissionList(); else savedListOrSearch">
@@ -43,22 +43,22 @@
       </h2>
 
       <!-- Icons -->
-      <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doToggleStarred()">
-        <tc-icon [size]="'xl'"
-                 [color]="'warning'"
-                 [ariaLabel]="(!isStarred() ? 'Star ' : 'Unstar ') + (isSavedList() ? 'list' : 'search')">
-          <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
-          <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
-        </tc-icon>
-      </a>
+      <tc-icon *ngIf="!isDefaultSavedSearch()" (click)="doToggleStarred()"
+               [size]="'xl'"
+               [color]="'warning'"
+               [ariaLabel]="(!isStarred() ? 'Star ' : 'Unstar ') + (isSavedList() ? 'list' : 'search')">
+        <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
+        <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
+      </tc-icon>
 
-      <a target="_blank" *ngIf="isSavedSearch() && !isDefaultSavedSearch()" (click)="doToggleWatch()">
-        <tc-icon [size]="'xl'"
-                 [ariaLabel]="(!isWatching() ? 'Watch ' : 'Unwatch ') + 'search'">
-          <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
-          <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
-        </tc-icon>
-      </a>
+      <tc-icon *ngIf="isSavedSearch() && !isDefaultSavedSearch()"
+               (click)="doToggleWatch()"
+               [size]="'xl'"
+               [ariaLabel]="(!isWatching() ? 'Watch ' : 'Unwatch ') + 'search'"
+      >
+        <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
+        <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
+      </tc-icon>
 
       <a target="_blank" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
         <tc-icon [size]="'xl'" [ariaLabel]="'Show published sheet'">
