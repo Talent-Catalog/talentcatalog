@@ -1416,7 +1416,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return boolQueryBuilder;
     }
 
-    private Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
+    private Specification<Candidate> addQuery(
+        Specification<Candidate> query, SearchJoinRequest searchJoinRequest,
+        List<Long> savedSearchIds) {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
@@ -2381,27 +2383,31 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             ands.add(clause);
         }
 
-        //TODO JC What about base searches?
-        /*todo
-           Need to construct composite baseSearch
-           Best bet is to move all this SQL extraction into a separate service which can call SavedSearchService
-         */
-        /**
+        /*
          * Loop through base searches constructing predicates like this anded together:
          *     clauses.add("candidate.id in (Base search query without ts_rank and order by)")
          * String clause = String.join(" and ", clauses);
          * ands.add(clause);
          */
         if (!ObjectUtils.isEmpty(request.getSearchJoinRequests())) {
+            Set<Long> savedSearchIds = new HashSet<>();
+            savedSearchIds.add(request.getSavedSearchId());
+
             List<String> clauses = new ArrayList<>();
+
             for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
+                Long baseSearchId = searchJoinRequest.getSavedSearchId();
+                //TODO JC Need to avoid circular references to ids
+                if (savedSearchIds.contains(baseSearchId)) {
+                    throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
+                }
+                SearchCandidateRequest searchRequest = loadSavedSearch(baseSearchId);
+                //TODO JC Possibly need to pass savedSearchIds in a wrapper around this recursive call
+                String sql = extractFetchSQL(searchRequest);
 
-//                SearchCandidateRequest searchRequest =
-//                    loadSavedSearch(searchJoinRequest.getSavedSearchId());
-//
-//                clauses.add()
+                clauses.add("candidate.id in (" + sql + ")");
             }
-
+            ands.add(String.join(" and ", clauses));
         }
         if (ordered) {
             List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(request.getSort());
