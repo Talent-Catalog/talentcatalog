@@ -1409,6 +1409,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
         User user = userService.getLoggedInUser();
+        //TODO JC this code needs to be replicated in new SQL search technique
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
@@ -1844,6 +1845,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         boolean useOldSearch = searchRequest.isUseOldSearch();
         if (!useOldSearch) {
+            //TODO JC Base search condition.
             //New search is Postgres SQL only - no elastic search and no CandidateSepecification
             candidates = candidateSearchService.searchCandidates(searchRequest, excludedCandidates);
         } else if (haveSimpleQueryString || hasBaseSearch) {

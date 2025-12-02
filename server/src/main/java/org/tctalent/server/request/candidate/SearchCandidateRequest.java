@@ -479,6 +479,28 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             ands.add(clause);
         }
 
+        //TODO JC What about base searches?
+        /*todo
+           Need to construct composite baseSearch
+           Best bet is to move all this SQL extraction into a separate service which can call SavedSearchService
+         */
+        /**
+         * Loop through base searches constructing predicates like this anded together:
+         *     clauses.add("candidate.id in (Base search query without ts_rank and order by)")
+         * String clause = String.join(" and ", clauses);
+         * ands.add(clause);
+         */
+        if (!ObjectUtils.isEmpty(searchJoinRequests)) {
+            List<String> clauses = new ArrayList<>();
+            for (SearchJoinRequest searchJoinRequest : searchJoinRequests) {
+
+//                SearchCandidateRequest searchRequest =
+//                    loadSavedSearch(searchJoinRequest.getSavedSearchId());
+//
+//                clauses.add()
+            }
+
+        }
         if (ordered) {
             List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(getSort());
             if (!tableSet.isEmpty()) {
