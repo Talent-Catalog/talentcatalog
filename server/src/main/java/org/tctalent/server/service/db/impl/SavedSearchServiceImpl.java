@@ -2070,7 +2070,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * @param ordered If true the generated sql will return ordered data as specified in the request.
      * @return String containing the SQL
      */
-    private String extractFetchSQL(SearchCandidateRequest request,
+    String extractFetchSQL(SearchCandidateRequest request,
         @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
 
         String joinAndWhereSql = extractJoinAndWhereSQL(request, user, excludedCandidates, ordered);
