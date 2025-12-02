@@ -49,6 +49,7 @@
       </tc-field>
 
       <!-- DAYS TO COMPLETE -->
+      <div class="task-details-container">
       <tc-description-list *ngIf="selectedTask"
                            [direction]="'column'"
       >
@@ -61,7 +62,7 @@
             </span>
         </tc-description-item>
       </tc-description-list>
-
+      </div>
         <!-- CUSTOM DUE DATE -->
         <tc-field [checkbox]="true">
           <tc-label for="customDate">
