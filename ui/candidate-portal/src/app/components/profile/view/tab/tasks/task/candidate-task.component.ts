@@ -275,4 +275,5 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
+  protected readonly TaskType = TaskType;
 }

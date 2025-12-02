@@ -122,7 +122,10 @@
         </div>
       </div>
 
-      <div class="mb-3" *ngIf="form.get('abandoned')?.value">
+      <div class="mb-3" *ngIf="
+       selectedTask.task.taskType !== TaskType.Form ||
+       form.get('abandoned')?.value
+     ">
         <label class="fw-bold form-label" for="comment">
           {{ 'TASKS.COMMENT.LABEL' | translate }}
         </label>
@@ -133,8 +136,13 @@
       <button class="btn btn-primary mt-2 align-self-start"
               type="submit"
               [disabled]="
-          (form.invalid || form.pristine) ||
-          (!form.get('abandoned')?.value && !completedTask)
+          form.invalid ||
+          form.pristine ||
+          (
+            selectedTask.task.taskType === TaskType.Form &&
+            !form.get('abandoned')?.value &&
+            !completedTask
+          )
         "
       >
         {{ 'TASKS.TASK.SUBMIT-COMMENT' | translate }}
