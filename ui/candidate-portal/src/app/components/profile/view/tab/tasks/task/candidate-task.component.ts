@@ -275,5 +275,23 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
+  isCommentVisible(): boolean {
+    return this.selectedTask?.task?.taskType !== TaskType.Form
+      || this.form.get('abandoned')?.value === true;
+  }
+
+  isSubmitDisabled(): boolean {
+    if (this.form.invalid || this.form.pristine) {
+      return true;
+    }
+
+    // For Form tasks, submit is only allowed when abandoned or completed
+    if (this.selectedTask?.task?.taskType === TaskType.Form) {
+      return !this.form.get('abandoned')?.value && !this.completedTask;
+    }
+
+    // All other task types allow normal comment submission
+    return false;
+  }
   protected readonly TaskType = TaskType;
 }
