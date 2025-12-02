@@ -106,8 +106,8 @@
     </ng-container>
   </ng-container>
 
-  <!-- COMMENT -->
-  <section>
+  <!-- ADD/EDIT COMMENT -->
+  <section *ngIf="selectedTask.task.taskType !== TaskType.Form">
     <div class="section-heading">
       <h5>{{ 'TASKS.COMMENT.HEADER' | translate }}</h5>
     </div>
@@ -137,9 +137,7 @@
         {{ 'TASKS.TASK.SUBMIT-COMMENT' | translate }}
         <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
       </button>
-
     </div>
-
   </section>
 
 </form>
