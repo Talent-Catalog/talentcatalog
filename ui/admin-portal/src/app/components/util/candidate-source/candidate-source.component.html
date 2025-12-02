@@ -16,143 +16,148 @@
 
 <div class="candidate-source-card">
   <div class="card-body d-flex min-height-150 align-items-center">
-      <div class="w-75 align-self-center ps-2">
+      <div class="align-self-center ps-2">
         <div *ngIf="!loading">
           <div class="d-flex gap-3 align-items-center heading-row">
             <h1 class="fs-5 fw-bold mb-0">{{candidateSource?.name + ' (' + candidateSource?.id + ')'}}</h1>
-            <tc-icon [color]="'warning'"
-                     [size]="'lg'"
-                     *ngIf="showOpen"
-                     (click)="doOpenSource()"
-                     title="Open"
-                     class="open-icon"
-            >
-              <i class="fas fa-expand"></i>
-            </tc-icon>
-            <tc-icon [color]="'warning'"
-                     [size]="'lg'"
-                     (click)="doToggleStarred()"
-            >
-              <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
-              <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
-            </tc-icon>
-            <tc-icon [size]="'lg'"
-                     [color]="'secondary'"
-                     *ngIf="showWatch && savedSearch"
-                     (click)="doToggleWatch()"
-            >
-              <i *ngIf="isWatching()" class="fas fa-eye" title="Unwatch"></i>
-              <i *ngIf="!isWatching()" class="far fa-eye" title="Watch"></i>
-            </tc-icon>
+            <ng-container *ngIf="showHeadingIcons">
+              <tc-icon [color]="'warning'"
+                       [size]="'lg'"
+                       *ngIf="showOpen"
+                       (click)="doOpenSource()"
+                       title="Open"
+                       class="open-icon"
+              >
+                <i class="fas fa-expand"></i>
+              </tc-icon>
+              <tc-icon [color]="'warning'"
+                       [size]="'lg'"
+                       (click)="doToggleStarred()"
+              >
+                <i *ngIf="isStarred()" class="fas fa-star" title="Unstar"></i>
+                <i *ngIf="!isStarred()" class="far fa-star" title="Star"></i>
+              </tc-icon>
+              <tc-icon [size]="'lg'"
+                       [color]="'secondary'"
+                       *ngIf="showWatch && savedSearch"
+                       (click)="doToggleWatch()"
+              >
+                <i *ngIf="isWatching()" class="fas fa-eye" title="Unwatch"></i>
+                <i *ngIf="!isWatching()" class="far fa-eye" title="Watch"></i>
+              </tc-icon>
 
-            <tc-dropdown placement="bottom-end">
-              <tc-dropdown-button type="solid" color="gray">
-                <i class="fas fa-angle-down"></i>
-              </tc-dropdown-button>
-              <tc-dropdown-menu>
-
-                <!--      Copy shareable link        -->
-                <tc-dropdown-item *ngIf="showLink" (click)="doCopyLink()" title="Copy Shareable Link">
-                  <tc-icon color="primary" size="md">
-                    <i class="fas fa-link"></i>
-                  </tc-icon>
-                  Copy shareable link
-                </tc-dropdown-item>
-
-                <!--      Show Search        -->
-                <tc-dropdown-item *ngIf="showOpen && hasSavedSearchSource()" (click)="doShowSearch()" title="Show Search">
-                  <tc-icon color="primary" size="md">
-                    <i class="fas fa-search" title="Show Search"></i>
-                  </tc-icon>
-                  Show Search
-                </tc-dropdown-item>
-
-                <!--      Rename        -->
-                <tc-dropdown-item *ngIf="showEdit && isEditable()" (click)="doEditSource()" title="Rename">
-                  <tc-icon color="primary" size="md">
-                    <i class="fas fa-edit" title="Rename"></i>
-                  </tc-icon>
-                  Rename
-                </tc-dropdown-item>
-
-                <!--      Select columns to display        -->
-                <tc-dropdown-item *ngIf="showEdit && isEditable()" (click)="doSelectColumns()" title="Select columns to display">
-                  <tc-icon color="primary" size="md">
-                    <i class="fas fa-columns" title="Select columns to display"></i>
-                  </tc-icon>
-                  Select columns to display
-                </tc-dropdown-item>
-
-                <!--      Associated Job        -->
-                <tc-dropdown-item *ngIf="candidateSource?.sfJobOpp" [routerLink]="['/job',candidateSource.sfJobOpp.id]" title="Associated Job">
-                  <tc-icon color="primary" size="md">
-                    <i class="fa-solid fa-briefcase" title="Associated Job"></i>
-                  </tc-icon>
-                  Associated Job
-                </tc-dropdown-item>
-
-                <!--      Associated Job        -->
-                <tc-dropdown-item *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()" [href]="salesforceService.joblink(candidateSource)" target="_blank" title="Associated Job Opportunity on Salesforce">
-                  <tc-icon color="primary" size="md">
-                    <i class="fa-solid fa-briefcase" title="Associated Job Opportunity on Salesforce"></i>
-                  </tc-icon>
-                  Associated Job Opportunity on Salesforce
-                </tc-dropdown-item>
-
-                <!--      Create/show Google folder        -->
-                <tc-dropdown-item *ngIf="isSavedList() && !isReadOnly" (click)="doShowListFolder()" title="Create/show Google folder">
-                  <tc-icon color="primary" size="md">
-                    <i class="fab fa-google-drive" title="Create/show Google folder"></i>
-                  </tc-icon>
-                  Create/show Google folder
-                </tc-dropdown-item>
-
-                <!--      Create/show Google folder        -->
-                <tc-dropdown-item *ngIf="showRunStats" (click)="doRunStats()" title="Run stats">
-                  <tc-icon color="primary" size="md">
-                    <i class="fas fa-chart-bar" title="Run stats"></i>
-                  </tc-icon>
-                  Run stats
-                </tc-dropdown-item>
-
-                <!--         todo - Copy Source for Saved Searches should be implemented-->
-
-                <!-- Copy Source -->
-                <tc-dropdown-item *ngIf="showCopy" (click)="doCopySource()" title="Copy">
-                  <tc-icon color="primary" size="md">
-                    <i class="fas fa-clone" title="Copy"></i>
-                  </tc-icon>
-                  Copy
-                </tc-dropdown-item>
-
-                <!-- Select Source -->
-                <tc-dropdown-item *ngIf="showSelect" (click)="doSelectSource()" title="Select">
-                  <tc-icon color="primary" size="md">
-                    <i class="far fa-hand-pointer" title="Select"></i>
-                  </tc-icon>
-                  Select
-                </tc-dropdown-item>
-
-                <!-- Delete Source -->
-                <tc-dropdown-item *ngIf="showDelete && isRemovable()" (click)="doDeleteSource()" title="Delete">
-                  <tc-icon color="error" size="md">
-                    <i class="fas fa-trash" title="Delete"></i>
-                  </tc-icon>
-                  Delete
-                </tc-dropdown-item>
-
-                <!-- View Details -->
-                <tc-dropdown-item *ngIf="showMore && isSavedSearch()"
-                                  (click)="toggleSeeMore()"
-                                  [title]="this.seeMore ? 'Hide details' : 'View details'"
+              <tc-dropdown placement="bottom-end">
+                <tc-dropdown-button [type]="'solid'"
+                                    [color]="'gray'"
+                                    class="me-2"
                 >
-                  <tc-icon color="primary" size="md">
-                    <i class="fas fa-ellipsis-h" title="View details"></i>
-                  </tc-icon>
-                  {{ this.seeMore ? 'Hide details' : 'View details' }}
-                </tc-dropdown-item>
-              </tc-dropdown-menu>
-            </tc-dropdown>
+                  <i class="fas fa-angle-down"></i>
+                </tc-dropdown-button>
+                <tc-dropdown-menu>
+
+                  <!--      Copy shareable link        -->
+                  <tc-dropdown-item *ngIf="showLink" (click)="doCopyLink()" title="Copy Shareable Link">
+                    <tc-icon color="primary" size="md">
+                      <i class="fas fa-link"></i>
+                    </tc-icon>
+                    Copy shareable link
+                  </tc-dropdown-item>
+
+                  <!--      Show Search        -->
+                  <tc-dropdown-item *ngIf="showOpen && hasSavedSearchSource()" (click)="doShowSearch()" title="Show Search">
+                    <tc-icon color="primary" size="md">
+                      <i class="fas fa-search" title="Show Search"></i>
+                    </tc-icon>
+                    Show Search
+                  </tc-dropdown-item>
+
+                  <!--      Rename        -->
+                  <tc-dropdown-item *ngIf="showEdit && isEditable()" (click)="doEditSource()" title="Rename">
+                    <tc-icon color="primary" size="md">
+                      <i class="fas fa-edit" title="Rename"></i>
+                    </tc-icon>
+                    Rename
+                  </tc-dropdown-item>
+
+                  <!--      Select columns to display        -->
+                  <tc-dropdown-item *ngIf="showEdit && isEditable()" (click)="doSelectColumns()" title="Select columns to display">
+                    <tc-icon color="primary" size="md">
+                      <i class="fas fa-columns" title="Select columns to display"></i>
+                    </tc-icon>
+                    Select columns to display
+                  </tc-dropdown-item>
+
+                  <!--      Associated Job        -->
+                  <tc-dropdown-item *ngIf="candidateSource?.sfJobOpp" [routerLink]="['/job',candidateSource.sfJobOpp.id]" title="Associated Job">
+                    <tc-icon color="primary" size="md">
+                      <i class="fa-solid fa-briefcase" title="Associated Job"></i>
+                    </tc-icon>
+                    Associated Job
+                  </tc-dropdown-item>
+
+                  <!--      Associated Job        -->
+                  <tc-dropdown-item *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()" [href]="salesforceService.joblink(candidateSource)" target="_blank" title="Associated Job Opportunity on Salesforce">
+                    <tc-icon color="primary" size="md">
+                      <i class="fa-solid fa-briefcase" title="Associated Job Opportunity on Salesforce"></i>
+                    </tc-icon>
+                    Associated Job Opportunity on Salesforce
+                  </tc-dropdown-item>
+
+                  <!--      Create/show Google folder        -->
+                  <tc-dropdown-item *ngIf="isSavedList() && !isReadOnly" (click)="doShowListFolder()" title="Create/show Google folder">
+                    <tc-icon color="primary" size="md">
+                      <i class="fab fa-google-drive" title="Create/show Google folder"></i>
+                    </tc-icon>
+                    Create/show Google folder
+                  </tc-dropdown-item>
+
+                  <!--      Create/show Google folder        -->
+                  <tc-dropdown-item *ngIf="showRunStats" (click)="doRunStats()" title="Run stats">
+                    <tc-icon color="primary" size="md">
+                      <i class="fas fa-chart-bar" title="Run stats"></i>
+                    </tc-icon>
+                    Run stats
+                  </tc-dropdown-item>
+
+                  <!--         todo - Copy Source for Saved Searches should be implemented-->
+
+                  <!-- Copy Source -->
+                  <tc-dropdown-item *ngIf="showCopy" (click)="doCopySource()" title="Copy">
+                    <tc-icon color="primary" size="md">
+                      <i class="fas fa-clone" title="Copy"></i>
+                    </tc-icon>
+                    Copy
+                  </tc-dropdown-item>
+
+                  <!-- Select Source -->
+                  <tc-dropdown-item *ngIf="showSelect" (click)="doSelectSource()" title="Select">
+                    <tc-icon color="primary" size="md">
+                      <i class="far fa-hand-pointer" title="Select"></i>
+                    </tc-icon>
+                    Select
+                  </tc-dropdown-item>
+
+                  <!-- Delete Source -->
+                  <tc-dropdown-item *ngIf="showDelete && isRemovable()" (click)="doDeleteSource()" title="Delete">
+                    <tc-icon color="error" size="md">
+                      <i class="fas fa-trash" title="Delete"></i>
+                    </tc-icon>
+                    Delete
+                  </tc-dropdown-item>
+
+                  <!-- View Details -->
+                  <tc-dropdown-item *ngIf="showMore && isSavedSearch()"
+                                    (click)="toggleSeeMore()"
+                                    [title]="this.seeMore ? 'Hide details' : 'View details'"
+                  >
+                    <tc-icon color="primary" size="md">
+                      <i class="fas fa-ellipsis-h" title="View details"></i>
+                    </tc-icon>
+                    {{ this.seeMore ? 'Hide details' : 'View details' }}
+                  </tc-dropdown-item>
+                </tc-dropdown-menu>
+              </tc-dropdown>
+            </ng-container>
           </div>
         </div>
         <div class="d-flex align-items-baseline gap-1">
