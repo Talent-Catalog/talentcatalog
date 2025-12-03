@@ -2023,10 +2023,42 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return new PageImpl<>(candidatesSorted, pageRequest, total);
     }
 
+    /**
+     * <p>
+     * Extracts native database count query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT COUNT DISTINCT id FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * @param request Search request being processed
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
+     *
+     * @return String containing the SQL
+     */
     private String extractCountSQL(SearchCandidateRequest request,
         @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractCountSQL(request, user, excludedCandidates, excludedSavedSearchIds);
+    }
 
-        String joinAndWhereSql = extractJoinAndWhereSQL(request, user, excludedCandidates, false);
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     */
+    private String extractCountSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates,
+        @NonNull Set<Long> excludedSavedSearchIds) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(
+            request, user, excludedCandidates, false, excludedSavedSearchIds);
         String selectSql = extractCountSelectSql();
         return selectSql + joinAndWhereSql;
     }
@@ -2049,7 +2081,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * @return String containing the SQL
      */
     public String extractFetchSQL(SearchCandidateRequest request) {
-        return extractFetchSQL(request, null, null, false);
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractFetchSQL(request, excludedSavedSearchIds);
+    }
+
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     * @param request Search request being processed
+     * @param excludedSavedSearchIds ids of saved search ids that have been encountered.
+     * @return String containing the extracted SQL
+     */
+    private String extractFetchSQL(SearchCandidateRequest request, @NonNull Set<Long> excludedSavedSearchIds) {
+        return extractFetchSQL(
+            request, null, null, false, excludedSavedSearchIds);
     }
 
     /**
@@ -2064,6 +2113,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * <p>
      *     The request will return candidate data without duplicates.
      * </p>
+     * @param request Search request being processed
      * @param user User making the request. If not null, user-specific constraints are added to the
      *             generated SQL - for example, some users are restricted to seeing candidates
      *             located in certain countries.
@@ -2074,8 +2124,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      */
     String extractFetchSQL(SearchCandidateRequest request,
         @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractFetchSQL(request, user, excludedCandidates, ordered, excludedSavedSearchIds);
+    }
 
-        String joinAndWhereSql = extractJoinAndWhereSQL(request, user, excludedCandidates, ordered);
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     */
+    private String extractFetchSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered,
+        @NonNull Set<Long> excludedSavedSearchIds) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(
+            request, user, excludedCandidates, ordered, excludedSavedSearchIds);
 
         String selectSql = extractFetchSelectSql(request, ordered);
 
@@ -2109,7 +2175,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     private String extractJoinAndWhereSQL(SearchCandidateRequest request,
-        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered,
+        @NonNull Set<Long> excludedSavedSearchIds) {
 
         //Uses a LinkedHashSet so that ordering is predictable - which helps unit testing
         Set<String> joins = new LinkedHashSet<>();
@@ -2390,20 +2457,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
          * ands.add(clause);
          */
         if (!ObjectUtils.isEmpty(request.getSearchJoinRequests())) {
-            Set<Long> savedSearchIds = new HashSet<>();
-            savedSearchIds.add(request.getSavedSearchId());
 
             List<String> clauses = new ArrayList<>();
 
             for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
                 Long baseSearchId = searchJoinRequest.getSavedSearchId();
-                //TODO JC Need to avoid circular references to ids
-                if (savedSearchIds.contains(baseSearchId)) {
+                if (excludedSavedSearchIds.contains(baseSearchId)) {
                     throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
                 }
                 SearchCandidateRequest searchRequest = loadSavedSearch(baseSearchId);
-                //TODO JC Possibly need to pass savedSearchIds in a wrapper around this recursive call
-                String sql = extractFetchSQL(searchRequest);
+                String sql = extractFetchSQL(searchRequest, excludedSavedSearchIds);
 
                 clauses.add("candidate.id in (" + sql + ")");
             }
