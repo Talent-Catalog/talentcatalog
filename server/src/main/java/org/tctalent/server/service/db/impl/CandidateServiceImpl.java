@@ -554,8 +554,8 @@ public class CandidateServiceImpl implements CandidateService {
         final List resultList = query.getResultList();
         Set<Long> result = new HashSet<>();
         for (Object obj : resultList) {
-            if (obj instanceof BigInteger) {
-                result.add(((BigInteger) obj).longValue());
+            if (obj instanceof Number) {
+                result.add(((Number) obj).longValue());
             }
         }
         return result;

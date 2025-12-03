@@ -16,10 +16,16 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.tctalent.server.configuration.SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID;
+import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import com.opencsv.CSVWriter;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -37,6 +43,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,6 +56,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -60,6 +68,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.tctalent.server.exception.CircularReferencedException;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityExistsException;
@@ -121,7 +130,6 @@ import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.service.db.CandidateSearchService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.EducationMajorService;
@@ -135,7 +143,9 @@ import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.email.EmailNotificationLink;
 import org.tctalent.server.service.db.es.ElasticsearchService;
+import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.PersistenceContextHelper;
+import org.tctalent.server.util.textExtract.IdAndRank;
 
 @Service
 @RequiredArgsConstructor
@@ -144,11 +154,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Value("${web.admin}")
     private String adminUrl;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
-    private final CandidateSearchService candidateSearchService;
     private final CountryService countryService;
     private final PartnerService partnerService;
     private final ElasticsearchService esService;
@@ -1404,11 +1416,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return boolQueryBuilder;
     }
 
-    private Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
+    private Specification<Candidate> addQuery(
+        Specification<Candidate> query, SearchJoinRequest searchJoinRequest,
+        List<Long> savedSearchIds) {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
         User user = userService.getLoggedInUser();
+        //TODO JC this code needs to be replicated in new SQL search technique
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
@@ -1844,11 +1859,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         boolean useOldSearch = searchRequest.isUseOldSearch();
         if (!useOldSearch) {
-            //New search is Postgres SQL only - no elastic search and no CandidateSepecification
-            candidates = candidateSearchService.searchCandidates(searchRequest, excludedCandidates);
+            //New search is Postgres SQL only - no elastic search and no CandidateSpecification
+            candidates = doSQLSearchCandidates(searchRequest, excludedCandidates);
         } else if (haveSimpleQueryString || hasBaseSearch) {
-            //TODO JC Reconsider this logic of forcing all searches based on other searches to be
-            //elastic searches.
             // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
@@ -1901,6 +1914,586 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             .logInfo();
 
         return candidates;
+    }
+    /**
+     * Do a paged search for candidates according to the given request but excluding the given
+     * candidates. Sorting and paging are supported as specified in the request.
+     * Overview of searching:
+     * <ol>
+     *    <li>
+     *        Construct a query which collects the sorted candidate ids of a page of candidates who
+     *        match the given search request.
+     *        This request will look like:
+     *        <p>
+     *           <code>
+     *              select distinct candidate.id from candidate ...
+     *              <br>
+     *              where ...
+     *              <br>
+     *              order by ...
+     *           </code>
+     *        </p>
+     *    </li>
+     *    <li>
+     *      Construct a very similar query which counts the total number of candidates matching
+     *      the search request. This count is used to support paging.
+     *      This request will look like:
+     *        <p>
+     *           <code>
+     *              select count(distinct candidate.id) from candidate ...
+     *              <br>
+     *              where ...
+     *           </code>
+     *        </p>
+     *        <p>
+     *            Note that there is no order by. It is unnecessary to get the total count. But the
+     *            where clause is the same for both queries.
+     *        </p>
+     *    </li>
+     *    <li>
+     *        Retrieve the candidate entities for the page of id's that are returned in the first
+     *        query and sort those candidates in the same order as the retrieved ids.
+     *    </li>
+     *    <li>
+     *        <p>
+     *        If the original query was sorted by a computed ranking then the ranking values will
+     *        have been returned in the results of the first query. Those ranks are
+     *        added to the candidate entity data so that they can be displayed to the user.
+     *        </p>
+     *        <p>
+     *           Matching keywords against a candidate's text data is an example of a ranking.
+     *           Close matches will display a higher ranking.
+     *        </p>
+     *    </li>
+     * </ol>
+     * @param request Specifies the details of the search
+     * @param excludedCandidates If specified, indicates candidates to be excluded from the search.
+     * @return Sorted page of candidates
+     */
+    private Page<Candidate> doSQLSearchCandidates(
+        SearchCandidateRequest request, @Nullable Set<Candidate> excludedCandidates) {
+        User user = userService.getLoggedInUser();
+        final PageRequest pageRequest = request.getPageRequest();
+
+        String sql = extractFetchSQL(request, user, excludedCandidates, true);
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Query: " + sql).logInfo();
+
+        //Create and execute the query to return the candidate ids
+        Query query = entityManager.createNativeQuery(sql);
+        query.setFirstResult((int) pageRequest.getOffset());
+        query.setMaxResults(pageRequest.getPageSize());
+
+        //Get results
+        final List<?> results = query.getResultList();
+        //Process the results
+        List<IdAndRank> idAndRanks =
+            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+
+        //Get ids of sorted candidates
+        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
+
+        //Retrieve the candidate entities for those ids. They will come back unsorted.
+        List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
+
+        //Candidates need to be sorted the same as the ids.
+        //Map the unsorted candidates by their ids
+        Map<Long, Candidate> candidatesById = candidatesUnsorted.stream()
+            .collect(toMap(Candidate::getId, c -> c));
+
+        //Construct a sorted list of the candidates in the same order as the returned ids.
+        List<Candidate> candidatesSorted = new ArrayList<>();
+        for (IdAndRank idAndRank : idAndRanks) {
+            final Candidate candidate = candidatesById.get(idAndRank.id());
+
+            //Optionally update candidate data with any ranking values.
+            final Number rank = idAndRank.rank();
+            //Rank is a transient field so no need to set to null
+            if (rank != null) {
+                candidate.setRank(rank);
+            }
+            candidatesSorted.add(candidate);
+        }
+
+        //Compute count
+        String countSql = extractCountSQL(request, user, excludedCandidates);
+        LogBuilder.builder(log).action("countCandidates")
+            .message("Query: " + countSql).logInfo();
+        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+        return new PageImpl<>(candidatesSorted, pageRequest, total);
+    }
+
+    /**
+     * <p>
+     * Extracts native database count query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT COUNT DISTINCT id FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * @param request Search request being processed
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
+     *
+     * @return String containing the SQL
+     */
+    private String extractCountSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractCountSQL(request, user, excludedCandidates, excludedSavedSearchIds);
+    }
+
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     */
+    private String extractCountSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates,
+        @NonNull Set<Long> excludedSavedSearchIds) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(
+            request, user, excludedCandidates, false, excludedSavedSearchIds);
+        String selectSql = extractCountSelectSql();
+        return selectSql + joinAndWhereSql;
+    }
+
+    private String extractCountSelectSql() {
+        return "select count(distinct candidate.id) from candidate";
+    }
+
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @return String containing the SQL
+     */
+    public String extractFetchSQL(SearchCandidateRequest request) {
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractFetchSQL(request, excludedSavedSearchIds);
+    }
+
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     * @param request Search request being processed
+     * @param excludedSavedSearchIds ids of saved search ids that have been encountered.
+     * @return String containing the extracted SQL
+     */
+    private String extractFetchSQL(SearchCandidateRequest request, @NonNull Set<Long> excludedSavedSearchIds) {
+        return extractFetchSQL(
+            request, null, null, false, excludedSavedSearchIds);
+    }
+
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     *     If ordered is true, there will also be an ORDER BY clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @param request Search request being processed
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
+     *
+     * @param ordered If true the generated sql will return ordered data as specified in the request.
+     * @return String containing the SQL
+     */
+    String extractFetchSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractFetchSQL(request, user, excludedCandidates, ordered, excludedSavedSearchIds);
+    }
+
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     */
+    private String extractFetchSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered,
+        @NonNull Set<Long> excludedSavedSearchIds) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(
+            request, user, excludedCandidates, ordered, excludedSavedSearchIds);
+
+        String selectSql = extractFetchSelectSql(request, ordered);
+
+        String sql = selectSql + joinAndWhereSql;
+
+        if (ordered) {
+            Sort sort = request.getSort();
+            String orderBySql = CandidateSearchUtils.buildOrderByClause(sort);
+            sql += orderBySql;
+        }
+
+        return sql;
+    }
+
+    private String extractFetchSelectSql(SearchCandidateRequest request, boolean ordered) {
+        String sql;
+        if (!ordered) {
+            sql = "select distinct candidate.id from candidate";
+        } else {
+            Sort sort = request.getSort();
+
+            sql = "select distinct candidate.id";
+            String nonIdSortFields =
+                CandidateSearchUtils.buildNonIdFieldList(sort, request.getSimpleQueryString());
+            if (!nonIdSortFields.isEmpty()) {
+                sql += "," + nonIdSortFields;
+            }
+            sql += " from candidate";
+        }
+        return sql;
+    }
+
+    private String extractJoinAndWhereSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered,
+        @NonNull Set<Long> excludedSavedSearchIds) {
+
+        //Uses a LinkedHashSet so that ordering is predictable - which helps unit testing
+        Set<String> joins = new LinkedHashSet<>();
+        List<String> ands = new ArrayList<>();
+
+        //Text search
+        if (StringUtils.hasText(request.getSimpleQueryString())) {
+            joins.add("candidate_job_experience");
+            String to_tsquery = CandidateSearchUtils.buildToTsQueryFunction(request.getSimpleQueryString());
+            String clause = CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD + " @@ " + to_tsquery;
+            ands.add(clause);
+        }
+
+        // STATUS SEARCH
+        if (!ObjectUtils.isEmpty(request.getStatuses())) {
+            String values = request.getStatuses().stream()
+                .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
+            ands.add("candidate.status in (" + values + ")");
+        }
+
+        // Occupations SEARCH
+        if (!ObjectUtils.isEmpty(request.getOccupationIds())) {
+            joins.add("candidate_occupation");
+            String values = request.getOccupationIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("candidate_occupation.occupation_id in (" + values + ")");
+
+            if (request.getMinYrs() != null) {
+                ands.add("candidate_occupation.years_experience >= " + request.getMinYrs());
+            }
+            if (request.getMaxYrs() != null) {
+                ands.add("candidate_occupation.years_experience <= " + request.getMaxYrs());
+            }
+        }
+
+        // EXCLUDED CANDIDATES (eg from Review Status)
+        if (!ObjectUtils.isEmpty(excludedCandidates)) {
+            String values = excludedCandidates.stream()
+                .map(candidate -> candidate.getId().toString())
+                .collect(Collectors.joining(","));
+            ands.add("candidate.id not in (" + values + ")");
+        }
+
+        // Exclude candidates belonging to the PENDING_TERMS_ACCEPTANCE_LIST unless specifically
+        // asked to include them.
+        boolean excludePendingTermsCandidates
+            = request.getIncludePendingTermsCandidates() == null || !request.getIncludePendingTermsCandidates();
+        if (excludePendingTermsCandidates) {
+            ands.add("candidate.id not in"
+                + " (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = " + PENDING_TERMS_ACCEPTANCE_LIST_ID + ")");
+        }
+
+        // NATIONALITY SEARCH
+        if (!ObjectUtils.isEmpty(request.getNationalityIds())) {
+            String values = request.getNationalityIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            if (request.getNationalitySearchType() == null || request.getNationalitySearchType().equals(SearchType.or)) {
+                ands.add("candidate.nationality_id in (" + values + ")");
+            } else {
+                ands.add("candidate.nationality_id not in (" + values + ")");
+            }
+        }
+
+        // COUNTRY SEARCH - taking into account user source country limitations
+        // If request ids is NOT EMPTY we can just accept them because the options
+        // presented to the user will be limited to the allowed source countries
+        if (!ObjectUtils.isEmpty(request.getCountryIds())) {
+            String values = request.getCountryIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            if (request.getCountrySearchType() == null || request.getCountrySearchType().equals(SearchType.or)) {
+                ands.add("candidate.country_id in (" + values + ")");
+            } else {
+                ands.add("candidate.country_id not in (" + values + ")");
+            }
+            // If request's countryIds IS EMPTY only show user's source countries
+        } else if (user != null && !ObjectUtils.isEmpty(user.getSourceCountries())) {
+            String values = user.getSourceCountries().stream()
+                .map(country -> country.getId().toString())
+                .collect(Collectors.joining(","));
+            ands.add("candidate.country_id in (" + values + ")");
+        }
+
+        // PARTNER SEARCH
+        if (!ObjectUtils.isEmpty(request.getPartnerIds())) {
+            joins.add("users");
+            String values = request.getPartnerIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("users.partner_id in (" + values + ")");
+        }
+
+        // SURVEY TYPE SEARCH
+        if (!ObjectUtils.isEmpty(request.getSurveyTypeIds())) {
+            String values = request.getSurveyTypeIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("candidate.survey_type_id in (" + values + ")");
+        }
+
+        // REFERRER
+        final String referrerParam =
+            request.getRegoReferrerParam() == null ? null : request.getRegoReferrerParam().trim().toLowerCase();
+        if (referrerParam != null && !referrerParam.isEmpty()) {
+            ands.add("lower(candidate.rego_referrer_param) like '" + referrerParam + "'");
+        }
+
+        // UTM: Campaign
+        final String utmCampaigns =
+            request.getRegoUtmCampaign() == null ? null : request.getRegoUtmCampaign().trim().toLowerCase();
+        if (utmCampaigns != null && !utmCampaigns.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_campaign) like '" + utmCampaigns + "'");
+        }
+
+        // UTM: Sources
+        final String regoUtmSources =
+            request.getRegoUtmSource() == null ? null : request.getRegoUtmSource().trim().toLowerCase();
+        if (regoUtmSources != null && !regoUtmSources.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_source) like '" + regoUtmSources + "'");
+        }
+
+        // UTM: MEDIUM
+        final String regoUtmMedium =
+            request.getRegoUtmMedium() == null ? null : request.getRegoUtmMedium().trim().toLowerCase();
+        if (regoUtmMedium != null && !regoUtmMedium.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_medium) like '" + regoUtmMedium + "'");
+        }
+
+        // GENDER SEARCH
+        if (request.getGender() != null) {
+            ands.add("candidate.gender = '" + request.getGender().name() + "'");
+        }
+
+        //Modified From
+        if (request.getLastModifiedFrom() != null) {
+            ands.add("candidate.updated_date >= '" +
+                getOffsetDateTime(request.getLastModifiedFrom(), LocalTime.MIN, request.getTimezone()) + "'");
+        }
+
+        //Modified To
+        if (request.getLastModifiedTo() != null) {
+            ands.add("candidate.updated_date <= '" +
+                getOffsetDateTime(request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone()) + "'");
+        }
+
+        //Min / Max Age
+        if (request.getMinAge() != null) {
+            LocalDate minDob = LocalDate.now().minusYears(request.getMinAge() + 1);
+            ands.add("(candidate.dob <= '" + minDob + "' or candidate.dob is null)" );
+        }
+        if (request.getMaxAge() != null) {
+            LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge() + 1);
+            ands.add("(candidate.dob > '" + maxDob + "' or candidate.dob is null)" );
+        }
+
+        // UNHCR STATUSES
+        if (!ObjectUtils.isEmpty(request.getUnhcrStatuses())) {
+            String values = request.getUnhcrStatuses().stream()
+                .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
+            ands.add("candidate.unhcr_status in (" + values + ")");
+        }
+
+        // EDUCATION LEVEL SEARCH
+        if (request.getMinEducationLevel() != null || request.getMaxEducationLevel() != null) {
+            joins.add("education_level");
+            if (request.getMinEducationLevel() != null) {
+                ands.add("education_level.level >= " + request.getMinEducationLevel());
+            }
+            if (request.getMaxEducationLevel() != null) {
+                ands.add("education_level.level <= " + request.getMaxEducationLevel());
+            }
+        }
+
+        // MINI INTAKE COMPLETE
+        if (request.getMiniIntakeCompleted() != null) {
+            boolean completed = request.getMiniIntakeCompleted();
+            ands.add("mini_intake_completed_date " + (completed ? "is not null" : "is null"));
+        }
+
+        // FULL INTAKE COMPLETE
+        if (request.getFullIntakeCompleted() != null) {
+            boolean completed = request.getFullIntakeCompleted();
+            ands.add("full_intake_completed_date " + (completed ? "is not null" : "is null"));
+        }
+
+        // POTENTIAL DUPLICATE
+        if (request.getPotentialDuplicate() != null) {
+            boolean potentialDuplicate = request.getPotentialDuplicate();
+            ands.add("candidate.potential_duplicate = " + potentialDuplicate);
+        }
+
+        // MAJOR SEARCH
+        if (!ObjectUtils.isEmpty(request.getEducationMajorIds())) {
+            String values = request.getEducationMajorIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            joins.add("candidate_education");
+            ands.add("major_id in (" + values + ")");
+        }
+
+        // LANGUAGE SEARCH
+        if (request.getEnglishMinSpokenLevel() != null || request.getEnglishMinWrittenLevel() != null
+            || request.getOtherLanguageId() != null
+            || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
+
+            joins.add("candidate_language");
+            joins.add("language");
+
+            if (request.getEnglishMinSpokenLevel() != null && request.getEnglishMinWrittenLevel() != null) {
+                joins.add("spoken_level");
+                joins.add("written_level");
+                ands.add("lower(language.name) = 'english'");
+                ands.add("spoken_level.level >= " + request.getEnglishMinSpokenLevel());
+                ands.add("written_level.level >= " + request.getEnglishMinWrittenLevel());
+            } else if (request.getEnglishMinSpokenLevel() != null) {
+                joins.add("spoken_level");
+                ands.add("lower(language.name) = 'english'");
+                ands.add("spoken_level.level >= " + request.getEnglishMinSpokenLevel());
+            } else if (request.getEnglishMinWrittenLevel() != null) {
+                joins.add("written_level");
+                ands.add("lower(language.name) = 'english'");
+                ands.add("written_level.level >= " + request.getEnglishMinWrittenLevel());
+            }
+
+            if (request.getOtherLanguageId() != null) {
+                if (request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null) {
+                    joins.add("spoken_level");
+                    joins.add("written_level");
+                    ands.add("candidate_language.language_id = " + request.getOtherLanguageId());
+                    ands.add("spoken_level.level >= " + request.getOtherMinSpokenLevel());
+                    ands.add("written_level.level >= " + request.getOtherMinWrittenLevel());
+                } else if (request.getOtherMinSpokenLevel() != null) {
+                    joins.add("spoken_level");
+                    ands.add("candidate_language.language_id = " + request.getOtherLanguageId());
+                    ands.add("spoken_level.level >= " + request.getOtherMinSpokenLevel());
+                } else if (request.getOtherMinWrittenLevel() != null) {
+                    joins.add("written_level");
+                    ands.add("candidate_language.language_id = " + request.getOtherLanguageId());
+                    ands.add("written_level.level >= " + request.getOtherMinWrittenLevel());
+                }
+            }
+        }
+
+        //LIST ANY
+        SearchType listAnySearchType = request.getListAnySearchType();
+        final List<Long> listAnyIds = request.getListAnyIds();
+        if (!ObjectUtils.isEmpty(listAnyIds)) {
+            String values = listAnyIds.stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            String clause = "candidate.id in"
+                + " (select candidate_id from candidate_saved_list"
+                + " where saved_list_id in (" + values + "))";
+            if (SearchType.not.equals(listAnySearchType)) {
+                clause = "not (" + clause + ")";
+            }
+            ands.add(clause);
+        }
+
+        //LIST ALL
+        SearchType listAllSearchType = request.getListAllSearchType();
+        final List<Long> listAllIds = request.getListAllIds();
+        if (!ObjectUtils.isEmpty(listAllIds)) {
+            List<String> clauses = new ArrayList<>();
+            for (Long listAllId : listAllIds) {
+                clauses.add("candidate.id in"
+                    + " (select candidate_id from candidate_saved_list"
+                    + " where saved_list_id = " + listAllId + ")");
+            }
+            //All clauses must be true so and together.
+            String clause = String.join(" and ", clauses);
+            if (SearchType.not.equals(listAllSearchType)) {
+                clause = "not (" + clause + ")";
+            }
+            ands.add(clause);
+        }
+
+        /*
+         * Loop through base searches constructing predicates like this anded together:
+         *     clauses.add("candidate.id in (Base search query without ts_rank and order by)")
+         * String clause = String.join(" and ", clauses);
+         * ands.add(clause);
+         */
+        if (!ObjectUtils.isEmpty(request.getSearchJoinRequests())) {
+
+            List<String> clauses = new ArrayList<>();
+
+            for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
+                Long baseSearchId = searchJoinRequest.getSavedSearchId();
+                if (excludedSavedSearchIds.contains(baseSearchId)) {
+                    throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
+                }
+                SearchCandidateRequest searchRequest = loadSavedSearch(baseSearchId);
+                String sql = extractFetchSQL(searchRequest, excludedSavedSearchIds);
+
+                clauses.add("candidate.id in (" + sql + ")");
+            }
+            ands.add(String.join(" and ", clauses));
+        }
+        if (ordered) {
+            List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(request.getSort());
+            if (!tableSet.isEmpty()) {
+                joins.addAll(tableSet);
+            }
+        }
+
+        String joinClause = joins.stream()
+            .map(CandidateSearchUtils::getTableJoin)
+            .collect(Collectors.joining(" left join "));
+
+        String whereClause = String.join(" and ", ands);
+
+        String query = "";
+        if (!joinClause.isEmpty()) {
+            query += " left join " + joinClause;
+        }
+        if (!whereClause.isEmpty()) {
+            query += " where " + whereClause;
+        }
+
+        return query;
     }
 
     @NonNull
