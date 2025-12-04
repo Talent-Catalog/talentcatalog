@@ -100,4 +100,8 @@ export class HeaderComponent implements OnInit {
   isLocalEnv(): boolean {
     return window.location.host == 'localhost:4200';
   }
+
+  closeNavbar() {
+    this.isNavbarCollapsed = true;
+  }
 }
