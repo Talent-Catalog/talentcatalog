@@ -1,61 +1,61 @@
-name: Terraform deployment
-
-on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'infra/aws/terraform/**'
-
-  workflow_dispatch: #this attribute will enable the manual run to the pipeline
-
-
-permissions:
-  contents: read
-
-# Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-defaults:
-  run:
-    shell: bash
-
-env:
-  TERRAFORM_VERSION: 1.3.0
-  AWS_REGION: "us-east-1"
-  INFRA_PATH: './infra/prod'
-  AWS_ACCESS_KEY_ID: "AKIATLUVZAGYXPLKILO3"
-
-jobs:
-  terraform-deploy:
-    name: terraform deployment
-    runs-on: ubuntu-latest
-
-    steps:
-      # Checkout the repository to the GitHub Actions runner
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-          aws-region: ${{ env.TERRAFORM_REGION }}
-
-      # Install the latest version of Terraform CLI and configure the Terraform
-      # CLI configuration file with a Terraform Cloud user API token
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: Init Terraform
-        id: init
-        run: |
-          terraform init -upgrade
-        working-directory: ${{ env.INFRA_PATH }}
-
-      # Apply the infrastructure to the related environment
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false
-        # TODO: terraform.tfvars should be copied from github secrets to the env.INFRA_PATH directory
-        working-directory: ${{ env.INFRA_PATH }}
+#name: Terraform deployment
+#
+#on:
+#  push:
+#    branches:
+#      - master
+#    paths:
+#      - 'infra/aws/terraform/**'
+#
+#  workflow_dispatch: #this attribute will enable the manual run to the pipeline
+#
+#
+#permissions:
+#  contents: read
+#
+## Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+#defaults:
+#  run:
+#    shell: bash
+#
+#env:
+#  TERRAFORM_VERSION: 1.3.0
+#  AWS_REGION: "us-east-1"
+#  INFRA_PATH: './infra/prod'
+#  AWS_ACCESS_KEY_ID: "AKIATLUVZAGYXPLKILO3"
+#
+#jobs:
+#  terraform-deploy:
+#    name: terraform deployment
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      # Checkout the repository to the GitHub Actions runner
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: Setup AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v2
+#        with:
+#          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+#          aws-region: ${{ env.TERRAFORM_REGION }}
+#
+#      # Install the latest version of Terraform CLI and configure the Terraform
+#      # CLI configuration file with a Terraform Cloud user API token
+#      - name: Setup Terraform
+#        uses: hashicorp/setup-terraform@v2
+#        with:
+#          terraform_version: ${{ env.TERRAFORM_VERSION }}
+#
+#      - name: Init Terraform
+#        id: init
+#        run: |
+#          terraform init -upgrade
+#        working-directory: ${{ env.INFRA_PATH }}
+#
+#      # Apply the infrastructure to the related environment
+#      - name: Terraform Apply
+#        run: terraform apply -auto-approve -input=false
+#        # TODO: terraform.tfvars should be copied from github secrets to the env.INFRA_PATH directory
+#        working-directory: ${{ env.INFRA_PATH }}
