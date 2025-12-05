@@ -25,12 +25,13 @@
   </div>
   <div class="card">
     <div>
-      <app-file-upload [uploading]="uploading" (uploadStarted)="completeUploadTask($event)"></app-file-upload>
-      <div *ngIf="uploading">
-        {{ 'TASKS.UPLOAD.LOADING' | translate }} <fa-icon  [spin]="true" icon="spinner"></fa-icon>
-      </div>
+      <app-file-upload [uploading]="uploading"
+                       (uploadStarted)="completeUploadTask($event)"
+      ></app-file-upload>
       <div *ngFor="let file of filesUploaded; let i = index;">
-        <p>{{ 'TASKS.UPLOAD.SUCCESS' | translate }} {{getFileName(file.name)}}!</p>
+        <p class="text-success">
+          {{ 'TASKS.UPLOAD.SUCCESS' | translate }} {{file.name}}
+        </p>
       </div>
     </div>
   </div>

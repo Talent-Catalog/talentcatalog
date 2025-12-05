@@ -14,54 +14,48 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+<tc-modal [heading]="title"
+          (onAction)="save()"
+          [disableAction]="form?.invalid || working"
+          [showClose]="true"
+>
+  <tc-alert *ngIf="error">{{error}}</tc-alert>
 
   <form [formGroup]="form">
-    <div class="mb-3">
-      <div class="mb-3">
-        <label class="form-label" for="name">Name *</label>
-        <input class="form-control" id="name" formControlName="name">
-      </div>
+    <tc-fieldset>
+      <tc-field>
+        <tc-label for="name">Name *</tc-label>
+        <tc-input id="name" formControlName="name"></tc-input>
+      </tc-field>
 
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="jobCreator" formControlName="jobCreator">
-        <label class="form-check-label" for="jobCreator">Job creator?</label>
-      </div>
+      <tc-field [checkbox]="true" class="my-0">
+        <tc-input type="checkbox" id="jobCreator" formControlName="jobCreator"></tc-input>
+        <tc-label for="jobCreator">Job creator?</tc-label>
+      </tc-field>
 
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="sourcePartner" formControlName="sourcePartner">
-        <label class="form-check-label" for="sourcePartner">Source Partner?</label>
-        <div *ngIf="form.errors?.['sourcePartnerIsJobCreator'] && (form.touched || form.dirty)"
+      <tc-field [checkbox]="true" class="my-0">
+        <tc-input type="checkbox" id="sourcePartner" formControlName="sourcePartner"></tc-input>
+        <tc-label class="form-check-label" for="sourcePartner">Source Partner?</tc-label>
+        <tc-error-message *ngIf="form.errors?.['sourcePartnerIsJobCreator'] && (form.touched || form.dirty)"
              class="alert alert-danger">
           Source partners cannot be job creators
-        </div>
-      </div>
+        </tc-error-message>
+      </tc-field>
 
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="employerPartner" formControlName="employerPartner">
-        <label class="form-check-label" for="employerPartner">Employer Partner?</label>
-      </div>
+      <tc-field [checkbox]="true" class="my-0">
+        <tc-input type="checkbox" id="employerPartner" formControlName="employerPartner"></tc-input>
+        <tc-label for="employerPartner">Employer Partner?</tc-label>
+      </tc-field>
 
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="publicApiAccess" formControlName="publicApiAccess">
-        <label class="form-check-label" for="publicApiAccess">Public API access?</label>
-      </div>
+      <tc-field [checkbox]="true" class="mt-0">
+        <tc-input type="checkbox" id="publicApiAccess" formControlName="publicApiAccess"></tc-input>
+        <tc-label for="publicApiAccess">Public API access?</tc-label>
+      </tc-field>
 
-      <div *ngIf="publicApiAccess" class="mb-3">
-        <label class="form-label">Public API Authorities</label>
+      <tc-field *ngIf="publicApiAccess">
+        <tc-label>Public API Authorities</tc-label>
         <ng-select
+          class="tc-select"
           id="publicApiAuthorities"
           [items]="publicApiAuthorityOptions"
           [multiple]="true"
@@ -72,11 +66,12 @@
           bindValue="key"
           formControlName="publicApiAuthorities">
         </ng-select>
-      </div>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label">Status? *</label>
+      <tc-field>
+        <tc-label>Status? *</tc-label>
         <ng-select
+          class="tc-select"
           id="status"
           [items]="statuses"
           [multiple]="false"
@@ -86,71 +81,74 @@
           bindValue="key"
           [formControlName]="'status'">
         </ng-select>
-      </div>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="name">Abbreviated name *</label>
-        <input class="form-control" id="abbreviation" formControlName="abbreviation">
-      </div>
+      <tc-field>
+        <tc-label for="name">Abbreviated name *</tc-label>
+        <tc-input id="abbreviation" formControlName="abbreviation"></tc-input>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="defaultContact">Default contact</label>
-        <ng-select id="defaultContact" [formControlName]="'defaultContact'"
-                  [items]="partnerUsers"
+      <tc-field>
+        <tc-label for="defaultContact">Default contact</tc-label>
+        <ng-select id="defaultContact"
+                   class="tc-select"
+                   [formControlName]="'defaultContact'"
+                   [items]="partnerUsers"
                    bindLabel="name"
-                  placeholder="Select" [clearable]="true">
+                   placeholder="Select" [clearable]="true">
         </ng-select>
-      </div>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="sflink">Salesforce account link</label>
-        <input class="form-control" id="sflink" formControlName="sflink">
-        <div *ngIf="isInvalid(form.controls.sflink)" class="alert alert-danger">
+      <tc-field>
+        <tc-label for="sflink">Salesforce account link</tc-label>
+        <tc-input id="sflink" formControlName="sflink"></tc-input>
+        <tc-error-message *ngIf="isInvalid(form.controls.sflink)">
           This doesn't look like a Salesforce link to me!
           <br/>
           Copy and paste from Salesforce.
-        </div>
-        <div *ngIf="form.errors?.['missingEmployerPartnerSflink'] && (form.touched || form.dirty)"
-             class="alert alert-danger">
+        </tc-error-message>
+        <tc-error-message
+          *ngIf="form.errors?.['missingEmployerPartnerSflink'] && (form.touched || form.dirty)">
           Employer partners must have a link to a Salesforce Account of type Employer
-        </div>
-      </div>
+        </tc-error-message>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="notificationEmail">Email</label>
-        <input class="form-control" id="notificationEmail" formControlName="notificationEmail">
-      </div>
+      <tc-field>
+        <tc-label for="notificationEmail">Email</tc-label>
+        <tc-input id="notificationEmail" formControlName="notificationEmail"></tc-input>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="logo">Logo</label>
-        <input class="form-control" id="logo" formControlName="logo">
-      </div>
+      <tc-field>
+        <tc-label for="logo">Logo</tc-label>
+        <tc-input id="logo" formControlName="logo"></tc-input>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="websiteUrl">Website Url</label>
-        <input class="form-control" id="websiteUrl" formControlName="websiteUrl">
-      </div>
+      <tc-field>
+        <tc-label for="websiteUrl">Website Url</tc-label>
+        <tc-input id="websiteUrl" formControlName="websiteUrl"></tc-input>
+      </tc-field>
 
       <div *ngIf="isSourcePartner()">
-        <div class="mb-3">
-          <label class="form-label" for="registrationLandingPage">Registration Landing Page (url)</label>
-          <input class="form-control" id="registrationLandingPage" formControlName="registrationLandingPage">
-        </div>
+        <tc-field>
+          <tc-label for="registrationLandingPage">Registration Landing Page (url)</tc-label>
+          <tc-input id="registrationLandingPage" formControlName="registrationLandingPage"></tc-input>
+        </tc-field>
 
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="autoAssignable" formControlName="autoAssignable">
-          <label class="form-check-label" for="autoAssignable">Auto assignable by country?</label>
-        </div>
+        <tc-field [checkbox]="true">
+          <tc-input type="checkbox" id="autoAssignable" formControlName="autoAssignable"></tc-input>
+          <tc-label for="autoAssignable">Auto assignable by country?</tc-label>
+        </tc-field>
 
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="defaultPartnerRef" formControlName="defaultPartnerRef">
-          <label class="form-check-label" for="defaultPartnerRef">Default partner ref?</label>
-        </div>
+        <tc-field [checkbox]="true">
+          <tc-input type="checkbox" id="defaultPartnerRef" formControlName="defaultPartnerRef"></tc-input>
+          <tc-label for="defaultPartnerRef">Default partner ref?</tc-label>
+        </tc-field>
 
         <!-- SOURCE COUNTRIES  -->
-        <div class="mb-3">
-          <label class="form-label">Source Country</label>
+        <tc-field>
+          <tc-label>Source Country</tc-label>
           <ng-select
+            class="tc-select"
             id="sourceCountry"
             [items]="countries"
             [multiple]="true"
@@ -160,13 +158,13 @@
             bindLabel="name"
             [formControlName]="'sourceCountries'">
           </ng-select>
-          <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
-        </div>
+          <tc-description>Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</tc-description>
+        </tc-field>
       </div>
 
       <!-- REDIRECT PARTNER  -->
-      <div *ngIf="!create" class="mb-3">
-        <label class="form-label">Redirect Partner</label>
+      <tc-field *ngIf="!create">
+        <tc-label>Redirect Partner
         <button class="tool-tip-button"
                 [ngbTooltip]="'Candidate with URL that would otherwise set CP branding ' +
                 (isSourcePartner() ? 'and assign them' : '') +
@@ -176,7 +174,9 @@
                 placement="top"
         ><i class="fa-regular fa-circle-question fa-xs"></i>
         </button>
+        </tc-label>
         <ng-select
+          class="tc-select"
           id="redirectPartner"
           [items]="partners"
           [multiple]="false"
@@ -187,16 +187,29 @@
           bindValue="id"
           [formControlName]="'redirectPartnerId'">
         </ng-select>
+      </tc-field>
+      <!-- New DPA Status Section (only shown when updating) -->
+      <div *ngIf="!isCreate()" class="mb-3">
+        <h5>Data Processing Agreement Status</h5>
+        <tc-field>
+          <tc-label for="acceptedDataProcessingAgreementId">Accepted DPA ID</tc-label>
+          <tc-input id="acceptedDataProcessingAgreementId"
+                    formControlName="acceptedDataProcessingAgreementId"
+                    [readonly]="true">
+          </tc-input>
+          <tc-error-message *ngIf="!form.get('acceptedDataProcessingAgreementId')?.value">
+            Not yet accepted by partner.
+          </tc-error-message>
+        </tc-field>
+        <tc-field>
+          <tc-label for="acceptedDataProcessingAgreementDate">Acceptance Date</tc-label>
+          <tc-input id="acceptedDataProcessingAgreementDate"
+                    formControlName="acceptedDataProcessingAgreementDate"
+                    [readonly]="true">
+          </tc-input>
+          <tc-description>Partner will be prompted to accept/re-accept upon login if needed.</tc-description>
+        </tc-field>
       </div>
-    </div>
-    <hr/>
+    </tc-fieldset>
   </form>
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="save()"
-          [disabled]="form?.invalid || working">
-    <i class="fas fa-spinner fa-spin" *ngIf="working"></i>
-    Save
-  </button>
-</div>
+</tc-modal>

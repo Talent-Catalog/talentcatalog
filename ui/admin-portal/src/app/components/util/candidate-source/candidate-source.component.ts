@@ -78,6 +78,9 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   //about the candidate source.
   @Input() showMore: boolean = true;
 
+  /** Show/hide additional icons and dropdown button for compact display in e.g. base search */
+  @Input() showHeadingIcons: boolean = true;
+
   // The font awesome icon buttons are dependent on these variables
   @Input() showLink: boolean = true;
   @Input() showOpen: boolean = true;
@@ -392,5 +395,9 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.candidateSourceCacheService.clearAll();
+  }
+
+  isReadOnly(): boolean {
+    return this.authorizationService.isReadOnly();
   }
 }

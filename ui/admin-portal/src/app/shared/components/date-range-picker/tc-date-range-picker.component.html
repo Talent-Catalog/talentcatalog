@@ -1,0 +1,52 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="tc-date-picker">
+  <div id="date-container">
+    <tc-button type="plain" (onClick)="picker.toggle()">
+      <tc-icon color="primary" size="md">
+        <i class="fas fa-calendar"></i>
+      </tc-icon>
+    </tc-button>
+    <input (click)="picker.toggle()" class="form-control" placeholder="yyyy-mm-dd" name="dp"
+           ngbDatepicker #picker="ngbDatepicker"
+           [autoClose]="'outside'"
+           [dayTemplate]="t"
+           [displayMonths]="2"
+           [outsideDays]="'hidden'"
+           [container]="'#date-container'"
+           [value]="displayDate"
+           [readOnly]="readonly"
+           (dateSelect)="selectDate($event)">
+
+    <tc-button type="plain" (onClick)="clearDates()">
+      <tc-icon color="gray" size="md">
+        <i class="fas fa-times"></i>
+      </tc-icon>
+    </tc-button>
+  </div>
+</div>
+<ng-template #t let-date let-focused="focused">
+  <span class="custom-day"
+        [class.focused]="focused"
+        [class.range]="isRange(date)"
+        [class.faded]="isHovered(date) || isInside(date)"
+        (mouseenter)="hoveredDate = date"
+        (mouseleave)="hoveredDate = null">
+    {{ date.day }}
+  </span>
+</ng-template>
+

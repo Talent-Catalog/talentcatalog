@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +31,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -49,6 +47,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -89,6 +88,7 @@ import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.EmployerService;
@@ -97,19 +97,21 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SkillsService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
+import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @Service
 @Slf4j
@@ -126,7 +128,6 @@ public class JobServiceImpl implements JobService {
 
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
 
-    private final static DateTimeFormatter nextStepDateFormat = DateTimeFormatter.ofPattern("ddMMMyy", Locale.ENGLISH);
     private final AuthService authService;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
@@ -138,7 +139,7 @@ public class JobServiceImpl implements JobService {
 
     private final JobChatService jobChatService;
     private final JobServiceHelper jobServiceHelper;
-    private final OppNotificationService oppNotificationService;
+    private final SystemNotificationService systemNotificationService;
     private final PartnerService partnerService;
     private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceConfig salesforceConfig;
@@ -147,6 +148,7 @@ public class JobServiceImpl implements JobService {
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
+    private final SkillsService skillsService;
     private final JobOppIntakeService jobOppIntakeService;
     private final NextStepProcessingService nextStepProcessingService;
 
@@ -288,7 +290,7 @@ public class JobServiceImpl implements JobService {
                     "No such Salesforce opportunity: " + sfJoblink);
             }
 
-            updateJobFromRequest(job, request);
+            updateTcJobFromRequest(job, request);
 
             job.setAuditFields(loggedInUser);
 
@@ -401,7 +403,7 @@ public class JobServiceImpl implements JobService {
         job.setAuditFields(loggedInUser);
 
         //Update from request
-        updateJobFromRequest(job, request);
+        updateTcJobFromRequest(job, request);
 
         //Save job to TC so that it has an id.
         job = salesforceJobOppRepository.save(job);
@@ -436,6 +438,42 @@ public class JobServiceImpl implements JobService {
         SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
         return checkEmployerEntity(jobOpp);
+    }
+
+    @Override
+    public @NonNull List<SkillName> getSkills(long id, @NonNull String lang) {
+        SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
+
+        String text = extractJobText(jobOpp);
+        return skillsService.extractSkillNames(text, lang);
+    }
+
+    private String extractJobText(SalesforceJobOpp jobOpp) {
+        StringBuilder sb = new StringBuilder();
+
+        appendJobText(sb, jobOpp.getJobSummary());
+
+        final JobOppIntake jobOppIntake = jobOpp.getJobOppIntake();
+        if (jobOppIntake != null) {
+            appendJobText(sb, jobOppIntake.getEmploymentExperience());
+            appendJobText(sb, jobOppIntake.getEducationRequirements());
+            appendJobText(sb, jobOppIntake.getSkillRequirements());
+        }
+
+        final String jdFileText = jobOpp.getJdFileText();
+        if (jdFileText != null) {
+            appendJobText(sb, jdFileText);
+        }
+
+        return sb.toString();
+    }
+
+    private void appendJobText(@NonNull StringBuilder sb, @Nullable String text) {
+        if (StringUtils.hasText(text)) {
+            sb.append(text);
+            sb.append("||\n");
+        }
     }
 
     /**
@@ -615,7 +653,7 @@ public class JobServiceImpl implements JobService {
             //Current stage is before CandidateSearch so update it
 
             //New stage will depend on skipCandidateSearch
-            JobOpportunityStage nextStage =
+            final JobOpportunityStage nextStage =
                 job.isSkipCandidateSearch() ? JobOpportunityStage.visaEligibility :
                     JobOpportunityStage.candidateSearch;
             job.setStage(nextStage);
@@ -631,7 +669,7 @@ public class JobServiceImpl implements JobService {
             job.setNextStep(processedNextStep);
 
             salesforceService.updateEmployerOpportunityStage(
-                job, JobOpportunityStage.candidateSearch, processedNextStep, submissionDueDate
+                job, nextStage, processedNextStep, submissionDueDate
             );
         }
 
@@ -652,7 +690,7 @@ public class JobServiceImpl implements JobService {
         }
 
         // Send out notifications
-        oppNotificationService.notifyNewJobOpp(job);
+        systemNotificationService.notifyNewJobOpp(job);
 
         return salesforceJobOppRepository.save(job);
     }
@@ -795,11 +833,11 @@ public class JobServiceImpl implements JobService {
         }
     }
 
-    private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
+    private void updateTcJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
 
         //Perform any notifications before actually applying the change so that we have the
         //old and current state
-        oppNotificationService.notifyJobOppChanges(job, request);
+        systemNotificationService.notifyJobOppNextStepInfoChangesIfAny(job, request);
 
         final String nextStep = request.getNextStep();
         if (nextStep != null) {
@@ -964,37 +1002,52 @@ public class JobServiceImpl implements JobService {
         User loggedInUser = getLoggedInUser("update job");
         SalesforceJobOpp job = getJob(id);
 
+        updateSfJobFromRequest(job, request);
+        updateTcJobFromRequest(job, request);
+        job.setAuditFields(loggedInUser);
+
+        return salesforceJobOppRepository.save(job);
+    }
+
+    private void updateSfJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
         final JobOpportunityStage stage = request.getStage();
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
-        final String processedNextStep =
-            nextStepProcessingService.processNextStep(job, request.getNextStep());
-        salesforceService.updateEmployerOpportunityStage(job, stage, processedNextStep, nextStepDueDate);
+
+        String nextStep = request.getNextStep();
+        if (nextStep != null) {
+            nextStep = nextStepProcessingService.processNextStep(job, request.getNextStep());
+        }
+
+        if (stage != null | nextStep != null | nextStepDueDate != null) {
+            salesforceService.updateEmployerOpportunityStage(job, stage, nextStep, nextStepDueDate);
+        }
 
         final String jobName = request.getJobName();
         if (jobName != null) {
             salesforceService.updateEmployerOpportunityName(job.getSfId(), jobName);
         }
-
-        updateJobFromRequest(job, request);
-        job.setAuditFields(loggedInUser);
-        return salesforceJobOppRepository.save(job);
     }
 
     private void closeUnclosedCandidateOppsForJob(SalesforceJobOpp job, JobOpportunityStage jobCloseStage) {
         Set<CandidateOpportunity> candidateOpportunities = job.getCandidateOpportunities();
+
+        //Retrieve any still active (ie unclosed) candidate opps that will need to be auto closed.
         final List<CandidateOpportunity> activeOpps = candidateOpportunities.stream()
             //Not interested in opps which are already closed or at an employed stage
             .filter(co -> !co.isClosed() && !co.getStage().isEmployed()).toList();
 
         //This will be populated with the candidates whose opps need to be updated for each
         //closing stage.
-        Map<CandidateOpportunityStage, List<Candidate>> closingStageCandidatesMap = new HashMap<>();
+        Map<CandidateOpportunityStage, List<CandidateOpportunity>> closingStageCasesMap = new HashMap<>();
 
+        //If there are some candidate opps that need to be closed
         if (!activeOpps.isEmpty()) {
+            //Lazy creation of logic
             if (closingStageLogic == null) {
                 initialiseClosingCandidateStageLogic();
             }
 
+            //Load the logic relevant to the given job closing stage.
             final EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>
                 currentToClosingStageMap = closingStageLogic.get(jobCloseStage);
 
@@ -1026,22 +1079,47 @@ public class JobServiceImpl implements JobService {
                         //Default to closing candidate opp as notFitForRole
                         closingStage = CandidateOpportunityStage.notFitForRole;
                     }
-                    List<Candidate> candidates = closingStageCandidatesMap.computeIfAbsent(
+
+                    //Add candidate to list of candidates whose opps are also being set to this
+                    //closing stage.
+                    List<CandidateOpportunity> cases = closingStageCasesMap.computeIfAbsent(
                         closingStage, k -> new ArrayList<>());
-                    candidates.add(activeOpp.getCandidate());
+                    cases.add(activeOpp);
                 }
 
-                for (Entry<CandidateOpportunityStage, List<Candidate>> stageListEntry :
-                    closingStageCandidatesMap.entrySet()) {
+                //This loops through each identified closing stage, batching together the
+                //opps being automatically set to that stage.
+                for (Entry<CandidateOpportunityStage, List<CandidateOpportunity>> stageListEntry :
+                    closingStageCasesMap.entrySet()) {
 
                     CandidateOpportunityParams params = new CandidateOpportunityParams();
                     final CandidateOpportunityStage candidateOppClosedStage = stageListEntry.getKey();
+                    List<CandidateOpportunity> cases = stageListEntry.getValue();
                     params.setStage(candidateOppClosedStage);
-                    params.setClosingComments(
-                        "Job opportunity closed: " + jobCloseStage.toString());
 
+                    //Extract all the different original stages of the candidate opps that are
+                    //being closed.
+                    final Set<CandidateOpportunityStage> originalStages = cases.stream()
+                        .map(CandidateOpportunity::getStage).collect(Collectors.toSet());
+
+                    //There is just one common closing comment for all closed cases.
+                    //We can simplify its wording if all the original candidate stages were the same.
+                    String s;
+                    if (originalStages.size() == 1) {
+                        s = originalStages.iterator().next().toString();
+                    } else {
+                        s = "one of the following (" + originalStages.stream()
+                            .map(CandidateOpportunityStage::toString)
+                            .collect(Collectors.joining(", ")) + ")";
+                    }
+                    params.setClosingComments("Closed because the candidate's stage was " + s +
+                        " when the job opportunity closed as " + jobCloseStage.toString());
+
+                    //Just pass in the candidates rather than the candidate opps.
+                    final List<Candidate> candidates =
+                        cases.stream().map(CandidateOpportunity::getCandidate).toList();
                     candidateOpportunityService.createUpdateCandidateOpportunities(
-                        stageListEntry.getValue(), job, params);
+                        candidates, job, params);
                 }
 
                 LogBuilder.builder(log)
@@ -1184,7 +1262,7 @@ public class JobServiceImpl implements JobService {
                     UpdateJobRequest updateRequest =
                         extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
                     if (updateRequest != null) {
-                        updateJobFromRequest(tcOpp, updateRequest);
+                        updateTcJobFromRequest(tcOpp, updateRequest);
                         salesforceJobOppRepository.save(tcOpp);
                         updates++;
                     }
@@ -1310,18 +1388,7 @@ public class JobServiceImpl implements JobService {
     }
 
     private GoogleFileSystemFile uploadFile(String folderLink, String fileName,
-        MultipartFile file) throws IOException {
-
-        //Save to a temporary file
-        InputStream is = file.getInputStream();
-        File tempFile = File.createTempFile("job", ".tmp");
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-            int read;
-            byte[] bytes = new byte[1024];
-            while ((read = is.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
-        }
+        File file) throws IOException {
 
         final GoogleFileSystemDrive listFoldersDrive = googleDriveConfig.getListFoldersDrive();
         final GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(folderLink);
@@ -1329,29 +1396,25 @@ public class JobServiceImpl implements JobService {
         //Upload the file to its folder, with the correct name (not the temp
         //file name).
         GoogleFileSystemFile uploadedFile =
-            fileSystemService.uploadFile(listFoldersDrive, parentFolder, fileName, tempFile);
+            fileSystemService.uploadFile(listFoldersDrive, parentFolder, fileName, file);
 
         //Delete tempfile
-        if (!tempFile.delete()) {
+        if (!file.delete()) {
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("UploadFile")
-                .message("Failed to delete temporary file " + tempFile)
+                .message("Failed to delete temporary file " + file)
                 .logError();
         }
 
         return uploadedFile;
     }
 
-    private GoogleFileSystemFile uploadJobFile(SalesforceJobOpp job, MultipartFile file)
+    private GoogleFileSystemFile uploadJobFile(SalesforceJobOpp job, File file, String fileName)
         throws IOException {
         SavedList submissionList = job.getSubmissionList();
 
         String jdFolderLink = submissionList.getFolderjdlink();
-
-        //Name of file being uploaded (this is the name it had on the
-        //originating computer).
-        String fileName = file.getOriginalFilename();
 
         return uploadFile(jdFolderLink, fileName, file);
     }
@@ -1364,10 +1427,38 @@ public class JobServiceImpl implements JobService {
         if (job.getSubmissionList() == null) {
             throw new InvalidRequestException("Job " + id + " does not have submission list");
         }
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+
+        //Save to a temporary file
+        File tempFile = saveToTempFile(file);
+
+        //Name of file being uploaded (this is the name it had on the originating computer).
+        String fileName = file.getOriginalFilename();
+
+        //Do text extraction. uploadJobFile deletes temp file - so need to do this first.
+        try {
+            String textExtract = TextExtractHelper.getTextExtractFromFile(tempFile, fileName);
+            job.setJdFileText(textExtract);
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("UploadJd")
+                .message("Could not extract text from uploaded file")
+                .logError(e);
+        }
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
         setJobJdLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         job.setAuditFields(authService.getLoggedInUser().orElse(null));
-        return job;
+        return salesforceJobOppRepository.save(job);
+    }
+
+    private File saveToTempFile(MultipartFile file) throws IOException {
+        File tempFile = File.createTempFile("job", ".tmp");
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+            InputStream inputStream = file.getInputStream()) {
+            inputStream.transferTo(outputStream);
+        }
+        return tempFile;
     }
 
     @Override
@@ -1378,7 +1469,14 @@ public class JobServiceImpl implements JobService {
         if (job.getSubmissionList() == null) {
             throw new InvalidRequestException("Job " + id + " does not have submission list");
         }
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+
+        //Save to a temporary file
+        File tempFile = saveToTempFile(file);
+
+        //Name of file being uploaded (this is the name it had on the originating computer).
+        String fileName = file.getOriginalFilename();
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
         setJobJoiLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }
@@ -1391,7 +1489,14 @@ public class JobServiceImpl implements JobService {
         if (job.getSubmissionList() == null) {
             throw new InvalidRequestException("Job " + id + " does not have submission list");
         }
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+
+        //Save to a temporary file
+        File tempFile = saveToTempFile(file);
+
+        //Name of file being uploaded (this is the name it had on the originating computer).
+        String fileName = file.getOriginalFilename();
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
         setJobInterviewGuidanceLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }
@@ -1404,7 +1509,14 @@ public class JobServiceImpl implements JobService {
         if (job.getSubmissionList() == null) {
             throw new InvalidRequestException("Job " + id + " does not have submission list");
         }
-        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+
+        //Save to a temporary file
+        File tempFile = saveToTempFile(file);
+
+        //Name of file being uploaded (this is the name it had on the originating computer).
+        String fileName = file.getOriginalFilename();
+
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, tempFile, fileName);
         setJobMouLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }

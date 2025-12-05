@@ -18,6 +18,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'com.google.cloud.tools.jib' version '3.4.4'
+    id 'jacoco'
 }
 
 group = 'org.tctalent'
@@ -76,6 +77,7 @@ dependencies {
         implementation(project(':ui:public-portal'))
     }
 
+    implementation "org.springframework.boot:spring-boot-starter-batch"
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -87,6 +89,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation "org.springframework.data:spring-data-rest-webmvc"
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
@@ -166,7 +169,7 @@ dependencies {
     implementation 'io.github.mweirauch:micrometer-jvm-extras:0.2.2'
 
     // tc api
-    implementation "io.github.sadatmalik:tc-api-spec:1.0.11"
+    implementation "org.tctalent:tc-api-spec:1.0.0"
 
     // Mapstruct
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
@@ -186,10 +189,24 @@ jib {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.12"
+}
 test {
     useJUnitPlatform()
+    if (isDev){
+        finalizedBy jacocoTestReport
+    }
 }
-
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required.set(true)
+        xml.required.set(false)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/test/html"))
+    }
+}
 bootJar {
     from(".") {
         include ".ebextensions/**"

@@ -1,0 +1,151 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="container mt-4">
+  <div class="alert alert-danger" *ngIf="error">{{ error?.message || error }}</div>
+
+  <div class="form-check mb-3">
+    <input type="checkbox" class="form-check-input" id="noEligible"
+           formControlName="noEligibleDependants" [disabled]="readOnly">
+    <label class="form-check-label" for="noEligible">
+      {{'FAMILY-DOC.LABEL.NO_ELIGIBLE' | translate}}
+    </label>
+  </div>
+
+  <div class="mb-3" *ngIf="noEligibleDependants">
+    <label class="form-label">{{"REGISTRATION.EXAM.LABEL.NOTES" | translate}}</label>
+    <textarea class="form-control" rows="2" formControlName="noEligibleNotes"
+              [readonly]="readOnly"></textarea>
+    <div class="text-danger"
+         *ngIf="form.get('noEligibleNotes')?.touched && form.get('noEligibleNotes')?.hasError('required')">
+      {{ "FORM.ERROR.REQUIRED" | translate }}
+    </div>
+  </div>
+
+  <ng-container formArrayName="members" *ngIf="!noEligibleDependants">
+    <div class="card mb-3" *ngFor="let m of members.controls; let i = index" [formGroupName]="i">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-3"> {{'FAMILY-DOC.LABEL.FAMILY-MEMBER' | translate}} #{{ i + 1 }}</h5>
+          <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeMember(i)"
+                  [disabled]="readOnly"> {{"CHAT.LINK-REMOVE-BTN" | translate}}
+          </button>
+        </div>
+
+        <!-- basic fields -->
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">  {{'FAMILY-DOC.LABEL.RELATIONSHIP' | translate}} *</label>
+            <ng-select formControlName="relationship"
+                       [readonly]="readOnly"
+                       [items]="relationships"
+                       bindLabel="stringValue"
+                       bindValue="key"
+                       [clearable]="false">
+            </ng-select>
+
+            <div class="text-danger"
+                 *ngIf="m.get('relationship')?.touched && m.get('relationship')?.hasError('required')">
+              {{ "FORM.ERROR.REQUIRED" | translate }}
+            </div>
+          </div>
+          <!-- If relationship is "Other", ask for detail -->
+          <div class="col-md-6" *ngIf="m.get('relationship')?.value === 'Other'">
+            <label class="form-label">{{'FAMILY-DOC.LABEL.OTHER' | translate}}</label>
+            <input class="form-control" formControlName="relationOther"
+                   [readonly]="readOnly">
+            <div class="text-danger" *ngIf="m.touched && m.hasError('otherRelationshipRequired')">
+              {{ "FORM.ERROR.REQUIRED" | translate }}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">{{"PROFILE.PERSONAL.FIRSTNAME" | translate}} *</label>
+            <input class="form-control" formControlName="user.firstName" [readonly]="readOnly">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">{{"PROFILE.PERSONAL.LASTNAME" | translate}} *</label>
+            <input class="form-control" formControlName="user.lastName" [readonly]="readOnly">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">{{"PROFILE.PERSONAL.DOB" | translate}} *</label>
+            <input type="date" class="form-control" formControlName="dob"
+                   [readonly]="readOnly">
+            <div class="text-danger" *ngIf="m.touched && m.hasError('childAgeInvalid')">
+              {{'FAMILY-DOC.LABEL.AGE-VALIDATION' | translate}}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">{{"PROFILE.PERSONAL.GENDER" | translate}}</label>
+            <select class="form-select" formControlName="gender" [disabled]="readOnly">
+              <option value="male">{{ 'GENDER.MALE' | translate }}</option>
+              <option value="female">{{ 'GENDER.FEMALE' | translate }}</option>
+              <option value="other">{{ 'GENDER.OTHER' | translate }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">{{ "TRAVELINFO.LABEL.BIRTHCOUNTRY" | translate }}</label>
+            <input class="form-control" formControlName="birthCountry.name" [readonly]="readOnly">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.PLACEOFBIRTH' | translate }}</label>
+            <input class="form-control" formControlName="placeOfBirth" [readonly]="readOnly">
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCTYPE' | translate }} *</label>
+            <select class="form-select" formControlName="TTH_IT$TRAVEL_DOC_TYPE">
+              <option [value]="TravelDocType.Passport">{{ 'TRAVELINFO.OPTION.PASSPORT' | translate }}</option>
+              <option [value]="TravelDocType.NationalId">{{ 'TRAVELINFO.OPTION.NATIONALID' | translate }}</option>
+              <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELINFO.OPTION.REFUGEE' | translate }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCNUMBER' | translate }} *</label>
+            <input class="form-control" formControlName="TTH_IT$TRAVEL_DOC_NUMBER" [readonly]="readOnly">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCISSUEDBY' | translate }}</label>
+            <input class="form-control" formControlName="TTH_IT$TRAVEL_DOC_ISSUED_BY" [readonly]="readOnly">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.ISSUEDATE' | translate }}</label>
+            <input type="date" class="form-control" formControlName="TTH_IT$TRAVEL_DOC_ISSUE_DATE"
+                   [readonly]="readOnly">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.EXPIRYDATE' | translate }}</label>
+            <input type="date" class="form-control" formControlName="TTH_IT$TRAVEL_DOC_EXPIRY_DATE"
+                   [readonly]="readOnly">
+            <div class="text-danger"
+                 *ngIf="m.get('travelDoc')?.touched && m.get('travelDoc')?.hasError('expiryTooSoon')">
+              {{'FAMILY-DOC.LABEL.DOC-VALIDATION' | translate}}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">{{ 'TRAVELINFO.LABEL.COMMENT' | translate }}</label>
+            <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                      [readonly]="readOnly" formControlName="TTH_IT$TRAVEL_INFO_COMMENT" ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-outline-primary" (click)="addMember()"
+            [disabled]="readOnly">
+      {{'FAMILY-DOC.LABEL.ANOTHER-MEMBER' | translate}}
+    </button>
+  </ng-container>
+
+  <div class="mt-4">
+    <button class="btn btn-primary" type="submit" [disabled]="!canSubmit()">
+      {{ 'TASKS.TASK.SUBMIT' | translate }}
+    </button>
+  </div>
+</form>

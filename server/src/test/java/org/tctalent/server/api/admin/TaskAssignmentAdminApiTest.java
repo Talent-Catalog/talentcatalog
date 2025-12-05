@@ -32,6 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.SavedListTestData.getSavedList;
+import static org.tctalent.server.data.TaskTestData.getCompletedTaskAssignment;
+import static org.tctalent.server.data.TaskTestData.getTask;
+import static org.tctalent.server.data.TaskTestData.getTaskAssignment;
+import static org.tctalent.server.data.TaskTestData.getTaskAssignments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -74,12 +80,12 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
   private static final String ASSIGN_TO_LIST_PATH = "/assign-to-list";
   private static final String REMOVE_FROM_LIST_PATH = "/remove-from-list";
 
-  private static final TaskImpl task = AdminApiTestUtil.getTask();
-  private static final Candidate candidate = AdminApiTestUtil.getCandidate();
-  private static final TaskAssignmentImpl taskAssignment = AdminApiTestUtil.getTaskAssignment();
-  private static final SavedList savedList = AdminApiTestUtil.getSavedList();
-  private static final TaskAssignmentImpl completedTaskAssignment = AdminApiTestUtil.getCompletedTaskAssignment();
-  private static final List<TaskAssignmentImpl> taskAssignments = AdminApiTestUtil.getTaskAssignments();
+  private static final TaskImpl task = getTask();
+  private static final Candidate candidate = getCandidate();
+  private static final TaskAssignmentImpl taskAssignment = getTaskAssignment();
+  private static final SavedList savedList = getSavedList();
+  private static final TaskAssignmentImpl completedTaskAssignment = getCompletedTaskAssignment();
+  private static final List<TaskAssignmentImpl> taskAssignments = getTaskAssignments();
 
   @MockBean AuthService authService;
   @MockBean CandidateService candidateService;

@@ -36,17 +36,19 @@ import {
 } from "../../util/form/date-range-picker/date-range-picker.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {AuthorizationService} from "../../../services/authorization.service";
+import {Subject} from "rxjs";
 
 describe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
   let fixture: ComponentFixture<DefineSearchComponent>;
   let searchQueryServiceSpy: jasmine.SpyObj<SearchQueryService>;
-  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
-  let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
   let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
 
   beforeEach(waitForAsync(() => {
-    const searchQuerySpy = jasmine.createSpyObj('SearchQueryService', ['changeSearchQuery']);
+    const searchQuerySpy = jasmine.createSpyObj(
+      'SearchQueryService', ['changeSearchQuery'], {
+        currentSearchTerms$: new Subject<string[]>()
+      });
     const savedSearchSpy = jasmine.createSpyObj('SavedSearchService', ['getSavedSearchTypeInfos','load']);
     const authenticationSpy = jasmine.createSpyObj('AuthenticationService',
       ['getLoggedInUser']);
@@ -77,8 +79,6 @@ describe('DefineSearchComponent', () => {
     fixture = TestBed.createComponent(DefineSearchComponent);
     component = fixture.componentInstance;
     searchQueryServiceSpy = TestBed.inject(SearchQueryService) as jasmine.SpyObj<SearchQueryService>;
-    authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-    savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;
     authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
     fixture.detectChanges();
   });
@@ -98,11 +98,30 @@ describe('DefineSearchComponent', () => {
   });
 
   it('should clear the form on clearForm() method call', () => {
+    component.modifiedDatePicker = jasmine.createSpyObj('DateRangePickerComponent', ['clearDates']);
+    component.englishLanguagePicker = jasmine.createSpyObj('LanguageLevelFormControlComponent', ['clearProficiencies']);
+    component.otherLanguagePicker = {
+      form: jasmine.createSpyObj('FormGroup', ['reset'])
+    } as any;
+
+    // Set some initial values
     component.searchForm.get('simpleQueryString').patchValue('test query');
     component.searchForm.get('statuses').patchValue(['status1', 'status2']);
+
+    // Clear value
     component.clearForm();
+
+    // Assert main fields are cleared
     expect(component.searchForm.get('simpleQueryString').value).toBeNull();
-    expect(component.searchForm.get('statuses').value).toEqual(null);
+    expect(component.searchForm.get('statuses').value).toBeNull();
+
+    // Verify that picker methods were called
+    expect(component.modifiedDatePicker.clearDates).toHaveBeenCalled();
+    expect(component.englishLanguagePicker.clearProficiencies).toHaveBeenCalled();
+    expect(component.otherLanguagePicker.form.reset).toHaveBeenCalled();
+
+    // Verify the form has actually changed
+    expect(component.searchForm.dirty).toBeTruthy();
   });
 
   it('should call apply() method to initialize search request', () => {

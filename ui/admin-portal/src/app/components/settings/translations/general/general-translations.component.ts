@@ -144,7 +144,7 @@ export class GeneralTranslationsComponent implements OnInit {
     this.saving = true;
     this.saveError = null;
     this.translationService.updateTranslationFile(this.systemLanguage.language, result).subscribe(
-      result => {
+      () => {
         this.saving = false;
       },
       error => {
@@ -182,6 +182,7 @@ const ALL_FIELDS = {
         "ACCOUNT": null,
         "LOGOUT": null,
         "LOGIN": null,
+        "PRIVACY": null,
         "PROFILE": null,
         "UPLOAD": {
           "FILE": null,
@@ -289,11 +290,6 @@ const ALL_FIELDS = {
       "TITLE": null,
       "REGISTER": null,
       "LOGIN": null,
-      "PARA1": null,
-      "HEADING2": null,
-      "PARA2": null,
-      "HEADING3": null,
-      "PARA3": null,
       "USAFGHAN": {
         "HEADING1": null,
         "HEADING2": null
@@ -503,6 +499,8 @@ const ALL_FIELDS = {
         }
       },
       "SUBMIT": {
+        "INTRODUCTION": null,
+        "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
           "SURVEY": null,
@@ -512,6 +510,9 @@ const ALL_FIELDS = {
           "LABEL": null,
           "WARN": null
         },
+        "NO_POLICY_ACCEPTANCE_TEXT": null,
+        "POLICY_ACCEPTANCE_TEXT": null,
+        "YOUR_PARTNER_IS": null,
       },
       "COMPLETE": {
         "TITLE": null,
@@ -532,7 +533,8 @@ const ALL_FIELDS = {
         },
         "CV": {
           "NAME": null,
-          "EXPLANATION": null
+          "EXPLANATION": null,
+          "WARNING": null,
         },
         "OTHER": {
           "NAME": null,
@@ -568,6 +570,14 @@ const ALL_FIELDS = {
         "STATE": null,
         "YEAROFARRIVAL": null,
         "NATIONALITY": null
+      },
+      "PRIVACY": {
+        "CHANGED": null,
+        "THANK_ACCEPTANCE": null,
+        "VERSION": null,
+        "ACCEPTED_ON": null,
+        "ACCEPTED_WITH": null,
+        "ACCEPTANCE_DETAILS": null
       },
       "OCCUPATIONS": {
         "TITLE": null
@@ -837,7 +847,8 @@ const ALL_FIELDS = {
       "VIEWHELP": null,
       "RETURN": null,
       "SUBMIT": null,
-    },
+      "SUBMIT-COMMENT": null,
+    }
   },
   "CANDIDATE-OPPS": {
     "HEADER": null,
@@ -903,6 +914,62 @@ const ALL_FIELDS = {
         "JOB_CREATOR_SOURCE_PARTNER": null,
         "CANDIDATE_RECRUITING": null,
         "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
+      }
+  },
+  "TRAVELINFO": {
+    "MISMATCH": {
+      "TITLE": null,
+      "DESCRIPTION": null,
+      "INSTRUCTION": null
+    },
+    "BUTTON": {
+      "UPDATEPROFILE": null,
+      "SUBMIT": null
+    },
+    "LABEL": {
+      "BIRTHCOUNTRY": null,
+      "PLACEOFBIRTH": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "DOCISSUEDBY": null,
+      "ISSUEDATE": null,
+      "EXPIRYDATE": null,
+      "COMMENT": null
+    },
+    "OPTION": {
+      "SELECTCOUNTRY": null,
+      "PASSPORT": null,
+      "NATIONALID": null,
+      "REFUGEE": null
+    }
+  },
+  "FAMILY-DOC":{
+      "LABEL":{
+        "NO_ELIGIBLE": null,
+        "FAMILY-MEMBER": null,
+        "RELATIONSHIP":null,
+        "OTHER":null,
+        "AGE-VALIDATION":null,
+        "HEALTH-CONCERN":null,
+        "REGISTERED":null,
+        "REGISTRED-NUMBER":null,
+        "DOC-VALIDATION":null,
+        "ANOTHER-MEMBER":null
+      }
+  },
+  "RSD-EVIDENCE":{
+    "LABEL":{
+      "COMMENT": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "REFUGEE-STATUS": null,
+      "RSD-VALIDATION":null
+    }
+  },
+  "FAMILY-RSD":{
+      "LABEL":{
+        "NO-MEMBER": null,
+        "NOTHING-TO-DO": null
       }
   }
 }

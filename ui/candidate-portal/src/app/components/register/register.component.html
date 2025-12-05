@@ -28,8 +28,9 @@
       {{ 'REGISTRATION.HEADER.EXPLANATION' | translate }}
     </p>
 
-    <p *ngIf="registrationService?.currentStep?.section === 0" class="explain">
-      {{ 'REGISTRATION.HEADER.ACCOUNT.EXPLANATION' | translate }}
+    <p *ngIf="registrationService?.currentStep?.section === 0" class="explain"
+       [innerHTML]="'REGISTRATION.HEADER.ACCOUNT.EXPLANATION' | translate"
+    >
     </p>
 
   </div>
@@ -42,7 +43,9 @@
 
 </div>
 
-<div class="step-body" [ngSwitch]="registrationService?.currentStepKey">
+<div class="step-body"
+     [ngClass]="{'register-submit' : !isRegistered() && registrationService?.currentStepKey == 'complete'}"
+     [ngSwitch]="registrationService?.currentStepKey">
 
   <app-registration-create-account *ngSwitchCase="'account'">
   </app-registration-create-account>
@@ -50,8 +53,7 @@
   <app-registration-contact *ngSwitchCase="'contact'">
   </app-registration-contact>
 
-  <app-registration-personal *ngSwitchCase="'personal'"
-                             (onPartnerAssignment)="setPartnerName()">
+  <app-registration-personal *ngSwitchCase="'personal'">
   </app-registration-personal>
 
   <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
@@ -77,27 +79,36 @@
   <app-registration-upload-file *ngSwitchCase="'upload'">
   </app-registration-upload-file>
 
-  <div class="container text-center" *ngSwitchCase="'complete'">
+  <div *ngSwitchCase="'complete'">
+    <!-- If candidate is not registered display submit component-->
+    <ng-container *ngIf="!isRegistered()">
+      <app-registration-submit>
+      </app-registration-submit>
+    </ng-container>
 
-    <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
+    <ng-container *ngIf="isRegistered()" >
+      <div class="container text-center">
+        <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
 
-    <p>{{ 'REGISTRATION.COMPLETE.PARA1' | translate:{partner: getPartnerName()} }}</p>
+        <p>{{ 'REGISTRATION.COMPLETE.PARA1' | translate:{partner: partnerName} }}</p>
 
-    <div class="text-center my-4">
-      <a class="btn btn-primary" [routerLink]="'/profile'">
-        {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate}}
-      </a>
-    </div>
+        <div class="text-center my-4">
+          <a class="btn btn-primary" [routerLink]="'/profile'">
+            {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate}}
+          </a>
+        </div>
 
-    <div class="text-center my-4">
-      <app-download-cv></app-download-cv>
-    </div>
+        <div class="text-center my-4">
+          <app-download-cv></app-download-cv>
+        </div>
 
-    <div class="text-center">
-      <button class="btn btn-outline-primary" (click)="logout()">
-        {{ 'REGISTRATION.COMPLETE.BUTTON.LOGOUT' | translate}}
-      </button>
-    </div>
+        <div class="text-center">
+          <button class="btn btn-outline-primary" (click)="logout()">
+            {{ 'REGISTRATION.COMPLETE.BUTTON.LOGOUT' | translate}}
+          </button>
+        </div>
+      </div>
+    </ng-container>
 
   </div>
 

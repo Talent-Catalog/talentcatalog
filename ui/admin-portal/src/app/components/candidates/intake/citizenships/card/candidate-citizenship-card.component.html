@@ -14,28 +14,34 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 
-<div class="card">
+<tc-card [header]="false">
   <div class="card-body">
 
     <form [formGroup]="form">
       <div class="mb-3">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label class="form-label" [for]="'nationality'+myRecordIndex">Country of Citizenship</label>
-          <div class="float-end d-flex align-items-center">
+          <label class="form-label" [for]="'nationality' + myRecordIndex">
+            Country of Citizenship
+          </label>
+          <div *ngIf="editable" class="d-flex align-items-center gap-2">
             <app-autosave-status
               [saving]="saving"
               [typing]="typing">
             </app-autosave-status>
-            <button class="btn" (click)="doDelete()">
-                <i class="fas fa-trash"></i>
-            </button>
+            <tc-button (onClick)="doDelete()"
+                       [size]="'sm'"
+                       [type]="'plain'"
+                       [color]="'gray'"
+            >
+                <tc-icon [color]="'gray'"><i class="fas fa-trash"></i></tc-icon>
+            </tc-button>
           </div>
         </div>
-        <ng-select [id]="'nationality'+myRecordIndex" [formControlName]="'citizenNationalityId'"
+        <ng-select class="tc-select" [id]="'nationality'+myRecordIndex" [formControlName]="'citizenNationalityId'"
                    [clearOnBackspace]="false" placeholder="Select">
           <ng-option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
             {{nationality.name}}</ng-option>
@@ -45,14 +51,14 @@
       <ng-container *ngIf="hasSelectedNationality">
         <div class="mb-3">
           <label class="form-label" [for]="'hasPassport'+myRecordIndex">Passport?</label>
-          <ng-select [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'" (clear)="setNoResponse('citizenHasPassport')"
+          <ng-select class="tc-select"  [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'" (clear)="setNoResponse('citizenHasPassport')"
                      [items]="hasPassportOptions" [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
         </div>
         <div *ngIf="hasPassport === 'ValidPassport'">
           <div class="mb-3">
             <label class="form-label" [for]="'passportExp'+myRecordIndex">Passport Expiry Date?</label>
-            <app-date-picker [id]="'passportExp'+myRecordIndex" [control]="form.controls.citizenPassportExp" [allowPast]="false"></app-date-picker>
+            <tc-date-picker [id]="'passportExp'+myRecordIndex" [control]="form.controls.citizenPassportExp" [allowPast]="false"></tc-date-picker>
             <div *ngIf="dateDifference()"
                  class="alert alert-danger">
               This passport has expired since entry.
@@ -61,12 +67,12 @@
         </div>
         <div class="mb-3">
           <label class="form-label" [for]="'citizenNotes'+myRecordIndex">Notes</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="4"
+          <tc-textarea rows="4"
                     [id]="'citizenNotes'+myRecordIndex" [formControlName]="'citizenNotes'"
-                    placeholder="" ></textarea>
+                    placeholder="" ></tc-textarea>
         </div>
       </ng-container>
     </form>
   </div>
-</div>
+</tc-card>
 

@@ -120,7 +120,8 @@ public interface DuolingoCouponService {
    */
   void assignCouponsToList(Long listId, User user) throws NoSuchObjectException;
 
-  /* Expires all coupons that have passed their expiration date.
+  /**
+   * Expires all coupons that have passed their expiration date.
    * <p>
    * This method identifies all coupons with an expiration date before the current time
    * that are not already marked as {@code EXPIRED} or {@code REDEEMED}. It updates their status
@@ -154,4 +155,18 @@ public interface DuolingoCouponService {
    */
   int countAvailableProctoredCoupons();
 
+
+  /**
+   * Reassigns a new coupon to a candidate and marks any previously assigned coupon as redeemed.
+   * <p/>
+   * This method finds any existing coupon assigned to the candidate, regardless of its status,
+   * marks it as REDEEMED if present, and assigns a new available coupon to the candidate.
+   *
+   * @param candidateNumber the ID of the candidate to whom a new coupon will be assigned.
+   * @param user the user performing the reassignment.
+   * @return a DuolingoCouponResponse containing the details of the newly assigned coupon.
+   * @throws NoSuchObjectException if the candidate or available coupons are not found.
+   */
+  DuolingoCouponResponse reassignProctoredCouponToCandidate(String candidateNumber, User user)
+      throws NoSuchObjectException;
 }

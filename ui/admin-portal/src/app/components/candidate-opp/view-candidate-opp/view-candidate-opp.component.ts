@@ -14,19 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
-  CandidateOpportunity,
-  isCandidateOpportunity,
-  isOppStageGreaterThanOrEqualTo
-} from "../../../model/candidate-opportunity";
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {CandidateOpportunity, isCandidateOpportunity} from "../../../model/candidate-opportunity";
 import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-opp.component";
 import {CandidateOpportunityParams} from "../../../model/candidate";
-import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  isCvReviewStageOrMore,
+  Opportunity
+} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -189,12 +197,11 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   }
 
   private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+    this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   private setActiveTabId(id: string) {
@@ -223,7 +230,7 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       this.nonCandidateChats = [this.jobCreatorSourcePartnerChat, this.jobCreatorAllSourcePartnersChat];
     } else if (userIsJobCreator) {
       this.nonCandidateChats = [this.jobCreatorSourcePartnerChat, this.jobCreatorAllSourcePartnersChat];
-      if (this.cvReviewStageOrMore()) {
+      if (isCvReviewStageOrMore(this.opp?.stage)) {
         this.candidateChats = [this.candidateRecruitingChat, this.allJobCandidatesChat];
       } else {
         this.candidateChats = [];
@@ -266,13 +273,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
         this.saving = false;
       }
     );
-  }
-
-  /**
-   *  Recruiters only see candidates past the CV Review stage.
-   */
-  cvReviewStageOrMore() {
-    return isOppStageGreaterThanOrEqualTo(this.opp?.stage, 'cvReview')
   }
 
   hasVisibleCandidateChats(): boolean {

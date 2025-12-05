@@ -86,13 +86,17 @@ export interface Partner extends PartnerSimpleAttributes {
   //The underscore naming is a convention to distinguish this field from those that are
   //uploaded from the server - not set according to context on the browser.
   _jobChat?: JobChat;
+  // DPA fields for versioned acceptance management
+  acceptedDataProcessingAgreementId?: string;
+  acceptedDataProcessingAgreementDate?: string;
+  firstDpaSeenDate?: string;
 }
 
 export function sourceCountriesAsString(partner: Partner): string {
   let s = '';
   const countries: Country[] = partner.sourceCountries;
   if (countries != null) {
-    s = countries.map(c => c.name).join(",");
+    s = countries.map(c => c.name).join(", ");
   }
   return s;
 }

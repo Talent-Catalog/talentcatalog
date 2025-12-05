@@ -14,15 +14,14 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert [type]="'danger'" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i>
-</div>
+<tc-loading [loading]="loading"></tc-loading>
 
 <app-define-search *ngIf="!error && !loading"
+                     [jobId]="jobId"
                      [savedSearch]="savedSearch"
                      [pageNumber]="pageNumber"
                      [pageSize]="pageSize"

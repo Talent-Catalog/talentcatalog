@@ -131,7 +131,7 @@ export class SearchEducationMajorsComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteEducationMajorModal.componentInstance.message = 'Are you sure you want to delete '+educationMajor.name;
+    deleteEducationMajorModal.componentInstance.message = 'Are you sure you want to delete '+ educationMajor.name;
 
     deleteEducationMajorModal.result
       .then((result) => {

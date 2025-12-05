@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
@@ -186,6 +186,15 @@ public class SavedListServiceImpl implements SavedListService {
             final Boolean isSubmissionList = destinationList.getRegisteredJob();
             final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
             if (isSubmissionList && jobOpp != null ) {
+                if (candidate.isPendingTerms()) {
+                    //Candidates who have been shown our latest terms but have not accepted them
+                    //cannot be added to submission lists
+                    throw new InvalidRequestException("Candidate " + candidate.getCandidateNumber()
+                        + " cannot be added to a submission list."
+                        + " They have been shown the latest TC terms but have not accepted them."
+                        + " Ask the candidate to log on to their TC account and accept the terms.");
+                }
+
                 //With no params specified will not change any existing opp associated with this job,
                 //but will create a new opp if needed, with stage defaulting to "prospect"
                 candidateOpportunityService.createUpdateCandidateOpportunities(
@@ -528,6 +537,13 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @NonNull
+    public SavedList getByPublicId(@NonNull String publicId) throws NoSuchObjectException {
+        return savedListRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new NoSuchObjectException(SavedList.class, publicId));
+    }
+
+    @Override
     @Nullable
     public SavedList get(@NonNull User user, String listName) {
         return listName == null ? null :
@@ -562,7 +578,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         Set<Long> candidateIds = new HashSet<>();
 
-        //Extract candidate numbers from file, look up the id and add to candidateIds
+        //Extract candidate numbers or PublicIds from file, look up the id and add to candidateIds
         //We need candidateIds to pass to other methods.
         CSVReader reader = new CSVReader(new InputStreamReader(is));
         String [] tokens;
@@ -573,22 +589,28 @@ public class SavedListServiceImpl implements SavedListService {
                 //Ignore empty tokens
                 if (tokens.length > 0 && !tokens[0].isEmpty()) {
                     //A bit of logic to skip any header. Only checks once.
-                    boolean skip = possibleHeader && !StringUtils.isNumeric(tokens[0]);
+                    boolean skip = possibleHeader &&
+                        !isCandidateNumber(tokens[0]) && !isPublicId(tokens[0]);
                     possibleHeader = false;
 
                     if (!skip) {
-                        long candidateNumber = Long.parseLong(tokens[0]);
-                        Candidate candidate =
-                            candidateRepository.findByCandidateNumber(Long.toString(candidateNumber));
+                        Candidate candidate = null;
+                        if (isPublicId(tokens[0])) {
+                            String publicId = tokens[0];
+                            candidate = candidateRepository
+                                .findByPublicId(publicId).orElse(null);
+                        } else if (isCandidateNumber(tokens[0])) {
+                            long candidateNumber = Long.parseLong(tokens[0]);
+                            candidate = candidateRepository
+                                .findByCandidateNumber(Long.toString(candidateNumber));
+                        }
                         if (candidate == null) {
-                            throw new NoSuchObjectException(Candidate.class, candidateNumber);
+                            throw new NoSuchObjectException(Candidate.class, tokens[0]);
                         }
                         candidateIds.add(candidate.getId());
                     }
                 }
             }
-        } catch (NumberFormatException ex) {
-            throw new NoSuchObjectException("Non numeric candidate number " + ex.getMessage());
         } catch (CsvValidationException ex) {
             throw new IOException("Bad file format: " + ex.getMessage());
         }
@@ -597,6 +619,19 @@ public class SavedListServiceImpl implements SavedListService {
         request.setCandidateIds(candidateIds);
         request.setUpdateType(ContentUpdateType.add);
         mergeSavedList(savedListId, request);
+    }
+
+    private boolean isCandidateNumber(String s) {
+        try {
+            Long.parseLong(s);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
+    private boolean isPublicId(String s) {
+        return s.length() == 22;
     }
 
     @Override
@@ -736,6 +771,22 @@ public class SavedListServiceImpl implements SavedListService {
             savedList.setDisplayedFieldsShort(request.getDisplayedFieldsShort());
         }
         saveIt(savedList);
+    }
+
+    @Override
+    public void updatePendingTermsAcceptance(Candidate candidate, boolean flag) {
+        SavedList ptaList = findPendingTermsAcceptanceList();
+        if (flag) {
+            addCandidateToList(ptaList, candidate, "");
+        } else {
+            removeCandidateFromList(candidate, ptaList);
+        }
+        saveIt(ptaList);
+    }
+
+    private SavedList findPendingTermsAcceptanceList() {
+        return savedListRepository.findPendingTermsAcceptanceList()
+            .orElseThrow(() -> new NoSuchObjectException(SavedList.class, "PendingTermsAcceptance"));
     }
 
     @Override
@@ -933,7 +984,7 @@ public class SavedListServiceImpl implements SavedListService {
             }
 
             if (!def.getType().equals(PublishedDocColumnType.DisplayOnly)) {
-                columnSetUp.setRangeName(def.getType().toString());
+                columnSetUp.setRangeName(def.getType() + "_" + def.getKey());
             }
 
             //Check for a candidate number column. We set up a range name for that column as well
@@ -971,29 +1022,28 @@ public class SavedListServiceImpl implements SavedListService {
             //For job lists where publishClosedOpps is false, filter out closed opps (unless they
             //are "won" - we always publish won opps, which are a special kind of closed).
             candidates = savedList.getCandidates().stream().filter(
-                candidate -> {
-                    return candidate.getCandidateOpportunities().stream()
-                        .anyMatch(opp -> {
-                            return opp.getJobOpp().getId().equals(sfJob.getId())
-                                && (opp.isWon() || !opp.isClosed());
-                        });
-                }
+                candidate ->
+                    candidate.getCandidateOpportunities()
+                    .stream()
+                    .anyMatch(opp -> opp.getJobOpp().getId().equals(sfJob.getId())
+                            && (opp.isWon() || !opp.isClosed()))
             ).toList();
         } else {
             //Publish all for non job lists, or job lists where we have been asked to publish all
             candidates = new ArrayList<>(savedList.getCandidates());
         }
 
-        //Create an empty doc - leaving room for the number of candidates
-        String link = docPublisherService.createPublishedDoc(listFolder, savedList.getName(),
-                publishedSheetDataRangeName, candidates.size() + 1, props, columnSetUpMap);
+        //Create the document - empty but with the number of rows of data expected
+        String link = docPublisherService.createPublishedDoc(
+            listFolder, savedList.getName(), publishedSheetDataRangeName,
+            candidates, request, props, columnSetUpMap);
 
-        //Populate candidate data in doc.
-        //This is processed asynchronously so pass candidate ids, rather than candidate entities
-        //which will not in a persistence context in the Async processing. They will need to
+        //Populate candidate data in doc - filling the empty rows.
+        //This is all processed asynchronously so pass candidate ids, rather than candidate entities,
+        //which will not be in a persistence context in the Async processing. They will need to
         //be reloaded from the database using their ids.
         List<Long> candidateIds = candidates.stream().map(Candidate::getId).collect(Collectors.toList());
-        docPublisherService.populatePublishedDoc(link, savedList.getId(), candidateIds, columnInfos,
+        docPublisherService.populatePublishedDoc(link, savedList.getId(), candidateIds, request,
             publishedSheetDataRangeName);
 
         /*
@@ -1055,6 +1105,15 @@ public class SavedListServiceImpl implements SavedListService {
         return savedListRepository.findUnionOfCandidates(Collections.singletonList(listId));
     }
 
+    @NonNull
+    @Override
+    public Set<String> fetchCandidatePublicIds(String publicListId) {
+        return savedListRepository
+            .findCandidatePublicIdsBySavedListPublicIds(
+                Collections.singletonList(publicListId)
+            );
+    }
+
     @Nullable
     @Override
     public Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds) {
@@ -1063,6 +1122,21 @@ public class SavedListServiceImpl implements SavedListService {
             candidateIds = null;
         } else {
             candidateIds = savedListRepository.findUnionOfCandidates(listIds);
+        }
+        return candidateIds;
+    }
+
+    @Nullable
+    @Override
+    public Set<String> fetchUnionCandidatePublicIds(@Nullable List<String> publicListIds) {
+        Set<String> candidateIds;
+        if (publicListIds == null) {
+            candidateIds = null;
+        } else {
+            candidateIds = savedListRepository
+                .findCandidatePublicIdsBySavedListPublicIds(
+                    publicListIds
+                );
         }
         return candidateIds;
     }
@@ -1087,6 +1161,28 @@ public class SavedListServiceImpl implements SavedListService {
             }
         }
         return candidateIds;
+    }
+
+    @Nullable
+    @Override
+    public Set<String> fetchIntersectionCandidatePublicIds(@Nullable List<String> publicListIds) {
+        Set<String> candidatePublicIds;
+        if (publicListIds == null) {
+            candidatePublicIds = null;
+        } else {
+            final Iterator<String> iterator = publicListIds.iterator();
+            if (iterator.hasNext()) {
+                candidatePublicIds = fetchCandidatePublicIds(iterator.next());
+                while (iterator.hasNext() && !candidatePublicIds.isEmpty()) {
+                    String nextPublicListId = iterator.next();
+                    candidatePublicIds.retainAll(fetchCandidatePublicIds(nextPublicListId));
+                }
+            } else {
+                // No lists provided. Return empty set of candidate public ids.
+                candidatePublicIds = new HashSet<>();
+            }
+        }
+        return candidatePublicIds;
     }
 
     @Nullable

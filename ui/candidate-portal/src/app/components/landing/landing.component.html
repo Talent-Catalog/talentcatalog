@@ -13,15 +13,6 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-<!--
-   MODEL
-
-   Passing existing query params on in another link.
-
-   See below [queryParams] and [queryParamsHandling]
-
-   See also Typescript use of these in registration.service.ts
--->
 <div class="container">
 
   <div class="d-flex justify-content-center mt-4">
@@ -37,21 +28,7 @@
              [queryParamsHandling]="'merge'"
           >{{ 'LANDING.REGISTER' | translate }}</a>
         </div>
-        <hr/>
       </div>
-
-      <hr/>
-
-      <h5><a target="_blank" href="https://talentbeyondboundaries.org/privacy-and-data-protection-policy">
-        {{ 'LANDING.HEADING3' | translate }}
-      </a>
-      </h5>
-
-      <div [innerHTML]="'LANDING.PARA3' | translate:{partner: getPartnerName()}"></div>
-
     </div>
-
-
   </div>
-
 </div>

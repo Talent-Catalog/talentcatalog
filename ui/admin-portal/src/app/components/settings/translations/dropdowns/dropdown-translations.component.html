@@ -14,108 +14,74 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div>
-  <div class="section">
-    <div>
-      <form [formGroup]="searchForm" (ngSubmit)="search()">
-
-        <div class="row">
-
-          <div class="mb-3 col-4">
-            <input type="text" class="form-control" placeholder="Search..." aria-label="Search"
-                   formControlName="keyword"
-                   id="keyword">
-          </div>
-
-          <div class="mb-3 col-4">
-            <ng-select id="type" formControlName="type" placeholder="Select an object type..." [clearable]="false">
-              <ng-option value="country">Countries</ng-option>
-              <ng-option value="language">Languages</ng-option>
-              <ng-option value="language_level">Language Levels</ng-option>
-              <ng-option value="occupation">Occupations</ng-option>
-              <ng-option value="education_level">Education Levels</ng-option>
-              <ng-option value="education_major">Education Majors</ng-option>
-              <ng-option value="survey_type">Survey Types</ng-option>
-            </ng-select>
-          </div>
-
-          <div class="mb-3 col-4">
-            <ng-select id="language" [formControlName]="'language'" [items]="systemLanguages" [clearable]="false"
-                       placeholder="Select a language..." bindValue="language" bindLabel="label"></ng-select>
-          </div>
-
-        </div>
-      </form>
-      <div class="alert alert-danger" *ngIf="error">
-        {{error}}
-      </div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
+<form [formGroup]="searchForm" (ngSubmit)="search()">
+  <div class="row mb-3">
+    <div class="col-4">
+      <input type="text" class="form-control" placeholder="Search..." aria-label="Search"
+             formControlName="keyword"
+             id="keyword">
     </div>
-
-    <div class="text-muted mb-2 align-middle">
-
-      <ngb-pagination class="float-end"
-                      [boundaryLinks]="true"
-                      [pageSize]="pageSize"
-                      [collectionSize]="results?.totalElements"
-                      [(page)]="pageNumber"
-                      [maxSize]="5"
-                      [ellipses]="true"
-                      [rotate]="true"
-                      (pageChange)="search()">
-      </ngb-pagination>
-
-      Found {{results?.totalElements}} translations
+    <div class="col-4">
+      <ng-select id="type" formControlName="type" placeholder="Select an object type..." [clearable]="false">
+        <ng-option value="country">Countries</ng-option>
+        <ng-option value="language">Languages</ng-option>
+        <ng-option value="language_level">Language Levels</ng-option>
+        <ng-option value="occupation">Occupations</ng-option>
+        <ng-option value="education_level">Education Levels</ng-option>
+        <ng-option value="education_major">Education Majors</ng-option>
+        <ng-option value="survey_type">Survey Types</ng-option>
+      </ng-select>
     </div>
-    <form [formGroup]="topLevelForm">
-      <div formArrayName="translations">
-        <table class="table">
-
-          <thead class="table-primary">
-          <tr>
-            <th>Type</th>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Translation</th>
-          </tr>
-          </thead>
-
-          <tbody>
-
-
-          <tr *ngFor="let translation of results?.content; index as index" [formGroupName]="index">
-              <td>{{searchForm.value.type | titlecase}}</td>
-              <td>{{translation.name}}</td>
-              <td>{{translation.status}}</td>
-              <td>
-                <div *ngIf="!loggedInUser.readOnly">
-                  <input type="text" formControlName="value" (blur)="updateTranslation(index)"/>
-                </div>
-                <div *ngIf="loggedInUser.readOnly">
-                  <input type="text" formControlName="value" [readOnly]="loggedInUser.readOnly"/>
-                </div>
-              </td>
-          </tr>
-
-
-          <!-- loading -->
-          <tr *ngIf="loading">
-            <td colspan="42">
-              <i class="fas fa-spinner fa-spin"></i> Loading...
-            </td>
-          </tr>
-
-              <!-- no results -->
-              <tr *ngIf="!loading && !results?.totalElements">
-                <td colspan="42">
-                  <span class="text-muted">(no matching translations)</span>
-                </td>
-              </tr>
-
-          </tbody>
-
-        </table>
-      </div>
-    </form>
-
+    <div class="col-4">
+      <ng-select class="tc-select" id="language" [formControlName]="'language'"
+                 [items]="systemLanguages" [clearable]="false"
+                 placeholder="Select a language..." bindValue="language" bindLabel="label">
+      </ng-select>
+    </div>
   </div>
-</div>
+</form>
+
+<form [formGroup]="topLevelForm">
+  <div formArrayName="translations">
+    <tc-table [results]="results"
+              [loading]="loading"
+              [paginationPosition]="'top'"
+              [(pageNumber)]="pageNumber"
+              (pageChange)="search()"
+              [clickableRows]="false"
+    >
+
+      <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Translation</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr *ngFor="let translation of results?.content; index as index" [formGroupName]="index">
+          <td>{{searchForm.value.type | titlecase}}</td>
+          <td>{{translation.name}}</td>
+          <td>{{translation.status}}</td>
+          <td>
+            <div *ngIf="!loggedInUser.readOnly">
+              <tc-input [type]="'text'"
+                        [formControlName]="'value'"
+                        (blur)="updateTranslation(index)"
+              ></tc-input>
+            </div>
+            <div *ngIf="loggedInUser.readOnly">
+              <tc-input [type]="'text'"
+                        [formControlName]="'value'"
+                        [editable]="false"
+              ></tc-input>
+            </div>
+          </td>
+      </tr>
+      </tbody>
+    </tc-table>
+  </div>
+</form>

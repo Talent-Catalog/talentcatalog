@@ -23,6 +23,9 @@ import {EditCandidateEducationComponent} from "./edit/edit-candidate-education.c
 import {CreateCandidateEducationComponent} from "./create/create-candidate-education.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {CandidateService} from "../../../../services/candidate.service";
+import {
+  EditMaxEducationLevelComponent
+} from "./edit-max-education-level/edit-max-education-level.component";
 
 @Component({
   selector: 'app-view-candidate-education',
@@ -45,6 +48,26 @@ export class ViewCandidateEducationComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  editMaxEducationLevel() {
+    const modalRef = this.modalService.open(EditMaxEducationLevelComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    modalRef.componentInstance.educationLevel = this.candidate.maxEducationLevel;
+    modalRef.result.then((newLevelId) => {
+      if (newLevelId) {
+        const candidatePayload = {
+          maxEducationLevel: newLevelId
+        };
+
+        this.candidateService.updateMaxEducationLevel(this.candidate.id, candidatePayload).subscribe(() => {
+          this.candidateService.updateCandidate(); // refresh candidate
+        });
+      }
+    }).catch(() => { /* dismissed */ });
   }
 
   editCandidateEducation(candidateEducation: CandidateEducation) {

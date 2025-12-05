@@ -14,35 +14,32 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [heading]="title"
+          [showCancel]="true"
+          [actionText]="action"
+          (onAction)="select()"
+          [disableAction]="saving || (form.errors !== null)"
+          [showClose]="true">
 
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <form [formGroup]="form">
 
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-      <input type="radio" class="btn-check" [formControlName]="'newList'" id="btnradio1" autocomplete="off" checked [value]="true">
-      <label class="btn btn-outline-secondary" for="btnradio1">New List</label>
-      <input type="radio" class="btn-check" [formControlName]="'newList'" id="btnradio2" autocomplete="off" [value]="false">
-      <label class="btn btn-outline-secondary" for="btnradio2">Existing List</label>
+    <div class="btn-group" role="group">
+      <tc-radio [formControlName]="'newList'" id="btnradio1" [value]="true" label="New List"></tc-radio>
+      <tc-radio [formControlName]="'newList'" id="btnradio2" [value]="false" label="Existing List"></tc-radio>
     </div>
 
     <hr>
 
     <div *ngIf="!newList" >
-      <div class="mb-3">
-        <label class="form-label">Existing list</label>
+
+      <tc-field class="mb-3">
+        <tc-label>Existing list</tc-label>
         <ng-select
+          class="tc-select"
           id="savedList"
           [items]="lists"
           [clearable]="false"
@@ -51,43 +48,64 @@
           bindLabel="name"
           formControlName="savedList">
         </ng-select>
-        <div *ngIf="selectedSubmissionList()" class="form-text"><span class="fw-bold">Note: </span>
-          Adding candidate(s) to a submission list will create candidate opportunities. <br>
-          Once added they cannot be removed from the submission list, however candidate
-          opportunities can be closed. <br>
-          Closed candidate opportunities are hidden unless checkbox 'view closed cases' is checked.
-          <br> Submission list contents can't be replaced.</div>
+      </tc-field>
+
+      <div *ngIf="selectedSubmissionList()" class="form-text mb-2">
+        <span class="fw-bold">Note: </span>
+        Adding candidate(s) to a submission list will create candidate opportunities.
+        <br>
+        Once added they cannot be removed from the submission list, however candidate
+        opportunities can be closed.
+        <br>
+        Closed candidate opportunities are hidden unless checkbox 'view closed cases' is checked.
+        <br>
+        Submission list contents can't be replaced.
       </div>
-      <div *ngIf="!selectedSubmissionList() && isListMine()" class="mb-3">
-        <div class="form-check form-check-reverse form-check-inline">
-          <label class="form-check-label" for="replace">Replace my existing list contents?</label>
-          <input class="form-check-input" type="checkbox" [formControlName]="'replace'" id="replace">
-        </div>
-      </div>
+
+      <tc-field *ngIf="!selectedSubmissionList() && isListMine()"
+                class="mb-3"
+                [checkbox]="true">
+        <tc-label [for]="'replace'">
+          Replace my existing list contents?
+        </tc-label>
+        <tc-input [type]="'checkbox'" [formControlName]="'replace'" [id]="'replace'"></tc-input>
+      </tc-field>
     </div>
 
     <div *ngIf="newList">
-      <div class="mb-3">
-        <label class="form-label" for="name">Name</label>
-        <input type="text" class="form-control" [formControlName]="'newListName'" [readOnly]="loading" id="name">
-        <div *ngIf="form.errors?.invalidName" class="alert alert-danger" >
-          {{form.errors.invalidName}}
+      <tc-field class="mb-3">
+        <tc-label [for]="'name'">Name</tc-label>
+        <tc-input [type]="'text'"
+                  [formControlName]="'newListName'"
+                  [readonly]="loading"
+                  [id]="'name'">
+        </tc-input>
+        <tc-alert type="warning" *ngIf="form.errors?.invalidName">
+          <div>{{form.errors.invalidName}}</div>
+        </tc-alert>
+      </tc-field>
+
+      <tc-field>
+        <div class="d-flex align-items-baseline mb-3">
+            <tc-label [for]="'name'" class="me-2">OR copy job name</tc-label>
+            <app-joblink (jobSelection)="onJobSelection($event)" class="flex-fill"></app-joblink>
         </div>
-      </div>
-
-      <div class="d-flex align-items-baseline mb-3">
-        <label class="form-label me-2" for="name">OR copy job name</label>
-        <app-joblink (jobSelection)="onJobSelection($event)" class="flex-fill"
-        ></app-joblink>
-      </div>
+      </tc-field>
 
     </div>
 
-    <div *ngIf="canChangeStatuses" class="mb-3 form-check form-check-reverse form-check-inline">
-      <label class="form-check-label" for="changeStatuses">Change status for all candidates
-        {{action == "Save" ? "selected" : "in list"}}?</label>
-      <input class="form-check-input" type="checkbox" [formControlName]="'changeStatuses'" id="changeStatuses">
-    </div>
+    <tc-field *ngIf="canChangeStatuses"
+              [checkbox]="true"
+              class="mb-3">
+      <tc-label [for]="changeStatuses">
+        Change status for all candidates
+        {{action == "Save" ? "selected" : "in list"}}?
+      </tc-label>
+      <tc-input [type]="'checkbox'"
+                [formControlName]="'changeStatuses'"
+                [id]="'changeStatuses'">
+      </tc-input>
+    </tc-field>
 
     <div *ngIf="changeStatuses" class="mb-3">
       <app-candidate-status-selector
@@ -96,13 +114,7 @@
       >
       </app-candidate-status-selector>
     </div>
-  </form>
-</div>
 
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="select()"
-          [disabled]="saving || form.errors">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    {{action}}
-  </button>
-</div>
+  </form>
+
+</tc-modal>

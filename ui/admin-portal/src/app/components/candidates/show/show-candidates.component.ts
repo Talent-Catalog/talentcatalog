@@ -22,8 +22,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from '@angular/core';
 
 import {
@@ -107,11 +106,16 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  getStageBadgeColor,
+  OpportunityIds
+} from "../../../model/opportunity";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {TcModalComponent} from "../../../shared/components/modal/tc-modal.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -127,10 +131,9 @@ interface CachedTargetList {
 })
 export class ShowCandidatesComponent extends CandidateSourceBaseComponent implements OnInit, OnChanges, OnDestroy {
 
-  @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
-
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
+  @Input() isKeywordSearch: boolean = false;
   @Input() declare pageNumber: number;
   @Input() declare pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
@@ -152,13 +155,15 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   updatingTasks: boolean;
   savingSelection: boolean;
   showDescription: boolean = false;
-  searchForm: UntypedFormGroup;
+
+  //This form is defined differently depending on whether the candidate source is a list or a search.
+  //It is used to search within existing results.
+  searchInResultsForm: UntypedFormGroup;
+
   monitoredTask: Task;
   tasksAssignedToList: Task[];
 
   subscription: Subscription;
-  sortField = 'id';
-  sortDirection = 'DESC';
 
   //Request full details on candidates
   searchDetail = DtoType.EXTENDED;
@@ -256,12 +261,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
     if (isSavedSearch(this.candidateSource)) {
       const reviewable = this.candidateSource.reviewable;
-      this.searchForm = this.fb.group({
+      this.searchInResultsForm = this.fb.group({
         statusesDisplay: [reviewable ? defaultReviewStatusFilter: []],
       });
     }
     if (isSavedList(this.candidateSource)) {
-      this.searchForm = this.fb.group({
+      this.searchInResultsForm = this.fb.group({
         keyword: [''],
         showClosedOpps: [this.showClosedOpps]
       });
@@ -293,7 +298,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   get keyword(): string {
-    return this.searchForm ? this.searchForm.value.keyword : "";
+    return this.searchInResultsForm ? this.searchInResultsForm.value.keyword : "";
   }
 
   private savedListStateKey(): string {
@@ -314,7 +319,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   subscribeToFilterChanges(): void {
-    this.searchForm.valueChanges
+    this.searchInResultsForm.valueChanges
       .pipe(
         debounceTime(800),
         distinctUntilChanged()
@@ -327,7 +332,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   private saveShowClosedOpps(): void {
-    const showClosedOppsValue = this.searchForm.get('showClosedOpps').value;
+    const showClosedOppsValue = this.searchInResultsForm.get('showClosedOpps').value;
     this.localStorageService.set(this.savedListStateKey() + this.showClosedOppsSuffix, showClosedOppsValue.toString());
   }
 
@@ -414,6 +419,18 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.searching = true;
     const request = this.searchRequest;
 
+    //todo jc Display a text sort toggle if there is a query string
+
+    //Guard against the case where we have a text sort where there is no query string.
+    let queryString = request.simpleQueryString;
+    const haveSimpleQueryString: boolean =  queryString != null && queryString.trim().length > 0;
+    if (!haveSimpleQueryString && this.sortField === "text_match") {
+      //Text sort when there is no query string does not make sense.
+      //So revert to standard id sort.
+      this.sortField = "id";
+      this.sortDirection = "DESC";
+    }
+
     //Search passed in externally will not have current reviewStatusFilter applied
     //because that is only managed by this component. So fill it in.
     if (this.isReviewable()) {
@@ -448,7 +465,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
        * This component is used in two ways:
        * - To display saved lists
        * - To display saved searches.
-       * This affects the way to a refresh is done.
+       * This affects the way that a refresh is done.
        *
        * For saved lists, it is simply going to the server requesting the requested
        * page of the list.
@@ -607,13 +624,18 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         const _this = this;
         reader.addEventListener('loadend', function () {
           if (typeof reader.result === 'string') {
-            _this.error = JSON.parse(reader.result);
-            const modalRef = _this.modalService.open(_this.downloadCsvErrorModal);
-            modalRef.result
-              .then(() => {
-              })
-              .catch(() => {
-              });
+            const errorObj = JSON.parse(reader.result);
+            const csvExportErrorModal = _this.modalService.open(TcModalComponent, {});
+            csvExportErrorModal.componentInstance.title = 'Export Failed';
+            csvExportErrorModal.componentInstance.icon = 'fas fa-triangle-exclamation';
+            csvExportErrorModal.componentInstance.actionText = 'Retry';
+            csvExportErrorModal.componentInstance.message =
+              "CSV download error: " + "'" + errorObj.message + "'";
+            csvExportErrorModal.componentInstance.isError = true;
+            csvExportErrorModal.componentInstance.onAction.subscribe(() => {
+              _this.exportCandidates();
+              csvExportErrorModal.close();
+            });
           }
         });
         reader.readAsText(err.error);
@@ -776,12 +798,13 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     const sourceType = getCandidateSourceType(candidateSource);
     let sourcePrefix = isSubmissionList(candidateSource) ? "Submission" : "";
     return candidateSource != null ?
-      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name) : sourceType;
+      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')')
+      : sourceType;
   }
 
   onReviewStatusFilterChange() {
 
-    this.reviewStatusFilter = this.searchForm.value.statusesDisplay;
+    this.reviewStatusFilter = this.searchInResultsForm.value.statusesDisplay;
 
     //We can ignore page number because changing the reviewStatus filter will
     //completely change the number of results.
@@ -810,8 +833,11 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return !isSavedSearch(this.candidateSource);
   }
 
-  onSelectionChange(candidate: Candidate, selected: boolean) {
+  displayTextMatchRank(): boolean {
+    return this.isSavedSearch() && !this.useOldSearch && this.isKeywordSearch;
+  }
 
+  onSelectionChange(candidate: Candidate, selected: boolean) {
     //Record change
     candidate.selected = selected;
     //Update cache
@@ -1237,7 +1263,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     showReport.componentInstance.showCancel = false;
     showReport.componentInstance.message = "Paste the link where you want";
     showReport.componentInstance.message = "Paste the link (" + text + ") where you want";
-
   }
 
   addCandidateToList(candidate: Candidate) {
@@ -1485,7 +1510,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   private requestNewStatusInfo(nSelections: number) {
     const modal = this.modalService.open(EditCandidateStatusComponent);
     if (nSelections > 1) {
-      modal.componentInstance.text = "WARNING: You are about to set the status of " +
+      modal.componentInstance.warningText = "You are about to set the status of " +
         nSelections + " candidates. This can only be undone manually, one by one.";
     }
     modal.result
@@ -1523,6 +1548,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
             candidate.status = info.status;
           }
           this.updatingStatuses = false;
+          this.doSearch(true);
         },
         (error) => {
           this.error = error;
@@ -1803,4 +1829,13 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return this.authorizationService.isEmployerPartner();
   }
 
+  isReadOnly(): boolean {
+    return this.authorizationService.isReadOnly();
+  }
+
+  openCandidateInNewTab(candidateNumber: string): void {
+    window.open(`/candidate/${candidateNumber}`, '_blank');
+  }
+
+  protected readonly getStageBadgeColor = getStageBadgeColor;
 }

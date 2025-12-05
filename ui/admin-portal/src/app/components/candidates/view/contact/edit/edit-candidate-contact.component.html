@@ -14,152 +14,235 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal heading="Edit Candidate"
+          [showClose]="true"
+          [showCancel]="true"
+          actionText="Save"
+          (onAction)="onSave()"
+          [disableAction]="candidateForm.invalid || loading || saving"
+>
 
-  <h4 class="modal-title">Edit Candidate</h4>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
+  <form [formGroup]="candidateForm">
+    <div class="row">
+      <div class="col-6">
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'firstName'">First name</tc-label>
+            <tc-input [type]="'text'" [id]="'firstName'" formControlName="firstName"></tc-input>
+          </tc-field>
+        </div>
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'lastName'">Last name</tc-label>
+            <tc-input [type]="'text'" [id]="'lastName'" formControlName="lastName"></tc-input>
+          </tc-field>
+        </div>
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'gender'">Gender</tc-label>
+            <ng-select class="tc-select "
+                       id="gender"
+                       [formControlName]="'gender'"
+                       [items]="genderOptions"
+                       placeholder="Select"
+                       bindLabel="stringValue"
+                       bindValue="key"
+            ></ng-select>
+          </tc-field>
+        </div>
 
-</div>
+        <!-- NATIONALITY -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'nationalityId'">Country of Nationality *</tc-label>
+            <ng-select class="tc-select"
+                       id="nationalityId"
+                       [formControlName]="'nationalityId'"
+                       [items]="nationalities"
+                       [clearable]="false"
+                       placeholder="Select"
+                       bindValue="id"
+                       bindLabel="name"
+            ></ng-select>
+          </tc-field>
+        </div>
 
-<div class="modal-body">
+        <!-- DOB -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'dob'">Date of birth</tc-label>
+            <tc-date-picker id="dob"
+                            [control]="candidateForm.controls.dob"
+                            [allowFuture]="false">
+            </tc-date-picker>
+          </tc-field>
+        </div>
 
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'email'">Email</tc-label>
+            <tc-input [type]="'email'"
+                      [id]="'email'"
+                      [formControlName]="'email'"
+                      pattern="{{emailRegex}}"
+            ></tc-input>
+            <div *ngIf="candidateForm.get('email').touched || candidateForm.get('email').dirty">
+              <small *ngIf="candidateForm.get('email').errors?.['pattern']" class="text-danger">
+                Please enter valid email address
+              </small>
+            </div>
+          </tc-field>
+        </div>
 
-  <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
+        <!-- PHONE # -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'phone'">Phone</tc-label>
+            <app-intl-phone-input id="phone" [control]="candidateForm.controls.phone"></app-intl-phone-input>
+          </tc-field>
+        </div>
+
+        <!-- WHATSAPP -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'whatsapp'">WhatsApp</tc-label>
+            <app-intl-phone-input id="whatsapp" [control]="candidateForm.controls.whatsapp"></app-intl-phone-input>
+          </tc-field>
+        </div>
+
+
+      </div>
+      <div class="col-6">
+        <!-- ADDRESS -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label for="address1">
+              Address
+            </tc-label>
+            <tc-input [type]="'text'"
+                      id="address1"
+                      placeholder="Enter address (if have one)"
+                      [formControlName]="'address1'"
+            ></tc-input>
+          </tc-field>
+        </div>
+
+        <!-- City -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label for="city">
+              City
+            </tc-label>
+            <tc-input [type]="'text'"
+                      [id]="'city'"
+                      [placeholder]="'Enter city'"
+                      [formControlName]="'city'"
+            ></tc-input>
+          </tc-field>
+        </div>
+
+        <!-- City -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'state'">State</tc-label>
+            <tc-input [type]="'text'"
+                      [id]="'state'"
+                      [placeholder]="'Enter state'"
+                      [formControlName]="'state'"
+            ></tc-input>
+          </tc-field>
+        </div>
+
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'countryId'">Country *</tc-label>
+            <ng-select class="tc-select"
+                       id="countryId"
+                       [formControlName]="'countryId'"
+                       [items]="countries"
+                       [clearable]="false"
+                       placeholder="Select"
+                       bindValue="id"
+                       bindLabel="name"
+            ></ng-select>
+          </tc-field>
+        </div>
+
+        <!-- YEAR OF ARRIVAL -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'yearOfArrival'">What year did they arrive in this country?</tc-label>
+            <ng-select class="tc-select"
+                       id="yearOfArrival"
+                       [formControlName]="'yearOfArrival'"
+                       [items]="years"
+                       placeholder="Select"
+            ></ng-select>
+          </tc-field>
+        </div>
+
+        <hr>
+
+        <p class="fst-italic text-muted">
+          If candidate has relocated via employment please provide their relocation details below.
+        </p>
+        <!-- RELOCATED ADDRESS -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'relocatedAddress'">Relocated Address</tc-label>
+            <tc-input [type]="'text'"
+                      [id]="'relocatedAddress'"
+                      [placeholder]="'Enter address'"
+                      [formControlName]="'relocatedAddress'"
+            ></tc-input>
+          </tc-field>
+        </div>
+
+        <!-- RELOCATED City -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'relocatedCity'">Relocated City</tc-label>
+            <tc-input [type]="'text'"
+                      [id]="'relocatedCity'"
+                      [placeholder]="'Enter city'"
+                      [formControlName]="'relocatedCity'"
+            ></tc-input>
+          </tc-field>
+        </div>
+
+        <!-- RELOCATED STATE -->
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'relocatedState'">Relocated State</tc-label>
+            <tc-input [type]="'text'"
+                      [id]="'relocatedState'"
+                      [placeholder]="'Enter state'"
+                      [formControlName]="'relocatedState'"
+            ></tc-input>
+          </tc-field>
+        </div>
+
+        <div class="mb-3">
+          <tc-field>
+            <tc-label [for]="'relocatedCountryId'">Relocated Country</tc-label>
+            <ng-select class="tc-select"
+                       id="relocatedCountryId"
+                       [formControlName]="'relocatedCountryId'"
+                       [items]="countries"
+                       [clearable]="false"
+                       placeholder="Select"
+                       bindValue="id"
+                       bindLabel="name"
+            ></ng-select>
+          </tc-field>
+        </div>
+      </div>
     </div>
 
-    <form [formGroup]="candidateForm">
-      <div class="row">
-        <div class="col-6">
-          <div class="mb-3">
-            <label class="form-label" for="firstName">First name</label>
-            <input type="text" class="form-control" id="firstName" formControlName="firstName">
-          </div>
-          <div class="mb-3">
-            <label class="form-label" for="lastName">Last name</label>
-            <input type="text" class="form-control" id="lastName" formControlName="lastName">
-          </div>
-          <div class="mb-3">
-            <label class="form-label" for="gender">Gender</label>
-            <ng-select id="gender" [formControlName]="'gender'" [items]="genderOptions" placeholder="Select"
-                       name="gender" bindLabel="stringValue" bindValue="key" ></ng-select>
-          </div>
+  </form>
 
-          <!-- NATIONALITY -->
-          <div class="mb-3">
-            <label class="form-label" for="nationalityId">Country of Nationality *</label>
-            <ng-select id="nationalityId" name="nationality" [formControlName]="'nationalityId'" [items]="nationalities"
-                       [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
-          </div>
-
-          <!-- DOB -->
-          <div class="mb-3">
-            <label class="form-label" for="dob">Date of birth</label>
-            <app-date-picker id="dob" [control]="candidateForm.controls.dob" [allowFuture]="false"></app-date-picker>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="email">Email</label>
-            <input type="email" class="form-control" id="email" formControlName="email" pattern="{{emailRegex}}">
-            <div *ngIf="candidateForm.get('email').touched || candidateForm.get('email').dirty">
-              <small *ngIf="candidateForm.get('email').errors?.['pattern']" class="text-danger">Please enter valid email address</small>
-            </div>
-          </div>
-
-          <!-- PHONE # -->
-          <div class="mb-3">
-            <label class="form-label" for="phone">Phone / mobile</label>
-            <input type="text" class="form-control" id="phone" placeholder="Enter phone number" [formControlName]="'phone'">
-          </div>
-
-          <!-- WHATSAPP -->
-          <div class="mb-3">
-            <label class="form-label" for="whatsapp">Whatsapp</label>
-            <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp"
-                   [formControlName]="'whatsapp'">
-          </div>
-
-
-        </div>
-        <div class="col-6">
-          <!-- ADDRESS -->
-          <div class="mb-3">
-            <label class="form-label" for="address1">Address</label>
-            <input type="text" class="form-control" id="address1" placeholder="Enter address (if have one)"
-                   [formControlName]="'address1'">
-          </div>
-
-          <!-- City -->
-          <div class="mb-3">
-            <label class="form-label" for="city">City</label>
-            <input type="text" class="form-control" id="city" placeholder="Enter city" [formControlName]="'city'">
-          </div>
-
-          <!-- City -->
-          <div class="mb-3">
-            <label class="form-label" for="state">State</label>
-            <input type="text" class="form-control" id="state" placeholder="Enter state" [formControlName]="'state'">
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="countryId">Country *</label>
-            <ng-select id="countryId" name="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
-                       placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
-          </div>
-
-          <!-- YEAR OF ARRIVAL -->
-          <div class="mb-3">
-            <label class="form-label" for="yearOfArrival">What year did they arrive in this country?</label>
-            <ng-select id="yearOfArrival" name="yearOfArrival" [formControlName]="'yearOfArrival'"
-                       [items]="years" placeholder="Select"></ng-select>
-          </div>
-
-          <hr>
-
-          <p class="fst-italic text-muted">If candidate has relocated via employment please provide their relocation
-            details below.</p>
-          <!-- RELOCATED ADDRESS -->
-          <div class="mb-3">
-            <label class="form-label" for="relocatedAddress">Relocated Address</label>
-            <input type="text" class="form-control" id="relocatedAddress" placeholder="Enter address"
-                   [formControlName]="'relocatedAddress'">
-          </div>
-
-          <!-- RELOCATED City -->
-          <div class="mb-3">
-            <label class="form-label" for="relocatedCity">Relocated City</label>
-            <input type="text" class="form-control" id="relocatedCity" placeholder="Enter city" [formControlName]="'relocatedCity'">
-          </div>
-
-          <!-- RELOCATED STATE -->
-          <div class="mb-3">
-            <label class="form-label" for="relocatedState">Relocated State</label>
-            <input type="text" class="form-control" id="relocatedState" placeholder="Enter state" [formControlName]="'relocatedState'">
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="relocatedCountryId">Relocated Country</label>
-            <ng-select id="relocatedCountryId" [formControlName]="'relocatedCountryId'"
-                       [items]="countries" [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name">
-            </ng-select>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
-    </form>
-
-  </div>
-</div>
+</tc-modal>

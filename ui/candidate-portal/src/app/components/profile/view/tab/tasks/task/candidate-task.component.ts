@@ -43,9 +43,11 @@ export class CandidateTaskComponent implements OnInit {
   saving: boolean;
   error;
 
-  constructor(private fb: UntypedFormBuilder,
-              private taskAssignmentService: TaskAssignmentService,
-              public sanitizer: DomSanitizer) { }
+  constructor(
+    private fb: UntypedFormBuilder,
+    private taskAssignmentService: TaskAssignmentService,
+    public sanitizer: DomSanitizer
+  ) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -95,12 +97,16 @@ export class CandidateTaskComponent implements OnInit {
     }
   }
 
-  get formAbandoned() {
+  private get formAbandoned(): boolean {
     return this.form.get('abandoned').value;
   }
 
-  get abandonedTask() {
+  private get abandonedTask() {
     return this.selectedTask?.abandonedDate != null;
+  }
+
+  get abandoned() {
+    return this.formAbandoned || this.abandonedTask;
   }
 
   get completedTask() {
@@ -126,29 +132,56 @@ export class CandidateTaskComponent implements OnInit {
     return (new Date(ta.dueDate) < new Date()) && !ta.task.optional;
   }
 
+  /**
+   * This is called when the form of a form task has been submitted
+   */
+  completedFormTask($event: TaskAssignment) {
+    this.saving = true;
+    const request: UpdateTaskAssignmentRequest = {
+      completed: true,
+      abandoned: false
+    }
+    this.taskAssignmentService.updateTaskAssignment(this.selectedTask.id, request).subscribe(
+      (taskAssignment) => {
+        this.selectedTask = taskAssignment;
+        this.saving = false;
+      }, error => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+  }
+
   completedUploadTask($event: TaskAssignment) {
     this.selectedTask = $event;
   }
 
   submitTask() {
     // This handles the submission of the non upload tasks, including any comment or if abandoned.
-    // If it is an upload task the task is completed separately on file upload, the submit button will then add a comment or if abandoned to the upload task.
+    // If it is an upload task the task is completed separately on file upload, the submit button
+    // will then add a comment or if abandoned to the upload task.
     // If it is an already completed task, only can update the comment field.
     if (this.completedTask) {
       this.updateTaskComment();
     } else {
-      if (!this.abandonedTask) {
-        if (this.selectedTask.task.taskType === TaskType.Question || this.selectedTask.task.taskType === TaskType.YesNoQuestion) {
-          this.updateQuestionTask();
-        } else if (this.selectedTask.task.taskType === TaskType.Simple) {
-          this.updateSimpleTask();
-        } else {
-          this.updateUploadTask();
+      if (!this.abandoned) {
+        switch (this.selectedTask.task.taskType) {
+          case TaskType.Question:
+          case TaskType.YesNoQuestion:
+            this.updateQuestionTask();
+            break;
+          case TaskType.Simple:
+            this.updateSimpleTask();
+            break;
+          case TaskType.Upload:
+            this.updateUploadTask();
+            break;
         }
       } else {
         this.updateAbandonedTask();
       }
     }
+    this.form.markAsPristine()
   }
 
   updateQuestionTask() {
@@ -242,4 +275,23 @@ export class CandidateTaskComponent implements OnInit {
     )
   }
 
+  isCommentVisible(): boolean {
+    return this.selectedTask?.task?.taskType !== TaskType.Form
+      || this.form.get('abandoned')?.value === true;
+  }
+
+  isSubmitDisabled(): boolean {
+    if (this.form.invalid || this.form.pristine) {
+      return true;
+    }
+
+    // For Form tasks, submit is only allowed when abandoned or completed
+    if (this.selectedTask?.task?.taskType === TaskType.Form) {
+      return !this.form.get('abandoned')?.value && !this.completedTask;
+    }
+
+    // All other task types allow normal comment submission
+    return false;
+  }
+  protected readonly TaskType = TaskType;
 }

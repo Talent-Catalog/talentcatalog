@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="familyMove">
@@ -28,17 +28,24 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="familyMove" [formControlName]="'familyMove'" (clear)="setNoResponse('familyMove')"
-               [items]="familyMoveOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-    <p class="small mb-0">Note: Explain what is possible with the visa pathway at hand if known, but also explain
+    <ng-select class="tc-select"
+               id="familyMove"
+               [formControlName]="'familyMove'"
+               (clear)="setNoResponse('familyMove')"
+               [items]="familyMoveOptions"
+               [clearOnBackspace]="false"
+               placeholder="Select"
+               bindLabel="stringValue"
+               bindValue="key"
+    ></ng-select>
+    <p class="small mb-0 text-muted">Note: Explain what is possible with the visa pathway at hand if known, but also explain
       that this will help us determine if other visa pathways are suitable should any opportunities arise.</p>
   </div>
   <div *ngIf="familyMove === 'Yes'" class="mb-3">
     <label class="form-label" for="familyMoveNotes">If yes, please add any additional notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+    <tc-textarea rows="4"
               id="familyMoveNotes" [formControlName]="'familyMoveNotes'"
-              placeholder="" ></textarea>
+              placeholder="" ></tc-textarea>
   </div>
 </form>
 

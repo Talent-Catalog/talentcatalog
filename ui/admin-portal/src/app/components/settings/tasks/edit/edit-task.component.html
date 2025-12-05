@@ -14,56 +14,42 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Edit Task</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
-
+<tc-modal heading="Edit Task"
+          (onAction)="onSave()"
+          [disableAction]="taskForm.invalid || loading || saving"
+          [showClose]="true"
+>
+  <tc-loading [loading]="loading"></tc-loading>
+  <tc-alert *ngIf="error">{{error}}</tc-alert>
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
-
     <form [formGroup]="taskForm">
-      <div class="mb-3">
-        <label class="form-label" for="displayName">Display Name</label>
-        <input type="text" class="form-control" id="displayName" formControlName="displayName">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Description</label>
-        <ngx-wig placeholder="" [formControlName]="'description'"></ngx-wig>
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="daysToComplete">Days to Complete</label>
-        <input type="number" class="form-control" id="daysToComplete" formControlName="daysToComplete">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="docLink">Document Link</label>
-        <input type="text" class="form-control" id="docLink" formControlName="docLink">
-        <div class="form-text">Note: If this is a Simple task type, the candidate will be prompted to 'agree' to the document via checkbox.</div>
-        <div *ngIf="taskForm.controls.docLink.errors?.pattern">Please provide valid url</div>
-      </div>
-      <div class="form-check-inline mb-3">
-        <label class="form-label" for="optional">Optional?</label>
-        <input type="checkbox" id="optional" formControlName="optional">
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="taskForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
+      <tc-fieldset>
+        <tc-field>
+          <tc-label for="displayName">Display Name</tc-label>
+          <tc-input type="text" id="displayName" formControlName="displayName"></tc-input>
+        </tc-field>
+        <tc-field>
+          <tc-label for="description">Description</tc-label>
+          <ngx-wig id="description" placeholder="" [formControlName]="'description'"></ngx-wig>
+        </tc-field>
+        <tc-field>
+          <tc-label for="daysToComplete">Days to Complete</tc-label>
+          <tc-input type="number" id="daysToComplete" formControlName="daysToComplete"></tc-input>
+        </tc-field>
+        <tc-field>
+          <tc-label for="docLink">Document Link</tc-label>
+          <tc-input type="text" id="docLink" formControlName="docLink"></tc-input>
+          <tc-description>Note: If this is a Simple task type, the candidate will be prompted
+            to 'agree' to the document via checkbox.</tc-description>
+          <tc-error-message *ngIf="taskForm.controls.docLink.errors?.pattern">
+            Please provide valid url
+          </tc-error-message>
+        </tc-field>
+        <tc-field [checkbox]="true">
+          <tc-label for="optional">Optional?</tc-label>
+          <tc-input type="checkbox" id="optional" formControlName="optional"></tc-input>
+        </tc-field>
+      </tc-fieldset>
     </form>
   </div>
-</div>
+</tc-modal>

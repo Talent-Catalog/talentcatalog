@@ -14,91 +14,169 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-loading type="page" [loading]="loading"></tc-loading>
+
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
 <div *ngIf="!loading && !loadingError">
 
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb align-items-center">
-      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
-      <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
-      <li *ngIf="isEditable()" class="ms-auto">
-        <div  class="input-group">
-          <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
-                 value="{{candidate.status | titlecase}}" disabled>
-          <button class="btn btn-sm btn-secondary" (click)="editCandidate()"><i class="fas fa-edit fa-sm"></i></button>
-        </div>
-      </li>
-    </ol>
+  <div class="d-flex justify-content-between align-items-center mt-3">
 
-  </nav>
+    <div class="candidate-header-container">
+      <p class="text-color-secondary heading-xs">
+        Candidate #{{ candidate.candidateNumber }}
+      </p>
 
-  <div class="d-flex justify-content-between align-items-center">
-
-      <h1>{{candidate.user.firstName}} {{candidate.user.lastName}}
-        <span class="small text-muted">
-        {{candidate.candidateNumber}}
-          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]" class="link-primary">
-            <i class="fas fa-external-link-alt is-link" title="Show candidate in new tab"></i>
-          </a>
-           -
-          <a target="_blank" (click)="downloadGeneratedCV()" class="link-info">
-              <i class="fas fa-file-download"
-                 title="Opens/DLs CV generated from candidate profile"
-              ></i>
-          </a>
-          <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank" class="link-info">
-            <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
-          </a>
-          <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
-             [href]="candidate.folderlink"
-             target="_blank"
-             class="link-info">
-            <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
-          </a>
-          <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank" class="link-info">
-            <i class="fas fa-video" title="Show candidate's one way video"></i>
-          </a>
-          <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank" class="link-info" >
-            <i class="fab fa-linkedin" title="Show candidate's linkedIn"></i>
-          </a>
-          <app-cv-icon
-            *ngIf="isCVViewable()"
-            [candidate]="candidate">
-          </app-cv-icon>
-          <a [href]="publicCvUrl()" target="_blank" class="link-info">
-            <i class="fas fa-users" title="View candidate's public CV"></i>
-          </a>
-          <a (click)="createTailoredCv()" class="link-info">
-            <i class="fas fa-users-gear"  title="View tailored candidate's public CV"></i>
-          </a>
-          <app-potential-duplicate-icon
-            [candidate]="candidate"
-            (refresh)="refreshCandidateProfile()"
-          ></app-potential-duplicate-icon>
-        </span>
-      </h1>
-
-
-      <div class="col-sm-4">
-        <app-candidate-shareable-notes
+      <div class="candidate-name-container gap-2">
+        <h2>{{candidate.user.firstName}} {{candidate.user.lastName}}</h2>
+        <app-potential-duplicate-icon
           [candidate]="candidate"
-          [editable] = "isEditable()"
-        >
-        </app-candidate-shareable-notes>
+          (refresh)="refreshCandidateProfile()"
+          [size]="'lg'"
+        ></app-potential-duplicate-icon>
+
+        <tc-dropdown placement="bottom-start">
+          <tc-dropdown-button type="solid" color="gray">
+            <i class="fas fa-angle-down"></i>
+          </tc-dropdown-button>
+
+          <tc-dropdown-menu>
+            <tc-dropdown-item (itemSelect)="downloadGeneratedCV()"
+                              target="_blank"
+                              title="Open/download generated CV"
+                              [style.line-height]="'1rem'"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+              >
+                <i class="fas fa-file-download"></i>
+              </tc-icon>
+              Open/download generated CV
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="candidate.sflink && canAccessSalesforce()"
+                              [href]="candidate.sflink"
+                              target="_blank"
+                              title="View candidate in Salesforce"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+              >
+                <i class="fab fa-salesforce"></i>
+              </tc-icon>
+              View candidate in Salesforce
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="candidate.folderlink && canAccessGoogleDrive()"
+                              [href]="candidate.folderlink"
+                              target="_blank"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View Google Drive folder"
+              >
+                <i class="fab fa-google-drive"></i>
+              </tc-icon>
+              View Google Drive folder
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="candidate.videolink"
+                              [href]="candidate.videolink"
+                              target="_blank"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View one-way video"
+              >
+                <i class="fas fa-video"></i>
+              </tc-icon>
+              View one-way video
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="candidate.linkedInLink"
+                              [href]="candidate.linkedInLink"
+                              target="_blank"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View LinkedIn"
+              >
+                <i class="fab fa-linkedin"></i>
+              </tc-icon>
+              View LinkedIn
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="isCVViewable() && uploadedCvAvailable"
+                              [routerLink]="['/candidate',candidate.candidateNumber]"
+            >
+              <app-cv-icon [candidate]="candidate"
+                           [size]="'md'"
+                           [color]="'primary'"
+                           [showLabel]="true"
+              ></app-cv-icon>
+            </tc-dropdown-item>
+
+            <tc-dropdown-item [href]="publicCvUrl()"
+                              target="_blank"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View public CV"
+              >
+                <i class="fas fa-users"></i>
+              </tc-icon>
+              View public CV
+            </tc-dropdown-item>
+
+            <tc-dropdown-item (itemSelect)="createTailoredCv()"
+                              [style.line-height]="'1rem'"
+            >
+              <tc-icon [color]="'primary'"
+                       [size]="'md'"
+                       title="View tailored CV"
+              >
+                <i class="fas fa-users-gear"></i>
+              </tc-icon>
+              View tailored CV
+            </tc-dropdown-item>
+          </tc-dropdown-menu>
+        </tc-dropdown>
       </div>
+    </div>
+
+
+    <div class="col-sm-5">
+      <div *ngIf="isEditable()"
+           class="input-group status-editor ms-auto"
+      >
+        <input type="text"
+               class="form-control"
+               id="status"
+               title="{{candidate.candidateMessage}}"
+               value="{{candidate.status | titlecase}}"
+               disabled
+        >
+        <button class="btn btn-sm btn-secondary edit-status-btn" (click)="editCandidate()">
+          <i class="fas fa-edit fa-sm"></i>
+        </button>
+      </div>
+
+      <app-candidate-shareable-notes
+        [candidate]="candidate"
+        [editable] = "isEditable()"
+      ></app-candidate-shareable-notes>
+    </div>
 
   </div>
 
-  <div class="d-flex align-items-end mb-4">
+  <p class="small text-muted mb-1">Add candidate to a list - you can select from lists you created, global lists
+    (like job lists) or lists that you have starred.</p>
+  <div class="d-flex align-items-center mb-5">
     <div class="flex-grow-1">
-      <p class="small text-muted mb-0">Add candidate to a list</p>
       <ng-select
+        class="tc-select"
         [readonly]="!isEditable()"
         [items]="lists"
         [multiple]="true"
@@ -127,132 +205,154 @@
           </div>
         </ng-template>
       </ng-select>
-      <p class="small text-muted mt-1">
-        You can select from lists you created, global lists (like job lists) or lists that you have
-        starred.
-      </p>
     </div>
 
-    <button class="btn btn-sm btn-primary" type="button"
-            (click)="onNewList()">+ New List
-    </button>
+    <tc-button class="ms-2 flex-shrink-0"
+               (onClick)="onNewList()"
+               [size]="'lg'"
+               [type]="'solid'"
+               [color]="'primary'"
+    >
+      + New List
+    </tc-button>
   </div>
 
   <div class="row">
       <!-- Just have main panel taking up whole screen if they cannot view private data (case notes)-->
       <div class="col-sm-{{canViewPrivateInfo() ? mainPanelColWidth : totalPanelWidth}}">
         <!-- TABS -->
-        <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+        <tc-tabs [activeTabId]="activeTabId"
+                 (tabChanged)="onTabChanged($event)"
+        >
 
           <!-- GENERAL -->
-          <ng-container ngbNavItem="General">
-            <a ngbNavLink>General</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'General'">
+            <tc-tab-header>
+              General
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-general-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-general-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- EXPERIENCE -->
-          <ng-container ngbNavItem="Experience">
-            <a ngbNavLink>Experience</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Experience'">
+            <tc-tab-header>
+              Experience
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-experience-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-experience-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Education -->
-          <ng-container ngbNavItem="Education">
-            <a ngbNavLink>Education</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Education'">
+            <tc-tab-header>
+              Education
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-education-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
                 [adminUser]="isAnAdmin()">
               </app-candidate-education-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Additional Info -->
-          <ng-container ngbNavItem="Additional">
-            <a ngbNavLink>Additional Info</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Additional'">
+            <tc-tab-header>
+              Additional Info
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-additional-info-tab
                 [candidate]="candidate"
                 [editable]="isEditable()"
                 [canViewPrivateInfo]="canViewPrivateInfo()">
               </app-candidate-additional-info-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Mini Intake -->
-          <ng-container ngbNavItem="MiniIntake" *ngIf="canViewPrivateInfo()">
-            <a ngbNavLink>Mini Intake</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'MiniIntake'" *ngIf="canViewPrivateInfo()">
+            <tc-tab-header>
+              Mini Intake
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-mini-intake-tab
                 [candidate]="candidate">
               </app-candidate-mini-intake-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Intake -->
-          <ng-container ngbNavItem="FullIntake" *ngIf="canViewPrivateInfo()">
-            <a ngbNavLink>Full Intake</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'FullIntake'" *ngIf="canViewPrivateInfo()">
+            <tc-tab-header>
+              Full Intake
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-intake-tab
                 [candidate]="candidate">
               </app-candidate-intake-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Visa eligibility -->
-          <ng-container ngbNavItem="Visa" *ngIf="canViewPrivateInfo()">
-            <a ngbNavLink>Visa</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Visa'" *ngIf="canViewPrivateInfo()">
+            <tc-tab-header>
+              Visa
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-visa-tab
                 [candidate]="candidate">
               </app-candidate-visa-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- TASKS -->
-          <ng-container ngbNavItem="Tasks" *ngIf="canViewPrivateInfo()">
-            <a ngbNavLink>Tasks</a>
-            <ng-template ngbNavContent>
+          <tc-tab [id]="'Tasks'" *ngIf="canViewPrivateInfo()">
+            <tc-tab-header>
+              Tasks
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-task-tab
                 [candidate]="candidate"
                 [editable]="isEditable()">
               </app-candidate-task-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- JOBS -->
-          <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Jobs">
-            <a ngbNavLink>Jobs</a>
-            <ng-template ngbNavContent>
+          <tc-tab *ngIf="canSeeJobDetails()" [id]="'Jobs'">
+            <tc-tab-header>
+              Jobs
+            </tc-tab-header>
+            <tc-tab-content>
               <app-candidate-jobs-tab
                 [candidate]="candidate">
               </app-candidate-jobs-tab>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
           <!-- Chat between source partner and candidate, or the option to create one -->
-          <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
+          <tc-tab [id]="'CandidateProspect'" *ngIf="candidateProspectTabVisible">
             <!-- Tab header -->
-            <a ngbNavLink>
+            <tc-tab-header>
               Chat With Candidate
-              <app-chat-read-status *ngIf="candidateChat" [chats]="[candidateChat]">
-              </app-chat-read-status>
-            </a>
+            </tc-tab-header>
+            <app-chat-read-status *ngIf="candidateChat"
+                                  [chats]="[candidateChat]"
+            ></app-chat-read-status>
             <!-- Tab content — either the chats or a button to create one with help text -->
-            <ng-template ngbNavContent>
+            <tc-tab-content>
 
               <!-- Candidate's notification preferences for non read only users-->
 <!--              todo Comment this back in when Opt in/out is being supported-->
@@ -280,78 +380,63 @@
 <!--                </div>-->
 <!--              </div>-->
 
-
-              <!-- Mute/Unmute candidate button for non read only users-->
-              <div *ngIf="!isReadOnlyUser()" class="container">
-                <ng-template #mutingTip>
-                  <div>
-                    <p>
-                      Muting a candidate prevents them from posting on any chat - but they can see
-                      posts that are sent to them.
-                    </p>
-                    <p>
-                      You should only mute a candidate when their posts do not adhere to TC rules.
-                    </p>
-                    <p>
-                      You can unmute them at any time.
-                    </p>
-                    <p>
-                      Whenever a candidate is muted or unmuted a candidate note is automatically
-                      generated recording the fact.
-                    </p>
-                  </div>
-                </ng-template>
-
-                <div class="mute-btn-align">
-                  <button class="btn btn-sm btn-accent-2" (click)="toggleMuted()"
-                  title="">
-                    {{computeMuteButtonLabel()}}
-                    <i *ngIf="this.candidate.muted; else notMute" class="fas fa-comment"></i>
-                    <ng-template #notMute><i class="fas fa-comment-slash"></i></ng-template>
-                  </button>
-                  <button class="tool-tip-button" [ngbTooltip]="mutingTip" triggers="click" tooltipClass="mute-tip">
-                    <i class="fa-regular fa-circle-question fa-xs"></i>
-                  </button>
-                </div>
+              <div class="mute-btn-align" *ngIf="!isReadOnlyUser()">
+                <app-chat-mute-toggle-button
+                  [candidate]="candidate"
+                  [refreshAfterToggle]="true"
+                  (mutedToggled)="onMuteToggled()">
+                </app-chat-mute-toggle-button>
               </div>
 
               <app-view-chat-posts *ngIf="candidateChat; else createChatButton"
                                    [readOnly] = "isReadOnlyUser()"
                                    [chat]="candidateChat">
               </app-view-chat-posts>
+
               <ng-template #createChatButton>
                 <div *ngIf="!isReadOnlyUser()">
                   <div class="text-center mt-5 mb-4">
-                    <button class="btn btn-secondary mb-1" (click)="createChat()">
-                  <span *ngIf="loadingButton; else elseBlock">
-                    <i class="fas fa-spinner fa-spin"></i>
-                  </span>
+                    <tc-button class="mb-1"
+                               (onClick)="createChat()"
+                               [type]="'solid'"
+                               [color]="'primary'"
+                               [size]="'lg'"
+                    >
+                      <tc-loading [loading]="true"
+                                  *ngIf="loadingButton; else elseBlock"
+                      ></tc-loading>
                       <ng-template #elseBlock>
                         <i class="fa-regular fa-comment"></i>
                       </ng-template>
                       Create Chat
-                    </button>
+                    </tc-button>
                   </div>
                   <div class="text-muted fw-light text-center fs-6">
                     Click the button to create a chat with this candidate.
                     <br><br>
                     They will not see the chat until you have posted, at which point the Chat tab
-                    will appear on their candidate portal profile. Candidates are notified via email
-                    when new posts are added.
+                    will appear on their candidate portal profile.
+                    <br>
+                    Candidates are notified via email when new posts are added.
                   </div>
                 </div>
               </ng-template>
-            </ng-template>
-          </ng-container>
+            </tc-tab-content>
+          </tc-tab>
 
-        </nav>
-        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        </tc-tabs>
+
       </div>
-      <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} admin-panel">
+      <div *ngIf="canViewPrivateInfo()" class="col-sm-{{sidePanelColWidth}} candidate-notes-panel">
         <div class="w-100">
           <div *ngIf="canToggleSizes()" class="float-end">
-            <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-              class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i></button>
+            <tc-button (onClick)="resizeSidePanel()"
+                       [type]="'outline'"
+                       [size]="'sm'"
+                       [color]="'primary'"
+            >
+              <i class="fas fa-arrow-{{sidePanelColWidth == 2 ? 'left' : 'right'}}"></i>
+            </tc-button>
           </div>
           <app-view-candidate-note
             [candidate]="candidate"

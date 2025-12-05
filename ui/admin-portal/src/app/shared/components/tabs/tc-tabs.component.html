@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs">
+  <li *ngFor="let tab of tabs; let i = index"
+    class="nav-item"
+    (click)="selectTab(i)">
+    <a class="nav-link" [class.active]="i === activeIndex" [title]="tab.description ? tab.description : ''">
+      <ng-container *ngTemplateOutlet="tab.header"></ng-container>
+    </a>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <ng-container *ngFor="let tab of tabs">
+    <div *ngIf="tab.id === activeTabId" class="tab-pane active">
+      <ng-container *ngTemplateOutlet="tab.content"></ng-container>
+    </div>
+  </ng-container>
+</div>

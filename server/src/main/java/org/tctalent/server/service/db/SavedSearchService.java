@@ -16,10 +16,10 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.validation.constraints.NotNull;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;
@@ -44,6 +44,20 @@ import org.tctalent.server.request.search.UpdateWatchingRequest;
 
 
 public interface SavedSearchService {
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @return String containing the SQL
+     */
+    String extractFetchSQL(SearchCandidateRequest request);
 
     /**
      * Return all SavedSearch's that match the given ids, ordered by name.

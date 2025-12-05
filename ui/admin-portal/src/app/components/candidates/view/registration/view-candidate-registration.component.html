@@ -14,175 +14,151 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div class="card" *ngIf="!loading">
 
-  <div class="card-header">
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
+
+  <tc-card-header>
     Registration
     <div class="float-end" *ngIf="editable">
-      <button class="btn btn-sm btn-secondary" (click)="editRegistrationDetails()">
-        <i class="fas fa-edit"></i></button>
+      <tc-button (onClick)="editRegistrationDetails()"
+                 [color]="'primary'"
+                 [size]="'sm'"
+                 [type]="'solid'"
+      >
+        <i class="fas fa-edit"></i>
+      </tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
 
-    <div class="row">
+    <tc-description-item [label]="'Partner'"
+                         [icon]="'fas fa-id-badge'"
+    >
+        <a target="_blank" [href]="candidate.user.partner.websiteUrl"
+           [innerHtml]="candidate.user.partner.name + ' ' + candidate.user.partner.abbreviation"
+           appHighlightSearch>
+        </a>
+    </tc-description-item>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-id-badge"></i>Partner</label>
+    <tc-description-item [label]="'Partner\'s ID for candidate'"
+                         [icon]="'fas fa-id-badge'"
+    >
+      <span *ngIf="candidate.partnerRef"
+            [innerHtml]="candidate.partnerRef"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>
-            <a target="_blank" [href]="candidate.user.partner.websiteUrl"
-               [innerHtml]="candidate.user.partner.name + ' ' + candidate.user.partner.abbreviation"
-               appHighlightSearch>
-            </a>
-          </span>
-        </div>
-      </div>
+    <tc-description-item [label]="'External ID'"
+                         [icon]="'fas fa-id-badge'"
+    >
+      <span
+          [innerHtml]="candidate.externalId"
+          appHighlightSearch
+      ></span>
+      <span *ngIf="candidate.externalIdSource"
+            [innerHtml]="': ' + candidate.externalIdSource"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-id-badge"></i>Partner's id for candidate</label>
+    <tc-description-item [label]="'UNHCR Registered'"
+                         [icon]="'far fa-registered'"
+    >
+      <span>{{candidate.unhcrRegistered}}</span>
+      <span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"
+            [innerHtml]="' - #' + candidate.unhcrNumber"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span *ngIf="candidate.partnerRef"
-                [innerHtml]="candidate.partnerRef"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UNRWA Registered'"
+                         [icon]="'far fa-registered'"
+    >
+      <span>{{candidate.unrwaRegistered}}</span>
+      <span *ngIf="candidate.unrwaNumber && candidate.unrwaRegistered === 'Yes'"
+            [innerHtml]="' - #' + candidate.unrwaNumber"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.externalId" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-id-badge"></i>External Id</label>
+    <tc-description-item [label]="'UNHCR Status'"
+                         [icon]="'far fa-registered'"
+    >
+      <span>{{candidate.unhcrStatus}}</span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span
-              [innerHtml]="candidate.externalId"
-              appHighlightSearch>
-          </span>
-          <span *ngIf="candidate.externalIdSource"
-                [innerHtml]="': ' + candidate.externalIdSource"
-                appHighlightSearch></span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UNHCR Consent'"
+                         [icon]="'far fa-thumbs-up'"
+    >
+      <span>{{candidate.unhcrConsent}}</span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.unhcrRegistered" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="far fa-registered"></i>UNHCR Registered</label>
+    <tc-description-item [label]="'Partner Query Param'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoPartnerParam"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.unhcrRegistered}}</span>
-          <span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"
-                [innerHtml]="' - #' + candidate.unhcrNumber"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
+    <tc-description-item [label]="'Referrer Query Param'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoReferrerParam"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.unrwaRegistered" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="far fa-registered"></i>UNRWA Registered</label>
+    <tc-description-item [label]="'UTM Campaign'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmCampaign"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.unrwaRegistered}}</span>
-          <span *ngIf="candidate.unrwaNumber && candidate.unrwaRegistered === 'Yes'"
-                [innerHtml]="' - #' + candidate.unrwaNumber"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UTM Content'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmContent"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.unhcrStatus" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="far fa-registered"></i>UNHCR Status</label>
+    <tc-description-item [label]="'UTM Medium'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmMedium"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.unhcrStatus}}</span>
-        </div>
-      </div>
+    <tc-description-item [label]="'UTM Source'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmSource"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-      <div *ngIf="candidate.unhcrConsent" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="far fa-thumbs-up"></i>UNHCR Consent</label>
+    <tc-description-item [label]="'UTM Term'"
+                         [icon]="'fas fa-question'"
+    >
+      <span [innerHtml]="candidate.regoUtmTerm"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.unhcrConsent}}</span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoPartnerParam" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-question"></i>Partner Query Parameter</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoPartnerParam"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoReferrerParam" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-question"></i>Referrer Query Parameter</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoReferrerParam"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmCampaign" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-question"></i>UTM Campaign</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmCampaign"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmContent" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-question"></i>UTM Content</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmContent"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmMedium" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-question"></i>UTM Medium</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmMedium"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmSource" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-question"></i>UTM Source</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmSource"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.regoUtmTerm" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-question"></i>UTM Term</label>
-
-        <div class="form-control-plaintext">
-          <span [innerHtml]="candidate.regoUtmTerm"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-</div>
+  </tc-description-list>
+</tc-card>

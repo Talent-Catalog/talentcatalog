@@ -14,29 +14,28 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="card">
+<tc-card>
 
-  <div class="card-header">
+  <tc-card-header>
     Skills (migrated)
+  </tc-card-header>
+
+  <div *ngIf="!candidate.candidateSkills || candidate.candidateSkills.length == 0">
+    <div class="row">
+      <div class="col-sm-12">
+        No skills migrated
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngFor="let skill of candidate.candidateSkills">
+    <div class="col-6"
+         [innerHtml]="skill.skill"
+         appHighlightSearch>
+    </div>
+    <div class="col-6"
+         [innerHtml]="skill.timePeriod + ' years'"
+         appHighlightSearch>
+    </div>
   </div>
 
-  <div class="card-body">
-    <div *ngIf="!candidate.candidateSkills || candidate.candidateSkills.length == 0">
-      <div class="row">
-        <div class="col-sm-12">
-          No skills migrated
-        </div>
-      </div>
-    </div>
-    <div class="row" *ngFor="let skill of candidate.candidateSkills">
-      <div class="col-6"
-           [innerHtml]="skill.skill"
-           appHighlightSearch>
-      </div>
-      <div class="col-6"
-           [innerHtml]="skill.timePeriod + ' years'"
-           appHighlightSearch>
-      </div>
-    </div>
-  </div>
-</div>
+</tc-card>

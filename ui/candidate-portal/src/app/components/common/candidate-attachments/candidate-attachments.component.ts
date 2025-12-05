@@ -71,7 +71,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     this._loading.user = true;
     this.editTarget = null;
 
-    this.candidateService.getCandidateNumber().subscribe(
+    this.candidateService.getCandidatePersonal().subscribe(
       (response) => {
         this.candidateNumber = response.candidateNumber;
         this._loading.candidate = false;
@@ -131,7 +131,7 @@ export class CandidateAttachmentsComponent implements OnInit {
   deleteAttachment(attachment: CandidateAttachment) {
     this.deleting = true;
     this.candidateAttachmentService.deleteAttachment(attachment.id).subscribe(
-      (response) => {
+      () => {
         this.attachments = this.attachments.filter(att => att.name !== attachment.name);
         this.deleting = false;
       },
@@ -160,7 +160,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     }
 
     forkJoin(...uploads).subscribe(
-      (results: CandidateAttachment[]) => {
+      () => {
         this.uploading = false;
         this.refreshAttachments();
       },
@@ -199,7 +199,7 @@ export class CandidateAttachmentsComponent implements OnInit {
       name: attachment.name
     };
     this.candidateAttachmentService.updateAttachment(attachment.id, request).subscribe(
-      (response) => {
+      () => {
         this.attachments[i] = attachment;
         this.editTarget = null;
         this._loading.saving = false;

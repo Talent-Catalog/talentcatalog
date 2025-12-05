@@ -60,7 +60,7 @@ export class AuthorizationService {
     //For now only TBB can do this.
     //Todo Need to make this more broadly available. It gets complicated when assigning tasks
     //to a list - if that list has candidates from multiple partners.
-    return this.isDefaultSourcePartner();
+    return this.isDefaultSourcePartner() && !this.isReadOnly();
   }
 
   canViewCandidateCountry(): boolean {
@@ -478,6 +478,14 @@ export class AuthorizationService {
   canEditCandidateOpp(opp: CandidateOpportunity) {
     return !this.isReadOnly() && this.isPartnerAdminOrGreater() &&
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
+  }
+
+  /**
+   * True if the currently logged-in user can edit the given job opp.
+   * @param jobOpp Job Opp
+   */
+  canEditJobOpp(jobOpp: Job) {
+    return !this.isReadOnly() && this.isPartnerAdminOrGreater() && this.isJobOurs(jobOpp as ShortJob);
   }
 
   /**

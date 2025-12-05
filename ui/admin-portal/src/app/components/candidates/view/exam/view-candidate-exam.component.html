@@ -14,83 +14,105 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> Loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
-<div *ngIf="error">
-  {{ error }}
-</div>
-<div class="card" *ngIf="!loading">
-  <div class="card-header">
+
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
+  <tc-card-header>
     Exams
-    <div class="float-end" *ngIf="editable">
-      <button type="button" class="btn btn-primary btn-sm" (click)="createCandidateExam()">
+    <div class="d-flex justify-content-end" *ngIf="editable">
+      <tc-button [type]="'solid'"
+                 [color]="'primary'"
+                 [size]="'sm'"
+                 (onClick)="createCandidateExam()"
+      >
         <i class="fas fa-plus"></i>
-      </button>
+      </tc-button>
+    </div>
+  </tc-card-header>
+
+  <div *ngIf="!candidate.candidateExams || candidate.candidateExams.length == 0">
+    <div class="row">
+      <div class="col-sm-12">
+        No exams entered
+      </div>
     </div>
   </div>
 
-  <div class="card-body">
-    <div *ngIf="!candidate.candidateExams || candidate.candidateExams.length == 0">
-      <div class="row">
-        <div class="col-sm-12">
-          No exams entered
+  <div *ngFor="let candidateExam of candidate.candidateExams; let i = index">
+
+    <hr *ngIf="i > 0">
+
+    <div class="row mb-3">
+      <div class="col-6">
+        <span class="card-title" appHighlightSearch>
+          <label class="col-form-label text-muted">
+            <strong>Exam:</strong> {{ candidateExam.exam || 'N/A' }}
+          </label>
+        </span>
+      </div>
+
+      <div class="col-6">
+        <div class="d-flex justify-content-end gap-2" *ngIf="editable">
+
+          <tc-button [type]="'plain'"
+                     [color]="'secondary'"
+                     [size]="'sm'"
+                     (onClick)="editCandidateExam(candidateExam)"
+          >
+            <i class="fas fa-edit"></i>
+          </tc-button>
+
+          <tc-button *ngIf="adminUser"
+                     (onClick)="deleteCandidateExam(candidateExam)"
+                     [size]="'sm'"
+                     [type]="'plain'"
+                     [color]="'gray'"
+          >
+            <i class="fas fa-trash"></i>
+          </tc-button>
+
         </div>
       </div>
     </div>
-    <div *ngFor="let candidateExam of candidate.candidateExams">
-      <div class="row mb-3">
-        <div class="col-6">
-          <span class="card-title" appHighlightSearch>
-            <label class="col-form-label text-muted">
-              <strong>Exam:</strong> {{ candidateExam.exam || 'N/A' }}
-            </label>
-          </span>
-        </div>
 
-        <div class="col-6">
-          <div class="btn-group float-end" *ngIf="editable">
-            <button type="button" class="btn btn-default" (click)="editCandidateExam(candidateExam)"><i
-              class="fas fa-edit"></i></button>
-            <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateExam(candidateExam)">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        </div>
+    <div class="row mb-3" *ngIf="candidateExam.exam === 'Other'">
+      <div class="col-6">
+        <label class="col-form-label text-muted">
+          <strong>Other Exam Name:</strong> {{ candidateExam.otherExam || 'N/A' }}
+        </label>
       </div>
-
-      <div class="row mb-3" *ngIf="candidateExam.exam === 'Other'">
-        <div class="col-6">
-          <label class="col-form-label text-muted">
-            <strong>Other Exam Name:</strong> {{ candidateExam.otherExam || 'N/A' }}
-          </label>
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label text-muted card-subtitle">
-            <strong>Year:</strong> {{ candidateExam.year || 'N/A' }}
-          </label>
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label text-muted">
-            <strong>Score:</strong> {{ candidateExam.score || 'N/A' }}
-          </label>
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label text-muted card-subtitle">
-            <strong>Notes:</strong> {{ candidateExam.notes || 'N/A' }}
-          </label>
-        </div>
-      </div>
-      <hr/>
     </div>
+
+    <div class="row mb-3">
+      <div class="col-sm-12 col-md-6">
+        <label class="col-form-label text-muted card-subtitle">
+          <strong>Year:</strong> {{ candidateExam.year || 'N/A' }}
+        </label>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-sm-12 col-md-6">
+        <label class="col-form-label text-muted">
+          <strong>Score:</strong> {{ candidateExam.score || 'N/A' }}
+        </label>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-sm-12 col-md-6">
+        <label class="col-form-label text-muted card-subtitle">
+          <strong>Notes:</strong> {{ candidateExam.notes || 'N/A' }}
+        </label>
+      </div>
+    </div>
+
   </div>
-</div>
+
+</tc-card>

@@ -216,12 +216,32 @@ public interface SavedListService {
     Set<Long> fetchCandidateIds(long listId);
 
     /**
+     * Fetches the public ids of candidates in the given list, note that the list id provided
+     * must be the public id of the list, not the internal id.
+     *
+     * @param publicListId public Id of list
+     * @return public Ids of candidates contained in the list
+     */
+    @NonNull
+    Set<String> fetchCandidatePublicIds(String publicListId);
+
+    /**
      * Fetches the ids of the union of all candidates in all the given lists
      * @param listIds Ids of lists
      * @return Ids of candidates contained in the lists or null if ids is null
      */
     @Nullable
     Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds);
+
+    /**
+     * Fetches the public ids of the union of all candidates in all the given lists, note that the
+     * list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates contained in the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchUnionCandidatePublicIds(@Nullable List<String> publicListIds);
 
     /**
      * Fetches the ids of candidates which appear in all the given lists
@@ -231,6 +251,15 @@ public interface SavedListService {
     @Nullable
     Set<Long> fetchIntersectionCandidateIds(@Nullable List<Long> listIds);
 
+    /**
+     * Fetches the public ids of the intersection of all candidates in all the given lists, note
+     * that the list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates common to all the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchIntersectionCandidatePublicIds(@Nullable List<String> publicListIds);
 
     /**
      * Get the SavedList with the given id.
@@ -240,6 +269,15 @@ public interface SavedListService {
      */
     @NonNull
     SavedList get(long savedListId) throws NoSuchObjectException;
+
+    /**
+     * Get the SavedList with the given public id.
+     * @param publicId public ID of the SavedList to get
+     * @return Saved list
+     * @throws NoSuchObjectException if there is no saved list with this public id.
+     */
+    @NonNull
+    SavedList getByPublicId(@NonNull String publicId) throws NoSuchObjectException;
 
     /**
      * Get the SavedList, if any, with the given name (ignoring case), owned by the given user.
@@ -302,11 +340,13 @@ public interface SavedListService {
 
     /**
      * Merge the contents of the SavedList with the given id with the
-     * candidates whose candidate numbers (NOT ids) appear in the given input stream.
-     * @param savedListId ID of saved list to be updated
-     * @param is Input stream containing candidate numbers, one to a line
-     * @throws NoSuchObjectException if there is no saved list with this id
-     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * candidates whose candidate numbers (NOT ids) or publicIds appear in the given input stream.
+     * @param savedListId ID of the saved list to be updated
+     * @param is Input stream formatted as csv containing candidate numbers or publicIds, in the
+     *           first column.
+     * @throws NoSuchObjectException if there is no saved list with this id,
+     * or if any of the candidate numbers are not numeric, or is not a publicId or does not
+     * correspond to a candidate.
      * @throws IOException If there is a problem reading the input stream
      */
     void mergeSavedListFromInputStream(long savedListId, InputStream is)
@@ -418,6 +458,18 @@ public interface SavedListService {
     void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
+
+    /**
+     * Tags or untags the given candidate as pendingTermsAcceptance.
+     * (This is done by adding or removing them from the associated SavedList).
+     * <p>
+     *     This means that we have informed the candidate that they need to accept new terms and
+     *     that we are still waiting for them to do it.
+     * </p>
+     * @param candidate Candidate to be tagged/untagged
+     * @param flag True if we are waiting for the candidate to accept terms.
+     */
+    void updatePendingTermsAcceptance(Candidate candidate, boolean flag);
 
     /**
      * Create a published external document from the data of candidates in the given list.

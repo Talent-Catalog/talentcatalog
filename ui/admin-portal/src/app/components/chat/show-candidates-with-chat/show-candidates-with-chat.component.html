@@ -14,53 +14,43 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
+<tc-alert type="warning" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 
-<!-- MODEL: loading indicator that doesn't move other elements on the screen around -->
-<!-- loading -->
-<div class="mt-1">
-  <span *ngIf="loading || !chatsReadProcessingComplete; else emptyLine">
-    <i class="fas fa-spinner fa-spin"></i> Loading...
-  </span>
-  <!-- Keeps elements from bouncing around when toggling between loading and not loading -->
-  <ng-template #emptyLine><br></ng-template>
-</div>
+<tc-loading *ngIf="loading || !chatsReadProcessingComplete" [loading]="loading"></tc-loading>
 
-<div class="searches mb-4 mt-3">
-  <form [formGroup]="searchForm" (ngSubmit)="fetchCandidatesWithActiveChat(true)">
-    <div class="row mb-3">
-      <div class="col-10">
-        <input #searchFilter type="text" class="form-control" placeholder="Name or number..."
-               aria-label="Search" formControlName="keyword"
-               id="keyword">
-      </div>
-      <div class="col-2">
-        <button class="btn btn-sm btn-accent-3" (click)="refresh($event)">
-          Refresh
-          <i class="fas fa-sync" title="Refresh data"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="row mb-2">
-      <div class="col-md-5">
-        <div class="form-check form-check-reverse">
-          <input [title]="unreadOnlyTip" type="checkbox"
-                 formControlName="unreadOnly" id="unreadOnlyCheckbox" class="form-check-input">
-          <label class="form-check-label" [title]="unreadOnlyTip"
-                 for="unreadOnlyCheckbox">{{unreadOnlyLabel}}</label>
+<div *ngIf="!loading">
+  <div class="searches">
+    <form [formGroup]="searchForm" (ngSubmit)="fetchCandidatesWithActiveChat(true)">
+      <div class="row">
+        <div class="col-md-8">
+          <tc-field>
+            <tc-input #searchFilter type="text" placeholder="Name or number..."
+                      aria-label="Search" formControlName="keyword" id="keyword"></tc-input>
+          </tc-field>
+        </div>
+        <div class="col-md-3 align-content-center">
+          <tc-field [checkbox]="true" [title]="unreadOnlyTip">
+            <tc-label for="unreadOnlyCheckbox">{{unreadOnlyLabel}}</tc-label>
+            <tc-input type="checkbox" formControlName="unreadOnly" id="unreadOnlyCheckbox"></tc-input>
+          </tc-field>
+        </div>
+        <div class="col-md-1">
+          <tc-button type="plain" color="primary" (onClick)="refresh($event)">
+            <i class="fas fa-sync" title="Refresh data"></i>
+          </tc-button>
         </div>
       </div>
-    </div>
-  </form>
-</div>
 
-<div class="table-responsive">
-  <table class="table table-hover">
+      <div class="row">
 
-    <thead class="table-primary">
+      </div>
+    </form>
+  </div>
+
+  <tc-table [results]="results" [loading]="loading" [(pageNumber)]="pageNumber" (pageChange)="fetchCandidatesWithActiveChat(true)">
+    <thead>
     <tr>
       <th (click)="toggleSort('id')">
         <app-sorted-by [column]="'id'"
@@ -88,44 +78,32 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let candidate of candidates"
-          (click)="onCandidateSelected(candidate)"
-          [ngClass]="{'current': currentCandidate?.id == candidate.id}"
-      >
-        <td>
-          <a class="fw-bold" target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+    <tr *ngFor="let candidate of candidates"
+        (click)="onCandidateSelected(candidate)"
+        [ngClass]="{'current': currentCandidate?.id == candidate.id}"
+    >
+      <td>
+        <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]" class="d-flex gap-2">
+          <span class="fw-bold">
             {{candidate.candidateNumber}}
-          </a>
-          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+          </span>
+          <span class="text-decoration-none">
             <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
-          </a>
-        </td>
-        <td>
-          {{candidate.user.firstName}}
-        </td>
-        <td>
-          {{candidate.user.lastName}}
-        </td>
-        <td>
-          <app-chat-read-status *ngIf="chatsReadProcessingComplete"
-                                [chats]="getCandidateChat(candidate)">
-          </app-chat-read-status>
-        </td>
-      </tr>
+          </span>
+        </a>
+      </td>
+      <td>
+        {{candidate.user.firstName}}
+      </td>
+      <td>
+        {{candidate.user.lastName}}
+      </td>
+      <td>
+        <app-chat-read-status *ngIf="chatsReadProcessingComplete"
+                              [chats]="getCandidateChat(candidate)">
+        </app-chat-read-status>
+      </td>
+    </tr>
     </tbody>
-  </table>
-</div>
-
-<div class="text-muted mb-2 align-middle">
-  <ngb-pagination [boundaryLinks]="true"
-                  [pageSize]="pageSize"
-                  [collectionSize]="results?.totalElements"
-                  [(page)]="pageNumber"
-                  [maxSize]="5"
-                  [ellipses]="true"
-                  [rotate]="true"
-                  (pageChange)="fetchCandidatesWithActiveChat(true)">
-  </ngb-pagination>
-
-  Found {{results?.totalElements}} in total
+  </tc-table>
 </div>

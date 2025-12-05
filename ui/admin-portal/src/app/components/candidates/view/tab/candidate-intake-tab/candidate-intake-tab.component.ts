@@ -37,6 +37,7 @@ import {
 } from "../../../../../services/candidate-dependant.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
 import {calculateAge} from "../../../../../model/candidate";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -52,6 +53,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
               noteService: CandidateNoteService,
               authenticationService: AuthenticationService,
               modalService: NgbModal,
+              private authorizationService: AuthorizationService,
               private candidateCitizenshipService: CandidateCitizenshipService,
               private candidateExamService: CandidateExamService,
               private candidateDependantService: CandidateDependantService) {
@@ -68,7 +70,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       if (this.candidate.fullIntakeCompletedBy != null) {
         user = this.candidate?.fullIntakeCompletedBy.firstName + " " + this.candidate?.fullIntakeCompletedBy.lastName;
       } else {
-        user = "external intake input, see notes for more details."
+        user = "external input - see Notes for more details"
       }
     }
     return user;
@@ -78,9 +80,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
     return this.countryService.isPalestine(this.candidate?.nationality)
   }
 
-  addCitizenshipRecord(e: MouseEvent) {
-    // Stop the button from opening/closing the accordion
-    e.stopPropagation();
+  addCitizenshipRecord() {
     this.saving = true;
     const request: CreateCandidateCitizenshipRequest = {};
     this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
@@ -94,8 +94,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addExamRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addExamRecord() {
     this.saving = true;
     const request: CreateCandidateExamRequest = {};
     this.candidateExamService.create(this.candidate.id, request).subscribe(
@@ -109,8 +108,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addDependantRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addDependantRecord() {
     const request: CreateCandidateDependantRequest = {};
     this.candidateDependantService.create(this.candidate.id, request).subscribe(
       (dependant) => {
@@ -145,6 +143,15 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       }
     }
     return health;
+  }
+
+
+  isReadOnly() {
+    return this.authenticationService.getLoggedInUser().readOnly;
+  }
+
+  isEditable(): boolean {
+    return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
 }

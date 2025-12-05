@@ -38,6 +38,7 @@ import {CandidateLanguage} from "./candidate-language";
 import {CandidateOccupation} from "./candidate-occupation";
 import {CandidateSkill} from "./candidate-skill";
 import {CandidateNote} from "./candidate-note";
+import {Partner} from "./partner";
 
 export interface ShortCandidate {
   id: number;
@@ -47,6 +48,8 @@ export interface ShortCandidate {
 
 export interface Candidate extends HasId {
   id: number;
+  rank?: number;
+  pendingTerms?: boolean;
   candidateNumber: string;
   publicId?: string;
   status: string;
@@ -133,6 +136,10 @@ export interface Candidate extends HasId {
   relocatedState: string;
   relocatedCountry: Country;
 
+  // privacy policy info
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: Partner;
 }
 
 export interface CandidateProperty {
@@ -229,7 +236,6 @@ export interface CandidateIntakeData {
   militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   maritalStatusNotes?: string;
-  monitoringEvaluationConsent?: YesNo;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
@@ -412,6 +418,7 @@ export enum CandidateStatus {
   incomplete = "incomplete",
   ineligible = "ineligible (inactive)",
   pending = "pending",
+  relocatedIndependently = "relocated independently (inactive)",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
 }

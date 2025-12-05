@@ -97,6 +97,7 @@ export class AssignTasksListComponent implements OnInit {
         //todo This should really do a search with the current filter. Can we make the search
         //part of the component so we can access the filter data in this code.
         this.filteredTaskAssociations = result.tasks;
+        this.assignForm.reset();
       }, (error) => {
         this.error = error;
       }
@@ -144,9 +145,9 @@ export class AssignTasksListComponent implements OnInit {
   }
 
   removeTask(task: Task) {
-    const confirmationModal = this.modalService.open(ConfirmationComponent, {scrollable: true});
+    const confirmationModal = this.modalService.open(ConfirmationComponent, {scrollable: true, size: 'lg'});
     confirmationModal.componentInstance.title =
-      "Are you sure you want to remove " + task.displayName + " from the associated list " + this.savedList.name + "?";
+      "Are you sure you want to remove '" + task.displayName + "' from the associated list '" + this.savedList.name + "'?";
     confirmationModal.componentInstance.message =
       "Note: Removing this task association will make the task inactive for any candidates within the list who have not completed the task. "
 
@@ -190,7 +191,10 @@ export class AssignTasksListComponent implements OnInit {
 
   // Allow to search for either a task display name or a task type.
   searchTypeOrName = (searchTerm: string, item: any) => {
-    return item.taskType.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || item.displayName.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+    const term = searchTerm.trim().toLowerCase();
+    const type = item.taskType?.toLowerCase() ?? '';
+    const name = item.displayName?.toLowerCase() ?? '';
+    return type.includes(term) || name.includes(term);
   }
 
   monitorTask(t: Task) {
