@@ -53,6 +53,8 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.util.PersistenceContextHelper;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
@@ -78,6 +80,8 @@ class CandidateServiceImplTest {
     @Mock private Page<Candidate> mockCandidatePage;
     @Mock private CandidateRepository candidateRepository;
     @Mock private PartnerService partnerService;
+    @Mock private CountryService countryService;
+    @Mock private SystemNotificationService systemNotificationService;
     @Mock private CountryRepository countryRepository;
     @Mock private AuthService authService;
     @Mock private UserRepository userRepository;
