@@ -1,35 +1,39 @@
-#name: Terraform deployment
-#
-#on:
-#  push:
-#    branches:
-#      - master
-#    paths:
-#      - 'infra/aws/terraform/**'
-#
-#  workflow_dispatch: #this attribute will enable the manual run to the pipeline
-#
-#
-#permissions:
-#  contents: read
-#
-## Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-#defaults:
-#  run:
-#    shell: bash
-#
-#env:
-#  TERRAFORM_VERSION: 1.3.0
-#  AWS_REGION: "us-east-1"
-#  INFRA_PATH: './infra/prod'
-#  AWS_ACCESS_KEY_ID: "AKIATLUVZAGYXPLKILO3"
-#
-#jobs:
-#  terraform-deploy:
-#    name: terraform deployment
-#    runs-on: ubuntu-latest
-#
-#    steps:
+name: Terraform deployment
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'infra/aws/terraform/**'
+
+  workflow_dispatch: #this attribute will enable the manual run to the pipeline
+
+
+permissions:
+  contents: read
+
+# Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+defaults:
+  run:
+    shell: bash
+
+env:
+  TERRAFORM_VERSION: 1.3.0
+  AWS_REGION: "us-east-1"
+  INFRA_PATH: './infra/prod'
+  AWS_ACCESS_KEY_ID: "AKIATLUVZAGYXPLKILO3"
+
+jobs:
+  terraform-deploy:
+    name: terraform deployment
+    runs-on: ubuntu-latest
+
+    steps:
+      # Make this temporarily disabled
+      - name: No-op
+        run: echo "Terraform deployment temporarily disabled."
+
 #      # Checkout the repository to the GitHub Actions runner
 #      - name: Checkout
 #        uses: actions/checkout@v3
