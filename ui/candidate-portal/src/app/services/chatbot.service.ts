@@ -15,7 +15,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -142,7 +142,8 @@ export class ChatbotService implements OnDestroy {
           };
           this.addMessage(errorMessage);
           
-          return throwError(() => error);
+          // Return empty observable to complete the stream without error
+          return of();
         })
       )
       .subscribe();
@@ -176,7 +177,8 @@ export class ChatbotService implements OnDestroy {
           };
           this.addMessage(fallbackMessage);
           this.errorSubject.next('Chatbot backend is unavailable');
-          return throwError(() => error);
+          // Return empty observable to complete the stream without error
+          return of();
         })
       )
       .subscribe();
