@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -104,6 +105,12 @@ public interface LanguageService {
 
     List<SystemLanguage> listSystemLanguages();
 
+    /**
+     * Returns the language matching the given English language name (ignoring case).
+     * @param languageName Name of language - eg 'English'
+     * @return Language or null if not found
+     */
+    @Nullable
     Language getLanguage(String languageName);
 
     /**

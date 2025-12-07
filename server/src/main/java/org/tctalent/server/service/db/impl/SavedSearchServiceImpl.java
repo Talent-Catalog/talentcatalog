@@ -133,6 +133,7 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.EducationMajorService;
+import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
@@ -175,6 +176,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final SearchJoinRepository searchJoinRepository;
     private final LanguageLevelRepository languageLevelRepository;
     private final LanguageRepository languageRepository;
+    private final LanguageService languageService;
     private final CountryRepository countryRepository;
     private final PartnerRepository partnerRepository;
     private final OccupationRepository occupationRepository;
@@ -185,6 +187,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationLevelRepository educationLevelRepository;
     private final PersistenceContextHelper persistenceContextHelper;
     private final AuthService authService;
+
+    private long ENGLISH_LANGUAGE_ID;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
@@ -200,6 +204,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 defaultSearchStatuses.add(candidateStatus);
             }
         }
+        Language english = languageService.getLanguage("english");
+        if (english == null) {
+            throw new RuntimeException("English language not found in database");
+        }
+        ENGLISH_LANGUAGE_ID = english.getId();
     }
 
     @Override
@@ -2378,41 +2387,30 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (request.getEnglishMinSpokenLevel() != null || request.getEnglishMinWrittenLevel() != null
             || request.getOtherLanguageId() != null
             || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
+            String selection;
 
-            joins.add("candidate_language");
-            joins.add("language");
-
-            if (request.getEnglishMinSpokenLevel() != null && request.getEnglishMinWrittenLevel() != null) {
-                joins.add("spoken_level");
-                joins.add("written_level");
-                ands.add("lower(language.name) = 'english'");
-                ands.add("spoken_level.level >= " + request.getEnglishMinSpokenLevel());
-                ands.add("written_level.level >= " + request.getEnglishMinWrittenLevel());
-            } else if (request.getEnglishMinSpokenLevel() != null) {
-                joins.add("spoken_level");
-                ands.add("lower(language.name) = 'english'");
-                ands.add("spoken_level.level >= " + request.getEnglishMinSpokenLevel());
-            } else if (request.getEnglishMinWrittenLevel() != null) {
-                joins.add("written_level");
-                ands.add("lower(language.name) = 'english'");
-                ands.add("written_level.level >= " + request.getEnglishMinWrittenLevel());
+            if (request.getEnglishMinSpokenLevel() != null) {
+                selection = computeLanguageLevelSelection(
+                    ENGLISH_LANGUAGE_ID, true, request.getEnglishMinSpokenLevel());
+                ands.add("exists (" + selection + ")");
+            }
+            if (request.getEnglishMinWrittenLevel() != null) {
+                selection = computeLanguageLevelSelection(
+                    ENGLISH_LANGUAGE_ID, false, request.getEnglishMinWrittenLevel());
+                ands.add("exists (" + selection + ")");
             }
 
             if (request.getOtherLanguageId() != null) {
-                if (request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null) {
-                    joins.add("spoken_level");
-                    joins.add("written_level");
-                    ands.add("candidate_language.language_id = " + request.getOtherLanguageId());
-                    ands.add("spoken_level.level >= " + request.getOtherMinSpokenLevel());
-                    ands.add("written_level.level >= " + request.getOtherMinWrittenLevel());
-                } else if (request.getOtherMinSpokenLevel() != null) {
-                    joins.add("spoken_level");
-                    ands.add("candidate_language.language_id = " + request.getOtherLanguageId());
-                    ands.add("spoken_level.level >= " + request.getOtherMinSpokenLevel());
-                } else if (request.getOtherMinWrittenLevel() != null) {
-                    joins.add("written_level");
-                    ands.add("candidate_language.language_id = " + request.getOtherLanguageId());
-                    ands.add("written_level.level >= " + request.getOtherMinWrittenLevel());
+                long languageId = request.getOtherLanguageId();
+                if (request.getOtherMinSpokenLevel() != null) {
+                    selection = computeLanguageLevelSelection(
+                        languageId, true, request.getOtherMinSpokenLevel());
+                    ands.add("exists (" + selection + ")");
+                }
+                if (request.getOtherMinWrittenLevel() != null) {
+                    selection = computeLanguageLevelSelection(
+                        languageId, false, request.getOtherMinWrittenLevel());
+                    ands.add("exists (" + selection + ")");
                 }
             }
         }
@@ -2494,6 +2492,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         return query;
+    }
+
+    private String computeLanguageLevelSelection(long languageId, boolean spoken, int level) {
+        String selection = "select 1 from candidate_language join language_level"
+            + " on language_level.id = " + (spoken ? "spoken_level_id" : "written_level_id")
+            + " where candidate_language.candidate_id = candidate.id"
+            + " and candidate_language.language_id = " + languageId
+            + " and language_level.level >= " + level;
+        return selection;
     }
 
     @NonNull
