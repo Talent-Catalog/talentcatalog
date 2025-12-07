@@ -2389,31 +2389,27 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
             String selection;
 
-            if (request.getEnglishMinSpokenLevel() != null && request.getEnglishMinWrittenLevel() != null) {
-                selection = computeLanguageLevelSelection(ENGLISH_LANGUAGE_ID, true, request.getEnglishMinSpokenLevel());
+            if (request.getEnglishMinSpokenLevel() != null) {
+                selection = computeLanguageLevelSelection(
+                    ENGLISH_LANGUAGE_ID, true, request.getEnglishMinSpokenLevel());
                 ands.add("exists (" + selection + ")");
-                selection = computeLanguageLevelSelection(ENGLISH_LANGUAGE_ID, false, request.getEnglishMinWrittenLevel());
-                ands.add("exists (" + selection + ")");
-            } else if (request.getEnglishMinSpokenLevel() != null) {
-                selection = computeLanguageLevelSelection(ENGLISH_LANGUAGE_ID, true, request.getEnglishMinSpokenLevel());
-                ands.add("exists (" + selection + ")");
-            } else if (request.getEnglishMinWrittenLevel() != null) {
-                selection = computeLanguageLevelSelection(ENGLISH_LANGUAGE_ID, false, request.getEnglishMinWrittenLevel());
+            }
+            if (request.getEnglishMinWrittenLevel() != null) {
+                selection = computeLanguageLevelSelection(
+                    ENGLISH_LANGUAGE_ID, false, request.getEnglishMinWrittenLevel());
                 ands.add("exists (" + selection + ")");
             }
 
             if (request.getOtherLanguageId() != null) {
                 long languageId = request.getOtherLanguageId();
-                if (request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null) {
-                    selection = computeLanguageLevelSelection(languageId, true, request.getOtherMinSpokenLevel());
+                if (request.getOtherMinSpokenLevel() != null) {
+                    selection = computeLanguageLevelSelection(
+                        languageId, true, request.getOtherMinSpokenLevel());
                     ands.add("exists (" + selection + ")");
-                    selection = computeLanguageLevelSelection(languageId, false, request.getOtherMinWrittenLevel());
-                    ands.add("exists (" + selection + ")");
-                } else if (request.getOtherMinSpokenLevel() != null) {
-                    selection = computeLanguageLevelSelection(languageId, true, request.getOtherMinSpokenLevel());
-                    ands.add("exists (" + selection + ")");
-                } else if (request.getOtherMinWrittenLevel() != null) {
-                    selection = computeLanguageLevelSelection(languageId, false, request.getOtherMinWrittenLevel());
+                }
+                if (request.getOtherMinWrittenLevel() != null) {
+                    selection = computeLanguageLevelSelection(
+                        languageId, false, request.getOtherMinWrittenLevel());
                     ands.add("exists (" + selection + ")");
                 }
             }
@@ -2503,7 +2499,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             + " on language_level.id = " + (spoken ? "spoken_level_id" : "written_level_id")
             + " where candidate_language.candidate_id = candidate.id"
             + " and candidate_language.language_id = " + languageId
-            + " and language_level.level = " + level;
+            + " and language_level.level >= " + level;
         return selection;
     }
 

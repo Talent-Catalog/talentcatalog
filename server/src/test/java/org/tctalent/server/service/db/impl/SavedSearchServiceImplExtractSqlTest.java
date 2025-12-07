@@ -324,7 +324,7 @@ class SavedSearchServiceImplExtractSqlTest {
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level = 20"
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
                 + ")"
             , sql);
 
@@ -338,13 +338,13 @@ class SavedSearchServiceImplExtractSqlTest {
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level = 20"
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
                 + ")"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = written_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level = 20"
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
                 + ")"
             , sql);
 
@@ -359,19 +359,19 @@ class SavedSearchServiceImplExtractSqlTest {
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level = 20"
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
                 + ")"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = written_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level = 20"
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
                 + ")"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 344 and language_level.level = 30"
+                + "candidate_language.language_id = 344 and language_level.level >= 30"
                 + ")"
             , sql);
 
