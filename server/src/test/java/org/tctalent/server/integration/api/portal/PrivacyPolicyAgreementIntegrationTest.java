@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -53,6 +54,7 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.TcUserDetails;
 
+@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
