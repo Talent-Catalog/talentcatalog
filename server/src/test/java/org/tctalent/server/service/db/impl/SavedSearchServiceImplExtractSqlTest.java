@@ -313,45 +313,67 @@ class SavedSearchServiceImplExtractSqlTest {
     @Test
     @DisplayName("SQL generated from languages request and including pending terms")
     void extractFetchSQLFromLanguagesRequestAndIncludingPendingTerms() {
-        request.setEnglishMinSpokenLevel(2);
+        request.setEnglishMinSpokenLevel(20);
         request.setIncludePendingTermsCandidates(false);
         String sql = savedSearchService.extractFetchSQL(request);
-        assertEquals(UNORDERED_SELECT +
-            " left join candidate_language on candidate.id = candidate_language.candidate_id"
-            + " left join language on candidate_language.language_id = language.id"
-            + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
+        assertEquals(UNORDERED_SELECT
             + " where "
             + EXCLUDE_PENDING_TERMS_CLAUSE
             + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
-            + " and lower(language.name) = 'english' and spoken_level.level >= 2", sql);
+            + " and exists ("
+                + "select 1 from candidate_language "
+                + "join language_level on language_level.id = spoken_level_id "
+                + "where candidate_language.candidate_id = candidate.id and "
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + ")"
+            , sql);
 
-        request.setEnglishMinWrittenLevel(2);
+        request.setEnglishMinWrittenLevel(20);
         sql = savedSearchService.extractFetchSQL(request);
-        assertEquals(UNORDERED_SELECT +
-            " left join candidate_language on candidate.id = candidate_language.candidate_id"
-            + " left join language on candidate_language.language_id = language.id"
-            + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
-            + " left join language_level as written_level on candidate_language.written_level_id = written_level_id"
+        assertEquals(UNORDERED_SELECT
             + " where "
             + EXCLUDE_PENDING_TERMS_CLAUSE
             + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
-            + " and lower(language.name) = 'english' and spoken_level.level >= 2"
-            + " and written_level.level >= 2", sql);
+                + " and exists ("
+                + "select 1 from candidate_language "
+                + "join language_level on language_level.id = spoken_level_id "
+                + "where candidate_language.candidate_id = candidate.id and "
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + ")"
+                + " and exists ("
+                + "select 1 from candidate_language "
+                + "join language_level on language_level.id = written_level_id "
+                + "where candidate_language.candidate_id = candidate.id and "
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + ")"
+            , sql);
 
         request.setOtherLanguageId(344L);
-        request.setOtherMinSpokenLevel(3);
+        request.setOtherMinSpokenLevel(30);
         sql = savedSearchService.extractFetchSQL(request);
-        assertEquals(UNORDERED_SELECT +
-            " left join candidate_language on candidate.id = candidate_language.candidate_id"
-            + " left join language on candidate_language.language_id = language.id"
-            + " left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id"
-            + " left join language_level as written_level on candidate_language.written_level_id = written_level_id"
+        assertEquals(UNORDERED_SELECT
             + " where "
             + EXCLUDE_PENDING_TERMS_CLAUSE
             + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
-            + " and lower(language.name) = 'english' and spoken_level.level >= 2"
-            + " and written_level.level >= 2"
-            + " and candidate_language.language_id = 344 and spoken_level.level >= 3", sql);
+                + " and exists ("
+                + "select 1 from candidate_language "
+                + "join language_level on language_level.id = spoken_level_id "
+                + "where candidate_language.candidate_id = candidate.id and "
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + ")"
+                + " and exists ("
+                + "select 1 from candidate_language "
+                + "join language_level on language_level.id = written_level_id "
+                + "where candidate_language.candidate_id = candidate.id and "
+                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + ")"
+                + " and exists ("
+                + "select 1 from candidate_language "
+                + "join language_level on language_level.id = spoken_level_id "
+                + "where candidate_language.candidate_id = candidate.id and "
+                + "candidate_language.language_id = 344 and language_level.level >= 30"
+                + ")"
+            , sql);
 
     }
 
