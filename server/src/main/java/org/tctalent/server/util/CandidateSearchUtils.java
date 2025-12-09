@@ -177,6 +177,9 @@ public abstract class CandidateSearchUtils {
 
     /**
      * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
+     * <p>
+     *     See <a href="https://www.postgresql.org/docs/18/textsearch-intro.html">Postgres Text Search</a>
+     * </p>
      * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
      * @return Postgres tsQuery SQL
      */
@@ -187,6 +190,9 @@ public abstract class CandidateSearchUtils {
 
         //Trim leading or trailing spaces - they confuse the regex below
         esQuery = esQuery.trim();
+
+        //Strip out any single quotes in the query - they mess up the tsquery syntax
+        esQuery = esQuery.replace("'", "");
 
         // Step 1: Handle quoted phrases: "quick brown" => quick <-> brown
         StringBuilder result = new StringBuilder();
