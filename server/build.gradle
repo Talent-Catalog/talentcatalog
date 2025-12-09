@@ -179,6 +179,14 @@ dependencies {
 }
 
 jib {
+    container {
+        jvmFlags = [
+                "-XX:InitialRAMPercentage=60.0",
+                "-XX:MaxRAMPercentage=60.0",
+                "-XX:+HeapDumpOnOutOfMemoryError",
+                "-XX:HeapDumpPath=/tmp"
+        ]
+    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
