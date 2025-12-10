@@ -331,11 +331,11 @@ ngx-wig {
   }
 }
 
-/* assign-tasks-list modal special styling:
- * Has to be global because the modal is rendered outside the component's view encapsulation, so
- * component styles can't reach it.
+/* Special styling for component instantiating tc-modal whose content may increase after the modal
+ * has rendered and thereby require a scrollbar. Has to be global because the modal is rendered
+ outside the component's view encapsulation, so component styles can't reach it.
  */
-.assign-tasks-list-modal {
+.expanding-content-modal {
   & .tc-modal {
     max-height: 80vh;
     overflow-y: auto;
