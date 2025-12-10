@@ -15,7 +15,8 @@
  */
 
 import {Directive, Input, OnInit} from '@angular/core';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {Candidate, CandidateExam, CandidateIntakeData} from '../../../model/candidate';
 import {CandidateService, IntakeAuditRequest} from '../../../services/candidate.service';
 import {CountryService} from '../../../services/country.service';
@@ -139,8 +140,20 @@ export abstract class IntakeComponentTabBase implements OnInit {
     protected modalService: NgbModal
   ) { }
 
+  private destroy$ = new Subject<void>();
   ngOnInit(): void {
     this.refreshIntakeDataInternal(true);
+
+    // Listen for candidate update signals and refresh the intake data whenever they occur.
+    this.candidateService
+    .candidateUpdated()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(() => this.refreshIntakeData());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
