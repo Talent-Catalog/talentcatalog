@@ -330,3 +330,22 @@ ngx-wig {
     outline: none;
   }
 }
+
+/* assign-tasks-list modal special styling:
+ * Has to be global because the modal is rendered outside the component's view encapsulation, so
+ * component styles can't reach it.
+ */
+.assign-tasks-list-modal {
+  & .tc-modal {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 16px;
+    position: relative;
+
+    #close-btn {
+      position: absolute;
+      right: 1rem;
+      cursor: pointer;
+    }
+  }
+}
