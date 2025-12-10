@@ -2612,6 +2612,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
             .filter(CandidateAttachment::isCv)
             .map(CandidateAttachment::getTextExtract)
             .collect(Collectors.joining(" || "));
-        this.text = combinedJobText + " || " + combinedCvText;
+        String notesText = getShareableNotes();
+        this.text = Stream.of(combinedJobText, combinedCvText, notesText)
+            .filter(s -> s != null && !s.isBlank())
+            .collect(Collectors.joining(" || "));
     }
 }
