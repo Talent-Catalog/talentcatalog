@@ -70,4 +70,5 @@ export interface SearchCandidateRequest {
   listAnySearchType?: string;
   listAllIds?: number[];
   listAllSearchType?: string;
+  candidateNumbers?: string[];
 }

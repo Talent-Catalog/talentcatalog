@@ -95,6 +95,8 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private String regoUtmCampaign;
     private String regoUtmSource;
     private String regoUtmMedium;
+
+    private List<String> candidateNumbers;
     /**
      * If specified, requests display of candidates whose candidate opportunities (if any) match
      * the filter.
