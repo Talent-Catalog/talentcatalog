@@ -1043,7 +1043,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setShareableNotes(request.getShareableNotes());
-        return save(candidate, true);
+        return save(candidate, true, true);
     }
 
     @Override
