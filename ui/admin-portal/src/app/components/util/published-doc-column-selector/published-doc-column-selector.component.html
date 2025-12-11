@@ -19,7 +19,9 @@
           (onAction)="submit()"
           [disableAction]="!selectedColumns.length"
           [showCancel]="true"
-          [showClose]="true">
+          [showClose]="true"
+          class="expanding-content-modal"
+>
 
   <tc-alert type="danger" *ngIf="error">
     <div><strong>{{error}}</strong></div>

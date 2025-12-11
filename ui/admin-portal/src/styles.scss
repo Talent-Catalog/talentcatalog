@@ -330,3 +330,22 @@ ngx-wig {
     outline: none;
   }
 }
+
+/* Special styling for component instantiating tc-modal whose content may increase after the modal
+ * has rendered and thereby require a scrollbar. Has to be global because the modal is rendered
+ outside the component's view encapsulation, so component styles can't reach it.
+ */
+.expanding-content-modal {
+  & .tc-modal {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 16px;
+    position: relative;
+
+    #close-btn {
+      position: absolute;
+      right: 1rem;
+      cursor: pointer;
+    }
+  }
+}

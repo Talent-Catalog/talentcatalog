@@ -20,105 +20,108 @@
           actionText="Add Task"
           [showCancel]="true"
           [cancelText]="'Close'"
-          [showClose]="true">
+          [showClose]="true"
+          class="expanding-content-modal"
+>
 
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
-    <tc-alert type="danger" *ngIf="error">
-      <div><strong>{{error}}</strong></div>
-    </tc-alert>
+  <form [formGroup]="assignForm">
 
-    <form [formGroup]="assignForm">
+    <!-- TASKS -->
+    <div class="mb-3">
+      <tc-field>
+        <tc-label [for]="'task'">
+          Task to assign
+        </tc-label>
+        <ng-select id="task"
+                   class="tc-select"
+                   appendTo=".modal-content"
+                   [formControlName]="'task'"
+                   [items]="allTasks"
+                   [groupBy]="'taskType'"
+                   [searchFn]="searchTypeOrName"
+                   [clearable]="true"
+                   placeholder="Select or type to search..."
+                   bindLabel="displayName">
+        </ng-select>
+      </tc-field>
+    </div>
 
-      <!-- TASKS -->
+    <!-- DAYS TO COMPLETE -->
+    <div *ngIf="selectedTask">
       <div class="mb-3">
-        <tc-field>
-          <tc-label [for]="'task'">
-            Task to assign
-          </tc-label>
-          <ng-select id="task"
-                     class="tc-select"
-                     appendTo=".modal-content"
-                     [formControlName]="'task'"
-                     [items]="allTasks"
-                     [groupBy]="'taskType'"
-                     [searchFn]="searchTypeOrName"
-                     [clearable]="true"
-                     placeholder="Select or type to search..."
-                     bindLabel="displayName">
-          </ng-select>
-        </tc-field>
-      </div>
-
-      <!-- DAYS TO COMPLETE -->
-      <div *ngIf="selectedTask" class="paragraph-sm">
-        <div class="mb-3">
-          <strong>Description: </strong>
-          <span [innerHtml]="selectedTask.description"></span>
+        <div class="mb-1">
+          <strong>Description:</strong>
         </div>
-        <div class="mb-3">
-          <strong>Estimated Due Date: </strong>
+        <span class="fw-light" [innerHtml]="selectedTask.description"></span>
+      </div>
+      <div class="mb-3">
+        <strong>Estimated Due Date:</strong>
+        <span class="fw-light">
           {{estimatedDueDate | date}} ({{selectedTask?.daysToComplete}} days to complete)
-        </div>
+        </span>
       </div>
+    </div>
 
-    </form>
+  </form>
 
-
-
-    <tc-table [results]="filteredTaskAssociations"
-              [loading]="loading"
-              name="Current Task Associations"
-              [clickableRows]="false"
-    >
-      <tc-loading [loading]="loading"></tc-loading>
-      <thead>
+  <tc-table [results]="filteredTaskAssociations"
+            [loading]="loading"
+            name="Current Task Associations"
+            [clickableRows]="false"
+  >
+    <tc-loading [loading]="loading"></tc-loading>
+    <thead>
+    <tr>
+      <th>Task</th>
+      <th>Current Assignments</th>
+      <th>
+        <tc-field class="search-current">
+          <tc-input [type]="'text'"
+                    [placeholder]="'Search current tasks...'"
+                    [ariaLabel]="'Search'"
+                    (keyup)="search($event.target)"
+                    [id]="'keyword'">
+          </tc-input>
+        </tc-field>
+      </th>
+    </tr>
+    </thead>
+    <tbody *ngFor="let t of filteredTaskAssociations;">
       <tr>
-        <th>Task</th>
-        <th>Current Assignments</th>
-        <th>
-          <tc-field class="search-current">
-            <tc-input [type]="'text'"
-                      [placeholder]="'Search current tasks...'"
-                      [ariaLabel]="'Search'"
-                      (keyup)="search($event.target)"
-                      [id]="'keyword'">
-            </tc-input>
-          </tc-field>
-        </th>
+        <td>
+          <p class="small fw-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
+        </td>
+        <td>
+          <app-tasks-monitor-list
+            [task]="t"
+            [list]="savedList">
+          </app-tasks-monitor-list>
+        </td>
+        <td>
+          <div class="float-end">
+            <tc-icon size="md"
+                     type="button"
+                     class="me-4"
+                     aria-label="Monitor Task"
+                     [ngbTooltip]="'Zoom in to view current assignments for this task only'"
+                     (click)="monitorTask(t)">
+              <i class="fas fa-search-plus"></i>
+            </tc-icon>
+            <tc-icon size="md"
+                     type="button"
+                     aria-label="Remove Task"
+                     [ngbTooltip]="'Remove this task from the candidates in this list'"
+                     (click)="removeTask(t)">
+              <i class="far fa-trash-alt"></i>
+            </tc-icon>
+          </div>
+        </td>
       </tr>
-      </thead>
-      <tbody *ngFor="let t of filteredTaskAssociations;">
-        <tr>
-          <td>
-            <p class="small fw-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
-          </td>
-          <td>
-            <app-tasks-monitor-list
-              [task]="t"
-              [list]="savedList">
-            </app-tasks-monitor-list>
-          </td>
-          <td>
-            <div class="float-end">
-              <tc-icon size="md"
-                       type="button"
-                       class="me-4"
-                       aria-label="Monitor Task"
-                       [ngbTooltip]="'Zoom in to view current assignments for this task only'"
-                       (click)="monitorTask(t)">
-                <i class="fas fa-search-plus"></i>
-              </tc-icon>
-              <tc-icon size="md"
-                       type="button"
-                       aria-label="Remove Task"
-                       [ngbTooltip]="'Remove this task from the candidates in this list'"
-                       (click)="removeTask(t)">
-                <i class="far fa-trash-alt"></i>
-              </tc-icon>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </tc-table>
+    </tbody>
+  </tc-table>
 
 </tc-modal>
