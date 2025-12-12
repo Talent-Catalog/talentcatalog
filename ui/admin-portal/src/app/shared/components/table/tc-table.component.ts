@@ -62,7 +62,7 @@ export class TcTableComponent {
   @Input() striped: boolean = false;
   @Input() hover: boolean = true;
   // Optional if pagination supported
-  @Input() paginationPosition: 'top' | 'bottom' = 'bottom';
+  @Input() paginationPosition: 'top' | 'bottom' | 'both' = 'bottom';
   /** Pass false when rows are not intended to be clickable e.g. to display a summary card */
   @Input() clickableRows: boolean = true;
 
