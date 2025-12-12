@@ -67,8 +67,15 @@ public class QAServiceImpl implements QAService {
             sb.append("Here are the FAQs about Talent Beyond Boundaries (TBB) and labour mobility:\n\n");
             
             for (Map<String, String> qa : qaList) {
+                String id = qa.get("id");
                 String question = qa.get("question");
                 String answer = qa.get("answer");
+                
+                // Include FAQ ID in format Claude can cite: [FAQ-001]
+                if (id != null) {
+                    String faqCitation = "[" + id.toUpperCase().replace("_", "-") + "]";
+                    sb.append(faqCitation).append("\n");
+                }
                 sb.append("Q: ").append(question).append("\n");
                 sb.append("A: ").append(answer).append("\n\n");
             }

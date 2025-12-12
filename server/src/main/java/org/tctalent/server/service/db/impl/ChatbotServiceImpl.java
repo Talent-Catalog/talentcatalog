@@ -25,6 +25,7 @@ import org.tctalent.server.repository.db.ChatbotMessageRepository;
 import org.tctalent.server.service.ai.AnthropicService;
 import org.tctalent.server.service.db.ChatbotService;
 import org.tctalent.server.service.db.QAService;
+import org.tctalent.server.util.FaqIdExtractor;
 import org.tctalent.server.util.html.HtmlSanitizer;
 
 import java.time.OffsetDateTime;
@@ -75,17 +76,25 @@ public class ChatbotServiceImpl implements ChatbotService {
             // Send sanitized message to AI service
             String aiResponse = anthropicService.sendMessage(sanitizedMessage, qaContext);
             
+            // Extract FAQ IDs and clean response (remove FAQ citations from user-facing message)
+            FaqIdExtractor.ExtractionResult extraction = FaqIdExtractor.extractFaqIds(aiResponse);
+            
+            log.debug("Extracted {} FAQ IDs from response: {}", 
+                extraction.getFaqIds().size(), extraction.getFaqIds());
+            
             // Create and save bot response with the same question_id
             ChatbotMessage response = new ChatbotMessage();
             response.setId(UUID.randomUUID());
             response.setSessionId(sessionUUID);
             response.setQuestionId(questionId); // Same question_id links question to answer
             response.setSender(ChatbotMessage.ChatbotSender.bot);
-            response.setMessage(aiResponse);
+            response.setMessage(extraction.getCleanedResponse()); // Use cleaned response (without FAQ citations)
+            response.setReferencedFaqIds(extraction.getFaqIds()); // Store extracted FAQ IDs
             response.setTimestamp(OffsetDateTime.now());
             chatbotMessageRepository.save(response);
             
-            log.info("Chatbot response sent to session {} with question_id: {}", sessionId, questionId);
+            log.info("Chatbot response sent to session {} with question_id: {} (referenced FAQs: {})", 
+                sessionId, questionId, extraction.getFaqIds());
             return response;
             
         } catch (Exception e) {

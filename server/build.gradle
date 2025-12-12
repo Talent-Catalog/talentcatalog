@@ -171,6 +171,9 @@ dependencies {
     // tc api
     implementation "org.tctalent:tc-api-spec:1.0.0"
 
+    // Hypersistence Utils for JSON type handling
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.3'
+
     // Mapstruct
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation "com.google.code.findbugs:jsr305:3.0.2" // todo - move version to ext - not a spring boot curated dep
@@ -207,6 +210,26 @@ jacocoTestReport {
         html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/test/html"))
     }
 }
+
+// Chatbot evaluation task - runs separately from main test suite to avoid API costs
+// Usage: ./gradlew chatbotEval
+// Requires: ANTHROPIC_API_KEY environment variable to be set
+tasks.register('chatbotEval', Test) {
+    description = 'Run chatbot evaluation tests (requires ANTHROPIC_API_KEY)'
+    group = 'verification'
+    useJUnitPlatform {
+        includeTags 'chatbot-eval'
+    }
+    outputs.dir(layout.buildDirectory.dir('reports/chatbot-eval'))
+    
+    doFirst {
+        println "=========================================="
+        println "Running Chatbot Evaluation Tests"
+        println "This will make real API calls to Anthropic"
+        println "=========================================="
+    }
+}
+
 bootJar {
     from(".") {
         include ".ebextensions/**"

@@ -16,10 +16,13 @@
 
 package org.tctalent.server.model.db.chatbot;
 
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -50,6 +53,10 @@ public class ChatbotMessage {
 
     @Column(name = "timestamp", nullable = false)
     private OffsetDateTime timestamp;
+
+    @Type(JsonBinaryType.class)
+    @Column(name = "referenced_faq_ids", columnDefinition = "jsonb")
+    private List<String> referencedFaqIds;
 
     /**
      * Enum representing the sender of a chatbot message.

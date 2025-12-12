@@ -1,77 +1,96 @@
 [
   {
+    "id": "faq_001",
     "question": "What does Talent Beyond Boundaries do?",
     "answer": "Talent Beyond Boundaries (TBB) is a nonprofit that creates labour mobility pathways for refugees and displaced people. Instead of humanitarian resettlement, TBB connects refugees with international employment opportunities in countries offering full rights and stability. TBB does not assist with humanitarian resettlement, internships, or scholarships."
   },
   {
+    "id": "faq_002",
     "question": "How do I sign up for TBB's programme?",
     "answer": "If you're a refugee or other forcibly displaced person and you are interested in international employment, you can create a profile on TBB's Talent Catalog here: tctalent.org. For better job matching, provide detailed experiences, skills, education, and languages on your profile. You can also update or delete your profile anytime."
   },
   {
+    "id": "faq_003",
     "question": "Does signing up for TBB's programme guarantee that I will receive a job offer?",
     "answer": "No. Registering on our Talent Catalog does not guarantee employment. Due to the large number of registrants, only a small percentage will be offered international positions depending on labor market demand. Therefore, continue pursuing other opportunities. We will contact you only if an employer is interested in your profile or if we need to verify your information."
   },
   {
+    "id": "faq_004",
     "question": "What happens after I register in the Talent Catalog?",
     "answer": "After you register, we keep your profile until we find a job that matches your skills. When a suitable opportunity comes up, our team will contact you to connect you with the employer. The hiring process is managed by employers based on their needs. If your profile fits a job they posted, they will decide the timeline for hiring. We are here to help connect you and provide support along the way. Once we find a job for you, we will reach out quickly."
   },
   {
+    "id": "faq_005",
     "question": "What can I do to increase my chances of getting a job?",
     "answer": "Ensure your profile is fully completed with detailed information, keywords related to your jobs, especially in the occupations section. Include a detailed job description to give us a clearer understanding of your skills, allowing us to better match you with opportunities. Also, if you have a CV in English, we ask that you attach it as well. Keep your contact information, work experience, and certificates up to date. Confirm that your profile has been successfully submitted and is not in draft status. English language skills remain essential, both for employers and for visa processes. We encourage you to work to improve your English if you feel the need to do so. You can find English language resources on this page. We encourage you to follow our Facebook page, as we post some of our active opportunities there. You can also find them on this page where you can nominate yourself if you think you are a good fit. TBB offers you free access to Coursera. You can use this resource to improve your skills, gain work experience, and market yourself to potential employers globally. If you were able to secure employment in Canada, Australia, or the United Kingdom on your own, we might be able to support you with relocation and legal matters. Should you secure employment independently of TBB, we encourage you to reach out to us via this email."
   },
   {
+    "id": "faq_006",
     "question": "How are successful candidates selected?",
     "answer": "Our model is employer-driven, meaning that Talent Beyond Boundaries does not select candidates for international employment. Rather, we facilitate matches between candidates and potential employers. A decision about whether to hire someone is always made independently by the employer."
   },
   {
+    "id": "faq_007",
     "question": "Do I need to speak English/French to get a job offer?",
     "answer": "Skilled work visas in English or French-speaking countries typically require functional English (minimum IELTS 4.5) or equivalent French proficiency (TCF/TEF), as mandated by governments and employers. Senior specialized roles in fields like Tech or Engineering often demand higher language skills. Because visa holders are typically expected to begin work within a month of arrival, demonstrating sufficient language proficiency for effective workplace communication prior to relocation is essential."
   },
   {
+    "id": "faq_008",
     "question": "Do I need to have an IELTS score to be considered for international employment opportunities?",
     "answer": "Please note that having an IELTS score is not a requirement for candidates to be considered for international employment opportunities. However, in some cases, having an IELTS score is a requirement for obtaining the visa. In other cases, employers require a certain English language level. In those cases, TBB will assist you to take the exam after you receive a job offer."
   },
   {
+    "id": "faq_009",
     "question": "Does the programme cost money?",
     "answer": "No. Registering on the Talent Catalog is free. All of our services are free of charge for all candidates. If anyone asks you for money on TBB's behalf, please report this activity to us immediately: candidates@talentbeyondboundaries.org. During the visa process after a job offer, you may need to pay fees for document issuance, translation, or other administrative tasks directly to the relevant party, not TBB. Talent Beyond Boundaries will inform you of any anticipated expenses beforehand and provide support throughout the process."
   },
   {
+    "id": "faq_010",
     "question": "Do I need a passport? Do I need documents that prove my qualifications?",
     "answer": "No. You do not need any documents to register on the Talent Catalog. A passport can make the migration process easier, but it is not a requirement. Some skilled visa programs require official documentation of your qualifications, whereas others do not. If an employer would like to interview you, we will ask you which documents you have."
   },
   {
+    "id": "faq_011",
     "question": "Does TBB select candidates based on their vulnerability?",
     "answer": "No. TBB connects qualified candidates, regardless of vulnerability, with employers seeking their skill sets."
   },
   {
+    "id": "faq_012",
     "question": "If I receive a job offer, will I be able to move with my family?",
     "answer": "Yes. If you receive a job offer, you will be able to relocate with your immediate family (i.e. your spouse or de facto partner and any dependent children). Skilled visa programs generally do not allow you to include parents or siblings."
   },
   {
+    "id": "faq_013",
     "question": "Is my data secure on the Talent Catalog?",
     "answer": "Yes. TBB has rigorous data security and privacy protocols and all personnel with access to your personal data have signed a Confidentiality Agreement. See our Privacy Policy. https://www.talentbeyondboundaries.org/privacy-and-data-protection-policy You own the data you put on the Talent Catalog, and you can log in to update (or delete) that data at any time."
   },
   {
+    "id": "faq_014",
     "question": "I am having trouble logging into my Talent Catalog profile. What should I do?",
     "answer": "First, please make sure that you are entering the correct password. If you cannot remember your password, you can reset it here https://www.tbbtalent.org/candidate-portal/reset-password. Please note that your username is usually your email address. If you are still having trouble logging in, try using a different browser, or logging in from a different device. If the problem persists, contact us: candidates@talentbeyondboundaries.org."
   },
   {
+    "id": "faq_015",
     "question": "What happens if I secure a job abroad independently of TBB?",
     "answer": "Depending on the role you have secured and your specific circumstances, TBB may be able to assist you with the visa application and relocation process. We can only assist candidates who are signed up to the Talent Catalog. If you have successfully secured a job abroad, reach out to candidates@talentbeyondboundaries.org to discuss your options."
   },
   {
+    "id": "faq_016",
     "question": "I've been registered in the Talent Catalog for some time. Why haven't I been contacted?",
     "answer": "TBB cannot guarantee employment, as hiring depends on various factors such as available job positions, industry competition within our pool, and your skills. Common reasons you may not have been contacted yet include: Your English level requires more improvement. Your field of expertise does not match that of available opportunities. Your current skills do not match the requirements of the available opportunities. Your profile is marked as unreachable, indicating we have tried to contact you several times without receiving a response. Your profile is currently in draft status, indicating that it has not been submitted yet. As a result, you are not yet considered a TBB candidate. To be recognized as a TBB candidate, please complete and submit your profile. To check if your profile is still in Draft status, log in to your profile. If you see the Submit button, it's still a draft; if you see the Review button, you're fully registered."
   },
   {
+    "id": "faq_017",
     "question": "How can I make TBB matching faster?",
     "answer": "We understand candidates' requests for urgent job matching and resettlement support through labor mobility programs. We want to be transparent about the limitations of our services: We are not a resettlement agency: TBB does not offer direct humanitarian resettlement, emergency asylum, or financial aid. Our focus is specifically on skilled migration pathways tied to employment. Reliance on Employer Demand: Our ability to help depends entirely on the availability of suitable job opportunities posted by employers willing to sponsor visas for skilled refugees. We cannot create job opportunities; we can only facilitate connections when they arise. No Control Over Visa Outcomes: While we can support the application process, the final decision on visas and immigration rests with the respective governments. We cannot guarantee job placement or successful visa outcomes. Lengthy Process: Even when job matches and visa sponsorships are secured, the skilled migration process can be lengthy and complex, often taking many months or even over a year to finalize. We cannot expedite these official processes."
   },
   {
+    "id": "faq_018",
     "question": "How does TBB operate?",
     "answer": "Job Matching: We use a talent platform (Talent Catalog) where skilled refugees create profiles. We then work to match these profiles with available job opportunities posted by employers who are open to hiring refugees. Advocacy and Education: We advocate for policy changes that make it easier for refugees to use their skills to migrate. We also educate governments and employers about the benefits of refugee labor mobility. Support through the Process: Once a job match is made, we can offer guidance and support to both the employer and the candidate through the visa and immigration process. This can include assistance with documentation and understanding the requirements of specific migration programs."
   },
   {
+    "id": "faq_019",
     "question": "Why can't TBB provide a specific job matching timeline?",
     "answer": "The process from matching to relocation is not immediate and involves multiple steps, including: Employer Engagement: Securing job openings from our partner employers. Candidate Matching: Reviewing profiles and shortlisting based on a specific employer criteria. Interviews: Initial screenings by TBB, followed by employer interviews which can include waiting periods from both parties. Job Offers & Visa Processing: Successful candidates receive job offers, followed by visa processing, which may take several months depending on government processing times."
   }
