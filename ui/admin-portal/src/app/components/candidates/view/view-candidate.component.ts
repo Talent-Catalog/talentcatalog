@@ -293,6 +293,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   onTabChanged(activeTabId: string) {
     this.setActiveTabId(activeTabId);
+    // Notify other tabs to refresh when the user switches tabs between mini intake and full intake.
+    this.candidateService.updateCandidate();
   }
 
   publicCvUrl() {

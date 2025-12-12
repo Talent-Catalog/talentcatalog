@@ -156,7 +156,7 @@ describe('CandidateIntakeTabComponent', () => {
   const mockCandidate = new MockCandidate();
 
   beforeEach(async () => {
-    const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData']);
+    const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData',  'candidateUpdated', 'updateCandidate']);
     const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTCDestinations']);
     const educationSpy = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     const occupationSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
@@ -164,6 +164,7 @@ describe('CandidateIntakeTabComponent', () => {
     const noteSpy = jasmine.createSpyObj('CandidateNoteService', ['getIntakeData']);
     const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const authorizationSpy = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate', 'canAccessSalesforce']);
+    candidateSpy.candidateUpdated.and.returnValue(of(null));
 
     const citizenshipSpy = jasmine.createSpyObj('CandidateCitizenshipService', ['create']);
     citizenshipSpy.create.and.returnValue(of(null));
