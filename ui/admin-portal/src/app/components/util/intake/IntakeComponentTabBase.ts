@@ -184,7 +184,6 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   private handleCrossTabUpdate(): void {
     const snapshot = [...this.openIndexes];
-    const scrollY = window.scrollY;
     this.refreshIntakeData();
     // Restore open panels after the data refresh completes
     setTimeout(() => this.openIndexes = snapshot, 0);
