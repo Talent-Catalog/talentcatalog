@@ -76,7 +76,7 @@ $candidate-card-width: 40vw;
 
 
 .split {
-  margin-right:  #{$candidate-card-width};
+  margin-right: calc(#{$candidate-card-width} + (var(--bs-gutter-x)));
 }
 
 .split-view {
