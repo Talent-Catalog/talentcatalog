@@ -33,7 +33,7 @@
         <div class="row g-3">
           <div class="col-md-4">
             <label class="form-label">  {{'FAMILY-DOC.LABEL.RELATIONSHIP' | translate}} *</label>
-            <ng-select formControlName="relationship"
+            <ng-select formControlName="TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT"
                        [readonly]="readOnly"
                        [items]="relationships"
                        bindLabel="stringValue"
@@ -42,12 +42,12 @@
             </ng-select>
 
             <div class="text-danger"
-                 *ngIf="m.get('relationship')?.touched && m.get('relationship')?.hasError('required')">
+                 *ngIf="m.get('TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT')?.touched && m.get('TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT')?.hasError('required')">
               {{ "FORM.ERROR.REQUIRED" | translate }}
             </div>
           </div>
           <!-- If relationship is "Other", ask for detail -->
-          <div class="col-md-6" *ngIf="m.get('relationship')?.value === 'Other'">
+          <div class="col-md-6" *ngIf="m.get('TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT')?.value === 'Other'">
             <label class="form-label">{{'FAMILY-DOC.LABEL.OTHER' | translate}}</label>
             <input class="form-control" formControlName="relationOther"
                    [readonly]="readOnly">
