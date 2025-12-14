@@ -38,7 +38,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -1668,6 +1667,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (request != null) {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
             savedSearch.setKeyword(request.getKeyword());
+            savedSearch.setCandidateNumbers(getStringListAsString(request.getCandidateNumbers()));
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
             savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
@@ -1758,6 +1758,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(search.getCountryIds());
+        searchCandidateRequest.setCandidateNumbers(getStringListFromString(search.getCandidateNumbers()));
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
@@ -1826,6 +1827,26 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .collect(Collectors.toList()) : null;
     }
 
+    String getStringListAsString(List<String> values) {
+        return !CollectionUtils.isEmpty(values)
+            ? values.stream()
+            .filter(StringUtils::hasText)
+            .map(String::trim)
+            .map(s -> s.replace(",", ""))
+            .collect(Collectors.joining(","))
+            : null;
+    }
+
+    List<String> getStringListFromString(String csv) {
+        return csv != null
+            ? Stream.of(csv.split(","))
+            .map(String::trim)
+            .filter(StringUtils::hasText)
+            .collect(Collectors.toList())
+            : null;
+    }
+
+
     String getStatusListAsString(List<CandidateStatus> statuses){
         return !CollectionUtils.isEmpty(statuses) ? statuses.stream().map(String::valueOf)
                 .collect(Collectors.joining(",")) : null;
@@ -1860,12 +1881,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         // Modify request, doing standard defaults
         addDefaultsToSearchCandidateRequest(searchRequest);
 
-        // Handle candidate numbers
-        Page<Candidate> candidatesByNumbers =
-            searchByCandidateNumbers(searchRequest, excludedCandidates);
-        if (candidatesByNumbers != null) {
-            return candidatesByNumbers;
-        }
         //Processing can change if search is based on another search.
         final boolean hasBaseSearch = searchRequest.getSearchJoinRequests() != null &&
                 !searchRequest.getSearchJoinRequests().isEmpty();
@@ -1931,59 +1946,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         return candidates;
     }
-
-    /**
-     * Search explicitly by candidateNumber.
-     *
-     * - Accepts a list of candidateNumber strings from the request.
-     * - Fetches all matching candidates using repository method:
-     *      findByCandidateNumberIn(Collection<String>, Pageable)
-     * - Removes excluded candidates.
-     * - Preserves the exact order in which numbers were entered.
-     */
-    private Page<Candidate> searchByCandidateNumbers(
-        SearchCandidateRequest request,
-        Set<Candidate> excludedCandidates
-    ) {
-        List<String> candidateNumbers = request.getCandidateNumbers();
-
-        // 1) No numbers → Caller fall back to normal search
-        if (candidateNumbers == null || candidateNumbers.isEmpty()) {
-            return null;
-        }
-
-        Page<Candidate> page = candidateRepository.findByCandidateNumberIn(
-            candidateNumbers,
-            PageRequest.of(request.getPageNumber(), request.getPageSize())
-        );
-
-        // 2) Remove excluded candidates
-        List<Candidate> filtered = page.getContent().stream()
-            .filter(c -> !excludedCandidates.contains(c))
-            .collect(Collectors.toList());
-
-        // 3) Maintain input order (important for user experience)
-        Map<String, Integer> orderByNumber = new HashMap<>();
-        for (int i = 0; i < candidateNumbers.size(); i++) {
-            orderByNumber.put(candidateNumbers.get(i), i);
-        }
-
-        filtered.sort(Comparator.comparingInt(
-            c -> orderByNumber.getOrDefault(
-                c.getCandidateNumber(),
-                Integer.MAX_VALUE
-            )
-        ));
-
-        // 4) Return as a new paginated result
-        return new PageImpl<>(
-            filtered,
-            request.getPageRequest(),
-            filtered.size()
-        );
-    }
-
-
 
     /**
      * Do a paged search for candidates according to the given request but excluding the given
@@ -2266,6 +2228,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
             ands.add("candidate.status in (" + values + ")");
         }
+
+        // CANDIDATE NUMBER SEARCH (exact match)
+        if (!ObjectUtils.isEmpty(request.getCandidateNumbers())) {
+            String values = request.getCandidateNumbers().stream()
+                .filter(StringUtils::hasText)
+                .map(String::trim)
+                .map(val -> val.replace("'", "''"))
+                .map(val -> "'" + val + "'")
+                .collect(Collectors.joining(","));
+
+            ands.add("candidate.candidate_number in (" + values + ")");
+        }
+
 
         // Occupations SEARCH
         if (!ObjectUtils.isEmpty(request.getOccupationIds())) {
