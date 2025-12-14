@@ -2255,7 +2255,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Text search
         if (StringUtils.hasText(request.getSimpleQueryString())) {
-            joins.add("candidate_job_experience");
             String to_tsquery = CandidateSearchUtils.buildToTsQueryFunction(request.getSimpleQueryString());
             String clause = CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD + " @@ " + to_tsquery;
             ands.add(clause);
