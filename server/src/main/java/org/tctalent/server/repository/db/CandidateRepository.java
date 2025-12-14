@@ -921,15 +921,6 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(value = "select * from candidate where id in :idsSql", nativeQuery = true)
     Page<Candidate> findByIdIn(@Param("idsSql") String idsSql, Pageable pageable);
 
-    /**
-     * Takes a collection of candidate numbers and returns their corresponding candidates.
-     *
-     * @param numbers  any collection of candidateNumber values
-     * @param pageable details of requested pagination
-     * @return paged search result of candidates who match the provided candidate numbers
-     */
-    Page<Candidate> findByCandidateNumberIn(Collection<String> numbers, Pageable pageable);
-
 
     @Query(
         value =
