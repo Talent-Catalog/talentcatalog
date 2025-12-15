@@ -79,8 +79,8 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
 
   private newMemberGroup(value?: Partial<RelocatingDependant>) {
     const group = this.fb.nonNullable.group({
-      TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT: [value?. TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT ?? DependantRelations.Partner, [Validators.required]],
-      relationOther: [(value as any)?.relationOther ?? ''],
+      TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT: [(value as any)?. TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT ?? DependantRelations.Partner, [Validators.required]],
+      TTH_IT$OTHER_RELATIONSHIP_TO_PRIMARY_APPLICANT: [(value as any)?.TTH_IT$OTHER_RELATIONSHIP_TO_PRIMARY_APPLICANT ?? ''],
 
       //Names must match the TC published column field keys/property names for a normal (non dependant) candidate.
       //they already match the published column fields.
@@ -152,7 +152,7 @@ export class DependantsTravelInfoFormComponent implements OnInit, ICandidateForm
   private otherRelationshipNotesIfOtherValidator() {
     return (group: AbstractControl): ValidationErrors | null => {
       const rel = group.get('TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT')?.value as DependantRelations;
-      const other = group.get('relationOther')?.value as string;
+      const other = group.get('TTH_IT$OTHER_RELATIONSHIP_TO_PRIMARY_APPLICANT')?.value as string;
       if (rel !== DependantRelations.Other) return null;
       return other && other.trim().length >= 2 ? null : {otherRelationshipRequired: true};
     };
