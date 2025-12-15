@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div [hidden]="loading" [class.split]="!!selectedCandidate">
+<div [hidden]="loading">
 
 <!--  <nav aria-label="breadcrumb" class="breadcrumb-container">-->
 <!--    <h3 class="breadcrumb-heading">-->
@@ -924,7 +924,7 @@
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"
                        [searchRequest]="searchRequest"
-                       [manageScreenSplits]="false"
+                       [manageScreenSplits]="true"
                        [showBreadcrumb]="false"
                        (candidateSelection)="selectedCandidate = $event"
                        [(selectedCandidates)]="selectedCandidates"
