@@ -28,3 +28,24 @@
 .intake-complete {
   @include text-color-secondary
 }
+
+.highlight-button{
+  border-radius: 8px;
+  inset: -2px;
+  box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  animation: pulse-warning 1.2s ease-out infinite;
+}
+
+@keyframes pulse-warning {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.85);
+
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
+
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(251, 191, 36, 0);
+  }
+}

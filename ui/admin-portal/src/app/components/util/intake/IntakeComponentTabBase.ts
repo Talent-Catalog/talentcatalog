@@ -130,6 +130,11 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   examLabels: { [key: string]: string } = {};
 
+  /**
+   * Keeps track of which accordion panels are currently open.
+   * Used to restore the open panels when the candidate intake data is refreshed or reloaded.
+   */
+  openIndexes: number[] = [];
   /** Indicates that newer intake data is available from another tab */
   hasPendingRemoteUpdate = false;
 
