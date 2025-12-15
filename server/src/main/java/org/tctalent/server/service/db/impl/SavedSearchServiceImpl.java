@@ -19,6 +19,10 @@ package org.tctalent.server.service.db.impl;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.tctalent.server.configuration.SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID;
+import static org.tctalent.server.util.StringHelper.getIdsFromString;
+import static org.tctalent.server.util.StringHelper.getListAsString;
+import static org.tctalent.server.util.StringHelper.getStringListAsString;
+import static org.tctalent.server.util.StringHelper.getStringListFromString;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
@@ -1755,10 +1759,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(search.getNationalitySearchType());
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
+        searchCandidateRequest.setCandidateNumbers(getStringListFromString(search.getCandidateNumbers()));
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(search.getCountryIds());
-        searchCandidateRequest.setCandidateNumbers(getStringListFromString(search.getCandidateNumbers()));
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
@@ -1812,38 +1816,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         return searchCandidateRequest;
 
-    }
-
-
-
-    String getListAsString(List<Long> ids){
-        return !CollectionUtils.isEmpty(ids) ? ids.stream().map(String::valueOf)
-                .collect(Collectors.joining(",")) : null;
-    }
-
-    List<Long> getIdsFromString(String listIds){
-        return listIds != null ? Stream.of(listIds.split(","))
-                .map(Long::parseLong)
-                .collect(Collectors.toList()) : null;
-    }
-
-    String getStringListAsString(List<String> values) {
-        return !CollectionUtils.isEmpty(values)
-            ? values.stream()
-            .filter(StringUtils::hasText)
-            .map(String::trim)
-            .map(s -> s.replace(",", ""))
-            .collect(Collectors.joining(","))
-            : null;
-    }
-
-    List<String> getStringListFromString(String csv) {
-        return csv != null
-            ? Stream.of(csv.split(","))
-            .map(String::trim)
-            .filter(StringUtils::hasText)
-            .collect(Collectors.toList())
-            : null;
     }
 
 
