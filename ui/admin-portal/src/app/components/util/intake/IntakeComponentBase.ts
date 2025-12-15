@@ -93,7 +93,7 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
 
   /**
    * Called after a successful save.
-   * Broadcasts an update so other open tabs can refresh their data.
+   * Notifies other open tabs that newer intake data is available.
    */
   onSuccessfulSave(): void {
     this.crossTab.broadcastCandidateUpdated(this.candidate.id);

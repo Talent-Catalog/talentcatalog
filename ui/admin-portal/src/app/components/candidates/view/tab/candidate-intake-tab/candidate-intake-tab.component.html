@@ -73,6 +73,27 @@
 
   <hr>
 
+  <tc-alert
+    *ngIf="hasPendingRemoteUpdate"
+    type="warning"
+    [dismissible]="false"
+    [showIcon]="true">
+
+    <div class="d-flex align-items-center justify-content-between w-100">
+    <span>
+      This intake data has been updated in another tab.
+    </span>
+
+      <tc-button
+        type="solid"
+        color="secondary"
+        class="ms-3"
+        (onClick)="onRefreshRequested()">
+        Refresh
+      </tc-button>
+    </div>
+  </tc-alert>
+
   <tc-accordion [appReadOnlyInputs]="!isEditable()" [(activeIndexes)]="openIndexes"
                 class="intake-accordion"
   >
