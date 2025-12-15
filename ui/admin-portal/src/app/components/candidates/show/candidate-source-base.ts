@@ -225,12 +225,12 @@ export class CandidateSourceBaseComponent {
     });
   }
 
-  protected toggleSort(column: string, sortDirection: string = 'ASC') {
+  protected toggleSort(column: string, defaultSortDirection: string = 'ASC') {
     if (this.sortField === column) {
       this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
     } else {
       this.sortField = column;
-      this.sortDirection = sortDirection;
+      this.sortDirection = defaultSortDirection;
     }
   }
 

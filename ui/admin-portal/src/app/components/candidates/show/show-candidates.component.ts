@@ -538,8 +538,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.doSearch(true);
   }
 
-  toggleSort(column: string, sortDirection: string = 'ASC') {
-    super.toggleSort(column, sortDirection);
+  toggleSort(column: string, defaultSortDirection: string = 'ASC') {
+    super.toggleSort(column, defaultSortDirection);
     this.doSearch(true);
   }
 
