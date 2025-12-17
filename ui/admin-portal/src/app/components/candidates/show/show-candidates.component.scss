@@ -76,6 +76,8 @@ $candidate-card-width: 40vw;
 
 
 .split {
+  // Adds a small, consistent gap between the left panel and the candidate card,
+  // matching the horizontal gutter used by container-fluid
   margin-right: calc(#{$candidate-card-width} + (var(--bs-gutter-x)));
 }
 
