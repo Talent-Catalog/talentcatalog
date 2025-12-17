@@ -191,8 +191,9 @@ public abstract class CandidateSearchUtils {
         //Trim leading or trailing spaces - they confuse the regex below
         esQuery = esQuery.trim();
 
-        //Strip out any single quotes in the query - they mess up the tsquery syntax
-        esQuery = esQuery.replace("'", "");
+        //Prevent single quotes from messing up tsQuery syntax by doubling them. tsQuery syntax
+        //ignores '' and it is treated like a single quote text
+        esQuery = esQuery.replace("'", "''");
 
         // Step 1: Handle quoted phrases: "quick brown" => quick <-> brown
         StringBuilder result = new StringBuilder();
