@@ -52,9 +52,6 @@ export interface TravelInfoFormData {
  * into each column based on the field key or property name of the column.
  */
 export interface RelocatingDependant {
-  relationship?: DependantRelations;
-  dependantRelationOther?: string;
-
   'user.firstName'?: string;
   'user.lastName'?: string;
   dob?: string;
@@ -73,6 +70,8 @@ export interface RelocatingDependant {
   TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE?: string;
   TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER?: string;
   TTH_IT$REFUGEE_STATUS_COMMENT?: string;
+  TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT?: DependantRelations;
+  TTH_IT$OTHER_RELATIONSHIP_TO_PRIMARY_APPLICANT?: string;
 }
 
 export interface DependantsInfoFormData {

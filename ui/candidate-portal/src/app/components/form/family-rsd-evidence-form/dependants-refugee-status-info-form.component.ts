@@ -165,6 +165,6 @@ export class DependantsRefugeeStatusInfoFormComponent
     const first = member['user.firstName']?.trim() ?? '';
     const last = member['user.lastName']?.trim() ?? '';
     const fullName = `${first} ${last}`.trim();
-    return fullName || member.relationship || 'Unnamed Member';
+    return fullName || member.TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT || 'Unnamed Member';
   }
 }
