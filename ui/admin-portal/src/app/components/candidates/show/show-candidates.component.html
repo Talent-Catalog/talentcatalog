@@ -479,8 +479,8 @@
           <tr>
             <th></th>
             <th *ngIf="displayTextMatchRank()">
-              <ng-container (click)="toggleSort('text_match')">
-                <div (click)="toggleSort('text_match')" class="sortable-column-header">
+              <ng-container (click)="toggleSort('text_match', 'DESC')">
+                <div (click)="toggleSort('text_match', 'DESC')" class="sortable-column-header">
                   <app-sorted-by [column]="'text_match'" [sortColumn]="sortField"
                                  [sortDirection]="sortDirection"></app-sorted-by>
                   Rank
@@ -492,7 +492,7 @@
                 <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
               </tc-icon>
             </th>
-            <th class="candidate-number-row sortable-column-header" (click)="toggleSort('id')">
+            <th class="candidate-number-row sortable-column-header" (click)="toggleSort('id', 'DESC')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
