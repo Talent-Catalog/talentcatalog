@@ -921,6 +921,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(value = "select * from candidate where id in :idsSql", nativeQuery = true)
     Page<Candidate> findByIdIn(@Param("idsSql") String idsSql, Pageable pageable);
 
+
     @Query(
         value =
             """

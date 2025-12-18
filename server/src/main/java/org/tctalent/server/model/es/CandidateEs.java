@@ -99,6 +99,9 @@ public class CandidateEs {
     private String additionalInfo;
 
     @Field(type = FieldType.Text)
+    private String shareableNotes;
+
+    @Field(type = FieldType.Text)
     private List<String> certifications;
 
     /*
@@ -265,6 +268,8 @@ public class CandidateEs {
             : candidate.getUser().getEmail();
         this.externalId = candidate.getExternalId();
         this.candidateNumber = candidate.getCandidateNumber();
+
+        this.shareableNotes = candidate.getShareableNotes();
 
         this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
             null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();

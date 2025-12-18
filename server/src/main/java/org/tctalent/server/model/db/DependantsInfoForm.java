@@ -28,7 +28,7 @@ import org.tctalent.server.service.db.CandidateService;
  */
 public class DependantsInfoForm extends CandidateFormInstanceHelper {
 
-    private static final String DEPENDANTS_INFO = "DEPENDANTS_INFO";
+    private static final String DEPENDANTS_INFO = "TTH_IT$DEPENDANTS_INFO";
     private static final String NO_ELIGIBLE = "NO_ELIGIBLE_FAMILY_MEMBERS";
     private static final String NO_ELIGIBLE_NOTES = "NO_ELIGIBLE_NOTES";
 

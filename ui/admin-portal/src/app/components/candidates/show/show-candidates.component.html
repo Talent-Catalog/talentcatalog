@@ -64,7 +64,13 @@
           <i class="fas fa-globe" title="Show published sheet"></i>
         </tc-icon>
       </a>
-
+      <a target="_blank" *ngIf="timestamp" (click)="doSearch(true)">
+        <tc-icon [size]="'xl'"
+                 [color]="'primary'"
+                 [ariaLabel]="'Refresh data'">
+          <i class="fas fa-sync" title="Refresh data"></i>
+        </tc-icon>
+        </a>
       <tc-dropdown placement="bottom-start">
         <tc-dropdown-button type="solid" color="gray">
           <i class="fas fa-angle-down"></i>
@@ -140,13 +146,6 @@
               <i class="fab fa-google-drive" title="Create/show Google folder"></i>
             </tc-icon>
             Create/show Google folder
-          </tc-dropdown-item>
-
-          <tc-dropdown-item target="_blank" *ngIf="timestamp" (click)="doSearch(true)">
-            <tc-icon [size]="'md'"  [ariaLabel]="'Refresh data'">
-              <i class="fas fa-sync" title="Refresh data"></i>
-            </tc-icon>
-            Refresh data
           </tc-dropdown-item>
 
         </tc-dropdown-menu>
@@ -470,6 +469,7 @@
       <tc-table
         [results]="results"
         [loading]="loading"
+        [paginationPosition]="'both'"
         [(pageNumber)]="pageNumber"
         (pageChange)="doSearch(true)">
 
@@ -478,8 +478,8 @@
           <tr>
             <th></th>
             <th *ngIf="displayTextMatchRank()">
-              <ng-container (click)="toggleSort('text_match')">
-                <div (click)="toggleSort('text_match')" class="sortable-column-header">
+              <ng-container (click)="toggleSort('text_match', 'DESC')">
+                <div (click)="toggleSort('text_match', 'DESC')" class="sortable-column-header">
                   <app-sorted-by [column]="'text_match'" [sortColumn]="sortField"
                                  [sortDirection]="sortDirection"></app-sorted-by>
                   Rank
@@ -491,7 +491,7 @@
                 <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
               </tc-icon>
             </th>
-            <th class="candidate-number-row sortable-column-header" (click)="toggleSort('id')">
+            <th class="candidate-number-row sortable-column-header" (click)="toggleSort('id', 'DESC')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>

@@ -51,6 +51,16 @@
         </tc-button>
       </div>
       <ng-template #notComplete>
+        <tc-button
+          type="solid"
+          [color]="hasPendingRemoteUpdate ? 'warning' : 'info'"
+          [size]="'sm'"
+          [class.highlight-button]="hasPendingRemoteUpdate"
+          (onClick)="onRefreshRequested()"
+        >
+          <i class="fas fa-sync" title="Refresh data"></i>
+          {{ hasPendingRemoteUpdate ? 'Refresh – updated in another tab' : 'Refresh' }}
+        </tc-button>
         <tc-button [color]="'warning'"
                    (onClick)="inputOldIntake(true)"
                    [disabled]="saving"
@@ -73,7 +83,7 @@
 
   <hr>
 
-  <tc-accordion [appReadOnlyInputs]="!isEditable()"
+  <tc-accordion [appReadOnlyInputs]="!isEditable()" [(activeIndexes)]="openIndexes"
                 class="intake-accordion"
   >
 

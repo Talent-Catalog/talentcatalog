@@ -376,6 +376,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     if (changes.searchRequest) {
       if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
         if (this.searchRequest) {
+          //A new search request has to clear the page number.
+          //Old page number is no longer relevant with a new search.
+          this.pageNumber = 1;
           this.updatedSearch();
         }
       }
@@ -535,8 +538,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.doSearch(true);
   }
 
-  toggleSort(column: string) {
-    super.toggleSort(column);
+  toggleSort(column: string, defaultSortDirection: string = 'ASC') {
+    super.toggleSort(column, defaultSortDirection);
     this.doSearch(true);
   }
 

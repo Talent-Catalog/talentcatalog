@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div [hidden]="loading" [class.split]="!!selectedCandidate">
+<div [hidden]="loading">
 
 <!--  <nav aria-label="breadcrumb" class="breadcrumb-container">-->
 <!--    <h3 class="breadcrumb-heading">-->
@@ -217,6 +217,23 @@
             </div>
 
           </div>
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <tc-label size="sm" class="form-label" for="candidateNumbers">
+                Candidate Numbers
+              </tc-label>
+              <tc-input id="candidateNumbers"
+                        type="text"
+                        placeholder="E.g. 320387 309881 2886"
+                        aria-label="Candidate Numbers"
+                        formControlName="candidateNumbers">
+              </tc-input>
+              <small class="text-muted">
+                Type one or more candidate numbers separated by spaces or commas.
+              </small>
+            </div>
+          </div>
+
         </div>
 
         <hr class="w-100">
@@ -907,7 +924,7 @@
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"
                        [searchRequest]="searchRequest"
-                       [manageScreenSplits]="false"
+                       [manageScreenSplits]="true"
                        [showBreadcrumb]="false"
                        (candidateSelection)="selectedCandidate = $event"
                        [(selectedCandidates)]="selectedCandidates"

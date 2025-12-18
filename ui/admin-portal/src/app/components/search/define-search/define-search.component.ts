@@ -88,6 +88,7 @@ import {SearchQueryService} from "../../../services/search-query.service";
 import {first} from "rxjs/operators";
 import {JobService} from "../../../services/job.service";
 import {SkillName} from "../../../model/skill";
+import {CandidateNumberParser} from "../../../util/candidate-number-parser";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -188,6 +189,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm = this.fb.group({
       savedSearchId: [null],
       simpleQueryString: [null],
+      candidateNumbers: [''],
       keyword: [null],
       statuses: [[]],
       gender: [null],
@@ -434,6 +436,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
    * @param request Form data
    */
   getIdsMultiSelect(request): SearchCandidateRequestPaged {
+    request.candidateNumbers = CandidateNumberParser.parseCandidateNumbers(request.candidateNumbers);
+    
     if (request.countries != null) {
       request.countryIds = request.countries.map(c => c.id);
       delete request.countries;
@@ -484,7 +488,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     // We need to add back the saved search id because we are always working with a saved search object,
     // either it's a default saved search or saved search.
     this.searchForm.controls['savedSearchId'].patchValue(this.savedSearchId);
-
+    this.searchForm.controls['candidateNumbers'].patchValue('');
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
     this.searchForm.controls['listAllSearchType'].patchValue(null);
@@ -987,6 +991,5 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       behavior: 'smooth'
     });
   }
-
   public readonly CandidateSourceType = CandidateSourceType;
 }
