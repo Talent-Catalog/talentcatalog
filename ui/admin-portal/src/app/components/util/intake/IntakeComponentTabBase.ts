@@ -14,8 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit} from '@angular/core';
-import {forkJoin} from 'rxjs';
+import {Directive, inject, Input, OnInit} from '@angular/core';
+import {forkJoin, Subject} from 'rxjs';
+import {filter, takeUntil} from 'rxjs/operators';
 import {Candidate, CandidateExam, CandidateIntakeData} from '../../../model/candidate';
 import {CandidateService, IntakeAuditRequest} from '../../../services/candidate.service';
 import {CountryService} from '../../../services/country.service';
@@ -39,6 +40,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ConfirmationComponent} from "../confirm/confirmation.component";
 import {OldIntakeInputComponent} from "../old-intake-input-modal/old-intake-input.component";
+import {CrossTabSyncService} from "../../../services/cross-tab-sync.service";
 
 /**
  * Base class for all candidate intake tab components.
@@ -128,6 +130,14 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   examLabels: { [key: string]: string } = {};
 
+  /**
+   * Keeps track of which accordion panels are currently open.
+   * Used to restore the open panels when the candidate intake data is refreshed or reloaded.
+   */
+  openIndexes: number[] = [];
+  /** Indicates that newer intake data is available from another tab */
+  hasPendingRemoteUpdate = false;
+
   public constructor(
     protected candidateService: CandidateService,
     protected countryService: CountryService,
@@ -138,9 +148,56 @@ export abstract class IntakeComponentTabBase implements OnInit {
     protected authenticationService: AuthenticationService,
     protected modalService: NgbModal
   ) { }
-
+  /** Cross-tab sync for candidate intake updates */
+  protected crossTab = inject(CrossTabSyncService);
+  private destroy$ = new Subject<void>();
   ngOnInit(): void {
     this.refreshIntakeDataInternal(true);
+
+    // Listen for candidate update signals and refresh the intake data whenever they occur.
+    this.candidateService
+    .candidateUpdated()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(() => {
+      // Internal refresh (same browser tab) → not a remote update
+      this.hasPendingRemoteUpdate = false;
+      this.refreshIntakeData();
+    });
+
+    /**
+     * Listen for candidate intake updates coming from other browser tabs.
+     * When the same candidate is updated elsewhere, refresh the intake data
+     * while keeping the currently open accordion panels unchanged.
+     */
+    this.crossTab.candidateUpdated$
+    .pipe(
+      // Only react to updates for the currently viewed candidate
+      filter(m => m.id === this.candidate?.id),
+      // Stop listening when the component is destroyed
+      takeUntil(this.destroy$)
+    )
+    .subscribe(() => {
+      if (!this.hasPendingRemoteUpdate) {
+        // Mark data as out of date, but do not refresh automatically
+        this.hasPendingRemoteUpdate = true;
+        // Scroll to top so the user notices the refresh prompt
+        if (window.scrollY > 200) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+      }
+    );
+  }
+
+  /** Refresh intake data after user confirmation */
+  onRefreshRequested(): void {
+    this.hasPendingRemoteUpdate = false;
+    this.refreshIntakeData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
