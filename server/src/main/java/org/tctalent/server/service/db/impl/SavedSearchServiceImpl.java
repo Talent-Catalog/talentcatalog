@@ -19,6 +19,10 @@ package org.tctalent.server.service.db.impl;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.tctalent.server.configuration.SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID;
+import static org.tctalent.server.util.StringHelper.getIdsFromString;
+import static org.tctalent.server.util.StringHelper.getListAsString;
+import static org.tctalent.server.util.StringHelper.getStringListAsString;
+import static org.tctalent.server.util.StringHelper.getStringListFromString;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
@@ -1667,6 +1671,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (request != null) {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
             savedSearch.setKeyword(request.getKeyword());
+            savedSearch.setCandidateNumbers(getStringListAsString(request.getCandidateNumbers()));
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
             savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
@@ -1754,6 +1759,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(search.getNationalitySearchType());
         searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
+        searchCandidateRequest.setCandidateNumbers(getStringListFromString(search.getCandidateNumbers()));
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(search.getCountryIds());
@@ -1812,18 +1818,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     }
 
-
-
-    String getListAsString(List<Long> ids){
-        return !CollectionUtils.isEmpty(ids) ? ids.stream().map(String::valueOf)
-                .collect(Collectors.joining(",")) : null;
-    }
-
-    List<Long> getIdsFromString(String listIds){
-        return listIds != null ? Stream.of(listIds.split(","))
-                .map(Long::parseLong)
-                .collect(Collectors.toList()) : null;
-    }
 
     String getStatusListAsString(List<CandidateStatus> statuses){
         return !CollectionUtils.isEmpty(statuses) ? statuses.stream().map(String::valueOf)
@@ -1924,6 +1918,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         return candidates;
     }
+
     /**
      * Do a paged search for candidates according to the given request but excluding the given
      * candidates. Sorting and paging are supported as specified in the request.
@@ -2031,6 +2026,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
         return new PageImpl<>(candidatesSorted, pageRequest, total);
     }
+
 
     /**
      * <p>
@@ -2204,6 +2200,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
             ands.add("candidate.status in (" + values + ")");
         }
+
+        // CANDIDATE NUMBER SEARCH (exact match)
+        if (!ObjectUtils.isEmpty(request.getCandidateNumbers())) {
+            String values = request.getCandidateNumbers().stream()
+                .filter(StringUtils::hasText)
+                .map(String::trim)
+                .map(val -> val.replace("'", "''"))
+                .map(val -> "'" + val + "'")
+                .collect(Collectors.joining(","));
+
+            ands.add("candidate.candidate_number in (" + values + ")");
+        }
+
 
         // Occupations SEARCH
         if (!ObjectUtils.isEmpty(request.getOccupationIds())) {
