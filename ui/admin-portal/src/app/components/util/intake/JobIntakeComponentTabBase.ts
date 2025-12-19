@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
 import {Job} from "../../../model/job";
 import {JobOppIntake} from "../../../model/job-opp-intake";
 import {JobService} from "../../../services/job.service";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 /**
  * Base class for all job intake tab components.
@@ -34,7 +43,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
  * @author John Cameron
  */
 @Directive()
-export abstract class JobIntakeComponentTabBase implements OnInit {
+export abstract class JobIntakeComponentTabBase implements OnInit, OnChanges {
   /**
    * This is the job whose intake data we are entering
    */
@@ -74,13 +83,22 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
 
   public constructor(
     protected authenticationService: AuthenticationService,
+    protected authorizationService: AuthorizationService,
     protected jobService: JobService,
   ) {
     this.loggedInUser = this.authenticationService.getLoggedInUser();
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
     this.refreshIntakeDataInternal(true);
+  }
+
+  canViewEmployerDetails() {
+    //Employer partners do not need to see details about themselves.
+    return !this.authorizationService.isEmployerPartner();
   }
 
   /**
@@ -101,6 +119,10 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
     }).subscribe(results => {
       this.loading = false;
       this.jobIntakeData = results['job'].jobOppIntake;
+      if (!this.jobIntakeData) {
+        //If there is no JobIntakeData - create an empty one.
+        this.jobIntakeData = {};
+      }
       this.onDataLoaded(init);
     }, error => {
       this.loading = false;

@@ -1,11 +1,18 @@
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-    <li class="breadcrumb-item active" aria-current="page">
-      {{getBreadCrumb()}}
-    </li>
-  </ol>
-</nav>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
 <div class="d-flex mb-3">
   <div *ngIf="isDefaultJobCreator()" class="me-4">
@@ -21,14 +28,27 @@
   <div *ngIf="isEmployerPartner()">
     <div class="me-4">
       <h5>Job Name</h5>
-      <p>Enter a job name - describing the role. For example, "Full stack software engineer"</p>
+      <p>
+        Enter the role name - e.g. 'Full stack software engineer' - which will be prepended with
+        additional identifying information to give the full job name.
+      </p>
+      <p>
+        You can edit this later in the job's 'General' tab.
+      </p>
 
       <form [formGroup]="jobForm">
         <div>
-          <input #role type="text" class="form-control" placeholder="Role..." formControlName="role"
-                 id="role">
+          <tc-input #role
+                 type="text"
+                 class="form-control"
+                 placeholder="Role..."
+                 formControlName="role"
+                 id="role"
+                 maxlength="50">
+          </tc-input>
         </div>
       </form>
+      <small class="text-muted">{{remainingChars}} characters remaining</small>
     </div>
   </div>
 
@@ -38,90 +58,89 @@
       (updateError)="onJoblinkError($event)"
       (sfJoblinkValidation)="onSfJoblinkValidation($event)">
     </app-sf-joblink>
-    <div class="alert alert-danger" *ngIf="errorFindingJob">
+    <tc-alert type="warning" *ngIf="errorFindingJob">
       {{errorFindingJob}}
-    </div>
+    </tc-alert>
   </div>
 </div>
 
-<div *ngIf="jobName" class="card">
-  <div class="card-header d-flex align-items-baseline justify-content-between">
+<tc-card *ngIf="jobName">
+  <tc-card-header>
     <h5>{{jobName}}</h5>
       <ng-container>
         <div *ngIf="jobName && progressPercent != 100" class="float-end">
-          <button type="button" class="btn btn-primary" (click)="doPreparation()">
-            Create New Job
-          </button>
-          <button type="button" class="btn btn-secondary ms-3" (click)="selectJobCopy()"
-                  [ngbTooltip]="'Copies the JOI, Job Uploads and contacts from an existing job.'">
+          <tc-button type="outline" (onClick)="selectJobCopy()" class="me-2"
+                     [ngbTooltip]="'Copies the JOI, Job Uploads and contacts from an existing job.'">
             Copy Existing Job
-          </button>
+          </tc-button>
+          <tc-button type="solid" (onClick)="doPreparation()"
+                  ngbTooltip="Initiates creation of a new job for which you will provide details.">
+            Create New Job
+          </tc-button>
         </div>
-        <button *ngIf="jobName && progressPercent == 100" type="button"
-                class="btn btn-primary float-end" (click)="doShowJob()">
+        <tc-button *ngIf="jobName && progressPercent == 100" type="solid" color="success"
+                   (onClick)="doShowJob()" class="float-end">
           Show Job
-        </button>
+        </tc-button>
       </ng-container>
+  </tc-card-header>
+  <div class="progress">
+    <div class="background-color-info" [ngClass]=
+      "{'progress-bar-animated progress-bar-striped': progressPercent != 100 }"
+         role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+         [ngStyle]="{'width': progressPercent + '%'}"></div>
   </div>
-  <div class="card-body">
-    <div class="progress">
-      <div class="tbb-primary" [ngClass]=
-        "{'progress-bar-animated progress-bar-striped': progressPercent != 100 }"
-           role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
-           [ngStyle]="{'width': progressPercent + '%'}"></div>
+
+  <div class="d-flex flex-column pt-4">
+    <div [ngSwitch]="creatingJob">
+      <ul class="fa-ul">
+        <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-color-caption"><i class="far fa-square"></i></span>
+          Create job, submission list and exclusion list
+        </li>
+        <li *ngSwitchCase="Progress.Started"><span class="fa-li text-color-primary"><i class="fas fa-spinner fa-spin"></i></span>
+          Creating job, submission list and exclusion list
+        </li>
+        <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-color-success"><i class="fas fa-check-square"></i></span>
+          List <a [href]="listLink" target="_blank>">{{listLink}}</a> is the list that should be populated with job candidates.
+        </li>
+      </ul>
+      <tc-alert type="warning" *ngIf="errorCreatingJob">
+        {{errorCreatingJob}}
+      </tc-alert>
     </div>
 
-    <div class="d-flex flex-column pt-4">
-      <div [ngSwitch]="creatingJob">
-        <ul class="fa-ul">
-          <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Create job, submission list and exclusion list
-          </li>
-          <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
-            Creating job, submission list and exclusion list
-          </li>
-          <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
-            List <a [href]="listLink" target="_blank>">{{listLink}}</a> is the list that should be populated with job candidates.
-          </li>
-        </ul>
-        <div class="alert alert-danger" *ngIf="errorCreatingJob">
-          {{errorCreatingJob}}
-        </div>
-      </div>
+    <div [ngSwitch]="creatingFolders">
+      <ul class="fa-ul">
+        <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-color-caption"><i class="far fa-square"></i></span>
+          Create document storage folders associated with job's submission list
+        </li>
+        <li *ngSwitchCase="Progress.Started"><span class="fa-li text-color-primary"><i class="fas fa-spinner fa-spin"></i></span>
+          Creating document storage folders
+        </li>
+        <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-color-success"><i class="fas fa-check-square"></i></span>
+          Created document storage folders
+        </li>
+      </ul>
+      <tc-alert type="warning" *ngIf="errorCreatingFolders">
+        {{errorCreatingFolders}}
+      </tc-alert>
+    </div>
 
-      <div [ngSwitch]="creatingFolders">
-        <ul class="fa-ul">
-          <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Create document storage folders associated with job's submission list
-          </li>
-          <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
-            Creating document storage folders
-          </li>
-          <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
-            Created document storage folders
-          </li>
-        </ul>
-        <div class="alert alert-danger" *ngIf="errorCreatingFolders">
-          {{errorCreatingFolders}}
-        </div>
-      </div>
-
-      <div [ngSwitch]="creatingSFLinks">
-        <ul class="fa-ul">
-          <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
-            Link various Talent Catalog databases
-          </li>
-          <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
-            Linking databases
-          </li>
-          <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
-            Databases linked.
-          </li>
-        </ul>
-        <div class="alert alert-danger" *ngIf="errorCreatingSFLinks">
-          {{errorCreatingSFLinks}}
-        </div>
-      </div>
+    <div [ngSwitch]="creatingSFLinks">
+      <ul class="fa-ul">
+        <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-color-caption"><i class="far fa-square"></i></span>
+          Link various Talent Catalog databases
+        </li>
+        <li *ngSwitchCase="Progress.Started"><span class="fa-li text-color-primary"><i class="fas fa-spinner fa-spin"></i></span>
+          Linking databases
+        </li>
+        <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-color-success"><i class="fas fa-check-square"></i></span>
+          Databases linked.
+        </li>
+      </ul>
+      <tc-alert type="warning" *ngIf="errorCreatingSFLinks">
+        {{errorCreatingSFLinks}}
+      </tc-alert>
+    </div>
   </div>
-  </div>
-</div>
+</tc-card>

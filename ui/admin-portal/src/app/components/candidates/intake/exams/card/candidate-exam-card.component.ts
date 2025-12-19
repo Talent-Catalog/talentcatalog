@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,7 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {CandidateExam, Exam} from '../../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateExamService} from '../../../../../services/candidate-exam.service';
 
@@ -39,7 +39,7 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
   errorMsg: string;
   regexpIeltsScore: RegExp;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService,
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService,
               private candidateExamService: CandidateExamService) {
     super(fb, candidateService);
   }

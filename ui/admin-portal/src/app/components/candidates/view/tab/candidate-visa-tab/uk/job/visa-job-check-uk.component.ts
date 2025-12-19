@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {
   Candidate,
@@ -6,9 +22,6 @@ import {
   CandidateVisaJobCheck
 } from "../../../../../../../model/candidate";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
-import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
-import {OccupationService} from "../../../../../../../services/occupation.service";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
@@ -28,9 +41,7 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
 
   error: string;
 
-  constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService,
-              private occupationService: OccupationService) {}
+  constructor() {}
 
   ngOnInit() {
     this.candidateOpportunity = this.candidate.candidateOpportunities
@@ -38,6 +49,8 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.visaJobUk.expandAll();
+    if(this.visaJobUk){
+      this.visaJobUk.expandAll();
+    }
   }
 }

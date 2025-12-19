@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -31,7 +31,7 @@ import {ChangePasswordComponent} from "../../account/change-password/change-pass
 import {SearchResults} from "../../../model/search-results";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('SearchUsersComponent', () => {
+describe('SearchUsersComponent', () => {
   let component: SearchUsersComponent;
   let fixture: ComponentFixture<SearchUsersComponent>;
   let userServiceSpy: jasmine.SpyObj<UserService>;

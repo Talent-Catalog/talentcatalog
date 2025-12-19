@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,14 +18,14 @@ package org.tctalent.server.model.db;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,17 +48,29 @@ public class ChatPost extends AbstractAuditableDomainObject<Long> {
     @OneToMany(mappedBy = "chatPost", cascade = CascadeType.ALL)
     private List<Reaction> reactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "chatPost", cascade = CascadeType.ALL)
+    /**
+     * See <a href="https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/">
+     *   here</a> for best practices in mapping bidirectional relationships and {@link LinkPreview}
+     *   for a description of link previews in this context.
+     *   <p>MODEL: mapping bidirectional one-to-many relationships</p>
+     */
+    @OneToMany(mappedBy = "chatPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LinkPreview> linkPreviews = new ArrayList<>();
 
-    public void setLinkPreviews(List<LinkPreview> linkPreviews) {
-        //TODO JC This still has problems because it doesn't clear out existing linkPreviews
-        if (linkPreviews != null) {
-            linkPreviews.forEach(linkPreview -> {
-                linkPreview.setChatPost(this);
-                this.linkPreviews.add(linkPreview);
-            });
-        }
+    public void addLinkPreview(LinkPreview linkPreview) {
+        linkPreviews.add(linkPreview);
+        linkPreview.setChatPost(this);
+    }
+
+    /**
+     * Not currently used (as at Aug '24) but provided in case we subsequently wish to retain a
+     * Link Preview but remove it from the parent post — also illustrative for purpose of modelling
+     * bidirectional one-to-many relationship JPA implementation.
+     * @param linkPreview the Link Preview to be removed
+     */
+    public void removeLinkPreview(LinkPreview linkPreview) {
+        linkPreviews.remove(linkPreview);
+        linkPreview.setChatPost(null);
     }
 
     //Author of post is stored in inherited createdBy

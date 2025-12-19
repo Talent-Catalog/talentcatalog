@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -59,7 +59,7 @@ public class EmployerServiceImpl implements EmployerService {
         //todo Other account related fields - office size etc
 
         final String accountCountry = account.getCountry();
-        Country country = countryService.findCountryByName(accountCountry);
+        Country country = countryService.findByName(accountCountry);
         employer.setCountry(country);
         if (country == null ){
             emailHelper.sendAlert("Salesforce country " + accountCountry +

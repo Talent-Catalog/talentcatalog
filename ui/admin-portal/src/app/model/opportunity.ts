@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,9 +13,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {CandidateOpportunityStage, isCandidateOpportunity} from "./candidate-opportunity";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage,
+  isCandidateOpportunity,
+  isOppStageGreaterThanOrEqualTo
+} from "./candidate-opportunity";
 import {Auditable, HasId} from "./base";
-import {isJob, JobOpportunityStage} from "./job";
+import {isJob, isJobOppStageGreaterThanOrEqualTo, Job, JobOpportunityStage} from "./job";
+import {BadgeColor} from "../shared/components/badge/badge.component";
 
 /**
  * Given an opportunity (job or candidate), return the string value of the opportunity's stage's
@@ -54,6 +60,78 @@ export function getOpportunityStageName(opp: Opportunity): string {
     }
   }
   return s;
+}
+
+export function getStageBadgeColor(opp: Opportunity): BadgeColor {
+  //Need to select the appropriate stage's badge color - depending on whether opp is a candidate or
+  // job opportunity.
+  if (isCandidateOpportunity(opp)) {
+    return getCandidateOppStageBadgeColor(opp);
+  }
+  if (isJob(opp)) {
+    return getJobStageBadgeColor(opp);
+  }
+}
+
+/**
+ * Badge colors groups by job opp stages:
+ * - Won Stage: Yellow;
+ * - Closed Stages: Gray;
+ * - Recruiter Stages (stage CV Review onwards, but not closed or won): Orange;
+ * - Prospect: Pink;
+ * - Other stages (prospect to CV review): Purple;
+ * @param opp
+ */
+function getJobStageBadgeColor(opp: Job): BadgeColor {
+  if (opp.won) {
+    return "yellow"
+  } else if (opp.closed) {
+    return "gray"
+  } else if (isJobCvReviewStageOrMore(opp.stage)) {
+    return "orange"
+  } else if (CandidateOpportunityStage[opp.stage] === CandidateOpportunityStage.prospect) {
+    return "pink"
+  } else {
+    return "purple"
+  }
+}
+
+/**
+ * Badge colors groups by candidate opp stages:
+ * - Closed Stages: Gray;
+ * - Employed Stages (stage 'training' onwards, but not closed): Yellow;
+ * - Recruiter Stages (stage CV Review onwards, but not closed or employed): Orange;
+ * - Prospect: Pink;
+ * - Other stages (prospect to CV review): Purple;
+ * @param opp
+ */
+function getCandidateOppStageBadgeColor(opp: CandidateOpportunity): BadgeColor {
+  if (opp.closed) {
+    return "gray"
+  } else if (isEmployedStageOrMore(opp.stage)) {
+    return "yellow"
+  } else if (isCvReviewStageOrMore(opp.stage)) {
+    return "orange"
+  } else if (CandidateOpportunityStage[opp.stage] === CandidateOpportunityStage.prospect) {
+    return "pink"
+  } else {
+    return "purple"
+  }
+}
+
+export function isEmployedStageOrMore(stage: string): boolean {
+  return isOppStageGreaterThanOrEqualTo(stage, "training")
+}
+
+/**
+ *  Recruiters only see candidates past the CV Review stage.
+ */
+export function isCvReviewStageOrMore(stage: string) {
+  return isOppStageGreaterThanOrEqualTo(stage, 'cvReview')
+}
+
+export function isJobCvReviewStageOrMore(stage: string) {
+  return isJobOppStageGreaterThanOrEqualTo(stage, 'cvReview');
 }
 
 export interface OpportunityProgressParams {

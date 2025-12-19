@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,6 +19,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges
@@ -34,7 +35,7 @@ import {
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {User} from '../../../model/user';
-import {CandidateSource, canEditSource, isMine, isStarredByMe} from '../../../model/base';
+import {CandidateSource, DtoType} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
@@ -44,6 +45,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../services/saved-list.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";
 
 
 /**
@@ -51,27 +53,36 @@ import {AuthenticationService} from "../../../services/authentication.service";
  * <p/>
  * It does not display the candidates associated with that source.
  * For that reason some of the events (from clicking on the icons) may have to be passed up to
- * a parent who does managed the associated displayed candidates because actioning the event
+ * a parent who manages the associated displayed candidates because actioning the event
  * may require knowledge of, for example, what is the current page of candidates being displayed.
  */
 @Component({
   selector: 'app-candidate-source',
   templateUrl: './candidate-source.component.html',
-  styleUrls: ['./candidate-source.component.scss']
+  styleUrls: ['./candidate-source.component.scss'],
 })
-export class CandidateSourceComponent implements OnInit, OnChanges {
+export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
 
-  // The data processing is dependant on these variables
+  // The data processing is dependent on these variables
   // The candidate source passed in
   @Input() candidateSource: CandidateSource;
   // If the extra data can be loaded for the dropdowns (get request)
   @Input() canLoad: boolean = true;
-  // Handles the toggle state of the candidate source (show less/show more)
+
+  //Controls whether extras data is displayed about the candidate source.
+  //If showMore is true, an ellipsis button is displayed which allows you to toggle the state of
+  //this value.
   @Input() seeMore: boolean;
 
-  // The font awesome icon buttons are dependant on these variables
-  @Input() showLink: boolean = true;
+  //Show more determines whether the ellipsis icon appears allowing you to request more detail
+  //about the candidate source.
   @Input() showMore: boolean = true;
+
+  /** Show/hide additional icons and dropdown button for compact display in e.g. base search */
+  @Input() showHeadingIcons: boolean = true;
+
+  // The font awesome icon buttons are dependent on these variables
+  @Input() showLink: boolean = true;
   @Input() showOpen: boolean = true;
   @Input() showRunStats: boolean = true;
   @Input() showWatch: boolean = true;
@@ -102,8 +113,9 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     private location: Location,
     private modalService: NgbModal,
     private router: Router,
-    private authService: AuthorizationService,
-    private authenticationService: AuthenticationService
+    private authorizationService: AuthorizationService,
+    private authenticationService: AuthenticationService,
+    private candidateSourceCacheService: CandidateSourceCacheService
   ) {
   }
 
@@ -111,26 +123,37 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     this.loggedInUser = this.authenticationService.getLoggedInUser();
   }
 
-  ngOnChanges (changes: SimpleChanges){
-    // WHEN candidateSource changes IF showAll fetch the savedSearch object
-    // which has the multi select Names to display (not just Ids).
-    if (this.seeMore && changes && changes.candidateSource
-      && changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
+  ngOnChanges(changes: SimpleChanges) {
+    const candidateSourceChange = changes?.candidateSource;
 
-      //Only fetch if we have an id - otherwise changes will just be local
-      //modifications of a candidate source which has not been created yet.
-      if (this.candidateSource.id) {
-        this.getSavedSearch(this.candidateSource.id);
+    //Check if current source has changed
+    if (candidateSourceChange?.currentValue
+      && candidateSourceChange.previousValue !== candidateSourceChange.currentValue) {
+
+      //We have special pre-processing for candidate sources which are saved searches.
+      //(There is no special pre-processing needed for saved lists)
+      if (isSavedSearch(this.candidateSource)) {
+        //If seeMore is set, we need to fetch extended data for the saved search.
+        //This extended data is the names of search filters (that we can display)
+        //- such as countries - rather than just their IDs.
+        if (this.seeMore) {
+          //Only fetch extra data if we have an id - otherwise changes will just be local
+          //modifications of a candidate source which has not been created yet.
+          const candidateSourceId = candidateSourceChange.currentValue.id;
+          if (candidateSourceId) {
+            this.getSavedSearch(candidateSourceId, DtoType.EXTENDED);
+          }
+        }
       }
     }
   }
 
-  toggleShowMore() {
+  toggleSeeMore() {
     this.seeMore = !this.seeMore;
     // Get extra data from saved search if needed (canLoad:true)
     if (this.canLoad) {
       this.loading = true;
-      this.getSavedSearch(this.candidateSource.id);
+      this.getSavedSearch(this.candidateSource.id, DtoType.EXTENDED);
     }
   }
 
@@ -149,6 +172,8 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   doEditSource(){
+    // Remove from cache when editing
+    this.deleteFromCache(this.candidateSource);
     this.editSource.emit(this.candidateSource);
   }
 
@@ -177,14 +202,18 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   doToggleStarred() {
+    // Remove from cache when toggling starred
+    this.deleteFromCache(this.candidateSource);
     this.toggleStarred.emit(this.candidateSource);
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.candidateSource?.users);
   }
 
   doToggleWatch() {
+    // Remove from cache when toggling watch
+    this.deleteFromCache(this.candidateSource);
     this.toggleWatch.emit(this.candidateSource);
   }
 
@@ -203,11 +232,11 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isShared() {
-    return !isMine(this.candidateSource, this.authenticationService);
+    return !this.authorizationService.isCandidateSourceMine(this.candidateSource);
   }
 
   isEditable() {
-    return canEditSource(this.candidateSource, this.authenticationService);
+    return this.authorizationService.canEditCandidateSource(this.candidateSource);
   }
 
   isRemovable() {
@@ -215,14 +244,79 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     return !this.candidateSource.global;
   }
 
-  getSavedSearch(savedSearchId: number) {
-    this.savedSearchService.get(savedSearchId).subscribe(result => {
-      this.candidateSource = result;
+  getSavedSearch(savedSearchId: number, dtoType: DtoType) {
+    this.loading = true;
+
+    this.getFromCache(this.candidateSource);
+
+    if (this.isAlreadyLoaded(dtoType)) {
       this.loading = false;
-    }, err => {
+      return;
+    }
+
+    this.savedSearchService.get(savedSearchId, dtoType).subscribe({
+      next: (result) => this.handleSuccessfulFetch(result, dtoType),
+      error: (err) => this.handleError(err),
+    });
+  }
+
+  /**
+   * This method checks the current state of the `candidateSource` and returns `true`
+   * if the data has already been loaded with sufficient detail to satisfy the requested `dtoType`.
+   *
+   * If the requested `dtoType` is `FULL`, the method will return `true` if the candidate source
+   * is already loaded with either `FULL` or `EXTENDED` details. This is because `EXTENDED` contains
+   * all the details of `FULL` and more, so it's sufficient for the request.
+   *
+   * If the requested `dtoType` is `EXTENDED`, the method will return `true` only if the candidate source
+   * is already loaded with `EXTENDED` details. The `EXTENDED` type represents a more detailed dataset.
+   *
+   * @param dtoType The type of data transfer object (DTO) requested (either `FULL` or `EXTENDED`).
+   * @returns `true` if the data is already loaded with sufficient detail; otherwise, `false`.
+   */
+  private isAlreadyLoaded(dtoType: DtoType): boolean {
+    if (dtoType === DtoType.FULL) {
+      return this.candidateSource.dtoType === DtoType.FULL || this.candidateSource.dtoType === DtoType.EXTENDED;
+    }
+    return dtoType === DtoType.EXTENDED && this.candidateSource.dtoType === DtoType.EXTENDED;
+  }
+
+  private handleSuccessfulFetch(result: any, dtoType: DtoType): void {
+    this.candidateSource = {
+      ...this.candidateSource,
+      ...result,
+      dtoType: dtoType
+    };
+    this.cacheCandidateSource();
+    this.loading = false;
+  }
+
+  private handleError(err: any): void {
+    this.loading = false;
+    this.error = err;
+  }
+
+  private cacheCandidateSource(): void {
+    const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
+    this.candidateSourceCacheService.cache(cacheKey, this.candidateSource);
+  }
+
+  private getFromCache(source: CandidateSource) {
+    const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
+    const cached = this.candidateSourceCacheService.getFromCache(cacheKey);
+    if (cached) {
+      this.candidateSource = {
+        ...this.candidateSource,
+        ...cached
+      };
       this.loading = false;
-      this.error = err;
-    })
+      return;
+    }
+  }
+
+  private deleteFromCache(source: CandidateSource) {
+    const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
+    this.candidateSourceCacheService.removeFromCache(cacheKey);
   }
 
   private getSavedSearchSource(): SavedSearchRef {
@@ -296,7 +390,14 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
+  ngOnDestroy(): void {
+    this.candidateSourceCacheService.clearAll();
+  }
+
+  isReadOnly(): boolean {
+    return this.authorizationService.isReadOnly();
+  }
 }

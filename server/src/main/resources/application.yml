@@ -1,9 +1,9 @@
-tbb:
+tc:
   cors:
-    urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
+    urls: ${TC_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
 
-  destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
-  partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
+  destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
+  partner-dbcopy-config: ${TC_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
 
 logging:
   level:
@@ -30,11 +30,24 @@ logging:
             #See https://stackoverflow.com/questions/60001034/how-to-remove-spring-data-customconversions-warnings-from-application-startup
             CustomConversions: ERROR
 
+logbuilder:
+  # Set to true to enable cpu utilisation logging
+  includeCpuUtilization: ${LOGBUILDER_INCLUDE_CPU_UTILIZATION:true}
+  # Set to true to enable memory utilisation logging
+  includeMemoryUtilization: ${LOGBUILDER_INCLUDE_MEMORY_UTILIZATION:true}
+
 spring:
   autoconfigure:
     exclude:
       # We only want to use Redis as a cache so we do not want it to auto configure as a data store
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+  # Batch
+  batch:
+    jdbc:
+      initialize-schema: never # batch schema are initialised by flyway
+    job:
+      enabled: false
 
   servlet:
     multipart:
@@ -51,11 +64,10 @@ spring:
     redis:
         time-to-live: 300000
 
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
-
   data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
     # We explicitly enable repositories with @EnableJpaRepositories and
     # @EnableElasticsearchRepositories.
     # Turn off default enabling to avoid errors
@@ -120,7 +132,7 @@ salesforce:
   # - then selecting Edit. Bizarrely, you can't do it from
   # Setup|Apps|ConnectedApps|Manage Connected Apps)
   #
-  # For dev this should be set in tbb-secrets
+  # For dev this should be set in tc-secrets
   #
   # We use the same SF connected app and key/certificate for TC dev and staging to access our SF sandbox, but other URLs and access credentials are different and therefore defined below and designated per environment.
   privatekey: ${SF_PRIVATE_KEY:}
@@ -133,6 +145,8 @@ salesforce:
   daysAgoRecent: 7
   recordType:
     employerJob: 0121N000001890wQAA
+    candidateRecruitment: 0121N000001890rQAA
+    candidateRecruitmentCan: 0123l000001DxSjAAK
   tbb:
     jordanAccount: 0013l00002Jm1rRAAR
     lebanonAccount: 0013l00002Jm2sqAAB
@@ -176,7 +190,7 @@ google:
     projectId: ${GOOGLE_DRIVE_PROJECTID:talentcatalog}
     tokenUri: ${GOOGLE_DRIVE_TOKENURI:https://oauth2.googleapis.com/token}
 
-  # For dev these should be set in tbb-secrets
+  # For dev these should be set in tc-secrets
     privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:}
     privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:}
 
@@ -210,7 +224,7 @@ aws:
     max-size: 52428800
     upload-folder: temp
   credentials:
-    # For dev this should be set in tbb-secrets
+    # For dev this should be set in tc-secrets
     accessKey: ${AWS_CREDENTIALS_ACCESSKEY:}
     secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
@@ -237,6 +251,12 @@ email:
   defaultEmail: ${EMAIL_DEFAULTEMAIL:noreply@talentcatalog.net}
   testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:}
 
+  # Duolingo API Configuration:
+  # Contains the API secret and base URL for interacting with the Duolingo English test API.
+duolingo:
+  api:
+    apiSecret: ${DUOLINGO_SECRET:}
+    baseUrl: https://englishtest.duolingo.com/api/partner/2
 
 #Support for in context language translation
 translation:
@@ -245,3 +265,23 @@ translation:
 #Identifies the running environment — AWS task definitions hold the corresponding value, e.g. 'prod'/'staging'
 #Options for injecting into code: https://www.baeldung.com/spring-boot-properties-env-variables
 environment: ${ENVIRONMENT:local}
+
+# Preset API Configuration:
+# Contains the secret or TC-environment-contingent properties required to interact w the Preset API.
+preset:
+  api:
+    apiSecret: ${PRESET_SECRET:}
+    apiToken: ${PRESET_API_TOKEN:}
+    workspaceId: ${PRESET_WORKSPACE_ID:}
+
+tc-api:
+  apiUrl: ${TC_API_URL:http://localhost:8082}
+  apiKey: ${TC_API_KEY:}
+
+tc-skills-extraction-service:
+  apiUrl: ${TC_SKILLS_EXTRACTION_API_URL:http://localhost:8000}
+  apiKey: ${TC_SKILLS_EXTRACTION_API_KEY:}
+
+dpa:
+  # Used in EmailHelper
+  dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}

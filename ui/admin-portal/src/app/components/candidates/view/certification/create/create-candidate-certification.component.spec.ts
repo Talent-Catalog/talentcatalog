@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,7 +26,7 @@ import {CountryService} from "../../../../../services/country.service";
 import {NgbActiveModal, NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
 
-fdescribe('CreateCandidateCertificationComponent', () => {
+describe('CreateCandidateCertificationComponent', () => {
   let component: CreateCandidateCertificationComponent;
   let fixture: ComponentFixture<CreateCandidateCertificationComponent>;
   let candidateCertificationServiceSpy: jasmine.SpyObj<CandidateCertificationService>;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,10 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.validation.constraints.NotNull;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;
@@ -27,9 +27,10 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateSummary;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
@@ -43,10 +44,34 @@ import org.tctalent.server.request.search.UpdateWatchingRequest;
 
 
 public interface SavedSearchService {
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @return String containing the SQL
+     */
+    String extractFetchSQL(SearchCandidateRequest request);
+
+    /**
+     * Return all SavedSearch's that match the given ids, ordered by name.
+     * @param request Defines the ids of the SavedSearch's to return
+     * @return Requested SavedSearch's
+     */
+    List<SavedSearch> search(IdsRequest request);
 
     /**
      * Searches for saved searches whose name and other attributes match the
      * given search request.
+     * <p/>
+     * See also {@link #searchPaged} which does the same except
+     * returns just one page of results.
      * @param request Attributes to search on
      * @return Matching saved searches.
      */
@@ -78,12 +103,7 @@ public interface SavedSearchService {
     Page<Candidate> searchCandidates(
         long savedSearchId, SavedSearchGetRequest request)
         throws NoSuchObjectException;
-    
-    //TODO JC Doc
-    Page<CandidateSummary> searchCandidateSummaries(
-        long savedSearchId, SavedSearchGetRequest request)
-        throws NoSuchObjectException;
-    
+
     /**
      * Returns a set of the ids of all candidates matching the given saved search.
      * <p/>
@@ -142,6 +162,8 @@ public interface SavedSearchService {
     SavedSearch createFromDefaultSavedSearch(
             CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException;
+
+    void setPublicIds(List<SavedSearch> savedSearches);
 
     SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException;
 
@@ -265,4 +287,13 @@ public interface SavedSearchService {
     void updateDisplayedFieldPaths(
             long id, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
+
+    /**
+     * Updates the names of suggested searches for the given Job, to reflect its new name.
+     * Job renaming happens first - if for any reason that failed, this method has the virtue of
+     * reproducing the old name.
+     * @param job Job whose suggested searches are to be renamed
+     * @param oldJobName the previous name of the Job, used for character replacement
+     */
+    void updateSuggestedSearchesNames(SalesforceJobOpp job, String oldJobName);
 }

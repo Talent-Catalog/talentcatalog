@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,9 @@
 import {BrowseTasksComponent} from "./browse-tasks.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {TaskService} from "../../../services/task.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {MockCandidate} from "../../../MockData/MockCandidate";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
@@ -29,8 +28,9 @@ import {RouterTestingModule} from "@angular/router/testing";
 import {ViewTaskDetailsComponent} from "../view-task-details/view-task-details.component";
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
-fdescribe('BrowseTasksComponent', () => {
+describe('BrowseTasksComponent', () => {
   let component: BrowseTasksComponent;
   let fixture: ComponentFixture<BrowseTasksComponent>;
   let taskServiceSpy: jasmine.SpyObj<TaskService>;
@@ -56,7 +56,7 @@ fdescribe('BrowseTasksComponent', () => {
       declarations: [ BrowseTasksComponent, ViewTaskDetailsComponent, UpdatedByComponent ],
       imports: [HttpClientTestingModule, RouterTestingModule,NgbPaginationModule,FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: TaskService, useValue: taskService },
         { provide: LocalStorageService, useValue: localStorageService },
         { provide: AuthenticationService, useValue: authenticationService }

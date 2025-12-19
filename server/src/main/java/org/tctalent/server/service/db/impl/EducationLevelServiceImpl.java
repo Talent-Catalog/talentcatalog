@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,7 +29,6 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.Status;
-import org.tctalent.server.repository.db.CandidateEducationRepository;
 import org.tctalent.server.repository.db.EducationLevelRepository;
 import org.tctalent.server.repository.db.EducationLevelSpecification;
 import org.tctalent.server.request.education.level.CreateEducationLevelRequest;
@@ -42,15 +41,12 @@ import org.tctalent.server.service.db.TranslationService;
 @Slf4j
 public class EducationLevelServiceImpl implements EducationLevelService {
 
-    private final CandidateEducationRepository candidateEducationRepository;
     private final EducationLevelRepository educationLevelRepository;
     private final TranslationService translationService;
 
     @Autowired
-    public EducationLevelServiceImpl(CandidateEducationRepository candidateEducationRepository,
-                                     EducationLevelRepository educationLevelRepository,
+    public EducationLevelServiceImpl(EducationLevelRepository educationLevelRepository,
                                      TranslationService translationService) {
-        this.candidateEducationRepository = candidateEducationRepository;
         this.educationLevelRepository = educationLevelRepository;
         this.translationService = translationService;
     }
@@ -75,6 +71,12 @@ public class EducationLevelServiceImpl implements EducationLevelService {
             translationService.translate(educationLevels.getContent(), "education_level", request.getLanguage());
         }
         return educationLevels;
+    }
+
+    @Override
+    public EducationLevel findByLevel(int level) {
+        return this.educationLevelRepository.findByLevel(level)
+            .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, level));
     }
 
     @Override

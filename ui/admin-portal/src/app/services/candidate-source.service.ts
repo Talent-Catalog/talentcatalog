@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,6 +22,7 @@ import {SearchResults} from "../model/search-results";
 import {
   CandidateSource,
   CandidateSourceType,
+  IdsRequest,
   SearchCandidateSourcesRequest,
   UpdateCandidateContextNoteRequest,
   UpdateCandidateSourceDescriptionRequest,
@@ -57,6 +58,13 @@ export class CandidateSourceService {
     return this.http.delete<boolean>(`${apiUrl}/${source.id}`);
   }
 
+  get(sourceType: CandidateSourceType, id: number): Observable<CandidateSource> {
+    const apiUrl = sourceType === CandidateSourceType.SavedSearch ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.get<CandidateSource>(`${apiUrl}/${id}`);
+  }
+
   starSourceForUser(source: CandidateSource, request: { userId: number }):
     Observable<CandidateSource> {
 
@@ -81,6 +89,13 @@ export class CandidateSourceService {
       .pipe(
         map(result => this.processPostResult(result))
       );
+  }
+
+  searchByIds(sourceType: CandidateSourceType, request: IdsRequest): Observable<CandidateSource[]> {
+    const apiUrl = sourceType === CandidateSourceType.SavedSearch ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.post<CandidateSource[]>(`${apiUrl}/search-ids`, request);
   }
 
   searchPaged(sourceType: CandidateSourceType, request: SearchCandidateSourcesRequest):

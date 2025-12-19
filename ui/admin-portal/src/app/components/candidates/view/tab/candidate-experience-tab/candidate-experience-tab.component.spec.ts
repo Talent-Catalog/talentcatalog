@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,15 +24,18 @@ import {
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {
+  ViewCandidateJobExperienceComponent
+} from "../../occupation/experience/view-candidate-job-experience.component";
 
-fdescribe('CandidateExperienceTabComponent', () => {
+describe('CandidateExperienceTabComponent', () => {
   let component: CandidateExperienceTabComponent;
   let fixture: ComponentFixture<CandidateExperienceTabComponent>;
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
-      declarations: [ CandidateExperienceTabComponent,ViewCandidateSkillComponent,ViewCandidateOccupationComponent ]
+      declarations: [ CandidateExperienceTabComponent,ViewCandidateSkillComponent,ViewCandidateJobExperienceComponent,ViewCandidateOccupationComponent ]
     })
     .compileComponents();
   });

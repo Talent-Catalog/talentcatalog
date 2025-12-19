@@ -1,54 +1,99 @@
-<div class="modal-header">
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
-  <h4 class="modal-title">Update Candidate Opportunity</h4>
+<tc-modal [heading]="'Update Candidate Opportunity'"
+          [showCancel]="true"
+          [actionText]="'Save'"
+          (onAction)="onSave()"
+          [showClose]="true">
 
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
-
-</div>
-
-<div class="modal-body">
   <form [formGroup]="salesforceStageForm">
 
     <div *ngIf="showProgressParams" class="mb-3">
-      <label class="form-label" for="stage">Candidate Opportunity Stage - order is just a guide, most stages are optional.
-        <app-help [request]="stageHelpRequest"></app-help>
-      </label>
-      <ng-select id="stage" [formControlName]="'stage'" [items]="candidateOpportunityStageOptions"
-                 (change)="onStageSelectionChange($event)"
-                 placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
+      <tc-field>
+        <tc-label [for]="'stage'">
+          Candidate Opportunity Stage - order is just a guide, most stages are optional.
+          <app-help [request]="stageHelpRequest"></app-help>
+        </tc-label>
+        <ng-select id="stage"
+                   class="tc-select"
+                   [formControlName]="'stage'"
+                   [items]="candidateOpportunityStageOptions"
+                   (change)="onStageSelectionChange($event)"
+                   placeholder="Select"
+                   bindLabel="stringValue"
+                   bindValue="key" >
+        </ng-select>
+      </tc-field>
     </div>
 
     <div *ngIf="showProgressParams" class="mb-3">
-      <label class="form-label" for="nextStep">Next step - please start with date: eg 9Nov21-...</label>
-      <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
+      <tc-field>
+        <tc-label [for]="'nextStep'">
+          Next step
+        </tc-label>
+        <tc-input [type]="'text'"
+                  [id]="'nextStep'"
+                  [formControlName]="'nextStep'">
+        </tc-input>
+        <small class="text-muted">
+          Note: when a new next step is saved, the date and user will be appended to the next step
+          automatically for audit purposes.
+        </small>
+      </tc-field>
     </div>
 
     <div *ngIf="showProgressParams" class="mb-3">
-      <label class="form-label" for="nextStepDueDate">Next step due date</label>
-      <app-date-picker id="nextStepDueDate" [control]="salesforceStageForm.controls.nextStepDueDate"
-                       [allowFuture]="true"></app-date-picker>
+      <tc-field>
+        <tc-label [for]="'nextStepDueDate'">
+          Next step due date
+        </tc-label>
+        <tc-date-picker id="nextStepDueDate"
+                         [control]="salesforceStageForm.controls.nextStepDueDate"
+                         [allowFuture]="true">
+        </tc-date-picker>
+      </tc-field>
     </div>
 
     <div class="mb-3">
-      <label class="form-label" for="closingComments">Closing comments</label>
-      <ngx-wig id="closingComments" formControlName="closingComments"></ngx-wig>
+      <tc-field>
+        <tc-label [for]="'closingComments'">
+          Closing comments
+        </tc-label>
+        <ngx-wig id="closingComments" formControlName="closingComments"></ngx-wig>
+      </tc-field>
     </div>
 
     <div class="mb-3">
-      <label class="form-label" for="closingComments">Closing comments for candidate</label>
-      <ngx-wig id="closingCommentsForCandidate" formControlName="closingCommentsForCandidate"></ngx-wig>
+      <tc-field>
+        <tc-label [for]="'closingComments'">
+          Closing comments for candidate
+        </tc-label>
+        <ngx-wig id="closingCommentsForCandidate" formControlName="closingCommentsForCandidate"></ngx-wig>
+      </tc-field>
     </div>
 
     <div class="mb-3">
-      <label class="form-label" for="employerFeedback">Employer feedback</label>
-      <ngx-wig id="employerFeedback" formControlName="employerFeedback"></ngx-wig>
+      <tc-field>
+        <tc-label [for]="'employerFeedback'">
+          Employer feedback
+        </tc-label>
+        <ngx-wig id="employerFeedback" formControlName="employerFeedback"></ngx-wig>
+      </tc-field>
     </div>
   </form>
-</div>
 
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary"
-          (click)="onSave()">Do it</button>
-  <button type="button" class="btn btn-secondary"
-          (click)="cancel()">Cancel</button>
-</div>
+</tc-modal>

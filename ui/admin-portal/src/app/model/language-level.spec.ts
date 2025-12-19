@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,20 +16,22 @@
 
 import {LanguageLevel} from "./language-level";
 
-fdescribe('LanguageLevel Interface', () => {
+describe('LanguageLevel Interface', () => {
   it('should create a valid LanguageLevel object', () => {
     // Mock data
     const languageLevel: LanguageLevel = {
       id: 1,
       name: 'Advanced',
-      level: 3,
+      level: 4,
+      cefrLevel: 'B2',
       status: 'active'
     };
 
     // Assertions
     expect(languageLevel.id).toEqual(1);
     expect(languageLevel.name).toEqual('Advanced');
-    expect(languageLevel.level).toEqual(3);
+    expect(languageLevel.level).toEqual(4);
+    expect(languageLevel.cefrLevel).toEqual('B2');
     expect(languageLevel.status).toEqual('active');
   });
 });

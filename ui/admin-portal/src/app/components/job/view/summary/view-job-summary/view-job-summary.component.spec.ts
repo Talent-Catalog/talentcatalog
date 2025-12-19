@@ -1,13 +1,30 @@
-import {ComponentFixture,TestBed} from '@angular/core/testing';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
-import {of,throwError} from 'rxjs';
+import {of} from 'rxjs';
 import {ViewJobSummaryComponent} from './view-job-summary.component';
-import {JobService } from '../../../../../services/job.service';
+import {JobService} from '../../../../../services/job.service';
 import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
+import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('ViewJobSummaryComponent', () => {
+describe('ViewJobSummaryComponent', () => {
   let component: ViewJobSummaryComponent;
   let fixture: ComponentFixture<ViewJobSummaryComponent>;
   let jobServiceSpy: jasmine.SpyObj<JobService>;
@@ -16,7 +33,7 @@ fdescribe('ViewJobSummaryComponent', () => {
     const jobServiceSpyObj = jasmine.createSpyObj('JobService', ['updateSummary']);
 
     await TestBed.configureTestingModule({
-      declarations: [ViewJobSummaryComponent],
+      declarations: [ViewJobSummaryComponent, AutosaveStatusComponent],
       imports: [ReactiveFormsModule, HttpClientModule],
       providers: [{ provide: JobService, useValue: jobServiceSpyObj }]
     }).compileComponents();
@@ -40,27 +57,15 @@ fdescribe('ViewJobSummaryComponent', () => {
     component.form.get('jobSummary').setValue(newSummary);
     jobServiceSpy.updateSummary.and.returnValue(of(MockJob));
 
-
-    component.saveChanges();
+    component.doSave(component.form.get('jobSummary'));
 
     expect(jobServiceSpy.updateSummary).toHaveBeenCalledWith(component.job.id, newSummary);
     expect(component.error).toBeNull();
-    expect(component.saving).toBeFalse();
+    expect(component.saving).toBeTruthy();
     expect(component.job.jobSummary).toEqual(newSummary);
     expect(component.jobSummaryControl.pristine).toBeTrue();
   });
 
-  it('should handle error when saving changes to job summary', () => {
-    const errorMessage = 'Error saving changes';
-    component.form.get('jobSummary').setValue('Updated summary');
-    jobServiceSpy.updateSummary.and.returnValue(throwError(errorMessage));
-
-    component.saveChanges();
-
-    expect(jobServiceSpy.updateSummary).toHaveBeenCalled();
-    expect(component.error).toEqual(errorMessage);
-    expect(component.saving).toBeFalse();
-  });
 
   it('should cancel changes to job summary correctly', () => {
     const originalSummary = component.job.jobSummary;

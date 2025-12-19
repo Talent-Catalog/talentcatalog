@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -52,12 +52,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.HasMultipleRows;
+import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocBuilderService;
 import org.tctalent.server.request.candidate.PublishedDocColumnDef;
 import org.tctalent.server.request.candidate.PublishedDocColumnSetUp;
@@ -102,11 +106,17 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     @Transactional
     @Async
     public void populatePublishedDoc(
-        String publishedDocLink, long savedListId, List<Long> candidateIds,
-        List<PublishedDocColumnDef> columnInfos, String publishedSheetDataRangeName)
+        String publishedDocLink, long savedListId,
+        List<Long> candidateIds, PublishListRequest request,
+        String publishedSheetDataRangeName)
         throws GeneralSecurityException, IOException {
 
         //Load candidates from database into persistence context
+        LogBuilder.builder(log)
+            .action("populatePublishedDoc")
+            .message("Loading " + candidateIds.size() +" candidates from database into persistence context")
+            .logInfo();
+
         List<Candidate> candidates = new ArrayList<>();
         for (Long candidateId : candidateIds) {
             final Candidate candidate = candidateService.getCandidate(candidateId);
@@ -117,12 +127,23 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         }
 
         //Create all candidate folders (and subfolders) as needed.
+        int count = 0;
         for (Candidate candidate : candidates) {
             candidateService.createCandidateFolder(candidate.getId());
+            count++;
+
+            if (count % 50 == 0 || count == candidates.size()) {
+                LogBuilder.builder(log)
+                    .action("populatePublishedDoc")
+                    .message("Created folders for " + count + " out of " + candidates.size() + " candidates")
+                    .logInfo();
+            }
         }
 
         //This is what will be used to create the published doc
         List<List<Object>> publishedData = new ArrayList<>();
+
+        final List<PublishedDocColumnDef> columnInfos = request.getConfiguredColumns();
 
         //Title row
         List<Object> title = publishedDocBuilderService.buildTitle(columnInfos);
@@ -131,11 +152,28 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         //Sort candidates by candidate id (ie oldest first) - note that sorting by candidateNumber
         //gives alpha sort - eg 100 before 20
         candidates.sort(Comparator.comparing(Candidate::getId));
-        //Add row for each candidate
+
+
+        final PublishedDocColumnDef expandingColumnDef =
+            publishedDocBuilderService.findExpandingColumnDef(request.getColumns());
+
+        //Add row(s) for each candidate
         for (Candidate candidate : candidates) {
-            List<Object> candidateData = publishedDocBuilderService.buildRow(candidate,
-                columnInfos);
-            publishedData.add(candidateData);
+            //Could be more than one row per candidate if, for example, dependants are being displayed
+            HasMultipleRows expandingData = null;
+            if (expandingColumnDef != null) {
+                expandingData = publishedDocBuilderService
+                    .loadExpandingData(candidate, expandingColumnDef);
+            }
+            int nRows = 1;
+            if (expandingData != null) {
+                nRows += expandingData.nRows();
+            }
+            for (int expandingCount = 0; expandingCount < nRows; expandingCount++) {
+                List<Object> candidateData = publishedDocBuilderService.buildRow(
+                    candidate, expandingData, expandingCount, columnInfos);
+                publishedData.add(candidateData);
+            }
         }
         writeCandidateDataToDoc(publishedDocLink, publishedSheetDataRangeName, publishedData);
     }
@@ -143,7 +181,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     /**
      * Writes the candidate data to the given document into the given range.
      * @param docUrl Link to document (sheet) to write to
-     * @param dataRangeName Name of data range where data is to be writtem
+     * @param dataRangeName Name of data range where data is to be written
      * @param mainData Array of cell data to write
      * @throws GeneralSecurityException if there are security problems accessing the document
      * @throws IOException if there are communication problems accessing the document
@@ -177,11 +215,52 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
             .logInfo();
     }
 
+    /**
+     * If there is no expanding column, the number of rows equals the number of candidates - ie
+     * one row per candidate.
+     * <p>
+     * However, if there is an expanding column (eg a candidate's dependants), there may be extra
+     * rows.
+     * @param candidates The candidates supplying the data
+     * @param expandingColumnDef If not null defines a column that may lead to more than one
+     *                           row being displayed for some candidates.
+     * @return The number of rows of data.
+     */
+    private int computeNumberOfRows(
+        @NonNull List<Candidate> candidates, @Nullable PublishedDocColumnDef expandingColumnDef) {
+        int nRows = 0;
+        for (Candidate candidate : candidates) {
+            //Load any expanding data
+            HasMultipleRows expandingData = null;
+            if (expandingColumnDef != null) {
+                expandingData = publishedDocBuilderService
+                    .loadExpandingData(candidate, expandingColumnDef);
+            }
+
+            //One row for the candidate
+            nRows += 1;
+            if (expandingData != null) {
+                //Plus extra rows for expanding data
+                nRows += expandingData.nRows();
+            }
+        }
+        return nRows;
+    }
+
     @Override
     public String createPublishedDoc(GoogleFileSystemFolder folder,
-        String name, String dataRangeName, int nRowsData, Map<String, Object> props,
+        String name, String dataRangeName,
+        List<Candidate> candidates, PublishListRequest request,
+        Map<String, Object> props,
         Map<Integer, PublishedDocColumnSetUp> columnSetUpMap)
         throws GeneralSecurityException, IOException {
+
+        //Fetch any expanding column
+        final PublishedDocColumnDef expandingColumnDef =
+            publishedDocBuilderService.findExpandingColumnDef(request.getColumns());
+
+        //The number of data rows required plus 1 for the header
+        int nRowsData = computeNumberOfRows(candidates, expandingColumnDef) + 1;
 
         //Create copy of sheet from template
         GoogleFileSystemFile file = fileSystemService.copyFile(
@@ -291,12 +370,28 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
             .message(res2.getReplies().size() + " batch update responses received")
             .logInfo();
 
+        //Validate the number of candidate rows to be written fits within the bounds of the named data range.
+        //Throws an IOException which the user will see in the admin portal if the range is too small.
+        validateDataRangeCapacity(dataRangeName, dataRange, nRowsData);
+
         //File is already public - ie viewable by anyone with the link - because of the folder where
         //it is located
         //Setting it public when it is already causes Google to throw a permissions error
 
         return file.getUrl();
 
+    }
+
+    static void validateDataRangeCapacity(String rangeName, GridRange range, int nRowsData)
+        throws IOException {
+
+        int availableDataRows = range.getEndRowIndex() - range.getStartRowIndex();
+
+        if (nRowsData > availableDataRows) {
+            throw new IOException("Attempting to publish too many candidates (" + (nRowsData - 1)
+                + ") to the sheet " + rangeName + " which can hold a maximum of "
+                + (availableDataRows - 1) + " rows.");
+        }
     }
 
     @Override

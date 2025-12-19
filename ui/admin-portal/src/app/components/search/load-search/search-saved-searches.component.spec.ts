@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,7 +26,6 @@ import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {CandidateSourceComponent} from "../../util/candidate-source/candidate-source.component";
-import {LocalStorageModule} from "angular-2-local-storage";
 
 const mockSearchResult:SearchResults<SavedSearch> = {
   number : 1,
@@ -38,7 +37,7 @@ const mockSearchResult:SearchResults<SavedSearch> = {
   content : [new MockSavedSearch()] // Use the MockCandidateSource as content
 }
 
-fdescribe('SearchSavedSearchesComponent', () => {
+describe('SearchSavedSearchesComponent', () => {
   let component: SearchSavedSearchesComponent;
   let fixture: ComponentFixture<SearchSavedSearchesComponent>;
   let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
@@ -50,7 +49,7 @@ fdescribe('SearchSavedSearchesComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [SearchSavedSearchesComponent,CandidateSourceComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,RouterTestingModule,NgbPaginationModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,RouterTestingModule,NgbPaginationModule],
       providers: [
         { provide: SavedSearchService, useValue: searchServiceSpy },
         { provide: NgbActiveModal, useValue: modalSpy }

@@ -1,187 +1,239 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-loading [type]="'page'" [loading]="loading"></tc-loading>
+
 <div *ngIf="opp">
-
-  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
-    <ol class="breadcrumb align-items-center">
-      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="opp.name" class="breadcrumb-item active" aria-current="page">Case / {{opp.name}}</li>
-    </ol>
-
-  </nav>
-
   <div class="py-3">
-    <div class="d-flex justify-content-between align-items-center">
-      <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
-        <span class="small text-muted icon-padding">
-          <a *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
-            <i class="fas fa-expand link-info" title="Open"></i>
-          </a>
-          <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
-            <i class="fas fa-user link-info" title="Candidate"></i>
-          </a>
-          <a *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
-            <i class="fas fa-address-book link-info" title="Case (same as Open)"></i>
-          </a>
-          <a [routerLink]="['/job',opp.jobOpp.id]">
-            <i class="fa-solid fa-briefcase link-info" title="Job"></i>
-          </a>
-          <a *ngIf="opp.jobOpp.submissionList" [routerLink]="['/list',opp.jobOpp.submissionList.id]">
-            <i class="fa-solid fa-rectangle-list link-info" title="Submission list"></i>
-          </a>
-          <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
-            <i class="fab fa-salesforce link-info ms-2" title="Show opp in Salesforce"></i>
-          </a>
-        </span>
-      </h1>
-    </div>
-    <p class="text-accent-1 fst-italic" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-0' : !showBreadcrumb}">
-      Candidate Opportunity Case Number {{opp.id}}
+    <p class="text-color-secondary heading-xs" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-1' : !showBreadcrumb}">
+      Candidate Opportunity Case #{{opp.id}}
     </p>
+    <div class="d-flex align-items-center gap-3">
+      <h2  class="mb-0" [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-4': showBreadcrumb}">{{opp.name}}
+      </h2>
+      <tc-icon type="button" color="warning" size="lg" *ngIf="!showBreadcrumb"
+               [routerLink]="['/opp',opp.id]"
+               title="Open Candidate Opportunity Case">
+        <i class="fas fa-expand"></i>
+      </tc-icon>
+        <tc-dropdown placement="bottom-start">
+          <tc-dropdown-button type="solid" color="gray">
+            <i class="fas fa-angle-down"></i>
+          </tc-dropdown-button>
+
+          <tc-dropdown-menu>
+            <tc-dropdown-item [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fas fa-user " title="Candidate"></i>
+              </tc-icon>
+              View Candidate
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fas fa-address-book " title="Case (same as Open)"></i>
+              </tc-icon>
+              Case (same as Open)
+            </tc-dropdown-item>
+
+            <tc-dropdown-item [routerLink]="['/job',opp.jobOpp.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fa-solid fa-briefcase " title="Job"></i>
+              </tc-icon>
+              Job
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="opp.jobOpp.submissionList"
+                              [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fa-solid fa-rectangle-list"
+                   title="Submission list"></i>
+              </tc-icon>
+              View Submission list
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
+                              target="_blank">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+              </tc-icon>
+              Show Opp in Salesforce
+            </tc-dropdown-item>
+
+
+          </tc-dropdown-menu>
+        </tc-dropdown>
+    </div>
   </div>
 
-  <div class="pt-2">
+  <div class="pt-2"  style="margin-bottom: 2rem">
     <!-- TABS -->
-    <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+    <tc-tabs [activeTabId]="activeTabId" (tabChanged)="onTabChanged($event)">
 
       <!-- GENERAL -->
-      <ng-container ngbNavItem="General">
-        <a ngbNavLink>General</a>
-        <ng-template ngbNavContent>
-          <div class="card">
-
-            <div class="card-header">
-              Case details
+      <tc-tab id="General" description="General details of the opportunity">
+        <tc-tab-header>General</tc-tab-header>
+        <tc-tab-content>
+          <tc-card>
+            <tc-card-header>
+              Case Details
               <div class="float-end" *ngIf="editable">
-                <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-                <button class="btn btn-sm btn-secondary" title="Update progress" (click)="editOppProgress()">
-                  <i class="fas fa-edit"></i>
-                </button>
+                <tc-button color="primary" title="Update progress"  [size]="'sm'" (onClick)="editOppProgress()">
+                 <tc-icon color="white"> <i class="fas fa-edit"></i></tc-icon>
+                </tc-button>
               </div>
-            </div>
+            </tc-card-header>
 
-            <div class="card-body">
+            <tc-loading [type]="'section'" [loading]="updating"></tc-loading>
+            <div class="card-body" *ngIf="!updating">
               <div class="row">
+                <tc-description-list direction="column">
+                  <!-- Destination Country -->
+                  <tc-description-item label="Destination Country" icon="fas fa-globe">
+                    {{ opp.jobOpp?.country?.name }}
+                  </tc-description-item>
 
-                <div class="mb-3 col-sm-12 col-md-4">
-                  <label class="col-form-label"><i class="fas fa-globe"></i>Destination Country</label>
-                  <div class="form-control-plaintext">
-                    {{opp.jobOpp?.country?.name}}
-                  </div>
-                </div>
+                  <!-- Submission List -->
+                  <tc-description-item
+                    label="Submission List"
+                    icon="fas fa-rectangle-list"
+                    title="Potential candidates should be added to this list"
+                  >
+                    <a *ngIf="opp.jobOpp.submissionList" [routerLink]="['/list', opp.jobOpp.submissionList.id]">
+                      {{ displaySavedList(opp.jobOpp.submissionList) }}
+                    </a>
+                  </tc-description-item>
 
-                <div class="mb-3 col-sm-12 col-md-8">
-                  <label title="Potential candidates should be added to this list" class="col-form-label">
-                    <i class="fas fa-rectangle-list"></i>Submission List</label>
-
-                  <div *ngIf="opp.jobOpp.submissionList" class="form-control-plaintext">
-            <span><a [routerLink]="['/list',opp.jobOpp.submissionList.id]">
-              {{displaySavedList(opp.jobOpp.submissionList)}}</a></span>
-                  </div>
-                </div>
-
-                <div class="mb-3 col-sm-12 col-md-4">
-                  <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
-                  <div class="form-control-plaintext">
+                  <!-- Created -->
+                  <tc-description-item label="Created" icon="fa-regular fa-calendar-days">
                     <app-created-by [object]="opp"></app-created-by>
-                  </div>
-                </div>
+                  </tc-description-item>
 
-                <div class="mb-3 col-sm-12 col-md-4">
-                  <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Last updated</label>
-                  <div class="form-control-plaintext">
+                  <!-- Last updated -->
+                  <tc-description-item label="Last updated" icon="fa-regular fa-calendar-days">
                     <app-updated-by [object]="opp"></app-updated-by>
-                  </div>
-                </div>
+                  </tc-description-item>
+                </tc-description-list>
                 <hr/>
                 <div>
                   <label class="form-label" for="closingComments">
                     Closing comments:
                   </label>
-                  <div class="col-12" id="closingComments" [innerHtml]="opp.closingComments">
-                  </div>
+                  <div class="col-12 mb-3 text-color-secondary"
+                       id="closingComments"
+                       [innerHtml]="opp.closingComments"
+                  ></div>
                 </div>
                 <hr/>
                 <div>
                   <label class="form-label" for="closingCommentsForCandidate">
                     Closing comments for candidate:
                   </label>
-                  <div class="col-12" id="closingCommentsForCandidate" [innerHtml]="opp.closingCommentsForCandidate">
-                  </div>
+                  <div class="col-12 mb-3 text-color-secondary"
+                       id="closingCommentsForCandidate"
+                       [innerHtml]="opp.closingCommentsForCandidate"
+                  ></div>
                 </div>
                 <hr/>
                 <div>
                   <label class="form-label" for="employerFeedback">
                     Employer feedback:
                   </label>
-                  <div class="col-12" id="employerFeedback" [innerHtml]="opp.employerFeedback">
-                  </div>
+                  <div class="col-12 mb-3 text-color-secondary"
+                       id="employerFeedback"
+                       [innerHtml]="opp.employerFeedback"
+                  ></div>
                 </div>
               </div>
             </div>
-          </div>
-        </ng-template>
-      </ng-container>
+          </tc-card>
+        </tc-tab-content>
+      </tc-tab>
 
       <!-- PROGRESS -->
-      <ng-container ngbNavItem="Progress">
-        <a ngbNavLink>Progress</a>
-        <ng-template ngbNavContent>
-          <app-opportunity-stage-next-step
-            [opp]="opp"
-            (oppProgressUpdated)="onOppProgressUpdated($event)"
-          >
-          </app-opportunity-stage-next-step>
-        </ng-template>
-      </ng-container>
+      <tc-tab id="Progress" description="Track the progress of the opportunity">
+        <tc-tab-header>Progress</tc-tab-header>
+        <tc-tab-content>
+          <app-opportunity-stage-next-step [opp]="opp"
+                                           (oppProgressUpdated)="onOppProgressUpdated($event)"
+          ></app-opportunity-stage-next-step>
+        </tc-tab-content>
+      </tc-tab>
 
-      <ng-container ngbNavItem="Upload">
-        <a ngbNavLink>Upload</a>
-        <ng-template ngbNavContent>
-          <div class="card">
+      <!-- UPLOAD -->
+      <tc-tab id="Upload" description="Upload job offer and dependants info">
+        <tc-tab-header>Upload</tc-tab-header>
+        <tc-tab-content>
+          <tc-card>
 
-            <div class="card-header">
-              Upload Job Offer <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-            </div>
+            <tc-card-header>
+              Job Offer
+            </tc-card-header>
 
-            <div class="card-body">
-              <div class="alert alert-danger" *ngIf="error">
-                {{error}}
-              </div>
+            <tc-loading [type]="'section'" [loading]="saving"></tc-loading>
+
+            <div *ngIf="!saving" class="card-body">
+
+              <tc-alert type="danger" *ngIf="error">
+                <div><strong>{{error}}</strong></div>
+              </tc-alert>
 
               <div class="row">
 
                 <div class="col-10 col-sm">
-                  <label class="col-form-label">
-                    <i class="fa-solid fa-file-lines"></i>Job Offer Contract For Candidate
-                  </label>
-                  <p class="small fst-italic">If applicable upload the candidate's job offer contract here for the candidate to review.</p>
+                  <tc-description-item label="Job Offer Contract For Candidate" icon="fa-solid fa-file-lines">
+                  </tc-description-item>
+                  <p class="small fst-italic mt-2">If applicable upload the candidate's job offer contract here for the candidate to review.</p>
                   <div class="file-link">
                     <div *ngIf="!opp.fileOfferLink" class="form-control-plaintext">
                       <p class="text-accent-3 mb-0">No File Uploaded</p>
                     </div>
                     <div *ngIf="opp.fileOfferLink" class="form-control-plaintext">
-                      <a class="link-info" target="_blank" [href]="opp.fileOfferLink">
-                        <i class="fa-solid fa-link"></i> {{opp.fileOfferName ? opp.fileOfferName : opp.fileOfferLink}}</a>
+                      <a class="is-link" target="_blank" [href]="opp.fileOfferLink">
+                        <i class="fa-solid fa-link"></i>{{opp.fileOfferName ? opp.fileOfferName : opp.fileOfferLink}}
+                      </a>
                     </div>
                   </div>
                 </div>
                 <div class="col-2 col-sm-auto" *ngIf="editable">
-                  <button title="Upload the document from your computer" class="btn btn-sm btn-primary" (click)="uploadOffer()">
+                  <tc-button title="Upload the document from your computer"
+                             [type]="'outline'"
+                             (onClick)="uploadOffer()"
+                  >
                     Upload file <i class="fa-solid fa-upload ms-2"></i>
-                  </button>
+                  </tc-button>
                 </div>
               </div>
 
             </div>
 
-          </div>
+          </tc-card>
 
           <hr>
 
-          <div class="card">
+          <tc-card>
 
-            <div class="card-header">
+            <tc-card-header>
               Relocating Dependants
-            </div>
+            </tc-card-header>
 
             <div class="card-body">
               <app-relocating-dependants
@@ -189,47 +241,35 @@
                 [candidateId]="opp.candidate.id">
               </app-relocating-dependants>
             </div>
-          </div>
-        </ng-template>
-      </ng-container>
+          </tc-card>
+        </tc-tab-content>
+      </tc-tab>
+      <tc-tab id="CandidateChats"
+              description="Chats that include the candidate"
+              *ngIf="hasVisibleCandidateChats()">
+        <tc-tab-header>
+          Chats with candidate
+          <app-chat-read-status [chats]="candidateChats"></app-chat-read-status>
+        </tc-tab-header>
+        <tc-tab-content>
+          <app-chats-with-posts [chats]="candidateChats" [fromUrl]="fromUrl"></app-chats-with-posts>
+        </tc-tab-content>
+      </tc-tab>
 
-      <!-- Chat between source partner candidate-->
-      <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
-        <a ngbNavLink [title]="'Chat ' + candidateChat?.id">Chat with candidate
-          <app-chat-read-status *ngIf="candidateChat"
-            [chats]="[candidateChat]"
-            >
-          </app-chat-read-status>
-        </a>
-        <ng-template ngbNavContent>
-          <app-view-chat-posts
-            [candidateId]="opp.candidate.id"
-            [jobChatType]="JobChatType.CandidateProspect"
-          >
-          </app-view-chat-posts>
-        </ng-template>
-      </ng-container>
+      <tc-tab id="NonCandidateChats"
+              description="Chats that exclude the candidate"
+              *ngIf="hasVisibleNonCandidateChats()">
+        <tc-tab-header>
+          Chats without candidate
+          <app-chat-read-status [chats]="nonCandidateChats"></app-chat-read-status>
+        </tc-tab-header>
+        <tc-tab-content>
+          <app-chats-with-posts [chats]="nonCandidateChats" [fromUrl]="fromUrl"></app-chats-with-posts>
+        </tc-tab-content>
+      </tc-tab>
 
-      <!-- Chat including source partner and job creator-->
-      <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible && cvReviewStageOrMore()">
-        <a ngbNavLink [title]="'Chat ' + candidateRecruitingChat?.id">{{candidateRecruitingTabTitle}}
-          <app-chat-read-status *ngIf="candidateRecruitingChat"
-            [chats]="[candidateRecruitingChat]"
-          >
-          </app-chat-read-status>
-        </a>
-        <ng-template ngbNavContent>
-          <app-view-chat-posts
-            [candidateId]="opp.candidate.id"
-            [jobId]="opp.jobOpp.id"
-            [jobChatType]="JobChatType.CandidateRecruiting"
-          >
-          </app-view-chat-posts>
-        </ng-template>
-      </ng-container>
 
-    </nav>
-    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </tc-tabs>
 
   </div>
 

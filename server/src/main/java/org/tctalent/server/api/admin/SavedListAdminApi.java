@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,19 +20,23 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.api.dto.DtoType;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
@@ -49,23 +53,16 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/saved-list")
+@RequiredArgsConstructor
 public class SavedListAdminApi implements
         ITableApi<SearchSavedListRequest, UpdateSavedListInfoRequest, UpdateSavedListInfoRequest> {
 
     private final CandidateService candidateService;
     private final SavedListService savedListService;
     private final CandidateSavedListService candidateSavedListService;
-    private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
-
-    @Autowired
-    public SavedListAdminApi(SavedListService savedListService,
-        CandidateService candidateService, CandidateSavedListService candidateSavedListService) {
-        this.candidateService = candidateService;
-        this.savedListService = savedListService;
-        this.candidateSavedListService = candidateSavedListService;
-    }
+    private final SavedListBuilderSelector builderSelector;
 
     /*
         Standard ITableApi methods
@@ -107,7 +104,7 @@ public class SavedListAdminApi implements
      * @throws NoSuchObjectException if there is no saved list with this id.
      */
     @Override
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
@@ -124,8 +121,15 @@ public class SavedListAdminApi implements
     @Override
     public @NotNull List<Map<String, Object>> search(
             @Valid SearchSavedListRequest request) {
-        List<SavedList> savedLists = savedListService.listSavedLists(request);
-        DtoBuilder builder = builderSelector.selectBuilder(request.getMinimalData());
+        List<SavedList> savedLists = savedListService.search(request);
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
+        return builder.buildList(savedLists);
+    }
+
+    @PostMapping("search-ids")
+    @NotNull List<Map<String, Object>> searchByIds(@Valid @RequestBody IdsRequest request) {
+        List<SavedList> savedLists = savedListService.search(request);
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildList(savedLists);
     }
 
@@ -140,9 +144,9 @@ public class SavedListAdminApi implements
     @Override
     public @NotNull Map<String, Object> searchPaged(
             @Valid SearchSavedListRequest request) {
-        Page<SavedList> savedLists = savedListService.searchSavedLists(request);
+        Page<SavedList> savedLists = savedListService.searchPaged(request);
 
-        DtoBuilder builder = builderSelector.selectBuilder(request.getMinimalData());
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(savedLists);
     }
 
@@ -273,8 +277,8 @@ public class SavedListAdminApi implements
     }
 
     @PutMapping("/short-name")
-    public void updateTbbShortName(@RequestBody UpdateShortNameRequest request) {
-        savedListService.updateTbbShortName(request);
+    public void updateTcShortName(@RequestBody UpdateShortNameRequest request) {
+        savedListService.updateTcShortName(request);
     }
 
 }

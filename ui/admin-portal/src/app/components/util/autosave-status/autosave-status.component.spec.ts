@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@ import {AutosaveStatusComponent} from "./autosave-status.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {By} from '@angular/platform-browser';
 
-fdescribe('AutosaveStatusComponent', () => {
+describe('AutosaveStatusComponent', () => {
   let component: AutosaveStatusComponent;
   let fixture: ComponentFixture<AutosaveStatusComponent>;
 

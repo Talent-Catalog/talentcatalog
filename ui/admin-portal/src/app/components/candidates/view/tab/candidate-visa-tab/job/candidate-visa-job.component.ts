@@ -1,14 +1,37 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ShortJob} from "../../../../../../model/job";
-import {HasNameSelectorComponent} from "../../../../../util/has-name-selector/has-name-selector.component";
+import {
+  HasNameSelectorComponent
+} from "../../../../../util/has-name-selector/has-name-selector.component";
 import {
   CandidateVisaJobService,
   CreateCandidateVisaJobRequest
 } from "../../../../../../services/candidate-visa-job.service";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
-import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
+import {
+  Candidate,
+  CandidateIntakeData,
+  CandidateVisa,
+  CandidateVisaJobCheck
+} from "../../../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
@@ -32,11 +55,11 @@ export class CandidateVisaJobComponent implements OnInit {
   selectedIndex: number;
   loading: boolean;
   error: string;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private authService: AuthorizationService) { }
 
   ngOnInit(): void {
@@ -57,7 +80,7 @@ export class CandidateVisaJobComponent implements OnInit {
     if (!this.hasJobChecks) {
       const ops = this.candidate.candidateOpportunities
         .map(co => co.jobOpp)
-        .filter(jo => jo.country.id == this.visaCheckRecord.country.id);
+        .filter(jo => jo?.country?.id == this.visaCheckRecord.country.id);
       return ops;
     } else {
       /**
@@ -171,5 +194,9 @@ export class CandidateVisaJobComponent implements OnInit {
       return this.candidate.candidateOpportunities.find(
         co => co.jobOpp.id === jobId).id;
     }
+  }
+
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
   }
 }

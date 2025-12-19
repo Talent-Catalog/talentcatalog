@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {LanguageLevel} from './language-level';
 import {Candidate} from './candidate';
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('CandidateLanguage Interface', () => {
+describe('CandidateLanguage Interface', () => {
   it('should create a valid CandidateLanguage object', () => {
     const language: Language = {
       id: 1,
@@ -30,8 +30,9 @@ fdescribe('CandidateLanguage Interface', () => {
 
     const languageLevel: LanguageLevel = {
       id: 1,
-      name: 'France',
+      name: 'Beginner',
       level: 1,
+      cefrLevel: 'A1',
       status: 'active'
     };
 
@@ -65,8 +66,9 @@ fdescribe('CandidateLanguage Interface', () => {
 
     const languageLevel: LanguageLevel = {
       id: 1,
-      name: 'France',
+      name: 'Elementary',
       level: 2,
+      cefrLevel: 'A2',
       status: 'active'
     };
 

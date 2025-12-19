@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ import {DatePipe} from "@angular/common";
 import {By} from "@angular/platform-browser";
 import {MockUser} from "../../../../MockData/MockUser";
 
-fdescribe('UpdatedByComponent', () => {
+describe('UpdatedByComponent', () => {
   let component: UpdatedByComponent;
   let fixture: ComponentFixture<UpdatedByComponent>;
   let userPipe: UserPipe;

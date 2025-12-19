@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,19 +16,19 @@
 import {CreateOccupationComponent} from "./create-occupation.component";
 import {OccupationService} from "../../../../services/occupation.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {Occupation} from "../../../../model/occupation";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateOccupationComponent', () => {
+describe('CreateOccupationComponent', () => {
   let component: CreateOccupationComponent;
   let fixture: ComponentFixture<CreateOccupationComponent>;
   let occupationServiceSpy: jasmine.SpyObj<OccupationService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   // @ts-expect-error
   const createdOccupation: Occupation = { id: 1, name: 'Engineer', status: 'active' };
 
@@ -47,7 +47,7 @@ fdescribe('CreateOccupationComponent', () => {
 
     occupationServiceSpy = TestBed.inject(OccupationService) as jasmine.SpyObj<OccupationService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

@@ -1,11 +1,28 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {DownloadCvComponent} from "./download-cv.component";
 import {CandidateService, DownloadCVRequest} from "../../../services/candidate.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {of, throwError} from "rxjs";
+import {By} from "@angular/platform-browser";
 
-fdescribe('DownloadCvComponent', () => {
+describe('DownloadCvComponent', () => {
   let component: DownloadCvComponent;
   let fixture: ComponentFixture<DownloadCvComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
@@ -19,7 +36,7 @@ fdescribe('DownloadCvComponent', () => {
       declarations: [DownloadCvComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateService },
         { provide: NgbActiveModal, useValue: activeModal }
       ]
@@ -97,7 +114,8 @@ fdescribe('DownloadCvComponent', () => {
   it('should show error message if error is present', () => {
     component.error = 'Test error message';
     fixture.detectChanges();
-    const errorMessage = fixture.debugElement.nativeElement.querySelector('.alert-danger');
+
+    const errorMessage = fixture.debugElement.nativeElement.querySelector('tc-alert');
     expect(errorMessage).toBeTruthy();
     expect(errorMessage.textContent).toContain('Test error message');
   });
@@ -114,11 +132,21 @@ fdescribe('DownloadCvComponent', () => {
     expect(component.onSave).toHaveBeenCalled();
   });
 
-  it('should call dismiss when cancel button is clicked', () => {
-    spyOn(component, 'dismiss');
-    const cancelButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary:nth-child(2)');
-    cancelButton.click();
-    expect(component.dismiss).toHaveBeenCalled();
+  it('should call dismiss when cancel button is clicked (wired in test)', () => {
+    const dismissSpy = spyOn(component, 'dismiss');
+    fixture.detectChanges();
+
+    const tcModalDE = fixture.debugElement.query(By.css('tc-modal'));
+    (tcModalDE.componentInstance as any).onCancel.subscribe(() => component.dismiss());
+
+    const cancelBtn: HTMLButtonElement =
+      fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-secondary');
+    expect(cancelBtn).withContext('Cancel button not found').toBeTruthy();
+
+    cancelBtn.click();
+
+    expect(dismissSpy).toHaveBeenCalled();
   });
+
 
 });

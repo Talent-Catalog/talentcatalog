@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {generateYearArray} from "./year-helper";
 
-fdescribe('generateYearArray', () => {
+describe('generateYearArray', () => {
 
   it('should generate an array of years from 1950 to the current year by default', () => {
     const currentYear = new Date().getFullYear();

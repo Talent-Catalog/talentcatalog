@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
 
   <div class="mb-3">
@@ -29,7 +29,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="canDrive" [formControlName]="'canDrive'" (clear)="setNoResponse('canDrive')"
+    <ng-select class="tc-select" id="canDrive" [formControlName]="'canDrive'" (clear)="setNoResponse('canDrive')"
                [items]="canDriveOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
@@ -39,7 +39,7 @@
       <label class="form-label" for="drivingLicense">
         Do you have a driving license?
       </label>
-      <ng-select id="drivingLicense" [formControlName]="'drivingLicense'" (clear)="setNoResponse('drivingLicense')"
+      <ng-select class="tc-select" id="drivingLicense" [formControlName]="'drivingLicense'" (clear)="setNoResponse('drivingLicense')"
                  [items]="drivingLicenseOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
@@ -49,13 +49,13 @@
         <label class="form-label" for="drivingLicenseExp">
           Expiry Date
         </label>
-        <app-date-picker id="drivingLicenseExp" [control]="form.controls.drivingLicenseExp"></app-date-picker>
+        <tc-date-picker id="drivingLicenseExp" [control]="form.controls.drivingLicenseExp"></tc-date-picker>
       </div>
       <div class="mb-3">
         <label class="form-label" for="drivingLicenseCountryId">
           Country of Issue
         </label>
-        <ng-select id="drivingLicenseCountryId" [formControlName]="'drivingLicenseCountryId'" (clear)="setNoResponse('drivingLicenseCountryId')"
+        <ng-select class="tc-select" id="drivingLicenseCountryId" [formControlName]="'drivingLicenseCountryId'" (clear)="setNoResponse('drivingLicenseCountryId')"
                    [items]="countries" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
       </div>

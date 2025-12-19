@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.exception.InvalidPasswordFormatException;
 import org.tctalent.server.exception.InvalidPasswordTokenException;
@@ -45,8 +46,13 @@ import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
 
 @RestController
 @RequestMapping("/api/admin/user")
@@ -55,6 +61,7 @@ public class UserAdminApi {
 
     private final UserService userService;
     private final AuthService authService;
+    private final CountryService countryService;
 
     @PostMapping("search")
     public List<Map<String, Object>> search(@RequestBody SearchUserRequest request) {
@@ -122,6 +129,39 @@ public class UserAdminApi {
         userService.resetPassword(request);
     }
 
+    @PostMapping("/verify-email")
+    public void sendVerifyEmailRequest(@RequestBody SendVerifyEmailRequest request)
+            throws NoSuchObjectException, ReCaptchaInvalidException {
+        userService.sendVerifyEmailRequest(request);
+    }
+
+    @GetMapping("/verify-email/{token}")
+    public ModelAndView verifyEmail(@PathVariable("token") String token) {
+        ModelAndView modelAndView = new ModelAndView();
+        VerifyEmailRequest request = new VerifyEmailRequest();
+        request.setToken(token);
+
+        User user = null;
+        try {
+            user = userService.getUserByEmailVerificationToken(token);
+        } catch (NoSuchObjectException e) {
+            modelAndView.setViewName("verify-email-failure");
+            modelAndView.addObject("displayName", "User");   // Token is invalid (no user found)
+            return modelAndView;
+        }
+
+        modelAndView.addObject("displayName", user.getDisplayName());
+
+        try {
+            userService.verifyEmail(request);
+            modelAndView.setViewName("verify-email-success");
+        } catch (ExpiredEmailTokenException e) {
+            modelAndView.setViewName("verify-email-failure");
+        }
+
+        return modelAndView;
+    }
+
     @PutMapping("/mfa-reset/{id}")
     public void mfaReset(@PathVariable("id") long id) {
         this.userService.mfaReset(id);
@@ -144,7 +184,7 @@ public class UserAdminApi {
                 .add("jobCreator")
                 .add("approver", userDtoApprover())
                 .add("purpose")
-                .add("sourceCountries", countryDto())
+                .add("sourceCountries", countryService.selectBuilder())
                 .add("readOnly")
                 .add("status")
                 .add("createdDate")
@@ -153,13 +193,7 @@ public class UserAdminApi {
                 .add("usingMfa")
                 .add("mfaConfigured")
                 .add("partner", PartnerDtoHelper.getPartnerDto())
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
+                .add("emailVerified")
                 ;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,14 +20,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.PdfGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.util.html.HtmlSanitizer;
 import org.tctalent.server.util.html.StringSanitizer;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -47,13 +48,23 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class PdfHelper {
 
     private static final String UTF_8 = "UTF-8";
     private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
 
     private final TemplateEngine pdfTemplateEngine;
+
+    /**
+     * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
+     * the @Qualifier annotation to the constructor.
+     * <p/>
+     * See <a href="https://www.jetbrains.com.cn/en-us/help/inspectopedia/SpringQualifierCopyableLombok.html">
+     *     Intellij doc</a>
+     */
+    public PdfHelper(@Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine) {
+        this.pdfTemplateEngine = pdfTemplateEngine;
+    }
 
     /**
      * Generates a PDF for a candidate.
@@ -66,6 +77,9 @@ public class PdfHelper {
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
 
+            if (Boolean.TRUE.equals(showContact)) {
+                cleanCandidateContactInfo(candidate);
+            }
             cleanCandidateJobDescriptions(candidate);
 
             Context context = new Context();
@@ -92,14 +106,30 @@ public class PdfHelper {
         }
 
     }
+    private static void cleanCandidateContactInfo(Candidate candidate) {
+        if (candidate.getPhone() != null) {
+            candidate.setPhone(StringSanitizer.sanitizeContactField(candidate.getPhone()));
+        }
+
+        if (candidate.getWhatsapp() != null) {
+            candidate.setWhatsapp(StringSanitizer.sanitizeContactField(candidate.getWhatsapp()));
+        }
+    }
+
 
     private static void cleanCandidateJobDescriptions(Candidate candidate) {
-        candidate.getCandidateJobExperiences().forEach(jobExperience ->
-            jobExperience.setDescription(
-                StringSanitizer.replaceLsepWithBr(jobExperience.getDescription())
-            )
-        );
+        candidate.getCandidateJobExperiences().forEach(jobExperience -> {
+            jobExperience.setRole(StringSanitizer.normalizeUnicodeText(jobExperience.getRole()));
+            jobExperience.setCompanyName(
+                StringSanitizer.normalizeUnicodeText(jobExperience.getCompanyName()));
+
+            String description = StringSanitizer.normalizeUnicodeText(jobExperience.getDescription());
+            String sanitizedDescription = HtmlSanitizer.sanitize(description);
+            sanitizedDescription = StringSanitizer.replaceLsepWithBr(sanitizedDescription);
+            jobExperience.setDescription(sanitizedDescription);
+        });
     }
+
 
     private static String convertToXhtml(String html) {
         Tidy tidy = new Tidy();

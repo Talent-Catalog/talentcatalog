@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -28,12 +28,12 @@
 
     <!-- LANGUAGE -->
     <div class="mb-3" [hidden]="languageDisabled">
-      <label class="form-label">Language</label>
-      <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false" (clear)="clearProficiencies()" [ngClass]="{'is-invalid' : form.hasError('disableLevels')}"
+      <tc-label class="form-label">Language</tc-label>
+      <ng-select class="tc-select" [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false" (clear)="clearProficiencies()" [ngClass]="{'is-invalid' : form.hasError('disableLevels')}"
                  [clearable]="true" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
-      <div *ngIf="form.hasError('languageLevelRequired')" class="small alert alert-danger">
+      <tc-alert *ngIf="form.hasError('languageLevelRequired')" type="info">
         You must select at least one proficiency level.
-      </div>
+      </tc-alert>
     </div>
 
     <div>
@@ -41,18 +41,13 @@
       <!-- SPOKEN LEVEL -->
       <div class="mb-3">
         <fieldset [disabled]="form.hasError('disableLevels')">
-          <label class="form-label">Minimum Spoken Level</label>
+          <tc-label class="label-md">Minimum Spoken Level</tc-label>
           <div class="float-end">
-            <button class="btn btn-sm btn-secondary" (click)="clearSpoken()">Clear</button>
+            <tc-button color="warning" size="sm" (onClick)="clearSpoken()">Clear</tc-button>
           </div>
           <div *ngFor="let level of languageLevels">
-            <div class="form-check">
-              <input [id]="level.name" class="form-check-input" type="radio"
-                     [formControlName]="'spokenLevel'" [value]="level.level">
-              <label [for]="level.name" class="form-check-label fw-light" >
-                {{level.name}}
-              </label>
-            </div>
+            <tc-radio [id]="level.name + 'spoken'" [label]="level.name" name="spokenLevel" required
+                        [formControlName]="'spokenLevel'" [value]="level.level"></tc-radio>
           </div>
         </fieldset>
       </div>
@@ -60,18 +55,13 @@
       <!-- WRITTEN LEVEL -->
       <div class="mb-3">
         <fieldset [disabled]="form.hasError('disableLevels')">
-          <label class="form-label">Minimum Written Level</label>
+          <tc-label>Minimum Written Level</tc-label>
           <div class="float-end">
-            <button class="btn btn-sm btn-secondary" (click)="clearWritten()">Clear</button>
+            <tc-button size="sm" color="warning" (onClick)="clearWritten()">Clear</tc-button>
           </div>
           <div *ngFor="let level of languageLevels">
-            <div class="form-check">
-              <input [id]="level.name" class="form-check-input" type="radio" required
-                     [formControlName]="'writtenLevel'" [value]="level.level">
-              <label [for]="level.name" class="form-check-label fw-light">
-                {{level.name}}
-              </label>
-            </div>
+              <tc-radio [id]="level.name + 'written'" [label]="level.name" name="writtenLevel" required
+                        [formControlName]="'writtenLevel'" [value]="level.level"></tc-radio>
           </div>
         </fieldset>
       </div>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -31,9 +30,11 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
@@ -165,6 +166,20 @@ public interface SavedListService {
             throws EntityExistsException, RegisteredListException;
 
     /**
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
+     * @param user User to be recorded as creator of saved list
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * @return Created saved list
+     * @throws EntityExistsException if a list with this name already exists.
+     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
+     */
+    SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
+        throws EntityExistsException, RegisteredListException;
+
+    /**
      * Creates/updates Salesforce records corresponding to candidates in a given list
      * <p/>
      * This could involve creating or updating contact records and/or
@@ -183,27 +198,68 @@ public interface SavedListService {
         throws NoSuchObjectException, SalesforceException, WebClientException;
 
     /**
-     * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
-     * nothing new is created, and the existing list is returned.
-     * @param user User to be recorded as creator of saved list
-     * @param request Request defining new list (including whether it is a registered list
-     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
-     * @return Created saved list
-     * @throws EntityExistsException if a list with this name already exists.
-     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
-     */
-    SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
-            throws EntityExistsException, RegisteredListException;
-
-    /**
      * Fetches the candidates specified in the given request.
      * @param request Request containing candidates to be fetched
      * @return Set of candidates - never null. Empty if no candidates in request.
      * @throws NoSuchObjectException if a candidate in the request does not exist
      */
-    @NotNull Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
+    @NonNull
+    Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
         throws NoSuchObjectException;
+
+    /**
+     * Fetches the ids of candidates in the given list
+     * @param listId Id of list
+     * @return Ids of candidates contained in the list
+     */
+    @NonNull
+    Set<Long> fetchCandidateIds(long listId);
+
+    /**
+     * Fetches the public ids of candidates in the given list, note that the list id provided
+     * must be the public id of the list, not the internal id.
+     *
+     * @param publicListId public Id of list
+     * @return public Ids of candidates contained in the list
+     */
+    @NonNull
+    Set<String> fetchCandidatePublicIds(String publicListId);
+
+    /**
+     * Fetches the ids of the union of all candidates in all the given lists
+     * @param listIds Ids of lists
+     * @return Ids of candidates contained in the lists or null if ids is null
+     */
+    @Nullable
+    Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds);
+
+    /**
+     * Fetches the public ids of the union of all candidates in all the given lists, note that the
+     * list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates contained in the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchUnionCandidatePublicIds(@Nullable List<String> publicListIds);
+
+    /**
+     * Fetches the ids of candidates which appear in all the given lists
+     * @param listIds Ids of lists
+     * @return Ids of candidates contained in the lists or null if ids is null
+     */
+    @Nullable
+    Set<Long> fetchIntersectionCandidateIds(@Nullable List<Long> listIds);
+
+    /**
+     * Fetches the public ids of the intersection of all candidates in all the given lists, note
+     * that the list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates common to all the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchIntersectionCandidatePublicIds(@Nullable List<String> publicListIds);
 
     /**
      * Get the SavedList with the given id.
@@ -213,6 +269,15 @@ public interface SavedListService {
      */
     @NonNull
     SavedList get(long savedListId) throws NoSuchObjectException;
+
+    /**
+     * Get the SavedList with the given public id.
+     * @param publicId public ID of the SavedList to get
+     * @return Saved list
+     * @throws NoSuchObjectException if there is no saved list with this public id.
+     */
+    @NonNull
+    SavedList getByPublicId(@NonNull String publicId) throws NoSuchObjectException;
 
     /**
      * Get the SavedList, if any, with the given name (ignoring case), owned by the given user.
@@ -235,7 +300,7 @@ public interface SavedListService {
      * Return all SavedList's associated with the given candidate that match
      * the given request, ordered by name.
      * <p/>
-     * See also {@link #listSavedLists} which does the same except for
+     * See also {@link #search} which does the same except for
      * any candidate.
      *
      * @param candidateId Candidate whose lists we are searching
@@ -245,14 +310,21 @@ public interface SavedListService {
     List<SavedList> search(long candidateId, SearchSavedListRequest request);
 
     /**
+     * Return all SavedList's that match the given ids, ordered by name.
+     * @param request Defines the ids of the SavedList's to return
+     * @return Requested SavedList's
+     */
+    List<SavedList> search(IdsRequest request);
+
+    /**
      * Return all SavedList's that match the given request, ordered by name.
      * <p/>
-     * See also {@link #searchSavedLists} which does the same except
+     * See also {@link #searchPaged} which does the same except
      * returns just one page of results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    List<SavedList> listSavedLists(SearchSavedListRequest request);
+    List<SavedList> search(SearchSavedListRequest request);
 
     /**
      * This is how candidates are added to a list.
@@ -268,11 +340,13 @@ public interface SavedListService {
 
     /**
      * Merge the contents of the SavedList with the given id with the
-     * candidates whose candidate numbers (NOT ids) appear in the given input stream.
-     * @param savedListId ID of saved list to be updated
-     * @param is Input stream containing candidate numbers, one to a line
-     * @throws NoSuchObjectException if there is no saved list with this id
-     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * candidates whose candidate numbers (NOT ids) or publicIds appear in the given input stream.
+     * @param savedListId ID of the saved list to be updated
+     * @param is Input stream formatted as csv containing candidate numbers or publicIds, in the
+     *           first column.
+     * @throws NoSuchObjectException if there is no saved list with this id,
+     * or if any of the candidate numbers are not numeric, or is not a publicId or does not
+     * correspond to a candidate.
      * @throws IOException If there is a problem reading the input stream
      */
     void mergeSavedListFromInputStream(long savedListId, InputStream is)
@@ -282,12 +356,12 @@ public interface SavedListService {
      * Return a page of SavedList's that match the given request, ordered by
      * name.
      * <p/>
-     * See also {@link #listSavedLists} which does the same except it
+     * See also {@link #search} which does the same except it
      * returns all matching results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    Page<SavedList> searchSavedLists(SearchSavedListRequest request);
+    Page<SavedList> searchPaged(SearchSavedListRequest request);
 
     /**
      * Mark the given Candidate objects with the given list context.
@@ -299,6 +373,8 @@ public interface SavedListService {
      *                   stored in the database).
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
+
+    void setPublicIds(List<SavedList> savedLists);
 
     /**
      * Update the info associated with the SavedList with the given id
@@ -354,7 +430,7 @@ public interface SavedListService {
      * @param request Request containing the updated short name and the saved list id which it belongs to.
      * @throws NoSuchObjectException  if there is no saved list with this id
      */
-    SavedList updateTbbShortName(UpdateShortNameRequest request)
+    SavedList updateTcShortName(UpdateShortNameRequest request)
         throws  NoSuchObjectException;
 
     /**
@@ -382,6 +458,18 @@ public interface SavedListService {
     void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
+
+    /**
+     * Tags or untags the given candidate as pendingTermsAcceptance.
+     * (This is done by adding or removing them from the associated SavedList).
+     * <p>
+     *     This means that we have informed the candidate that they need to accept new terms and
+     *     that we are still waiting for them to do it.
+     * </p>
+     * @param candidate Candidate to be tagged/untagged
+     * @param flag True if we are waiting for the candidate to accept terms.
+     */
+    void updatePendingTermsAcceptance(Candidate candidate, boolean flag);
 
     /**
      * Create a published external document from the data of candidates in the given list.
@@ -426,4 +514,11 @@ public interface SavedListService {
     @Nullable
     SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
 
+    /**
+     * Updates the names of formally associated lists for the given Job, to reflect its new name.
+     * Job renaming happens first - if for any reason that failed, this method has the virtue of
+     * reproducing the old name.
+     * @param job Job whose lists are to be renamed
+     */
+    void updateAssociatedListsNames(SalesforceJobOpp job);
 }

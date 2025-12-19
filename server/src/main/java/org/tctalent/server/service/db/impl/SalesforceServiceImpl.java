@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
+import jakarta.validation.constraints.NotBlank;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -75,17 +76,19 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tctalent.server.service.db.CandidateDependantService;
+import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
@@ -192,6 +195,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
     private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
     private final CandidateDependantService candidateDependantService;
+    private final NextStepProcessingService nextStepProcessingService;
 
     private PrivateKey privateKey;
 
@@ -208,19 +212,25 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private String accessToken = null;
 
     @Autowired
-    public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
-        SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
-        CandidateDependantService candidateDependantService) {
+    public SalesforceServiceImpl(
+        EmailHelper emailHelper, SalesforceConfig salesforceConfig,
+        SalesforceRecordTypeConfig salesforceRecordTypeConfig,
+        SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
+        CandidateDependantService candidateDependantService,
+        NextStepProcessingService nextStepProcessingService
+    ) {
         this.emailHelper = emailHelper;
         this.salesforceConfig = salesforceConfig;
         this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
         this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
         this.candidateDependantService = candidateDependantService;
+        this.nextStepProcessingService = nextStepProcessingService;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
         classSfPathMap.put(EmployerOppStageUpdateRequest.class, "Opportunity");
         classSfPathMap.put(JobOpportunityRequest.class, "Opportunity");
+        classSfPathMap.put(EmployerOppNameUpdateRequest.class, "Opportunity");
         classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
         classSfCompositePathMap.put(OpportunityRequestComposite.class, "Opportunity");
 
@@ -396,11 +406,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             //Now set any requested stage name and next step
             String stageName = null;
-            String nextStep = null;
-            LocalDate nextStepDueDate = null;
             String closingComments = null;
             String closingCommentsForCandidate = null;
             String employerFeedback = null;
+
+            // If creating new opp, set default Next Step info.
+            // Mirrors CandidateOpportunityService.createOrUpdateCandidateOpportunity
+            String nextStep = create ? "Contact candidate and do intake" : null;
+            LocalDate nextStepDueDate = create ? LocalDate.now().plusWeeks(2) : null;
+
             Map<String, Integer> relocationInfo = null;
             if (candidateOppParams != null) {
                 final CandidateOpportunityStage stage = candidateOppParams.getStage();
@@ -411,6 +425,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 closingCommentsForCandidate = candidateOppParams.getClosingCommentsForCandidate();
                 employerFeedback = candidateOppParams.getEmployerFeedback();
                 relocationInfo = candidateOppParams.getRelocationInfo();
+
+                // If relocationInfo not already included in params and new stage is 'Offer',
+                // update the SF case relocation info - just to assist with monitoring & evaluation,
+                // a failsafe in case admin users haven't clicked the 'Update case stats' button
+                // when updating relocating dependant info, which can be set on a visa job check
+                // or directly on the Candidate Opp via the 'Upload' tab.
+                if (relocationInfo == null && stage == CandidateOpportunityStage.offer) {
+                    CandidateOpportunity candidateOpp =
+                        fetchCandidateOppGivenJobAndCandidate(jobOpportunity, candidate);
+                    if (candidateOpp != null) {
+                        relocationInfo = processSfCaseRelocationInfo(candidateOpp, candidate);
+                    }
+                }
             }
 
             //Always need to specify a stage name when creating a new opp
@@ -422,7 +449,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 opportunityRequest.setStageName(stageName);
             }
             if (nextStep != null) {
-                opportunityRequest.setNextStep(nextStep);
+                CandidateOpportunity candidateOpp =
+                    fetchCandidateOppGivenJobAndCandidate(jobOpportunity, candidate);
+
+                String processedNextStep =
+                    nextStepProcessingService.processNextStep(candidateOpp, nextStep);
+
+                opportunityRequest.setNextStep(processedNextStep);
             }
             if (nextStepDueDate != null) {
                 opportunityRequest.setNextStepDueDate(nextStepDueDate);
@@ -599,8 +632,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     public String generateCandidateOppName(
         @NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp) {
-        return candidate.getUser().getFirstName()  +
+        String provisionalName = candidate.getUser().getFirstName()  +
             "(" + candidate.getCandidateNumber() + ")-" + jobOpp.getName();
+        // SF character limit for opportunity titles = 120
+        return provisionalName.length() > 120 ?
+            provisionalName.substring(0, 117) + "..." : provisionalName;
     }
 
     static class ContactQueryResult extends QueryResult {
@@ -609,30 +645,76 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds) {
+    public List<Opportunity> fetchOpportunitiesByOpenOnSF(OpportunityType type)
+        throws SalesforceException {
         List<Opportunity> opps = new ArrayList<>();
-        if (sfIds.size() > 0) {
-            //Construct the String of ids for the WHERE clause
-            final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
-                .collect(Collectors.joining(","));
 
-            String query =
-                "SELECT " + jobOpportunityRetrievalFields +
-                    " FROM Opportunity WHERE "
-                    + "(Id IN (" + idsAsString + ")"
-                    + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
-                    + salesforceConfig.getDaysAgoRecent() + "))"
-                + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
+            String query = switch (type) {
+                case JOB ->
+                    "SELECT " + jobOpportunityRetrievalFields
+                    + " FROM Opportunity"
+                    + " WHERE IsClosed = false"
+                    + " AND LastStageChangeDate > N_DAYS_AGO:" + salesforceConfig.getDaysAgoRecent()
+                    + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
+
+                case CANDIDATE ->
+                    "SELECT " + candidateOpportunityRetrievalFields
+                    + " FROM Opportunity"
+                    + " WHERE IsClosed = false"
+                    + " AND LastStageChangeDate > N_DAYS_AGO:" + salesforceConfig.getDaysAgoRecent()
+                    + " AND (RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
+                    + " OR RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
+
+                default ->
+                    throw new IllegalArgumentException("Unsupported OpportunityType: " + type);
+            };
 
             ClientResponse response = executeQuery(query);
 
             OpportunityQueryResult result =
                 response.bodyToMono(OpportunityQueryResult.class).block();
 
-            //Retrieve the contact from the response
+            // Retrieve the records from the response
             if (result != null) {
                 opps = result.records;
             }
+        return opps;
+    }
+
+    @Override
+    public List<Opportunity> fetchOpportunitiesById(
+        Collection<String> sfIds, OpportunityType type
+    ) throws SalesforceException {
+        List<Opportunity> opps = new ArrayList<>();
+        //Construct the String of IDs for the WHERE clause
+        final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
+            .collect(Collectors.joining(","));
+
+        String query = switch (type) {
+            case JOB ->
+                "SELECT " + jobOpportunityRetrievalFields
+                + " FROM Opportunity WHERE"
+                + " Id IN (" + idsAsString + ")"
+                + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
+
+            case CANDIDATE ->
+                "SELECT " + candidateOpportunityRetrievalFields
+                + " FROM Opportunity WHERE"
+                + " Id IN (" + idsAsString + ")"
+                + " AND (RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
+                + " OR RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
+
+            default -> throw new IllegalArgumentException("Unsupported OpportunityType: " + type);
+        };
+
+        ClientResponse response = executeQuery(query);
+
+        OpportunityQueryResult result =
+            response.bodyToMono(OpportunityQueryResult.class).block();
+
+        // Retrieve the records from the response
+        if (result != null) {
+            opps = result.records;
         }
         return opps;
     }
@@ -828,6 +910,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Log any failures
         int count = 0;
+        List<String> errors = new ArrayList<>();
         for (CandidateOpportunityRecordComposite request : requests) {
             UpsertResult result = results[count++];
             if (!result.isSuccess()) {
@@ -837,7 +920,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                         + request.getName()
                         + ": " + result.getErrorMessage())
                     .logError();
+                // Create list of errors to return to admin portal
+                errors.add(request.getName() + ": " + result.getErrorMessage());
             }
+        }
+        if (!errors.isEmpty()) {
+            throw new SalesforceException("The following update/s failed: " + String.join(",", errors) + ")");
         }
     }
 
@@ -922,11 +1010,20 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void updateEmployerOpportunityStage(
-        String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
-        throws SalesforceException, WebClientException {
+        SalesforceJobOpp job, JobOpportunityStage stage, String processedNextStep, LocalDate dueDate
+    ) throws SalesforceException, WebClientException {
 
         EmployerOppStageUpdateRequest sfRequest =
-            new EmployerOppStageUpdateRequest(stage, nextStep, dueDate);
+            new EmployerOppStageUpdateRequest(stage, processedNextStep, dueDate);
+
+        executeUpdate(job.getSfId(), sfRequest);
+    }
+
+    @Override
+    public void updateEmployerOpportunityName(String sfId, String jobName)
+        throws SalesforceException, WebClientException {
+        EmployerOppNameUpdateRequest sfRequest =
+            new EmployerOppNameUpdateRequest(jobName);
 
         executeUpdate(sfId, sfRequest);
     }
@@ -989,7 +1086,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         ClientResponse response = executeWithRetry(spec);
 
         //Only a 204 response is expected - and no body.
-        if (response.rawStatusCode() != 204) {
+        if (response.statusCode().value() != 204) {
             WebClientException ex = response.createException().block();
             assert ex != null;
             throw ex;
@@ -1172,8 +1269,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         if (clientResponse == null) {
             throw new RuntimeException("Null client response to Salesforce request");
-        } else if (clientResponse.rawStatusCode() == 300 ||
-            clientResponse.rawStatusCode() == 400) {
+        } else if (clientResponse.statusCode().value() == 300 ||
+            clientResponse.statusCode().value() == 400) {
             //Pull out the extra info on the error provided by Salesforce.
             //See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/errorcodes.htm
             String errorInfo = clientResponse.bodyToMono(String.class).block();
@@ -1185,7 +1282,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             //Create our own exception with the extra info.
             throw new SalesforceException(ex.getMessage() + ": " + errorInfo);
-        } else if (clientResponse.rawStatusCode() > 300) {
+        } else if (clientResponse.statusCode().value() > 300) {
             WebClientException ex = clientResponse.createException().block();
             assert ex != null;
             throw ex;
@@ -1467,7 +1564,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             setStatus(status);
 
             final String tcAccountCreated = String.valueOf(candidate.getCreatedDate());
-            setTcAccountCreated(tcAccountCreated.substring(0, 9));
+            setTcAccountCreated(tcAccountCreated.substring(0, 10));
 
             final String unhcrRegistered = String.valueOf(candidate.getUnhcrRegistered());
             if (unhcrRegistered != null) {
@@ -1521,34 +1618,42 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             final boolean partnerContactConsent = candidate.getContactConsentPartners();
             setPartnerContactConsent(partnerContactConsent);
 
-            final boolean monitoringEvaluationConsent = getMonitoringEvaluationConsentBoolean(candidate);
-            setMonitoringEvaluationConsent(monitoringEvaluationConsent);
+            if (candidate.getRelocatedAddress() != null) {
+                final String relocatedAddress = candidate.getRelocatedAddress();
+                setRelocatedAddress(relocatedAddress);
+            }
+
+            if (candidate.getRelocatedCity() != null) {
+                final String relocatedCity = candidate.getRelocatedCity();
+                setRelocatedCity(relocatedCity);
+            }
+
+            if (candidate.getRelocatedState() != null) {
+                final String relocatedState = candidate.getRelocatedState();
+                setRelocatedState(relocatedState);
+            }
+
+            if (candidate.getRelocatedCountry() != null) {
+                final String relocatedCountry = candidate.getRelocatedCountry().getName();
+                setRelocatedCountry(relocatedCountry);
+            }
         }
 
-        private String getSpecificLanguageSpeakingLevel(List<CandidateLanguage> candidateLanguagesList, String languageToFind) {
+        private String getSpecificLanguageSpeakingLevel(
+            List<CandidateLanguage> candidateLanguagesList, String languageToFind
+        ) {
             CandidateLanguage languageToCheck = candidateLanguagesList.stream()
-                .filter(candidateLanguage -> languageToFind.equals(candidateLanguage.getLanguage().getName()))
+                .filter(cl -> cl.getLanguage() != null)
+                .filter(cl -> languageToFind.equals(cl.getLanguage().getName()))
                 .findAny()
                 .orElse(null);
+
             if (languageToCheck != null) {
                 return languageToCheck.getSpokenLevel() == null ? null :
                     String.valueOf(languageToCheck.getSpokenLevel().getName());
             } else {
                 return null;
             }
-
-        }
-
-        /**
-         * Need to set the string enum to a boolean to match the SF field (checkbox). This boolean field is then used in survey workflows.
-         * Kept the string value on the TC as we can capture Yes/No which provides a bit more detail on the response
-         * (e.g. difference between No vs NULL) but need to convert this to boolean for our SF workflow.
-         * Only explicitly answering Yes will render true. No, NoResponse & NULL values render false.
-         * @param candidate Candidate whose monitoring evaluation consent we are syncing to SF
-         * @return consent value, true = Yes or false = No/NoResponse/null
-         */
-        private boolean getMonitoringEvaluationConsentBoolean(Candidate candidate) {
-            return candidate.getMonitoringEvaluationConsent() == YesNo.Yes;
         }
 
         public void setAccountId(String accountId) {
@@ -1633,7 +1738,21 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         public void setPartnerContactConsent(boolean partnerContactConsent) { super.put("Partner_Contact_Consent__c", partnerContactConsent); }
 
-        public void setMonitoringEvaluationConsent(boolean monitoringEvaluationConsent) { super.put("Monitoring_Evaluation_Consent__c", monitoringEvaluationConsent); }
+        public void setRelocatedAddress(String relocatedAddress) {
+            super.put("Relocated_Street__c", relocatedAddress);
+        }
+
+        public void setRelocatedCity(String relocatedCity) {
+            super.put("Relocated_City__c", relocatedCity);
+        }
+
+        public void setRelocatedState(String relocatedState) {
+            super.put("Relocated_State_Province__c", relocatedState);
+        }
+
+        public void setRelocatedCountry(String relocatedCountry) {
+            super.put("Relocated_Country__c", relocatedCountry);
+        }
     }
 
     /**
@@ -1732,6 +1851,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
+    class EmployerOppNameUpdateRequest extends HashMap<String, String> {
+
+        public EmployerOppNameUpdateRequest(@NotBlank String jobName) {
+            put("Name", jobName);
+        }
+    }
+
     @Getter
     @Setter
     @ToString
@@ -1779,7 +1905,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
                 setAccountId(jobOpportunity.getAccountId());
                 setCandidateContactId(candidate.getSfId());
-                setOwnerId(jobOpportunity.getOwnerId());
+                if (jobOpportunity.getOwnerId() != null) {
+                    setOwnerId(jobOpportunity.getOwnerId());
+                }
                 setParentOpportunityId(jobOpportunity.getSfId());
 
                 LocalDateTime close = LocalDateTime.now().plusYears(1);
@@ -2202,7 +2330,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private List<CandidateDependant> getRelocatingDependants(CandidateOpportunity candidateOpportunity)
         throws NoSuchObjectException {
         List<Long> relocatingDependantIds = candidateOpportunity.getRelocatingDependantIds();
-    
+
         return relocatingDependantIds != null ?
             relocatingDependantIds
                 .stream()
@@ -2230,6 +2358,26 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         // Update the candidate opp
         createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);
+    }
+
+    /**
+     * Calling {@link CandidateOpportunityService} from this service would cause a circular
+     * dependency, so instead this method fetches the relevant Candidate Opp for a given Job and
+     * candidate by querying the {@link SalesforceJobOpp}, provided there is one.
+     * @param job the presumed parent Job of the Candidate Opp to be fetched
+     * @param candidate the candidate presumed to be associated with the Opp to be fetched
+     * @return {@link CandidateOpportunity} if one fits the criteria, otherwise null
+     */
+    private @Nullable CandidateOpportunity fetchCandidateOppGivenJobAndCandidate(
+        SalesforceJobOpp job,
+        Candidate candidate
+    ) {
+        Optional<CandidateOpportunity> candidateOpp = job.getCandidateOpportunities()
+            .stream()
+            .filter(opp -> opp.getCandidate().getId().equals(candidate.getId()))
+            .findFirst();
+
+        return candidateOpp.orElse(null);
     }
 
 }

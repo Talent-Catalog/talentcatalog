@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,18 +17,18 @@
 package org.tctalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -51,8 +51,12 @@ public class JobSpecification {
 
     public static Specification<SalesforceJobOpp> buildSearchQuery(
         final SearchJobRequest request, User loggedInUser) {
-        return (job, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (job, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("JobSpecification.CriteriaQuery should not be null");
+            }
+
+            Predicate conjunction = cb.conjunction();
 
             /*
               Note that there are two ways of retrieving a join.
@@ -80,7 +84,7 @@ public class JobSpecification {
                 Join<Object, Object> submissionList = (Join<Object, Object>) listFetch;
 
                 //Manage sorting for non count queries
-                List<Order> ordering = getOrdering(request, job, builder, submissionList);
+                List<Order> ordering = getOrdering(request, job, cb, submissionList);
                 query.orderBy(ordering);
             }
 
@@ -88,10 +92,8 @@ public class JobSpecification {
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(job.get("name")), likeMatchTerm)
-                        ));
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(job.get("name")), likeMatchTerm));
             }
 
             final Boolean showActiveStages = request.getActiveStages();
@@ -103,14 +105,16 @@ public class JobSpecification {
             // STAGE
             List<JobOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
-                conjunction.getExpressions().add(builder.isTrue(job.get("stage").in(stages)));
+                conjunction = cb.and(conjunction,
+                    cb.isTrue(job.get("stage").in(stages)));
                 isStageFilterActive = true;
             }
 
             // DESTINATION
             List<Long> destinationIds = request.getDestinationIds();
             if (!Collections.isEmpty(destinationIds)) {
-                conjunction.getExpressions().add(builder.isTrue(job.get("country").in(destinationIds)));
+                conjunction = cb.and(conjunction,
+                    cb.isTrue(job.get("country").get("id").in(destinationIds)));
             }
 
             //ACTIVE STAGES (ignored if doing stage filtering)
@@ -120,28 +124,27 @@ public class JobSpecification {
                     //Only apply filter when we just want to display active stages
                     //Otherwise, if false, it will ONLY display inactive stages which we don't want
                     if (showActiveStages) {
-                        final Predicate activePredicate = builder.between(job.get("stageOrder"),
-                            JobOpportunityStage.candidateSearch.ordinal(),
-                            JobOpportunityStage.jobOffer.ordinal());
-                        if (showClosed || showUnpublished) {
-                            //When active stages are requested as well as closed or unpublished,
-                            //we need union of all that match active predicate, or that are closed
-                            //or that are unpublished.
-                            //ie The user might want to show jobs which are active OR closed OR
-                            //unpublished
-                            Predicate disjunction = builder.disjunction();
-                            disjunction.getExpressions().add(activePredicate);
-                            if (showClosed) {
-                                disjunction.getExpressions().add(
-                                    builder.equal(job.get("closed"), true));
-                            }
-                            if (showUnpublished) {
-                                disjunction.getExpressions().add(
-                                    builder.isNull(job.get("publishedDate")));
-                            }
-                            conjunction.getExpressions().add(disjunction);
-                        } else {
-                            conjunction.getExpressions().add(activePredicate);
+                        Predicate disjunction = cb.disjunction();
+                        disjunction = cb.or(disjunction,
+                            cb.between(job.get("stageOrder"),
+                                JobOpportunityStage.candidateSearch.ordinal(),
+                                JobOpportunityStage.jobOffer.ordinal()));
+                        //When active stages are requested as well as closed or unpublished,
+                        //we need union of all that match active predicate, or that are closed
+                        //or that are unpublished.
+                        //ie The user might want to show jobs which are active OR closed OR
+                        //unpublished
+                        if (showClosed) {
+                            disjunction = cb.or(disjunction,
+                                cb.equal(job.get("closed"), true));
+                        }
+                        if (showUnpublished) {
+                            disjunction = cb.or(disjunction,
+                                cb.isNull(job.get("publishedDate")));
+                        }
+
+                        if (!disjunction.getExpressions().isEmpty()) {
+                            conjunction = cb.and(conjunction, disjunction);
                         }
                     }
                 }
@@ -151,7 +154,7 @@ public class JobSpecification {
             //Only apply filter if we want to exclude closed opps.
             //Otherwise the filter when true will only show closed opps - which we don't want.
             if (!isStageFilterActive && !showClosed) {
-                conjunction.getExpressions().add(builder.equal(job.get("closed"), false));
+                conjunction = cb.and(conjunction, cb.equal(job.get("closed"), false));
             }
 
             //UNREAD MESSAGES
@@ -160,38 +163,38 @@ public class JobSpecification {
                 Subquery<Long> numberOfChatsToRead = query.subquery(Long.class);
                 Root<JobChat> numberOfChatsToReadRoot = numberOfChatsToRead.from(JobChat.class);
 
-                final Predicate chatIsLinkedToJob = builder.equal(
+                final Predicate chatIsLinkedToJob = cb.equal(
                     numberOfChatsToReadRoot.get("jobOpp").get("id"), job.get("id"));
 
                 //Create predicate so that we just look at chats directly associated with jobs
                 List<JobChatType> belongsToJob = Arrays.asList(
                     JobChatType.JobCreatorAllSourcePartners, JobChatType.AllJobCandidates,
                     JobChatType.JobCreatorSourcePartner);
-                final Predicate chatTypeBelongsToOpp = builder
+                final Predicate chatTypeBelongsToOpp = cb
                     .in(numberOfChatsToReadRoot.get("type")).value(belongsToJob);
 
-                final Predicate chatBelongsToOpp = builder
+                final Predicate chatBelongsToOpp = cb
                     .and(chatIsLinkedToJob, chatTypeBelongsToOpp);
 
 
                 final Predicate oppHasUnreadChats = SpecificationHelper.hasUnreadChats(
-                    loggedInUser, query, builder, numberOfChatsToRead, numberOfChatsToReadRoot,
+                    loggedInUser, query, cb, numberOfChatsToRead, numberOfChatsToReadRoot,
                     chatBelongsToOpp);
 
-                conjunction.getExpressions().add(oppHasUnreadChats);
+                conjunction = cb.and(conjunction, oppHasUnreadChats);
             }
 
             // (starred OR owned)
-            Predicate ors = builder.disjunction();
+            Predicate ors = cb.disjunction();
 
             //If owned by this user (ie by logged in user)
             if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
                 if (loggedInUser != null) {
-                    ors.getExpressions().add(
-                        builder.equal(job.get("createdBy"), loggedInUser.getId())
+                    ors = cb.or(ors,
+                        cb.equal(job.get("createdBy").get("id"), loggedInUser.getId())
                     );
-                    ors.getExpressions().add(
-                        builder.equal(job.get("contactUser"), loggedInUser.getId())
+                    ors = cb.or(ors,
+                        cb.equal(job.get("contactUser").get("id"), loggedInUser.getId())
                     );
                 }
             }
@@ -203,8 +206,8 @@ public class JobSpecification {
                     if (loggedInUserPartner != null) {
                         Join<Object, Object> owner = job.join("createdBy");
                         Join<Object, Object> partner = owner.join("partner");
-                        ors.getExpressions().add(
-                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
+                        ors = cb.or(ors,
+                            cb.equal(partner.get("id"), loggedInUserPartner.getId())
                         );
                     }
                 }
@@ -214,14 +217,14 @@ public class JobSpecification {
             if (request.getStarred() != null && request.getStarred()) {
                 if (loggedInUser != null) {
                     Join<Object, Object> users = job.join("starringUsers");
-                    ors.getExpressions().add(
-                        builder.equal(users.get("id"), loggedInUser.getId())
+                    ors = cb.or(ors,
+                        cb.equal(users.get("id"), loggedInUser.getId())
                     );
                 }
             }
 
             if (!ors.getExpressions().isEmpty()) {
-                conjunction.getExpressions().add(ors);
+                conjunction = cb.and(conjunction, ors);
             }
 
             return conjunction;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,40 +16,45 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.TaskDtoHelper;
-import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
+import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
+@RequiredArgsConstructor
 @RestController()
 @RequestMapping("/api/portal/candidate")
 public class CandidatePortalApi {
 
     private final CandidateService candidateService;
-
-    @Autowired
-    public CandidatePortalApi(CandidateService candidateService) {
-        this.candidateService = candidateService;
-    }
+    private final CountryService countryService;
+    private final OccupationService occupationService;
+    private final SavedListService savedListService;
 
     @GetMapping("contact")
     public Map<String, Object> getCandidateEmail() {
@@ -85,6 +90,13 @@ public class CandidatePortalApi {
         return candidateWithCandidateOccupationsDto().build(candidate);
     }
 
+    @GetMapping("exams")
+    public Map<String, Object> getCandidateCandidateExams() {
+        Candidate candidate = this.candidateService
+            .getLoggedInCandidateLoadCandidateExams()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        return candidateWithCandidateExamsDto().build(candidate);
+    }
     @GetMapping("education")
     public Map<String, Object> getCandidateEducation() {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
@@ -113,9 +125,26 @@ public class CandidatePortalApi {
         return candidateAdditionalInfoDto().build(candidate);
     }
 
-    @PostMapping("additional-info")
-    public Map<String, Object> updateCandidateAdditionalInfo(@Valid @RequestBody UpdateCandidateAdditionalInfoRequest request) {
-        Candidate candidate = this.candidateService.updateAdditionalInfo(request);
+    @PutMapping("privacy/{id}")
+    public Map<String, Object> updateCandidateAcceptedPrivacyPolicy(@PathVariable("id") String id) {
+        Candidate candidate = this.candidateService.updateAcceptedPrivacyPolicy(id);
+
+        //Remove pending terms acceptance tag now that they have accepted
+        this.savedListService.updatePendingTermsAcceptance(candidate, false);
+
+        return candidateAdditionalInfoDto().build(candidate);
+    }
+
+    @PutMapping("pending-acceptance/{flag}")
+    public void updatePendingTermsAcceptance(@PathVariable("flag") boolean flag) {
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        this.savedListService.updatePendingTermsAcceptance(candidate, flag);
+    }
+
+    @PostMapping("other-info")
+    public Map<String, Object> updateCandidateAdditionalInfo(@Valid @RequestBody UpdateCandidateOtherInfoRequest request) {
+        Candidate candidate = this.candidateService.updateOtherInfo(request);
         return candidateAdditionalInfoDto().build(candidate);
     }
 
@@ -147,11 +176,12 @@ public class CandidatePortalApi {
         return candidateWithCertificationsDto().build(candidate);
     }
 
-    @GetMapping("status")
-    public Map<String, Object> getCandidateStatus() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return candidateStatusDto().build(candidate);
+    @GetMapping("destinations")
+    public Map<String, Object> getCandidateDestinations() {
+        Candidate candidate = this.candidateService
+            .getLoggedInCandidateLoadDestinations()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        return candidateWithDestinationsDto().build(candidate);
     }
 
     @GetMapping("profile")
@@ -159,13 +189,6 @@ public class CandidatePortalApi {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateProfileDto().build(candidate);
-    }
-
-    @GetMapping("candidate-number")
-    public Map<String, Object> getCandidateNumber() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        return candidateNumberDto().build(candidate);
     }
 
     @GetMapping(value = "cv.pdf")
@@ -185,16 +208,17 @@ public class CandidatePortalApi {
         }
     }
 
-    @PostMapping("submit")
-    public Map<String, Object> submitRegistration() {
-        Candidate candidate = this.candidateService.submitRegistration();
-        return candidateStatusDto().build(candidate);
-    }
 
-    private DtoBuilder candidateNumberDto() {
-        return new DtoBuilder()
-                .add("candidateNumber")
-                ;
+    /**
+     * Complete the registration process.
+     * @param submitRegistrationRequest Contains the id of the terms that they accepted
+     * @return Candidate personal info
+     */
+    @PostMapping("submit")
+    public Map<String, Object> submitRegistration(
+        @RequestBody SubmitRegistrationRequest submitRegistrationRequest) {
+        Candidate candidate = this.candidateService.submitRegistration(submitRegistrationRequest);
+        return candidatePersonalDto().build(candidate);
     }
 
     private DtoBuilder candidateContactDto() {
@@ -202,6 +226,11 @@ public class CandidatePortalApi {
                 .add("user", userDto())
                 .add("phone")
                 .add("whatsapp")
+                /* RELOCATED ADDRESS */
+                .add("relocatedAddress")
+                .add("relocatedCity")
+                .add("relocatedState")
+                .add("relocatedCountry", countryService.selectBuilder())
                 ;
     }
 
@@ -211,24 +240,48 @@ public class CandidatePortalApi {
                 .add("email")
                 .add("firstName")
                 .add("lastName")
+                .add("partner", partnerDto())
                 ;
+    }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+            .add("name")
+            .add("notificationEmail")
+            .add("websiteUrl")
+            .add("defaultSourcePartner")
+            ;
     }
 
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()
                 .add("user", userDto())
+                .add("acceptedPrivacyPolicyId")
+                .add("acceptedPrivacyPolicyDate")
+                .add("acceptedPrivacyPolicyPartner",partnerDto())
                 .add("candidateNumber")
+                .add("publicId")
+                .add("candidateMessage")
+                .add("changePassword")
                 .add("gender")
                 .add("dob")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("city")
                 .add("state")
+                .add("status")
                 .add("yearOfArrival")
-                .add("nationality", countryDto())
+                .add("nationality", countryService.selectBuilder())
+                .add("candidateCitizenships", candidateCitizenshipDto())
                 .add("externalId")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
                 .add("unhcrConsent")
+                ;
+    }
+
+    private DtoBuilder candidateCitizenshipDto() {
+        return new DtoBuilder()
+                .add("nationality", countryService.selectBuilder())
                 ;
     }
 
@@ -238,13 +291,28 @@ public class CandidatePortalApi {
                 ;
     }
 
+    private DtoBuilder candidateWithCandidateExamsDto() {
+        return new DtoBuilder()
+            .add("candidateExams", candidateExamDto())
+            ;
+    }
+
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
-                .add("migrationOccupation")
                 ;
+    }
+
+    private DtoBuilder candidateExamDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("exam")
+            .add("otherExam")
+            .add("score")
+            .add("year")
+            .add("notes");
     }
 
     private DtoBuilder candidateEducationLevelDto() {
@@ -263,19 +331,12 @@ public class CandidatePortalApi {
                 .add("courseName")
                 .add("yearCompleted")
                 .add("incomplete")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("educationMajor", majorDto())
                 ;
     }
 
     private DtoBuilder majorDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
@@ -301,6 +362,7 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("additionalInfo")
                 .add("linkedInLink")
+                .add("allNotifications")
                 ;
     }
 
@@ -328,7 +390,7 @@ public class CandidatePortalApi {
     private DtoBuilder jobExperienceDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("candidateOccupation", candidateOccupationDto())
                 .add("companyName")
                 .add("role")
@@ -337,13 +399,6 @@ public class CandidatePortalApi {
                 .add("fullTime")
                 .add("paid")
                 .add("description")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
                 ;
     }
 
@@ -359,6 +414,22 @@ public class CandidatePortalApi {
                 .add("name")
                 .add("institution")
                 .add("dateCompleted")
+                ;
+    }
+
+    private DtoBuilder candidateWithDestinationsDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("candidateDestinations", destinationsDto())
+                ;
+    }
+
+    private DtoBuilder destinationsDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("country", countryService.selectBuilder())
+                .add("interest")
+                .add("notes")
                 ;
     }
 
@@ -392,34 +463,37 @@ public class CandidatePortalApi {
                 ;
     }
 
-    private DtoBuilder candidateStatusDto() {
-        return new DtoBuilder()
-                .add("user", userDto())
-                .add("status")
-                .add("candidateMessage")
-                ;
-    }
-
     private DtoBuilder candidateProfileDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("user", userDto())
                 /* CONTACT */
                 .add("candidateNumber")
+                .add("publicId")
                 .add("phone")
                 .add("whatsapp")
+                /* STATUS */
+                .add("status")
+                /* MUTED */
+                .add("muted")
                 /* PERSONAL */
                 .add("gender")
                 .add("dob")
                 .add("city")
                 .add("state")
                 .add("yearOfArrival")
-                .add("nationality", countryDto())
-                .add("country", countryDto())
+                .add("nationality", countryService.selectBuilder())
+                .add("country", countryService.selectBuilder())
+                .add("birthCountry", countryService.selectBuilder())
                 .add("externalId")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
                 .add("unhcrConsent")
+                /* RELOCATED ADDRESS */
+                .add("relocatedAddress")
+                .add("relocatedCity")
+                .add("relocatedState")
+                .add("relocatedCountry", countryService.selectBuilder())
                 /* OCCUPATIONS */
                 .add("candidateOccupations", candidateOccupationDto())
                 /* JOB EXPERIENCE */
@@ -429,6 +503,7 @@ public class CandidatePortalApi {
                 .add("candidateEducations", educationDto())
                 /* LANGUAGES */
                 .add("candidateLanguages", candidateLanguageDto())
+                .add("candidateExams", candidateExamDto())
                 /* CERTIFICATIONS */
                 .add("candidateCertifications", certificationDto())
                 /* ADDITIONAL INFO / SUBMIT */
@@ -437,8 +512,10 @@ public class CandidatePortalApi {
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")
                 .add("linkedInLink")
+                .add("allNotifications")
                 .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 .add("candidateOpportunities", candidateOpportunityDto())
+                .add("candidateDestinations", destinationsDto())
                 ;
     }
 
@@ -485,6 +562,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
             .add("id")
             .add("candidateNumber")
+            .add("publicId")
             ;
     }
 

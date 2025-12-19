@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,21 +14,37 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
+@import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 :host {
   font-size: 0.80rem;
-  background-color: $light;
+  @include background-color-soft;
+  border-radius: 1rem;
+  margin-right:2rem;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.12);
+  @include shadow-lg;
+}
+
+/* smooth scrollbar look */
+:host::-webkit-scrollbar {
+  width: 8px;
+}
+
+:host::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
 }
 
 .candidate-card {
   width: 100%;
   padding: 1.5em;
-  border: 1px solid #aaa;
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  margin-bottom: 8px;
+  border-radius: 1rem;
 }
 
 .candidate-header {

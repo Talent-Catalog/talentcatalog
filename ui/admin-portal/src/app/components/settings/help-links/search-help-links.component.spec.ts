@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {HelpLinkService} from "../../../services/help-link.service";
 import {CountryService} from "../../../services/country.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {SearchResults} from "../../../model/search-results";
@@ -30,8 +30,9 @@ import {HelpComponent} from "../../help/help.component";
 import {
   CreateUpdateHelpLinkComponent
 } from "./create-update-help-link/create-update-help-link.component";
+import {By} from "@angular/platform-browser";
 
-fdescribe('SearchHelpLinksComponent', () => {
+describe('SearchHelpLinksComponent', () => {
   let component: SearchHelpLinksComponent;
   let fixture: ComponentFixture<SearchHelpLinksComponent>;
   let helpLinkServiceSpy: jasmine.SpyObj<HelpLinkService>;
@@ -50,7 +51,7 @@ fdescribe('SearchHelpLinksComponent', () => {
 
   beforeEach(async () => {
     const helpLinkServiceMock = jasmine.createSpyObj('HelpLinkService', ['searchPaged']);
-    const countryServiceMock = jasmine.createSpyObj('CountryService', ['listTBBDestinations']);
+    const countryServiceMock = jasmine.createSpyObj('CountryService', ['listTCDestinations']);
     const modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
     const authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isReadOnly']);
 
@@ -58,7 +59,7 @@ fdescribe('SearchHelpLinksComponent', () => {
       declarations: [SearchHelpLinksComponent, HelpComponent],
       imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         {provide: HelpLinkService, useValue: helpLinkServiceMock},
         {provide: CountryService, useValue: countryServiceMock},
         {provide: NgbModal, useValue: modalServiceMock},
@@ -75,7 +76,7 @@ fdescribe('SearchHelpLinksComponent', () => {
 
     // Mock initial data and methods
     helpLinkServiceSpy.searchPaged.and.returnValue(of(searchResults));
-    countryServiceSpy.listTBBDestinations.and.returnValue(of([]));
+    countryServiceSpy.listTCDestinations.and.returnValue(of([]));
     authServiceSpy.isReadOnly.and.returnValue(false);
 
     fixture.detectChanges();
@@ -146,9 +147,9 @@ fdescribe('SearchHelpLinksComponent', () => {
     component.error = error;
     fixture.detectChanges();
 
-    const errorMessage = fixture.nativeElement.querySelector('.alert-danger');
+    const errorMessage = fixture.debugElement.query(By.css('tc-alert'));
     expect(errorMessage).toBeTruthy();
-    expect(errorMessage.textContent).toContain(error);
+    expect(errorMessage.nativeElement.textContent).toContain(error);
   });
 
 });

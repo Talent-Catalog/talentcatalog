@@ -1,28 +1,60 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> {{ 'LOADING' | translate }}
+  <tc-loading [loading]="true"></tc-loading>
 </div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div>{{error}}</div>
+</tc-alert>
 
 <div class="container my-lg-5">
-  <div *ngIf="!chatIsRead" class="d-flex justify-content-end mb-2">
-    <button type="button" class="btn btn-sm btn-secondary" (click)="onMarkChatAsRead()">
-      {{'CHAT.MARK-AS-READ' | translate}} <i class="fa-solid fa-envelope-circle-check ms-1"></i>
-    </button>
+  <div *ngIf="!readOnly && !chatIsRead" class="d-flex justify-content-end mb-2">
+    <tc-button color="secondary" type="outline" size="sm" (onClick)="onMarkChatAsRead()">
+      {{ 'CHAT.MARK-AS-READ' | translate }} <tc-icon color="secondary"><i class="fa-solid fa-envelope-circle-check ms-1"></i></tc-icon>
+    </tc-button>
   </div>
-  <div id="posts" *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
-    <div *ngFor="let post of posts"
-         (click)="selectCurrent(post)"
-         [ngClass]="{'current': currentPost?.id == post.id}">
-      <app-view-post
-        [currentPost] ="currentPost"
-        [post]="post">
-      </app-view-post>
+
+  <div id="posts">
+    <div *ngFor="let group of groupedMessages">
+      <div class="date-divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">{{ group.date }}</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <div *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
+        <div *ngFor="let post of group.messages"
+             (click)="selectCurrent(post)"
+             [ngClass]="{'current': currentPost?.id == post.id}">
+
+          <app-view-post
+            [readOnly]="readOnly"
+            [currentPost]="currentPost"
+            [post]="post">
+          </app-view-post>
+        </div>
+      </div>
     </div>
   </div>
+
   <ng-template #noPosts>
-    <p class="py-lg-5 text-muted py-3 fw-light text-center fs-6">{{'CHAT.NO-POSTS' | translate}}</p>
+    <p *ngIf="!readOnly" class="py-lg-5 text-muted py-3 fw-light text-center fs-6">
+      {{ 'CHAT.NO-POSTS' | translate }}
+    </p>
   </ng-template>
   <div>
     <app-create-update-post

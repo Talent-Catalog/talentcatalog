@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ViewChatPostsComponent} from "./view-chat-posts.component";
 import {ChatService} from "../../../services/chat.service";
 import {ChatPostService} from "../../../services/chat-post.service";
@@ -10,7 +26,7 @@ import {Partner} from "../../../model/partner";
 import {of} from "rxjs";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 
-fdescribe('ViewChatPostsComponent', () => {
+describe('ViewChatPostsComponent', () => {
   let component: ViewChatPostsComponent;
   let fixture: ComponentFixture<ViewChatPostsComponent>;
   let chatService: jasmine.SpyObj<ChatService>;
@@ -49,7 +65,7 @@ fdescribe('ViewChatPostsComponent', () => {
   });
 
   it('should handle chat input changes and call onNewChat', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     const mockChats: JobChat[] = [mockChat];
     chatService.list.and.returnValue(of(mockChats));
 
@@ -84,7 +100,7 @@ fdescribe('ViewChatPostsComponent', () => {
 
 
   it('should call markChatAsRead on chatService when onMarkChatAsRead is called', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     component.chat = mockChat;
 
     component.onMarkChatAsRead();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {FormsModule} from "@angular/forms";
 import {NgbDate, NgbDateStruct, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('DateRangePickerComponent', () => {
+describe('DateRangePickerComponent', () => {
   let component: DateRangePickerComponent;
   let fixture: ComponentFixture<DateRangePickerComponent>;
 

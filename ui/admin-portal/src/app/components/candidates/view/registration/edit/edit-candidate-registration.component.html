@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,94 +14,131 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [heading]="'Edit Candidate Registrations'"
+          [showClose]="true"
+          [showCancel]="true"
+          [actionText]="'Save'"
+          (onAction)="onSave()"
+          [disableAction]="candidateForm.invalid || loading || saving">
 
-  <h4 class="modal-title">Edit Candidate Registrations</h4>
+  <tc-loading [loading]="loading"></tc-loading>
 
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
-
     <form [formGroup]="candidateForm">
 
       <!-- Partner reference -->
       <div class="mb-3">
-        <label class="form-label" for="partnerRef">Partner's internal id for candidate</label>
-        <input type="text" class="form-control" id="partnerRef" placeholder=""
-               [formControlName]="'partnerRef'">
+        <tc-field>
+          <tc-label [for]="'partnerRef'">Partner's internal id for candidate</tc-label>
+          <tc-input [type]="'text'"
+                    [id]="'partnerRef'"
+                    [placeholder]=""
+                    [formControlName]="'partnerRef'"
+          ></tc-input>
+        </tc-field>
       </div>
 
       <!-- EXTERNAL ID -->
       <div class="mb-3">
-        <label class="form-label" for="externalId">External Id</label>
-        <input type="text" class="form-control" id="externalId" placeholder=""
-               [formControlName]="'externalId'">
+        <tc-field>
+          <tc-label [for]="'externalId'">External Id</tc-label>
+          <tc-input [type]="'text'"
+                    [id]="'externalId'"
+                    [placeholder]=""
+                    [formControlName]="'externalId'"
+          ></tc-input>
+        </tc-field>
       </div>
 
       <!-- EXTERNAL ID SOURCE -->
       <div class="mb-3">
-        <label class="form-label" for="externalIdSource">External Id Source</label>
-        <input type="text" class="form-control" id="externalIdSource" placeholder=""
-               [formControlName]="'externalIdSource'">
+        <tc-field>
+          <tc-label [for]="'externalIdSource'">External Id Source</tc-label>
+          <tc-input [type]="'text'"
+                    [id]="'externalIdSource'"
+                    [placeholder]=""
+                    [formControlName]="'externalIdSource'"
+          ></tc-input>
+        </tc-field>
       </div>
 
       <!-- UNHCR STATUS -->
       <div class="mb-3">
-        <label class="form-label" for="unhcrStatus">What is your registration status with UNHCR?</label>
-        <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'"
-                   [items]="unhcrStatusOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+        <tc-field>
+          <tc-label [for]="'unhcrStatus'">What is your registration status with UNHCR?</tc-label>
+          <ng-select id="unhcrStatus"
+                     class="tc-select"
+                     [formControlName]="'unhcrStatus'"
+                     [items]="unhcrStatusOptions"
+                     [clearOnBackspace]="false"
+                     placeholder="Select"
+                     bindLabel="stringValue"
+                     bindValue="key"
+          ></ng-select>
+        </tc-field>
       </div>
 
       <!-- UNHCR NUMBER -->
       <div class="mb-3">
-        <label class="form-label" for="unhcrNumber">UNHCR Number</label>
-        <input type="text" class="form-control" id="unhcrNumber" placeholder=""
-               [formControlName]="'unhcrNumber'">
+        <tc-field>
+          <tc-label [for]="'unhcrNumber'">UNHCR Number</tc-label>
+          <tc-input [type]="'text'"
+                    [id]="'unhcrNumber'"
+                    [placeholder]=""
+                    [formControlName]="'unhcrNumber'"
+          ></tc-input>
+        </tc-field>
       </div>
 
       <!-- UNHCR CONSENT -->
       <div class="mb-3">
-        <label class="form-label" for="unhcrConsent">UNHCR Consent?</label>
-        <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'"
-                   [items]="unhcrConsentOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+        <tc-field>
+          <tc-label [for]="'unhcrConsent'">UNHCR Consent?</tc-label>
+          <ng-select class="tc-select"
+                     id="unhcrConsent"
+                     [formControlName]="'unhcrConsent'"
+                     [items]="unhcrConsentOptions"
+                     [clearOnBackspace]="false"
+                     placeholder="Select"
+                     bindLabel="stringValue"
+                     bindValue="key"
+          ></ng-select>
+        </tc-field>
       </div>
 
       <!-- UNRWA REGISTERED -->
       <div class="mb-3">
-        <label class="form-label" for="unrwaRegistered">UNRWA Registered?</label>
-        <ng-select id="unrwaRegistered" [formControlName]="'unrwaRegistered'"
-                   [items]="registeredOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+        <tc-field>
+          <tc-label [for]="'unrwaRegistered'">UNRWA Registered?</tc-label>
+          <ng-select class="tc-select"
+                     id="unrwaRegistered"
+                     [formControlName]="'unrwaRegistered'"
+                     [items]="registeredOptions"
+                     [clearOnBackspace]="false"
+                     placeholder="Select"
+                     bindLabel="stringValue"
+                     bindValue="key"
+          ></ng-select>
+        </tc-field>
       </div>
 
       <!-- UNRWA NUMBER -->
       <div class="mb-3">
-        <label class="form-label" for="unrwaNumber">UNRWA Number</label>
-        <input type="text" class="form-control" id="unrwaNumber" placeholder=""
-               [formControlName]="'unrwaNumber'">
+        <tc-field>
+          <tc-label [for]="'unrwaNumber'">UNRWA Number</tc-label>
+          <tc-input [type]="'text'"
+                    [id]="'unrwaNumber'"
+                    [placeholder]=""
+                    [formControlName]="'unrwaNumber'"
+          ></tc-input>
+        </tc-field>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
     </form>
-
   </div>
-</div>
+
+</tc-modal>

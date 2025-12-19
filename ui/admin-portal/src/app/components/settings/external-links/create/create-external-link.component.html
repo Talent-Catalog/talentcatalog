@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,43 +14,26 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Add External Link</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
-
+<tc-modal heading="Add External Link" (onAction)="onSave()" [disableAction]="form.invalid || saving">
+  <tc-alert *ngIf="error">{{error}}</tc-alert>
   <form [formGroup]="form">
-    <div class="mb-3">
-      <label class="form-label">Saved List</label>
-      <ng-select id="savedListId" [formControlName]="'savedListId'" [items]="savedLists" [closeOnSelect]="true"
-                 [clearOnBackspace]="false" placeholder="Select or type..." bindLabel="name" bindValue="id"></ng-select>
-      <div class="form-text">If you can't see your list here, it will already have an external link assigned to it.</div>
-    </div>
+    <tc-fieldset>
+      <tc-field>
+        <tc-label>Saved List</tc-label>
+        <ng-select class="tc-select" id="savedListId" [formControlName]="'savedListId'" [items]="savedLists" [closeOnSelect]="true"
+                   [clearOnBackspace]="false" placeholder="Select or type..." bindLabel="name" bindValue="id"></ng-select>
+        <tc-description>If you can't see your list here, it will already have an external link assigned to it.</tc-description>
+      </tc-field>
 
-    <div>External link</div>
-    <div class="row mb-3">
-      <span class="col-form-label col-6 form-text">{{publishUrl}}/</span>
-      <div class="col-6">
-        <input class="form-control" id="link" [formControlName]="'tbbShortName'">
-      </div>
-    </div>
+      <tc-field>
+        <tc-label>External link</tc-label>
+        <div class="row mb-3">
+          <span class="col-form-label col-6 form-text">{{publishUrl}}/</span>
+          <div class="col-6">
+            <tc-input id="link" [formControlName]="'tcShortName'"></tc-input>
+          </div>
+        </div>
+      </tc-field>
+    </tc-fieldset>
   </form>
-
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="onSave()"
-          [disabled]="form.invalid || saving">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    Save
-  </button>
-</div>
+</tc-modal>

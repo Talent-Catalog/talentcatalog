@@ -1,12 +1,28 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {UserChangePasswordComponent} from './user-change-password.component';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {of, throwError} from 'rxjs';
 import {UserService} from '../../../services/user.service';
 import {config_test} from "../../../../config-test";
 
-fdescribe('UserChangePasswordComponent', () => {
+describe('UserChangePasswordComponent', () => {
   let component: UserChangePasswordComponent;
   let fixture: ComponentFixture<UserChangePasswordComponent>;
   let mockUserService: jasmine.SpyObj<UserService>;
@@ -28,7 +44,7 @@ fdescribe('UserChangePasswordComponent', () => {
       declarations: [UserChangePasswordComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: UserService, useValue: mockUserService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter }

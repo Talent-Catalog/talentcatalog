@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,11 +18,11 @@ import {MaritalStatusComponent} from "./marital-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('MaritalStatusComponent', () => {
+describe('MaritalStatusComponent', () => {
   let component: MaritalStatusComponent;
   let fixture: ComponentFixture<MaritalStatusComponent>;
 
@@ -31,7 +31,7 @@ fdescribe('MaritalStatusComponent', () => {
       declarations: [ MaritalStatusComponent,AutosaveStatusComponent ],
       imports: [HttpClientTestingModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService }
       ]
     })
@@ -50,8 +50,8 @@ fdescribe('MaritalStatusComponent', () => {
       { id: 2, name: 'Teacher', isco08Code: '5678', status: 'Active' }
     ];
     component.languageLevels = [
-      { id: 1, name: 'Basic', level: 1, status: 'Active' },
-      { id: 2, name: 'Intermediate', level: 2, status: 'Active' }
+      { id: 1, name: 'Basic', level: 1, cefrLevel: 'A1', status: 'Active' },
+      { id: 2, name: 'Intermediate', level: 2, cefrLevel: 'B1', status: 'Active' }
     ];
     component.nationalities = [
       { id: 1, name: 'USA', status: 'Active', translatedName: 'United States' },
@@ -97,6 +97,44 @@ fdescribe('MaritalStatusComponent', () => {
       partnerIeltsScore: 6.5, // Valid IELTS score
     });
     expect(component.form.valid).toBeTruthy();
+  });
+
+  it('should patch form values correctly', () => {
+    const patch = {
+      maritalStatus: 'Married',
+      partnerRegistered: 'Yes',
+      partnerCandId: 1,
+      partnerEduLevelId: 2,
+      partnerOccupationId: 1,
+      partnerEnglish: 'Yes',
+      partnerEnglishLevelId: 1,
+      partnerIelts: 'YesGeneral',
+      partnerIeltsScore: 7.5,
+      partnerIeltsYr: 2023,
+      partnerCitizenship: 1
+    };
+    component.form.patchValue(patch);
+    expect(component.form.value).toEqual(jasmine.objectContaining(patch));
+  });
+
+  it('should return true for hasPartner when maritalStatus is Married', () => {
+    component.form.get('maritalStatus')?.setValue('Married');
+    expect(component.hasPartner).toBeTrue();
+  });
+
+  it('should recognize partner as registered when value is Yes', () => {
+    component.form.get('partnerRegistered')?.setValue('Yes');
+    expect(component.partnerRegistered).toBe('Yes');
+  });
+
+  it('should show eduLevelNotes section when an education level is selected', () => {
+    component.form.get('partnerEduLevelId')?.setValue(2);
+    expect(component.eduLevelSelected).toBeTrue();
+  });
+
+  it('should accept valid citizenship ID', () => {
+    component.form.get('partnerCitizenship')?.setValue(2);
+    expect(component.form.get('partnerCitizenship')?.value).toBe(2);
   });
 
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -80,6 +80,12 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     }
 
     @Override
+    public LanguageLevel findByLevel(int level) {
+        return languageLevelRepository.findByLevel(level)
+            .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, level));
+    }
+
+    @Override
     public LanguageLevel getLanguageLevel(long id) {
         return this.languageLevelRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, id));
@@ -90,11 +96,10 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     public LanguageLevel createLanguageLevel(
         CreateLanguageLevelRequest request) throws EntityExistsException {
         LanguageLevel languageLevel = new LanguageLevel(
-                request.getName(), request.getStatus(), request.getLevel());
+                request.getName(), request.getStatus(), request.getLevel(), request.getCefrLevel());
         checkDuplicates(null, request.getName(), request.getLevel());
         return this.languageLevelRepository.save(languageLevel);
     }
-
 
     @Override
     @Transactional
@@ -106,6 +111,7 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
         languageLevel.setName(request.getName());
         languageLevel.setLevel(request.getLevel());
         languageLevel.setStatus(request.getStatus());
+        languageLevel.setCefrLevel(request.getCefrLevel());
         return languageLevelRepository.save(languageLevel);
     }
 

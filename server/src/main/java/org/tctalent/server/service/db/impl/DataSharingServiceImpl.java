@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -46,18 +46,18 @@ import org.tctalent.server.service.db.util.PartnerTableDefinition;
 /**
  * Data is shared with destination partners by copying to their own databases,
  * as configured in an XML configuration file stored in resources whose path is
- * specified in tbb.partner-dbcopy-config in application.yml.
+ * specified in tc.partner-dbcopy-config in application.yml.
  * <p/>
  * The configuration file contains a different configuration for each partner
  * (typically by country - eg Australian partner, UK partner etc).
  * <p/>
  * Each destination configuration defines the structure of destination tables
- * which are populated from the TBB database.
+ * which are populated from the TC database.
  * <p/>
  * In this implementation data is copied in two stages. First a local
  * "in memory" copy of the destination database is created on this server
  * (using an H2 in memory database). This involves reading a subset of data from
- * the normal TBB data base (as defined in the "populate" elements of the xml
+ * the normal TC database (as defined in the "populate" elements of the xml
  * configuration) and inserting it into the appropriate fields of the
  * destination tables (as defined in the "fields" elements for each destination
  * table in the xml configuration).
@@ -85,13 +85,13 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Value("${spring.datasource.password}")
     private String masterPwd;
 
-    @Value("${tbb.partner-dbcopy-config}")
-    private String partnerDbcopyConfig = "data.sharing/tbbCopies.xml";
+    @Value("${tc.partner-dbcopy-config}")
+    private String partnerDbcopyConfig = "data.sharing/tcCopies.xml";
 
     private static final String DB_LOCAL_COPY_URL = "jdbc:h2:mem:";
 
-    private Connection tbbMaster;
-    private Connection tbbLocalCopy;
+    private Connection tcMaster;
+    private Connection tcLocalCopy;
 
     private final EmailSender emailSender;
 
@@ -117,7 +117,7 @@ public class DataSharingServiceImpl implements DataSharingService {
         boolean ok = true;
 
         try {
-            //Connect to TBB database and local copy
+            //Connect to TC database and local copy
             connect();
 
             List<PartnerDatabaseDefinition> destinations = getDestinations();
@@ -148,9 +148,9 @@ public class DataSharingServiceImpl implements DataSharingService {
                         .message("Export/Import remote copy")
                         .logInfo();
 
-                    try (Connection tbbRemoteCopy = destination.connect()) {
+                    try (Connection tcRemoteCopy = destination.connect()) {
                         for (PartnerTableDefinition def : defs) {
-                            exportImport(tbbRemoteCopy, def);
+                            exportImport(tcRemoteCopy, def);
                         }
                     }
                 } catch (Exception ex) {
@@ -172,27 +172,27 @@ public class DataSharingServiceImpl implements DataSharingService {
         String dbLocalCopyUser = "sa";
         String dbLocalCopyPassword = "";
 
-        tbbLocalCopy = DriverManager.getConnection(DB_LOCAL_COPY_URL, dbLocalCopyUser, dbLocalCopyPassword);
-        tbbMaster = DriverManager.getConnection(masterJdbcUrl, masterUser, masterPwd);
+        tcLocalCopy = DriverManager.getConnection(DB_LOCAL_COPY_URL, dbLocalCopyUser, dbLocalCopyPassword);
+        tcMaster = DriverManager.getConnection(masterJdbcUrl, masterUser, masterPwd);
 
     }
 
     private void disconnect() {
         try {
-            if (tbbMaster != null) {
-                tbbMaster.close();
-                tbbMaster = null;
+            if (tcMaster != null) {
+                tcMaster.close();
+                tcMaster = null;
             }
         } catch (Exception ex) {
             reportError("Could not close master DB connection", ex);
         }
 
         try {
-            if (tbbLocalCopy != null) {
-                Statement st = tbbLocalCopy.createStatement();
+            if (tcLocalCopy != null) {
+                Statement st = tcLocalCopy.createStatement();
                 st.execute("DROP ALL OBJECTS");
-                tbbLocalCopy.close();
-                tbbLocalCopy = null;
+                tcLocalCopy.close();
+                tcLocalCopy = null;
             }
         } catch (Exception ex) {
             reportError("Could not close local temporary DB connection", ex);
@@ -207,10 +207,10 @@ public class DataSharingServiceImpl implements DataSharingService {
             .logInfo();
 
         final String populateTableSQL = def.getPopulateTableSQL();
-        try (final Statement masterSelect = tbbMaster.createStatement();
+        try (final Statement masterSelect = tcMaster.createStatement();
              final ResultSet masterData =
                      masterSelect.executeQuery(populateTableSQL);
-             final Statement reCreateCopy = tbbLocalCopy.createStatement()) {
+             final Statement reCreateCopy = tcLocalCopy.createStatement()) {
             ResultSetMetaData rsmd = masterData.getMetaData();
 
             //Drop and recreate any existing table
@@ -225,7 +225,7 @@ public class DataSharingServiceImpl implements DataSharingService {
             String insertSQL = def.getInsertSQL(nColumns);
 
             try (final PreparedStatement insertStatement =
-                         tbbLocalCopy.prepareStatement(insertSQL)) {
+                         tcLocalCopy.prepareStatement(insertSQL)) {
                 int count = 0;
                 while (masterData.next()) {
                     // Insert a row with these values into copy
@@ -255,7 +255,7 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     private void exportImport(
-            Connection tbbRemoteCopy, PartnerTableDefinition def) {
+            Connection tcRemoteCopy, PartnerTableDefinition def) {
         final String tableName = def.getTableName();
 
         LogBuilder.builder(log)
@@ -281,13 +281,13 @@ public class DataSharingServiceImpl implements DataSharingService {
             .message("Exporting to " + exportFilePath)
             .logInfo();
 
-        try (final Statement exportSt = tbbLocalCopy.createStatement()) {
+        try (final Statement exportSt = tcLocalCopy.createStatement()) {
             String s = "CALL CSVWRITE(" +
                     "'" + exportFilePath + "'" +
                     ", 'SELECT * FROM " + tableName + "'" +
                     ")";
             exportSt.execute(s);
-            try (final Statement importSt = tbbRemoteCopy.createStatement()) {
+            try (final Statement importSt = tcRemoteCopy.createStatement()) {
                 //Create a new table
                 //Delete if already exists
                 importSt.executeUpdate(def.getDropTableSQLAsNew());

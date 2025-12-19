@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,15 +17,15 @@
 import {ChartComponent} from "./chart.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {DataRow} from "../../../model/data-row";
-import {ChartsModule} from "ng2-charts";
+import {NgChartsModule} from "ng2-charts";
 
-fdescribe('ChartComponent', () => {
+describe('ChartComponent', () => {
   let component: ChartComponent;
   let fixture: ComponentFixture<ChartComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChartsModule],
+      imports: [NgChartsModule],
       declarations: [ChartComponent]
     }).compileComponents();
   });
@@ -53,8 +53,13 @@ fdescribe('ChartComponent', () => {
 
     component.ngOnInit();
     expect(component.chartLabels).toEqual(['Label 1', 'Label 2', 'Label 3']);
-    expect(component.chartDataSet).toEqual([10, 20, 30]);
-    expect(component.chartOptions).toEqual({});
+    expect(component.chartDataSet).toEqual({
+      labels: ['Label 1', 'Label 2', 'Label 3'],
+      datasets: [
+        { data: [10, 20, 30] }
+      ]
+    });
+    expect(component.chartOptions).toEqual({ responsive: true });
   });
 
   it('should initialize bar chart correctly', () => {
@@ -71,28 +76,36 @@ fdescribe('ChartComponent', () => {
     component.ngOnInit();
 
     expect(component.chartLabels).toEqual(['Label 1', 'Label 2', 'Label 3']);
-    expect(component.chartDataSet).toEqual([10, 20, 30]);
+    expect(component.chartDataSet).toEqual({
+      labels: ['Label 1', 'Label 2', 'Label 3'],
+      datasets: [
+        { data: [10, 20, 30] }
+      ]
+    });
     expect(component.chartOptions).toEqual({
+      responsive: true,
       scales: {
-        yAxes: [
-          {
-            ticks: {
-              min: 0
-            }
-          }
-        ]
+        y: {
+          beginAtZero: true,
+          min: 0
+        }
       }
     });
   });
 
-  it('should not initialize chart if chartData is not provided', () => {
+  it('should not initialize chart with data if chartData is not provided', () => {
     component.chartType = 'doughnut';
     component.chartLegend = true;
 
     component.ngOnInit();
 
-    expect(component.chartLabels).toBeUndefined();
-    expect(component.chartDataSet).toBeUndefined();
+    expect(component.chartLabels).toEqual([]);
+    expect(component.chartDataSet).toEqual({
+      labels: [],
+      datasets: [
+        { data: [] }
+      ]
+    });
     expect(component.chartOptions).toEqual({});
   });
 });

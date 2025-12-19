@@ -24,6 +24,7 @@ import {JobOppIntake} from "./job-opp-intake";
 import {isCandidateOpportunity, SearchOpportunityRequest} from "./candidate-opportunity";
 import {Opportunity, OpportunityProgressParams} from "./opportunity";
 import {Country} from "./country";
+import {getOrdinal} from "../util/enum";
 
 export function isJob(opp: Opportunity): opp is Job {
   return !isCandidateOpportunity(opp);
@@ -52,6 +53,7 @@ export interface Job extends Opportunity {
   publishedBy: User;
   publishedDate: Date;
   jobCreator: ShortPartner;
+  skipCandidateSearch: boolean;
   stage: JobOpportunityStage;
   starringUsers: User[];
   submissionDueDate: Date;
@@ -117,7 +119,16 @@ export interface UpdateJobRequest extends OpportunityProgressParams {
   evergreen?: boolean;
   roleName?: string;
   sfId?: string;
+  jobName?: string;
   sfJoblink?: string;
+  skipCandidateSearch?: boolean;
   submissionDueDate?: Date;
   jobToCopyId?: number;
+}
+
+
+export function isJobOppStageGreaterThanOrEqualTo(selectedOppStageKey: string, desiredStageKey: string) {
+  let oppOrdinal: number = getOrdinal(JobOpportunityStage, selectedOppStageKey);
+  let desiredOrdinal: number = getOrdinal(JobOpportunityStage, desiredStageKey);
+  return oppOrdinal >= desiredOrdinal;
 }

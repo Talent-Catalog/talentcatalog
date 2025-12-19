@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -27,7 +27,7 @@ import {
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateCandidateJobExperienceComponent', () => {
+describe('CreateCandidateJobExperienceComponent', () => {
   let component: CreateCandidateJobExperienceComponent;
   let fixture: ComponentFixture<CreateCandidateJobExperienceComponent>;
   let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;
@@ -43,7 +43,7 @@ fdescribe('CreateCandidateJobExperienceComponent', () => {
       declarations: [CreateCandidateJobExperienceComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
         { provide: CountryService, useValue: countryServiceSpy },
         { provide: NgbActiveModal, useValue: activeModalSpy }

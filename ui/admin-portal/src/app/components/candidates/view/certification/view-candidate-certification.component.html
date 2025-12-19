@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,67 +14,83 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div class="card" *ngIf="!loading">
 
-  <div class="card-header">
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
+
+  <tc-card-header>
     Certifications
-    <div class="float-end" *ngIf="editable">
-      <button type="button" class="btn btn-primary btn-sm" (click)="createCandidateCertification()">
+    <div class="d-flex justify-content-end"
+         *ngIf="editable"
+    >
+      <tc-button [type]="'solid'"
+                 [color]="'primary'"
+                 [size]="'sm'"
+                 (onClick)="createCandidateCertification()"
+      >
         <i class="fas fa-plus"></i>
-      </button>
+      </tc-button>
+    </div>
+  </tc-card-header>
+
+  <div *ngIf="!candidate.candidateCertifications || candidate.candidateCertifications?.length == 0">
+    <div class="row">
+      <div class="col-sm-12">
+        No certifications entered
+      </div>
     </div>
   </div>
+  <div *ngFor="let candidateCertification of candidate.candidateCertifications; let i = index">
 
-  <div class="card-body">
-    <div *ngIf="!candidateCertifications || candidateCertifications.length == 0">
-      <div class="row">
-        <div class="col-sm-12">
-          No certifications entered
+    <hr *ngIf="i > 0">
+
+    <div class="row">
+      <div class="col-6">
+        <span class="card-title"
+              [innerHtml]="candidateCertification.name"
+              appHighlightSearch>
+        </span>
+      </div>
+
+      <div class="col-6">
+        <div class="d-flex justify-content-end gap-2" *ngIf="editable">
+          <tc-button [type]="'plain'"
+                     [color]="'secondary'"
+                     (onClick)="editCandidateCertification(candidateCertification)"
+          >
+            <i class="fas fa-edit"></i>
+          </tc-button>
+          <tc-button *ngIf="adminUser"
+                     [type]="'plain'"
+                     [color]="'gray'"
+                     (onClick)="deleteCandidateCertification(candidateCertification)"
+          >
+            <i class="fas fa-trash"></i>
+          </tc-button>
         </div>
       </div>
     </div>
-    <div *ngFor="let candidateCertification of candidateCertifications">
-      <div class="row">
-        <div class="col-6">
-          <span class="card-title"
-                [innerHtml]="candidateCertification.name"
-                appHighlightSearch>
-          </span>
-        </div>
 
-        <div class="col-6">
-          <div class="btn-group float-end" *ngIf="editable">
-            <button type="button" class="btn btn-default" (click)="editCandidateCertification(candidateCertification)"><i
-              class="fas fa-edit"></i></button>
-            <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateCertification(candidateCertification)">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-6">
+        <label class="col-form-label text-muted card-subtitle"
+               [innerHtml]="candidateCertification.institution"
+               appHighlightSearch>
+        </label>
       </div>
-
-      <div class="row">
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label text-muted card-subtitle"
-                 [innerHtml]="candidateCertification.institution"
-                 appHighlightSearch>
-          </label>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-6">
+        <label class="col-form-label text-muted mb-2">{{candidateCertification.dateCompleted | date }}</label>
       </div>
-      <div class="row">
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label text-muted mb-2">{{candidateCertification.dateCompleted | date }}</label>
-        </div>
-      </div>
-      <hr/>
     </div>
 
   </div>
 
-</div>
+</tc-card>

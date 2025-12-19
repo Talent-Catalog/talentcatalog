@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,6 @@
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {VisaJobCheckCaComponent} from "./visa-job-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
@@ -77,7 +76,7 @@ import {
   LanguageThresholdComponent
 } from "../../../../../visa/visa-job-assessments/language-threshold/language-threshold.component";
 
-fdescribe('VisaJobCheckCaComponent', () => {
+describe('VisaJobCheckCaComponent', () => {
   let component: VisaJobCheckCaComponent;
   let fixture: ComponentFixture<VisaJobCheckCaComponent>;
   let candidateEducationServiceSpy: jasmine.SpyObj<CandidateEducationService>;
@@ -89,7 +88,7 @@ fdescribe('VisaJobCheckCaComponent', () => {
     const occupationSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,NgbAccordionModule,ReactiveFormsModule,
-        NgSelectModule,LocalStorageModule.forRoot({})],
+        NgSelectModule],
       declarations: [ VisaJobCheckCaComponent,DependantsComponent,VisaJobNotesComponent,FixedInputComponent,
         RelocatingDependantsComponent,JobEligibilityAssessmentComponent,JobInterestComponent,
         AgeRequirementComponent,RelevantWorkExpComponent,IneligiblePathwaysComponent,PreferredPathwaysComponent,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -31,15 +31,45 @@ package org.tctalent.server.model.db;
  */
 public enum Role {
 
+    /**
+     * Can do anything - intended for tech staff.
+     * Only level which can create partners
+     * Only level which can modify configuration for whole system
+     * Only level which can create new system admin
+     * Only level which can create new users assigning any partner to them - not just the default
+     * Only level which can see all data, no matter which partner they are associated with.
+     */
     systemadmin,
+
+    /**
+     * Can create new users, including administrators, for their own partner
+     */
     admin,
 
     /**
-     * All candidates have Role.user.
+     * Can create new users, including administrators, for their own partner
+     * Can’t assign regions to admins
+     * Can’t add or modify anything to do with the appearance of the app - ie can’t modify
+     * Posts and Pages, User Registration Options, Localization or General Settings
      */
-    user,
-
     partneradmin,
+
+    /**
+     * Can't create new users
+     * Can’t see candidate’s name or contact info,
+     * Can’t see file attachments
+     * Can’t update candidate comments
+     */
     semilimited,
-    limited
+
+    /**
+     * Can’t see a refugee’s location info - country, province, nationality
+     */
+    limited,
+
+    /**
+     * All candidates have Role.user.
+     * They can only see information relevant to themselves.
+     */
+    user
 }

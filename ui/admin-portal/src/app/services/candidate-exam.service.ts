@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,7 +27,14 @@ export interface CreateCandidateExamRequest {
   year?: number;
   notes?: string;
 }
-
+export interface UpdateCandidateExamRequest {
+  id?:number
+  exam?: Exam;
+  otherExam?: string;
+  score?: string;
+  year?: number;
+  notes?: string;
+}
 @Injectable({providedIn: 'root'})
 export class CandidateExamService {
 
@@ -41,7 +48,15 @@ export class CandidateExamService {
       `${this.apiUrl}/${candidateId}`, request);
   }
 
+  list(id: number): Observable<CandidateExam[]> {
+    return this.http.get<CandidateExam[]>(`${this.apiUrl}/${id}/list`);
+  }
+
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  update(examId: number, request: UpdateCandidateExamRequest): Observable<CandidateExam>  {
+    return this.http.put<CandidateExam>(`${this.apiUrl}/${examId}`, request);
   }
 }

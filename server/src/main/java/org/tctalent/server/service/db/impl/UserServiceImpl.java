@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -63,16 +63,16 @@ import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
-import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
@@ -89,6 +89,10 @@ import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.qr.EncodedQrImage;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
 
 @Service
 @Slf4j
@@ -102,7 +106,6 @@ public class UserServiceImpl implements UserService {
     private final AuthService authService;
     private final EmailHelper emailHelper;
     private final PartnerService partnerService;
-    private final SavedSearchRepository savedSearchRepository;
 
     @Value("${web.portal}")
     private String portalUrl;
@@ -125,7 +128,6 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository,
         CandidateRepository candidateRepository,
         CountryRepository countryRepository,
-        SavedSearchRepository savedSearchRepository,
         PasswordHelper passwordHelper,
         AuthenticationManager authenticationManager,
         JwtTokenProvider tokenProvider,
@@ -134,7 +136,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
-        this.savedSearchRepository = savedSearchRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
@@ -144,7 +145,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsernameAndRole(String username, Role role) {
+    public @Nullable User findByUsernameAndRole(String username, Role role) {
         return userRepository.findByUsernameAndRole(username, role);
     }
 
@@ -217,58 +218,8 @@ public class UserServiceImpl implements UserService {
         }
         user.setEmail(requestedEmail);
 
-        //Possibly update the user's source partner
-        Partner currentPartner = user.getPartner();
-        Long currentPartnerId = currentPartner == null ? null : currentPartner.getId();
-        Partner newSourcePartner = null;
-        Long partnerId = request.getPartnerId();
-        if (partnerId != null) {
-            //Partner specified - is it a new one?
-            if (!partnerId.equals(currentPartnerId)) {
-                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
-                    //Only system admins can change partners
-                    throw new InvalidRequestException("You don't have permission to assign a partner.");
-                } else {
-                    //Changing partner
-                    newSourcePartner = partnerService.getPartner(partnerId);
-                }
-            }
-        } else {
-            //Throw an exception if no partner is specified
-            throw new InvalidRequestException("A partner must be specified.");
-        }
-        //If we have a new source partner, update it.
-        if (newSourcePartner != null) {
-            user.setPartner((PartnerImpl) newSourcePartner);
-        }
-
-        //Possibly update the user's approver
-        User currentApprover = user.getApprover();
-        Long currentApproverId = currentApprover == null ? null : currentApprover.getId();
-        User newApprover = null;
-        Long approverId = request.getApproverId();
-        if (approverId != null) {
-            //Approver specified - is it a new one?
-            if (!approverId.equals(currentApproverId)) {
-                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
-                    //Only system admins can change approver
-                    throw new InvalidRequestException("You don't have permission to assign an approver.");
-                } else {
-                    //Changing approver
-                    newApprover = getUser(approverId);
-                }
-            }
-        } else {
-            //If user does not already have an approver, assign one
-            if (currentApprover == null && creatingUser != null) {
-                newApprover = creatingUser.getApprover();
-            }
-        }
-        //If we have a new approver, update it.
-        if (newApprover != null) {
-            user.setApprover(newApprover);
-        }
-
+        reassignPartnerIfNeeded(user, request, creatingUser);
+        updateApproverIfNeeded(user, request, creatingUser);
         user.setReadOnly(request.getReadOnly());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -308,6 +259,70 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    private void reassignPartnerIfNeeded(User user, UpdateUserRequest request, User creatingUser) {
+        Partner currentPartner = user.getPartner();
+        Long currentPartnerId = currentPartner == null ? null : currentPartner.getId();
+        Partner newSourcePartner = null;
+        Long requestPartnerId = request.getPartnerId();
+        if (requestPartnerId != null) {
+            //Partner specified - is it changing the existing partner?
+            if (!requestPartnerId.equals(currentPartnerId)) {
+                if (creatingUser != null && currentPartnerId != null
+                    && creatingUser.getRole() != Role.systemadmin) {
+                    //Only system admins can change partners
+                    throw new InvalidRequestException("You don't have permission to change a partner.");
+                } else {
+                    //Changing partner -
+                    //or setting partner for the first time (currentPartnerId = null)
+                    newSourcePartner = partnerService.getPartner(requestPartnerId);
+                }
+            }
+        } else {
+            //Throw an exception if no partner is specified
+            throw new InvalidRequestException("A partner must be specified.");
+        }
+        //If we have a new source partner, update it.
+        if (newSourcePartner != null) {
+            user.setPartner((PartnerImpl) newSourcePartner);
+        }
+    }
+
+    private void updateApproverIfNeeded(User user, UpdateUserRequest request, User creatingUser) {
+        User currentApprover = user.getApprover();
+        Long currentApproverId = currentApprover == null ? null : currentApprover.getId();
+        User newApprover = null;
+        Long requestApproverId = request.getApproverId();
+        if (requestApproverId != null) {
+            //Approver specified - is it a new one?
+            if (!requestApproverId.equals(currentApproverId)) {
+                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
+                    //Only system admins can change approver
+                    throw new InvalidRequestException("You don't have permission to assign an approver.");
+                } else {
+                    //Changing approver
+                    newApprover = getUser(requestApproverId);
+                }
+            }
+        } else {
+            //If user does not already have an approver, assign the creating user's if they have one.
+            if (currentApprover == null && creatingUser != null) {
+                newApprover = creatingUser.getApprover();
+            }
+        }
+        //If we have a new approver, update the user.
+        if (newApprover != null) {
+            user.setApprover(newApprover);
+        }
+    }
+
+    private void checkAndResetEmailVerification(User user, String newEmail) {
+        if (user.getEmail() == null ? newEmail != null : !user.getEmail().equals(newEmail)) {
+            user.setEmailVerified(false);
+            user.setEmailVerificationToken(null);
+            user.setEmailVerificationTokenIssuedDate(null);
+        } 
+    }
+
     @Override
     @Transactional
     public User updateUser(long id, UpdateUserRequest request) throws UsernameTakenException, InvalidRequestException {
@@ -317,6 +332,7 @@ public class UserServiceImpl implements UserService {
 
         // Only update if logged in user role is admin OR source partner admin AND they created the user.
         if (authoriseAdminUser()) {
+            checkAndResetEmailVerification(user, request.getEmail());
             populateUserFields(user, request, loggedInUser);
             userRepository.save(user);
         } else {
@@ -374,7 +390,10 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Validates that source partner admins can only set roles that aren't admin or source partner admin.
+     * Validates whether given creating user can assign a given role to the user they are creating
+     * or updating.
+     * <p/>
+     * See doc on {@link Role} for who can create users of what types.
      * @param user User - the user to add or update role type to.
      * @param requestedRole - The role to change to in the request.
      * @param creatingUser User that is assigning role to given user
@@ -390,13 +409,16 @@ public class UserServiceImpl implements UserService {
             } else {
                 throw new InvalidRequestException("You don't have permission to save this role type.");
             }
-        } else {
-            // Check that source partner admin is only saving roles that are allowed (not admin or source partner admin)
-            if (!authService.hasAdminPrivileges(requestedRole)) {
+        } else if (creatingUserRole == Role.partneradmin) {
+            // Check that source partner admin is only saving roles that are allowed
+            // (not admin or system admin)
+            if (requestedRole != Role.systemadmin && requestedRole != Role.admin) {
                 user.setRole(requestedRole);
             } else {
                 throw new InvalidRequestException("You don't have permission to save this role type.");
             }
+        } else {
+            throw new InvalidRequestException("You don't have permission to save this role type.");
         }
     }
 
@@ -415,6 +437,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public boolean isCandidate(@Nullable User user) {
+        return user != null && user.getRole().equals(Role.user);
+    }
 
     @Override
     public JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException {
@@ -432,7 +458,8 @@ public class UserServiceImpl implements UserService {
                     //Log details to check for nature of brute force attacks.
                     LogBuilder.builder(log)
                         .action("Login")
-                        .message("Invalid credentials for user: " + request)
+                        .message("Invalid credentials for user with given username: " +
+                            request.getUsername())
                         .logError(ex);
 
                     //Exception if there is more than one user associated with email.
@@ -462,7 +489,8 @@ public class UserServiceImpl implements UserService {
             //Log details to check for nature of brute force attacks.
             LogBuilder.builder(log)
                 .action("Login")
-                .message("Invalid credentials for user: " + request)
+                .message("Invalid credentials for user with given username: " +
+                    request.getUsername())
                 .logError(e);
 
             // map spring exception to a service exception for better handling
@@ -500,6 +528,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByEmailVerificationToken(String token) throws NoSuchObjectException {
+        User user = userRepository.findByEmailVerificationToken(token);
+        if (user == null) {
+            throw new NoSuchObjectException("Invalid token");
+        }
+        return user;
+    }
+
+    @Override
     public Partner getLoggedInPartner() {
         Partner partner = null;
         User user = authService.getLoggedInUser().orElse(null);
@@ -514,6 +551,46 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getSystemAdminUser() {
         return findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.systemadmin);
+    }
+
+    @Override
+    @Transactional
+    public void sendVerifyEmailRequest(SendVerifyEmailRequest request) {
+        User user = userRepository.findByEmailIgnoreCase(request.getEmail());
+        if (user != null) {
+            user.setEmailVerificationToken(UUID.randomUUID().toString());
+            user.setEmailVerificationTokenIssuedDate(OffsetDateTime.now());
+            userRepository.save(user);
+
+            try {
+                emailHelper.sendVerificationEmail(user);
+            } catch (EmailSendFailedException e) {
+                LogBuilder.builder(log)
+                        .action("SendVerificationEmail")
+                        .message("Unable to send verification email for " + user.getEmail())
+                        .logError(e);
+            }
+        } else {
+            LogBuilder.builder(log)
+                    .action("GenerateVerificationToken")
+                    .message("Unable to send verification email for " + request.getEmail())
+                    .logError();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void verifyEmail(VerifyEmailRequest request) {
+        User user = userRepository.findByEmailVerificationToken(request.getToken());
+
+        if (user == null) {
+            throw new InvalidEmailVerificationTokenException();
+        } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(24))) {
+            throw new ExpiredEmailTokenException();
+        }
+
+        user.setEmailVerified(true);
+        userRepository.save(user);
     }
 
     /**
@@ -542,6 +619,15 @@ public class UserServiceImpl implements UserService {
         String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
         user.setPasswordEnc(passwordEnc);
         userRepository.save(user);
+
+        /* Update changePassword */
+        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
+            Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
+                .orElseThrow(
+                    () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
+            candidate.setChangePassword(false);
+            candidateRepository.save(candidate);
+        }
     }
 
     /**
@@ -667,7 +753,7 @@ public class UserServiceImpl implements UserService {
         QrData data = totpQrDataFactory.newBuilder()
             .label(user.getEmail())
             .secret(secret)
-            .issuer("TBB")
+            .issuer("TalentCatalog")
             .build();
 
         // Generate the QR code image data as a base64 string which
@@ -689,11 +775,11 @@ public class UserServiceImpl implements UserService {
     public void mfaVerify(String mfaCode) throws InvalidCredentialsException {
         User user = fetchLoggedInUser();
         if (user.getUsingMfa()) {
-            if (mfaCode == null || mfaCode.length() == 0) {
+            if (mfaCode == null || mfaCode.isEmpty()) {
                 throw new InvalidCredentialsException("You need to enter an authentication code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
-                throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a TBB administrator.");
+                throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a Talent Catalog administrator.");
             }
         }
     }
@@ -708,7 +794,7 @@ public class UserServiceImpl implements UserService {
     @SchedulerLock(name = "UserService_searchStaffNotUsingMfa", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void checkMfaUsers() {
         List<User> users = searchStaffNotUsingMfa();
-        if (users.size() > 0) {
+        if (!users.isEmpty()) {
             String s = users.stream()
                 .map(User::getUsername)
                 .collect(Collectors.joining(","));

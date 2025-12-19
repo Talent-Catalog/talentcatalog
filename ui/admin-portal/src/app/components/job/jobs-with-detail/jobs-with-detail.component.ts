@@ -1,12 +1,27 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
-import {Router} from "@angular/router";
-import {isStarredByMe, SearchOppsBy} from "../../../model/base";
+import {SearchOppsBy} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
-import {AuthenticationService} from "../../../services/authentication.service";
 import {BehaviorSubject} from "rxjs";
 import {JobsComponent} from "../jobs/jobs.component";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 /**
  * Displays the jobs returned by the given type of search, together with extra details
@@ -42,8 +57,7 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   @ViewChild(JobsComponent, { static: false }) jobsComponent: JobsComponent;
 
   constructor(
-    private router: Router,
-    private authenticationService: AuthenticationService,
+    private authorizationService: AuthorizationService,
     private jobService: JobService
   ) {
     super(6);
@@ -67,7 +81,7 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.selectedJob?.starringUsers, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.selectedJob?.starringUsers);
   }
 
   // Refresh the jobs component (list of jobs) so that the new updated details can be displayed.

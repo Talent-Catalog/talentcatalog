@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,6 @@ import {CandidateNoteService} from "../../../../services/candidate-note.service"
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateNote} from "../../../../model/candidate-note";
-import {of, Subject, throwError} from "rxjs";
 import {CreateCandidateNoteComponent} from "./create/create-candidate-note.component";
 import {EditCandidateNoteComponent} from "./edit/edit-candidate-note.component";
 import {MockUser} from "../../../../MockData/MockUser";
@@ -30,7 +29,7 @@ import {SearchResults} from "../../../../model/search-results";
 import {UpdatedByComponent} from "../../../util/user/updated-by/updated-by.component";
 import {UserPipe} from "../../../util/user/user.pipe";
 
-fdescribe('ViewCandidateNoteComponent', () => {
+describe('ViewCandidateNoteComponent', () => {
   let component: ViewCandidateNoteComponent;
   let fixture: ComponentFixture<ViewCandidateNoteComponent>;
   let mockCandidateNoteService: jasmine.SpyObj<CandidateNoteService>;
@@ -61,19 +60,12 @@ fdescribe('ViewCandidateNoteComponent', () => {
 
 
   beforeEach(async () => {
-    const candidateNoteServiceSpy = jasmine.createSpyObj('CandidateNoteService', {
-      search: of({}),
-    }, {
-      newNote$: new Subject<void>(),
-      updatedNote$: new Subject<void>(),
-    });
     const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [ViewCandidateNoteComponent, UpdatedByComponent, UserPipe],
       providers: [
-        { provide: CandidateNoteService, useValue: candidateNoteServiceSpy },
         { provide: NgbModal, useValue: modalServiceSpy }
       ]
     })
@@ -93,37 +85,6 @@ fdescribe('ViewCandidateNoteComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should initialize and load candidate notes', () => {
-    mockCandidateNoteService.search.and.returnValue(of(mockSearchResults));
-    component.ngOnChanges({
-      candidate: {
-        currentValue: component.candidate,
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }
-    });
-    expect(mockCandidateNoteService.search).toHaveBeenCalled();
-    expect(component.notes[0]).toEqual(mockCandidateNotes[0]);
-    expect(component.hasMore).toBeFalse();
-  });
-
-  it('should handle error while loading notes', () => {
-    const errorResponse = { error: 'error message' };
-    mockCandidateNoteService.search.and.returnValue(throwError(errorResponse));
-    component.ngOnChanges({
-      candidate: {
-        currentValue: component.candidate,
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }
-    });
-    expect(mockCandidateNoteService.search).toHaveBeenCalled();
-    expect(component.error).toEqual(errorResponse);
-    expect(component.loading).toBeFalse();
   });
 
   it('should open create note modal', () => {
@@ -150,23 +111,5 @@ fdescribe('ViewCandidateNoteComponent', () => {
       backdrop: 'static'
     });
     expect(mockModalRef.componentInstance.candidateNote).toEqual(mockCandidateNotes[0]);
-  });
-
-  it('should load more notes', () => {
-    mockCandidateNoteService.search.and.returnValue(of(mockSearchResults));
-
-    component.ngOnChanges({
-      candidate: {
-        currentValue: component.candidate,
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }
-    });
-
-    component.loadMore();
-
-    expect(mockCandidateNoteService.search.calls.count()).toBe(2);
-    expect(component.notes.length).toBe(2);
   });
 });

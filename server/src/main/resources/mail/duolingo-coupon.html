@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Duolingo Coupon</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9;">
+<div style="max-width: 600px; margin: 40px auto; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  Dear <span th:text="${displayName}"></span>,
+  <p style="font-size: 16px">
+    As part of the next steps in your application, you have been provided with a free <strong>Duolingo
+    English Test (DET)</strong> coupon to assess your English proficiency.
+    <br>
+    <br>
+    To begin, please log in to <a th:href="${loginUrl}" style="color: #1a73e8; text-decoration: none;">Talent Catalog</a>
+    and navigate to the <strong>“Services”</strong> tab for detailed instructions on completing the test.
+    <br>
+    <br>
+    If you have any questions or encounter any issues, feel free to reach out.
+    <br>
+    <br>
+    Good luck with your test!
+    <br>
+    <br>
+
+    Best regards,
+    <br>
+    <br>
+    <strong>Talent Beyond Boundaries</strong>
+  </p>
+</div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
+import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-edit-candidate',
@@ -27,9 +28,16 @@ export class EditCandidateComponent implements OnInit {
   section: string;
 
   constructor(private route: ActivatedRoute,
-              private router: Router) { }
+              private router: Router,
+              private languageService: LanguageService) {
+  }
 
   ngOnInit() {
+    const lang = this.route.snapshot.queryParams['lang'];
+    //Need to delay changing language otherwise you get ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(
+      () => this.languageService.changeLanguage(lang), 1000
+    )
     this.route.params.subscribe(params => {
       this.section = params.section;
     })

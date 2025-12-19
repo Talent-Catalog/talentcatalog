@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,7 +27,7 @@ import {SearchResults} from "../../../model/search-results";
 import {EducationLevel} from "../../../model/education-level";
 import {Job} from "../../../model/job";
 
-fdescribe('JoblinkComponent', () => {
+describe('JoblinkComponent', () => {
   let component: JoblinkComponent;
   let fixture: ComponentFixture<JoblinkComponent>;
   let jobService: jasmine.SpyObj<JobService>;
@@ -67,11 +67,11 @@ fdescribe('JoblinkComponent', () => {
 
   it('should initialize correctly', () => {
     component.jobId = 1;
+    component.currentJobName = 'XYZ';
 
     component.ngOnChanges({});
 
     expect(component.searchHeading).toBe('Change job association');
-    expect(component.currentJobName).toBe('NEW JOB');
   });
 
   it('should emit job selection correctly', (done) => {

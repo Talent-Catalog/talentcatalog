@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 import {Partner, sourceCountriesAsString} from "./partner";
 import {Country} from "./country";
 
-fdescribe('sourceCountriesAsString function', () => {
+describe('sourceCountriesAsString function', () => {
   it('should return a comma-separated string of country names', () => {
     const partner: Partner = {
       id: 1,
@@ -40,7 +40,7 @@ fdescribe('sourceCountriesAsString function', () => {
     } as Partner;
 
     const result = sourceCountriesAsString(partner);
-    expect(result).toBe('Country A,Country B');
+    expect(result).toBe('Country A, Country B');
   });
 
   it('should return an empty string if sourceCountries is null', () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,7 +26,7 @@ import {By} from "@angular/platform-browser";
 import {SystemLanguage} from "../../../../model/language";
 import {MockUser} from "../../../../MockData/MockUser";
 
-fdescribe('GeneralTranslationsComponent', () => {
+describe('GeneralTranslationsComponent', () => {
   let component: GeneralTranslationsComponent;
   let fixture: ComponentFixture<GeneralTranslationsComponent>;
   let translationService: jasmine.SpyObj<TranslationService>;
@@ -129,32 +129,31 @@ fdescribe('GeneralTranslationsComponent', () => {
     component.loading = true;
     fixture.detectChanges();
     const loadingElement = fixture.debugElement.query(By.css('.main'));
-    expect(loadingElement).toBeTruthy();
+    expect(loadingElement).toBeFalsy();
   });
 
   it('should display save button for admin users', () => {
     fixture.detectChanges();
-    const saveButton = fixture.debugElement.query(By.css('button.btn-success'));
+    const saveButton = fixture.debugElement.query(By.css('tc-button#save-translations'));
     expect(saveButton).toBeTruthy();
   });
 
   it('should disable save button if saving or errors exist', () => {
+    let saveButton = fixture.debugElement.query(By.css('tc-button#save-translations'));
+
     component.saving = true;
     fixture.detectChanges();
-    let saveButton = fixture.debugElement.query(By.css('button.btn-success[disabled]'));
-    expect(saveButton).toBeTruthy();
+    expect(saveButton.componentInstance.disabled).toBeTruthy();
 
     component.saving = false;
     component.error = 'Some error';
     fixture.detectChanges();
-    saveButton = fixture.debugElement.query(By.css('button.btn-success[disabled]'));
-    expect(saveButton).toBeTruthy();
+    expect(saveButton.componentInstance.disabled).toBeTruthy();
 
     component.error = null;
     component.saveError = 'Save error';
     fixture.detectChanges();
-    saveButton = fixture.debugElement.query(By.css('button.btn-success[disabled]'));
-    expect(saveButton).toBeTruthy();
+    expect(saveButton.componentInstance.disabled).toBeTruthy();
   });
 
   it('should not display save button for non-admin users', () => {

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,8 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="text-end" *ngIf="!isEnglish(language.languageId) && !preview">
+<div class="text-end" *ngIf="!isEnglish(language.languageId) && !preview"
+     xmlns="http://www.w3.org/1999/html">
   <button class="btn btn-danger btn-card" (click)="delete()">&times;</button>
 </div>
 
@@ -27,14 +28,14 @@
   </ng-select>
 
   <p class="m-0" *ngIf="preview">
-    {{getLanguageName(language)}}
+    {{translatedLanguageName}}
   </p>
 </div>
 
 <!-- HOW WELL DO YOU SPEAK -->
 <div class="mb-3">
-  <label class="form-label" translate dir="auto">
-    {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language)} }}
+  <label class="form-label" dir="auto">
+    {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate: { languageName: translatedLanguageName } }}
   </label>
 
   <ng-select [(ngModel)]="language.spokenLevelId" *ngIf="!preview" [items]="languageLevels"
@@ -48,8 +49,8 @@
 
 <!-- HOW WELL DO YOU READ AND WRITE -->
 <div class="mb-3">
-  <label class="form-label" translate dir="auto" [translateParams]="{languageName: getLanguageName(language)}">
-    {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language)} }}
+  <label class="form-label" [translate]="'REGISTRATION.LANGUAGE.LABEL.WRITTEN'"
+    dir="auto" [translateParams]=" { languageName: translatedLanguageName }">
   </label>
 
   <ng-select [(ngModel)]="language.writtenLevelId" *ngIf="!preview" [items]="languageLevels"

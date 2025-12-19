@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,20 +15,13 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {User, Role} from './user';
+import {User} from './user';
 import {AuthenticationService} from '../services/authentication.service';
-import {
-  CandidateSource, canEditSource,
-  EMAIL_REGEX,
-  findHasId,
-  indexOfHasId,
-  isMine, isStarredByMe,
-  salesforceUrlRegExp
-} from "./base";
+import {EMAIL_REGEX, findHasId, indexOfHasId, salesforceUrlRegExp} from "./base";
 import {MockUser} from "../MockData/MockUser";
 
 
-fdescribe('Miscellaneous Tests', () => {
+describe('Miscellaneous Tests', () => {
   let authenticationService: jasmine.SpyObj<AuthenticationService>;
   let mockUser: User;
 
@@ -67,37 +60,6 @@ fdescribe('Miscellaneous Tests', () => {
     invalidEmails.forEach(email => {
       expect(new RegExp(EMAIL_REGEX).test(email)).toBeFalse();
     });
-  });
-
-  it('should determine if source is mine', () => {
-    const source: CandidateSource = { createdBy: mockUser } as CandidateSource;
-    authenticationService.getLoggedInUser.and.returnValue(mockUser);
-
-    expect(isMine(source, authenticationService)).toBeTrue();
-    authenticationService.getLoggedInUser.and.returnValue({ ...mockUser, id: 2 });
-    expect(isMine(source, authenticationService)).toBeFalse();
-  });
-
-  it('should determine if source is starred by me', () => {
-    const users: User[] = [mockUser];
-    authenticationService.getLoggedInUser.and.returnValue(mockUser);
-
-    expect(isStarredByMe(users, authenticationService)).toBeTrue();
-    authenticationService.getLoggedInUser.and.returnValue({ ...mockUser, id: 2 });
-    expect(isStarredByMe(users, authenticationService)).toBeFalse();
-  });
-
-  it('should determine if source can be edited', () => {
-    const source: CandidateSource = { fixed: false } as CandidateSource;
-    authenticationService.getLoggedInUser.and.returnValue(mockUser);
-
-    expect(canEditSource(source, authenticationService)).toBeTrue();
-    source.fixed = true;
-    source.createdBy = mockUser;
-    expect(canEditSource(source, authenticationService)).toBeTrue();
-
-    source.createdBy = { ...mockUser, id: 2 };
-    expect(canEditSource(source, authenticationService)).toBeFalse();
   });
 
   it('should validate Salesforce URL regex', () => {

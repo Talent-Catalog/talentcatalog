@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {MockCandidate} from "../../../MockData/MockCandidate";
 import {UploadType} from "../../../model/task";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
 
-fdescribe('ViewTaskDetailsComponent', () => {
+describe('ViewTaskDetailsComponent', () => {
   let component: ViewTaskDetailsComponent;
   let fixture: ComponentFixture<ViewTaskDetailsComponent>;
 

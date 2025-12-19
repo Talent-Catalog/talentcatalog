@@ -1,0 +1,42 @@
+name: Run Angular Tests
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!staging' #Not execute the workflow on push to staging
+      - '!master'  #Not execute the workflow on push to master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Node.js for Angular
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x' 
+
+      # Step 3: Install project dependencies
+      - name: Install dependencies
+        run: npm install
+        working-directory: ui/admin-portal
+
+      # Step 4: Run Angular tests using Karma
+      - name: Run Angular tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: ui/admin-portal
+        env:
+          CI: true
+      # Step 5: Archive test results if tests fail
+      - name: Archive test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ui/admin-portal/dist/test-results

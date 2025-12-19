@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
@@ -46,11 +47,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Saved Search Candidate Admin Api endpoints
@@ -69,17 +71,17 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
 
   private final Page<Candidate> candidatePage =
       new PageImpl<>(
-          AdminApiTestUtil.listOfCandidates(),
+          getListOfCandidates(),
           PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
 
   @MockBean
-  CandidateOpportunityService candidateOpportunityService;
-  @MockBean
   SavedSearchService savedSearchService;
   @MockBean
-  UserService userService;
+  CandidateService candidateService;
+  @MockBean
+  CandidateBuilderSelector candidateBuilderSelector;
 
   @Autowired
   MockMvc mockMvc;
@@ -91,6 +93,14 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   @BeforeEach
   void setUp() {
     configureAuthentication();
+
+    // Minimal builder for Candidate
+    DtoBuilder candidateDto = new DtoBuilder()
+        .add("id")
+        .add("selected")
+        .add("status");
+
+    given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
   }
 
   @Test

@@ -1,7 +1,22 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ViewPostComponent} from "./view-post.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
-import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {ChatPost} from "../../../model/chat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 import {of} from "rxjs";
@@ -9,12 +24,11 @@ import {Reaction} from "../../../model/reaction";
 import {MOCK_REACTIONS} from "../../../MockData/MockReactions";
 import {By} from "@angular/platform-browser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {MockUser} from "../../../MockData/MockUser";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 
-fdescribe('ViewPostComponent', () => {
+describe('ViewPostComponent', () => {
   let component: ViewPostComponent;
   let fixture: ComponentFixture<ViewPostComponent>;
   let reactionServiceSpy: jasmine.SpyObj<ReactionService>;
@@ -26,9 +40,7 @@ fdescribe('ViewPostComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ViewPostComponent ],
-      imports: [HttpClientTestingModule,NgbTooltipModule,
-        LocalStorageModule.forRoot({}),
-      ],
+      imports: [HttpClientTestingModule,NgbTooltipModule],
       providers: [
         { provide: ReactionService, useValue: spy },
         { provide: AuthenticationService, useValue: authSpy }
@@ -94,10 +106,11 @@ fdescribe('ViewPostComponent', () => {
   it('should update reaction when a reaction button is clicked', () => {
     const reaction: Reaction = MOCK_REACTIONS[0];
     reactionServiceSpy.modifyReaction.and.returnValue(of(MOCK_REACTIONS));
+    component.post = { id: 2 } as ChatPost;;
 
     component.onSelectReaction(reaction);
 
-    expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(reaction.id);
+    expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(component.post.id, reaction.id);
     expect(component.post.reactions.length).toBe(3);
     expect(component.post.reactions[0].users.length).toBe(2);
   });
@@ -125,13 +138,13 @@ fdescribe('ViewPostComponent', () => {
     component.post.content = '<p>This is <strong>HTML</strong> content.</p>';
     fixture.detectChanges();
 
-    const content = fixture.debugElement.query(By.css('.content.html'));
+    const content = fixture.debugElement.query(By.css('.message-text.html'));
     expect(content).toBeTruthy();
 
     component.post.content = 'This is plain text content.';
     fixture.detectChanges();
 
-    const textContent = fixture.debugElement.query(By.css('.content.text'));
+    const textContent = fixture.debugElement.query(By.css('.message-text.text'));
     expect(textContent).toBeTruthy();
   });
 

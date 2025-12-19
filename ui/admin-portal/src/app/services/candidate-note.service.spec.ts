@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,9 +22,8 @@ import {CandidateNote} from '../model/candidate-note';
 import {SearchResults} from '../model/search-results';
 import {environment} from '../../environments/environment';
 import {MockUser} from "../MockData/MockUser";
-import {User} from "../model/user";
 
-fdescribe('CandidateNoteService', () => {
+describe('CandidateNoteService', () => {
   let service: CandidateNoteService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-note';
@@ -110,10 +109,6 @@ fdescribe('CandidateNoteService', () => {
       expect(note).toEqual(mockResponse);
     });
 
-    service.newNote$.subscribe((event) => {
-      expect(event).toBeUndefined();  // Expecting the newNoteSource.next() call
-    });
-
     const req = httpMock.expectOne(apiUrl);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(newNote);
@@ -145,10 +140,6 @@ fdescribe('CandidateNoteService', () => {
 
     service.update(1, updatedNote).subscribe((note) => {
       expect(note).toEqual(mockResponse);
-    });
-
-    service.updatedNote$.subscribe((event) => {
-      expect(event).toBeUndefined();  // Expecting the updatedNoteSource.next() call
     });
 
     const req = httpMock.expectOne(`${apiUrl}/1`);

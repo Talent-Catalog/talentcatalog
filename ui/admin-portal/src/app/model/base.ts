@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,6 @@
 import {Role, User} from './user';
 import {ExportColumn} from "./saved-list";
 import {OpportunityIds} from "./opportunity";
-import {AuthenticationService} from "../services/authentication.service";
 
 export interface HasName {
   name?: string;
@@ -166,6 +165,7 @@ export interface Auditable extends HasId {
 }
 
 export interface CandidateSource extends Auditable {
+  publicId?: string;
   name: string;
   description?: string;
   displayedFieldsLong?: string[];
@@ -176,6 +176,7 @@ export interface CandidateSource extends Auditable {
   sfJobOpp?: OpportunityIds;
   users?: User[];
   watcherUserIds?: number[];
+  dtoType?: DtoType;
 }
 
 
@@ -201,8 +202,20 @@ export interface PostJobToSlackResponse {
   slackChannelUrl: string;
 }
 
+export enum DtoType {
+  MINIMAL = 'MINIMAL',
+  PREVIEW = 'PREVIEW',
+  FULL = 'FULL',
+  EXTENDED = 'EXTENDED'
+}
+
+export class IdsRequest {
+  dtoType?: DtoType;
+  ids: number[];
+}
+
 export class PagedSearchRequest {
-  minimalData?: boolean;
+  dtoType?: DtoType;
   pageSize?: number;
   pageNumber?: number;
   sortFields?: string[];
@@ -212,6 +225,10 @@ export class PagedSearchRequest {
 export class PagedFilteredSearchRequest extends PagedSearchRequest {
   keyword?: string;
   status?: string;
+}
+
+export class KeywordPagedSearchRequest extends PagedSearchRequest {
+  keyword?: string;
 }
 
 export class SearchPartnerRequest extends PagedFilteredSearchRequest {
@@ -280,43 +297,65 @@ export class LoginRequest {
 export const EMAIL_REGEX: string =
   '(?!.*[@.]{2})[a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~]+[a-zA-Z0-9.!#$%&\'*+-/=?^_`{|}~]*@(?!-)[a-zA-Z0-9-]+(?<!-)(\\.(?!-)[a-zA-Z0-9-]+(?<!-))*$';
 
-export function isMine(source: CandidateSource, authenticationService: AuthenticationService) {
-  let mine: boolean = false;
-  const me: User = authenticationService.getLoggedInUser();
-  if (source && source.createdBy && me) {
-    mine = source.createdBy.id === me.id;
-  }
-  return mine;
-}
-
-export function isStarredByMe(users: User[], authenticationService: AuthenticationService) {
-  let starredByMe: boolean = false;
-  const me: User = authenticationService.getLoggedInUser();
-  if (users && me) {
-    starredByMe = users.find(u => u.id === me.id ) !== undefined;
-  }
-  return starredByMe;
-}
-
-export function canEditSource(source: CandidateSource, authenticationService: AuthenticationService) {
-  //We can change the source if we own the savedSearch or if it not fixed.
-  let changeable: boolean = false;
-  const me: User = authenticationService.getLoggedInUser();
-  if (source) {
-    // If source is NOT FIXED anyone can edit it
-    if (!source.fixed) {
-      changeable = true;
-      // If source is FIXED but it belongs to me, I can change it. If it doesn't belong to me I can't.
-    } else {
-      //Only can edit source if we own that source.
-      changeable = isMine(source, authenticationService);
-    }
-  }
-  return changeable;
-}
+/**
+ * URL validation, also accepting 'mailto:' links, from
+ * <a href="https://regex101.com/library/4hNOPu">regex101</a>
+ */
+export const URL_REGEX: string =
+  '(mailto:[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)|(((?:https?)|(?:ftp)):\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})'
 
 export enum Status {
   active = "active",
   inactive = "inactive",
   deleted = "deleted"
+}
+
+/**
+ * Interface for sharing link-formatted text properties.
+ * See {@link CreateUpdatePostComponent}
+ */
+export interface Link {
+  /**
+   * Display text
+   */
+  placeholder: string,
+  /**
+   * Navigate to
+   */
+  url: string
+}
+
+/**
+ * Interface for sharing text editor selection properties.
+ * See {@link CreateUpdatePostComponent}
+ */
+export interface EditorSelection {
+  /**
+   * Index position of user selection
+   */
+  userSelectionIndex: number,
+  /**
+   * No. of characters included after index in user selection
+   */
+  userSelectionLength: number,
+  /**
+   * Placeholder for link (user selection if new link, current placeholder if existing link)
+   */
+  placeholder?: string,
+  /**
+   * Index position of beginning of link
+   */
+  linkIndex?: number,
+  /**
+   * No. of characters from link index in entire link-formatted text
+   */
+  linkLength?: number,
+  /**
+   * URL if selection is a link
+   */
+  linkUrl?: string
+}
+
+export interface FetchCandidatesWithChatRequest extends PagedFilteredSearchRequest {
+  unreadOnly: boolean;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -31,8 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.JobChatTestData.getListOfPosts;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,10 +44,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.ApiTestBase;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.service.db.impl.ChatPostServiceImpl;
+import org.tctalent.server.service.db.impl.ChatUploadFileServiceImpl;
 
 /**
  * @author John Cameron
@@ -58,17 +58,16 @@ class ChatPostAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/chat-post";
     private static final String LIST = "/list";
     private static final String UPLOAD = "/upload";
-    private static final List<ChatPost> postList = AdminApiTestUtil.getListOfPosts();
+    private static final List<ChatPost> postList = getListOfPosts();
 
     @Autowired
     MockMvc mockMvc;
-    @Autowired
-    ObjectMapper objectMapper;
-    @Autowired
-    ChatPostAdminApi chatPostAdminApi;
 
     @MockBean
     ChatPostServiceImpl chatPostService;
+
+    @MockBean
+    ChatUploadFileServiceImpl chatUploadFileService;
 
     @BeforeEach
     void setUp() {
@@ -110,7 +109,7 @@ class ChatPostAdminApiTest extends ApiTestBase {
             "some content".getBytes()
         );
 
-        given(chatPostService.uploadFile(anyLong(), any(MultipartFile.class)))
+        given(chatUploadFileService.uploadFile(anyLong(), any(MultipartFile.class)))
             .willReturn(testFileUrl);
 
         long postId = 123;
@@ -127,6 +126,6 @@ class ChatPostAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.url", is(testFileUrl)));
 
-        verify(chatPostService).uploadFile(anyLong(), any(MultipartFile.class));
+        verify(chatUploadFileService).uploadFile(anyLong(), any(MultipartFile.class));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -52,6 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateNote;
 
 /**
  * Unit tests for Candidate Note Admin Api endpoints.
@@ -66,7 +67,7 @@ class CandidateNoteAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-note";
     private static final String SEARCH_PATH = "/search";
 
-    private static final CandidateNote candidateNote = AdminApiTestUtil.getCandidateNote();
+    private static final CandidateNote candidateNote = getCandidateNote();
 
     private final Page<CandidateNote> candidateNotesPage =
             new PageImpl<>(

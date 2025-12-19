@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
@@ -7,6 +23,7 @@ import {SearchResults} from "../model/search-results";
 import {UpdateLinkRequest} from "../components/util/input/input-link/input-link.component";
 import {OpportunityService} from "../components/util/opportunity/OpportunityService";
 import {JobChatUserInfo} from "../model/chat";
+import {SkillName} from "../model/skill";
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +45,10 @@ export class JobService implements OpportunityService<Job> {
 
   get(id: number): Observable<Job> {
     return this.http.get<Job>(`${this.apiUrl}/${id}`);
+  }
+
+  getSkills(id: number): Observable<SkillName[]> {
+    return this.http.get<SkillName[]>(`${this.apiUrl}/${id}/skills`);
   }
 
   publishJob(id: number): Observable<Job> {

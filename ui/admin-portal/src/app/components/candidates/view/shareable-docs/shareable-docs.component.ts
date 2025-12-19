@@ -1,10 +1,27 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateService} from "../../../../services/candidate.service";
 import {isSavedList} from "../../../../model/saved-list";
 import {CandidateSource} from "../../../../model/base";
+import {AuthorizationService} from "../../../../services/authorization.service";
 
 @Component({
   selector: 'app-shareable-docs',
@@ -29,10 +46,11 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
 
   savedList: boolean;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
-  constructor(private fb: FormBuilder,
-              private candidateService: CandidateService) {}
+  constructor(private fb: UntypedFormBuilder,
+              private candidateService: CandidateService,
+              private authorizationService: AuthorizationService) {}
 
   ngOnInit() {
 
@@ -58,9 +76,14 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     this.loadDropdowns();
 
     //Replace form value with the new candidates shareable docs when changing from one candidate to the next in a list.
-    if (this.form && this.isList) {
-      this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id, {emitEvent: false});
-      this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id, {emitEvent: false});
+    if (this.form) {
+      if (this.isList) {
+        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.listShareableCv?.id, {emitEvent: false});
+        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.listShareableDoc?.id, {emitEvent: false});
+      } else {
+        this.form.controls['shareableCvAttachmentId'].patchValue(this.candidate?.shareableCv?.id, {emitEvent: false});
+        this.form.controls['shareableDocAttachmentId'].patchValue(this.candidate?.shareableDoc?.id, {emitEvent: false});
+      }
     }
   }
 
@@ -81,10 +104,15 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     }
     this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
       (candidate) => {
-        this.candidateChange.emit(candidate);
-        if (this.isList) {
-          this.setCandidateListDocs();
+        // As null values aren't returned in the DTO we need to capture these and add them to the candidate object so
+        // the null value can replace the old values in the existing candidate object.
+        if (formValue.shareableCvAttachmentId == null) {
+          this.isList ? candidate.listShareableCv = null : candidate.shareableCv = null;
         }
+        if (formValue.shareableDocAttachmentId == null) {
+          this.isList ? candidate.listShareableDoc = null : candidate.shareableDoc = null;
+        }
+        this.candidateService.updateCandidate(candidate);
         this.saving = false;
       },
       (error) => {
@@ -92,23 +120,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
         this.saving = false;
       }
     )
-  }
-
-  setCandidateListDocs() {
-    // In a list, we need to set the updated value of the shareable docs to the candidate as we are switching between.
-    // Note: We don't need to do this for regular shareable docs in the view candidate component as
-    // the new candidate is loaded when changing tabs or refreshing.
-    if (this.shareableCvId != null) {
-      this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
-    } else {
-      this.candidate.listShareableCv = null;
-    }
-    if (this.shareableDocId != null) {
-      this.candidate.listShareableDoc = this.other.find(att => att.id === this.shareableDocId);
-    } else {
-      this.candidate.listShareableDoc = null;
-    }
-    this.updatedShareableCV.emit(this.candidate.listShareableCv);
   }
 
   get shareableCvId() {
@@ -124,6 +135,20 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   }
 
   filterByCv(isCV: boolean) {
-    return this.candidate.candidateAttachments.filter(a => a.cv === isCV);
+    return this.candidate.candidateAttachments?.filter(a => a.cv === isCV);
   }
+
+  /**
+   * If a loggedInUser can edit the list, they should be able to edit the docs.
+   * If a loggedInUser can edit the candidate, they should be able to edit the docs.
+   * Otherwise, if a user is read only, or fails those checks then the ng-select will be disabled using the readOnlyInputs directive
+   */
+  isEditable(): boolean {
+    if (this.isList) {
+      return this.authorizationService.canEditCandidateSource(this.candidateSource);
+    } else {
+      return this.authorizationService.isEditableCandidate(this.candidate);
+    }
+  }
+
 }

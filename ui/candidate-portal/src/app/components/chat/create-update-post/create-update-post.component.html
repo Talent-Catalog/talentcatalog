@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -26,17 +26,24 @@
                   placeholder="Write your message..."
                   [formControlName]="'content'"
                   (onEditorCreated)="editorCreated($event)"
-                  (onContentChanged)="checkForLinks($event)">
+                  (onContentChanged)="contentChanged($event)"
+                  (onSelectionChanged)="editorSelectionChanged($event)"
+    >
       <div quill-editor-toolbar id="quillToolbar">
         <button class="ql-list" value="ordered" title="Ordered list"></button>
         <button class="ql-list" value="bullet" title="Bullet list"></button>
         <button class="ql-bold" title="Bold text"></button>
         <button class="ql-italic" title="Italic text"></button>
         <button class="ql-underline" title="Underline text"></button>
-        <button class="ql-link" title="Add link"></button>
         <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
           <fa-icon *ngIf="!saving" icon="file-upload" size="xs"></fa-icon>
           <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+        </button>
+
+        <button [ngClass]="!this.linkBtnSelected ? 'custom-link-btn' : 'custom-link-btn-selected'"
+                title="{{ 'CHAT.ADD-LINK' | translate }}"
+                (click)="onLinkBtnClickOrKeyShortcut()">
+          <fa-icon icon="link" size="xs"></fa-icon>
         </button>
 
         <button
@@ -45,6 +52,14 @@
           (click)="toggleEmojiPicker()">
           <fa-icon icon="face-smile" size="xs"></fa-icon>
         </button>
+
+        <app-link-tooltip *ngIf="this.linkTooltipVisible"
+                          [leftOffset]="linkTooltipLeftOffset"
+                          [bottomOffset]="linkTooltipBottomOffset"
+                          [url]="editorSelection.linkUrl"
+                          (editClicked)="onEditLinkTooltipClick()"
+                          (removeClicked)="onRemoveLinkTooltipClick()"
+        ></app-link-tooltip>
       </div>
     </quill-editor>
   </div>

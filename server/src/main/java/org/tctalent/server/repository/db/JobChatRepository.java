@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -76,5 +76,5 @@ public interface JobChatRepository extends JpaRepository<JobChat, Long>,
         (select created_date from chat_post
         where chat_post.id = (select max(chat_post.id) from chat_post where chat_post.job_chat_id = c.id)) > :date
         """, nativeQuery = true)
-    List<Long> myFindChatsWithPostsSinceDate(@Param("date") OffsetDateTime dateTime);
+    List<Long> findChatsWithPostsSinceDate(@Param("date") OffsetDateTime dateTime);
 }

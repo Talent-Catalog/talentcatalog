@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-@import "~src/scss/variables";
+@import "src/scss/variables";
 
 .backdrop {
   position: fixed;
@@ -29,9 +29,8 @@
   z-index: 10;
   background: white;
   padding: 1em;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  border: 1px solid $info;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
   border-top: none;
   min-width: 100%;
 }

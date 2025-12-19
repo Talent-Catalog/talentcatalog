@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,10 +14,25 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<a *ngIf="canOpen()" target="_blank" (click)="openCVs()" class="link-info">
-  <i class="fas fa-address-card" title="Opens/DLs uploaded CV(s)"></i>
+<a *ngIf="canOpen()"
+   target="_blank"
+   (click)="openCVs()"
+   class="cv-icon"
+>
+  <tc-icon [color]="color"
+           [size]="size"
+           ariaLabel="Opens/DLs uploaded CV(s)"
+           *ngIf="!loading"
+  >
+    <i class="fas fa-address-card" title="Open/download uploaded CV(s)"></i>
+  </tc-icon>
+  <span *ngIf="showLabel">
+    Open/download uploaded CV(s)
+  </span>
 </a>
 <span *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
 </span>
-<div *ngIf="error" class="error">{{error}}</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>

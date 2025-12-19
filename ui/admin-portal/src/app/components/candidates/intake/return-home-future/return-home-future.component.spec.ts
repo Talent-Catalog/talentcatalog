@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {YesNoUnsure} from "../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('ReturnHomeFutureComponent', () => {
+describe('ReturnHomeFutureComponent', () => {
   let component: ReturnHomeFutureComponent;
   let fixture: ComponentFixture<ReturnHomeFutureComponent>;
 

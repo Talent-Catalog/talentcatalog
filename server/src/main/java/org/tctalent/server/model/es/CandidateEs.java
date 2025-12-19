@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,13 @@
 
 package org.tctalent.server.model.es;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +85,7 @@ public class CandidateEs {
             "dob",
             "maxEducationLevel",
             "ieltsScore",
+            "englishAssessmentScoreDet",
             "residenceStatus",
             "numberDependants",
     };
@@ -96,6 +97,9 @@ public class CandidateEs {
 
     @Field(type = FieldType.Text)
     private String additionalInfo;
+
+    @Field(type = FieldType.Text)
+    private String shareableNotes;
 
     @Field(type = FieldType.Text)
     private List<String> certifications;
@@ -167,6 +171,10 @@ public class CandidateEs {
     }
 
     private String regoReferrerParam;
+    private String regoUtmCampaign;
+    private String regoUtmSource;
+    private String regoUtmMedium;
+
 
     private Long updated;
 
@@ -198,15 +206,12 @@ public class CandidateEs {
 
     @Getter
     @Setter
-    static class Occupation {
+    public static class Occupation {
         private String name;
 
         @Field(type = FieldType.Long)
         private Long yearsExperience;
     }
-
-    @Field(type = FieldType.Text)
-    private String migrationOccupation;
 
     @Field(type = FieldType.Text)
     private List<String> skills;
@@ -221,6 +226,9 @@ public class CandidateEs {
 
     @Field(type = FieldType.Double)
     private BigDecimal ieltsScore;
+
+    @Field(type = FieldType.Long)
+    private Long englishAssessmentScoreDet;
 
     @Field(type = FieldType.Long)
     private Long numberDependants;
@@ -261,6 +269,15 @@ public class CandidateEs {
         this.externalId = candidate.getExternalId();
         this.candidateNumber = candidate.getCandidateNumber();
 
+        this.shareableNotes = candidate.getShareableNotes();
+
+        this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
+            null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();
+        this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
+            null : candidate.getFullIntakeCompletedDate().toInstant().toEpochMilli();
+        this.surveyType = candidate.getSurveyType() == null ?
+            null : candidate.getSurveyType().getId();
+
         this.gender = candidate.getGender();
         this.country = candidate.getCountry() == null ? null
                 : candidate.getCountry().getName();
@@ -273,6 +290,10 @@ public class CandidateEs {
         this.partner = candidate.getUser() == null ? null
                 : candidate.getUser().getPartner().getAbbreviation();
         this.regoReferrerParam = candidate.getRegoReferrerParam();
+        this.regoUtmCampaign = candidate.getRegoUtmCampaign();
+        this.regoUtmSource = candidate.getRegoUtmSource();
+        this.regoUtmMedium = candidate.getRegoUtmMedium();
+
         this.status = candidate.getStatus();
 
         this.phone = candidate.getPhone();
@@ -282,7 +303,9 @@ public class CandidateEs {
         this.dob = candidate.getDob();
         this.residenceStatus = candidate.getResidenceStatus();
         this.ieltsScore = candidate.getIeltsScore();
+        this.englishAssessmentScoreDet = candidate.getEnglishAssessmentScoreDet();
         this.numberDependants = candidate.getNumberDependants();
+
 
         this.maxEducationLevel = null;
         if (candidate.getMaxEducationLevel() != null) {
@@ -363,8 +386,6 @@ public class CandidateEs {
             }
         }
 
-        //Education major can also come from the candidate's special migrationEducationMajor field
-        addEducationMajor(candidate.getMigrationEducationMajor());
 
         this.jobExperiences = new ArrayList<>();
         List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
@@ -392,7 +413,6 @@ public class CandidateEs {
         }
 
         this.occupations = new ArrayList<>();
-        this.migrationOccupation = null;
         List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
         if (candidateOccupations != null) {
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
@@ -407,19 +427,8 @@ public class CandidateEs {
                         }
                         occupations.add(occupation);
                     }
-
-                    if (candidateOccupation.getMigrationOccupation() != null) {
-                        this.migrationOccupation = candidateOccupation.getMigrationOccupation();
-                    }
                 }
             }
-            this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
-                null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();
-            this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
-                null : candidate.getFullIntakeCompletedDate().toInstant().toEpochMilli();
-
-            this.surveyType = candidate.getSurveyType() == null ?
-                null : candidate.getSurveyType().getId();
         }
 
         this.skills = new ArrayList<>();
@@ -489,7 +498,7 @@ public class CandidateEs {
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields
                 //that are not keyword fields (eg numeric fields).
-                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore",
+                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel","englishAssessmentScoreDet", "ieltsScore",
                     "numberDependants", "dob"};
 
                 boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);

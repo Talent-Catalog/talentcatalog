@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,23 +16,23 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -63,6 +63,17 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer maxYrs;
 
     private String partnerIds;
+
+    private String candidateNumbers;
+
+    private String listAllIds;
+    @Enumerated(EnumType.STRING)
+    private SearchType listAllSearchType;
+
+    private String listAnyIds;
+    @Enumerated(EnumType.STRING)
+    private SearchType listAnySearchType;
+
     private String nationalityIds;
     @Enumerated(EnumType.STRING)
     private SearchType nationalitySearchType;
@@ -101,8 +112,10 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer minEducationLevel;
     private String educationMajorIds;
 
+    private Boolean includePendingTermsCandidates;
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
+    private Boolean potentialDuplicate;
 
     private String regoReferrerParam;
 
@@ -249,6 +262,47 @@ public class SavedSearch extends AbstractCandidateSource {
         this.partnerIds = partnerIds;
     }
 
+    public String getCandidateNumbers() {
+        return candidateNumbers;
+    }
+
+    public void setCandidateNumbers(String candidateNumbers) {
+        this.candidateNumbers = candidateNumbers;
+    }
+
+
+    public String getListAllIds() {
+        return listAllIds;
+    }
+
+    public void setListAllIds(String listAllIds) {
+        this.listAllIds = listAllIds;
+    }
+
+    public SearchType getListAllSearchType() {
+        return listAllSearchType;
+    }
+
+    public void setListAllSearchType(SearchType listAllSearchType) {
+        this.listAllSearchType = listAllSearchType;
+    }
+
+    public String getListAnyIds() {
+        return listAnyIds;
+    }
+
+    public void setListAnyIds(String listAnyIds) {
+        this.listAnyIds = listAnyIds;
+    }
+
+    public SearchType getListAnySearchType() {
+        return listAnySearchType;
+    }
+
+    public void setListAnySearchType(SearchType listAnySearchType) {
+        this.listAnySearchType = listAnySearchType;
+    }
+
     public String getNationalityIds() {
         return nationalityIds;
     }
@@ -389,6 +443,14 @@ public class SavedSearch extends AbstractCandidateSource {
         this.educationMajorIds = educationMajorIds;
     }
 
+    public Boolean getIncludePendingTermsCandidates() {
+        return includePendingTermsCandidates;
+    }
+
+    public void setIncludePendingTermsCandidates(Boolean includePendingTermsCandidates) {
+        this.includePendingTermsCandidates = includePendingTermsCandidates;
+    }
+
     public Boolean getMiniIntakeCompleted() {
         return miniIntakeCompleted;
     }
@@ -403,6 +465,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setFullIntakeCompleted(Boolean fullIntakeCompleted) {
         this.fullIntakeCompleted = fullIntakeCompleted;
+    }
+
+    public Boolean getPotentialDuplicate() {
+        return potentialDuplicate;
+    }
+
+    public void setPotentialDuplicate(Boolean potentialDuplicate) {
+        this.potentialDuplicate = potentialDuplicate;
     }
 
     public Set<SearchJoin> getSearchJoins() {

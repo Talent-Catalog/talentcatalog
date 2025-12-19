@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {IndustryService} from "../../../services/industry.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {SearchResults} from "../../../model/search-results";
@@ -29,7 +29,7 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {EditIndustryComponent} from "./edit/edit-industry.component";
 import {CreateIndustryComponent} from "./create/create-industry.component";
 
-fdescribe('SearchIndustriesComponent', () => {
+describe('SearchIndustriesComponent', () => {
   let component: SearchIndustriesComponent;
   let fixture: ComponentFixture<SearchIndustriesComponent>;
   let industryServiceSpy: jasmine.SpyObj<IndustryService>;
@@ -54,7 +54,7 @@ fdescribe('SearchIndustriesComponent', () => {
       declarations: [SearchIndustriesComponent],
       imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: IndustryService, useValue: industryServiceMock },
         { provide: NgbModal, useValue: modalServiceMock },
         { provide: AuthorizationService, useValue: authServiceMock }

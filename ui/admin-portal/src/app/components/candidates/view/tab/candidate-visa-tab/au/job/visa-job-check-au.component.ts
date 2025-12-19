@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {
   calculateAge,
@@ -5,14 +21,16 @@ import {
   CandidateIntakeData,
   CandidateVisa,
   CandidateVisaJobCheck,
+  describeFamilyInDestination,
   getIeltsScoreTypeString
 } from "../../../../../../../model/candidate";
 import {OccupationService} from "../../../../../../../services/occupation.service";
-import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
+import {
+  CandidateOccupationService
+} from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
-import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {Occupation} from "../../../../../../../model/occupation";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
@@ -69,7 +87,7 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
       }
     )
 
-    this.familyInAus = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
+    this.familyInAus = describeFamilyInDestination(this.visaCheckRecord);
     const dobDate = new Date(this.candidate.dob);
     this.candidateAge = calculateAge(dobDate);
     this.candidateOpportunity = this.candidate.candidateOpportunities
@@ -77,7 +95,9 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.visaJobAus.expandAll();
+    if(this.visaJobAus){
+      this.visaJobAus.expandAll();
+    }
   }
 
   get ieltsScoreType(): string {

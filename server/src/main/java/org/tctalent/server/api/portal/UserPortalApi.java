@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,7 @@ package org.tctalent.server.api.portal;
 
 import java.util.Map;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -94,10 +94,7 @@ public class UserPortalApi {
                 .add("email")
                 .add("firstName")
                 .add("lastName")
+                .add("emailVerified")
                 ;
     }
-
-
-
-
 }

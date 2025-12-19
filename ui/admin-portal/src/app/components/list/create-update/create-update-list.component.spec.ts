@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ import {of, throwError} from "rxjs";
 import {JoblinkComponent} from "../../util/joblink/joblink.component";
 import {JobNameAndId} from "../../../model/job";
 
-fdescribe('CreateUpdateListComponent', () => {
+describe('CreateUpdateListComponent', () => {
   let component: CreateUpdateListComponent;
   let fixture: ComponentFixture<CreateUpdateListComponent>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;

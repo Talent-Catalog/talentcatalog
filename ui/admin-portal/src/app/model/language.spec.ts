@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Language, SystemLanguage} from "./language";
 
-fdescribe('Language Interface', () => {
+describe('Language Interface', () => {
   it('should create a valid Language object', () => {
     // Mock data
     const language: Language = {

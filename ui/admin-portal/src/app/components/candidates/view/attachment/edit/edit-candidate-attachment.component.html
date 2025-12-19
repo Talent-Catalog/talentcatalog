@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,48 +14,44 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal heading="Edit attachment - {{attachment?.name}}"
+          [showCancel]="true"
+          [showClose]="true"
+          [disableAction]="loading"
+          (onAction)="save()"
+          actionText="Save"
+>
 
-  <h4 class="modal-title">Edit attachment - {{attachment?.name}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <form [formGroup]="form">
 
-    <div class="mb-3">
-      <label class="form-label" for="name">Attachment Name</label>
-      <input class="form-control" id="name" [formControlName]="'name'" type="text">
-    </div>
+    <tc-field class="mb-4">
+      <tc-label for="name">
+        Attachment Name
+      </tc-label>
+      <tc-input id="name"
+                [formControlName]="'name'"
+                type="text"
+      ></tc-input>
+    </tc-field>
 
-    <div class="mb-3" *ngIf="attachment?.type === 'link'">
-      <label class="form-label" for="location">Attachment URL</label>
+    <tc-field class="mb-4" *ngIf="attachment?.type === 'link'">
+      <tc-label for="location">
+        Attachment URL
+      </tc-label>
       <div>
         <small class="text-muted">Please include the leading protocol (http:// or https://)</small>
       </div>
-      <input class="form-control" id="location" [formControlName]="'location'" type="text" placeholder="https://www.dropbox.com/path/to/file.ext">
-    </div>
-
-    <div class="mb-3" *ngIf="attachment?.type === 'file'">
-        <label class="form-label" for="cv">Is this file a CV?</label>
-        <input id="cv" [formControlName]="'cv'" type="checkbox" [checked]="attachment?.cv">
-        <div class="form-text">If it is a CV it will have the text extracted to assist keyword search (if include CV files is checked).</div>
-    </div>
+      <tc-input id="location"
+                [formControlName]="'location'"
+                type="text"
+                placeholder="https://www.dropbox.com/path/to/file.ext"
+      ></tc-input>
+    </tc-field>
 
   </form>
 
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" [disabled]="loading" (click)="save()">
-    <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
-    Save
-  </button>
-</div>
+</tc-modal>

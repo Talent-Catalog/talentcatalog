@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -29,6 +30,7 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
+import org.tctalent.server.request.candidate.destination.UpdateCandidateDestinationRequest;
 import org.tctalent.server.service.db.CandidateDestinationService;
 
 /**
@@ -55,17 +57,31 @@ public class CandidateDestinationServiceImpl implements CandidateDestinationServ
     public CandidateDestination createDestination(
             long candidateId, CreateCandidateDestinationRequest request)
             throws NoSuchObjectException {
+        CandidateDestination cd = new CandidateDestination();
 
         Candidate candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
-
-        CandidateDestination cd = new CandidateDestination();
         cd.setCandidate(candidate);
 
-        cd.setCountry(request.getCountry());
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+        cd.setCountry(country);
+
         cd.setInterest(request.getInterest());
-        cd.setFamily(request.getFamily());
-        cd.setLocation(request.getLocation());
+        cd.setNotes(request.getNotes());
+
+        return candidateDestinationRepository.save(cd);
+    }
+
+    @Override
+    public CandidateDestination updateDestination(
+            long id, UpdateCandidateDestinationRequest request)
+            throws NoSuchObjectException {
+
+        CandidateDestination cd = candidateDestinationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateDestination.class, id));
+
+        cd.setInterest(request.getInterest());
         cd.setNotes(request.getNotes());
 
         return candidateDestinationRepository.save(cd);
@@ -94,5 +110,10 @@ public class CandidateDestinationServiceImpl implements CandidateDestinationServ
             cd.populateIntakeData(candidate, country, data);
             candidateDestinationRepository.save(cd);
         }
+    }
+
+    @Override
+    public List<CandidateDestination> list(long candidateId) {
+        return candidateDestinationRepository.findByCandidateId(candidateId);
     }
 }

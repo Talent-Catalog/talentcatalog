@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -15,38 +15,47 @@
   -->
 
 <!-- LOADING -->
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
 
-<!-- ERROR -->
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
 
 <ng-container *ngIf="!loading">
-
-  <div class="dropdown my-2" ngbDropdown>
-    <!-- ADD OCCUPATION BTN-->
-    <div class="float-end" *ngIf="editable && adminUser">
-      <button class="btn btn-sm btn-primary" (click)="createCandidateOccupation()">
-        <i class="fas fa-plus"></i> Occupation
-      </button>
-    </div>
+  <div class="mb-4 d-flex justify-content-between align-items-center">
     <!-- ORDER BY -->
-    <a class="dropdown-toggle btn btn-sm" ngbDropdownToggle>
-      Order By {{orderOccupation ? 'Occupation' : 'Date'}}
-    </a>
-    <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-      <a class="dropdown-item" (click)="orderOccupation = true">Occupation</a>
-      <a class="dropdown-item" (click)="orderOccupation = false">Date</a>
+    <tc-dropdown>
+      <tc-dropdown-button [type]="'outline'">
+        Order By {{orderOccupation ? 'Occupation' : 'Date'}}
+        <i class="fas fa-chevron-down"></i>
+      </tc-dropdown-button>
+      <tc-dropdown-menu>
+        <tc-dropdown-item (click)="orderOccupation = true">
+          Occupation
+        </tc-dropdown-item>
+        <tc-dropdown-item (click)="orderOccupation = false">
+          Date
+        </tc-dropdown-item>
+      </tc-dropdown-menu>
+    </tc-dropdown>
+
+    <!-- CREATE OCCUPATION BTN-->
+    <div *ngIf="editable && adminUser">
+      <tc-button (onClick)="createCandidateOccupation()"
+                 [type]="'solid'"
+      >
+        <i class="fas fa-plus"></i>
+        Occupation
+      </tc-button>
     </div>
   </div>
 
   <!-- OCCUPATION VIEW -->
   <ng-container *ngIf="orderOccupation">
 
-    <app-view-candidate-job-experience *ngFor="let occupation of candidateOccupations"
+    <app-view-candidate-job-experience *ngFor="let occupation of candidate?.candidateOccupations"
                                        [candidate]="candidate"
                                        [candidateOccupation]="occupation"
                                        [editable]="editable"
@@ -59,20 +68,23 @@
   <!-- EXPERIENCE VIEW -->
   <ng-container *ngIf="!orderOccupation">
 
-    <div class="card mb-4" *ngFor="let experience of experiences">
+    <tc-card class="mb-4" *ngFor="let experience of candidate?.candidateJobExperiences">
 
       <!-- HEADER -->
-      <div class="card-header">
+      <tc-card-header>
         <span>{{experience.role}}</span>
 
         <div class="float-end" *ngIf="editable">
-          <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(experience)"><i
-            class="fas fa-edit"></i></button>
+          <tc-button (onClick)="editCandidateJobExperience(experience)"
+                     [type]="'plain'"
+                     [color]="'secondary'"
+          >
+            <i class="fas fa-edit"></i>
+          </tc-button>
         </div>
-      </div>
+      </tc-card-header>
 
       <!-- BODY -->
-      <div class="card-body">
 
         <div class="row">
           <!-- DESCRIPTION -->
@@ -91,13 +103,7 @@
 
         </div>
 
-      </div>
-
-    </div>
-
-    <div class="text-center" *ngIf="hasMore">
-      <button class="btn btn-primary" (click)="loadJobExperiences(true)">Load more</button>
-    </div>
+    </tc-card>
 
   </ng-container>
 

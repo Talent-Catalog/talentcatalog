@@ -60,6 +60,46 @@ version 2.
 Each script's purpose and sequence within the indexing lifetime are immediately clear, allowing for 
 systematic updates, or rollbacks if necessary.
 
+## Configuration: config.ini
+
+The `config.ini` file contains environment-specific configuration details for connecting to the 
+Elasticsearch cluster. This file allows you to easily switch between different environments, such as 
+staging and production, by specifying the correct cloud_id for each. If no cloud_id is specified, the 
+scripts will default to connecting to a local Elasticsearch instance.
+
+A cloud_id is a unique identifier for your Elasticsearch deployment. It encodes the region and 
+specific instance details for a deployment on Elastic cloud, allowing the Python scripts to connect 
+to the right cluster.
+
+### Example Configuration
+
+```ini
+[Elasticsearch]
+; Elasticsearch configuration
+; Specify the cloud_id for the environment you are connecting to.
+; cloud_id is the unique identifier for your Elasticsearch deployment.
+;
+; For staging, use the cloud_id provided by your Elastic Cloud deployment.
+; For production, use the production cloud_id.
+;
+; Example:
+; cloud_id = tc-staging:xxxxxxxx
+
+cloud_id = 
+
+; If no cloud_id is provided, the default behavior is to connect to 
+; Elasticsearch on localhost at http://localhost:9200.
+; Otherwise, a connection will be attempted to the configured Elasticsearch 
+; deployment for the provided cloud_id.
+```
+
+- **When a cloud_id is provided**: The scripts will attempt to connect to the Elasticsearch 
+deployment (e.g., staging or production) corresponding to the cloud_id specified.
+
+- **When no cloud_id is provided**: If the cloud_id field is left empty or commented out, the
+default behavior is to connect to an Elasticsearch instance running locally at http://localhost:9200.
+
+
 ## Setting Up the Python Environment
 Before executing the scripts in this directory, ensure that your Python environment is correctly set
 up. Follow these steps to install Python and the required Python packages.

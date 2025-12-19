@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -95,8 +95,7 @@
 
         <div class="text-start">
           <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.INELIGIBLE.BUTTON' | translate }}</a>
-          <a class="btn btn-secondary" [href]="lang == 'en' ? 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility'
-                                     : 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility-ar'" target="_blank">
+          <a class="btn btn-secondary" [href]="getEligibilityLink()" target="_blank">
             <fa-icon icon="external-link-alt"></fa-icon> {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}</a>
         </div>
       </ng-container>
@@ -111,6 +110,10 @@
           <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
         </div>
       </ng-container>
+
+      <div *ngIf="emailVerified === false" class="text-start verify-email-button" style="margin-top: 1rem;">
+        <button class="btn btn-primary" (click)="openModal()">{{ 'HOME.EMAIL_VERIFICATION.BUTTON' | translate }}</button>
+      </div>
 
     </ng-container>
 

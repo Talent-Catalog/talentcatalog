@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
@@ -14,7 +30,7 @@ import {SlackService} from "../../../services/slack.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {Job, UpdateJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {Employer} from "../../../model/partner";
@@ -47,12 +63,13 @@ export class NewJobComponent implements OnInit {
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
   errorGettingJobsToCopySlack: string = null;
-  jobForm: FormGroup;
+  jobForm: UntypedFormGroup;
+  remainingChars: number = 50;
 
   constructor(
     private authorizationService: AuthorizationService,
     private authenticationService: AuthenticationService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private jobService: JobService,
     public salesforceService: SalesforceService,
     private savedListService: SavedListService,
@@ -69,6 +86,9 @@ export class NewJobComponent implements OnInit {
         role: []
       });
       this.subscribeToJobFormChanges();
+      this.jobForm.get('role').valueChanges.subscribe((value: string) => {
+        this.remainingChars = 50 - (value?.length || 0);
+      });
     }
   }
 

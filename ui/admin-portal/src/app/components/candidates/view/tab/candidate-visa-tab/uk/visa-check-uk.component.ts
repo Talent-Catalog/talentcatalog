@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
+import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-visa-check-uk',
@@ -28,7 +29,7 @@ export class VisaCheckUkComponent implements OnInit {
   @Input() visaCheckRecord: CandidateVisa;
   selectedJob: CandidateVisaJobCheck
 
-  constructor() {}
+  constructor(private authService: AuthorizationService) {}
 
   ngOnInit() {
     /**
@@ -36,6 +37,10 @@ export class VisaCheckUkComponent implements OnInit {
      * two-way data binding of selectedJob on the CandidateVisaJobComponent.
      */
     this.selectedJob = this.visaCheckRecord.candidateVisaJobChecks[0]
+  }
+
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
   }
 }
 

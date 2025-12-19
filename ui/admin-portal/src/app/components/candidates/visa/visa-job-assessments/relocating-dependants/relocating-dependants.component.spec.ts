@@ -1,10 +1,26 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {RelocatingDependantsComponent} from './relocating-dependants.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {By} from '@angular/platform-browser';
 import {NgSelectModule} from '@ng-select/ng-select';
-import {DebugElement} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, DebugElement} from '@angular/core';
 import {CandidateDependant, DependantRelations} from "../../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -14,14 +30,16 @@ import {CandidateOpportunityService} from "../../../../../services/candidate-opp
 import {CandidateDependantService} from "../../../../../services/candidate-dependant.service";
 import {CandidateOpportunity} from "../../../../../model/candidate-opportunity";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
-fdescribe('RelocatingDependantsComponent', () => {
+describe('RelocatingDependantsComponent', () => {
   let component: RelocatingDependantsComponent;
   let fixture: ComponentFixture<RelocatingDependantsComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
   let candidateOpportunityService: jasmine.SpyObj<CandidateOpportunityService>;
   let candidateDependantService: jasmine.SpyObj<CandidateDependantService>;
-  let fb: FormBuilder;
+  let authorizationService: jasmine.SpyObj<AuthorizationService>;
+  let fb: UntypedFormBuilder;
 
   const mockCandidate = new MockCandidate();
   const mockOpp: CandidateOpportunity = mockCandidateOpportunity;
@@ -34,22 +52,27 @@ fdescribe('RelocatingDependantsComponent', () => {
     const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
     const candidateOpportunityServiceSpy = jasmine.createSpyObj('CandidateOpportunityService', ['updateSfCaseRelocationInfo']);
     const candidateDependantServiceSpy = jasmine.createSpyObj('CandidateDependantService', ['list']);
+    const authorizationServiceSpy = jasmine.createSpyObj('AuthorizationService',
+      ['isReadOnly']);
 
     await TestBed.configureTestingModule({
       declarations: [RelocatingDependantsComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        { provide: FormBuilder  },
+        { provide: UntypedFormBuilder  },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
         { provide: CandidateOpportunityService, useValue: candidateOpportunityServiceSpy },
-        { provide: CandidateDependantService, useValue: candidateDependantServiceSpy }
-      ]
+        { provide: CandidateDependantService, useValue: candidateDependantServiceSpy },
+        { provide: AuthorizationService, useValue: authorizationServiceSpy }
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
 
     candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
     candidateOpportunityService = TestBed.inject(CandidateOpportunityService) as jasmine.SpyObj<CandidateOpportunityService>;
     candidateDependantService = TestBed.inject(CandidateDependantService) as jasmine.SpyObj<CandidateDependantService>;
-    fb = TestBed.inject(FormBuilder);
+    authorizationService = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {
@@ -58,6 +81,7 @@ fdescribe('RelocatingDependantsComponent', () => {
     component.candidateId = mockCandidate.id;
     component.candidateOpp = mockOpp;
     candidateDependantService.list.and.returnValue(of(mockDependants));
+    authorizationService.isReadOnly.and.returnValue(false);
     fixture.detectChanges();
   });
 
@@ -96,7 +120,7 @@ fdescribe('RelocatingDependantsComponent', () => {
   });
 
   it('should display the correct helper text', () => {
-    const helperText: HTMLElement = fixture.nativeElement.querySelector('.form-text');
+    const helperText: HTMLElement = fixture.nativeElement.querySelector('tc-description');
     expect(helperText.textContent).toContain("If a dependant isn't listed in the dropdown, you may need to add the dependant to the Dependants section under the Full Intake tab.");
   });
 

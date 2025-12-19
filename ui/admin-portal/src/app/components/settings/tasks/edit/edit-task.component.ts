@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {TaskService, UpdateTaskRequest} from "../../../../services/task.service";
 import {Task} from "../../../../model/task";
@@ -28,13 +28,13 @@ import {Task} from "../../../../model/task";
 export class EditTaskComponent implements OnInit {
 
   taskId: number;
-  taskForm: FormGroup;
+  taskForm: UntypedFormGroup;
   error;
   loading: boolean;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private taskService: TaskService) {
   }
 
@@ -46,7 +46,7 @@ export class EditTaskComponent implements OnInit {
         description: [task.description, Validators.required],
         daysToComplete: [task.daysToComplete, Validators.required],
         optional: [task.optional, Validators.required],
-        helpLink: [task.helpLink],
+        docLink: [task.docLink],
       });
       this.loading = false;
     });
@@ -59,7 +59,7 @@ export class EditTaskComponent implements OnInit {
       description: this.taskForm.value.description,
       daysToComplete: this.taskForm.value.daysToComplete,
       optional: this.taskForm.value.optional,
-      helpLink: this.taskForm.value.helpLink,
+      docLink: this.taskForm.value.docLink,
     }
     this.taskService.update(this.taskId, request).subscribe(
       (task) => {

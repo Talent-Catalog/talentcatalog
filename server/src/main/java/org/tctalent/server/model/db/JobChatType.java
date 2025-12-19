@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,10 @@ package org.tctalent.server.model.db;
 
 /**
  * Different kinds of job chats.
- *
+ * <p>
+ * NB: if creating a new JobChatType we must add and define new translations for its details.
+ * See TC Wiki for how-to.
+ *</p>
  * @author John Cameron
  */
 public enum JobChatType {
@@ -37,6 +40,9 @@ public enum JobChatType {
      * Participants: Source partner and candidate in source location who is a prospect for the job,
      * but who has not yet reached the stage (after CV Review) where they will be communicating
      * directly with the destination partner.
+     * <p/>
+     * Can also be used when there is no job yet associated - just between source partner and
+     * candidate.
      */
     CandidateProspect,
 

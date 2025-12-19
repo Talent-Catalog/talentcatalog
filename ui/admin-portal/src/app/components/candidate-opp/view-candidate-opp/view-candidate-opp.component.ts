@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {
   Component,
   EventEmitter,
@@ -7,25 +23,25 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {
-  CandidateOpportunity,
-  isCandidateOpportunity,
-  isOppStageGreaterThanOrEqualTo
-} from "../../../model/candidate-opportunity";
+import {CandidateOpportunity, isCandidateOpportunity} from "../../../model/candidate-opportunity";
 import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-opp.component";
 import {CandidateOpportunityParams} from "../../../model/candidate";
-import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
+import {
+  getOpportunityStageName,
+  isCvReviewStageOrMore,
+  Opportunity
+} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
-import {LocalStorageService} from "angular-2-local-storage";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {ChatService} from "../../../services/chat.service";
 import {forkJoin} from "rxjs";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -35,6 +51,7 @@ import {forkJoin} from "rxjs";
 export class ViewCandidateOppComponent implements OnInit, OnChanges {
   @Input() opp: CandidateOpportunity;
   @Input() showBreadcrumb: boolean = true;
+  @Input() fromUrl: boolean;
   @Output() candidateOppUpdated = new EventEmitter<CandidateOpportunity>();
 
   activeTabId: string;
@@ -43,11 +60,14 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   loading: boolean;
   updating: boolean;
   saving: boolean;
-  candidateChat: JobChat;
-  candidateRecruitingChat: JobChat;
-  candidateProspectTabVisible: boolean;
-  candidateRecruitingTabVisible: boolean;
-  candidateRecruitingTabTitle: string = 'CandidateRecruiting'
+  candidateChats: JobChat[];
+  nonCandidateChats: JobChat[];
+
+  private candidateChat: JobChat;
+  private candidateRecruitingChat: JobChat;
+  private jobCreatorSourcePartnerChat: JobChat;
+  private jobCreatorAllSourcePartnersChat: JobChat;
+  private allJobCandidatesChat: JobChat;
 
   constructor(
     private authorizationService: AuthorizationService,
@@ -62,8 +82,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.selectDefaultTab();
-    this.checkVisibility();
-
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -71,7 +89,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       this.fetchChats();
     }
   }
-
 
   private fetchChats() {
     const candidateProspectChatRequest: CreateChatRequest = {
@@ -83,17 +100,38 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       candidateId: this.opp?.candidate?.id,
       jobId: this.opp?.jobOpp?.id
     }
+    const jobCreatorSourcePartnerChatRequest: CreateChatRequest = {
+      type: JobChatType.JobCreatorSourcePartner,
+      sourcePartnerId: this.opp?.candidate?.user?.partner?.id,
+      jobId: this.opp?.jobOpp?.id
+    }
+    const jobCreatorAllSourcePartnersChatRequest: CreateChatRequest = {
+      type: JobChatType.JobCreatorAllSourcePartners,
+      jobId: this.opp?.jobOpp?.id
+    }
+    const allJobCandidatesChatRequest: CreateChatRequest = {
+      type: JobChatType.AllJobCandidates,
+      jobId: this.opp?.jobOpp?.id
+    }
 
     this.loading = true;
     this.error = null;
     forkJoin( {
       'candidateChat': this.chatService.getOrCreate(candidateProspectChatRequest),
       'candidateRecruitingChat': this.chatService.getOrCreate(candidateRecruitingChatRequest),
+      'jobCreatorSourcePartnerChat': this.chatService.getOrCreate(jobCreatorSourcePartnerChatRequest),
+      'jobCreatorAllSourcePartnersChat': this.chatService.getOrCreate(jobCreatorAllSourcePartnersChatRequest),
+      'allJobCandidatesChat': this.chatService.getOrCreate(allJobCandidatesChatRequest),
     }).subscribe(
       results => {
         this.loading = false;
+
         this.candidateChat = results['candidateChat'];
         this.candidateRecruitingChat = results['candidateRecruitingChat'];
+        this.jobCreatorSourcePartnerChat = results['jobCreatorSourcePartnerChat'];
+        this.jobCreatorAllSourcePartnersChat = results['jobCreatorAllSourcePartnersChat'];
+        this.allJobCandidatesChat = results['allJobCandidatesChat'];
+        this.checkVisibility();
       },
       (error) => {
         this.error = error;
@@ -153,17 +191,17 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
 
   onOppProgressUpdated(opp: Opportunity) {
     if (isCandidateOpportunity(opp)) {
+      this.checkVisibility();
       this.candidateOppUpdated.emit(opp);
     }
   }
 
   private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+    this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   private setActiveTabId(id: string) {
@@ -172,7 +210,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   }
 
   private checkVisibility() {
-    const candidateStage = this.opp?.stage;
     const candidatePartner = this.opp?.candidate?.user?.partner;
     const jobCreator = this.opp?.jobOpp.jobCreator;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
@@ -185,15 +222,19 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     const userIsCandidatePartner =
       loggedInPartner.defaultSourcePartner || loggedInPartner.id == candidatePartner?.id;
 
-    this.candidateProspectTabVisible = userIsCandidatePartner;
+    this.candidateChats = [];
+    this.nonCandidateChats = [];
 
-    this.candidateRecruitingTabVisible = userIsCandidatePartner || userIsJobCreator;
-
-    //Label on candidateRecruiting chat depends on who the logged in user is.
     if (userIsCandidatePartner) {
-      this.candidateRecruitingTabTitle = 'Chat with candidate & recruiter'
+      this.candidateChats = [this.candidateChat, this.candidateRecruitingChat, this.allJobCandidatesChat];
+      this.nonCandidateChats = [this.jobCreatorSourcePartnerChat, this.jobCreatorAllSourcePartnersChat];
     } else if (userIsJobCreator) {
-      this.candidateRecruitingTabTitle = 'Chat with candidate & source partner'
+      this.nonCandidateChats = [this.jobCreatorSourcePartnerChat, this.jobCreatorAllSourcePartnersChat];
+      if (isCvReviewStageOrMore(this.opp?.stage)) {
+        this.candidateChats = [this.candidateRecruitingChat, this.allJobCandidatesChat];
+      } else {
+        this.candidateChats = [];
+      }
     }
   }
   uploadOffer() {
@@ -234,22 +275,11 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     );
   }
 
-  onMarkCandidateChatAsRead() {
-    if (this.candidateChat) {
-      this.chatService.markChatAsRead(this.candidateChat);
-    }
+  hasVisibleCandidateChats(): boolean {
+    return this.candidateChats && this.candidateChats.length > 0;
   }
 
-  onMarkCandidateRecruitingChatAsRead() {
-    if (this.candidateRecruitingChat) {
-      this.chatService.markChatAsRead(this.candidateRecruitingChat);
-    }
-  }
-
-  /**
-   *  Recruiters only see candidates past the CV Review stage.
-   */
-  cvReviewStageOrMore() {
-    return isOppStageGreaterThanOrEqualTo(this.opp?.stage, 'cvReview')
+  hasVisibleNonCandidateChats() {
+    return this.nonCandidateChats && this.nonCandidateChats.length > 0;
   }
 }

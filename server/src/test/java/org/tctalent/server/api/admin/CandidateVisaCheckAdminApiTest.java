@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateVisaCheck;
+import static org.tctalent.server.data.CandidateTestData.getCandidateVisaCheck;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -49,6 +49,8 @@ import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 
 /**
  *  Unit tests for Candidate Visa Check Admin Api endpoints.
@@ -68,6 +70,10 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
 
     @MockBean
     CandidateVisaService candidateVisaService;
+    @MockBean
+    CountryService countryService;
+    @MockBean
+    OccupationService occupationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -116,7 +122,9 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.validTravelDocs", is("Valid")))
                 .andExpect(jsonPath("$.validTravelDocsNotes", is("These are some travel docs notes.")))
                 .andExpect(jsonPath("$.pathwayAssessment", is("No")))
-                .andExpect(jsonPath("$.pathwayAssessmentNotes", is("These are some pathway assessment notes.")));
+                .andExpect(jsonPath("$.pathwayAssessmentNotes", is("These are some pathway assessment notes.")))
+                .andExpect(jsonPath("$.destinationFamily", is("Cousin")))
+                .andExpect(jsonPath("$.destinationFamilyLocation", is("New York")));
 
         verify(candidateVisaService).getVisaCheck(anyLong());
     }
@@ -155,7 +163,9 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.[0].validTravelDocs", is("Valid")))
                 .andExpect(jsonPath("$.[0].validTravelDocsNotes", is("These are some travel docs notes.")))
                 .andExpect(jsonPath("$.[0].pathwayAssessment", is("No")))
-                .andExpect(jsonPath("$.[0].pathwayAssessmentNotes", is("These are some pathway assessment notes.")));
+                .andExpect(jsonPath("$.[0].pathwayAssessmentNotes", is("These are some pathway assessment notes.")))
+                .andExpect(jsonPath("$.[0].destinationFamily", is("Cousin")))
+                .andExpect(jsonPath("$.[0].destinationFamilyLocation", is("New York")));
 
         verify(candidateVisaService).listCandidateVisaChecks(CANDIDATE_ID);
     }

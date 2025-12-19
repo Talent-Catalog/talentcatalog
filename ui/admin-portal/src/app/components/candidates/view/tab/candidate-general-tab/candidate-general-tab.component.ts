@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,6 +27,8 @@ export class CandidateGeneralTabComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   @Input() adminUser: boolean;
+  /** Passed to tc-description-list instances to define column spacing */
+  @Input() compact: boolean = false;
 
   loading: boolean;
   error;

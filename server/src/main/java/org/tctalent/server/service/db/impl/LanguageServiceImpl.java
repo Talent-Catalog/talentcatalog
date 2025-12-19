@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
@@ -247,9 +248,17 @@ public class LanguageServiceImpl implements LanguageService {
         return languages;
     }
 
+    @NonNull
+    @Override
+    public Language findByIsoCode(String isoCode) {
+        return languageRepository.findByIsoCode(isoCode)
+            .orElseThrow(() -> new NoSuchObjectException(Language.class, isoCode));
+    }
+
+    @NonNull
     @Override
     public Language getLanguage(long id) {
-        return this.languageRepository.findById(id)
+        return languageRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Language.class, id));
     }
 

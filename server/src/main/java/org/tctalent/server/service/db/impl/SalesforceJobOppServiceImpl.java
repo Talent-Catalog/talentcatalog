@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,8 +20,6 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collection;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -136,49 +134,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             copyOpportunityToJobOpp(op, sfJobOpp);
         }
         return salesforceJobOppRepository.save(sfJobOpp);
-    }
-
-    @Override
-    public void updateJobs(Collection<String> sfIds) throws SalesforceException {
-        if (sfIds != null && !sfIds.isEmpty()) {
-            LogBuilder.builder(log)
-                .action("UpdateJobs")
-                .message("Updating job opportunities from Salesforce")
-                .logInfo();
-
-            //Get SF opportunities from SF that we will use to do the updates
-            List<Opportunity> ops = salesforceService.fetchJobOpportunitiesByIdOrOpenOnSF(sfIds);
-
-            LogBuilder.builder(log)
-                .action("UpdateJobs")
-                .message("Loaded " + ops.size() + " job opportunities from Salesforce")
-                .logInfo();
-
-            int count = 0;
-            int updates = 0;
-            for (Opportunity op : ops) {
-                String id = op.getId();
-                //Fetch DB with id
-                SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findBySfId(id)
-                    .orElse(null);
-                if (salesforceJobOpp != null) {
-                    copyOpportunityToJobOpp(op, salesforceJobOpp);
-                    salesforceJobOppRepository.save(salesforceJobOpp);
-                    updates++;
-                }
-                count++;
-                if (count%100 == 0) {
-                    LogBuilder.builder(log)
-                        .action("UpdateJobs")
-                        .message("Processed " + count + " job opportunities from Salesforce")
-                        .logInfo();
-                }
-            }
-            LogBuilder.builder(log)
-                .action("UpdateJobs")
-                .message("Updated " + updates + " job opportunities from Salesforce")
-                .logInfo();
-        }
     }
 
     /**

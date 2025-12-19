@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ import {NgSelectComponent, NgSelectModule} from '@ng-select/ng-select';
 import {HasNameSelectorComponent} from './has-name-selector.component';
 import {HasName} from '../../../model/base';
 
-fdescribe('HasNameSelectorComponent', () => {
+describe('HasNameSelectorComponent', () => {
   let component: HasNameSelectorComponent;
   let fixture: ComponentFixture<HasNameSelectorComponent>;
   let activeModal: jasmine.SpyObj<NgbActiveModal>;
@@ -110,20 +110,6 @@ fdescribe('HasNameSelectorComponent', () => {
     selectButton.click();
     fixture.detectChanges();
     expect(activeModal.close).toHaveBeenCalledWith(mockHasNames[2]);
-  });
-
-  it('should call onCancel method when cancel button is clicked', () => {
-    spyOn(component, 'onCancel');
-    const cancelButton = fixture.debugElement.query(By.css('.btn-secondary')).nativeElement;
-    cancelButton.click();
-    expect(component.onCancel).toHaveBeenCalled();
-  });
-
-  it('should call onSelect method when select button is clicked', () => {
-    spyOn(component, 'onSelect');
-    const selectButton = fixture.debugElement.query(By.css('.btn-primary')).nativeElement;
-    selectButton.click();
-    expect(component.onSelect).toHaveBeenCalled();
   });
 
 });

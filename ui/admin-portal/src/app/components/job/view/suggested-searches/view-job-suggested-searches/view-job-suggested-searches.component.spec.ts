@@ -1,18 +1,35 @@
-import {ComponentFixture,TestBed,waitForAsync} from '@angular/core/testing';
-import {NgbModal,NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {InputTextComponent} from '../../../../util/input/input-text/input-text.component';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {ViewJobSuggestedSearchesComponent } from './view-job-suggested-searches.component';
+import {ViewJobSuggestedSearchesComponent} from './view-job-suggested-searches.component';
 import {JobService} from '../../../../../services/job.service';
 import {SavedSearch} from "../../../../../model/saved-search";
 import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
-import {ActivatedRoute,Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {of} from "rxjs";
 import {MockSavedSearch} from "../../../../../MockData/MockSavedSearch";
 import {JobPrepSuggestedSearches} from "../../../../../model/job-prep-item";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
-fdescribe('ViewJobSuggestedSearchesComponent', () => {
+
+describe('ViewJobSuggestedSearchesComponent', () => {
   let component: ViewJobSuggestedSearchesComponent;
   let fixture: ComponentFixture<ViewJobSuggestedSearchesComponent>;
   let jobService: jasmine.SpyObj<JobService>;
@@ -71,7 +88,7 @@ fdescribe('ViewJobSuggestedSearchesComponent', () => {
     // Expectations
     expect(modalService.open).toHaveBeenCalledWith(InputTextComponent, jasmine.any(Object));
     expect(mockModalRef.componentInstance.title).toEqual('Enter search name suffix');
-    expect(mockModalRef.componentInstance.message).toEqual('(The search name will start with the job name. You just need to add a short suffix - eg "search 1" or "elastic search")');
+    expect(mockModalRef.componentInstance.message).toEqual('The search name will start with the job name. You just need to add a short suffix - eg "search 1" or "elastic search"');
 
     // Use fakeAsync to wait for the promise to resolve
     fixture.whenStable().then(() => {

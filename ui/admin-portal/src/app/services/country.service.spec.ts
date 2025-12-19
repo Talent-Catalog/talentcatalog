@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {environment} from '../../environments/environment';
 import {SearchResults} from '../model/search-results';
 import {MockJob} from "../MockData/MockJob";
 
-fdescribe('CountryService', () => {
+describe('CountryService', () => {
   let service: CountryService;
   let httpMock: HttpTestingController;
 
@@ -77,13 +77,13 @@ fdescribe('CountryService', () => {
     });
   });
 
-  describe('#listTBBDestinations', () => {
+  describe('#listTCDestinations', () => {
     it('should return an Observable Country[] ', () => {
       const mockCountries: Country[] = [
         MockJob.country
       ];
 
-      service.listTBBDestinations().subscribe(countries => {
+      service.listTCDestinations().subscribe(countries => {
         expect(countries.length).toBe(1);
         expect(countries).toEqual(mockCountries);
       });

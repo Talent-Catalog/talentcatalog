@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2024 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
 <div class="mb-3">
   <label class="form-label" for="arrestImprison">
@@ -28,16 +28,16 @@
       [typing]="typing">
     </app-autosave-status>
   </div>
-  <ng-select id="arrestImprison" [formControlName]="'arrestImprison'" (clear)="setNoResponse('arrestImprison')"
+  <ng-select class="tc-select" id="arrestImprison" [formControlName]="'arrestImprison'" (clear)="setNoResponse('arrestImprison')"
              [items]="arrestImprisonOptions" [clearOnBackspace]="false"
              placeholder="Select" bindLabel="stringValue" bindValue="key">
   </ng-select>
 </div>
 <div *ngIf="hasNotes" class="mb-3">
   <label class="form-label" for="arrestImprisonNotes">Notes (e.g. If yes, when and where? Can you briefly explain the circumstances?) </label>
-  <textarea type="text" class="md-textarea-auto form-control" rows="4"
+  <tc-textarea rows="4"
             id="arrestImprisonNotes" [formControlName]="'arrestImprisonNotes'"
-            placeholder=""></textarea>
+            placeholder=""></tc-textarea>
 </div>
 </form>
 

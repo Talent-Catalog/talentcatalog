@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
 import {
   CandidateAttachment,
@@ -40,11 +40,11 @@ export class CreateCandidateAttachmentComponent implements OnInit {
   type: string;
   attachments: CandidateAttachment[];
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(private modal: NgbActiveModal,
               private candidateAttachmentService: CandidateAttachmentService,
-              private fb: FormBuilder) { }
+              private fb: UntypedFormBuilder) { }
 
   ngOnInit() {
 

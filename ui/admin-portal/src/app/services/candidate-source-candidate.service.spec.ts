@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,7 +23,7 @@ import {SearchResults} from '../model/search-results';
 import {CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from '../model/base';
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('CandidateSourceCandidateService', () => {
+describe('CandidateSourceCandidateService', () => {
   let service: CandidateSourceCandidateService;
   let httpMock: HttpTestingController;
 

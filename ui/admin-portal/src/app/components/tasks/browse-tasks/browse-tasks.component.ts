@@ -1,14 +1,30 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {SearchTaskRequest} from "../../../model/base";
 import {User} from "../../../model/user";
-import {LocalStorageService} from "angular-2-local-storage";
 import {Router} from "@angular/router";
 import {indexOfHasId} from "../../../model/saved-search";
 import {TaskService} from "../../../services/task.service";
 import {Task} from "../../../model/task";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-browse-tasks',
@@ -19,7 +35,7 @@ export class BrowseTasksComponent implements OnInit {
   private filterKeySuffix: string = 'Filter';
   private savedStateKeyPrefix: string = 'BrowseKey';
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   public loading: boolean;
   error: any;
   pageNumber: number;
@@ -29,7 +45,7 @@ export class BrowseTasksComponent implements OnInit {
   selectedIndex = 0;
   loggedInUser: User;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
               private authenticationService: AuthenticationService,

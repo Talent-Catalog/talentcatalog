@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,8 +46,6 @@ import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * This class contains unit tests for verifying cache eviction behaviour in the users cache.
  *
@@ -61,6 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * </ul>
  */
 @Disabled("Skipping all tests in this class")
+@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 class UserCacheEvictionTest {
 
@@ -149,7 +151,7 @@ class UserCacheEvictionTest {
 
   private void createSharedLists() {
     SavedList savedList = new SavedList();
-    savedList.setTbbShortName("TestList");
+    savedList.setTcShortName("TestList");
     savedList.setName("TestList");
     savedList.setDescription("TestDescription");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -157,7 +159,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(savedList);
 
     savedList = new SavedList();
-    savedList.setTbbShortName("TestList2");
+    savedList.setTcShortName("TestList2");
     savedList.setName("TestList2");
     savedList.setDescription("TestDescription2");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -165,7 +167,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(savedList);
 
     savedList = new SavedList();
-    savedList.setTbbShortName("TestList3");
+    savedList.setTcShortName("TestList3");
     savedList.setName("TestList3");
     savedList.setDescription("TestDescription3");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -244,7 +246,6 @@ class UserCacheEvictionTest {
     candidate.setCreatedBy(candidateUser);
     candidate.setCreatedDate(OffsetDateTime.now());
     candidate.setUser(candidateUser);
-    candidate.setContactConsentPartners(true);
     candidate.setContactConsentRegistration(true);
     candidate.setStatus(CandidateStatus.active);
     candidateRepository.save(candidate);
@@ -975,7 +976,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(list);
 
     // Verify that the saved list updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -993,7 +994,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAll(List.of(list));
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -1011,7 +1012,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAndFlush(list);
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -1029,7 +1030,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAllAndFlush(List.of(list));
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 

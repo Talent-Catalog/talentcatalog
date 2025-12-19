@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {EditCandidateSurveyComponent} from './edit-candidate-survey.component';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {SurveyTypeService} from '../../../../../services/survey-type.service';
@@ -25,7 +25,7 @@ import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('EditCandidateSurveyComponent', () => {
+describe('EditCandidateSurveyComponent', () => {
   let component: EditCandidateSurveyComponent;
   let fixture: ComponentFixture<EditCandidateSurveyComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;
@@ -49,7 +49,7 @@ fdescribe('EditCandidateSurveyComponent', () => {
       declarations: [EditCandidateSurveyComponent],
       imports: [ReactiveFormsModule, HttpClientTestingModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         NgbActiveModal,
         {provide: CandidateService, useValue: candidateServiceSpy},
         {provide: SurveyTypeService, useValue: surveyTypeServiceSpy}
@@ -85,5 +85,5 @@ fdescribe('EditCandidateSurveyComponent', () => {
     expect(component.candidateForm.get('surveyComment').value).toBe(candidate.surveyComment);
     expect(component.loading).toBeFalse();
   }));
-  
+
 });

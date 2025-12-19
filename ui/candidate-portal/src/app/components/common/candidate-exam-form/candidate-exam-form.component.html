@@ -1,0 +1,66 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<form class="card" [formGroup]="form">
+
+  <div class="col-12">
+    <div class="mb-3">
+      <label class="form-label" for="examType">{{ 'REGISTRATION.EXAM.LABEL.EXAM' | translate }} <sup>*</sup></label>
+      <ng-select id="examType" [formControlName]="'exam'" [clearable]="false"
+                 placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
+        <ng-option *ngFor="let exam of examListEnum" [value]="exam.key">{{exam.value}}</ng-option>
+      </ng-select>
+    </div>
+  </div>
+
+  <!-- Conditionally render otherExam field based on the selected examType -->
+  <div class="mb-3" *ngIf="isOtherExamSelected()">
+    <label class="form-label" for="otherExam">{{ 'REGISTRATION.EXAM.LABEL.OTHEREXAM' | translate }} <sup>*</sup></label>
+    <input type="text" class="form-control" id="otherExam" placeholder="" [formControlName]="'otherExam'">
+    <app-form-control-error [control]="form.controls.otherExam"></app-form-control-error>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label" for="score">{{ 'REGISTRATION.EXAM.LABEL.SCORE' | translate }} <sup>*</sup></label>
+    <input type="text" class="form-control" id="score" placeholder="" [formControlName]="'score'">
+    <app-form-control-error [control]="form.controls.score"></app-form-control-error>
+  </div>
+
+  <!-- YEAR -->
+  <div class="mb-3">
+    <label class="form-label" for="year">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }} <sup>*</sup></label>
+    <ng-select id="year" [items]="years" [formControlName]="'year'" [clearable]="false"
+               placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
+
+    </ng-select>
+    <app-form-control-error [control]="form.controls.year"></app-form-control-error>
+  </div>
+
+  <!-- NOTES -->
+  <div class="mb-3">
+    <label class="form-label" for="notes">{{ 'REGISTRATION.EXAM.LABEL.NOTES' | translate }}</label>
+    <textarea class="form-control" id="notes" [formControlName]="'notes'"></textarea>
+    <app-form-control-error [control]="form.controls.notes"></app-form-control-error>
+  </div>
+  <div class="text-center mt-4 submit">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      {{ 'FORM.LABEL.SAVE' | translate }}
+    </button>
+  </div>
+
+</form>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,12 +15,17 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../../../services/auth.service";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {LoginRequest} from "../../../model/base";
+import {ChangePasswordComponent} from '../change-password/change-password.component';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Candidate, CandidateStatus} from "../../../model/candidate";
+import {forkJoin} from "rxjs";
+import {TermsInfoDto, TermsType} from "../../../model/terms-info-dto";
+import {TermsInfoService} from "../../../services/terms-info.service";
 
 @Component({
   selector: 'app-login',
@@ -29,17 +34,18 @@ import {LoginRequest} from "../../../model/base";
 })
 export class LoginComponent implements OnInit {
 
-  loginForm: FormGroup;
+  loginForm: UntypedFormGroup;
   loading: boolean;
   returnUrl: string;
   error;
 
-  constructor(private builder: FormBuilder,
-              private authService: AuthService,
+  constructor(private builder: UntypedFormBuilder,
               private authenticationService: AuthenticationService,
               private candidateService: CandidateService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private termsInfoService: TermsInfoService,
+              private modalService: NgbModal) {
   }
 
   ngOnInit() {
@@ -81,19 +87,44 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(req)
       .subscribe(() => {
         this.loading = false;
-        // Get candidate number to save in storage to display in the header
-        this.candidateService.getCandidateNumber().subscribe(
-          (candidate) => {
-            this.candidateService.setCandNumberStorage(candidate.candidateNumber);
-          }
+
+        //Fetch the current candidate privacy policy and candidate info
+        forkJoin({
+          'currentPolicy': this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY),
+          'candidate': this.candidateService.getCandidatePersonal()
+        }).subscribe(
+          results => {
+            this.configure(results.candidate, results.currentPolicy)
+          },
+          err => this.error = err
         )
-        this.router.navigateByUrl(this.returnUrl);
       }, error => {
         console.log(error);
         this.error = error;
         this.loading = false;
       });
+  }
 
+  private configure(candidate: Candidate, currentPolicy: TermsInfoDto) {
+    //Save candidate number in storage to display in the header
+    this.candidateService.setCandNumberStorage(candidate.candidateNumber);
+    //Remember status
+    this.authenticationService.setCandidateStatus(CandidateStatus[candidate.status]);
+
+
+    //Check if the latest terms exist and whether the candidate has accepted the latest terms
+    if (currentPolicy.content.length > 0 && currentPolicy.id != candidate.acceptedPrivacyPolicyId) {
+      //Candidate needs to accept current policy. Ignore any returnUrl and send for normal
+      //"home" processing which will prompt them to accept the policy.
+      this.router.navigateByUrl("/home");
+    } else {
+      if (candidate.changePassword  === true) {
+        this.modalService.open(ChangePasswordComponent, {
+          centered: true
+        });
+      }
+      this.router.navigateByUrl(this.returnUrl);
+    }
   }
 }
 

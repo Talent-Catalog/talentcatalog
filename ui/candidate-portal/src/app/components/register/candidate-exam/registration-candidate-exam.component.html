@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- Exams - VIEW AND EDIT -->
+    <div class="card parent-card" *ngFor="let exam of candidateExams; let i = index;">
+
+      <app-candidate-exam-card *ngIf="editTarget?.id !== exam.id"
+                                        [exam]="exam"
+                                        [disabled]="saving || loading"
+                                        (onDelete)="deleteExam($event,exam.id)"
+                                        (onEdit)="editCandidateExam($event)">
+      </app-candidate-exam-card>
+
+      <app-candidate-exam-form *ngIf="editTarget?.id == exam.id"
+                                        [exam]="exam"
+                                        (saved)="handleExamSaved($event, i)">
+      </app-candidate-exam-form>
+
+    </div>
+
+    <!-- CREATE NEW CERT -->
+    <div class="card parent-card" *ngIf="addingExam">
+      <app-candidate-exam-form  class="mt-4"
+                                         (saved)="handleCandidateExamCreated($event)">
+      </app-candidate-exam-form>
+    </div>
+
+  </ng-container>
+
+  <app-error [error]="error"></app-error>
+
+  <div class="text-center mt-4" *ngIf="!addingExam">
+    <button class="btn btn-primary" (click)="addingExam = true">
+      {{ 'REGISTRATION.EXAM.BUTTON.ADD' | translate }}
+    </button>
+  </div>
+
+</div>
+
+
+<app-registration-footer [nextDisabled]="loading || saving"
+                         [type]="edit ? 'update' : 'step'"
+                         (backClicked)="edit ? finishEditing() : back() "
+                         (nextClicked)="edit ? finishEditing() : next()">
+</app-registration-footer>

@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,6 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "src/scss/color-mixins";
+@import "src/scss/support-colors";
+
 button.reaction-btn {
   border: none;
   background-color: inherit;
@@ -21,13 +24,13 @@ button.reaction-btn {
 }
 
 button.reaction-btn:hover {
-  color: #0066cc;
+  @include text-color-primary;
 }
 
 button.reaction-btn-selected {
   border: none;
   background-color: inherit;
-  color: #0066cc;
+  @include text-color-primary;
 }
 
 button.modify-reaction-btn {
@@ -42,8 +45,8 @@ button.modify-reaction-btn {
 }
 
 button.modify-reaction-btn:hover {
-  border-color: #0066cc;
-  color: #0066cc;
+  border-color: color(secondary, 700);
+  @include text-color-secondary;
 }
 
 emoji-mart#reactionPicker {
@@ -53,6 +56,111 @@ emoji-mart#reactionPicker {
   z-index: 1050;
 }
 
+section.emoji-mart {
+  @include shadow-lg;
+  border-radius: 1rem;
+}
+
+span.emoji-mart-anchor-bar {
+  background-color: color(primary,500) !important;
+}
+
+span.emoji-mart-anchor.emoji-mart-anchor-selected {
+  color: color(primary,500) !important;
+}
+
 div#reactionTooltipEmoji {
   font-size: xx-large;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.chat-message {
+  display: flex;
+  align-items: flex-start;
+  margin: 0.6rem 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #b0b0b0;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  color: #fff;
+  margin-right: 0.6rem;
+}
+
+.avatar.post-author {
+  @include background-color-secondary;
+  @include text-color-white;
+}
+
+.message-content {
+  max-width: 25rem;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+.partner {
+  color: black;
+  margin-right: 0.3rem;
+}
+
+.abbreviation {
+  color: #888;
+  font-size: .8rem;
+}
+
+.timestamp {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: lighter;
+  margin-left: 0.5rem;
+}
+
+.reactions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reaction {
+  display: flex;
+  align-items: center;
+  background-color: #e6f7ff;
+  border-radius: 1rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+  @include text-color-secondary;
+  border: 0.05em solid #444;
+}
+
+.emoji {
+  margin-right: 0.25rem;
+}
+
+.count {
+  margin-left: 0.25rem;
+}
+
+.message-text p {
+  margin-bottom: 0.25rem;
 }

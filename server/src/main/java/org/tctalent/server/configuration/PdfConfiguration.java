@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,25 +16,23 @@
 
 package org.tctalent.server.configuration;
 
-import java.nio.charset.StandardCharsets;
+import static org.thymeleaf.templatemode.TemplateMode.HTML;
 
+import java.nio.charset.StandardCharsets;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-
-import static org.thymeleaf.templatemode.TemplateMode.HTML;
 
 @Configuration
 public class PdfConfiguration {
 
     @Bean
     public TemplateEngine pdfTemplateEngine() {
-        final TemplateEngine templateEngine = new TemplateEngine();
+        final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(pdfTemplateResolver());
-        templateEngine.addDialect(new Java8TimeDialect());
         return templateEngine;
     }
 

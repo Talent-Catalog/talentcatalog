@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ import {isJob,
 } from "./job";
 import {MockJob} from "../MockData/MockJob";
 
-fdescribe('Job', () => {
+describe('Job', () => {
   let job: Job;
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ fdescribe('Job', () => {
 
 });
 
-fdescribe('SearchJobRequest', () => {
+describe('SearchJobRequest', () => {
   it('should create a SearchJobRequest instance', () => {
     const searchRequest: SearchJobRequest = {
       starred: true,
@@ -57,7 +57,7 @@ fdescribe('SearchJobRequest', () => {
   });
 });
 
-fdescribe('UpdateJobRequest', () => {
+describe('UpdateJobRequest', () => {
   it('should create an UpdateJobRequest instance', () => {
     const updateRequest: UpdateJobRequest = {
       contactUserId: 1,

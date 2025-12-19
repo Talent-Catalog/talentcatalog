@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,41 +14,37 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal heading="Download Candidate CV"
+          actionText="Ok"
+          (onAction)="onSave()"
+          [disableAction]="form.invalid || loading || saving"
+          [showCancel]="true"
+          [showClose]="true">
 
-  <h4 class="modal-title">Download Candidate CV</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <form [formGroup]="form">
-      <div>
-        <label class="form-label" for="name">Include name?</label>
-        <input type="checkbox" class="mx-2" [formControlName]="'name'" id="name">
-      </div>
-      <div>
-        <label class="form-label" for="contact">Include contact details?</label>
-        <input type="checkbox" class="mx-2" [formControlName]="'contact'" id="contact">
-      </div>
+        <tc-field [checkbox]="true">
+          <tc-label for="name">
+            Include name?
+          </tc-label>
+          <tc-input [type]="'checkbox'"
+                    [formControlName]="'name'"
+                    id="name"
+          ></tc-input>
+        </tc-field>
+        <tc-field [checkbox]="true">
+          <tc-label for="contact">
+            Include contact details?
+          </tc-label>
+          <tc-input [type]="'checkbox'"
+                    [formControlName]="'contact'"
+                    id="contact"
+          ></tc-input>
+        </tc-field>
   </form>
 
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="onSave()"
-          [disabled]="form.invalid || loading || saving">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    Save
-  </button>
-  <button type="button" class="btn btn-primary" (click)="dismiss()">
-    Cancel
-  </button>
-</div>
+</tc-modal>
 

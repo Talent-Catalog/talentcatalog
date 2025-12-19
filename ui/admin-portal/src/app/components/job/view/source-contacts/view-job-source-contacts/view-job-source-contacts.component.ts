@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {PartnerService} from "../../../../../services/partner.service";
@@ -16,6 +32,7 @@ import {
 import {AuthenticationService} from "../../../../../services/authentication.service";
 import {CreateChatRequest, JobChatType} from "../../../../../model/chat";
 import {ChatService} from "../../../../../services/chat.service";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 /*
 MODEL: Modal popups.
@@ -27,7 +44,6 @@ MODEL: Modal popups.
 })
 export class ViewJobSourceContactsComponent implements OnInit {
   @Input() job: Job;
-  @Input() editable: boolean;
   @Input() selectable: boolean;
   @Output() sourcePartnerSelection = new EventEmitter();
 
@@ -39,6 +55,7 @@ export class ViewJobSourceContactsComponent implements OnInit {
 
   constructor(
     private authenticationService: AuthenticationService,
+    private authorizationService: AuthorizationService,
     private chatService: ChatService,
     private modalService: NgbModal,
     private partnerService: PartnerService,
@@ -128,7 +145,9 @@ export class ViewJobSourceContactsComponent implements OnInit {
   }
 
   isEditable(partner: Partner): boolean {
-    let canEdit: boolean = this.editable;
+    //Can only edit if not read only, and viewing as source.
+    let canEdit: boolean = !this.authorizationService.isReadOnly()
+      && this.authorizationService.isViewingAsSource();
     if (canEdit) {
       canEdit = this.loggedInUserPartnerId === partner.id;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,6 +29,8 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 import {JobService} from "../../../services/job.service";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
+// todo Change this to app-find-job to match app-find-candidate-source.
+
 @Component({
   selector: 'app-joblink',
   templateUrl: './joblink.component.html',
@@ -36,6 +38,7 @@ import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 })
 export class JoblinkComponent implements OnInit, OnChanges {
 
+  // todo This is not used anywhere now
   @Input() jobId: number;
   @Output() jobSelection =  new EventEmitter<JobNameAndId>();
 

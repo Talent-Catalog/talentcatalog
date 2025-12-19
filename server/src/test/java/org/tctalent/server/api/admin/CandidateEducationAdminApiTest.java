@@ -1,37 +1,20 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.api.admin;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateEducation;
-import org.tctalent.server.request.candidate.education.CreateCandidateEducationRequest;
-import org.tctalent.server.request.candidate.education.UpdateCandidateEducationRequest;
-import org.tctalent.server.service.db.CandidateEducationService;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -50,6 +33,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateEducation;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateEducations;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateEducation;
+import org.tctalent.server.request.candidate.education.CreateCandidateEducationRequest;
+import org.tctalent.server.request.candidate.education.UpdateCandidateEducationRequest;
+import org.tctalent.server.service.db.CandidateEducationService;
+import org.tctalent.server.service.db.CountryService;
 
 /**
  * Unit tests for Candidate Education Admin Api endpoints.
@@ -63,10 +65,11 @@ class CandidateEducationAdminApiTest extends ApiTestBase {
     private static final String GET_EDUCATION_LIST_BY_ID_PATH = "/{id}/list";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateEducation candidateEducation = AdminApiTestUtil.getCandidateEducation();
-    private final List<CandidateEducation> candidateEducationList = AdminApiTestUtil.getListOfCandidateEducations();
+    private final CandidateEducation candidateEducation = getCandidateEducation();
+    private final List<CandidateEducation> candidateEducationList = getListOfCandidateEducations();
 
     @MockBean CandidateEducationService candidateEducationService;
+    @MockBean CountryService countryService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

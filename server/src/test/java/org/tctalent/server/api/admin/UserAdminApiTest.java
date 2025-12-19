@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -34,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.UserTestData.getAuditUser;
+import static org.tctalent.server.data.UserTestData.getFullUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -57,6 +59,7 @@ import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.UserService;
 
 /**
@@ -76,7 +79,7 @@ class UserAdminApiTest extends ApiTestBase {
   private static final String SEARCH_PATH = "/search";
   private static final String SEARCH_PAGED_PATH = "/search-paged";
 
-  private static final List<User> users = List.of(AdminApiTestUtil.getFullUser());
+  private static final List<User> users = List.of(getFullUser());
 
   private final Page<User> userPage =
       new PageImpl<>(
@@ -84,17 +87,18 @@ class UserAdminApiTest extends ApiTestBase {
           PageRequest.of(0,10, Sort.unsorted()),
           1
       );
-  
-  private static final User fullUser = AdminApiTestUtil.getFullUser();
-  private static final User loggedInAdminUser = AdminApiTestUtil.getUser();
+
+  private static final User fullUser = getFullUser();
+  private static final User loggedInAdminUser = getAuditUser();
   private static final User loggedInNonAdminUser = new User(
-      "nonAdminUser", 
-      "Not", 
-      "Admin", 
-      "notadmin@gmailcom", 
+      "nonAdminUser",
+      "Not",
+      "Admin",
+      "notadmin@gmailcom",
       Role.limited);
 
   @MockBean AuthService authService;
+  @MockBean CountryService countryService;
   @MockBean UserService userService;
 
   @Autowired MockMvc mockMvc;
@@ -153,18 +157,18 @@ class UserAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$[0].usingMfa", is(true)))
             .andExpect(jsonPath("$[0].mfaConfigured", is(false)))
             .andExpect(jsonPath("$[0].partner.abbreviation", is("TCP")))
-            .andExpect(jsonPath("$[0].partner.jobCreator", is(true)))
+            .andExpect(jsonPath("$[0].partner.jobCreator", is(false)))
             .andExpect(jsonPath("$[0].partner.defaultJobCreator", is(false)))
             .andExpect(jsonPath("$[0].partner.defaultPartnerRef", is(false)))
             .andExpect(jsonPath("$[0].partner.defaultSourcePartner", is(false)))
-            .andExpect(jsonPath("$[0].partner.registrationLandingPage", is("registration_landing_page")))
-            .andExpect(jsonPath("$[0].partner.sourceCountries", is(empty())))
+            .andExpect(jsonPath("$[0].partner.registrationLandingPage", is("www.registration.com")))
+            .andExpect(jsonPath("$[0].partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
             .andExpect(jsonPath("$[0].partner.notificationEmail", is("notification@email.address")))
             .andExpect(jsonPath("$[0].partner.sourcePartner", is(true)))
             .andExpect(jsonPath("$[0].partner.autoAssignable", is(false)))
-            .andExpect(jsonPath("$[0].partner.websiteUrl", is("website_url")))
+            .andExpect(jsonPath("$[0].partner.websiteUrl", is("www.website.com")))
             .andExpect(jsonPath("$[0].partner.name", is("TC Partner")))
-            .andExpect(jsonPath("$[0].partner.logo", is("logo_url")))
+            .andExpect(jsonPath("$[0].partner.logo", is("www.logo.com")))
             .andExpect(jsonPath("$[0].partner.status", is("active")));
 
     verify(userService).search(any(SearchUserRequest.class));
@@ -215,18 +219,18 @@ class UserAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.content.[0].usingMfa", is(true)))
             .andExpect(jsonPath("$.content.[0].mfaConfigured", is(false)))
             .andExpect(jsonPath("$.content.[0].partner.abbreviation", is("TCP")))
-            .andExpect(jsonPath("$.content.[0].partner.jobCreator", is(true)))
+            .andExpect(jsonPath("$.content.[0].partner.jobCreator", is(false)))
             .andExpect(jsonPath("$.content.[0].partner.defaultJobCreator", is(false)))
             .andExpect(jsonPath("$.content.[0].partner.defaultPartnerRef", is(false)))
             .andExpect(jsonPath("$.content.[0].partner.defaultSourcePartner", is(false)))
-            .andExpect(jsonPath("$.content.[0].partner.registrationLandingPage", is("registration_landing_page")))
-            .andExpect(jsonPath("$.content.[0].partner.sourceCountries", is(empty())))
+            .andExpect(jsonPath("$.content.[0].partner.registrationLandingPage", is("www.registration.com")))
+            .andExpect(jsonPath("$.content.[0].partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
             .andExpect(jsonPath("$.content.[0].partner.notificationEmail", is("notification@email.address")))
             .andExpect(jsonPath("$.content.[0].partner.sourcePartner", is(true)))
             .andExpect(jsonPath("$.content.[0].partner.autoAssignable", is(false)))
-            .andExpect(jsonPath("$.content.[0].partner.websiteUrl", is("website_url")))
+            .andExpect(jsonPath("$.content.[0].partner.websiteUrl", is("www.website.com")))
             .andExpect(jsonPath("$.content.[0].partner.name", is("TC Partner")))
-            .andExpect(jsonPath("$.content.[0].partner.logo", is("logo_url")))
+            .andExpect(jsonPath("$.content.[0].partner.logo", is("www.logo.com")))
             .andExpect(jsonPath("$.content.[0].partner.status", is("active")));
 
     verify(userService).searchPaged(any(SearchUserRequest.class));
@@ -269,18 +273,18 @@ class UserAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.usingMfa", is(true)))
         .andExpect(jsonPath("$.mfaConfigured", is(false)))
         .andExpect(jsonPath("$.partner.abbreviation", is("TCP")))
-        .andExpect(jsonPath("$.partner.jobCreator", is(true)))
+        .andExpect(jsonPath("$.partner.jobCreator", is(false)))
         .andExpect(jsonPath("$.partner.defaultJobCreator", is(false)))
         .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
         .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
-        .andExpect(jsonPath("$.partner.registrationLandingPage", is("registration_landing_page")))
-        .andExpect(jsonPath("$.partner.sourceCountries", is(empty())))
+        .andExpect(jsonPath("$.partner.registrationLandingPage", is("www.registration.com")))
+        .andExpect(jsonPath("$.partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
         .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
         .andExpect(jsonPath("$.partner.autoAssignable", is(false)))
-        .andExpect(jsonPath("$.partner.websiteUrl", is("website_url")))
+        .andExpect(jsonPath("$.partner.websiteUrl", is("www.website.com")))
         .andExpect(jsonPath("$.partner.name", is("TC Partner")))
-        .andExpect(jsonPath("$.partner.logo", is("logo_url")))
+        .andExpect(jsonPath("$.partner.logo", is("www.logo.com")))
         .andExpect(jsonPath("$.partner.status", is("active")));
 
     verify(userService).getUser(USER_ID);
@@ -355,18 +359,18 @@ class UserAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.usingMfa", is(true)))
         .andExpect(jsonPath("$.mfaConfigured", is(false)))
         .andExpect(jsonPath("$.partner.abbreviation", is("TCP")))
-        .andExpect(jsonPath("$.partner.jobCreator", is(true)))
+        .andExpect(jsonPath("$.partner.jobCreator", is(false)))
         .andExpect(jsonPath("$.partner.defaultJobCreator", is(false)))
         .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
         .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
-        .andExpect(jsonPath("$.partner.registrationLandingPage", is("registration_landing_page")))
-        .andExpect(jsonPath("$.partner.sourceCountries", is(empty())))
+        .andExpect(jsonPath("$.partner.registrationLandingPage", is("www.registration.com")))
+        .andExpect(jsonPath("$.partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
         .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
         .andExpect(jsonPath("$.partner.autoAssignable", is(false)))
-        .andExpect(jsonPath("$.partner.websiteUrl", is("website_url")))
+        .andExpect(jsonPath("$.partner.websiteUrl", is("www.website.com")))
         .andExpect(jsonPath("$.partner.name", is("TC Partner")))
-        .andExpect(jsonPath("$.partner.logo", is("logo_url")))
+        .andExpect(jsonPath("$.partner.logo", is("www.logo.com")))
         .andExpect(jsonPath("$.partner.status", is("active")));
 
     verify(userService).createUser(any(UpdateUserRequest.class));
@@ -413,18 +417,18 @@ class UserAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.usingMfa", is(true)))
         .andExpect(jsonPath("$.mfaConfigured", is(false)))
         .andExpect(jsonPath("$.partner.abbreviation", is("TCP")))
-        .andExpect(jsonPath("$.partner.jobCreator", is(true)))
+        .andExpect(jsonPath("$.partner.jobCreator", is(false)))
         .andExpect(jsonPath("$.partner.defaultJobCreator", is(false)))
         .andExpect(jsonPath("$.partner.defaultPartnerRef", is(false)))
         .andExpect(jsonPath("$.partner.defaultSourcePartner", is(false)))
-        .andExpect(jsonPath("$.partner.registrationLandingPage", is("registration_landing_page")))
-        .andExpect(jsonPath("$.partner.sourceCountries", is(empty())))
+        .andExpect(jsonPath("$.partner.registrationLandingPage", is("www.registration.com")))
+        .andExpect(jsonPath("$.partner.sourceCountries[*].name", containsInAnyOrder("Jordan", "Lebanon")))
         .andExpect(jsonPath("$.partner.notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.partner.sourcePartner", is(true)))
         .andExpect(jsonPath("$.partner.autoAssignable", is(false)))
-        .andExpect(jsonPath("$.partner.websiteUrl", is("website_url")))
+        .andExpect(jsonPath("$.partner.websiteUrl", is("www.website.com")))
         .andExpect(jsonPath("$.partner.name", is("TC Partner")))
-        .andExpect(jsonPath("$.partner.logo", is("logo_url")))
+        .andExpect(jsonPath("$.partner.logo", is("www.logo.com")))
         .andExpect(jsonPath("$.partner.status", is("active")));
 
     verify(userService).updateUser(anyLong(), any(UpdateUserRequest.class));

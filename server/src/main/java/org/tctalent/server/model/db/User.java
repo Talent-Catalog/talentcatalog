@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,20 +19,20 @@ package org.tctalent.server.model.db;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -93,6 +93,24 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     @Column(name = "password_updated_date")
     private OffsetDateTime passwordUpdatedDate;
+
+    /**
+     * The email verification token sent to the user for verifying their email address.
+     */
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
+    /**
+     * The timestamp when the email verification token was issued.
+     */
+    @Column(name = "email_verification_token_issued_time")
+    private OffsetDateTime emailVerificationTokenIssuedDate;
+
+    /**
+     * Indicates whether the user's email address has been verified.
+     */
+    @Column(name = "email_verified" , nullable = false)
+    private boolean emailVerified;
 
     /**
      * usingMfa is a basic security requirement, checked by default
@@ -306,6 +324,30 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setPasswordUpdatedDate(OffsetDateTime passwordUpdatedDate) {
         this.passwordUpdatedDate = passwordUpdatedDate;
+    }
+
+    public String getEmailVerificationToken() {
+        return emailVerificationToken;
+    }
+
+    public void setEmailVerificationToken(String emailVerificationToken) {
+        this.emailVerificationToken = emailVerificationToken;
+    }
+
+    public OffsetDateTime getEmailVerificationTokenIssuedDate() {
+        return emailVerificationTokenIssuedDate;
+    }
+
+    public void setEmailVerificationTokenIssuedDate(OffsetDateTime emailVerificationTokenIssuedDate) {
+        this.emailVerificationTokenIssuedDate = emailVerificationTokenIssuedDate;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     public String getSelectedLanguage() {

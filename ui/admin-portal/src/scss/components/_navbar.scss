@@ -1,0 +1,71 @@
+/*!
+ * Copyright (c) 2025 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+@import '../color-classes';
+@import '../typography-classes';
+
+nav.tc-navbar.navbar {
+  @include background-color-soft;
+  width: 100%;
+  height: 56px;
+  padding: 0 12px;
+
+  .logo {
+    height: 48px;
+  }
+
+  .navbar-divider {
+    width: 1px;
+    height: 24px;
+    @include background-color-light;
+    margin: 0 20px;
+  }
+
+  @media screen and (min-width: 768px) {
+    .navbar-collapse {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+  .nav-link {
+    @include label-md;
+    margin-left: 12px;
+    color: color(gray, 700);
+    &.active {
+      @include background-color-primary;
+      @include text-color-white;
+    }
+  }
+
+  input {
+    @include border-color-base;
+    @include label-md;
+    @include text-color-disabled;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    padding: 8px 12px;
+  }
+
+  // Color of user icon for account information (logout, settings etc)
+  i {
+    @include text-color-secondary;
+  }
+}
+
+// Remove the default down arrow after the dropdown icon
+.navbar-nav .nav-item > .nav-link[ngbDropdownToggle]::after {
+  display: none !important;
+}

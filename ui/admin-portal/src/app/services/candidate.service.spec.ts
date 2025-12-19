@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,12 +20,16 @@ import {CandidateService, DownloadCVRequest, IntakeAuditRequest} from './candida
 import {environment} from '../../environments/environment';
 import {
   Candidate,
-  CandidateIntakeData, CandidateOpportunityParams, UpdateCandidateShareableDocsRequest,
-  UpdateCandidateShareableNotesRequest, UpdateCandidateStatusRequest
+  CandidateIntakeData,
+  CandidateOpportunityParams,
+  UpdateCandidateShareableDocsRequest,
+  UpdateCandidateShareableNotesRequest,
+  UpdateCandidateStatusRequest
 } from '../model/candidate';
 import {SearchResults} from '../model/search-results';
 import {CandidateSource} from "../model/base";
-fdescribe('CandidateService', () => {
+
+describe('CandidateService', () => {
   let service: CandidateService;
   let httpMock: HttpTestingController;
 
@@ -73,15 +77,15 @@ fdescribe('CandidateService', () => {
     req.flush(dummyResponse);
   });
 
-  it('should find candidate by email or phone', () => {
+  it('should find candidate by email phone or whatsapp', () => {
     const dummyRequest = {};
     const dummyResponse: SearchResults<Candidate> = { content: [], totalElements: 0 } as SearchResults<Candidate>;
 
-    service.findByCandidateEmailOrPhone(dummyRequest).subscribe(response => {
+    service.findByCandidateEmailPhoneOrWhatsapp(dummyRequest).subscribe(response => {
       expect(response).toEqual(dummyResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/candidate/findbyemailorphone`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/candidate/findbyemailphoneorwhatsapp`);
     expect(req.request.method).toBe('POST');
     req.flush(dummyResponse);
   });

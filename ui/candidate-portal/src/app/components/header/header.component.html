@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -45,7 +45,7 @@
               <h5 class="mb-0 fw-bold">{{ 'HEADER.LANG.SELECT' | translate }}</h5>
             </div>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item text-center" *ngFor="let lang of languages" (click)="setLanguage(lang.language)">{{lang.label}}</a>
+            <a class="dropdown-item text-center" *ngFor="let lang of languages" (click)="setLanguage(lang.language)" (click)="closeNavbar()">{{lang.label}}</a>
           </div>
         </div>
       </div>
@@ -58,7 +58,7 @@
             {{ 'HEADER.NAV.ACCOUNT' | translate }} {{this.candidateService?.getCandNumberStorage()}}
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-            <a class="dropdown-item" [routerLink]="['/profile']">
+            <a class="dropdown-item" [routerLink]="['/profile']" (click)="closeNavbar()">
               {{ 'HEADER.NAV.PROFILE' | translate }}
             </a>
 
@@ -67,15 +67,19 @@
             (e.g. if d-sm-none it is hidden from small screens upwards until/if there's another d class - but shown on xs screens).
             On a small screen we want to hide Upload File (d-none) and then show on a large screen (d-lg-block).
             We want to see Upload File/Photo so that is only hidden once we hit large screens (d-lg-none). -->
-            <a class="dropdown-item d-none d-lg-block" [routerLink]="['/profile/edit/upload']">
+            <a class="dropdown-item d-none d-lg-block" [routerLink]="['/profile/edit/upload']" (click)="closeNavbar()">
               {{ 'HEADER.NAV.UPLOAD.FILE' | translate }}
             </a>
 
-            <a class="dropdown-item d-lg-none" [routerLink]="['/profile/edit/upload']">
+            <a class="dropdown-item d-lg-none" [routerLink]="['/profile/edit/upload']" (click)="closeNavbar()">
               {{ 'HEADER.NAV.UPLOAD.PHOTO' | translate }}
             </a>
 
-            <a class="dropdown-item" (click)="logout()">
+            <a *ngIf="isRegistered()" class="dropdown-item" [routerLink]="['/privacy']" (click)="closeNavbar()">
+              {{ 'HEADER.NAV.PRIVACY' | translate }}
+            </a>
+
+            <a class="dropdown-item" (click)="logout()" (click)="closeNavbar()">
               {{ 'HEADER.NAV.LOGOUT' | translate }}
             </a>
           </div>
@@ -84,7 +88,7 @@
       </div>
 
       <!-- LOGIN -->
-      <a class="btn btn-link" [routerLink]="['/login']" *ngIf="!(authenticationService.loggedInUser$ | async)">
+      <a class="btn btn-link" [routerLink]="['/login']" *ngIf="!(authenticationService.loggedInUser$ | async)" (click)="closeNavbar()">
         {{ 'HEADER.NAV.LOGIN' | translate }}
       </a>
 

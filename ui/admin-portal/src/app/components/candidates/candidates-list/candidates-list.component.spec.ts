@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,8 +23,7 @@ import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {ShowCandidatesComponent} from "../show/show-candidates.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule} from "angular-2-local-storage";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule, DatePipe, TitleCasePipe} from "@angular/common";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -32,7 +31,7 @@ import {CandidateSourceDescriptionComponent} from "../../util/candidate-source-d
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 
-fdescribe('CandidatesListComponent', () => {
+describe('CandidatesListComponent', () => {
   let component: CandidatesListComponent;
   let fixture: ComponentFixture<CandidatesListComponent>;
   let mockActivatedRoute: any;
@@ -54,10 +53,10 @@ fdescribe('CandidatesListComponent', () => {
     mockSavedListService.get.and.returnValue(of(MockSavedList));
     TestBed.configureTestingModule({
       declarations: [CandidatesListComponent, CandidateSourceDescriptionComponent, AutosaveStatusComponent, RouterLinkStubDirective ,ShowCandidatesComponent, SortedByComponent],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}), NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
+      imports: [HttpClientTestingModule, NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
       ],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         DatePipe,
         TitleCasePipe,
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

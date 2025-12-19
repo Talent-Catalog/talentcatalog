@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {SearchHelpLinkRequest, UpdateHelpLinkRequest, HelpLink} from '../model/h
 import {SearchResults } from '../model/search-results';
 import {MockJob} from "../MockData/MockJob";
 
-fdescribe('HelpLinkService', () => {
+describe('HelpLinkService', () => {
   let service: HelpLinkService;
   let httpTestingController: HttpTestingController;
   const apiUrl = `${environment.apiUrl}/help-link`;

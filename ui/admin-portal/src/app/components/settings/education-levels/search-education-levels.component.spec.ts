@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -30,7 +30,7 @@ import {EditEducationLevelComponent} from "./edit/edit-education-level.component
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
-fdescribe('SearchEducationLevelsComponent', () => {
+describe('SearchEducationLevelsComponent', () => {
   let component: SearchEducationLevelsComponent;
   let fixture: ComponentFixture<SearchEducationLevelsComponent>;
   let modalService: NgbModal;

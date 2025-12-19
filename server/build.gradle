@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,79 +13,118 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-buildscript {
-    ext {
-        springBootVersion = '2.7.13'
-        isDev = System.properties['env'] == 'dev'
-        javaTargetVersion = JavaVersion.VERSION_17
-        lombokVersion = "1.18.30"
-        ext['spring-security.version']='5.8.12'
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
-    }
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.google.cloud.tools.jib' version '3.4.4'
+    id 'jacoco'
 }
 
-plugins {
-    id "org.springframework.boot" version "${springBootVersion}"
-    id 'io.spring.dependency-management' version '1.1.0'
-    id 'java'
-    id 'idea'
-    id 'com.google.cloud.tools.jib' version '3.4.0'
+group = 'org.tctalent'
+version = '0.0.1-SNAPSHOT'
+ext {
+    isDev = System.properties['env'] == 'dev'
+    mapstructVersion = "1.6.3"
+    lombokMapstructBindingVersion = "0.2.0"
 }
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
-//Yes - you do have to declare this again (even though it is declared in the
-//buildscript above)
-//- see https://stackoverflow.com/questions/13923766/gradle-buildscript-dependencies
+tasks.withType(JavaCompile).configureEach {
+    //See https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes
+    options.compilerArgs.add("-parameters")
+
+    //MapStruct integration with Spring
+    options.compilerArgs += [
+            "-Amapstruct.defaultComponentModel=spring"
+    ]
+}
+
+//@SpringBootTest's typically won't work during GitHub builds because they require that the whole
+//application starts up. We used to comment out the @Test's in the code. But this allows us to
+//tag those tests and then exclude running them. So the code is not changed and we can manually
+//run those test when we need to in our dev environments. JC.
+tasks.withType(Test).configureEach {
+    useJUnitPlatform {
+        excludeTags 'skip-test-in-gradle-build'
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+
+    //See https://stackoverflow.com/questions/76706612/standard-commons-logging-discovery-in-action-with-spring-jcl
+    configureEach {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
-configurations.configureEach {
-    exclude group: "commons-logging", module: "commons-logging"
-}
-
 dependencies {
-
-    //Instead of defaulting Lombok version, specify recent Lombok version to address this issue:
-    // https://stackoverflow.com/questions/65380359/lomboks-access-to-jdk-compilers-internal-packages-incompatible-with-java-16
-    //We were getting this error when building server:
-    //java: java.lang.IllegalAccessError: class lombok.javac.apt.LombokProcessor
-    // (in unnamed module @0x3dd0aa6) cannot access class
-    // com.sun.tools.javac.processing.JavacProcessingEnvironment (in module jdk.compiler) because
-    // module jdk.compiler does not export com.sun.tools.javac.processing to unnamed module @0x3dd0aa6
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-    testCompileOnly("org.projectlombok:lombok:1.18.30")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
-
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-
     if (!isDev) {
         implementation(project(':ui:admin-portal'))
         implementation(project(':ui:candidate-portal'))
         implementation(project(':ui:public-portal'))
     }
+
+    implementation "org.springframework.boot:spring-boot-starter-batch"
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation "org.springframework.data:spring-data-rest-webmvc"
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:elasticsearch'
+    testImplementation 'org.testcontainers:postgresql'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'com.h2database:h2'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //Extra stuff not part of Spring Initializr
+
+    testImplementation 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    //Note that Spring Initializr pulls in org.flywaydb:flyway-core but that will not process
+    //older Postgres DB versions. We need the the following dependency
+    //See https://github.com/flyway/flyway/issues/3902
+    implementation 'org.flywaydb:flyway-database-postgresql'
+
+    //See https://stackoverflow.com/questions/75768422/cannot-find-messagematcherdelegatingauthorizationmanager-class-while-trying-to-c
+    //Does not get included in Spring Boot starter
+    implementation 'org.springframework.security:spring-security-messaging'
+
     implementation platform('com.google.cloud:libraries-bom:22.0.0')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20210629-1.32.1'
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.1'
     implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
@@ -96,19 +135,6 @@ dependencies {
     implementation("org.jdom:jdom2")
 // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation('org.springframework.boot:spring-boot-starter-webflux')
-
-    //See https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
-    implementation 'org.springframework.data:spring-data-elasticsearch'
-
-    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
-    implementation 'org.springframework.security:spring-security-web'
-
-    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-messaging
-    implementation 'org.springframework.security:spring-security-messaging'
 
     //See https://github.com/samdjstevens/java-totp/tree/master/totp-spring-boot-starter
     implementation 'dev.samstevens.totp:totp-spring-boot-starter:1.7.1'
@@ -125,35 +151,42 @@ dependencies {
     implementation 'com.google.api-client:google-api-client:1.32.1'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20210725-1.32.1'
-    implementation("org.flywaydb:flyway-core")
+
     implementation("org.apache.commons:commons-lang3")
     implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
-    implementation("com.sun.mail:jakarta.mail:2.0.1")
-    implementation("jakarta.activation:jakarta.activation-api:latest.release")
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
-    implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
 
-    // Thymeleaf version 5 for spring
-    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
-
-    // Caching
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-
-    // Testing
-    testImplementation("org.springframework.security:spring-security-test:5.8.12")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
-    runtimeOnly('org.postgresql:postgresql')
-    runtimeOnly('mysql:mysql-connector-java')
-    runtimeOnly('com.h2database:h2')
+
+    // monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-core'
+    implementation 'io.github.mweirauch:micrometer-jvm-extras:0.2.2'
+
+    // tc api
+    implementation "org.tctalent:tc-api-spec:1.0.0"
+
+    // Mapstruct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation "com.google.code.findbugs:jsr305:3.0.2" // todo - move version to ext - not a spring boot curated dep
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
 }
 
 jib {
+    container {
+        jvmFlags = [
+                "-XX:InitialRAMPercentage=60.0",
+                "-XX:MaxRAMPercentage=60.0",
+                "-XX:+HeapDumpOnOutOfMemoryError",
+                "-XX:HeapDumpPath=/tmp"
+        ]
+    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
@@ -164,17 +197,27 @@ jib {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.12"
+}
 test {
     useJUnitPlatform()
+    if (isDev){
+        finalizedBy jacocoTestReport
+    }
 }
-
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required.set(true)
+        xml.required.set(false)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/test/html"))
+    }
+}
 bootJar {
     from(".") {
         include ".ebextensions/**"
     }
 }
 
-// Parameter flag required for SpringBoot3+ (Spring 6.1+)
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs.add("-parameters")
-}

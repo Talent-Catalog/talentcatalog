@@ -1,7 +1,22 @@
-import {Component, ElementRef, Inject, LOCALE_ID, ViewChild} from '@angular/core';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, Inject, LOCALE_ID, ViewChild} from '@angular/core';
 import {AuthorizationService} from "../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {Job, JobOpportunityStage, SearchJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
@@ -15,6 +30,8 @@ import {forkJoin, Observable} from "rxjs";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Component({
   selector: 'app-jobs',
@@ -36,11 +53,11 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
   withUnreadMessagesTip = "Only show jobs which have unread chats";
 
   @ViewChild("searchFilter")
-  searchFilter: ElementRef;
+  declare searchFilter: InputComponent;
 
   constructor(
     chatService: ChatService,
-    fb: FormBuilder,
+    fb: UntypedFormBuilder,
     authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: JobService,
@@ -71,6 +88,9 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
       case SearchOppsBy.starredByMe:
         req.starred = true;
+
+        //If it is starred I want to see it even if it is closed
+        req.sfOppClosed = true;
         break;
     }
 
@@ -149,4 +169,9 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     //Employers with direct access know that all jobs are coming to their destination.
     return !this.authorizationService.isEmployerPartner();
   }
+
+  public canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
 }

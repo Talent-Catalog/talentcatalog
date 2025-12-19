@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,19 +14,32 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../../model/candidate';
 import {CandidateOccupation} from '../../../../../model/candidate-occupation';
 import {CandidateJobExperience} from '../../../../../model/candidate-job-experience';
-import {CandidateJobExperienceService} from '../../../../../services/candidate-job-experience.service';
+import {
+  CandidateJobExperienceService
+} from '../../../../../services/candidate-job-experience.service';
 import {EditCandidateJobExperienceComponent} from './edit/edit-candidate-job-experience.component';
-import {CreateCandidateJobExperienceComponent} from './create/create-candidate-job-experience.component';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {
+  CreateCandidateJobExperienceComponent
+} from './create/create-candidate-job-experience.component';
+import {UntypedFormGroup} from '@angular/forms';
 import {SearchResults} from '../../../../../model/search-results';
 import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupation.component';
 import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
 import {isHtml} from "../../../../../util/string";
+import {CandidateService} from "../../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-job-experience',
@@ -41,17 +54,16 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   @Input() candidateOccupation: CandidateOccupation;
   @Output() deleteOccupation = new EventEmitter<CandidateOccupation>();
 
-  candidateJobExperienceForm: FormGroup;
+  candidateJobExperienceForm: UntypedFormGroup;
   loading: boolean;
   expanded: boolean;
   error;
   results: SearchResults<CandidateJobExperience>;
   experiences: CandidateJobExperience[];
-  hasMore: boolean;
 
   constructor(private candidateJobExperienceService: CandidateJobExperienceService,
               private modalService: NgbModal,
-              private fb: FormBuilder) {
+              private candidateService: CandidateService) {
   }
 
   ngOnInit() {
@@ -59,45 +71,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.expanded = false;
-    this.experiences = [];
-
-    this.candidateJobExperienceForm = this.fb.group({
-      candidateOccupationId: [this.candidateOccupation.id],
-      pageSize: 10,
-      pageNumber: 0,
-      sortDirection: 'DESC',
-      sortFields: [['endDate']]
-    });
-
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.doSearch();
-    }
-
-  }
-
-  doSearch() {
-    this.loading = true;
-    this.experiences = [];
-
-    /* GET CANDIDATE JOB EXPERIENCES */
-    this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
-      results => {
-        this.experiences = results.content;
-        this.hasMore = results.totalPages > results.number+1;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
-
-  }
-
-  loadMore() {
-   this.candidateJobExperienceForm.controls['pageNumber'].patchValue(this.candidateJobExperienceForm.value.pageNumber+1);
-   this.doSearch();
+    this.experiences = this.candidate?.candidateJobExperiences.filter(je => je.candidateOccupation?.id == this.candidateOccupation?.id);
   }
 
   editOccupation() {
@@ -109,7 +83,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     modal.componentInstance.candidateOccupation = this.candidateOccupation;
 
     modal.result
-      .then((candidateOccupation) => this.candidateOccupation = candidateOccupation)
+      .then((candidateOccupation) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */
       });
 
@@ -126,7 +100,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     createCandidateJobExperienceModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateJobExperienceModal.result
-      .then((candidateJobExperience) => this.doSearch())
+      .then((candidateJobExperience) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */
       });
 
@@ -141,7 +115,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     editCandidateJobExperienceModal.componentInstance.candidateJobExperience = candidateJobExperience;
 
     editCandidateJobExperienceModal.result
-      .then((candidateJobExperience) => this.doSearch())
+      .then((candidateJobExperience) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */
       });
 
@@ -181,13 +155,12 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
           this.candidateJobExperienceService.delete(candidateJobExperience.id).subscribe(
             (user) => {
               this.loading = false;
-              this.doSearch();
+              this.candidateService.updateCandidate()
             },
             (error) => {
               this.error = error;
               this.loading = false;
             });
-          this.doSearch();
         }
       })
       .catch(() => { /* Isn't possible */ });

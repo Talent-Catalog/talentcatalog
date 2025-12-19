@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('CandidateHistoryTabComponent', () => {
+describe('CandidateHistoryTabComponent', () => {
   let component: CandidateHistoryTabComponent;
   let fixture: ComponentFixture<CandidateHistoryTabComponent>;
   const mockCandidate = new MockCandidate();

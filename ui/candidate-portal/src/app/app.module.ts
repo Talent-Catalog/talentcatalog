@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,6 +22,7 @@ import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
 import {
+  NgbCollapseModule,
   NgbDateAdapter,
   NgbDateParserFormatter,
   NgbDatepickerConfig,
@@ -31,9 +32,6 @@ import {
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
 
-import {
-  RegistrationLandingComponent
-} from './components/register/landing/registration-landing.component';
 import {
   RegistrationContactComponent
 } from './components/register/contact/registration-contact.component';
@@ -61,7 +59,6 @@ import {
 import {
   RegistrationAdditionalInfoComponent
 } from './components/register/additional-info/registration-additional-info.component';
-import {LocalStorageModule} from 'angular-2-local-storage';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {LanguageInterceptor} from './services/language.interceptor';
 import {LoginComponent} from './components/account/login/login.component';
@@ -115,6 +112,7 @@ import {MonthPickerComponent} from './components/common/month-picker/month-picke
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft,
+  faArrowUpRightFromSquare,
   faBriefcase,
   faCalendar,
   faCheck,
@@ -122,11 +120,14 @@ import {
   faChevronUp,
   faEdit,
   faEllipsisH,
+  faEnvelope,
+  faEnvelopeOpen,
   faExternalLinkAlt,
   faFaceSmile,
   faFileUpload,
   faFolderOpen,
   faGlobe,
+  faHandshake,
   faLink,
   faListCheck,
   faMessage,
@@ -134,6 +135,7 @@ import {
   faQuestion,
   faQuestionCircle,
   faTimes,
+  faTriangleExclamation,
   faUser,
   faXmark
 } from '@fortawesome/free-solid-svg-icons';
@@ -201,6 +203,62 @@ import {
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
 import {PreviewLinkComponent} from './components/chat/preview-link/preview-link.component';
+import {BuildLinkComponent} from './util/build-link/build-link.component';
+import {LinkTooltipComponent} from './util/link-tooltip/link-tooltip.component';
+import {
+  CandidateExamFormComponent
+} from "./components/common/candidate-exam-form/candidate-exam-form.component";
+import {
+  CandidateExamCardComponent
+} from "./components/common/candidate-exam-card/candidate-exam-card.component";
+import {
+  RegistrationCandidateExamComponent
+} from "./components/register/candidate-exam/registration-candidate-exam.component";
+import {
+  DeleteExamComponent
+} from "./components/register/candidate-exam/delete/delete-exam.component";
+import {
+  RegistrationDestinationsComponent
+} from './components/register/destinations/registration-destinations.component';
+import {
+  DestinationComponent
+} from "./components/register/destinations/destination/destination.component";
+import {ServicesComponent} from './components/profile/view/tab/services/services.component';
+import {VerifyEmailComponent} from './components/account/verify-email/verify-email.component';
+import {
+  DuolingoCouponComponent
+} from './components/profile/view/tab/services/duolingo/duolingo-coupon/duolingo-coupon.component';
+import {
+  DuolingoComponent
+} from './components/profile/view/tab/services/duolingo/duolingo.component';
+import {TabHeaderComponent} from './components/common/tab-header/tab-header.component';
+import {TermsComponent} from './components/privacy-policy/terms.component';
+import {
+  RegistrationSubmitComponent
+} from './components/register/submit/registration-submit.component';
+import {ShowTermsComponent} from './components/util/accept-terms/show-terms.component';
+import {
+  ViewFormTaskComponent
+} from './components/profile/view/tab/tasks/task/form/view-form-task.component';
+import {MyFirstFormComponent} from './components/form/my-first-form/my-first-form.component';
+import {
+  TravelInfoFormComponent
+} from './components/form/italy-travel-document-form/travel-info-form.component';
+import {
+  DependantsRefugeeStatusInfoFormComponent
+} from './components/form/family-rsd-evidence-form/dependants-refugee-status-info-form.component';
+import {
+  RefugeeStatusInfoFormComponent
+} from './components/form/rsd-evidence-form/refugee-status-info-form.component';
+import {
+  TaskSubmittedComponent
+} from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
+import {
+  TaskAbandonedComponent
+} from './components/profile/view/tab/tasks/task/task-abandoned/task-abandoned.component';
+import {
+  IntlPhoneInputComponent
+} from './components/util/intl-phone-input/intl-phone-input.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -214,7 +272,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     HeaderComponent,
     LandingComponent,
-    RegistrationLandingComponent,
     RegistrationContactComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,
@@ -271,7 +328,31 @@ export function HttpLoaderFactory(http: HttpClient) {
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent,
-    PreviewLinkComponent
+    PreviewLinkComponent,
+    LinkTooltipComponent,
+    BuildLinkComponent,
+    CandidateExamFormComponent,
+    CandidateExamCardComponent,
+    RegistrationCandidateExamComponent,
+    DeleteExamComponent,
+    RegistrationDestinationsComponent,
+    DestinationComponent,
+    VerifyEmailComponent,
+    ServicesComponent,
+    DuolingoCouponComponent,
+    DuolingoComponent,
+    TabHeaderComponent,
+    TermsComponent,
+    RegistrationSubmitComponent,
+    ShowTermsComponent,
+    ViewFormTaskComponent,
+    MyFirstFormComponent,
+    TravelInfoFormComponent,
+    TaskSubmittedComponent,
+    DependantsRefugeeStatusInfoFormComponent,
+    RefugeeStatusInfoFormComponent,
+    TaskAbandonedComponent,
+    IntlPhoneInputComponent,
   ],
   imports: [
     BrowserModule,
@@ -280,15 +361,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
-    LocalStorageModule.forRoot({
-      prefix: 'tbb-candidate-portal',
-      storageType: 'localStorage'
-    }),
+    NgbCollapseModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
-        useClass: LanguageLoader
+        useExisting: LanguageLoader
         // Below is the standard loader which finds json translation files in assets/i18n
         //See https://github.com/ngx-translate/core#configuration
         //See doc for LanguageLoader for the reasons why we do what we do.
@@ -317,13 +395,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n},
     {provide: RxStompService},
-    DatePipe
-
+    DatePipe,
+    LanguageLoader
   ],
   exports: [
     CandidateOppsComponent,
     CandidateEducationCardComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    ViewChatPostsComponent
   ],
   bootstrap: [AppComponent]
 })
@@ -332,6 +411,7 @@ export class AppModule {
   constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
     library.addIcons(
+      faArrowUpRightFromSquare,
       faEdit,
       faSpinner,
       faChevronDown,
@@ -354,7 +434,11 @@ export class AppModule {
       faUser,
       faListCheck,
       faBriefcase,
-      faMessage
+      faMessage,
+      faHandshake,
+      faEnvelope,
+      faEnvelopeOpen,
+      faTriangleExclamation
     );
   }
 }

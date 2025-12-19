@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,18 +13,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {TestBed, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {CandidatesSearchComponent} from './candidates-search.component';
 import {ActivatedRoute} from '@angular/router';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {of, throwError } from 'rxjs';
+import {of, throwError} from 'rxjs';
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
-fdescribe('CandidatesSearchComponent', () => {
+describe('CandidatesSearchComponent', () => {
   let component: CandidatesSearchComponent;
   let fixture: ComponentFixture<CandidatesSearchComponent>;
   let mockActivatedRoute: any;
   let mockSavedSearchService: any;
+  let modalService: NgbModal;
 
   beforeEach(async () => {
     mockActivatedRoute = {
@@ -37,11 +40,13 @@ fdescribe('CandidatesSearchComponent', () => {
       declarations: [CandidatesSearchComponent],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: SavedSearchService, useValue: mockSavedSearchService }
+        { provide: SavedSearchService, useValue: mockSavedSearchService },
+        { provide: NgbModal  },
       ]
     })
     .compileComponents();
     mockSavedSearchService.getDefault.and.returnValue(of());
+    modalService = TestBed.inject(NgbModal);
   });
 
   beforeEach(() => {
@@ -85,6 +90,19 @@ fdescribe('CandidatesSearchComponent', () => {
 
     expect(component.pageNumber).toEqual(2);
     expect(component.pageSize).toEqual(10);
+  });
+
+  it('should display confirmation modal if form dirty and navigate away', () => {
+    spyOn(modalService, 'open').and.returnValue({
+      componentInstance: {},
+      result: Promise.resolve('saved')
+    } as NgbModalRef);
+
+    component.formDirty = true;
+
+    component.canExit();
+
+    expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, jasmine.any(Object));
   });
 
 });

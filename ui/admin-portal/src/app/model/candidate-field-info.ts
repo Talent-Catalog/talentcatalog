@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {Candidate} from "./candidate";
+import {CandidateSource} from "./base";
 
 export class CandidateFieldInfo {
   /**
@@ -39,36 +40,40 @@ export class CandidateFieldInfo {
    * @param fieldSelector If null, field is always available for display. If not null, field is
    * only available for display if this function returns true. For example, candidate names are
    * only displayable to user admins.
-   * @param sortable Designates whether a field is intended to be sortable, meaning we can include non-sortable (e.g. @Transient) fields and disable the frontend sort-on-click behaviour that would otherwise cause an error (using *ngIf).
+   * @param sortable Designates whether a field is intended to be sortable, meaning we can include
+   * non-sortable (e.g. @Transient) fields and disable the frontend sort-on-click behaviour that
+   * would otherwise cause an error (using *ngIf).
    */
   constructor(displayName: string, fieldPath: string,
-              private tooltipSupplier: (value: any) => string,
-              private fieldFormatter: (value: any) => string,
-              public fieldSelector: () => boolean,
+              private tooltipSupplier: (value: any, value2: any) => string,
+              private fieldFormatter: (value: any, value2: any) => string,
+              public fieldSelector: (value: any) => boolean,
               public sortable: boolean) {
     this.displayName = displayName;
     this.fieldPath = fieldPath;
   }
 
-  getTooltip(candidate: Candidate): string {
+  getTooltip(candidate: Candidate, source: CandidateSource): string {
     let tooltip: string = '';
     if (this.tooltipSupplier != null) {
-      const value = this.getValue(candidate);
-      tooltip = this.tooltipSupplier(candidate);
+      const value = this.getValue(candidate, source);
+      tooltip = this.tooltipSupplier(candidate, source);
     }
     return tooltip;
   }
 
-  getValue(candidate: Candidate): string {
+  getValue(candidate: Candidate, source: CandidateSource): string {
     let value;
     // Need to format field with the candidate object not value
-    if (this.fieldPath === "ieltsScore" || this.fieldPath === "latestIntake" || this.fieldPath === "latestIntakeDate") {
+    if (this.fieldPath === "ieltsScore" || this.fieldPath === "englishAssessmentScoreDet" || this.fieldPath === "frenchAssessmentScoreNclc" ||
+      this.fieldPath === "latestIntake" || this.fieldPath === "latestIntakeDate" ||
+      this.fieldPath === "nextStep" || this.fieldPath === "addedBy") {
       value = candidate;
     } else {
       value = this.getUnformattedValue(candidate);
     }
     const ret = value == null ? null :
-      this.fieldFormatter == null ? value : this.fieldFormatter(value);
+      this.fieldFormatter == null ? value : this.fieldFormatter(value, source);
     return ret;
   }
 

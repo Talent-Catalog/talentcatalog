@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -15,14 +15,21 @@
   -->
 
 <div class="container">
+  <ng-template #cvWarningHtml>
+    <div [innerHTML]="cvWarning"></div>
+  </ng-template>
 
     <div id="upload">
       <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds">
         <ngb-panel id="upload-cv">
           <ng-template ngbPanelTitle>
             <div class="container">
-              <strong class="link underline">{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
-              <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
+              <strong class="link underline"> {{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}
+                <span triggers="mouseenter:mouseleave" [autoClose]="false" placement="end"
+                      [ngbPopover]="cvWarningHtml">
+                  <fa-icon icon="circle-question" class="fa-s"
+                           style="color: #10B0E3;"></fa-icon></span></strong>
+              <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}  </p>
             </div>
           </ng-template>
           <ng-template ngbPanelContent>
@@ -54,7 +61,7 @@
 
 </div>
 
-<app-registration-footer [type]="edit ? 'update' : 'submit'"
+<app-registration-footer [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? cancel() : back() "
-                         (nextClicked)="edit ? update() : submit()">
+                         (nextClicked)="edit ? update() : next()">
 </app-registration-footer>

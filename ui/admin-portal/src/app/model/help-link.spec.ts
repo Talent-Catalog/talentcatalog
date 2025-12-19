@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,7 +27,7 @@ import {User} from './user';
 import {Country} from './country';
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('HelpLink', () => {
+describe('HelpLink', () => {
   it('should create a HelpLink instance', () => {
     const user: User = new MockUser();
     const country: Country = { id: 1, name: 'Country1', status: 'Active', translatedName: 'Country One' }; // Mock country
@@ -64,7 +64,7 @@ fdescribe('HelpLink', () => {
   });
 });
 
-fdescribe('SearchHelpLinkRequest', () => {
+describe('SearchHelpLinkRequest', () => {
   it('should create a SearchHelpLinkRequest instance', () => {
     const searchRequest: SearchHelpLinkRequest = new SearchHelpLinkRequest();
     searchRequest.countryId = 1;
@@ -88,7 +88,7 @@ fdescribe('SearchHelpLinkRequest', () => {
   });
 });
 
-fdescribe('UpdateHelpLinkRequest', () => {
+describe('UpdateHelpLinkRequest', () => {
   it('should create an UpdateHelpLinkRequest instance', () => {
     const updateRequest: UpdateHelpLinkRequest = {
       label: 'Updated Help Link',

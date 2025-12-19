@@ -1,7 +1,23 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <span>
   <ng-template #helpTipContent>
     <div *ngIf="loading">
-      Loading...
+      <i class="fas fa-spinner fa-spin"></i>
     </div>
     <div *ngIf="error">
       {{error}}
@@ -13,9 +29,13 @@
     </div>
   </ng-template>
 
-  <button class="help-tip-button" [ngbTooltip]="helpTipContent"
-          (click)="fetchHelp()" placement="auto"
-          triggers="click" tooltipClass="help-tips">
+  <button class="help-tip-button"
+          *ngIf="request"
+          [ngbTooltip]="helpTipContent"
+          (shown)="fetchHelp()"
+          [placement]="placement"
+          triggers="click"
+          tooltipClass="help-tips">
     <i class="fa-regular fa-circle-question fa-xs"></i>
   </button>
 

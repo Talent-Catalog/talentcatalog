@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,9 +25,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.ChatPost;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
     JpaSpecificationExecutor<ChatPost> {
@@ -37,7 +36,8 @@ public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
     @Modifying
     @Query("DELETE FROM ChatPost cp WHERE cp.jobChat.id = :jobChatId")
     void deleteByJobChatId(@Param("jobChatId") Long jobChatId);
-    Optional<List<ChatPost>> findByJobChatId(Long chatId);
+
+    Optional<List<ChatPost>> findByJobChatIdOrderByIdAsc(Long chatId);
 
     @Query(
         value="SELECT id FROM chat_post p WHERE p.job_chat_id = :chatId ORDER BY p.id DESC LIMIT 1",

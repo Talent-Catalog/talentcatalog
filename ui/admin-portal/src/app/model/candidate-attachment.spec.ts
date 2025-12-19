@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,7 +23,7 @@ import {
 import {UploadType} from "./task";
 import {User} from "./user";
 
-fdescribe('CandidateAttachmentRequest', () => {
+describe('CandidateAttachmentRequest', () => {
   it('should create an instance of CandidateAttachmentRequest with required fields', () => {
     const request = new CandidateAttachmentRequest();
     request.candidateId = 1;
@@ -67,7 +67,7 @@ fdescribe('CandidateAttachmentRequest', () => {
     const request = new CandidateAttachmentRequest();
     request.candidateId = 1;
     request.type = AttachmentType.googlefile;
-    request.name = 'Google Doc';
+    request.name = 'Google Drive';
     request.location = 'google-drive-link';
     request.cv = true;
     request.uploadType = UploadType.englishExam;
@@ -76,7 +76,7 @@ fdescribe('CandidateAttachmentRequest', () => {
 
     expect(request.candidateId).toBe(1);
     expect(request.type).toBe(AttachmentType.googlefile);
-    expect(request.name).toBe('Google Doc');
+    expect(request.name).toBe('Google Drive');
     expect(request.location).toBe('google-drive-link');
     expect(request.cv).toBe(true);
     expect(request.uploadType).toBe(UploadType.englishExam);
@@ -85,7 +85,7 @@ fdescribe('CandidateAttachmentRequest', () => {
   });
 });
 
-fdescribe('CandidateAttachment', () => {
+describe('CandidateAttachment', () => {
   it('should create an instance of CandidateAttachment with required fields', () => {
     const createdBy: User = { id: 1, name: 'Creator' } as User;
     const updatedBy: User = { id: 2, name: 'Updater' } as User;

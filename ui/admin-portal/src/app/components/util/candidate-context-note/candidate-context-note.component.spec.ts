@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,8 +22,9 @@ import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {By} from "@angular/platform-browser";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
 import {of} from "rxjs";
+import {AuthorizationService} from "../../../services/authorization.service";
 
-fdescribe('CandidateContextNoteComponent', () => {
+describe('CandidateContextNoteComponent', () => {
   let component: CandidateContextNoteComponent;
   let fixture: ComponentFixture<CandidateContextNoteComponent>;
   let candidateSourceService: jasmine.SpyObj<CandidateSourceService>;
@@ -33,12 +34,14 @@ fdescribe('CandidateContextNoteComponent', () => {
 
   beforeEach(async () => {
     const candidateSourceSpy = jasmine.createSpyObj('CandidateSourceService', ['updateContextNote']);
+    const authorizationServiceSpy = jasmine.createSpyObj('AuthorizationService', ['canEditCandidateSource']);
 
     await TestBed.configureTestingModule({
       declarations: [CandidateContextNoteComponent, AutosaveStatusComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        { provide: CandidateSourceService, useValue: candidateSourceSpy }
+        { provide: CandidateSourceService, useValue: candidateSourceSpy },
+        { provide: AuthorizationService, useValue: authorizationServiceSpy }
       ]
     }).compileComponents();
 

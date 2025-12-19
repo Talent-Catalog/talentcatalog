@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -38,7 +38,8 @@ public class HtmlSanitizer {
      */
     @Nullable
     public static String sanitize(@Nullable String html) {
-        return html == null ? null : Jsoup.clean(html, Safelist.relaxed());
+        return html == null ? null :
+            StringSanitizer.removeControlCharacters(Jsoup.clean(html, Safelist.relaxed()));
     }
 
     /**
@@ -52,6 +53,10 @@ public class HtmlSanitizer {
      */
     @Nullable
     public static String sanitizeWithLinksNewTab(@Nullable String html) {
-        return html == null ? null : Jsoup.clean(html, Safelist.relaxed().addAttributes("a", "target", "rel"));
+        return html == null ? null :
+            StringSanitizer.removeControlCharacters(
+                Jsoup.clean(html, Safelist.relaxed().addAttributes("a", "target", "rel"))
+            );
     }
+
 }

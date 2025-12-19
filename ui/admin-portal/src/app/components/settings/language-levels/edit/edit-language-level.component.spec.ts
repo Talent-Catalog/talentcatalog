@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 import {EditLanguageLevelComponent} from "./edit-language-level.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageLevelService} from "../../../../services/language-level.service";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -23,16 +23,16 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LanguageLevel} from "../../../../model/language-level";
 import {of, throwError} from "rxjs";
 
-fdescribe('EditLanguageLevelComponent', () => {
+describe('EditLanguageLevelComponent', () => {
   let component: EditLanguageLevelComponent;
   let fixture: ComponentFixture<EditLanguageLevelComponent>;
   let languageLevelServiceSpy: jasmine.SpyObj<LanguageLevelService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   // @ts-expect-error
-  const languageLevel: LanguageLevel = { level: 5, name: 'Advanced', status: 'active' };
+  const languageLevel: LanguageLevel = { level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' };
   // @ts-expect-error
-  const updatedLanguageLevel: LanguageLevel = { level: 4, name: 'Intermediate', status: 'active' };
+  const updatedLanguageLevel: LanguageLevel = { level: 4, name: 'Intermediate', cefrLevel: 'B1', status: 'active' };
 
   beforeEach(async () => {
     const languageLevelServiceSpyObj = jasmine.createSpyObj('LanguageLevelService', ['get', 'update']);
@@ -49,7 +49,7 @@ fdescribe('EditLanguageLevelComponent', () => {
 
     languageLevelServiceSpy = TestBed.inject(LanguageLevelService) as jasmine.SpyObj<LanguageLevelService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {
@@ -75,7 +75,7 @@ fdescribe('EditLanguageLevelComponent', () => {
   }));
 
   it('should call onSave and close modal when language level is successfully updated', fakeAsync(() => {
-    component.languageLevelForm.patchValue({ level: 4, name: 'Intermediate', status: 'active' });
+    component.languageLevelForm.patchValue({ level: 4, name: 'Intermediate', cefrLevel: 'B1', status: 'active' });
 
     component.onSave();
     tick(); // Waiting for async operation to complete
@@ -83,6 +83,7 @@ fdescribe('EditLanguageLevelComponent', () => {
     expect(languageLevelServiceSpy.update).toHaveBeenCalledWith(component.languageLevelId, {
       level: 4,
       name: 'Intermediate',
+      cefrLevel: 'B1',
       status: 'active'
     });
     expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(updatedLanguageLevel);

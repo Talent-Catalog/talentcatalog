@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,8 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.validation.Valid;
 import java.util.Map;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +30,7 @@ import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tctalent.server.service.db.CandidateEducationService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -39,10 +38,13 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class CandidateEducationPortalApi {
 
     private final CandidateEducationService candidateEducationService;
+    private final CountryService countryService;
 
     @Autowired
-    public CandidateEducationPortalApi(CandidateEducationService candidateEducationService) {
+    public CandidateEducationPortalApi(CandidateEducationService candidateEducationService,
+        CountryService countryService) {
         this.candidateEducationService = candidateEducationService;
+        this.countryService = countryService;
     }
 
     @PostMapping()
@@ -67,7 +69,7 @@ public class CandidateEducationPortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("educationType")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("educationMajor", majorDto())
                 .add("lengthOfCourseYears")
                 .add("institution")
@@ -83,12 +85,4 @@ public class CandidateEducationPortalApi {
                 .add("name")
                 ;
     }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
 }

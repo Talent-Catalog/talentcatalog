@@ -1,0 +1,33 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="text-end" *ngIf="!preview">
+  <button class="btn btn-danger btn-card"
+          [disabled]="disabled"
+          (click)="deleteExam()">&times;</button>
+  <button class="btn btn-primary btn-card pb-1"
+          [disabled]="disabled"
+          (click)="editExam()"><fa-icon icon="edit" size="xs"></fa-icon></button>
+</div>
+
+<h5><strong>Exam:</strong> {{ getExamName(exam.exam) || 'N/A' }}</h5>
+<!-- Conditionally display the Other Exam Name label -->
+<p *ngIf="exam.exam === 'Other'">
+  <strong>Other Exam Name:</strong> {{ exam.otherExam || 'N/A' }}
+</p>
+<p><strong>Year:</strong> {{ exam.year || 'N/A' }}</p>
+<p><strong>Score:</strong> {{ exam.score || 'N/A' }}</p>
+<p><strong>Notes:</strong> {{ exam.notes || 'N/A' }}</p>

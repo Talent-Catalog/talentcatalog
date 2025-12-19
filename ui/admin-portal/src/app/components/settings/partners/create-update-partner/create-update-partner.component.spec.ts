@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {PartnerService} from "../../../../services/partner.service";
 import {CountryService} from "../../../../services/country.service";
 import {UserService} from "../../../../services/user.service";
 import {NgbActiveModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockPartner} from "../../../../MockData/MockPartner";
 import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
@@ -29,28 +29,30 @@ import {MockJob} from "../../../../MockData/MockJob";
 import {of, throwError} from "rxjs";
 import {MockUser} from "../../../../MockData/MockUser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 
-fdescribe('CreateUpdatePartnerComponent', () => {
+describe('CreateUpdatePartnerComponent', () => {
   let component: CreateUpdatePartnerComponent;
   let fixture: ComponentFixture<CreateUpdatePartnerComponent>;
   let partnerServiceSpy: jasmine.SpyObj<PartnerService>;
   let countryServiceSpy: jasmine.SpyObj<CountryService>;
   let userServiceSpy: jasmine.SpyObj<UserService>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
   const mockCountries: Country[] = [MockJob.country];
   const mockUsers = [new MockUser()];
+  const mockPartners = [new MockPartner()];
 
   beforeEach(async () => {
-    const partnerSpy = jasmine.createSpyObj('PartnerService', ['create', 'update']);
+    const partnerSpy = jasmine.createSpyObj(
+      'PartnerService', ['create', 'update', 'listPartners']
+    );
     const countrySpy = jasmine.createSpyObj('CountryService', ['listCountriesRestricted']);
     const userSpy = jasmine.createSpyObj('UserService', ['search']);
     const modalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
 
     await TestBed.configureTestingModule({
       declarations: [CreateUpdatePartnerComponent],
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
         { provide: PartnerService, useValue: partnerSpy },
         { provide: CountryService, useValue: countrySpy },
@@ -63,7 +65,7 @@ fdescribe('CreateUpdatePartnerComponent', () => {
     countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
     userServiceSpy = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {
@@ -72,6 +74,7 @@ fdescribe('CreateUpdatePartnerComponent', () => {
     component.partner = new MockPartner();
     countryServiceSpy.listCountriesRestricted.and.returnValue(of(mockCountries));
     userServiceSpy.search.and.returnValue(of(mockUsers));
+    partnerServiceSpy.listPartners.and.returnValue(of(mockPartners));
     fixture.detectChanges();
   });
 
@@ -146,6 +149,8 @@ fdescribe('CreateUpdatePartnerComponent', () => {
       jobCreator: false,
       logo: "",
       notificationEmail: "",
+      publicApiAccess: false,
+      publicApiAuthorities: [],
       registrationLandingPage: "",
       sflink: "",
       sourceCountryIds: [],
@@ -172,22 +177,32 @@ fdescribe('CreateUpdatePartnerComponent', () => {
 
   it('should update existing partner', fakeAsync(() => {
     const partner: Partner = new MockPartner();
-    // @ts-ignore
-    const request: UpdatePartnerRequest = { id: 1, name: 'Test Partner', abbreviation: 'TP', status: 'active' };
+    const redirectPartnerId = 42;
+
     partnerServiceSpy.update.and.returnValue(of(partner));
     component.partner = partner;
 
     component.form = fb.group({
       name: ['Test Partner', Validators.required],
       abbreviation: ['TP', Validators.required],
-      status: ['active', Validators.required]
+      status: ['active', Validators.required],
+      redirectPartnerId: redirectPartnerId,
     });
 
     component.save();
-
     tick(); // Simulate async operation
 
-    expect(partnerServiceSpy.update).toHaveBeenCalled();
+    // Use jasmine.objectContaining to check just the properties we care about
+    expect(partnerServiceSpy.update).toHaveBeenCalledWith(
+      1, // First parameter is the partner ID
+      jasmine.objectContaining({
+        name: 'Test Partner',
+        abbreviation: 'TP',
+        status: 'active',
+        redirectPartnerId: redirectPartnerId
+      })
+    );
+
     expect(activeModalSpy.close).toHaveBeenCalledWith(partner);
     expect(component.working).toBeFalse();
   }));

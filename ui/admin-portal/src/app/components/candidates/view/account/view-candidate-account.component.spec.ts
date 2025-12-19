@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,10 +23,8 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {Candidate} from "../../../../model/candidate";
 import {User} from "../../../../model/user";
-import {of} from "rxjs";
-import {SimpleChange} from "@angular/core";
 
-fdescribe('ViewCandidateAccountComponent', () => {
+describe('ViewCandidateAccountComponent', () => {
   let component: ViewCandidateAccountComponent;
   let fixture: ComponentFixture<ViewCandidateAccountComponent>;
   let mockUserService;
@@ -52,24 +50,13 @@ fdescribe('ViewCandidateAccountComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ViewCandidateAccountComponent);
     component = fixture.componentInstance;
-    component.user = user;
+    component.user = candidate.user;
     component.candidate = candidate;
     fixture.detectChanges();
   });
 
   it('should ', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should fetch user information when the candidate input changes', () => {
-    mockUserService.get.and.returnValue(of(user));
-    const changes = {
-      candidate: new SimpleChange(null, candidate, true)
-    };
-    component.ngOnChanges(changes);
-    expect(mockUserService.get).toHaveBeenCalledWith(1);
-    expect(component.loading).toBe(false);
-    expect(component.user).toEqual(user);
   });
 
   it('should open the password update modal when reset link is clicked', () => {
@@ -81,5 +68,13 @@ fdescribe('ViewCandidateAccountComponent', () => {
 
     expect(mockModalService.open).toHaveBeenCalledOnceWith(jasmine.any(Function), { centered: true, backdrop: 'static' });
     expect(modalRef.componentInstance.user).toEqual(user);
+  });
+
+  it('should hide password reset link if editable is false', () => {
+    component.editable = false;
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    const resetLink = compiled.querySelector('a.small');
+    expect(resetLink).toBeFalsy();
   });
 });

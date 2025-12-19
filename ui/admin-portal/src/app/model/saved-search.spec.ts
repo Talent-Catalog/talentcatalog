@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {
-  getCandidateSourceBreadcrumb,
   getCandidateSourceNavigation,
-  getCandidateSourceStatsNavigation, getCandidateSourceType, getSavedSearchBreadcrumb,
+  getCandidateSourceStatsNavigation,
+  getCandidateSourceType,
+  getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
   isSavedSearch,
   SavedSearch,
@@ -24,9 +25,8 @@ import {
   SavedSearchType
 } from "./saved-search";
 import {CandidateSource, HasId, indexOfHasId} from "./base";
-import {SearchCandidateRequest} from "./search-candidate-request";
 
-fdescribe('SavedSearch Utilities', () => {
+describe('SavedSearch Utilities', () => {
   let location: Location;
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ fdescribe('SavedSearch Utilities', () => {
     location = jasmine.createSpyObj('Location', ['path']);
   });
 
-  fdescribe('Navigation Functions', () => {
+  describe('Navigation Functions', () => {
     let savedSearch: SavedSearch;
     let candidateSource: CandidateSource;
 
@@ -71,14 +71,14 @@ fdescribe('SavedSearch Utilities', () => {
 
   });
 
-  fdescribe('Type Checking and Breadcrumbs', () => {
+  describe('Type Checking and Breadcrumbs', () => {
     let savedSearch: SavedSearch;
     let candidateSource: CandidateSource;
 
     beforeEach(() => {
       savedSearch = {
         id: 1,
-        name: 'Test Search',
+        name: 'Test Search (1)',
         defaultSearch: false,
         reviewable: true,
         savedSearchType: SavedSearchType.profession,
@@ -103,11 +103,6 @@ fdescribe('SavedSearch Utilities', () => {
       expect(type).toBe('Search');
     });
 
-    it('should generate correct breadcrumb for getCandidateSourceBreadcrumb', () => {
-      const breadcrumb = getCandidateSourceBreadcrumb(savedSearch);
-      expect(breadcrumb).toBe('Search: Test Search (1)');
-    });
-
     it('should generate correct breadcrumb for getSavedSearchBreadcrumb', () => {
       const infos = [{ savedSearchSubtype: SavedSearchSubtype.engineering, title: 'Engineering' }];
       const breadcrumb = getSavedSearchBreadcrumb(savedSearch, infos);
@@ -115,7 +110,7 @@ fdescribe('SavedSearch Utilities', () => {
     });
   });
 
-  fdescribe('Utility Functions', () => {
+  describe('Utility Functions', () => {
     let hasIds: HasId[];
 
     beforeEach(() => {

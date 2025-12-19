@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,10 +17,12 @@
 package org.tctalent.server.configuration;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +44,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.security.JwtAuthenticationEntryPoint;
 import org.tctalent.server.security.JwtAuthenticationFilter;
 import org.tctalent.server.security.JwtTokenProvider;
@@ -53,11 +56,11 @@ import org.tctalent.server.security.TcUserDetailsService;
 /**
  * Talent Catalog security configuration.
  * <p/>
- * See https://docs.spring.io/spring-security/site/docs/3.2.0.RC2/reference/htmlsingle/#jc
+ * See <a href="https://docs.spring.io/spring-security/site/docs/3.2.0.RC2/reference/htmlsingle/#jc">...</a>
  * also
  * https://www.marcobehler.com/guides/spring-security
  * <p/>
- * Summary of TBB Talent Catalog security:
+ * Summary of Talent Catalog security:
  *
  * <ul>
  *     <li>
@@ -92,12 +95,13 @@ import org.tctalent.server.security.TcUserDetailsService;
  *     </li>
  * </ul>
  */
+@Slf4j
 @Configuration
-@EnableWebSecurity(debug = false)
+@EnableWebSecurity
 @EnableMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
-        prePostEnabled = false)
+        prePostEnabled = true)
 public class SecurityConfiguration {
 
     @Autowired
@@ -136,9 +140,11 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/admin/auth").permitAll()
                 .requestMatchers("/api/admin/auth/**").permitAll()
                 .requestMatchers("/api/admin/branding").permitAll()
+                .requestMatchers("/api/admin/terms-info/**").permitAll()
                 .requestMatchers("/api/admin/user/reset-password-email").permitAll()
                 .requestMatchers("/api/admin/user/check-token").permitAll()
                 .requestMatchers("/api/admin/user/reset-password").permitAll()
+                .requestMatchers("/api/admin/user/verify-email/**").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/published/**").permitAll()
 
@@ -189,7 +195,7 @@ public class SecurityConfiguration {
 
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
-                .requestMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasAnyRole("SYSTEMADMIN", "ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/admin/**/*")).hasAnyRole("SYSTEMADMIN", "ADMIN")
                     // Migrate database
                 .requestMatchers("/api/admin/system/migrate").hasAnyRole("SYSTEMADMIN", "ADMIN")
 
@@ -224,6 +230,16 @@ public class SecurityConfiguration {
                 // POST: REQUEST INFOGRAPHICS
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/stat/all").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // POST: REQUEST PRESET
+                .requestMatchers(HttpMethod.POST, "/api/admin/preset/*/guest-token").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                /*
+                 * CHECKING CHATS
+                 */
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/opp/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/job/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 /*
                  * SAVED SEARCH ENDPOINTS
                 */
@@ -232,6 +248,9 @@ public class SecurityConfiguration {
 
                 // PUT: UPDATE SAVED SEARCHES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UPDATE SAVED SEARCH DESCRIPTION
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT: UPDATE CONTEXT NOTES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -254,6 +273,9 @@ public class SecurityConfiguration {
                 // PUT: CLEAR SELECTION SAVED SEARCHES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/clear-selection/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: SELECT COLUMNS SAVED SEARCHES
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // POST: EXPORT SAVE SELECTION SAVED SEARCHES
                 .requestMatchers(HttpMethod.POST, "/api/admin/saved-search-candidate/*/export/csv").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -262,6 +284,12 @@ public class SecurityConfiguration {
                  */
                 // POST: ALL SEARCHES
                 .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: ADD TO WATCHER
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-search/watcher-add/*",HttpMethod.PUT.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: REMOVE FROM WATCHER
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-search/watcher-remove/*",HttpMethod.PUT.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: ALL PAGED SEARCHES
                 .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search-paged", HttpMethod.POST.name())).hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -275,8 +303,19 @@ public class SecurityConfiguration {
                 // POST: SEARCH BY PHONE
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // POST: SEARCH BY EMAIL/PHONE/WHATSAPP
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyemailphoneorwhatsapp").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: SEARCH BY EXTERNAL ID
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyexternalid").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: FETCH CANDIDATES WITH CHATS
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/fetch-candidates-with-chat").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // CHAT - include USER but exclude READONLY
-                .requestMatchers(HttpMethod.GET, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
+                .requestMatchers(HttpMethod.GET, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/chat/get-or-create").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
                 .requestMatchers(HttpMethod.POST, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
                 .requestMatchers(HttpMethod.PUT, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
                 .requestMatchers(HttpMethod.GET, "/api/admin/chat-post/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "READONLY")
@@ -289,11 +328,14 @@ public class SecurityConfiguration {
                 // CHAT LINK PREVIEWS - permits all
                 .requestMatchers(HttpMethod.POST, "/api/admin/link-preview/**").permitAll()
 
-            /*
+                /*
                  * LIST ENDPOINTS
                  */
                 // POST: CREATE LIST
                 .requestMatchers(HttpMethod.POST, "/api/admin/saved-list").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: CREATE LIST 2
+                .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT: MERGE CANDIDATE INTO LIST (ADD BY NAME/NUMBER)
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/merge").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -301,26 +343,32 @@ public class SecurityConfiguration {
                 // PUT: REMOVE CANDIDATE FROM LIST
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/remove").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: SAVE SELECTION FROM LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/save-selection").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // PUT: UPDATE SF
                 .requestMatchers(HttpMethod.PUT, "/api/admin/sf/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT: UPDATE SAVED LIST
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: SELECT COLUMNS SAVED LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UPDATE SAVED LIST DESCRIPTION
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // PUT: UPDATE CONTEXT NOTES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
-                // PUT: ADD SHARED LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
-                // PUT: REMOVE SHARED LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT: COPY LIST
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/copy/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: EXPORT LIST
                 .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: SEARCH LISTS BY IDS
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-list/search-ids",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: VIEW TRANSLATIONS
                 .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -334,6 +382,29 @@ public class SecurityConfiguration {
 
                 // PUT (EXC. READ ONLY)
                 .requestMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                /*
+                 * CANDIDATE ENDPOINTS
+                 */
+                // DOWNLOAD CV (admins and read only)
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/*/cv.pdf").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "READONLY")
+
+                /*
+                 * READONLY can star and share things
+                 */
+                .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/starred").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: SHARE LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UNSHARE LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: SHARE SEARCH
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UNSHARE SEARCH
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 /*
                  * JOB INTAKE ENDPOINTS
@@ -394,15 +465,22 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        String urls = env.getProperty("tbb.cors.urls");
+        String urls = env.getProperty("tc.cors.urls");
         List<String> corsUrls = new ArrayList<>();
         if (StringUtils.isNotBlank(urls)) {
             Collections.addAll(corsUrls, urls.split(","));
         }
-        configuration.setAllowedOrigins(corsUrls);
+        if (corsUrls.isEmpty()) {
+            LogBuilder.builder(log)
+                .message("No CORS URLs specified. Defaulting to empty list, which may block cross-origin requests.")
+                .logWarn();
+        }
+        configuration.setAllowedOriginPatterns(corsUrls);
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setMaxAge(3600L); // Cache preflight responses for 1 hour
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

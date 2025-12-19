@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,39 +14,34 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="card">
+<tc-card>
 
-  <div class="card-header">
+  <tc-card-header>
     How did you hear about us?
-    <div class="float-end" *ngIf="editable">
-      <button class="btn btn-sm btn-secondary" (click)="editSurvey()">
-      <i class="fas fa-edit"></i></button>
+    <div class="d-flex justify-content-end" *ngIf="editable">
+      <tc-button (onClick)="editSurvey()"
+                 [color]="'primary'"
+                 [size]="'sm'"
+                 [type]="'solid'"
+      >
+      <i class="fas fa-edit"></i></tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
-    <div class="row">
-      <div class="mb-3 col-sm-12 col-md-6">
-        <label class="col-form-label">Source:</label>
-        <div >
-          <span class="form-control-plaintext"
-                [innerHtml]="candidate?.surveyType?.name"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
-      <div class="mb-3 col-sm-12 col-md-6">
-        <label class="col-form-label">Comment:</label>
-        <div >
-          <span class="form-control-plaintext"
-                [innerHtml]="candidate?.surveyComment"
-                appHighlightSearch>
-          </span>
-        </div>
-      </div>
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
+    <tc-description-item label="Source:">
+      <span [innerHtml]="candidate?.surveyType?.name"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
+    <tc-description-item label="Comment:">
+      <span [innerHtml]="candidate?.surveyComment"
+            appHighlightSearch
+      ></span>
+    </tc-description-item>
+  </tc-description-list>
 
-    </div>
-  </div>
-
-</div>
+</tc-card>
 

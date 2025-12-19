@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -144,7 +144,7 @@ export class GeneralTranslationsComponent implements OnInit {
     this.saving = true;
     this.saveError = null;
     this.translationService.updateTranslationFile(this.systemLanguage.language, result).subscribe(
-      result => {
+      () => {
         this.saving = false;
       },
       error => {
@@ -156,6 +156,10 @@ export class GeneralTranslationsComponent implements OnInit {
 
   isBlank(value) {
     return (!value || /^\s*$/.test(value));
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   isAnAdmin(): boolean {
@@ -171,12 +175,14 @@ export class GeneralTranslationsComponent implements OnInit {
   }
 }
 
+
 const ALL_FIELDS = {
     "HEADER": {
       "NAV": {
         "ACCOUNT": null,
         "LOGOUT": null,
         "LOGIN": null,
+        "PRIVACY": null,
         "PROFILE": null,
         "UPLOAD": {
           "FILE": null,
@@ -187,7 +193,61 @@ const ALL_FIELDS = {
         "SELECT": null,
       }
     },
-     "STAFF_INSTRUCTION": {
+    "JOI": {
+      "BENEFITS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "COST_COMMITMENT": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "EDUCATION_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "EMPLOYMENT_EXPERIENCE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LANGUAGE_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LOCATION": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LOCATION_DETAILS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "MIN_SALARY": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "OCCUPATION_CODE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "RECRUITMENT_PROCESS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "SALARY_RANGE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "SKILL_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "VISA_PATHWAYS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+    },
+    "STAFF_INSTRUCTION": {
        "CANDIDATE_NO_INTEREST": null,
        "CANDIDATE_UNSURE_INTEREST": null
      },
@@ -230,11 +290,6 @@ const ALL_FIELDS = {
       "TITLE": null,
       "REGISTER": null,
       "LOGIN": null,
-      "PARA1": null,
-      "HEADING2": null,
-      "PARA2": null,
-      "HEADING3": null,
-      "PARA3": null,
       "USAFGHAN": {
         "HEADING1": null,
         "HEADING2": null
@@ -267,6 +322,29 @@ const ALL_FIELDS = {
       "INELIGIBLE": {
         "EXPLANATION": null,
         "BUTTON": null
+      },
+      "EMAIL_VERIFICATION" : {
+        "BUTTON": null,
+        "IDLE": {
+          "TITLE": null,
+          "DESCRIPTION": null,
+          "UPDATE_EMAIL": null,
+          "SEND_BUTTON": null,
+          "LINK": null
+        },
+        "LOADING": {
+          "TITLE": null,
+          "DESCRIPTION": null
+        },
+        "EMAIL_SENT" : {
+          "TITLE": null,
+          "DESCRIPTION": null,
+          "SPAM": null,
+          "BUTTON": null,
+        },
+        "ERROR":{
+          "BUTTON":null,
+        }
       }
     },
     "REGISTRATION": {
@@ -289,7 +367,9 @@ const ALL_FIELDS = {
           "EDUCATION/UNIVERSITY": null,
           "EDUCATION/SCHOOL": null,
           "LANGUAGE": null,
+          "EXAM": null,
           "CERTIFICATIONS": null,
+          "DESTINATIONS": null,
           "ADDITIONAL": null,
           "UPLOAD": null,
           "SUBMIT": null
@@ -302,17 +382,16 @@ const ALL_FIELDS = {
         "SUBMIT": null,
         "UPDATE": null
       },
-      "LANDING": {
-        "TITLE": null,
-        "PARA1": null,
-        "PARA2": null,
-        "BUTTON1": null
-      },
       "CONTACT": {
         "LABEL": {
           "EMAIL": null,
           "PHONE": null,
           "WHATSAPP": null,
+          "RELOCATEDFIELDS": null,
+          "RELOCATEDADDRESS": null,
+          "RELOCATEDCITY": null,
+          "RELOCATEDSTATE": null,
+          "RELOCATEDCOUNTRY": null,
           "USERNAME": null,
           "PASSWORD": null,
           "PASSWORDCONFIRMATION": null,
@@ -331,12 +410,15 @@ const ALL_FIELDS = {
           "STATE": null,
           "YEAROFARRIVAL": null,
           "NATIONALITY": null,
+          "OTHER_NATIONALITY": null,
+          "OTHER_NATIONALITIES": null,
           "EXTERNALID": null,
           "REGISTEREDWITHUN": null,
           "REGISTRATIONID": null,
           "UNHCRCONSENT": null
         },
         "NOTE": {
+          "STATELESS": null,
           "UNHCRREGISTERED": null,
           "UNHCRCONSENT": null
         }
@@ -382,6 +464,30 @@ const ALL_FIELDS = {
           "ADD": null
         }
       },
+      "EXAM": {
+        "LABEL": {
+          "EXAM": null,
+          "SCORE": null,
+          "YEAR": null,
+          "NOTES": null,
+          "OTHEREXAM":null
+        },
+        "BUTTON": {
+          "ADD": null
+        },
+        "DELETE": {
+          "TITLE": null,
+          "CONFIRMATION": null,
+          "YES": null,
+          "NO": null
+        }
+      },
+      "DESTINATIONS": {
+        "LABEL": {
+          "INTEREST": null,
+          "NOTES": null,
+        },
+      },
       "CERTIFICATIONS": {
         "LABEL": {
           "NAME": null,
@@ -393,6 +499,8 @@ const ALL_FIELDS = {
         }
       },
       "SUBMIT": {
+        "INTRODUCTION": null,
+        "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
           "SURVEY": null,
@@ -402,6 +510,9 @@ const ALL_FIELDS = {
           "LABEL": null,
           "WARN": null
         },
+        "NO_POLICY_ACCEPTANCE_TEXT": null,
+        "POLICY_ACCEPTANCE_TEXT": null,
+        "YOUR_PARTNER_IS": null,
       },
       "COMPLETE": {
         "TITLE": null,
@@ -422,7 +533,8 @@ const ALL_FIELDS = {
         },
         "CV": {
           "NAME": null,
-          "EXPLANATION": null
+          "EXPLANATION": null,
+          "WARNING": null,
         },
         "OTHER": {
           "NAME": null,
@@ -437,13 +549,15 @@ const ALL_FIELDS = {
       "TAB": {
         "PROFILE": null,
         "TASKS": null,
-        "OPPS": null
+        "OPPS": null,
+        "SERVICES": null,
       },
       "CONTACT": {
         "TITLE": null,
         "EMAIL": null,
         "PHONE": null,
-        "WHATSAPP": null
+        "WHATSAPP": null,
+        "RELOCATEDADDRESS": null
       },
       "PERSONAL": {
         "TITLE": null,
@@ -457,6 +571,14 @@ const ALL_FIELDS = {
         "YEAROFARRIVAL": null,
         "NATIONALITY": null
       },
+      "PRIVACY": {
+        "CHANGED": null,
+        "THANK_ACCEPTANCE": null,
+        "VERSION": null,
+        "ACCEPTED_ON": null,
+        "ACCEPTED_WITH": null,
+        "ACCEPTANCE_DETAILS": null
+      },
       "OCCUPATIONS": {
         "TITLE": null
       },
@@ -466,10 +588,16 @@ const ALL_FIELDS = {
       "EDUCATION": {
         "TITLE": null
       },
+      "EXAMS": {
+        "TITLE": null
+      },
       "CERTIFICATIONS": {
         "TITLE": null
       },
       "LANGUAGES": {
+        "TITLE": null
+      },
+      "DESTINATIONS": {
         "TITLE": null
       },
       "OTHER": {
@@ -477,7 +605,7 @@ const ALL_FIELDS = {
         "ADDITIONALINFO": null,
         "SURVEY": null,
         "SURVEYCOMMENT": null,
-        "LINKEDIN": null
+        "LINKEDIN": null,
       },
       "UPLOAD": {
         "TITLE": null
@@ -497,7 +625,9 @@ const ALL_FIELDS = {
         "EXPERIENCE": null,
         "EDUCATION": null,
         "LANGUAGES": null,
+        "EXAMS": null,
         "CERTIFICATIONS": null,
+        "DESTINATIONS": null,
         "ADDITIONAL": null,
         "UPLOAD": null
       }
@@ -512,7 +642,8 @@ const ALL_FIELDS = {
       },
       "PLACEHOLDER" : {
         "SELECT": null,
-        "SELECTORTYPE": null
+        "SELECTORTYPE": null,
+        "SELECTOREXAM": null
       },
       "ERROR": {
         "REQUIRED": null,
@@ -622,6 +753,34 @@ const ALL_FIELDS = {
     "NO": null,
     "UNSURE": null,
   },
+  'SERVICES': {
+    'TITLE': null,
+    'DESCRIPTION': null,
+    'DUOLINGO': {
+      'TAG': null,
+      'TITLE': null,
+      'DESCRIPTION': null,
+      'COUPONS_TITLE': null,
+      'COUPONS_DESC': null,
+      'COUPON_TITLE': null,
+      'COUPON_CTA': null,
+      'PAST_EXAMS': null,
+      'SCORE': null,
+      'YEAR': null,
+      'EXAM': {
+        'DEAR': null,
+        'INTRO': null,
+        'ABOUT': null,
+        'ABOUT_TEXT': null,
+        'TECHNICAL_STEPS': null,
+        'TECHNICAL_STEPS_TEXT': null,
+        'STEPS': null,
+        'STEPS_TEXT': null,
+        'GOOD_LUCK': null,
+        'CTA_BUTTON': null,
+      }
+    }
+  },
   "TASKS": {
     "TAB": null,
     "VIEWHELP": null,
@@ -688,7 +847,8 @@ const ALL_FIELDS = {
       "VIEWHELP": null,
       "RETURN": null,
       "SUBMIT": null,
-    },
+      "SUBMIT-COMMENT": null,
+    }
   },
   "CANDIDATE-OPPS": {
     "HEADER": null,
@@ -717,5 +877,99 @@ const ALL_FIELDS = {
       "POST-SEND": null,
       "MARK-AS-READ": null,
       "NO-POSTS": null,
+      "ADD-LINK": null,
+      "LINK-PLACEHOLDER": null,
+      "LINK-URL": null,
+      "URL-PREFIX": null,
+      "URL-PREFIX-ERROR": null,
+      "LINK-EDIT-BTN": null,
+      "LINK-REMOVE-BTN": null,
+      "LINK-SAVE-BTN": null,
+      "LINK-CANCEL-BTN": null,
+      "NOTIFICATION_PREFERENCE": null,
+      "NOTIFICATION_PREFERENCE_HELP": null
+  },
+  "CHAT_INFO": {
+      "LABEL": {
+        "PARTICIPANTS": null,
+        "PURPOSE": null,
+      },
+      "HEADING": {
+        "CANDIDATE_PROSPECT": null,
+        "ALL_JOB_CANDIDATES": null,
+        "JOB_CREATOR_SOURCE_PARTNER": null,
+        "CANDIDATE_RECRUITING": null,
+        "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
+      },
+      "PARTICIPANTS": {
+        "CANDIDATE_PROSPECT": null,
+        "ALL_JOB_CANDIDATES": null,
+        "JOB_CREATOR_SOURCE_PARTNER": null,
+        "CANDIDATE_RECRUITING": null,
+        "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
+      },
+      "PURPOSE": {
+        "CANDIDATE_PROSPECT": null,
+        "ALL_JOB_CANDIDATES": null,
+        "JOB_CREATOR_SOURCE_PARTNER": null,
+        "CANDIDATE_RECRUITING": null,
+        "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
+      }
+  },
+  "TRAVELINFO": {
+    "MISMATCH": {
+      "TITLE": null,
+      "DESCRIPTION": null,
+      "INSTRUCTION": null
+    },
+    "BUTTON": {
+      "UPDATEPROFILE": null,
+      "SUBMIT": null
+    },
+    "LABEL": {
+      "BIRTHCOUNTRY": null,
+      "PLACEOFBIRTH": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "DOCISSUEDBY": null,
+      "ISSUEDATE": null,
+      "EXPIRYDATE": null,
+      "COMMENT": null
+    },
+    "OPTION": {
+      "SELECTCOUNTRY": null,
+      "PASSPORT": null,
+      "NATIONALID": null,
+      "REFUGEE": null
+    }
+  },
+  "FAMILY-DOC":{
+      "LABEL":{
+        "NO_ELIGIBLE": null,
+        "FAMILY-MEMBER": null,
+        "RELATIONSHIP":null,
+        "OTHER":null,
+        "AGE-VALIDATION":null,
+        "HEALTH-CONCERN":null,
+        "REGISTERED":null,
+        "REGISTRED-NUMBER":null,
+        "DOC-VALIDATION":null,
+        "ANOTHER-MEMBER":null
+      }
+  },
+  "RSD-EVIDENCE":{
+    "LABEL":{
+      "COMMENT": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "REFUGEE-STATUS": null,
+      "RSD-VALIDATION":null
+    }
+  },
+  "FAMILY-RSD":{
+      "LABEL":{
+        "NO-MEMBER": null,
+        "NOTHING-TO-DO": null
+      }
   }
 }

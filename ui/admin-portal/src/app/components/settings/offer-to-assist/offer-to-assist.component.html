@@ -1,0 +1,43 @@
+<tc-alert *ngIf="error">
+  {{error}}
+</tc-alert>
+
+<form [formGroup]="searchForm">
+  <div class="row mb-3">
+    <div class="col-4">
+      <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                id="keyword"></tc-input>
+    </div>
+  </div>
+</form>
+
+<tc-table [results]="results"
+          [loading]="loading"
+          [paginationPosition]="'top'"
+          [(pageNumber)]="pageNumber"
+          (pageChange)="search()"
+          [clickableRows]="false"
+>
+
+  <thead>
+  <tr>
+    <th scope="col">Id</th>
+    <th>Partner</th>
+    <th>Public Id</th>
+    <th>Reason</th>
+    <th>Additional Notes</th>
+    <th>Created Date</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let ota of results?.content">
+    <td>{{ota.id}}</td>
+    <td>{{ota.partner.name}}</td>
+    <td>{{ota.publicId}}</td>
+    <td>{{getDisplayEnumValue(ota.reason)}}</td>
+    <td>{{ota.additionalNotes}}</td>
+    <td>{{ota.createdDate}}</td>
+  </tr>
+  </tbody>
+</tc-table>

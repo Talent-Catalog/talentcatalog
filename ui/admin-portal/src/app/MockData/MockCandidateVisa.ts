@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {CandidateVisa, TBBEligibilityAssessment, YesNo, YesNoUnsure} from "../model/candidate";
+import {
+  CandidateVisa,
+  FamilyRelations,
+  TBBEligibilityAssessment,
+  YesNo,
+  YesNoUnsure
+} from "../model/candidate";
 import {MockUser} from "./MockUser";
 import {MockJob} from "./MockJob";
 import {MockCandidateVisaJobCheck} from "./MockCandidateVisaCheck";
@@ -43,8 +49,9 @@ export const MockCandidateVisa: CandidateVisa = {
   createdDate: 2012,
   updatedBy: mockUser,
   updatedDate: 2017,
-  visaEligibilityAssessment: YesNo.Yes,
   pathwayAssessment: YesNoUnsure.Unsure,
   pathwayAssessmentNotes: 'Not sure about the pathway',
+  destinationFamily: FamilyRelations.Child,
+  destinationFamilyLocation:'USA',
   candidateVisaJobChecks: [MockCandidateVisaJobCheck]
 };

@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
+@import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 :host {
   ::ng-deep .dropdown-btn {
@@ -23,10 +24,7 @@
 }
 
 p {
-  font-style: italic;
   font-size: small;
-  padding-bottom: 0;
-  margin-bottom: 0;
 }
 
 .elasticized {
@@ -39,7 +37,7 @@ label {
 
 .filter-form {
   padding: 1em;
-  border-radius: 5px;
+  border-radius: 1rem;
 
   ::ng-deep {
     .dropdown-btn {
@@ -132,7 +130,7 @@ $candidate-card-width: 375px;
   }
 
   .active {
-    color: $info;
+    @include text-color-primary;
     font-weight: bold;
   }
 }
@@ -167,9 +165,13 @@ $candidate-card-width: 375px;
 ::ng-deep .search-tips .tooltip-inner {
   text-align: left;
   font-size: small;
-  max-width: 50%;
-  background-color: #212529;
-  padding: 1em
+  background-color: #000000;
+  padding: 1em;
+  max-width: 200px;
+}
+
+::ng-deep .search-tips.keyword .tooltip-inner {
+  max-width: 300px;
 }
 
 // To make example search queries more visible

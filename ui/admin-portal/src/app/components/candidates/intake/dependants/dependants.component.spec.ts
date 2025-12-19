@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,7 +24,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {CandidateDependantService} from "../../../../services/candidate-dependant.service";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-fdescribe('DependantsComponent', () => {
+describe('DependantsComponent', () => {
   let component: DependantsComponent;
   let fixture: ComponentFixture<DependantsComponent>;
 

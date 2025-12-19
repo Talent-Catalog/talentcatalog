@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {Router} from '@angular/router';
 import {AuthenticationService} from './authentication.service';
 import {ErrorInterceptor} from './error.interceptor';
 
-fdescribe('ErrorInterceptor', () => {
+describe('ErrorInterceptor', () => {
   let interceptor: ErrorInterceptor;
   let httpTestingController: HttpTestingController;
   let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;

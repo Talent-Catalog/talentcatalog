@@ -1,11 +1,27 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="employerCostCommitment">
-      Employer cost commitments
-      <sup class="text-danger fw-light">* required</sup>
+    <label class="form-label" ngbTooltip="{{ componentTooltipKey | translate }}">
+      {{componentLabelKey | translate}}
+      <sup *ngIf="required" class="text-danger fw-light">* required</sup>
     </label>
     <div *ngIf="editable" class="float-end">
       <app-autosave-status
@@ -13,6 +29,8 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ngx-wig id="employerCostCommitment" [formControlName]="'employerCostCommitment'"></ngx-wig>
+    <ngx-wig *ngIf="richText" [formControlName]="formFieldName"
+    ></ngx-wig>
+    <input *ngIf="!richText" [type]="inputType" class="form-control" [formControlName]="formFieldName">
   </div>
 </form>

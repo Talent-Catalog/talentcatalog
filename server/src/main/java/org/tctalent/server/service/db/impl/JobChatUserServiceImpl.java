@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -55,6 +55,23 @@ public class JobChatUserServiceImpl implements JobChatUserService {
         }
 
         return info;
+    }
+
+    @Override
+    public boolean isChatReadByUser(@NonNull JobChat chat, @NonNull User user) {
+        boolean isReadByUser;
+        JobChatUserInfo info = getJobChatUserInfo(chat, user);
+        if (info.getLastPostId() == null) {
+            //No posts in chat. Consider as read;
+            isReadByUser = true;
+        } else if (info.getLastReadPostId() == null) {
+            //User has not read post at all
+            isReadByUser = false;
+        } else {
+            //Read if user has read up to last post
+            isReadByUser = info.getLastReadPostId() >= info.getLastPostId();
+        }
+        return isReadByUser;
     }
 
     @Override

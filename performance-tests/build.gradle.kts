@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -20,7 +20,7 @@ val postgresVersion: String = "42.6.0"
 val gatlingVersion: String = "0.10.3"
 val highchartsVersion: String = "3.9.5"
 val javaTargetVersion = JavaVersion.VERSION_17
-val scalaCompileOpts: String = "-release:21"
+val scalaCompileOpts: String = "-release:17"
 val testName: String = "gatlingTest"
 
 plugins {

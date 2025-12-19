@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -37,11 +41,6 @@ import org.tctalent.server.request.task.SearchTaskRequest;
 import org.tctalent.server.request.task.UpdateTaskRequest;
 import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.util.BeanHelper;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
@@ -103,10 +102,10 @@ public class TaskServiceImpl implements TaskService {
         task.setDisplayName(request.getDisplayName());
         task.setDescription(request.getDescription());
         task.setDaysToComplete(request.getDaysToComplete());
-        if (StringUtils.isNotBlank(request.getHelpLink())) {
-            task.setHelpLink(request.getHelpLink());
+        if (StringUtils.isNotBlank(request.getDocLink())) {
+            task.setDocLink(request.getDocLink());
         } else {
-            task.setHelpLink(null);
+            task.setDocLink(null);
         }
         task.setOptional(request.isOptional());
         return taskRepository.save(task);

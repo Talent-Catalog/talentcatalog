@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {TestBed} from "@angular/core/testing";
 import {LOCALE_ID} from "@angular/core";
 import {DatePipe} from "@angular/common";
 
-fdescribe('ExtendDatePipe', () => {
+describe('ExtendDatePipe', () => {
   let pipe: ExtendDatePipe;
 
   beforeEach(() => {

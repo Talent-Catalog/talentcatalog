@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,6 +19,7 @@ package org.tctalent.server.model.db;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.UploadTask;
@@ -59,10 +60,10 @@ public class TaskDtoHelper {
     }
 
     public static DtoBuilder getTaskAssignmentDto() {
-        return getTaskAssignmentDto(false);
+        return getTaskAssignmentDto(DtoType.FULL);
     }
-    
-    public static DtoBuilder getTaskAssignmentDto(boolean summary) {
+
+    public static DtoBuilder getTaskAssignmentDto(DtoType dtoType) {
         return new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("abandonedDate")
@@ -70,35 +71,38 @@ public class TaskDtoHelper {
             .add("completedDate")
             .add("dueDate")
             .add("status")
-            .add("task", getTaskDto(summary))
+            .add("task", getTaskDto(dtoType))
             .add("answer")
             ;
     }
 
     public static DtoBuilder getTaskDto() {
-        return getTaskDto(false);
+        return getTaskDto(DtoType.FULL);
     }
-    
-    public static DtoBuilder getTaskDto(boolean summary) {
+
+    public static DtoBuilder getTaskDto(DtoType dtoType) {
         final DtoBuilder builder = new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("name")
+            .add("candidateForm", getCandidateFormDto())
             .add("daysToComplete")
             .add("description")
             .add("displayName")
             .add("optional")
-            .add("helpLink")
+            .add("docLink")
             .add("taskType")
             .add("uploadType")
             .add("uploadSubfolderName")
             .add("uploadableFileTypes")
             .add("candidateAnswerField")
-            .add("createdDate");
-        
-        if (!summary) {
+            .add("createdDate")
+            ;
+
+        if (!DtoType.PREVIEW.equals(dtoType)) {
             builder
-            .add("allowedAnswers", getAllowedQuestionTaskAnswerDto())
-            .add("createdBy", getUserDto());
+                .add("allowedAnswers", getAllowedQuestionTaskAnswerDto())
+                .add("createdBy", getUserDto())
+            ;
         }
         return builder;
     }
@@ -107,6 +111,13 @@ public class TaskDtoHelper {
         return new DtoBuilder()
             .add("name")
             .add("displayName")
+            ;
+    }
+
+    private static DtoBuilder getCandidateFormDto() {
+        return new DtoBuilder()
+            .add("name")
+            .add("description")
             ;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,8 +19,9 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {CandidateVisaJobService, CreateCandidateVisaJobRequest} from './candidate-visa-job.service';
 import {environment} from '../../environments/environment';
 import {CandidateVisaJobCheck} from '../model/candidate';
+import {MockJob} from "../MockData/MockJob";
 
-fdescribe('CandidateVisaJobService', () => {
+describe('CandidateVisaJobService', () => {
   let service: CandidateVisaJobService;
   let httpMock: HttpTestingController;
 
@@ -46,7 +47,7 @@ fdescribe('CandidateVisaJobService', () => {
     it('should return a CandidateVisaJobCheck object when called', () => {
       const mockJobCheck: CandidateVisaJobCheck = {
         id: 1,
-        name: 'visa job',
+        jobOpp: MockJob,
       };
 
       service.get(1).subscribe((jobCheck: CandidateVisaJobCheck) => {
@@ -63,7 +64,7 @@ fdescribe('CandidateVisaJobService', () => {
     it('should return a CandidateVisaJobCheck object when created successfully', () => {
       const mockJobCheck: CandidateVisaJobCheck = {
         id: 1,
-        name: 'test',
+        jobOpp: MockJob,
       };
       const requestPayload: CreateCandidateVisaJobRequest = { jobOppId: 456 };
 

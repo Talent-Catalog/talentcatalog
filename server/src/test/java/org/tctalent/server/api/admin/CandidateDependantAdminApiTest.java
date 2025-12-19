@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -47,6 +47,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CandidateTestData.getCandidateDependant;
 
 /**
  * Unit tests for Candidate Dependant Admin Api endpoints.
@@ -59,8 +61,8 @@ class CandidateDependantAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-dependant";
     private static final long CANDIDATE_ID = 99L;
 
-    private final Candidate candidate = AdminApiTestUtil.getCandidate();
-    private final CandidateDependant candidateDependant = AdminApiTestUtil.getCandidateDependant();
+    private final Candidate candidate = getCandidate();
+    private final CandidateDependant candidateDependant = getCandidateDependant();
 
     @MockBean CandidateDependantService candidateDependantService;
     @MockBean CandidateService candidateService;

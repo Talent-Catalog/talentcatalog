@@ -1,42 +1,66 @@
-<div class="post" #thisPost>
-  <p class="audit">
-   <strong> {{createdBy}}: </strong>
-    <small>{{post?.createdDate | date: 'customDateTime'}}</small>
-  </p>
-  <p class="content" *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></p>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
-  <div class="d-flex flex-row-reverse flex-wrap">
-    <button id="reactionBtn"
-            [ngClass]="!this.reactionPickerVisible ? 'reaction-btn' : 'reaction-btn-selected'"
-            (click)="toggleReactionPicker()">
-      <fa-icon id="reactionBtnSmiley" icon="face-smile" size="xs"></fa-icon>+
-    </button>
-    <button class="modify-reaction-btn"
-            *ngFor="let reaction of post.reactions"
-            (click)="onSelectReaction(reaction)">
-      <span [ngbTooltip]="reactionToolTip">
-        {{reaction.emoji}} {{reaction.users.length}}
-      </span>
-      <ng-template #reactionToolTip>
-        <div id="reactionTooltipEmoji">
-          {{reaction.emoji}}
-        </div>
-        <div *ngFor="let user of reaction.users">
-          {{user.displayName}}
-        </div>
-      </ng-template>
-    </button>
-  </div>
+<div class="chat-message" #thisPost>
+  <div class="avatar" [ngClass]="userIsPostAuthor && 'post-author'">{{post.createdBy.firstName.charAt(0)}}</div>
+  <div class="message-content">
+    <div class="message-header">
+      <span class="partner">{{ post.createdBy.firstName }} {{ post.createdBy.lastName }}</span>
+      <span class="abbreviation">({{  getUserAbbreviation(createdBy) }})</span>
+      <span class="timestamp">{{ post.createdDate | date: 'shortTime' }}</span>
+    </div>
+    <div class="message-text" *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></div>
 
-  <div>
     <div *ngFor="let linkPreview of post.linkPreviews">
       <app-preview-link [linkPreview]="linkPreview"
                         [userIsPostAuthor]="userIsPostAuthor"
       ></app-preview-link>
     </div>
-  </div>
 
+    <div class="reactions">
+
+      <button  class="reaction"
+               *ngFor="let reaction of post.reactions"
+               (click)="onSelectReaction(reaction)">
+      <span [ngbTooltip]="reactionToolTip">
+        {{reaction.emoji}} {{reaction.users.length}}
+      </span>
+
+        <ng-template #reactionToolTip>
+          <div id="reactionTooltipEmoji">
+            {{reaction.emoji}}
+          </div>
+          <div *ngFor="let user of reaction.users">
+            {{user.displayName}}
+          </div>
+        </ng-template>
+
+
+      </button>
+
+      <button class="add-reaction" *ngIf="!readOnly"
+              [ngClass]="!this.reactionPickerVisible ? 'reaction-btn' : 'reaction-btn-selected'"
+              (click)="toggleReactionPicker()">
+        <fa-icon id="reactionBtnSmiley" icon="face-smile" size="xs"></fa-icon>+
+      </button>
+
+    </div>
+  </div>
 </div>
+
 
 <emoji-mart
   id="reactionPicker"

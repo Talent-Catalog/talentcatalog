@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ package org.tctalent.server.service.db.impl;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -155,12 +155,6 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         } else {
             targetList = savedListRepository.findByIdLoadCandidates(targetId)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, targetId));
-        }
-
-        //Set any specified Job Opportunity
-        final Long jobId = request.getJobId();
-        if (jobId != null) {
-            targetList.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
         }
 
         boolean replace = request.getUpdateType() == ContentUpdateType.replace;

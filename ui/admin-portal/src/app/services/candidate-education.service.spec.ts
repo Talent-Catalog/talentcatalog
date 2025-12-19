@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ import {environment} from '../../environments/environment';
 import {CandidateEducation} from '../model/candidate-education';
 import {CreateCandidateEducationRequest, UpdateCandidateEducationRequest} from './candidate-education.service';
 
-fdescribe('CandidateEducationService', () => {
+describe('CandidateEducationService', () => {
   let service: CandidateEducationService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-education';

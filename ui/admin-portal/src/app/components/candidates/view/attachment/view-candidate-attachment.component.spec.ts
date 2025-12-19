@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,22 +16,21 @@
 import {ViewCandidateAttachmentComponent} from "./view-candidate-attachment.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {of} from "rxjs";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {MockUser} from "../../../../MockData/MockUser";
 import {UpdatedByComponent} from "../../../util/user/updated-by/updated-by.component";
 import {ShareableDocsComponent} from "../shareable-docs/shareable-docs.component";
 import {UserPipe} from "../../../util/user/user.pipe";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
-fdescribe('ViewCandidateAttachmentComponent', () => {
+describe('ViewCandidateAttachmentComponent', () => {
   let component: ViewCandidateAttachmentComponent;
   let fixture: ComponentFixture<ViewCandidateAttachmentComponent>;
   let candidateAttachmentServiceSpy: jasmine.SpyObj<CandidateAttachmentService>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
@@ -41,16 +40,16 @@ fdescribe('ViewCandidateAttachmentComponent', () => {
       declarations: [ViewCandidateAttachmentComponent, UpdatedByComponent, UserPipe, ShareableDocsComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateAttachmentService, useValue: spy },
         NgbModal
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
 
-    fb = TestBed.inject(FormBuilder) as jasmine.SpyObj<FormBuilder>;
+    fb = TestBed.inject(UntypedFormBuilder) as jasmine.SpyObj<UntypedFormBuilder>;
     candidateAttachmentServiceSpy = TestBed.inject(CandidateAttachmentService) as jasmine.SpyObj<CandidateAttachmentService>;
-    candidateAttachmentServiceSpy.searchPaged.and.returnValue(of());
 
   });
 
@@ -58,32 +57,10 @@ fdescribe('ViewCandidateAttachmentComponent', () => {
     fixture = TestBed.createComponent(ViewCandidateAttachmentComponent);
     component = fixture.componentInstance;
     component.candidate = mockCandidate;
-    component.attachments = mockCandidate.candidateAttachments;
-    // Initialize the form
-    component.attachmentForm = fb.group({
-      pageNumber: 0
-    });
     fixture.detectChanges(); // Run ngOnInit and ngOnChanges
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should load more attachments when "Load More" button is clicked', () => {
-    // Initial page number should be 0
-    expect(component.attachmentForm.value.pageNumber).toBe(0);
-
-    // Click the "Load More" button
-    component.loadMore();
-
-    // Expect the page number to increment
-    expect(component.attachmentForm.value.pageNumber).toBe(1);
-
-    // Verify that the searchPaged method is called again with the updated form value
-    expect(candidateAttachmentServiceSpy.searchPaged).toHaveBeenCalledTimes(1);
-
-    // Check that more attachments are added to the list
-    expect(component.attachments.length).toBe(1);
   });
 });

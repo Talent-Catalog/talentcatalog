@@ -1,0 +1,39 @@
+<ng-container>
+    <app-error [error]="error"></app-error>
+    <app-loading [loading]="loading"></app-loading>
+
+    <div class="service-title">
+        <div class="header">
+            <div>
+                <h2>{{ 'SERVICES.DUOLINGO.TITLE' | translate }}</h2>
+                <p>{{ 'SERVICES.DUOLINGO.DESCRIPTION' | translate }}</p>
+            </div>
+            <img src="assets/images/services/duolingoLogo.png"/>
+        </div>
+    </div>
+    <app-duolingo-coupon *ngIf="selectedCoupon"
+                         [candidate]="candidate"
+                         (refresh)="refresh.emit()"
+                         [selectedCoupon]="selectedCoupon"
+                         [activeDuolingoTask]="activeDuolingoTask"
+    >
+    </app-duolingo-coupon>
+    <div class="coupons" *ngIf="!loading && !selectedCoupon">
+        <h3>{{ 'SERVICES.DUOLINGO.COUPONS_TITLE' | translate }}</h3>
+        <p>{{ 'SERVICES.DUOLINGO.COUPONS_DESC' | translate }}</p>
+
+        <div class="ticket-container" *ngFor="let coupon of coupons" (click)="selectCoupon(coupon)">
+            <h6>{{ 'SERVICES.DUOLINGO.COUPON_TITLE' | translate }}</h6>
+            <p><b>{{ 'SERVICES.DUOLINGO.COUPON_CTA' | translate }}</b></p>
+        </div>
+    </div>
+
+  <div  class="exam-result" *ngIf="detExams.length > 0 && !selectedCoupon">
+    <h3>{{ 'SERVICES.DUOLINGO.PAST_EXAMS' | translate }}:</h3>
+    <ul>
+      <li *ngFor="let exam of detExams">
+        {{ 'SERVICES.DUOLINGO.SCORE' | translate }}: {{ exam.score }},  {{ 'SERVICES.DUOLINGO.YEAR' | translate }}: {{ exam.year }}
+      </li>
+    </ul>
+  </div>
+</ng-container>

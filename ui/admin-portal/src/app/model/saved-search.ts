@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -108,12 +108,6 @@ export function isSavedSearch(source: CandidateSource): source is SavedSearch {
   return source ? 'savedSearchType' in source : false;
 }
 
-export function getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
-  const sourceType = getCandidateSourceType(candidateSource);
-  return candidateSource != null ?
-    (sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')') : sourceType;
-}
-
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
   let breadcrumb: string = "";
   if (savedSearch) {
@@ -135,7 +129,7 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
         }
       }
 
-      breadcrumb += savedSearch.name + " (" + savedSearch.id + ")";
+      breadcrumb += savedSearch.name;
     }
   }
   return breadcrumb;

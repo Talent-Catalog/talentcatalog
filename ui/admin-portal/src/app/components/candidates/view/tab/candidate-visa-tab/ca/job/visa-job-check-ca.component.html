@@ -1,41 +1,48 @@
-<div class="d-flex justify-content-end mb-2">
-  <button (click)="visaJobCanada.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-  <button (click)="visaJobCanada.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
-</div>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
 <!-- ERROR -->
-<div *ngIf="error" class="alert alert-danger">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
-<ngb-accordion *ngIf="selectedJobCheck" #visaJobCanada="ngbAccordion" [destroyOnHide]="false">
-  <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
-    <ng-template ngbPanelContent>
-      <app-occupation-category
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-occupation-category>
-      <app-occupation-subcategory
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-occupation-subcategory>
-      <hr>
-      <div class="card card-body intake-data">
-        <app-fixed-input
-          [question]="'Job location'"
-          [answer]="selectedJobCheck?.jobOpp?.jobOppIntake?.location">
-        </app-fixed-input>
-        <app-fixed-input
-          [question]="'Job location details'"
-          [answer]="selectedJobCheck?.jobOpp?.jobOppIntake?.locationDetails">
-        </app-fixed-input>
-        <small class="text-center text-muted">All job information can be found on the job's page - to view click the linked job name under Job Specific Assessment above.</small>
-      </div>
-    </ng-template>
-  </ngb-panel>
+<tc-accordion *ngIf="selectedJobCheck">
+  <tc-accordion-item id="occupation-eligibility" header="Occupation Eligibility">
+    <app-occupation-category
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-occupation-category>
+    <app-occupation-subcategory
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-occupation-subcategory>
+    <hr>
+    <div class="card card-body intake-data">
+      <app-fixed-input
+        [question]="'Job location'"
+        [answer]="selectedJobCheck?.jobOpp?.jobOppIntake?.location">
+      </app-fixed-input>
+      <app-fixed-input
+        [question]="'Job location details'"
+        [answer]="selectedJobCheck?.jobOpp?.jobOppIntake?.locationDetails">
+      </app-fixed-input>
+      <small class="text-center text-muted">All job information can be found on the job's page - to view click the linked job name under Job Specific Assessment above.</small>
+    </div>
+  </tc-accordion-item>
 
-  <ngb-panel id="pathway-eligibility">
-    <ng-template ngbPanelTitle>
+  <tc-accordion-item id="pathway-eligibility">
+    <div custom-header>
       <p class="mb-0">Pathway Eligibility
         <span class="small fw-light fst-italic">
         <a [href]="pathwaysInfoLink" target="_blank">
@@ -43,26 +50,22 @@
         </a>
       </span>
       </p>
-    </ng-template>
-    <ng-template ngbPanelContent>
-      <app-preferred-pathways
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-preferred-pathways>
-      <app-eligible-pathways
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-eligible-pathways>
-      <app-ineligible-pathways
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-ineligible-pathways>
-    </ng-template>
-  </ngb-panel>
+    </div>
+    <app-preferred-pathways
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-preferred-pathways>
+    <app-eligible-pathways
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-eligible-pathways>
+    <app-ineligible-pathways
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-ineligible-pathways>
+  </tc-accordion-item>
 
-  <ngb-panel id="candidate-qualifications" title="Candidate Qualifications">
-    <ng-template ngbPanelContent>
-
+  <tc-accordion-item id="candidate-qualifications" header="Candidate Qualifications">
       <div>
         <app-relevant-work-exp
           [visaJobCheck]="selectedJobCheck"
@@ -149,67 +152,59 @@
           </ng-template>
         </div>
       </div>
+  </tc-accordion-item>
 
-    </ng-template>
-  </ngb-panel>
+  <tc-accordion-item id="tbb-eligibility" header="TC Eligibility">
+    <div>
+      <app-job-interest
+        [visaJobCheck]="selectedJobCheck"
+        [entity]="visaCheckRecord">
+      </app-job-interest>
+      <app-job-eligibility-assessment
+        [visaJobCheck]="selectedJobCheck"
+        [entity]="visaCheckRecord">
+      </app-job-eligibility-assessment>
+    </div>
+    <hr>
+    <div class="card card-body intake-data">
+      <app-fixed-input
+        [question]="'Family in Canada that may impact offer'"
+        [answer]="familyInCanada">
+      </app-fixed-input>
+    </div>
+  </tc-accordion-item>
 
-  <ngb-panel id="tbb-eligibility" title="TC Eligibility">
-    <ng-template ngbPanelContent>
-      <div>
-        <app-job-interest
-          [visaJobCheck]="selectedJobCheck"
-          [entity]="visaCheckRecord">
-        </app-job-interest>
-        <app-job-eligibility-assessment
-          [visaJobCheck]="selectedJobCheck"
-          [entity]="visaCheckRecord">
-        </app-job-eligibility-assessment>
-      </div>
+  <tc-accordion-item id="family-assessment" header="Family Assessment">
+    <div>
+      <app-relocating-dependants
+        [candidateOpp]="candidateOpportunity"
+        [candidateId]="candidate.id">
+      </app-relocating-dependants>
+    </div>
+    <div class="card card-body intake-data">
+      <app-fixed-input [question]="'Marital status'" [answer]="candidateIntakeData?.maritalStatus"></app-fixed-input>
+      <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="candidateIntakeData?.partnerEduLevel?.name"></app-fixed-input>
+      <app-fixed-input [question]="'Did spouse take IELTS?'" [answer]="partnerIeltsString"></app-fixed-input>
       <hr>
-      <div class="card card-body intake-data">
-        <app-fixed-input
-          [question]="'Family in Canada that may impact offer'"
-          [answer]="familyInCanada">
-        </app-fixed-input>
-      </div>
-    </ng-template>
-  </ngb-panel>
-
-  <ngb-panel id="family-assessment" title="Family Assessment">
-    <ng-template ngbPanelContent>
       <div>
-        <app-relocating-dependants
-          [candidateOpp]="candidateOpportunity"
-          [candidateId]="candidate.id">
-        </app-relocating-dependants>
+        <div class="card-title">Dependant Family</div>
+        <app-dependants
+          [candidateIntakeData]="candidateIntakeData"
+          [candidate]="candidate"
+          [editable]="false"
+        ></app-dependants>
       </div>
-      <div class="card card-body intake-data">
-        <app-fixed-input [question]="'Marital status'" [answer]="candidateIntakeData?.maritalStatus"></app-fixed-input>
-        <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="candidateIntakeData?.partnerEduLevel?.name"></app-fixed-input>
-        <app-fixed-input [question]="'Did spouse take IELTS?'" [answer]="partnerIeltsString"></app-fixed-input>
-        <hr>
-        <div>
-          <div class="card-title">Dependant Family</div>
-          <app-dependants
-            [candidateIntakeData]="candidateIntakeData"
-            [candidate]="candidate"
-            [editable]="false"
-          ></app-dependants>
-        </div>
-      </div>
-    </ng-template>
-  </ngb-panel>
-  <ngb-panel id="final-assessment" title="Final Assessment">
-    <ng-template ngbPanelContent>
-      <app-visa-job-put-forward
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-visa-job-put-forward>
-      <app-visa-job-notes
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-visa-job-notes>
-    </ng-template>
-  </ngb-panel>
+    </div>
+  </tc-accordion-item>
 
-</ngb-accordion>
+  <tc-accordion-item id="final-assessment" header="Final Assessment">
+    <app-visa-job-put-forward
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-visa-job-put-forward>
+    <app-visa-job-notes
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-visa-job-notes>
+  </tc-accordion-item>
+</tc-accordion>

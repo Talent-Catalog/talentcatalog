@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateOpportunityTestData.getCandidateOpp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -52,6 +53,7 @@ import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependant
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.SalesforceService;
 
 /**
@@ -70,7 +72,7 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
     private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
     private static final String RELOCATING_DEPENDANTS_PATH = "/{id}/relocating-dependants";
 
-    private static final CandidateOpportunity candidateOpportunity = AdminApiTestUtil.getCandidateOpportunity();
+    private static final CandidateOpportunity candidateOpportunity = getCandidateOpp();
     private final Page<CandidateOpportunity> candidateOpportunityPage =
             new PageImpl<>(
                     List.of(candidateOpportunity),
@@ -79,6 +81,7 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
             );
 
     @MockBean CandidateOpportunityService candidateOpportunityService;
+    @MockBean CountryService countryService;
     @MockBean SalesforceService salesforceService;
 
     @Autowired MockMvc mockMvc;

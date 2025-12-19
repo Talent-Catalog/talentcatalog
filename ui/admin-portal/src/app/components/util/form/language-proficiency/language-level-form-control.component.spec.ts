@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of} from "rxjs";
 
-fdescribe('LanguageLevelFormControlComponent', () => {
+describe('LanguageLevelFormControlComponent', () => {
   let component: LanguageLevelFormControlComponent;
   let fixture: ComponentFixture<LanguageLevelFormControlComponent>;
   let languageService: jasmine.SpyObj<LanguageService>;
@@ -33,9 +33,9 @@ fdescribe('LanguageLevelFormControlComponent', () => {
 
   const mockLanguages: Language[] = [{ id: 1, name: 'English',status:'active' }, { id: 2, name: 'Spanish',status:'inactive' }];
   const mockLanguageLevels: LanguageLevel[] = [
-    { id:1, level: 1, name: 'Basic',status:'active' },
-    { id:2, level: 2, name: 'Intermediate',status:'active' },
-    { id:3,level: 3, name: 'Advanced',status:'active'  }
+    { id:1, level: 1, name: 'Basic', cefrLevel: 'A1', status:'active' },
+    { id:2, level: 2, name: 'Intermediate', cefrLevel: 'B1', status:'active' },
+    { id:3, level: 3, name: 'Advanced', cefrLevel: 'B2', status:'active'  }
   ];
 
   beforeEach(async () => {

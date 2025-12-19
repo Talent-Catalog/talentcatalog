@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {SalaryTsmitComponent} from './salary-tsmit.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {By} from '@angular/platform-browser';
@@ -10,11 +26,11 @@ import {enumOptions} from '../../../../../util/enum';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('SalaryTsmitComponent', () => {
+describe('SalaryTsmitComponent', () => {
   let component: SalaryTsmitComponent;
   let fixture: ComponentFixture<SalaryTsmitComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
@@ -23,13 +39,13 @@ fdescribe('SalaryTsmitComponent', () => {
       declarations: [SalaryTsmitComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
       ]
     }).compileComponents();
 
     candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

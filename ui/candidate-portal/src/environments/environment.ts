@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,10 +23,13 @@ export const environment = {
   host: 'localhost:8080',
   publishUrl: 'http://localhost:8080/published',
   chatApiUrl: 'http://localhost:8080/api/admin',
+  termsInfoApiUrl: 'http://localhost:8080/api/admin',
+  halApiUrl: 'http://localhost:8080/api/hal',
   apiUrl: 'http://localhost:8080/api/portal',
   systemApiUrl: 'http://localhost:8080/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org',
-  googleAnalyticsId: 'G-K9ML1Y40B4' // for testing
+  googleAnalyticsId: 'G-K9ML1Y40B4', // for testing
+  environmentName: 'local'
 };
 
 /*

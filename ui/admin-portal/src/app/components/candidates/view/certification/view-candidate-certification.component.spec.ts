@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,67 +14,134 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ViewCandidateCertificationComponent} from "./view-candidate-certification.component";
-import {CandidateCertificationService} from "../../../../services/candidate-certification.service";
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {
+  ViewCandidateJobExperienceComponent
+} from "../occupation/experience/view-candidate-job-experience.component";
+import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
+import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {NgSelectModule} from "@ng-select/ng-select";
-import {CandidateCertification} from "../../../../model/candidate-certification";
-import {of} from "rxjs";
+import {Candidate} from "../../../../model/candidate";
+import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {CandidateOccupation} from "../../../../model/candidate-occupation";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {By} from "@angular/platform-browser";
+import {throwError} from "rxjs";
 
-fdescribe('ViewCandidateCertificationComponent', () => {
-  let component: ViewCandidateCertificationComponent;
-  let fixture: ComponentFixture<ViewCandidateCertificationComponent>;
-  let candidateCertificationServiceSpy: jasmine.SpyObj<CandidateCertificationService>;
-  let modalServiceSpy: jasmine.SpyObj<NgbModal>;
-  const mockCertifications: CandidateCertification[] = [
-    { id: 1, name: 'Certification 1', institution: 'Institution 1', dateCompleted: '2024-05-29' },
-    { id: 2, name: 'Certification 2', institution: 'Institution 2', dateCompleted: '2024-05-30' }
-  ];
-  beforeEach(waitForAsync(() => {
-    const candidateCertificationSpy = jasmine.createSpyObj('CandidateCertificationService', ['list', 'delete']);
-    const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
+describe('ViewCandidateCertificationComponent', () => {
+  let component: ViewCandidateJobExperienceComponent;
+  let fixture: ComponentFixture<ViewCandidateJobExperienceComponent>;
+  let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;
+  let mockCandidateService: jasmine.SpyObj<CandidateService>;
+  let mockModalService: jasmine.SpyObj<NgbModal>;
 
-    TestBed.configureTestingModule({
-      declarations: [ViewCandidateCertificationComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+  // Mock data
+  const mockCandidate: Candidate = new MockCandidate();
+
+  const mockCandidateOccupation: CandidateOccupation = {
+    id: 1,
+    occupation: { id: 1, name: 'Software Developer' },
+    yearsExperience: 5,
+    migrationOccupation: 'Engineer'
+  } as CandidateOccupation;
+
+  beforeEach(async () => {
+    // Create spy objects for services
+    mockCandidateJobExperienceService = jasmine.createSpyObj('CandidateJobExperienceService', ['delete']);
+    mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
+    mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
+
+    await TestBed.configureTestingModule({
+      declarations: [ViewCandidateJobExperienceComponent],
       providers: [
-        { provide: CandidateCertificationService, useValue: candidateCertificationSpy },
-        { provide: NgbModal, useValue: modalSpy }
-      ]
+        { provide: CandidateJobExperienceService, useValue: mockCandidateJobExperienceService },
+        { provide: CandidateService, useValue: mockCandidateService },
+        { provide: NgbModal, useValue: mockModalService }
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA] // Ignore custom directives like appHighlightSearch
     }).compileComponents();
-
-    candidateCertificationServiceSpy = TestBed.inject(CandidateCertificationService) as jasmine.SpyObj<CandidateCertificationService>;
-    modalServiceSpy = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-  }));
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateCertificationComponent);
+    fixture = TestBed.createComponent(ViewCandidateJobExperienceComponent);
     component = fixture.componentInstance;
-    component.candidateCertifications = mockCertifications;
-    component.candidate = { id: 1 } as any; // Mocking candidate object
-    component.editable = true; // Mocking editable input
-    component.adminUser = true; // Mocking adminUser input
+    component.candidate = mockCandidate;
+    component.candidateOccupation = mockCandidateOccupation;
+    component.editable = true;
+    component.adminUser = true;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize without errors', () => {
-    expect(component.loading).toBeFalsy();
-    expect(component.error).toBeUndefined();
+  it('should display error state', () => {
+    component.error = 'Failed to load data';
+    component.loading = false;
+
+    fixture.detectChanges();
+
+    const errorElement =
+      fixture.debugElement.query(By.css('tc-alert[type="danger"]'));
+    expect(errorElement).toBeTruthy();
+    expect(errorElement.nativeElement.textContent).toContain('Failed to load data');
   });
 
-  it('should load certifications for the given candidate', () => {
-    candidateCertificationServiceSpy.list.and.returnValue(of(mockCertifications));
+  it('should render candidate occupation details', () => {
+    component.loading = false;
+    fixture.detectChanges();
+    const cardHeader = fixture.debugElement.query(By.css('tc-card-header'));
+    expect(cardHeader.nativeElement.textContent).toContain('Software Developer (5 years)');
+    expect(cardHeader.nativeElement.textContent).toContain('Migrated Occupation: Engineer');
+  });
 
-    component.ngOnChanges({});
-    expect(component.loading).toBeFalsy();
-    expect(component.error).toBeUndefined();
-    expect(component.candidateCertifications).toEqual(mockCertifications);
+  it('should display empty state when no experiences', () => {
+    component.experiences = [];
+    component.loading = false;
+    fixture.detectChanges();
+    const emptyMessage = fixture.debugElement.query(By.css('p'));
+    expect(emptyMessage.nativeElement.textContent).toContain('No job experience data has been entered by this candidate.');
+  });
+
+  it('should emit deleteOccupation event when deleting occupation with no experiences', () => {
+    component.experiences = [];
+    const emitSpy = jasmine.createSpy('deleteOccupation');
+    component.deleteOccupation.subscribe(emitSpy);
+
+    component.deleteCandidateOccupation();
+    expect(emitSpy).toHaveBeenCalledWith(mockCandidateOccupation);
+  });
+
+  it('should handle error when deleting job experience', fakeAsync(() => {
+    const jobExperience = mockCandidate.candidateJobExperiences[0];
+    mockModalService.open.and.returnValue({
+      componentInstance: { message: null },
+      result: Promise.resolve(true)
+    } as any);
+    mockCandidateJobExperienceService.delete.and.returnValue(throwError('Delete error'));
+
+    component.deleteCandidateJobExperience(jobExperience);
+    tick();
+
+    expect(mockCandidateJobExperienceService.delete).toHaveBeenCalledWith(jobExperience.id);
+    expect(component.error).toBe('Delete error');
+    expect(component.loading).toBeFalse();
+  }));
+
+  it('should not show edit buttons when editable is false', () => {
+    component.editable = false;
+    component.loading = false;
+    fixture.detectChanges();
+    const createButton = fixture.debugElement.query(By.css('.btn-primary'));
+    const editOccupationButton = fixture.debugElement.query(By.css('.btn-secondary'));
+    const editJobExperienceButton = fixture.debugElement.query(By.css('.btn-default'));
+    expect(createButton).toBeNull();
+    expect(editOccupationButton).toBeNull();
+    expect(editJobExperienceButton).toBeNull();
   });
 });

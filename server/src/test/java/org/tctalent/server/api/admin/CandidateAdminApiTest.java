@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -35,6 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
@@ -57,12 +59,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.api.dto.CandidateIntakeDataBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
-import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
+import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
@@ -89,7 +93,7 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Candidate Admin Api endpoints.
@@ -102,7 +106,7 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate";
     private static final String SEARCH_PATH = "/search";
     private static final String FIND_BY_EMAIL_PATH = "/findbyemail";
-    private static final String FIND_BY_EMAIL_OR_PHONE_PATH = "/findbyemailorphone";
+    private static final String FIND_BY_EMAIL_PHONE_OR_WHATSAPP_PATH = "/findbyemailphoneorwhatsapp";
     private static final String FIND_BY_NUMBER_OR_NAME_PATH = "/findbynumberorname";
     private static final String FIND_BY_EXTERNAL_ID_PATH = "/findbyexternalid";
     private static final String GET_BY_NUMBER_PATH = "/number/{number}";
@@ -129,12 +133,12 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private final Page<Candidate> candidates =
             new PageImpl<>(
-                    AdminApiTestUtil.listOfCandidates(),
+                    getListOfCandidates(),
                     PageRequest.of(0,10, Sort.unsorted()),
-                    AdminApiTestUtil.listOfCandidates().size()
+                    getListOfCandidates().size()
             );
 
-    private final Candidate candidate = AdminApiTestUtil.getCandidate();
+    private final Candidate candidate = getCandidate();
 
     @MockBean
     CandidateService candidateService;
@@ -147,9 +151,11 @@ class CandidateAdminApiTest extends ApiTestBase {
     @MockBean
     SavedSearchService savedSearchService;
     @MockBean
-    UserService userService;
-    @MockBean
     CandidateTokenProvider candidateTokenProvider;
+    @MockBean
+    CandidateBuilderSelector candidateBuilderSelector;
+    @MockBean
+    CandidateIntakeDataBuilderSelector candidateIntakeDataBuilderSelector;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -158,6 +164,30 @@ class CandidateAdminApiTest extends ApiTestBase {
     @BeforeEach
     void setUp() {
         configureAuthentication();
+
+        // Minimal builder for Candidate
+        DtoBuilder nationalityDto = new DtoBuilder()
+            .add("name");
+
+        DtoBuilder candidateDto = new DtoBuilder()
+            .add("id")
+            .add("nationality", nationalityDto);
+
+        given(candidateBuilderSelector.selectBuilder()).willReturn(candidateDto);
+        given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
+
+        // Minimal builder for Intake
+        DtoBuilder countryDto = new DtoBuilder()
+            .add("name");
+
+        DtoBuilder destinationDto = new DtoBuilder()
+            .add("country", countryDto);
+
+        DtoBuilder intakeDto = new DtoBuilder()
+            .add("id")
+            .add("candidateDestinations", destinationDto);
+
+        given(candidateIntakeDataBuilderSelector.selectBuilder()).willReturn(intakeDto);
     }
 
     @Test
@@ -192,16 +222,16 @@ class CandidateAdminApiTest extends ApiTestBase {
     }
 
     @Test
-    @DisplayName("find by email or phone succeeds")
-    void findByEmailOrPhoneSucceeds() throws Exception {
-        CandidateEmailOrPhoneSearchRequest request = new CandidateEmailOrPhoneSearchRequest();
+    @DisplayName("find by email phone or whatsapp succeeds")
+    void findByEmailPhoneOrWhatsappSucceeds() throws Exception {
+        CandidateEmailPhoneOrWhatsappSearchRequest request = new CandidateEmailPhoneOrWhatsappSearchRequest();
 
         given(candidateService
-                .searchCandidates(any(CandidateEmailOrPhoneSearchRequest.class)))
+                .searchCandidates(any(CandidateEmailPhoneOrWhatsappSearchRequest.class)))
                 .willReturn(candidates);
 
-        postSearchRequestAndVerifyResponse(FIND_BY_EMAIL_OR_PHONE_PATH, objectMapper.writeValueAsString(request));
-        verify(candidateService).searchCandidates(any(CandidateEmailOrPhoneSearchRequest.class));
+        postSearchRequestAndVerifyResponse(FIND_BY_EMAIL_PHONE_OR_WHATSAPP_PATH, objectMapper.writeValueAsString(request));
+        verify(candidateService).searchCandidates(any(CandidateEmailPhoneOrWhatsappSearchRequest.class));
     }
 
     @Test
@@ -271,7 +301,18 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .addMissingDestinations(any(Candidate.class)))
                 .willReturn(addMissingDestinations(candidate));
 
-        getIntakeDataAndVerifyResponse(GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)));
+//        getIntakeDataAndVerifyResponse(GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)));
+      mockMvc.perform(get(BASE_PATH + GET_INTAKE_DATA_BY_ID_PATH.replace("{id}", Long.toString(id)))
+              .header("Authorization", "Bearer " + "jwt-token")
+              .accept(MediaType.APPLICATION_JSON))
+
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+          .andExpect(jsonPath("$.candidateDestinations").isArray())
+          .andExpect(jsonPath("$.candidateDestinations", hasSize(2)))
+          .andExpect(jsonPath("$.candidateDestinations[0].country.name", is("Canada")))
+          .andExpect(jsonPath("$.candidateDestinations[1].country.name", is("UK")));
 
         verify(candidateService).getCandidate(anyLong());
     }
@@ -609,7 +650,7 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements", Matchers.is(
-                    AdminApiTestUtil.listOfCandidates().size())))
+                    getListOfCandidates().size())))
                 .andExpect(jsonPath("$.totalPages", is(1)))
                 .andExpect(jsonPath("$.number", is(0)))
                 .andExpect(jsonPath("$.hasNext", is(false)))

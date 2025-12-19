@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="upload-box card text-center" [class.hover]="hover">
+<div class="upload-box card text-center mt-2" [class.hover]="hover">
 
   <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
 
@@ -22,10 +22,8 @@
 
   <span class="or text-muted">OR</span>
 
-  <span>
-    <button class="btn btn-info" (click)="input.click()">
-      Browse Files
-    </button>
-  </span>
+  <tc-button (onClick)="input.click()">
+    Browse Files
+  </tc-button>
 
 </div>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ import {ChatPost, CreateChatRequest, JobChat, JobChatType, JobChatUserInfo} from
 import {Message} from '@stomp/stompjs';
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('ChatService', () => {
+describe('ChatService', () => {
   let service: ChatService;
   let httpMock: HttpTestingController;
   let rxStompServiceMock: jasmine.SpyObj<RxStompService>;
@@ -66,7 +66,7 @@ fdescribe('ChatService', () => {
         sourcePartnerId:1,
         candidateId: 1
       };
-      const mockChat: JobChat = { id: 1 };
+      const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect };
 
       service.create(request).subscribe(chat => {
         expect(chat).toEqual(mockChat);
@@ -82,7 +82,7 @@ fdescribe('ChatService', () => {
   describe('getCandidateProspectChat', () => {
     it('should return the candidate prospect chat object', () => {
       const candidateId = 1;
-      const mockChat: JobChat = { id: 1 };
+      const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect };
 
       service.getCandidateProspectChat(candidateId).subscribe(chat => {
         expect(chat).toEqual(mockChat);
@@ -102,7 +102,7 @@ fdescribe('ChatService', () => {
         sourcePartnerId:1,
         candidateId: 1
       };
-      const mockChat: JobChat = { id: 1 };
+      const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect };
 
       spyOn(service['http'], 'post').and.returnValue(of(mockChat));
       service.getOrCreate(request).subscribe(chat => {
@@ -122,7 +122,7 @@ fdescribe('ChatService', () => {
         sourcePartnerId: 1,
         candidateId: 1
       };
-      const mockChat: JobChat = { id: 1 };
+      const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect };
 
       const chat$ = service.getOrCreate(request);
 
@@ -140,7 +140,7 @@ fdescribe('ChatService', () => {
 
   describe('getChatPosts$', () => {
     it('should map messages to ChatPost objects', () => {
-      const mockChat: JobChat = { id: 1};
+      const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect};
       const mockMessage: Message = {
         body: JSON.stringify({ id: 1, content: 'Test' })
       } as Message;
@@ -161,7 +161,7 @@ fdescribe('ChatService', () => {
 
   describe('getJobChatUserInfo', () => {
     it('should return JobChatUserInfo object', () => {
-      const mockChat: JobChat = { id: 1 };
+      const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect };
       const mockUserInfo: JobChatUserInfo = {
         numberUnreadChats: 1,
         lastReadPostId: 2,
@@ -183,7 +183,7 @@ fdescribe('ChatService', () => {
 
   describe('markChatAsRead', () => {
     it('should mark chat as read', () => {
-      const mockChat: JobChat = { id: 1 };
+      const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect };
 
       spyOn(service as any, 'markAsReadUptoOnServer').and.returnValue(of(void 0));
       spyOn(service as any, 'changeChatReadStatus');
@@ -198,9 +198,9 @@ fdescribe('ChatService', () => {
   describe('removeDuplicateChats', () => {
     it('should remove duplicate chats', () => {
       const chats: JobChat[] = [
-        { id: 1 },
-        { id: 2 },
-        { id: 1 }
+        { id: 1, type: JobChatType.CandidateProspect },
+        { id: 2, type: JobChatType.CandidateProspect },
+        { id: 1, type: JobChatType.CandidateProspect }
       ];
 
       const result = service.removeDuplicateChats(chats);

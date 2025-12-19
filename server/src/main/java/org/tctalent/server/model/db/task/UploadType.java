@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -33,6 +33,8 @@ public enum UploadType {
     degree,
     degreeTranscript,
     degreeTranscriptTrans,
+    dependantRefugeeStatusDoc,
+    dependantTravelDoc,
     englishExam,
     idCard,
     infoReleaseForm,
@@ -48,9 +50,11 @@ public enum UploadType {
     proofAddress,
     proofAddressTrans,
     references,
+    refugeeStatusDoc,
     residenceAttest,
     residenceAttestTrans,
     studiedInEnglish,
+    travelDoc,
     other,
     unhcrUnrwaRegCard,
     vaccination,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {VisaJobPutForwardComponent} from './visa-job-put-forward.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
@@ -23,7 +23,7 @@ import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('VisaJobPutForwardComponent', () => {
+describe('VisaJobPutForwardComponent', () => {
   let component: VisaJobPutForwardComponent;
   let fixture: ComponentFixture<VisaJobPutForwardComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
@@ -35,7 +35,7 @@ fdescribe('VisaJobPutForwardComponent', () => {
       declarations: [VisaJobPutForwardComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
       ]
     }).compileComponents();

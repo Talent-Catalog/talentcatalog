@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,12 +16,13 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,14 +31,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.api.dto.DtoType;
+import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
@@ -59,8 +65,10 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/saved-search")
+@Slf4j
+@RequiredArgsConstructor
 public class SavedSearchAdminApi implements
         ITableApi<SearchSavedSearchRequest,
             UpdateSavedSearchRequest, UpdateSavedSearchRequest> {
@@ -69,21 +77,8 @@ public class SavedSearchAdminApi implements
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
-    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
-    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector
-        = new ExportColumnsBuilderSelector();
-
-
-    @Autowired
-    public SavedSearchAdminApi(SavedSearchService savedSearchService,
-        SavedListService savedListService,
-        CandidateService candidateService,
-        CandidateSavedListService candidateSavedListService) {
-        this.candidateService = candidateService;
-        this.savedListService = savedListService;
-        this.savedSearchService = savedSearchService;
-        this.candidateSavedListService = candidateSavedListService;
-    }
+    private final SavedListBuilderSelector savedListBuilderSelector;
+    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector;
 
     /*
         Standard ITableApi methods
@@ -100,13 +95,26 @@ public class SavedSearchAdminApi implements
     }
 
     @Override
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
-        SavedSearch savedSearch = this.savedSearchService.getSavedSearch(id);
-        return savedSearchDtoExtended().build(savedSearch);
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) {
+        LogBuilder.builder(log)
+            .searchId(id)
+            .action("GetSavedSearch")
+            .message("Getting " + dtoType + " saved search")
+            .logInfo();
+
+        SavedSearch savedSearch = savedSearchService.getSavedSearch(id);
+        DtoBuilder dtoBuilder = selectedDtoBuilder(dtoType);
+        return dtoBuilder.build(savedSearch);
     }
 
     @Override
     public @NotNull List<Map<String, Object>> search(@Valid SearchSavedSearchRequest request) {
+        List<SavedSearch> savedSearches = savedSearchService.search(request);
+        return savedSearchDto().buildList(savedSearches);
+    }
+
+    @PostMapping("search-ids")
+    @NotNull List<Map<String, Object>> searchByIds(@Valid @RequestBody IdsRequest request) {
         List<SavedSearch> savedSearches = savedSearchService.search(request);
         return savedSearchDto().buildList(savedSearches);
     }
@@ -178,7 +186,7 @@ public class SavedSearchAdminApi implements
      * @param request Request containing details of the list to be saved to,
      *                the associated user and whether or not the save should
      *                add to or replace existing contents.
-     * @return List which selection was saved to
+     * @return Representation of List which selection was saved to
      * @throws EntityExistsException If a new list needs to be created but the
      * list name already exists.
      * @throws InvalidRequestException if not authorized.
@@ -283,7 +291,7 @@ public class SavedSearchAdminApi implements
     @GetMapping("/default")
     public @NotNull Map<String, Object> getDefault() {
         SavedSearch savedSearch = this.savedSearchService.getDefaultSavedSearch();
-        return savedSearchDtoExtended().build(savedSearch);
+        return extendedSavedSearchDto().build(savedSearch);
     }
 
     @GetMapping("{id}/load")
@@ -296,7 +304,7 @@ public class SavedSearchAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateSharingRequest request) {
         SavedSearch savedSearch = this.savedSearchService.addSharedUser(id, request);
-        return savedSearchDtoExtended().build(savedSearch);
+        return extendedSavedSearchDto().build(savedSearch);
     }
 
     @PutMapping("/shared-remove/{id}")
@@ -304,7 +312,7 @@ public class SavedSearchAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateSharingRequest request) {
         SavedSearch savedSearch = this.savedSearchService.removeSharedUser(id, request);
-        return savedSearchDtoExtended().build(savedSearch);
+        return extendedSavedSearchDto().build(savedSearch);
     }
 
     @PutMapping("/watcher-add/{id}")
@@ -312,7 +320,7 @@ public class SavedSearchAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateWatchingRequest request) {
         SavedSearch savedSearch = this.savedSearchService.addWatcher(id, request);
-        return savedSearchDtoExtended().build(savedSearch);
+        return extendedSavedSearchDto().build(savedSearch);
     }
 
     @PutMapping("/watcher-remove/{id}")
@@ -320,7 +328,7 @@ public class SavedSearchAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateWatchingRequest request) {
         SavedSearch savedSearch = this.savedSearchService.removeWatcher(id, request);
-        return savedSearchDtoExtended().build(savedSearch);
+        return extendedSavedSearchDto().build(savedSearch);
     }
 
     @PutMapping("/context/{id}")
@@ -345,13 +353,19 @@ public class SavedSearchAdminApi implements
     }
 
     private DtoBuilder selectedDtoBuilder(SearchSavedSearchRequest request) {
-        DtoBuilder builder;
-        if (request.getMinimalData() != null && request.getMinimalData()) {
-            builder = minimalSavedSearchDto();
-        } else {
-            builder = savedSearchDto();
+        return selectedDtoBuilder(request.getDtoType());
+    }
+
+    private DtoBuilder selectedDtoBuilder(DtoType dtoType) {
+        if (dtoType == null) {
+            return savedSearchDto(); // Default behavior if dtoType is null
         }
-        return builder;
+
+        return switch (dtoType) {
+            case MINIMAL -> minimalSavedSearchDto();
+            case EXTENDED -> extendedSavedSearchDto();
+            default -> savedSearchDto();
+        };
     }
 
     private DtoBuilder savedSearchNameDto() {
@@ -363,15 +377,23 @@ public class SavedSearchAdminApi implements
     private DtoBuilder minimalSavedSearchDto() {
         return new DtoBuilder()
             .add("id")
+            .add("publicId")
             .add("name")
             .add("savedSearchType")
             .add("savedSearchSubtype")
+            .add("displayedFieldsLong")
+            .add("displayedFieldsShort")
+            .add("users", userDto())
+            .add("watcherUserIds")
+            .add("createdBy", userDto())
+            .add("global")
             ;
     }
 
     private DtoBuilder savedSearchDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("publicId")
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
@@ -407,6 +429,7 @@ public class SavedSearchAdminApi implements
                 .add("reviewable")
                 .add("global")
                 .add("defaultSearch")
+                .add("includePendingTermsCandidates")
                 .add("miniIntakeCompleted")
                 .add("fullIntakeCompleted")
                 .add("sfJobOpp", jobOppIdsDto())
@@ -414,6 +437,26 @@ public class SavedSearchAdminApi implements
                 .add("createdBy", userDto())
                 .add("users", userDto())
                 ;
+    }
+
+    public DtoBuilder extendedSavedSearchDto() {
+        return savedSearchDto()
+            .add("countryNames")
+            .add("partnerNames")
+            .add("nationalityNames")
+            .add("vettedOccupationNames")
+            .add("occupationNames")
+            .add("educationMajors")
+            .add("englishWrittenLevel")
+            .add("englishSpokenLevel")
+            .add("otherWrittenLevel")
+            .add("otherSpokenLevel")
+            .add("minEducationLevelName")
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
+            .add("searchJoins", searchJoinDto());
+
     }
 
     private DtoBuilder jobOppIdsDto() {
@@ -429,26 +472,6 @@ public class SavedSearchAdminApi implements
                 .add("name")
                 .add("status")
                 ;
-    }
-
-    public DtoBuilder savedSearchDtoExtended(){
-        return savedSearchDto()
-                .add("countryNames")
-                .add("partnerNames")
-                .add("nationalityNames")
-                .add("vettedOccupationNames")
-                .add("occupationNames")
-                .add("educationMajors")
-                .add("englishWrittenLevel")
-                .add("englishSpokenLevel")
-                .add("otherWrittenLevel")
-                .add("otherSpokenLevel")
-                .add("minEducationLevelName")
-                .add("createdDate")
-                .add("updatedBy", userDto())
-                .add("updatedDate")
-                .add("searchJoins", searchJoinDto());
-
     }
 
     private DtoBuilder searchJoinDto() {

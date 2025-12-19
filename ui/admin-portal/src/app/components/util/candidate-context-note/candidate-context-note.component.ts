@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,13 +15,14 @@
  */
 
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
 import {Observable} from 'rxjs';
 import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {getCandidateSourceType} from "../../../model/saved-search";
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-context-note',
@@ -34,8 +35,9 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
 
-  constructor(private fb: FormBuilder,
-              private candidateSourceService: CandidateSourceService) {
+  constructor(private fb: UntypedFormBuilder,
+              private candidateSourceService: CandidateSourceService,
+              private authService: AuthorizationService) {
     super(null);
   }
 
@@ -62,17 +64,19 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
   }
 
   get title(): string {
-    return "Context notes for " + this.candidate.user.firstName + " in " + this.candidateSource.name +
-      " " + getCandidateSourceType(this.candidateSource);
+    return "Context notes for " + this.candidate.user.firstName + " in '" + this.candidateSource.name +
+      "' " + getCandidateSourceType(this.candidateSource);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     //Replace the form value with the new candidates context notes when
     //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
+      this.form.controls['contextNote'].patchValue(this.candidate.contextNote, {emitEvent: false});
     }
   }
 
-
+  isEditable(): boolean {
+    return this.authService.canEditCandidateSource(this.candidateSource);
+  }
 }

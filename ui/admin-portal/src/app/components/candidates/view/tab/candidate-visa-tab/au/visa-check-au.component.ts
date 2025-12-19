@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,15 +15,8 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {
-  Candidate,
-  CandidateIntakeData,
-  CandidateVisa,
-  CandidateVisaJobCheck
-} from '../../../../../../model/candidate';
-import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
+import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from '../../../../../../model/candidate';
+import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-visa-check-au',
@@ -40,9 +33,7 @@ export class VisaCheckAuComponent implements OnInit {
   currentYear: string;
   birthYear: string;
 
-  constructor(private candidateVisaJobService: CandidateVisaJobService,
-              private modalService: NgbModal,
-              private localStorageService: LocalStorageService) {}
+  constructor(private authService: AuthorizationService) {}
 
   ngOnInit() {
     this.currentYear = new Date().getFullYear().toString();
@@ -52,5 +43,9 @@ export class VisaCheckAuComponent implements OnInit {
      * two-way data binding of selectedJob on the CandidateVisaJobComponent.
      */
     this.selectedJob = this.visaCheckRecord.candidateVisaJobChecks[0]
+  }
+
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
   }
 }

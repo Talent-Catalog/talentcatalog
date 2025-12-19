@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,34 +16,38 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKey;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -51,8 +55,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.api.admin.SystemAdminApi;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
 
@@ -60,15 +67,43 @@ import org.tctalent.server.util.SalesforceHelper;
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
 @Slf4j
-public class Candidate extends AbstractAuditableDomainObject<Long> {
+public class Candidate extends AbstractAuditableDomainObject<Long> implements HasPublicId {
 
     private String candidateNumber;
+    private String publicId;
+
+    /**
+     * Privacy policy that candidate has accepted
+     */
+    private String acceptedPrivacyPolicyId;
+
+    /**
+     * Date time when candidate accepted privacy policy
+     */
+    private OffsetDateTime acceptedPrivacyPolicyDate;
+
+    /**
+     * Partner associated with the accepted privacy policy.
+     * Nullable because it may not be set initially.
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accepted_privacy_policy_partner_id")
+    private PartnerImpl acceptedPrivacyPolicyPartner;
+
+    /**
+     * True if candidate wants to receive all notifications.
+     * If false, the candidate will only receive notifications when they are well progressed in
+     * a job opportunity.
+     */
+    private boolean allNotifications;
 
     @Transient
     private Long contextSavedListId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateId", cascade = CascadeType.MERGE)
-    private Set<CandidateProperty> candidateProperties;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @MapKey(name="name")
+    private Map<String, CandidateProperty> candidateProperties;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("activatedDate DESC")
@@ -90,6 +125,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String linkedInLink;
 
     /**
+     * If true, candidate cannot post to chats. Effectively any chats they see are read only.
+     * <p/>
+     * A candidate can be muted by their source partner if they are not respecting the TC's chat
+     * rules. They can subsequently be unmuted.
+     */
+    private boolean muted;
+
+    /**
+     * Indicates whether the user's password requires update.
+     * If true, the candidate will be required to change their password upon their next login.
+     * This is particularly useful for candidates who are automatically registered by a third party
+     * and assigned a temporary password. When the candidate logs in for the first time, they will
+     * be prompted to change their password.
+     */
+    @Column(name = "change_password" , nullable = false)
+    private boolean changePassword;
+
+    /**
      * Candidate's internal id reference with the source partner handling their case.
      * This is the reference used to identify the candidate on the source partner's internal systems.
      * <p/>
@@ -98,6 +151,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      */
     @Nullable
     private String partnerRef;
+
+    /**
+     * This can be set to define an optional ranking associated with the candidate as a result
+     * of some kind of sorting logic.
+     */
+    @Transient
+    @Nullable
+    private Number rank;
+
+    /**
+     * If null the candidate registered themselves.
+     * If not null, the candidate was registered through the public API by the given partner.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "registered_by")
+    @Nullable
+    private PartnerImpl registeredBy;
 
     /**
      * IP address of candidate when they registered
@@ -170,6 +240,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private CandidateStatus status;
 
     /**
+     * Computed field of all searchable text associated with the candidate.
+     * <p/>
+     * Updated in {@link #updateText}
+     */
+    private String text;
+
+    /**
      * ID of corresponding candidate record in Elasticsearch
      * @see CandidateEs#getId()
      */
@@ -207,7 +284,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "nationality_id")
     private Country nationality;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -215,6 +292,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateOccupation> candidateOccupations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("updatedDate DESC")
     private List<CandidateNote> candidateNotes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -243,13 +321,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateOpportunity> candidateOpportunities;
-
-    //old data only links to candidate needs to be searchable
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "migration_education_major_id")
-    private EducationMajor migrationEducationMajor;
-
-    private String migrationNationality;
 
     /**
      * Url link to corresponding candidate folder on Google Drive, if one exists.
@@ -588,10 +659,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo monitoringEvaluationConsent;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
     private YesNoUnsure partnerRegistered;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -684,6 +751,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String englishAssessmentScoreIelts;
 
     @Nullable
+    private Long englishAssessmentScoreDet;
+
+    @Nullable
     private String frenchAssessment;
 
     @Nullable
@@ -736,8 +806,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @NotNull
     private Boolean contactConsentRegistration;
 
-    @NotNull
-    private Boolean contactConsentPartners;
+    /**
+     * This field is only used for candidates who have just agreed to the old TBB Privacy Policy.
+     * It is not used for candidates who have accepted the new Privacy Policy terms because those
+     * terms cover this consent to contact candidates about any opportunities.
+     */
+    private boolean contactConsentPartners = true;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
@@ -757,9 +831,32 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Column(name = "full_intake_completed_date")
     private OffsetDateTime fullIntakeCompletedDate;
 
+    @Nullable
+    private String relocatedAddress;
 
+    @Nullable
+    private String relocatedCity;
+
+    @Nullable
+    private String relocatedState;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "relocated_country_id")
+    private Country relocatedCountry;
+
+    @Nullable
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DuolingoCoupon> coupons = new ArrayList<>();
     public Candidate() {
     }
+
+    /**
+     * Candidate has been identified as a potential duplicate of another - monitored by daily
+     * scheduled call to {@link BackgroundProcessingService#processPotentialDuplicateCandidates()},
+     * which can also be manually triggered from {@link SystemAdminApi}.
+     */
+    private boolean potentialDuplicate;
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields
     //Seems to always be the same as user - so not sure if it has any point.
@@ -800,12 +897,44 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return obj;
     }
 
+    public String getAcceptedPrivacyPolicyId() {
+        return acceptedPrivacyPolicyId;
+    }
+
+    public void setAcceptedPrivacyPolicyId(String acceptedPrivacyPolicyId) {
+        this.acceptedPrivacyPolicyId = acceptedPrivacyPolicyId;
+    }
+
+    public OffsetDateTime getAcceptedPrivacyPolicyDate() {
+        return acceptedPrivacyPolicyDate;
+    }
+
+    public void setAcceptedPrivacyPolicyDate(OffsetDateTime acceptedPrivacyPolicyDate) {
+        this.acceptedPrivacyPolicyDate = acceptedPrivacyPolicyDate;
+    }
+
+    public PartnerImpl getAcceptedPrivacyPolicyPartner() {
+        return acceptedPrivacyPolicyPartner;
+    }
+
+    public void setAcceptedPrivacyPolicyPartner(PartnerImpl acceptedPrivacyPolicyPartner) {
+        this.acceptedPrivacyPolicyPartner = acceptedPrivacyPolicyPartner;
+    }
+
     public String getCandidateNumber() {
         return candidateNumber;
     }
 
     public void setCandidateNumber(String candidateNumber) {
         this.candidateNumber = candidateNumber;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 
     /**
@@ -1073,6 +1202,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.address1 = address1;
     }
 
+    public boolean isAllNotifications() {
+        return allNotifications;
+    }
+
+    public void setAllNotifications(boolean allNotifications) {
+        this.allNotifications = allNotifications;
+    }
+
     public String getCity() {return city;}
 
     public void setCity(String city) {
@@ -1116,6 +1253,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getLinkedInLink() { return linkedInLink; }
 
     public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
+
+    public boolean isChangePassword() {
+        return changePassword;
+    }
+
+    public void setChangePassword(boolean changePassword) {
+        this.changePassword = changePassword;
+    }
 
     public SurveyType getSurveyType() { return surveyType; }
 
@@ -1169,32 +1322,44 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return candidateOccupations;
     }
 
-    public void setCandidateOccupations(List<CandidateOccupation> candidateOccupations) {
-        this.candidateOccupations = candidateOccupations;
+    public void setCandidateOccupations(List<CandidateOccupation> entities) {
+        this.candidateOccupations = entities;
+        if (entities != null) {
+            entities.forEach(entity -> entity.setCandidate(this));
+        }
     }
 
     public List<CandidateNote> getCandidateNotes() {
         return candidateNotes;
     }
 
-    public void setCandidateNotes(List<CandidateNote> candidateNotes) {
-        this.candidateNotes = candidateNotes;
+    public void setCandidateNotes(List<CandidateNote> entities) {
+        this.candidateNotes = entities;
+        if (entities != null) {
+            for (CandidateNote entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateOpportunity> getCandidateOpportunities() {
         return candidateOpportunities;
     }
 
-    public void setCandidateOpportunities(
-        List<CandidateOpportunity> candidateOpportunities) {
-        this.candidateOpportunities = candidateOpportunities;
+    public void setCandidateOpportunities(List<CandidateOpportunity> entities) {
+        this.candidateOpportunities = entities;
+        if (entities != null) {
+            for (CandidateOpportunity entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
-    public Set<CandidateProperty> getCandidateProperties() {
+    public Map<String,CandidateProperty> getCandidateProperties() {
         return candidateProperties;
     }
 
-    public void setCandidateProperties(Set<CandidateProperty> properties) {
+    public void setCandidateProperties(Map<String,CandidateProperty> properties) {
         this.candidateProperties = properties;
     }
 
@@ -1202,98 +1367,129 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return candidateEducations;
     }
 
-    public void setCandidateEducations(List<CandidateEducation> candidateEducations) {
-        this.candidateEducations = candidateEducations;
+    public void setCandidateEducations(List<CandidateEducation> entities) {
+        this.candidateEducations = entities;
+        if (entities != null) {
+            for (CandidateEducation entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateLanguage> getCandidateLanguages() {
         return candidateLanguages;
     }
 
-    public void setCandidateLanguages(List<CandidateLanguage> candidateLanguages) {
-        this.candidateLanguages = candidateLanguages;
+    public void setCandidateLanguages(List<CandidateLanguage> entities) {
+        this.candidateLanguages = entities;
+        if (entities != null) {
+            for (CandidateLanguage entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateJobExperience> getCandidateJobExperiences() {
         return candidateJobExperiences;
     }
 
-    public void setCandidateJobExperiences(List<CandidateJobExperience> candidateJobExperiences) {
-        this.candidateJobExperiences = candidateJobExperiences;
+    public void setCandidateJobExperiences(List<CandidateJobExperience> entities) {
+        this.candidateJobExperiences = entities;
+        if (entities != null) {
+            for (CandidateJobExperience entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateCertification> getCandidateCertifications() {
         return candidateCertifications;
     }
 
-    public void setCandidateCertifications(List<CandidateCertification> candidateCertifications) {
-        this.candidateCertifications = candidateCertifications;
+    public void setCandidateCertifications(List<CandidateCertification> entities) {
+        this.candidateCertifications = entities;
+        if (entities != null) {
+            for (CandidateCertification entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public Set<CandidateReviewStatusItem> getCandidateReviewStatusItems() {
         return candidateReviewStatusItems;
     }
 
-    public void setCandidateReviewStatusItems(Set<CandidateReviewStatusItem> candidateReviewStatusItems) {
-        this.candidateReviewStatusItems = candidateReviewStatusItems;
-    }
-
-
-    public EducationMajor getMigrationEducationMajor() {
-        return migrationEducationMajor;
-    }
-
-    public void setMigrationEducationMajor(EducationMajor migrationEducationMajor) {
-        this.migrationEducationMajor = migrationEducationMajor;
+    public void setCandidateReviewStatusItems(Set<CandidateReviewStatusItem> entities) {
+        this.candidateReviewStatusItems = entities;
+        if (entities != null) {
+            for (CandidateReviewStatusItem entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateSkill> getCandidateSkills() {
         return candidateSkills;
     }
 
-    public void setCandidateSkills(List<CandidateSkill> candidateSkills) {
-        this.candidateSkills = candidateSkills;
+    public void setCandidateSkills(List<CandidateSkill> entities) {
+        this.candidateSkills = entities;
+        if (entities != null) {
+            for (CandidateSkill entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateAttachment> getCandidateAttachments() { return candidateAttachments; }
 
-    public void setCandidateAttachments(List<CandidateAttachment> candidateAttachments) { this.candidateAttachments = candidateAttachments; }
+    public void setCandidateAttachments(List<CandidateAttachment> entities) {
+        this.candidateAttachments = entities;
+        if (entities != null) {
+            for (CandidateAttachment entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
+    }
 
     public List<CandidateCitizenship> getCandidateCitizenships() {
         return candidateCitizenships;
     }
 
-    public void setCandidateCitizenships(List<CandidateCitizenship> candidateCitizenships) {
-        this.candidateCitizenships = candidateCitizenships;
+    public void setCandidateCitizenships(List<CandidateCitizenship> entities) {
+        this.candidateCitizenships = entities;
+        if (entities != null) {
+            for (CandidateCitizenship entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateExam> getCandidateExams() { return candidateExams; }
 
-    public void setCandidateExams(List<CandidateExam> candidateExams) { this.candidateExams = candidateExams; }
+    public void setCandidateExams(List<CandidateExam> entities) {
+        this.candidateExams = entities;
+        if (entities != null) {
+            for (CandidateExam entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
+    }
 
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
-        candidateVisaChecks.sort(null);
+        if (candidateVisaChecks != null) {
+            candidateVisaChecks.sort(null);
+        }
         return candidateVisaChecks;
     }
 
-    public void setCandidateVisaChecks(List<CandidateVisaCheck> candidateVisaChecks) {
-        this.candidateVisaChecks = candidateVisaChecks;
-    }
-
-    public String getMigrationCountry() {
-        return migrationNationality;
-    }
-
-    public void setMigrationCountry(String migrationCountry) {
-        this.migrationNationality = migrationCountry;
-    }
-
-    public String getMigrationNationality() {
-        return migrationNationality;
-    }
-
-    public void setMigrationNationality(String migrationNationality) {
-        this.migrationNationality = migrationNationality;
+    public void setCandidateVisaChecks(List<CandidateVisaCheck> entities) {
+        this.candidateVisaChecks = entities;
+        if (entities != null) {
+            for (CandidateVisaCheck entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     @Nullable
@@ -1694,14 +1890,30 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     public List<CandidateDependant> getCandidateDependants() { return candidateDependants; }
 
-    public void setCandidateDependants(List<CandidateDependant> candidateDependants) { this.candidateDependants = candidateDependants; }
+    public void setCandidateDependants(List<CandidateDependant> entities) {
+        this.candidateDependants = entities;
+        if (entities != null) {
+            for (CandidateDependant entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
+    }
 
     public List<CandidateDestination> getCandidateDestinations() {
-        candidateDestinations.sort(null);
+        if (candidateDestinations != null) {
+            candidateDestinations.sort(null);
+        }
         return candidateDestinations;
     }
 
-    public void setCandidateDestinations(List<CandidateDestination> candidateDestinations) { this.candidateDestinations = candidateDestinations; }
+    public void setCandidateDestinations(List<CandidateDestination> entities) {
+        this.candidateDestinations = entities;
+        if (entities != null) {
+            for (CandidateDestination entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
+    }
 
     @Nullable
     public YesNo getDestLimit() { return destLimit; }
@@ -1782,6 +1994,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getLeftHomeNotes() { return leftHomeNotes; }
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
+
+    public @Nullable Number getRank() {
+        return rank;
+    }
+
+    public void setRank(@Nullable Number rank) {
+        this.rank = rank;
+    }
+
+    @Nullable
+    public PartnerImpl getRegisteredBy() {
+        return registeredBy;
+    }
+
+    public void setRegisteredBy(@Nullable PartnerImpl registeredBy) {
+        this.registeredBy = registeredBy;
+    }
 
     @Nullable
     public String getRegoIp() {
@@ -1889,13 +2118,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getMaritalStatusNotes() { return maritalStatusNotes; }
 
     public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
-
-    @Nullable
-    public YesNo getMonitoringEvaluationConsent() {return monitoringEvaluationConsent;}
-
-    public void setMonitoringEvaluationConsent(@Nullable YesNo monitoringEvaluationConsent) {
-        this.monitoringEvaluationConsent = monitoringEvaluationConsent;
-    }
 
     @Nullable
     public String getPartnerRef() {
@@ -2061,6 +2283,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
+    public Long getEnglishAssessmentScoreDet() {
+        return englishAssessmentScoreDet;
+    }
+
+    public void setEnglishAssessmentScoreDet(@Nullable Long englishAssessmentScoreDet) {
+        this.englishAssessmentScoreDet = englishAssessmentScoreDet;
+    }
+
+    @Nullable
     public String getFrenchAssessment() { return frenchAssessment; }
 
     public void setFrenchAssessment(@Nullable String frenchAssessment) {
@@ -2140,6 +2371,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.mediaWillingness = mediaWillingness;
     }
 
+    public boolean getPotentialDuplicate() {return potentialDuplicate;}
+
+    public void setPotentialDuplicate(boolean potentialDuplicate) {
+        this.potentialDuplicate = potentialDuplicate;
+    }
+
     public Boolean getContactConsentRegistration() {
         return contactConsentRegistration;
     }
@@ -2148,11 +2385,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.contactConsentRegistration = emailConsentRegistration;
     }
 
-    public Boolean getContactConsentPartners() {
+    public boolean getContactConsentPartners() {
         return contactConsentPartners;
     }
 
-    public void setContactConsentPartners(Boolean emailConsentPartners) {
+    public void setContactConsentPartners(boolean emailConsentPartners) {
         this.contactConsentPartners = emailConsentPartners;
     }
 
@@ -2254,8 +2491,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return candidateSavedLists;
     }
 
-    public void setCandidateSavedLists(Set<CandidateSavedList> candidateSavedLists) {
-        this.candidateSavedLists = candidateSavedLists;
+    public void setCandidateSavedLists(Set<CandidateSavedList> entities) {
+        this.candidateSavedLists = entities;
+        if (entities != null) {
+            for (CandidateSavedList entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<TaskAssignmentImpl> getTaskAssignments() {
@@ -2275,6 +2517,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return savedLists;
     }
 
+    /**
+     * True if this candidate has been presented with our terms but has not yet accepted them.
+     * <p/>
+     * This is equivalent to the candidate being in the PendingTermsAcceptance list.
+     * @return True if the candidate has not accepted our terms.
+     */
+    public boolean isPendingTerms() {
+        return isTagged(SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID);
+    }
+
+    /**
+     * True if this is a test candidate.
+     * <p/>
+     * This is equivalent to the candidate being in the TestCandidates list.
+     * @return True if the candidate is a test candidate.
+     */
+    public boolean isTestCandidate() {
+        return isTagged(SystemAdminConfiguration.TEST_CANDIDATE_LIST_ID);
+    }
+
+    /**
+     * True if this candidate is in (ie tagged by) the given list
+     * @param savedListId Saved list id
+     * @return True if in list (ie tagged by that list)
+     */
+    public boolean isTagged(long savedListId) {
+        Optional<CandidateSavedList> optional = candidateSavedLists.stream()
+            .filter(sl -> sl.getSavedList().getId() == savedListId)
+            .findAny();
+        return optional.isPresent();
+    }
+
     public void addSavedLists(Set<SavedList> savedLists) {
         for (SavedList savedList : savedLists) {
             addSavedList(savedList);
@@ -2286,5 +2560,61 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                 new CandidateSavedList(this, savedList);
         candidateSavedLists.add(csl);
         savedList.getCandidateSavedLists().add(csl);
+    }
+
+    // RELOCATED FIELDS - keep track of a relocated candidate's location
+
+    @Nullable
+    public String getRelocatedAddress() {
+        return relocatedAddress;
+    }
+
+    public void setRelocatedAddress(@Nullable String relocatedAddress) {
+        this.relocatedAddress = relocatedAddress;
+    }
+
+    @Nullable
+    public String getRelocatedCity() {
+        return relocatedCity;
+    }
+
+    public void setRelocatedCity(@Nullable String relocatedCity) {
+        this.relocatedCity = relocatedCity;
+    }
+
+    @Nullable
+    public String getRelocatedState() {
+        return relocatedState;
+    }
+
+    public void setRelocatedState(@Nullable String relocatedState) {
+        this.relocatedState = relocatedState;
+    }
+
+    @Nullable
+    public Country getRelocatedCountry() {
+        return relocatedCountry;
+    }
+
+    public void setRelocatedCountry(Country relocatedCountry) {
+        this.relocatedCountry = relocatedCountry;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void updateText() {
+        String combinedJobText = getCandidateJobExperiences().stream()
+            .map(CandidateJobExperience::getDescription)
+            .collect(Collectors.joining(" || "));
+        String combinedCvText = getCandidateAttachments().stream()
+            .filter(CandidateAttachment::isCv)
+            .map(CandidateAttachment::getTextExtract)
+            .collect(Collectors.joining(" || "));
+        String notesText = getShareableNotes();
+        this.text = Stream.of(combinedJobText, combinedCvText, notesText)
+            .filter(s -> s != null && !s.isBlank())
+            .collect(Collectors.joining(" || "));
     }
 }

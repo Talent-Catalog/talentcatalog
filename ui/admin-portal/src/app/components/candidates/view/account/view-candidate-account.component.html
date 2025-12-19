@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,49 +14,46 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div class="card" *ngIf="!loading">
 
-  <div class="card-header">
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
+
+  <tc-card-header>
     Account Information
-<!--    <div class="float-end" *ngIf="editable">-->
-<!--      <button type="button" class="btn btn-default" (click)="editAccountDetails()"><i-->
-<!--        class="fas fa-edit"></i></button>-->
-<!--    </div>-->
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
-    <div class="row">
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
 
-      <div class="mb-3 col-sm-12 col-md-6">
-        <label class="col-form-label">Account Created:</label>
-        <div >
-          <span class="form-control-plaintext">{{user.createdDate | date: 'customDateTime' }}</span>
-        </div>
+    <tc-description-item [label]="'Account Created:'">
+      {{candidate.user.createdDate | date: 'customDateTime' }}
+    </tc-description-item>
+
+    <tc-description-item [label]="'Last Logged In:'">
+      {{candidate.user.lastLogin | date: 'customDateTime' }}
+    </tc-description-item>
+
+    <tc-description-item [label]="'Password:'">
+      *********
+      <div>
+        <tc-button *ngIf="editable"
+                   (onClick)="updatePassword(candidate.user)"
+                   [size]="'xs'"
+                   [type]="'outline'"
+                   [color]="'secondary'"
+        >
+          Reset
+        </tc-button>
       </div>
-      <div class="mb-3 col-sm-12 col-md-6">
-        <label class="col-form-label">Last Logged In:</label>
-        <div >
-          <span class="form-control-plaintext">{{user.lastLogin | date: 'customDateTime' }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="mb-3 col-sm-12 col-md-6">
-        <label class="col-form-label">Password:</label>
-        <div>
-          <span class="form-control-plaintext">*********</span>
-          <span><a class="small" [routerLink]="[]" (click)="updatePassword(user)">reset</a></span>
-        </div>
-      </div>
+    </tc-description-item>
 
-    </div>
+  </tc-description-list>
 
-  </div>
-
-</div>
+</tc-card>

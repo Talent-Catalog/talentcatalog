@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,6 +29,9 @@ import {AuthorizationService} from "../../../../services/authorization.service";
 export class ViewCandidateSpecialLinksComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  /** Passed to tc-description-list instances to define column spacing */
+  @Input() compact: boolean = false;
+
   loading: boolean;
   error;
 
@@ -49,7 +52,7 @@ export class ViewCandidateSpecialLinksComponent implements OnInit {
     editCandidateModal.componentInstance.candidateId = this.candidate.id;
 
     editCandidateModal.result
-      .then((candidate) => this.candidate = candidate)
+      .then((candidate) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -59,7 +62,7 @@ export class ViewCandidateSpecialLinksComponent implements OnInit {
     this.loading = true;
     this.candidateService.createCandidateFolder(this.candidate.id).subscribe(
       candidate => {
-        this.candidate = candidate;
+        this.candidateService.updateCandidate();
         this.loading = false;
       },
       error => {
@@ -73,7 +76,7 @@ export class ViewCandidateSpecialLinksComponent implements OnInit {
     this.loading = true;
     this.candidateService.createUpdateLiveCandidate(this.candidate.id).subscribe(
       candidate => {
-        this.candidate = candidate;
+        this.candidateService.updateCandidate();
         this.loading = false;
       },
       error => {
@@ -84,6 +87,10 @@ export class ViewCandidateSpecialLinksComponent implements OnInit {
 
   canAccessSalesforce(): boolean {
     return this.authService.canAccessSalesforce();
+  }
+
+  canAccessGoogleDrive(): boolean {
+    return this.authService.canAccessGoogleDrive();
   }
 
 }

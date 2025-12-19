@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {CandidateSavedListService} from './candidate-saved-list.service';
 import {environment} from '../../environments/environment';
 import {IHasSetOfSavedLists, SavedList, SearchSavedListRequest} from '../model/saved-list';
 
-fdescribe('CandidateSavedListService', () => {
+describe('CandidateSavedListService', () => {
   let service: CandidateSavedListService;
   let httpMock: HttpTestingController;
 

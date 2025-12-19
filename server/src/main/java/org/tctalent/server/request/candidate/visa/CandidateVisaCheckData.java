@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.RiskLevel;
 import org.tctalent.server.model.db.TBBEligibilityAssessment;
@@ -56,6 +57,8 @@ public class CandidateVisaCheckData {
     private String visaCreatedById;
     private YesNoUnsure visaPathwayAssessment;
     private String visaPathwayAssessmentNotes;
+    private FamilyRelations visaDestinationFamily;
+    private String visaDestinationFamilyLocation;
 
     //Corresponds to CandidateVisaJobCheck fields
     private Long visaJobId;

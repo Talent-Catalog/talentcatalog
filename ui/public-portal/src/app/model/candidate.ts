@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,6 +28,7 @@ export interface Candidate {
   id: number;
   user: User;
   candidateNumber: string;
+  publicId: string;
   phone: string;
   whatsapp: string;
   gender: string;
@@ -129,6 +130,7 @@ export enum CandidateStatus {
   incomplete = "incomplete",
   ineligible = "ineligible (inactive)",
   pending = "pending",
+  relocatedIndependently = "relocated independently (inactive)",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
 }

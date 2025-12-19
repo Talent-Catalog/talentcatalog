@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {S3UploadParams} from "./s3-upload-params";
 
-fdescribe('S3UploadParams Interface Tests', () => {
+describe('S3UploadParams Interface Tests', () => {
 
   it('should create an instance of S3UploadParams', () => {
     const params: S3UploadParams = {
@@ -51,6 +51,6 @@ fdescribe('S3UploadParams Interface Tests', () => {
     expect(params.policy).toBeUndefined();
     expect(params.signature).toBeUndefined();
   });
-  
+
 });
 

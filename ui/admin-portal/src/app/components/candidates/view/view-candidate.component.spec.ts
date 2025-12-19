@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,6 @@
  */
 
 import {NgbModal, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {SavedListService} from "../../../services/saved-list.service";
@@ -42,14 +41,15 @@ import {
 } from "../../util/candidate-shareable-notes/candidate-shareable-notes.component";
 import {ViewCandidateContactComponent} from "./contact/view-candidate-contact.component";
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
-import {User} from "../../../model/user";
 import {ViewCandidateNoteComponent} from "./note/view-candidate-note.component";
 import {Candidate} from "../../../model/candidate";
 import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
-import {MockPartner} from "../../../MockData/MockPartner";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {LocalStorageService} from "../../../services/local-storage.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
-fdescribe('ViewCandidateComponent', () => {
+describe('ViewCandidateComponent', () => {
   let component: ViewCandidateComponent;
   let fixture: ComponentFixture<ViewCandidateComponent>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;
@@ -58,30 +58,47 @@ fdescribe('ViewCandidateComponent', () => {
   let mockModalService: jasmine.SpyObj<NgbModal>;
   let mockLocalStorageService: jasmine.SpyObj<LocalStorageService>;
   let mockAuthenticationService: jasmine.SpyObj<AuthenticationService>;
+  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
   const mockCandidate = new MockCandidate();
+  mockCandidate.folderlink = 'https://localhost:8080/folder';
 
   beforeEach(waitForAsync(() => {
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['get','getByNumber', 'generateToken']);
+    const mockCandidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get','getByNumber', 'generateToken','updateCandidate', 'candidateUpdated']);
     mockSavedListService = jasmine.createSpyObj('SavedListService', ['search']);
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
-    mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser','isEditableCandidate', 'canViewPrivateCandidateInfo', 'canAccessSalesforce']);
+    mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    const authorizationSpy = jasmine.createSpyObj('AuthorizationService', [
+      'isEditableCandidate',
+      'canViewPrivateCandidateInfo',
+      'canAccessSalesforce',
+      'canAccessGoogleDrive',
+      'canSeeGlobalLists',
+      'canViewCandidateCV',
+      'canSeeJobDetails',
+      'isAnAdmin',
+      'isReadOnly'
+    ]);
 
     TestBed.configureTestingModule({
       declarations: [ViewCandidateComponent,ViewCandidateNoteComponent,CandidateGeneralTabComponent,CandidateShareableNotesComponent,ViewCandidateContactComponent,AutosaveStatusComponent,ViewCandidateLanguageComponent,ViewCandidateRegistrationComponent],
       imports: [HttpClientTestingModule,FormsModule,NgbNavModule,RouterTestingModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        { provide: CandidateService, useValue: mockCandidateService },
+        { provide: CandidateService, useValue: mockCandidateServiceSpy },
         { provide: SavedListService, useValue: mockSavedListService },
         { provide: ActivatedRoute, useValue: {
             paramMap: of(convertToParamMap({ candidateNumber: '123' }))
           }
         },        { provide: NgbModal, useValue: mockModalService },
         { provide: LocalStorageService, useValue: mockLocalStorageService },
-        { provide: AuthenticationService, useValue: mockAuthenticationService }
-      ]
+        { provide: AuthenticationService, useValue: mockAuthenticationService },
+        { provide: AuthorizationService, useValue: authorizationSpy }
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     mockActivatedRoute = TestBed.inject(ActivatedRoute);
+    mockCandidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
+    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
   }));
 
   beforeEach(() => {
@@ -92,6 +109,8 @@ fdescribe('ViewCandidateComponent', () => {
     component.candidate = mockCandidate;
     mockCandidateService.getByNumber.and.returnValue(of(mockCandidate));
     mockCandidateService.generateToken.and.returnValue(of('Token'));
+    mockCandidateService.candidateUpdated.and.returnValue(of(mockCandidate));
+
     fixture.detectChanges();
   });
 
@@ -131,5 +150,23 @@ fdescribe('ViewCandidateComponent', () => {
     expect(component.error).toEqual(`Candidate not found`);
     expect(component.loading).toBeFalse();
   });
+
+  it('should call canAccessGoogleDrive()', () => {
+    expect(authorizationServiceSpy.canAccessGoogleDrive).toHaveBeenCalled();
+  })
+
+  it('should not show Google Drive icon if user is not meant to have access', () => {
+    authorizationServiceSpy.canAccessGoogleDrive.and.returnValue(false);
+    fixture.detectChanges();
+    const googleDriveIcon = fixture.nativeElement.querySelector('.fa-google-drive');
+    expect(googleDriveIcon).toBeNull();
+  })
+
+  it('should show Google Drive icon if user is meant to have access', () => {
+    authorizationServiceSpy.canAccessGoogleDrive.and.returnValue(true);
+    fixture.detectChanges();
+    const googleDriveIcon = fixture.nativeElement.querySelector('.fa-google-drive');
+    expect(googleDriveIcon).toBeTruthy();
+  })
 
 });

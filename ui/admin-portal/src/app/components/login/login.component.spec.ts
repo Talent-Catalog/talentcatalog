@@ -1,10 +1,25 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {LoginComponent} from './login.component';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from "../../services/authentication.service";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {of} from "rxjs";
 
 import {Directive, Input} from '@angular/core';
@@ -17,7 +32,7 @@ export class RouterLinkStubDirective {
   @Input('routerLink') linkParams: any;
 }
 
-fdescribe('LoginComponent', () => {
+describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let authenticationService: AuthenticationService;
@@ -26,8 +41,7 @@ fdescribe('LoginComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        ReactiveFormsModule,
-        LocalStorageModule.forRoot({}),
+        ReactiveFormsModule
       ],
       declarations: [
         LoginComponent,
@@ -35,7 +49,7 @@ fdescribe('LoginComponent', () => {
       ],
       providers: [
         AuthenticationService,
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
         { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') } },
       ]
@@ -58,10 +72,10 @@ fdescribe('LoginComponent', () => {
     const compiled = fixture.nativeElement;
     // Assert login form and its required fields are rendered
     expect(compiled.querySelector('form')).toBeTruthy();
-    expect(compiled.querySelector('input[formControlName="username"]')).toBeTruthy();
-    expect(compiled.querySelector('input[formControlName="password"]')).toBeTruthy();
-    expect(compiled.querySelector('input[formControlName="totpToken"]')).toBeTruthy();
-    expect(compiled.querySelector('button[type="submit"]')).toBeTruthy();
+    expect(compiled.querySelector('tc-input[formControlName="username"]')).toBeTruthy();
+    expect(compiled.querySelector('tc-input[formControlName="password"]')).toBeTruthy();
+    expect(compiled.querySelector('tc-input[formControlName="totpToken"]')).toBeTruthy();
+    expect(compiled.querySelector('tc-button')).toBeTruthy();
   });
 
   it('should call the login function when the form is submitted', fakeAsync(() => {

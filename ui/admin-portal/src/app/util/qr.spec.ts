@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,7 +29,7 @@ export class QrImage implements EncodedQrImage {
   }
 }
 
-fdescribe('QrImage', () => {
+describe('QrImage', () => {
   it('should create an instance of QrImage with the given base64 encoding', () => {
     const base64Encoding = 'dGVzdA==';
     const qrImage = new QrImage(base64Encoding);

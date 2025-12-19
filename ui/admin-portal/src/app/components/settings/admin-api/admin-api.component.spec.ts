@@ -1,10 +1,26 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {AdminApiComponent} from './admin-api.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('AdminApiComponent', () => {
+describe('AdminApiComponent', () => {
   let component: AdminApiComponent;
   let fixture: ComponentFixture<AdminApiComponent>;
 
@@ -43,8 +59,9 @@ fdescribe('AdminApiComponent', () => {
   it('should call send method when the button is clicked', () => {
     spyOn(component, 'send');
 
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
-    button.click();
+    const button = fixture.debugElement.query(By.css('tc-button'));
+    button.triggerEventHandler('onClick', null);
+    fixture.detectChanges();
 
     expect(component.send).toHaveBeenCalled();
   });

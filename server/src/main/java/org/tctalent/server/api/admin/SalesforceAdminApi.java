@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.configuration.SalesforceRecordTypeConfig;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
@@ -38,7 +39,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RequiredArgsConstructor
 public class SalesforceAdminApi {
   private final SalesforceService salesforceService;
-
+  private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
   /**
    * Returns info (including "name") about the Salesforce opportunity corresponding to the given
    * url - or null if the url does not refer to a Salesforce opportunity.
@@ -63,7 +64,14 @@ public class SalesforceAdminApi {
     if ("Opportunity".equals(objectType)) {
       String sfId = SalesforceHelper.extractIdFromSfUrl(sfUrl);
       if (sfId != null) {
-        opp = salesforceService.findOpportunity(sfId);
+        // Want to fetch the job opportunity so we can see the recordTypeId and check that it is a job opp and not a candidate opp.
+        opp = salesforceService.fetchJobOpportunity(sfId);
+        if (opp != null) {
+          // If opp record type isn't an employer job record type (e.g. it's a candidate opp) we need to throw error
+          if (!opp.getRecordTypeId().equals(salesforceRecordTypeConfig.getEmployerJob())) {
+            throw new SalesforceException("This SF link is not a job opportunity record type.");
+          }
+        }
       }
     }
     return opportunityDto().build(opp);

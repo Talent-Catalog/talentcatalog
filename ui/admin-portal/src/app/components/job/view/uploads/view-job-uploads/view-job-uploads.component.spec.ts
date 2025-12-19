@@ -1,12 +1,28 @@
-import { ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ViewJobUploadsComponent } from './view-job-uploads.component';
-import { JobService } from '../../../../../services/job.service';
-import { of, throwError } from 'rxjs';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ViewJobUploadsComponent} from './view-job-uploads.component';
+import {JobService} from '../../../../../services/job.service';
+import {of, throwError} from 'rxjs';
 import {MockJob} from "../../../../../MockData/MockJob";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
 
-fdescribe('ViewJobUploadsComponent', () => {
+describe('ViewJobUploadsComponent', () => {
   let component: ViewJobUploadsComponent;
   let fixture: ComponentFixture<ViewJobUploadsComponent>;
   let mockJobService: jasmine.SpyObj<JobService>;

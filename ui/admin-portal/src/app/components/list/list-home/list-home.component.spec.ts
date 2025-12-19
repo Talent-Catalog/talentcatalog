@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,6 @@
 import {ListHomeComponent} from "./list-home.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {SavedSearchService, SavedSearchTypeInfo} from "../../../services/saved-search.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {NgbActiveModal, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
@@ -28,12 +27,13 @@ import {SavedSearchSubtype, SavedSearchType} from "../../../model/saved-search";
 import {
   BrowseCandidateSourcesComponent
 } from "../../candidates/show/browse/browse-candidate-sources.component";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {RouterTestingModule} from "@angular/router/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
-fdescribe('ListHomeComponent', () => {
+describe('ListHomeComponent', () => {
   let component: ListHomeComponent;
   let fixture: ComponentFixture<ListHomeComponent>;
   let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
@@ -46,16 +46,18 @@ fdescribe('ListHomeComponent', () => {
   beforeEach(async () => {
     const savedSearchServiceSpyObj = jasmine.createSpyObj('SavedSearchService', ['getSavedSearchTypeInfos']);
     const localStorageServiceSpyObj = jasmine.createSpyObj('LocalStorageService', ['get','set']);
-    const authorizationServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEmployerPartner']);
+    const authorizationServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEmployerPartner', 'canSeeJobDetails']);
     const authenticationServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
     const salesforceServiceSpyObj = jasmine.createSpyObj('SalesforceService', ['fetchJob']);
+
+    authorizationServiceSpyObj.canSeeJobDetails.and.returnValue(true);
 
     await TestBed.configureTestingModule({
       declarations: [ListHomeComponent,BrowseCandidateSourcesComponent,RouterLinkStubDirective],
       imports: [HttpClientTestingModule,NgbNavModule,RouterTestingModule,NgbPaginationModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         DatePipe,
         TitleCasePipe,
         { provide: SavedSearchService, useValue: savedSearchServiceSpyObj },
@@ -114,4 +116,10 @@ fdescribe('ListHomeComponent', () => {
     authorizationServiceSpy.isEmployerPartner.and.returnValue(true);
     expect(component.seesPublicLists()).toBeFalse();
   });
+
+  it('should not show public lists to partners who are not source, destination or employer', () => {
+    authorizationServiceSpy.canSeeJobDetails.and.returnValue(false);
+    expect(component.canSeeJobDetails()).toBeFalse();
+  });
+
 });

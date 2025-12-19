@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,6 +24,7 @@ import {Component, Input, OnInit} from '@angular/core';
 export class AutosaveStatusComponent implements OnInit {
   @Input() saving: boolean;
   @Input() typing: boolean;
+  @Input() size: 'sm' | 'md' | 'lg' | 'xl' | 'inherit' = 'inherit';
 
   constructor() { }
 

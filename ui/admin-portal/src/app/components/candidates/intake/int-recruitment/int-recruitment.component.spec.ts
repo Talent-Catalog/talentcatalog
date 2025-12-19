@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateIntakeData, IntRecruitReason} from "../../../../model/candidate";
 
-fdescribe('IntRecruitmentComponent', () => {
+describe('IntRecruitmentComponent', () => {
   let component: IntRecruitmentComponent;
   let fixture: ComponentFixture<IntRecruitmentComponent>;
   const mockCandidateIntakeData: CandidateIntakeData = {

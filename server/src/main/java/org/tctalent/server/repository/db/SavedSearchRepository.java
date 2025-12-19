@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -88,5 +89,8 @@ public interface SavedSearchRepository extends CacheEvictingRepository<SavedSear
             " where s.createdBy.id = :userId " +
             " and s.defaultSearch = true" )
     Optional<SavedSearch> findDefaultSavedSearch(@Param("userId")Long userId);
+
+    @Query(" select s from SavedSearch s where s.id in (:ids) order by s.name")
+    List<SavedSearch> findByIds(@Param("ids") Iterable<Long> ids);
 
 }

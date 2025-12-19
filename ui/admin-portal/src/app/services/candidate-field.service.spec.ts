@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,12 +21,18 @@ import {AuthorizationService} from './authorization.service';
 import {Status} from '../model/base';
 import {Candidate} from '../model/candidate';
 import {TaskAssignment} from '../model/task-assignment';
+import {MockSavedList} from "../MockData/MockSavedList";
+import {MockSavedSearch} from "../MockData/MockSavedSearch";
+import {MockCandidate} from "../MockData/MockCandidate";
+import {mockCandidateOpportunity, mockCandidateOpportunity2} from "../MockData/MockCandidateOpportunity";
+import {MockUser} from "../MockData/MockUser";
 
-fdescribe('CandidateFieldService', () => {
+describe('CandidateFieldService', () => {
   let service: CandidateFieldService;
   let authService: jasmine.SpyObj<AuthorizationService>;
   let datePipe: DatePipe;
   let titleCasePipe: TitleCasePipe;
+  const savedSubList = MockSavedList;
 
   beforeEach(() => {
     const authServiceSpy = jasmine.createSpyObj('AuthorizationService', ['canViewCandidateName', 'canViewCandidateCountry', 'isAnAdmin']);
@@ -54,7 +60,7 @@ fdescribe('CandidateFieldService', () => {
 
   describe('get defaultDisplayableFieldsLong', () => {
     it('should return the default fields in long format', () => {
-      const fields = service.defaultDisplayableFieldsLong;
+      const fields = service.getDefaultDisplayableFieldsLong(savedSubList);
       expect(fields.length).toBe(5); // Check the length of default fields
       expect(fields[0].fieldPath).toBe('status');
     });
@@ -62,24 +68,16 @@ fdescribe('CandidateFieldService', () => {
 
   describe('get defaultDisplayableFieldsShort', () => {
     it('should return the default fields in short format', () => {
-      const fields = service.defaultDisplayableFieldsShort;
+      const fields = service.getDefaultDisplayableFieldsShort(savedSubList);
       expect(fields.length).toBe(2); // Check the length of default fields
       expect(fields[0].fieldPath).toBe('user.partner.abbreviation');
     });
   });
 
-  describe('get displayableFieldsMap', () => {
-    it('should return a map of displayable fields', () => {
-      const fieldsMap = service.displayableFieldsMap;
-      expect(fieldsMap.size).toBeGreaterThan(0);
-    });
-  });
-
-
   describe('getFieldsFromPaths', () => {
     it('should return fields based on provided paths', () => {
       const paths = ['gender'];
-      const fields = service.getFieldsFromPaths(paths);
+      const fields = service.getFieldsFromPaths(paths, savedSubList);
       expect(fields.length).toBe(1);
       expect(fields[0].fieldPath).toBe('gender');
     });
@@ -143,4 +141,40 @@ fdescribe('CandidateFieldService', () => {
       expect(service.getTasksStatus(tasks)).toBe('Overdue');
     });
   });
+
+  describe('isSourceSubmissionList', () => {
+    it('should recognise when the saved list is not a submission list', () => {
+      savedSubList.registeredJob = false;
+      expect(service.isSourceSubmissionList(savedSubList)).toBe(false);
+    })
+
+    it('should recognise when the saved list is a submission list', () => {
+      savedSubList.registeredJob = true;
+      expect(service.isSourceSubmissionList(savedSubList)).toBe(true);
+    })
+
+    it('should recognise when the source is not a submission list', () => {
+      const savedSource = new MockSavedSearch();
+      expect(service.isSourceSubmissionList(savedSource)).toBe(false);
+    })
+  })
+
+  describe('getAddedBy', () => {
+    it('should get details for the user who created the candidate opp', () => {
+      // Create mock candidate with one opp that matches the job that the sub list relates to.
+      savedSubList.id = 1;
+
+      const candidate = new MockCandidate();
+      const matchingCandidateOpp = mockCandidateOpportunity;
+      matchingCandidateOpp.createdBy = new MockUser();
+      candidate.candidateOpportunities = [
+        mockCandidateOpportunity, mockCandidateOpportunity2
+      ]
+
+      const addedBy = service.getAddedBy(candidate, savedSubList);
+
+      expect(addedBy).toBe('John Doe');
+    })
+  })
+
 });

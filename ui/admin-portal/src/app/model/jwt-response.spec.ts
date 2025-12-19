@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,7 @@ import {JwtResponse} from "./jwt-response";
 import {User} from "./user";
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('JwtResponse', () => {
+describe('JwtResponse', () => {
   it('should create a valid JwtResponse object', () => {
     // Mock data
     const mockUser: User = new MockUser();

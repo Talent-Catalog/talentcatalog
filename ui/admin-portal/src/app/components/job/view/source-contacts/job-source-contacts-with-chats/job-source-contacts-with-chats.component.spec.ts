@@ -1,26 +1,39 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { JobSourceContactsWithChatsComponent } from './job-source-contacts-with-chats.component';
-import { AuthenticationService } from '../../../../../services/authentication.service';
-import { AuthorizationService } from '../../../../../services/authorization.service';
-import { ChatService } from '../../../../../services/chat.service';
-import { Partner } from '../../../../../model/partner';
-import {JobChatType, CreateChatRequest, JobChat} from '../../../../../model/chat';
-import { Job } from '../../../../../model/job';
-import { of } from 'rxjs';
- import {
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {JobSourceContactsWithChatsComponent} from './job-source-contacts-with-chats.component';
+import {AuthenticationService} from '../../../../../services/authentication.service';
+import {AuthorizationService} from '../../../../../services/authorization.service';
+import {ChatService} from '../../../../../services/chat.service';
+import {Partner} from '../../../../../model/partner';
+import {CreateChatRequest, JobChat, JobChatType} from '../../../../../model/chat';
+import {Job} from '../../../../../model/job';
+import {of} from 'rxjs';
+import {
   ViewJobSourceContactsComponent
 } from "../view-job-source-contacts/view-job-source-contacts.component";
 import {PartnerService} from "../../../../../services/partner.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
- import {ViewPostComponent} from "../../../../chat/view-post/view-post.component";
+import {ViewPostComponent} from "../../../../chat/view-post/view-post.component";
 import {ViewChatPostsComponent} from "../../../../chat/view-chat-posts/view-chat-posts.component";
 import {
   CreateUpdatePostComponent
 } from "../../../../chat/create-update-post/create-update-post.component";
-import {
-  FormBuilder,
-  ReactiveFormsModule
-} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {QuillModule} from "ngx-quill";
 import {MockPartner} from "../../../../../MockData/MockPartner";
 import {MockJobChat} from "../../../../../MockData/MockJobChat";
@@ -29,7 +42,7 @@ import {MockChatPost} from "../../../../../MockData/MockChatPost";
 import {TranslateModule} from "@ngx-translate/core";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
-fdescribe('JobSourceContactsWithChatsComponent', () => {
+describe('JobSourceContactsWithChatsComponent', () => {
    let component: JobSourceContactsWithChatsComponent;
    let fixture: ComponentFixture<JobSourceContactsWithChatsComponent>;
    let partnerService: jasmine.SpyObj<PartnerService>;
@@ -38,7 +51,8 @@ fdescribe('JobSourceContactsWithChatsComponent', () => {
     const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     authSpy.getLoggedInUser.and.returnValue(MockPartner);
 
-    const authzSpy = jasmine.createSpyObj('AuthorizationService', ['isSourcePartner', 'isDefaultSourcePartner', 'isJobCreator']);
+    const authzSpy = jasmine.createSpyObj('AuthorizationService',
+      ['isViewingAsSource', 'isSourcePartner', 'isDefaultSourcePartner', 'isJobCreator']);
     authzSpy.isSourcePartner.and.returnValue(true);
     authzSpy.isDefaultSourcePartner.and.returnValue(false);
 
@@ -58,7 +72,7 @@ fdescribe('JobSourceContactsWithChatsComponent', () => {
         { provide: AuthorizationService, useValue: authzSpy },
         { provide: ChatService, useValue: chatService },
         { provide: PartnerService, useValue: partnerService },
-        { provide: FormBuilder },
+        { provide: UntypedFormBuilder },
 
       ]
     })
@@ -101,7 +115,7 @@ fdescribe('JobSourceContactsWithChatsComponent', () => {
     mockPartner.name = 'XYZ';
     component.job = mockJob;
     component.onSourcePartnerSelected(mockPartner);
-    expect(component.chatHeader).toBe('Chat with XYZ Partner');
+    expect(component.chatHeader).toBe('Chat with source partner: XYZ');
   });
 
   it('should mark chat as read when requested', () => {

@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,10 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/buttons";
+@import "src/scss/variables";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/buttons";
+@import "src/scss/support-colors";
 
 @mixin tag($theme: Dark, $text: White) {
   background-color: $theme;
@@ -31,9 +32,9 @@
 }
 
 .tag-light {
-   @include tag($theme: #d8d8d8, $text: $accent1);
+   @include tag($theme: color(primary,300), $text: color(primary,800));
 }
 
 .tag-danger {
-  @include tag($theme: #c77e7e, $text: $accent1)
+  @include tag($theme: color(red,200), $text: color(red,500))
 }

@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
+@import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 :host {
   ::ng-deep .dropdown-btn {
@@ -26,25 +27,25 @@ label {
   font-size: 14px;
 }
 
-.fa-circle-check {
-  color: green;
-}
-
-.fa-circle-xmark {
-  color: red;
-}
-
-.fa-circle-question {
-  color: orange;
-}
-
 .fa-disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
-.starred {
-  color: $warning;
+//.starred {
+//  color: color(secondary, 500);
+//}
+
+//.notstarred {
+//  @include text-color-primary;
+//}
+
+.watched {
+  color: color(secondary, 500);
+}
+
+.notwatched {
+  color: color(secondary, 500);
 }
 
 
@@ -65,24 +66,6 @@ label {
   //}
 }
 
-.filter-group {
-  background: #CCCCCC;
-  padding-top: 1rem;
-
-}
-
-.buttons-spacing {
-  button {
-    margin-right: 2%;
-    margin-bottom: 0.5em;
-    min-width: 100px;
-  }
-}
-
-.space-evenly {
-  justify-content: space-evenly;
-}
-
 .candidate-number {
   cursor: pointer;
   font-weight: bold;
@@ -93,7 +76,9 @@ $candidate-card-width: 40vw;
 
 
 .split {
-  margin-right:  #{$candidate-card-width};
+  // Adds a small, consistent gap between the left panel and the candidate card,
+  // matching the horizontal gutter used by container-fluid
+  margin-right: calc(#{$candidate-card-width} + (var(--bs-gutter-x)));
 }
 
 .split-view {
@@ -155,6 +140,14 @@ $candidate-card-width: 40vw;
   }
 }
 
-ul#candidate-dropdown {
+a i {
+  cursor: pointer;
+}
+
+td a {
+  margin: 0.05rem;
+}
+
+.heading-row tc-icon {
   cursor: pointer;
 }

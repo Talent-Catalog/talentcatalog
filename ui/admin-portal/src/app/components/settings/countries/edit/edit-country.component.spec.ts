@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockJob} from "../../../../MockData/MockJob";
 
-fdescribe('EditCountryComponent', () => {
+describe('EditCountryComponent', () => {
   let component: EditCountryComponent;
   let fixture: ComponentFixture<EditCountryComponent>;
   let countryServiceSpy: jasmine.SpyObj<CountryService>;

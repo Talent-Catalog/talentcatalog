@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {VisaEligibility} from "../../../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../../../util/enum";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
@@ -30,7 +30,7 @@ export class VisaJobPutForwardComponent extends VisaCheckComponentBase implement
   //Drop down values for enumeration
   visaEligibilityOptions: EnumOption[] = enumOptions(VisaEligibility);
 
-  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+  constructor(fb: UntypedFormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
     super(fb, candidateVisaCheckService);
   }
 

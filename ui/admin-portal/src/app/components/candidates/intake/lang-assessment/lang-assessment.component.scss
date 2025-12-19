@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 // Making the NCLC tip icon a button enables it to be keyboard-focusable,
 // per Bootstrap doc advice https://getbootstrap.com/docs/5.0/components/tooltips/#markup
 // Overriding the native button style fixes the visual aspect.
-#nclcTipButton {
+.tip-button {
   border: none;
   background-color: inherit;
   margin-left: 5px;

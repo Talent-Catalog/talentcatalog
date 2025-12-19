@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -34,9 +34,10 @@ import {UserService} from "../../services/user.service";
 export class HeaderComponent implements OnInit {
 
   isNavbarCollapsed = true;
-  doEmailOrPhoneSearch;
+  doEmailPhoneOrWhatsappSearch;
   doNumberOrNameSearch;
   doExternalIdSearch;
+  doPublicIdSearch;
   searchFailed: boolean;
   searching: boolean;
   error;
@@ -105,7 +106,28 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
 
-    this.doEmailOrPhoneSearch = (text$: Observable<string>) =>
+    this.doPublicIdSearch = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => {
+          this.searching = true;
+          this.error = null;
+        }),
+        switchMap(publicId =>
+          this.candidateService.findByPublicId({ publicId: publicId, pageSize: 10 }).pipe(
+            tap(() => this.searchFailed = false),
+            map(result => result.content),
+            catchError(() => {
+              this.searchFailed = true;
+              return of([]);
+            })
+          )
+        ),
+        tap(() => this.searching = false)
+      );
+
+    this.doEmailPhoneOrWhatsappSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
@@ -113,8 +135,8 @@ export class HeaderComponent implements OnInit {
           this.searching = true;
           this.error = null
         }),
-        switchMap(candidateEmailOrPhone =>
-          this.candidateService.findByCandidateEmailOrPhone({candidateEmailOrPhone: candidateEmailOrPhone, pageSize: 10}).pipe(
+        switchMap(candidateEmailPhoneOrWhatsapp =>
+          this.candidateService.findByCandidateEmailPhoneOrWhatsapp({candidateEmailPhoneOrWhatsapp: candidateEmailPhoneOrWhatsapp, pageSize: 10}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {

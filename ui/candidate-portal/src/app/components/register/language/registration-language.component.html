@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -86,7 +86,7 @@
 
 </div>
 
-<app-registration-footer [nextDisabled]="loading || saving"
+<app-registration-footer [nextDisabled]="loading || saving || (!form.valid && candidateLanguages.length === 0)"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? cancel() : back() "
                          (nextClicked)="next()">

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {TaskAssignmentService} from "../../../services/task-assignment.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
@@ -30,7 +30,7 @@ import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {TaskType} from "../../../model/task";
 
-fdescribe('AssignTasksListComponent', () => {
+describe('AssignTasksListComponent', () => {
   let component: AssignTasksListComponent;
   let fixture: ComponentFixture<AssignTasksListComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
@@ -52,7 +52,7 @@ fdescribe('AssignTasksListComponent', () => {
       declarations: [AssignTasksListComponent, ConfirmationComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: TaskService, useValue: taskServiceSpyObj },
@@ -116,8 +116,14 @@ fdescribe('AssignTasksListComponent', () => {
     const estDate = new Date();
     estDate.setDate(estDate.getDate() + task.daysToComplete);
 
-    expect(component.estimatedDueDate).toEqual(estDate);
+    const dueDate = component.estimatedDueDate;
+
+    // Compare only the year, month, and date to avoid time comparison issues
+    expect(dueDate.getFullYear()).toEqual(estDate.getFullYear());
+    expect(dueDate.getMonth()).toEqual(estDate.getMonth());
+    expect(dueDate.getDate()).toEqual(estDate.getDate());
   });
+
 
   it('should save task association', fakeAsync(() => {
     const task = mockTasks[0];

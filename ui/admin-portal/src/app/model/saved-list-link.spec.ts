@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {MockSavedList} from "../MockData/MockSavedList";
 import {MockUser} from "../MockData/MockUser";
 import {SavedListLink} from "./saved-list-link";
 
-fdescribe('SavedListLink interface', () => {
+describe('SavedListLink interface', () => {
   let savedList: SavedList;
   let createdBy: User;
   let updatedBy: User;
@@ -50,5 +50,5 @@ fdescribe('SavedListLink interface', () => {
     expect(savedListLink.updatedBy).toBe(updatedBy);
     expect(savedListLink.updatedDate).toBeDefined();
   });
-  
+
 });

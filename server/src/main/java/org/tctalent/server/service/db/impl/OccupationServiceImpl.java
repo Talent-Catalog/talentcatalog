@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
@@ -40,6 +41,7 @@ import org.tctalent.server.request.occupation.SearchOccupationRequest;
 import org.tctalent.server.request.occupation.UpdateOccupationRequest;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.TranslationService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 @Service
 @Slf4j
@@ -56,6 +58,13 @@ public class OccupationServiceImpl implements OccupationService {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.occupationRepository = occupationRepository;
         this.translationService = translationService;
+    }
+
+    @NonNull
+    @Override
+    public Occupation findByIsco08Code(String isco08Code) {
+        return occupationRepository.findByIsco08Code(isco08Code)
+            .orElseThrow(() -> new NoSuchObjectException(Occupation.class, isco08Code));
     }
 
     @Override
@@ -135,5 +144,12 @@ public class OccupationServiceImpl implements OccupationService {
         }
     }
 
-
+    @Override
+    public DtoBuilder selectBuilder() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("isco08Code")
+            ;
+    }
 }

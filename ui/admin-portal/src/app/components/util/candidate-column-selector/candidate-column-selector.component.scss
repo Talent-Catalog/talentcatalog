@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,6 +15,7 @@
  */
 
 @import "src/scss/_variables.scss";
+@import "../../../../scss/color-mixins";
 
 .flex {
   display: flex;
@@ -22,27 +23,9 @@
   background: rgba(255, 255, 255, 0.4);
 }
 
-.field {
-  background-color: $accent3;
-  list-style: none;
-  padding: 8px;
-  color: $dark;
-  margin-bottom: 0.5em;
-  border-radius: 3px;
-  text-align: center;
-}
-
 .container {
   flex: 1;
 }
 .container:not(:last-child) {
   margin-right: 8px;
-}
-
-.gu-mirror {
-  background-color: $accent3;
-}
-
-.dragula-container {
-  height: 100%;
 }

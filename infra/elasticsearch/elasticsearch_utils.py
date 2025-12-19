@@ -1,4 +1,16 @@
-#  Copyright (c) 2024 Talent Beyond Boundaries.
+#  Copyright (c) 2024 Talent Catalog.
+#
+#  This program is free software: you can redistribute it and/or modify it under
+#  the terms of the GNU Affero General Public License as published by the Free
+#  Software Foundation, either version 3 of the License, or any later version.
+#
+#  This program is distributed in the hope that it will be useful, but WITHOUT
+#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+#  for more details.
+#
+#  You should have received a copy of the GNU Affero General Public License
+#  along with this program. If not, see https://www.gnu.org/licenses/.
 #
 #  This program is free software: you can redistribute it and/or modify it under
 #  the terms of the GNU Affero General Public License as published by the Free
@@ -48,21 +60,25 @@ def load_es_config(config_path):
                 cloud_id=cloud_id,
             )
             if not es.ping():
-                print("Failed to connect, requesting credentials...")
+                print("Enter credentials for Elastic Cloud ID: ", cloud_id)
                 username, password = get_credentials()
                 es = Elasticsearch(
                     cloud_id=cloud_id,
                     http_auth=(username, password)
                 )
             if es.ping():
+                print("Connected to Elasticsearch: ", es)
                 return es
             else:
                 print("Failed to connect to Elasticsearch. Exiting.")
                 exit(1)
         else:
-            return Elasticsearch([f"http://localhost:9200"])
+            # Default to localhost if cloud_id is not provided
+            print("Connecting to Elasticsearch at localhost")
+            return Elasticsearch(["http://localhost:9200"])
     else:
         # Default to localhost if configuration file does not exist
+        print("Connecting to Elasticsearch at localhost")
         return Elasticsearch(["http://localhost:9200"])
 
 

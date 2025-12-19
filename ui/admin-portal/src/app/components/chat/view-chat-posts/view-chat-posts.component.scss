@@ -1,0 +1,79 @@
+/*!
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+
+#posts {
+  max-height: 60vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+// Added some css to make the scroll look better.
+
+#posts::-webkit-scrollbar-track {
+  background: transparent
+}
+
+#posts::-webkit-scrollbar {
+  width: 10px;
+}
+
+#posts::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #88888876;
+}
+
+.post-item {
+  background-color: rgba(0, 123, 255, 0.8);
+  background-image: linear-gradient(135deg, #6c757d 0%, #e8a8a8 100%);
+  color: #4a70a6;
+  margin: 0.2em;
+  border-radius: 5px;
+  padding: 0.4em 1em;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert {
+  margin-bottom: 0;
+  font-size: 14px;
+  color: #ed0000;
+}
+
+.date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem 0;
+}
+
+.date-divider .divider-line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #b4b4b4;
+}
+
+.date-divider .divider-text {
+  padding: 0.25rem 1rem;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  margin: 0 1rem;
+}

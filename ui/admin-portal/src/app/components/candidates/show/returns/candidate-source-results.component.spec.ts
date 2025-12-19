@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,11 +28,10 @@ import {SavedSearchService} from "../../../../services/saved-search.service";
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {Router} from "@angular/router";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {ReactiveFormsModule} from "@angular/forms";
 
 
-fdescribe('CandidateSourceResultsComponent', () => {
+describe('CandidateSourceResultsComponent', () => {
   let component: CandidateSourceResultsComponent;
   let fixture: ComponentFixture<CandidateSourceResultsComponent>;
   beforeEach(async () => {
@@ -49,7 +48,6 @@ fdescribe('CandidateSourceResultsComponent', () => {
       declarations: [CandidateSourceResultsComponent],
       imports: [
         HttpClientTestingModule,
-        LocalStorageModule.forRoot({}),
         ReactiveFormsModule ,
         NgbPaginationModule
       ],
@@ -73,7 +71,7 @@ fdescribe('CandidateSourceResultsComponent', () => {
   });
 
   it('should initialize with the correct initial state', () => {
-    expect(component.error).toBeUndefined();
+    expect(component.error).toBeNull();
     expect(component.pageNumber).toBeUndefined();
     expect(component.pageSize).toBeUndefined();
     expect(component.results).toBeUndefined();

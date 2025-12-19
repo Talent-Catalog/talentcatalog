@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,16 +23,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -73,10 +71,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final FileSystemService fileSystemService;
     private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
-    private final TextExtractHelper textExtractHelper;
-
-    @Value("${aws.s3.bucketName}")
-    String s3Bucket;
 
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
@@ -90,7 +84,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         this.fileSystemService = fileSystemService;
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
-        this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
     }
 
     @Override
@@ -200,8 +193,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             // Extract text from the file
             if(request.getCv()) {
                 try {
-                    textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
-                    if(StringUtils.isNotBlank(textExtract)) {
+                    textExtract = TextExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
+                    if(StringUtils.hasText(textExtract)) {
                         attachment.setTextExtract(textExtract);
                         candidateAttachmentRepository.save(attachment);
                     }
@@ -220,11 +213,16 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         }
 
 
-        // Update candidate audit fields
-        candidate.setAuditFields(user);
-        candidateService.save(candidate, true);
+        //Save the updated attachment
+        attachment = candidateAttachmentRepository.save(attachment);
 
-        return candidateAttachmentRepository.save(attachment);
+        //Now update candidate audit fields and potentially update candidate text to take
+        //account of any cv text in the attachment we just updated above.
+        candidate.setAuditFields(user);
+        boolean updateCandidateText = request.getCv() != null ? request.getCv() : false;
+        candidateService.save(candidate, true, updateCandidateText);
+
+        return attachment;
     }
 
     // Removed @Transactional to fix logged error ObjectDeletedException. There is a risk that now deleting from
@@ -382,11 +380,18 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 }
             }
 
+            boolean extractedCvTextChanged = false;
+
             //Only AWS/S3 files support this CV to not CV and vice versa
             //for CV to non CV and vice versa only applies to AWS/S3 files
             if (attachmentType == AttachmentType.file) {
-                // Run text extraction if attachment changed from not CV to a CV or remove if changed from CV to not CV.
-                if (request.getCv() && !candidateAttachment.isCv()) {
+                // Run text extraction if attachment changed from not CV to a CV
+                // or remove if changed from CV to not CV.
+                if (!request.getCv() && candidateAttachment.isCv()) {
+                    //Was tagged as a CV and now it isn't. Set extracted text to null.
+                    candidateAttachment.setTextExtract(null);
+                    extractedCvTextChanged = true;
+                } else if (request.getCv() && !candidateAttachment.isCv()) {
                     try {
                         String uniqueFilename = candidateAttachment.getLocation();
                         String destination;
@@ -399,9 +404,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                         }
                         File srcFile = this.s3ResourceHelper.downloadFile(
                             this.s3ResourceHelper.getS3Bucket(), destination);
-                        String extractedText = textExtractHelper.getTextExtractFromFile(srcFile,
+                        String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile,
                             candidateAttachment.getFileType());
-                        if (StringUtils.isNotBlank(extractedText)) {
+                        if (StringUtils.hasText(extractedText)) {
                             candidateAttachment.setTextExtract(extractedText);
                             candidateAttachmentRepository.save(candidateAttachment);
                         }
@@ -414,18 +419,20 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
                         candidateAttachment.setTextExtract(null);
                     }
+                    extractedCvTextChanged = true;
                 }
             }
             // UPDATE THE URL LOCATION (IF LINK)
             if (candidateAttachment.getType().equals(AttachmentType.link)) {
                 candidateAttachment.setLocation(request.getLocation());
             }
+            candidateAttachment.setAuditFields(user);
+            candidateAttachment = candidateAttachmentRepository.save(candidateAttachment);
+
             // UPDATE THE CANDIDATE AUDIT FIELDS
             Candidate candidate = candidateAttachment.getCandidate();
             candidate.setAuditFields(user);
-            candidateService.save(candidate, true);
-            candidateAttachment.setAuditFields(user);
-            candidateAttachmentRepository.save(candidateAttachment);
+            candidateService.save(candidate, true, extractedCvTextChanged);
         } else {
             throw new UnauthorisedActionException("update");
         }
@@ -438,17 +445,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         UploadType uploadType) throws IOException, NoSuchObjectException {
 
         //Save to a temporary file
-        InputStream is = file.getInputStream();
-        File tempFile = File.createTempFile("tbb", ".tmp");
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-            int read;
-            byte[] bytes = new byte[1024];
-
-            while ((read = is.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
+        File tempFile = File.createTempFile("talent", ".tmp");
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+            InputStream inputStream = file.getInputStream()) {
+            inputStream.transferTo(outputStream);
         }
-
 
         //Get link to candidate folder, creating one (plus subfolders) if needed.
         candidate = candidateService.createCandidateFolder(candidate.getId());
@@ -489,8 +490,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         String textExtract = null;
         if(uploadType == UploadType.cv) {
             try {
-                textExtract = textExtractHelper
-                    .getTextExtractFromFile(tempFile, fileType);
+                textExtract = TextExtractHelper.getTextExtractFromFile(tempFile, fileType);
             } catch (Exception e) {
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
@@ -518,9 +518,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setLocation(uploadedFile.getUrl());
         req.setUploadType(uploadType);
         req.setCv(uploadType == UploadType.cv);
-        if(StringUtils.isNotBlank(textExtract)) {
-            // Remove any null bytes to avoid PSQLException: ERROR: invalid byte sequence for encoding "UTF8"
-            textExtract = Pattern.compile("\\x00").matcher(textExtract).replaceAll("?");
+        if(StringUtils.hasText(textExtract)) {
             req.setTextExtract(textExtract);
         }
 

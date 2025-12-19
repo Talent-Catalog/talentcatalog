@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getIndustries;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -69,7 +70,7 @@ class IndustryAdminApiTest extends ApiTestBase {
   private static final String BASE_PATH = "/api/admin/industry";
   private static final String SEARCH_PAGED_PATH = "/search";
 
-  private final List<Industry> industries = AdminApiTestUtil.getIndustries();
+  private final List<Industry> industries = getIndustries();
 
   private final Page<Industry> industryPage =
       new PageImpl<>(

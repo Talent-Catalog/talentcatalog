@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -50,6 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateCertification;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateCertifications;
 
 /**
  * Unit tests for Candidate Certification Admin Api endpoints.
@@ -63,8 +65,9 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
     private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateCertification candidateCertification = AdminApiTestUtil.getCandidateCertification();
-    private final List<CandidateCertification> candidateCertificationList = AdminApiTestUtil.getListOfCandidateCertifications();
+    private final CandidateCertification candidateCertification = getCandidateCertification();
+    private final List<CandidateCertification> candidateCertificationList =
+        getListOfCandidateCertifications();
 
     @MockBean CandidateCertificationService candidateCertificationService;
 

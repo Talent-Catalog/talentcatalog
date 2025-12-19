@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,7 +27,7 @@ import {MockSavedSearch} from "../MockData/MockSavedSearch";
 import {MockUser} from "../MockData/MockUser";
 import {TaskType, UploadType} from "./task";
 
-fdescribe('JobPrepDueDate', () => {
+describe('JobPrepDueDate', () => {
   let item: JobPrepDueDate;
   let job: Job;
 
@@ -58,7 +58,7 @@ fdescribe('JobPrepDueDate', () => {
   });
 });
 
-fdescribe('JobPrepJD', () => {
+describe('JobPrepJD', () => {
   let item: JobPrepJD;
   let job: Job;
 
@@ -88,7 +88,7 @@ fdescribe('JobPrepJD', () => {
   });
 });
 
-fdescribe('JobPrepJobSummary', () => {
+describe('JobPrepJobSummary', () => {
   let item: JobPrepJobSummary;
   let job: Job;
 
@@ -110,7 +110,7 @@ fdescribe('JobPrepJobSummary', () => {
   });
 });
 
-fdescribe('JobPrepJOI', () => {
+describe('JobPrepJOI', () => {
   let item: JobPrepJOI;
   let job: Job;
 
@@ -134,7 +134,7 @@ fdescribe('JobPrepJOI', () => {
   });
 });
 
-fdescribe('JobPrepSuggestedCandidates', () => {
+describe('JobPrepSuggestedCandidates', () => {
   let item: JobPrepSuggestedCandidates;
 
   beforeEach(() => {
@@ -151,7 +151,7 @@ fdescribe('JobPrepSuggestedCandidates', () => {
   });
 });
 
-fdescribe('JobPrepSuggestedSearches', () => {
+describe('JobPrepSuggestedSearches', () => {
   let item: JobPrepSuggestedSearches;
   let job: Job;
 

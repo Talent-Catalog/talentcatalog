@@ -1,7 +1,27 @@
-import {TestBed, ComponentFixture} from '@angular/core/testing';
-import {ReactiveFormsModule, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup
+} from '@angular/forms';
 import {NgbModal, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
-import {LocalStorageModule, LocalStorageService} from 'angular-2-local-storage';
 import {Router} from '@angular/router';
 import {BrowseCandidateSourcesComponent} from './browse-candidate-sources.component';
 import {AuthenticationService} from '../../../../services/authentication.service';
@@ -9,7 +29,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateSourceService} from "../../../../services/candidate-source.service";
 import {of} from "rxjs";
-import {CandidateSourceType} from "../../../../model/base";
+import {CandidateSourceType, DtoType} from "../../../../model/base";
 import {MockSearchResults} from "../../../../MockData/MockSearchResults";
 import {MockCandidateSource} from "../../../../MockData/MockCandidateSource";
 import {CandidateSourceResultsComponent} from "../returns/candidate-source-results.component";
@@ -18,8 +38,9 @@ import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
 import {SearchBy} from "../../../../model/saved-list";
 import {SearchSavedSearchRequest} from "../../../../model/saved-search";
+import {LocalStorageService} from "../../../../services/local-storage.service";
 
-fdescribe('BrowseCandidateSourcesComponent', () => {
+describe('BrowseCandidateSourcesComponent', () => {
   let component: BrowseCandidateSourcesComponent;
   let fixture: ComponentFixture<BrowseCandidateSourcesComponent>;
    let mockCandidateSourceService: any;
@@ -30,21 +51,24 @@ fdescribe('BrowseCandidateSourcesComponent', () => {
     mockCandidateSourceService = jasmine.createSpyObj('CandidateSourceService', ['searchPaged']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
     mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    mockCandidateFieldService = jasmine.createSpyObj('CandidateFieldService', ['getCandidateSourceFields']);
+    mockCandidateFieldService = jasmine.createSpyObj(
+      'CandidateFieldService',
+      ['setCandidateSource', 'getCandidateSourceFields']
+    );
+    mockCandidateFieldService.setCandidateSource.and.callThrough();
     mockCandidateFieldService.getCandidateSourceFields.and.returnValue(of());
     mockCandidateSourceService.searchPaged.and.returnValue(of(new MockSearchResults()));
     await TestBed.configureTestingModule({
       declarations: [BrowseCandidateSourcesComponent,CandidateSourceResultsComponent,CandidateSourceComponent,RouterLinkStubDirective],
       imports: [
         HttpClientTestingModule,
-        LocalStorageModule.forRoot({}),
         ReactiveFormsModule ,
         NgbPaginationModule
       ],
       providers: [
         DatePipe,
         TitleCasePipe,
-        FormBuilder,
+        UntypedFormBuilder,
         NgbModal,
         LocalStorageService,
         { provide: Router, useValue: {} },
@@ -59,9 +83,9 @@ fdescribe('BrowseCandidateSourcesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BrowseCandidateSourcesComponent);
     component = fixture.componentInstance;
-    component.searchForm = new FormGroup({
-      keyword: new FormControl(''), // Initialize keyword FormControl
-      selectedStages: new FormControl([])
+    component.searchForm = new UntypedFormGroup({
+      keyword: new UntypedFormControl(''), // Initialize keyword FormControl
+      selectedStages: new UntypedFormControl([])
     });
     component.sourceType = CandidateSourceType.SavedSearch;
     component.searchBy = SearchBy.mine;
@@ -79,7 +103,7 @@ fdescribe('BrowseCandidateSourcesComponent', () => {
     expect(component.loading).toBeFalsy();
     expect(component.results).toEqual(mockResults);
   });
-  
+
   it('should select a source when select method is called', () => {
     const mockSource = new MockCandidateSource();
     component.select(mockSource);
@@ -94,6 +118,7 @@ fdescribe('BrowseCandidateSourcesComponent', () => {
     expectedRequest.sortFields = ['name'];
     expectedRequest.sortDirection = 'ASC';
     expectedRequest.owned = true;
+    expectedRequest.dtoType = DtoType.MINIMAL;
 
     component.search();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ import {CandidateLanguage} from '../model/candidate-language';
 import {environment} from '../../environments/environment';
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('CandidateLanguageService', () => {
+describe('CandidateLanguageService', () => {
   let service: CandidateLanguageService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-language';
@@ -49,16 +49,16 @@ fdescribe('CandidateLanguageService', () => {
         id: 1,
         candidate: mockCandidate,
         language: { id: 1, name: 'English', status: 'active' },
-        spokenLevel: { id: 1, name: 'Fluent', level: 5, status: 'active' },
-        writtenLevel: { id: 1, name: 'Fluent', level: 5, status: 'active' },
+        spokenLevel: { id: 1, name: 'Fluent', level: 5, cefrLevel: 'C2', status: 'active' },
+        writtenLevel: { id: 1, name: 'Fluent', level: 5, cefrLevel: 'C2', status: 'active' },
         migrationLanguage: 'English'
       },
       {
         id: 2,
         candidate: mockCandidate,
         language: { id: 2, name: 'French', status: 'active' },
-        spokenLevel: { id: 2, name: 'Intermediate', level: 3, status: 'active' },
-        writtenLevel: { id: 2, name: 'Intermediate', level: 3, status: 'active' },
+        spokenLevel: { id: 2, name: 'Intermediate', level: 3, cefrLevel: 'B1', status: 'active' },
+        writtenLevel: { id: 2, name: 'Intermediate', level: 3, cefrLevel: 'B1', status: 'active' },
         migrationLanguage: 'French'
       }
     ];
@@ -86,8 +86,8 @@ fdescribe('CandidateLanguageService', () => {
       id: 3,
       candidate: mockCandidate,
       language: { id: 1, name: 'English', status: 'active' },
-      spokenLevel: { id: 3, name: 'Fluent', level: 5, status: 'active' },
-      writtenLevel: { id: 3, name: 'Fluent', level: 5, status: 'active' },
+      spokenLevel: { id: 3, name: 'Fluent', level: 5, cefrLevel: 'C2', status: 'active' },
+      writtenLevel: { id: 3, name: 'Fluent', level: 5, cefrLevel: 'C2', status: 'active' },
       migrationLanguage: 'English'
     };
 
@@ -114,8 +114,8 @@ fdescribe('CandidateLanguageService', () => {
       id: 1,
       candidate: mockCandidate,
       language: { id: 1, name: 'English', status: 'active' },
-      spokenLevel: { id: 4, name: 'Advanced', level: 4, status: 'active' },
-      writtenLevel: { id: 4, name: 'Advanced', level: 4, status: 'active' },
+      spokenLevel: { id: 4, name: 'Advanced', level: 4, cefrLevel: 'B2', status: 'active' },
+      writtenLevel: { id: 4, name: 'Advanced', level: 4, cefrLevel: 'B2', status: 'active' },
       migrationLanguage: 'English'
     };
 
@@ -134,8 +134,8 @@ fdescribe('CandidateLanguageService', () => {
       id: 1,
       candidate: mockCandidate,
       language: { id: 1, name: 'English', status: 'active' },
-      spokenLevel: { id: 1, name: 'Fluent', level: 5, status: 'active' },
-      writtenLevel: { id: 1, name: 'Fluent', level: 5, status: 'active' },
+      spokenLevel: { id: 1, name: 'Fluent', level: 5, cefrLevel: 'C2', status: 'active' },
+      writtenLevel: { id: 1, name: 'Fluent', level: 5, cefrLevel: 'C2', status: 'active' },
       migrationLanguage: 'English'
     };
 

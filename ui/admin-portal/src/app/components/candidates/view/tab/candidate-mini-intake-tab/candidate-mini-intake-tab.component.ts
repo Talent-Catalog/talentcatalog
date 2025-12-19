@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,7 +23,10 @@ import {EducationLevelService} from "../../../../../services/education-level.ser
 import {OccupationService} from "../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
@@ -39,7 +42,6 @@ import {EditCandidateContactComponent} from "../../contact/edit/edit-candidate-c
 })
 export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
   clickedOldIntake: boolean;
-
   constructor(candidateService: CandidateService,
               countryService: CountryService,
               educationLevelService: EducationLevelService,
@@ -64,7 +66,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
       if (this.candidate.miniIntakeCompletedBy != null) {
         user = this.candidate?.miniIntakeCompletedBy.firstName + " " + this.candidate?.miniIntakeCompletedBy.lastName;
       } else {
-        user = "external intake input, see notes for more details."
+        user = "external input - see Notes for more details"
       }
     }
     return user;
@@ -74,8 +76,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     return this.countryService.isPalestine(this.candidate?.nationality)
   }
 
-  addExamRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addExamRecord() {
     this.saving = true;
     const request: CreateCandidateExamRequest = {};
     this.candidateExamService.create(this.candidate.id, request).subscribe(
@@ -89,9 +90,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addCitizenshipRecord(e: MouseEvent) {
-    // Stop the button from opening/closing the accordion
-    e.stopPropagation();
+  addCitizenshipRecord() {
     this.saving = true;
     const request: CreateCandidateCitizenshipRequest = {};
     this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
@@ -109,14 +108,14 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
-  editContactDetails(event: MouseEvent) {
-    event.stopPropagation(); // Stop the click event from opening/closing the accordion
+  editContactDetails() {
     const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
+      size: "xl"
     });
 
-    editCandidateModal.componentInstance.candidateId = this.candidate.id;
+    editCandidateModal.componentInstance.candidate = this.candidate;
 
     editCandidateModal.result
     .then((candidate) => this.candidate = candidate)

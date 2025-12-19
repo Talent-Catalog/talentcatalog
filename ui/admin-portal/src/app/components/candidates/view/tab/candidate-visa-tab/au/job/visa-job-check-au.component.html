@@ -1,182 +1,178 @@
-<div class="d-flex justify-content-end mb-2">
-  <button (click)="visaJobAus.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-  <button (click)="visaJobAus.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
-</div>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
 <!-- ERROR -->
-<div *ngIf="error" class="alert alert-danger">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
-<ngb-accordion *ngIf="selectedJobCheck" #visaJobAus="ngbAccordion" [destroyOnHide]="false">
+<tc-accordion *ngIf="selectedJobCheck">
+  <tc-accordion-item id="emp-eligibility" header="Employer Eligibility">
+    <app-job-occupation
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord"
+      [occupations]="occupations">
+    </app-job-occupation>
+    <app-salary-tsmit
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-salary-tsmit>
+    <app-regional-area
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-regional-area>
+  </tc-accordion-item>
 
-  <ngb-panel id="emp-eligibility" title="Employer Eligibility">
-    <ng-template ngbPanelContent>
-      <app-job-occupation
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord"
-        [occupations]="occupations">
-      </app-job-occupation>
-      <app-salary-tsmit
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-salary-tsmit>
-      <app-regional-area
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-regional-area>
-    </ng-template>
-  </ngb-panel>
+  <tc-accordion-item id="tc-eligibility" header="TC Eligibility">
+    <div class="card card-body intake-data">
+      <!-- Display Family in Aus   -->
+      <div class="display">
+        <app-fixed-input
+          [question]="'Family in Australia that may impact offer'"
+          [answer]="familyInAus">
+        </app-fixed-input>
+      </div>
+    </div>
+    <hr>
+    <app-job-interest
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-job-interest>
+    <app-job-eligibility-assessment
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-job-eligibility-assessment>
+  </tc-accordion-item>
 
-  <ngb-panel id="tc-eligibility" title="TC Eligibility">
-    <ng-template ngbPanelContent>
-      <div class="card card-body intake-data">
-        <!-- Display Family in Aus   -->
-        <div class="display">
+  <tc-accordion-item id="visa-eligibility" header="Candidate Visa Eligibility">
+    <div class="card card-body intake-data">
+      <!-- Display Age   -->
+      <div>
+        <div class="display d-flex align-items-baseline">
           <app-fixed-input
-            [question]="'Family in Australia that may impact offer'"
-            [answer]="familyInAus">
+            [question]="'Age'"
+            [answer]="this.candidateAge">
+          </app-fixed-input>
+          <small class="ms-2">(50 year cutoff for 494; 55 for 186.)</small>
+        </div>
+      </div>
+
+      <!--  Display English Exams   -->
+      <div>
+        <div *ngIf="this.candidate.ieltsScore" class="display">
+          <app-fixed-input
+            [question]="'IELTS Score'"
+            [answer]="this.candidate.ieltsScore + ' - ' + ieltsScoreType">
           </app-fixed-input>
         </div>
       </div>
-      <hr>
-      <app-job-interest
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-job-interest>
-      <app-job-eligibility-assessment
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-job-eligibility-assessment>
-    </ng-template>
-  </ngb-panel>
+    </div>
+  </tc-accordion-item>
 
-  <ngb-panel id="visa-eligibility" title="Candidate Visa Eligibility">
-    <ng-template ngbPanelContent>
-      <div class="card card-body intake-data">
-        <!-- Display Age   -->
-        <div>
-          <div class="display d-flex align-items-baseline">
-            <app-fixed-input
-              [question]="'Age'"
-              [answer]="this.candidateAge">
-            </app-fixed-input>
-            <small class="ms-2">(50 year cutoff for 494; 55 for 186.)</small>
-          </div>
-        </div>
-
-        <!--  Display English Exams   -->
-        <div>
-          <div *ngIf="this.candidate.ieltsScore" class="display">
-            <app-fixed-input
-              [question]="'IELTS Score'"
-              [answer]="this.candidate.ieltsScore + ' - ' + ieltsScoreType">
-            </app-fixed-input>
-          </div>
-        </div>
-      </div>
-    </ng-template>
-  </ngb-panel>
-
-  <ngb-panel id="candidate-qualifications" title="Qualifications">
-    <ng-template ngbPanelContent>
-      <div class="card card-body intake-data">
-        <div>
-          <div class="card-title">Education</div>
-          <!-- Display All Candidate Qualifications   -->
-          <div *ngIf="candQualifications?.length > 0">
-            <ul>
-              <li class="display" *ngFor="let edu of candQualifications">
-                <app-fixed-input
-                  *ngIf="edu.educationMajor"
-                  [question]="edu.educationMajor?.name + ' ' + edu.courseName"
-                  [answer]="edu.educationType">
-                </app-fixed-input>
-                <app-fixed-input
-                  *ngIf="edu.educationMajor == null && edu.courseName"
-                  [question]="edu.courseName"
-                  [answer]="edu.educationType">
-                </app-fixed-input>
-              </li>
-            </ul>
-          </div>
-          <div *ngIf="candQualifications?.length == 0">
-            <p>No qualifications entered</p>
-          </div>
-        </div>
-        <div>
-          <div class="card-title">Experience</div>
-          <!-- Display All Candidate Experience   -->
-          <div *ngIf="candOccupations?.length > 0">
-            <ul>
-              <li class="display" *ngFor="let co of candOccupations" >
-                <app-fixed-input
-                  *ngIf="co.occupation"
-                  [question]="co.occupation?.name"
-                  [answer]="co.yearsExperience.toString() + 'years'">
-                </app-fixed-input>
-                <app-fixed-input
-                  *ngIf="co.occupation == null && co.migrationOccupation"
-                  [question]="co.migrationOccupation"
-                  [answer]="co.yearsExperience.toString() + 'years'">
-                </app-fixed-input>
-              </li>
-            </ul>
-          </div>
-          <div *ngIf="candOccupations?.length == 0">
-            <p>No experience entered</p>
-          </div>
-        </div>
-      </div>
-      <hr>
-      <app-qualification-relevant
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-qualification-relevant>
-    </ng-template>
-  </ngb-panel>
-
-  <ngb-panel id="family-assessment" title="Family Assessment">
-    <ng-template ngbPanelContent>
+  <tc-accordion-item id="candidate-qualifications" header="Qualifications">
+    <div class="card card-body intake-data">
       <div>
-        <app-relocating-dependants
-          [candidateOpp]="candidateOpportunity"
-          [candidateId]="candidate.id">
-        </app-relocating-dependants>
+        <div class="card-title">Education</div>
+        <!-- Display All Candidate Qualifications   -->
+        <div *ngIf="candQualifications?.length > 0">
+          <ul>
+            <li class="display" *ngFor="let edu of candQualifications">
+              <app-fixed-input
+                *ngIf="edu.educationMajor"
+                [question]="edu.educationMajor?.name + ' ' + edu.courseName"
+                [answer]="edu.educationType">
+              </app-fixed-input>
+              <app-fixed-input
+                *ngIf="edu.educationMajor == null && edu.courseName"
+                [question]="edu.courseName"
+                [answer]="edu.educationType">
+              </app-fixed-input>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="candQualifications?.length == 0">
+          <p>No qualifications entered</p>
+        </div>
       </div>
-      <div class="card card-body intake-data">
-        <div class="mb-3 h6">Dependant Family</div>
-        <app-dependants
-          [candidateIntakeData]="candidateIntakeData"
-          [candidate]="candidate"
-          [editable]="false">
-        </app-dependants>`
+      <div>
+        <div class="card-title">Experience</div>
+        <!-- Display All Candidate Experience   -->
+        <div *ngIf="candOccupations?.length > 0">
+          <ul>
+            <li class="display" *ngFor="let co of candOccupations" >
+              <app-fixed-input
+                *ngIf="co.occupation"
+                [question]="co.occupation?.name"
+                [answer]="co.yearsExperience.toString() + 'years'">
+              </app-fixed-input>
+              <app-fixed-input
+                *ngIf="co.occupation == null && co.migrationOccupation"
+                [question]="co.migrationOccupation"
+                [answer]="co.yearsExperience.toString() + 'years'">
+              </app-fixed-input>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="candOccupations?.length == 0">
+          <p>No experience entered</p>
+        </div>
       </div>
-    </ng-template>
-  </ngb-panel>
+    </div>
+    <hr>
+    <app-qualification-relevant
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-qualification-relevant>
+  </tc-accordion-item>
 
-  <ngb-panel id="final-assessment" title="Final Assessment">
-    <ng-template ngbPanelContent>
-      <app-visa-four-nine-four
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-visa-four-nine-four>
-      <app-visa-one-eight-six
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-visa-one-eight-six>
-      <app-visa-other-options
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-visa-other-options>
-      <app-visa-job-put-forward
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-visa-job-put-forward>
-      <app-visa-job-notes
-        [visaJobCheck]="selectedJobCheck"
-        [entity]="visaCheckRecord">
-      </app-visa-job-notes>
-    </ng-template>
-  </ngb-panel>
-</ngb-accordion>
+  <tc-accordion-item id="family-assessment" header="Family Assessment">
+    <div>
+      <app-relocating-dependants
+        [candidateOpp]="candidateOpportunity"
+        [candidateId]="candidate.id">
+      </app-relocating-dependants>
+    </div>
+    <div class="card card-body intake-data">
+      <div class="mb-3 h6">Dependant Family</div>
+      <app-dependants
+        [candidateIntakeData]="candidateIntakeData"
+        [candidate]="candidate"
+        [editable]="false">
+      </app-dependants>`
+    </div>
+  </tc-accordion-item>
+
+  <tc-accordion-item id="final-assessment" header="Final Assessment">
+    <app-visa-four-nine-four
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-visa-four-nine-four>
+    <app-visa-one-eight-six
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-visa-one-eight-six>
+    <app-visa-other-options
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-visa-other-options>
+    <app-visa-job-put-forward
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-visa-job-put-forward>
+    <app-visa-job-notes
+      [visaJobCheck]="selectedJobCheck"
+      [entity]="visaCheckRecord">
+    </app-visa-job-notes>
+  </tc-accordion-item>
+</tc-accordion>

@@ -1,13 +1,29 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {HelpComponent} from "./help.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {HelpLinkService} from "../../services/help-link.service";
 import {of, throwError} from "rxjs";
 import {By} from "@angular/platform-browser";
 import {MOCK_HELP_LINK} from "../../MockData/MockHelpLink";
-import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbTooltip, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {SearchHelpLinkRequest} from "../../model/help-link";
 
-fdescribe('HelpComponent', () => {
+describe('HelpComponent', () => {
   let component: HelpComponent;
   let fixture: ComponentFixture<HelpComponent>;
   let helpLinkService: jasmine.SpyObj<HelpLinkService>;
@@ -52,9 +68,12 @@ fdescribe('HelpComponent', () => {
   });
 
   it('should fetch help links on button click', (() => {
+    const tooltipDebugElement = fixture.debugElement.query(By.directive(NgbTooltip));
+    const tooltipDirective = tooltipDebugElement.injector.get(NgbTooltip);
+
+    tooltipDirective.shown.emit();
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.help-tip-button')).nativeElement;
-    button.click();
+
     expect(component.helpLinks).toEqual([MOCK_HELP_LINK]);
     expect(component.loading).toBeFalse();
     expect(component.error).toBeNull();
@@ -64,8 +83,11 @@ fdescribe('HelpComponent', () => {
     const errorMessage = 'Failed to fetch help links';
     helpLinkService.fetch.and.returnValue(throwError(errorMessage));
 
-    const button = fixture.debugElement.query(By.css('.help-tip-button')).nativeElement;
-    button.click();
+    const tooltipDebugElement = fixture.debugElement.query(By.directive(NgbTooltip));
+    const tooltipDirective = tooltipDebugElement.injector.get(NgbTooltip);
+
+    tooltipDirective.shown.emit();
+    fixture.detectChanges();
 
     expect(component.helpLinks).toBeUndefined();
     expect(component.loading).toBeFalse();

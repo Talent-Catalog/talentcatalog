@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,24 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {EditCandidateContactComponent} from "./edit-candidate-contact.component";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {Candidate} from "../../../../../model/candidate";
+import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
 
-fdescribe('EditCandidateContactComponent', () => {
+describe('EditCandidateContactComponent', () => {
   let component: EditCandidateContactComponent;
   let fixture: ComponentFixture<EditCandidateContactComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
   let countryServiceSpy: jasmine.SpyObj<CountryService>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
   beforeEach(waitForAsync(() => {
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
@@ -39,26 +39,26 @@ fdescribe('EditCandidateContactComponent', () => {
     const countryServiceSpyObj = jasmine.createSpyObj('CountryService', ['listCountries']);
 
     TestBed.configureTestingModule({
-      declarations: [EditCandidateContactComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      declarations: [EditCandidateContactComponent, DatePickerComponent],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
       providers: [
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: CandidateService, useValue: candidateServiceSpyObj },
         { provide: CountryService, useValue: countryServiceSpyObj },
-        FormBuilder,
+        UntypedFormBuilder,
       ],
     }).compileComponents();
 
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
     countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(EditCandidateContactComponent);
     component = fixture.componentInstance;
-    component.candidateId = 1; // Mock candidate ID
+    component.candidate = new MockCandidate(); // Mock candidate ID
     countryServiceSpy.listCountries.and.returnValue(of([]));
     candidateServiceSpy.get.and.returnValue(of());
     // component.candidateForm = formBuilder.group(new MockCandidate());
@@ -70,29 +70,28 @@ fdescribe('EditCandidateContactComponent', () => {
   });
 
   it('should initialize form with candidate details', () => {
-    // Mock candidate data
-    const mockCandidate: Candidate = new MockCandidate();
-    // Mock the candidate service to return the mock candidate
-    candidateServiceSpy.get.and.returnValue(of(mockCandidate));
-
     // Trigger ngOnInit
     component.ngOnInit();
     // Expect the form controls to be initialized with the candidate details
     expect(component.loading).toBeFalsy();
     expect(component.error).toBeUndefined();
     expect(component.candidateForm.value).toEqual({
-      firstName: mockCandidate.user.firstName,
-      lastName: mockCandidate.user.lastName,
-      gender: mockCandidate.gender,
-      address1: mockCandidate.address1,
-      city: mockCandidate.city,
-      state: mockCandidate.state,
-      countryId: mockCandidate.country.id,
-      yearOfArrival: mockCandidate.yearOfArrival,
-      phone: mockCandidate.phone,
-      whatsapp: mockCandidate.whatsapp,
-      email: mockCandidate.user.email,
-      dob: mockCandidate.dob,
-      nationalityId: mockCandidate.nationality.id,
+      firstName: component.candidate.user.firstName,
+      lastName: component.candidate.user.lastName,
+      gender: component.candidate.gender,
+      address1: component.candidate.address1,
+      city: component.candidate.city,
+      state: component.candidate.state,
+      countryId: component.candidate.country.id,
+      yearOfArrival: component.candidate.yearOfArrival,
+      phone: component.candidate.phone,
+      whatsapp: component.candidate.whatsapp,
+      email: component.candidate.user.email,
+      dob: component.candidate.dob,
+      nationalityId: component.candidate.nationality.id,
+      relocatedAddress: component.candidate.relocatedAddress,
+      relocatedCity: component.candidate.relocatedCity,
+      relocatedState: component.candidate.relocatedState,
+      relocatedCountryId: component.candidate.relocatedCountry.id,
     });  });
 });

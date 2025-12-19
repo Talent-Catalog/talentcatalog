@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,7 +23,7 @@ import {
 } from "./candidate-opportunity";
 import {Opportunity} from "./opportunity";
 
-fdescribe('CandidateOpportunity Model', () => {
+describe('CandidateOpportunity Model', () => {
   let candidate: ShortCandidate;
   let jobOpp: ShortJob;
   let candidateOpportunity: CandidateOpportunity;
@@ -84,7 +84,7 @@ fdescribe('CandidateOpportunity Model', () => {
   });
 });
 
-fdescribe('isCandidateOpportunity Function', () => {
+describe('isCandidateOpportunity Function', () => {
   let candidateOpportunity: CandidateOpportunity;
 
   beforeEach(() => {
@@ -117,7 +117,7 @@ fdescribe('isCandidateOpportunity Function', () => {
   });
 });
 
-fdescribe('isOppStageGreaterThanOrEqualTo Function', () => {
+describe('isOppStageGreaterThanOrEqualTo Function', () => {
   it('should return true if the selected stage is greater than or equal to the desired stage', () => {
     expect(isOppStageGreaterThanOrEqualTo(CandidateOpportunityStage.fullIntake, CandidateOpportunityStage.prospect)).toBeTrue();
     expect(isOppStageGreaterThanOrEqualTo(CandidateOpportunityStage.visaProcessing, CandidateOpportunityStage.visaEligibility)).toBeTrue();

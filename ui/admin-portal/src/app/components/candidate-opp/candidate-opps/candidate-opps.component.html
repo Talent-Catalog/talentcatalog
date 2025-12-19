@@ -1,238 +1,233 @@
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error">
-  {{ error }}
-</div>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
-<div class="searches" *ngIf="searchBy">
-  <form [formGroup]="searchForm" (ngSubmit)="search()">
-    <div class="row mb-3">
-      <div class="col-10">
-        <input #searchFilter type="text" class="form-control" placeholder="Search..."
-               aria-label="Search" formControlName="keyword"
-               id="keyword">
-      </div>
-      <div class="col-2">
-        <button class="btn btn-sm btn-accent-3" (click)="refresh()">
-          Refresh
-          <i class="fas fa-sync" title="Refresh data"></i>
-        </button>
-      </div>
+<tc-loading [loading]="loading"></tc-loading>
+<tc-alert type="danger" *ngIf="error">{{error}}</tc-alert>
 
+<div *ngIf="!loading">
+  <div class="searches" *ngIf="searchBy">
+    <div class="position-relative">
+      <tc-button color="info" type="plain" (onClick)="refresh($event)" class="position-absolute end-0">
+        <i class="fas fa-sync" title="Refresh data"></i>
+      </tc-button>
     </div>
 
-    <div *ngIf="searchBy === SearchOppsBy.mineAsSourcePartner ||
-    searchBy === SearchOppsBy.mineAsJobCreator " class="my-2">
-      <div class="row justify-content-center mb-2">
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <label class="form-check-label" [title]="myOppsOnlyTip"
-                   for="myOppsOnly">{{ myOppsOnlyLabel }}</label>
-            <input [title]="myOppsOnlyTip" type="checkbox"
-                   formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
+    <form [formGroup]="searchForm" (ngSubmit)="search()">
+      <tc-fieldset>
+        <tc-field>
+          <tc-label for="keyword">
+            Case Search
+          </tc-label>
+          <tc-description>Search the list of candidate cases</tc-description>
+          <tc-input #searchFilter
+                    id="keyword"
+                    placeholder="Case Name"
+                    ariaLabel="Search"
+                    formControlName="keyword">
+          </tc-input>
+        </tc-field>
+
+        <tc-field>
+          <tc-label for="stage">Stage</tc-label>
+          <tc-description>Select the step in the partner engagement process</tc-description>
+          <ng-select
+            id="stage"
+            class="tc-select"
+            [items]="stages"
+            [multiple]="true"
+            [closeOnSelect]="true"
+            bindLabel="stringValue"
+            bindValue="key"
+            placeholder="Select..."
+            formControlName="selectedStages">
+          </ng-select>
+        </tc-field>
+
+      </tc-fieldset>
+
+      <div *ngIf="searchBy === SearchOppsBy.mineAsSourcePartner ||
+      searchBy === SearchOppsBy.mineAsJobCreator ">
+        <div class="row justify-content-center">
+          <div class="col-md-5">
+            <tc-field [checkbox]="true">
+              <tc-label [title]="myOppsOnlyTip" for="myOppsOnly">{{ myOppsOnlyLabel }}</tc-label>
+              <tc-input [title]="myOppsOnlyTip" type="checkbox"
+                        formControlName="myOppsOnly" id="myOppsOnly"></tc-input>
+            </tc-field>
+          </div>
+          <div class="col-md-5">
+            <tc-field [checkbox]="true">
+              <tc-label [title]="showClosedOppsTip" for="showClosedOpps">
+                {{ showClosedOppsLabel }}</tc-label>
+              <tc-input [title]="showClosedOppsTip" type="checkbox"
+                        formControlName="showClosedOpps" id="showClosedOpps"></tc-input>
+            </tc-field>
           </div>
         </div>
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="showClosedOppsTip" type="checkbox"
-                   formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
-            <label class="form-check-label" [title]="showClosedOppsTip"
-                   for="showClosedOpps">{{ showClosedOppsLabel }}</label>
+        <div class="row justify-content-center">
+          <div class="col-md-5">
+            <tc-field [checkbox]="true">
+              <tc-label [title]="showInactiveOppsTip"
+                        for="showInactiveOpps">{{showInactiveOppsLabel}}</tc-label>
+              <tc-input [title]="showInactiveOppsTip" type="checkbox"
+                        formControlName="showInactiveOpps" id="showInactiveOpps">
+              </tc-input>
+            </tc-field>
+          </div>
+          <div class="col-md-5">
+            <tc-field [checkbox]="true">
+              <tc-label [title]="overdueOppsOnlyTip"
+                        for="overdueOppsOnly">{{ overdueOppsOnlyLabel }}</tc-label>
+              <tc-input [title]="overdueOppsOnlyTip" type="checkbox"
+                        formControlName="overdueOppsOnly" id="overdueOppsOnly"></tc-input>
+            </tc-field>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-md-5">
+            <tc-field [checkbox]="true">
+              <tc-label class="form-check-label" [title]="withUnreadMessagesTip"
+                        for="withUnreadMessages">{{ withUnreadMessagesLabel }}</tc-label>
+              <tc-input [title]="withUnreadMessagesTip" type="checkbox"
+                        formControlName="withUnreadMessages" id="withUnreadMessages"></tc-input>
+            </tc-field>
+          </div>
+          <div class="col-md-5">
           </div>
         </div>
       </div>
-      <div class="row justify-content-center mb-2">
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="showInactiveOppsTip" type="checkbox"
-                   formControlName="showInactiveOpps" id="showInactiveOpps"
-                   class="form-check-input">
-            <label class="form-check-label" [title]="showInactiveOppsTip"
-                   for="showInactiveOpps">{{ showInactiveOppsLabel }}</label>
-          </div>
-        </div>
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="overdueOppsOnlyTip" type="checkbox"
-                   formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
-            <label class="form-check-label" [title]="overdueOppsOnlyTip"
-                   for="overdueOppsOnly">{{ overdueOppsOnlyLabel }}</label>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-center">
-        <div class="col-md-5">
-          <div class="form-check form-check-reverse">
-            <input [title]="withUnreadMessagesTip"
-                   type="checkbox"
-                   formControlName="withUnreadMessages" id="withUnreadMessages"
-                   class="form-check-input">
-            <label class="form-check-label" [title]="withUnreadMessagesTip"
-                   for="withUnreadMessages">{{ withUnreadMessagesLabel }}</label>
-          </div>
-        </div>
-        <div class="col-md-5">
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Stage</label>
-      <ng-select
-        id="stage"
-        [items]="stages"
-        [multiple]="true"
-        [closeOnSelect]="true"
-        [searchable]="false"
-        bindLabel="stringValue"
-        bindValue="key"
-        placeholder="Select..."
-        formControlName="selectedStages">
-      </ng-select>
-    </div>
-  </form>
-</div>
-
-<div class="card" *ngIf="!loading">
-
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <!--          Header-->
-        <thead class="table-primary">
-        <tr>
-          <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
-            <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"
-                           *ngIf="searchBy"></app-sorted-by>
-            NS Due
-          </th>
-          <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
-            <app-sorted-by [column]="'name'" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"
-                           *ngIf="searchBy"></app-sorted-by>
-            Candidate Opportunity
-          </th>
-          <th *ngIf="showJobOppName" (click)="toggleSort('jobOpp.name')">
-            <app-sorted-by column="jobOpp.name" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"
-                           *ngIf="searchBy"></app-sorted-by>
-            Candidate Job Opportunity
-          </th>
-          <th (click)="toggleSort('stage')">
-            <app-sorted-by [column]="'stage'" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"
-                           *ngIf="searchBy"></app-sorted-by>
-            Stage
-          </th>
-          <th *ngIf="!preview" (click)="toggleSort('updatedDate', 'DESC')">
-            <app-sorted-by column="updatedDate" [sortColumn]="sortField"
-                           [sortDirection]="sortDirection"
-                           *ngIf="searchBy"></app-sorted-by>
-            Next step
-          </th>
-          <th *ngIf="preview">
-            Next?
-          </th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
-            [title]="isOverdue(opp) ? 'The next step is overdue' : ''"
-            [ngClass]="{'current': currentOpp?.id == opp.id, 'alert alert-warning': isOverdue(opp)}">
-          <td *ngIf="!preview">
-            {{ opp.nextStepDueDate }}
-          </td>
-          <td *ngIf="!showJobOppName" [title]="opp.name">
-            <app-chat-read-status
-              [chats]="getChats(opp)"
-            ></app-chat-read-status>
-            {{ opp.name | truncate: 25 }}
-            <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
-              <i class="fas fa-user" title="Candidate"></i>
-            </a>
-            <a [routerLink]="['/opp',opp.id]">
-              <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
-            </a>
-            <a [routerLink]="['/job',opp.jobOpp.id]">
-              <i class="fa-solid fa-briefcase" title="Job"></i>
-            </a>
-            <a *ngIf="opp.jobOpp.submissionList"
-               [routerLink]="['/list',opp.jobOpp.submissionList.id]">
-              <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
-            </a>
-            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
-               target="_blank">
-              <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
-            </a>
-          </td>
-          <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
-            <app-chat-read-status
-              [chats]="getChats(opp)"
-            ></app-chat-read-status>
-            <a [routerLink]="['/opp',opp.id]">
-              {{ opp.jobOpp.name }} <i class="fas fa-address-book"
-                                       title="Case (candidate opportunity)"></i>
-            </a>
-            <a [routerLink]="['/job',opp.jobOpp.id]">
-              <i class="fa-solid fa-briefcase" title="Job"></i>
-            </a>
-            <a *ngIf="opp.jobOpp.submissionList"
-               [routerLink]="['/list',opp.jobOpp.submissionList.id]">
-              <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
-            </a>
-            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
-               target="_blank">
-              <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
-            </a>
-          </td>
-          <td>
-            {{ getCandidateOpportunityStageName(opp) }}
-          </td>
-          <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
-            {{ opp.nextStep | truncate: 38 }}
-          </td>
-          <td *ngIf="preview">
-            <div *ngIf="opp?.nextStep" [ngbPopover]="nextStepPopover"
-                 triggers="mouseenter:mouseleave" container="body">
-              <i class="fa-solid fa-shoe-prints"></i>
-            </div>
-            <ng-template #nextStepPopover>
-              <strong>Due date: </strong>{{ opp.nextStepDueDate }}<br>
-              <strong>Next step: </strong>{{ opp.nextStep }}
-            </ng-template>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-
-
-      <div class="text-muted mb-2 align-middle" *ngIf="searchBy">
-
-        <ngb-pagination
-          [boundaryLinks]="true"
-          [pageSize]="pageSize"
-          [collectionSize]="results?.totalElements"
-          [(page)]="pageNumber"
-          [maxSize]="5"
-          [ellipses]="true"
-          [rotate]="true"
-          (pageChange)="search()">
-        </ngb-pagination>
-
-        Found {{ results?.totalElements }} in total
-      </div>
-
-      <!-- loading -->
-      <div *ngIf="loading">
-        <div>
-          <i class="fas fa-spinner fa-spin"></i> Loading...
-        </div>
-      </div>
-
-    </div>
+    </form>
   </div>
-</div>
 
+  <tc-table [results]="results"
+            [loading]="loading"
+            [(pageNumber)]="pageNumber"
+            (pageChange)="search()"
+            [clickableRows]="clickableRows"
+  >
+    <!--          Header-->
+    <thead>
+    <tr>
+      <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
+        <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+                       *ngIf="searchBy"></app-sorted-by>
+        NS Due
+      </th>
+      <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
+        <app-sorted-by [column]="'name'" [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+                       *ngIf="searchBy"></app-sorted-by>
+        Candidate Opportunity
+      </th>
+      <th *ngIf="showJobOppName" (click)="toggleSort('jobOpp.name')">
+        <app-sorted-by column="jobOpp.name" [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+                       *ngIf="searchBy"></app-sorted-by>
+        Candidate Job Opportunity
+      </th>
+      <th (click)="toggleSort('stage')">
+        <app-sorted-by [column]="'stage'" [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+                       *ngIf="searchBy"></app-sorted-by>
+        Stage
+      </th>
+      <th *ngIf="!preview" (click)="toggleSort('updatedDate', 'DESC')">
+        <app-sorted-by column="updatedDate" [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+                       *ngIf="searchBy"></app-sorted-by>
+        Next step
+      </th>
+      <th *ngIf="preview">
+        Next?
+      </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let opp of opps; let i = index;" (click)="selectCurrent(opp)"
+        [title]="isOverdue(opp) ? 'The next step is overdue' : ''"
+        [ngClass]="{'current': currentOpp?.id == opp.id, 'alert alert-warning': isOverdue(opp)}">
+      <td *ngIf="!preview">
+        {{ opp.nextStepDueDate }}
+      </td>
+      <td *ngIf="!showJobOppName" [title]="opp.name">
+        <app-chat-read-status
+          [chats]="getChats(opp)"
+        ></app-chat-read-status>
+        {{ opp.name | truncate: 25 }}
+        <tc-icon type="link" color="gray" [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+          <i class="fas fa-user" title="Candidate"></i>
+        </tc-icon>
+        <tc-icon type="link" color="gray" [routerLink]="['/opp',opp.id]">
+          <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+        </tc-icon>
+        <tc-icon type="link" color="gray" [routerLink]="['/job',opp.jobOpp.id]">
+          <i class="fa-solid fa-briefcase" title="Job"></i>
+        </tc-icon>
+        <tc-icon type="link" color="gray" *ngIf="opp.jobOpp.submissionList"
+           [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+          <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
+        </tc-icon>
+        <tc-icon [type]="'link'"
+                 [color]="'gray'"
+                 *ngIf="opp.sfId && canAccessSalesforce()"
+                 [href]="getOppSfLink(opp.sfId)"
+        >
+          <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+        </tc-icon>
+      </td>
+      <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
+        <app-chat-read-status
+          [chats]="getChats(opp)"
+        ></app-chat-read-status>
+        {{ opp.jobOpp.name }}
+        <tc-icon type="link" color="gray" [routerLink]="['/opp',opp.id]">
+          <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+        </tc-icon>
+        <tc-icon type="link" color="gray" [routerLink]="['/job',opp.jobOpp.id]">
+          <i class="fa-solid fa-briefcase" title="Job"></i>
+        </tc-icon>
+        <tc-icon type="link" color="gray" *ngIf="opp.jobOpp.submissionList"
+           [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+          <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
+        </tc-icon>
+        <tc-icon type="link" color="gray" *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)">
+          <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+        </tc-icon>
+      </td>
+      <td>
+        <tc-badge [color]="getBadgeColor(opp)">
+          {{getCandidateOpportunityStageName(opp) | truncate: 15}}
+        </tc-badge>
+      </td>
+      <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
+        {{ opp.nextStep | truncate: 38 }}
+      </td>
+      <td *ngIf="preview">
+        <div *ngIf="opp?.nextStep" [ngbPopover]="nextStepPopover"
+             triggers="mouseenter:mouseleave" container="body">
+          <i class="fa-solid fa-shoe-prints"></i>
+        </div>
+        <ng-template #nextStepPopover>
+          <strong>Due date: </strong>{{ opp.nextStepDueDate }}<br>
+          <strong>Next step: </strong>{{ opp.nextStep }}
+        </ng-template>
+      </td>
+    </tr>
+    </tbody>
+  </tc-table>
+</div>

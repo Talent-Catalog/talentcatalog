@@ -1,26 +1,45 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {By} from '@angular/platform-browser';
 import {CandidateShareableNotesComponent} from "./candidate-shareable-notes.component";
 import {CandidateService} from "../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {Candidate, UpdateCandidateShareableNotesRequest} from "../../../model/candidate";
 import {of} from "rxjs";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
+import {AuthorizationService} from "../../../services/authorization.service";
 
-fdescribe('CandidateShareableNotesComponent', () => {
+describe('CandidateShareableNotesComponent', () => {
   let component: CandidateShareableNotesComponent;
   let fixture: ComponentFixture<CandidateShareableNotesComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;
 
   beforeEach(async () => {
     const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateShareableNotes']);
+    const authorizationServiceSpy = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
 
     await TestBed.configureTestingModule({
       declarations: [CandidateShareableNotesComponent,AutosaveStatusComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        FormBuilder,
-        { provide: CandidateService, useValue: candidateServiceSpy }
+        UntypedFormBuilder,
+        { provide: CandidateService, useValue: candidateServiceSpy },
+        { provide: AuthorizationService, useValue: authorizationServiceSpy }
       ]
     }).compileComponents();
 
@@ -76,12 +95,13 @@ fdescribe('CandidateShareableNotesComponent', () => {
     });
   });
 
-  it('should disable textarea if not editable', () => {
-    component.editable = false;
+  it('should disable the textarea when candidate is not editable', () => {
+    component.editable = false
+
     fixture.detectChanges();
 
-    const textarea = fixture.debugElement.query(By.css('textarea')).nativeElement;
-    expect(textarea.readOnly).toBeTrue();
+    const textarea = fixture.debugElement.query(By.css('tc-textarea'));
+    expect(textarea.componentInstance.disabled).toBeTrue();
   });
 
   it('should enable textarea if editable', () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,9 @@
 
 package org.tctalent.server.repository.db;
 
+import jakarta.persistence.criteria.Predicate;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.SavedSearch;
@@ -39,11 +39,14 @@ public class SavedSearchSpecification {
         //That method is the toPredicate method -
         // Predicate toPredicate(Root<SavedSearch> savedSearch, CriteriaQuery<?> query, CriteriaBuilder builder)
         //toPredicate creates the WHERE clause for the given CriteriaQuery
-        return (savedSearch, query, builder) -> {
+        return (savedSearch, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("SavedSearchSpecification.CriteriaQuery should not be null");
+            }
+            query.distinct(true);
 
             //Conjunction means implicit AND between each term (sub Predicate)
-            Predicate conjunction = builder.conjunction();
-            query.distinct(true);
+            Predicate conjunction = cb.conjunction();
 
             /*
               WHERE
@@ -65,21 +68,21 @@ public class SavedSearchSpecification {
              */
 
             // ONLY SHOW ACTIVE SAVED SEARCHES
-            conjunction.getExpressions().add(
-                    builder.equal(savedSearch.get("status"), Status.active)
+            conjunction = cb.and(conjunction,
+                    cb.equal(savedSearch.get("status"), Status.active)
             );
 
             // DON'T SHOW DEFAULT SAVED SEARCHES
-            conjunction.getExpressions().add(
-                    builder.not(savedSearch.get("defaultSearch"))
+            conjunction = cb.and(conjunction,
+                    cb.not(savedSearch.get("defaultSearch"))
             );
 
             // Filter by keyword if present
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                     builder.like(builder.lower(savedSearch.get("name")), likeMatchTerm)
+                conjunction = cb.and(conjunction,
+                     cb.like(cb.lower(savedSearch.get("name")), likeMatchTerm)
                 );
             }
 
@@ -90,24 +93,24 @@ public class SavedSearchSpecification {
                 SavedSearchSubtype savedSearchSubtype = request.getSavedSearchSubtype();
                 String type = SavedSearch.makeStringSavedSearchType(
                         savedSearchType, savedSearchSubtype);
-                conjunction.getExpressions().add(
-                        builder.equal(savedSearch.get("type"), type)
+                conjunction = cb.and(conjunction,
+                        cb.equal(savedSearch.get("type"), type)
                 );
             }
 
             //If fixed is specified, only supply matching saved searches
             if (request.getFixed() != null && request.getFixed()) {
-                conjunction.getExpressions().add(
-                        builder.equal(savedSearch.get("fixed"), request.getFixed())
+                conjunction = cb.and(conjunction,
+                        cb.equal(savedSearch.get("fixed"), request.getFixed())
                 );
             }
 
             // (shared OR owned OR global)
-            Predicate ors = builder.disjunction();
+            Predicate disjunction = cb.disjunction();
 
             if (request.getGlobal() != null && request.getGlobal()) {
-                ors.getExpressions().add(
-                        builder.equal(savedSearch.get("global"), request.getGlobal())
+                disjunction = cb.or(disjunction,
+                        cb.equal(savedSearch.get("global"), request.getGlobal())
                 );
             }
 
@@ -120,7 +123,7 @@ public class SavedSearchSpecification {
                         for (SavedSearch sharedSearch : sharedSearches) {
                             sharedIDs.add(sharedSearch.getId());
                         }
-                        ors.getExpressions().add(
+                        disjunction = cb.or(disjunction,
                                 savedSearch.get("id").in( sharedIDs )
                         );
                     }
@@ -130,14 +133,14 @@ public class SavedSearchSpecification {
             //If owned by this user (ie by logged in user)
             if (request.getOwned() != null && request.getOwned()) {
                 if (loggedInUser != null) {
-                    ors.getExpressions().add(
-                         builder.equal(savedSearch.get("createdBy"), loggedInUser)
+                    disjunction = cb.or(disjunction,
+                         cb.equal(savedSearch.get("createdBy").get("id"), loggedInUser.getId())
                     );
                 }
             }
 
-            if (ors.getExpressions().size() != 0) {
-                conjunction.getExpressions().add(ors);
+            if (!disjunction.getExpressions().isEmpty()) {
+                conjunction = cb.and(conjunction, disjunction);
             }
 
             return conjunction;

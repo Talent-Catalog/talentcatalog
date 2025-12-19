@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ import {SearchResults} from "../../../model/search-results";
 import {Candidate} from "../../../model/candidate";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
-fdescribe('CandidateNameNumSearchComponent', () => {
+describe('CandidateNameNumSearchComponent', () => {
   let component: CandidateNameNumSearchComponent;
   let fixture: ComponentFixture<CandidateNameNumSearchComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;

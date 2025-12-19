@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,19 +14,20 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="workPermit">Do you have a valid work permit?</label>
     <div class="float-end">
       <app-autosave-status
+        *ngIf="editable"
         [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
+        [typing]="typing"
+      ></app-autosave-status>
     </div>
-    <ng-select id="workPermit" [formControlName]="'workPermit'" (clear)="setNoResponse('workPermit')"
+    <ng-select class="tc-select" id="workPermit" [formControlName]="'workPermit'" (clear)="setNoResponse('workPermit')"
                [items]="workPermitOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key">
     </ng-select>
@@ -34,7 +35,7 @@
   <div *ngIf="workPermit === 'YesNotDesired' || workPermit === 'No'">
     <div class="mb-3">
       <label class="form-label" for="workPermitDesired">Are you legally able to obtain a work permit in your desired field?</label>
-      <ng-select id="workPermitDesired" [formControlName]="'workPermitDesired'" (clear)="setNoResponse('workPermitDesired')"
+      <ng-select class="tc-select" id="workPermitDesired" [formControlName]="'workPermitDesired'" (clear)="setNoResponse('workPermitDesired')"
                  [items]="workPermitDesiredOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key">
       </ng-select>
@@ -42,9 +43,9 @@
     <div *ngIf="workPermitDesired === 'No'">
       <div class="mb-3">
           <label class="form-label" for="workPermitDesiredNotes">If no, please add any additional notes</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+          <tc-textarea type="text" rows="3"
                     id="workPermitDesiredNotes" [formControlName]="'workPermitDesiredNotes'"
-                    placeholder=""></textarea>
+                    placeholder=""></tc-textarea>
       </div>
     </div>
   </div>

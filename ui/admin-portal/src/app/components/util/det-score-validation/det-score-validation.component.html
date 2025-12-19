@@ -1,0 +1,9 @@
+<tc-input type="number"
+       [(ngModel)]="this.value"
+       (ngModelChange)="update()"
+       placeholder="10-160"
+       min="10" max="160"
+></tc-input>
+<tc-alert type="warning" *ngIf="error">
+  {{error}}
+</tc-alert>

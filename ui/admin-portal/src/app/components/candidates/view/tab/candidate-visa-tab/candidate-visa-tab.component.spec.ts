@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,11 +21,8 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 import {CountryService} from "../../../../../services/country.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {
-  HasNameSelectorComponent
-} from "../../../../util/has-name-selector/has-name-selector.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
+import {HasNameSelectorComponent} from "../../../../util/has-name-selector/has-name-selector.component";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
@@ -34,7 +31,7 @@ import {CandidateVisa} from "../../../../../model/candidate";
 import {Country} from "../../../../../model/country";
 import {ExportPdfComponent} from "../../../../util/export-pdf/export-pdf.component";
 
-fdescribe('CandidateVisaTabComponent', () => {
+describe('CandidateVisaTabComponent', () => {
   let component: CandidateVisaTabComponent;
   let fixture: ComponentFixture<CandidateVisaTabComponent>;
   let candidateServiceMock: jasmine.SpyObj<CandidateService>;
@@ -45,21 +42,21 @@ fdescribe('CandidateVisaTabComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     candidateServiceMock = jasmine.createSpyObj('CandidateService', ['getIntakeData']);
-    countryServiceMock = jasmine.createSpyObj('CountryService', ['listTBBDestinations']);
+    countryServiceMock = jasmine.createSpyObj('CountryService', ['listTCDestinations']);
     candidateVisaCheckServiceMock = jasmine.createSpyObj('CandidateVisaCheckService', ['create', 'list']);
     modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
-    authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly']);
+    authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly', 'isEditableCandidate']);
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [CandidateVisaTabComponent,ExportPdfComponent, HasNameSelectorComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateServiceMock },
         { provide: CountryService, useValue: countryServiceMock },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceMock },
         { provide: NgbModal, useValue: modalServiceMock },
-        { provide: LocalStorageService, useValue: {} },
+        // { provide: LocalStorageService, useValue: {} },
         { provide: AuthorizationService, useValue: authServiceMock },
       ]
     }).compileComponents();
@@ -70,7 +67,7 @@ fdescribe('CandidateVisaTabComponent', () => {
     component = fixture.componentInstance;
     component.candidate = mockCandidate;
     candidateServiceMock.getIntakeData.and.returnValue(of({}));
-    countryServiceMock.listTBBDestinations.and.returnValue(of([MockJob.country]));
+    countryServiceMock.listTCDestinations.and.returnValue(of([MockJob.country]));
     candidateVisaCheckServiceMock.list.and.returnValue(of([]));
     fixture.detectChanges();
   });

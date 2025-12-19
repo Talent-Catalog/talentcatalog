@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,10 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +32,8 @@ import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -40,10 +42,14 @@ public class CandidateVisaCheckAdminApi
         implements IJoinedTableApi<CreateCandidateVisaCheckRequest,
         CreateCandidateVisaCheckRequest, CreateCandidateVisaCheckRequest> {
     private final CandidateVisaService candidateVisaService;
+    private final CountryService countryService;
+    private final OccupationService occupationService;
 
     public CandidateVisaCheckAdminApi(
-            CandidateVisaService candidateVisaService) {
+            CandidateVisaService candidateVisaService, CountryService countryService, OccupationService occupationService) {
         this.candidateVisaService = candidateVisaService;
+        this.countryService = countryService;
+        this.occupationService = occupationService;
     }
 
     /**
@@ -120,7 +126,7 @@ public class CandidateVisaCheckAdminApi
         return new DtoBuilder()
                 .add("id")
                 .add("candidateVisaJobChecks", visaJobCheckDto())
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("protection")
                 .add("protectionGrounds")
                 .add("englishThreshold")
@@ -137,6 +143,8 @@ public class CandidateVisaCheckAdminApi
                 .add("validTravelDocsNotes")
                 .add("pathwayAssessment")
                 .add("pathwayAssessmentNotes")
+                .add("destinationFamily")
+                .add("destinationFamilyLocation")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())
@@ -164,7 +172,7 @@ public class CandidateVisaCheckAdminApi
                 .add("putForward")
                 .add("tbbEligibility")
                 .add("notes")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("occupationNotes")
                 .add("qualificationNotes")
                 .add("relevantWorkExp")
@@ -181,24 +189,11 @@ public class CandidateVisaCheckAdminApi
                 ;
     }
 
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
     private DtoBuilder userDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("firstName")
                 .add("lastName")
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
                 ;
     }
 

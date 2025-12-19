@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,13 +22,13 @@ import {CandidateLanguageService} from "../../../../../services/candidate-langua
 import {CandidateLanguage} from "../../../../../model/candidate-language";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {LanguageLevel} from "../../../../../model/language-level";
 import {Language} from "../../../../../model/language";
 
-fdescribe('EditCandidateLanguageComponent', () => {
+describe('EditCandidateLanguageComponent', () => {
   let component: EditCandidateLanguageComponent;
   let fixture: ComponentFixture<EditCandidateLanguageComponent>;
   let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
@@ -43,9 +43,9 @@ fdescribe('EditCandidateLanguageComponent', () => {
     // Add more languages as needed
   ];
   const mockLanguageLevels: LanguageLevel[] = [
-    { id: 1, name: 'Beginner', level: 1, status: 'Active' },
-    { id: 2, name: 'Intermediate', level: 2, status: 'Active' },
-    { id: 3, name: 'Advanced', level: 3, status: 'Active' },
+    { id: 1, name: 'Beginner', level: 1, cefrLevel: 'A1', status: 'Active' },
+    { id: 2, name: 'Intermediate', level: 2, cefrLevel: 'A2', status: 'Active' },
+    { id: 3, name: 'Advanced', level: 3, cefrLevel: 'B2', status: 'Active' },
     // Add more language levels as needed
   ];
 
@@ -64,7 +64,7 @@ fdescribe('EditCandidateLanguageComponent', () => {
         { provide: LanguageService, useValue: mockLanguageService },
         { provide: LanguageLevelService, useValue: mockLanguageLevelService },
         { provide: CandidateLanguageService, useValue: mockCandidateLanguageService },
-        FormBuilder
+        UntypedFormBuilder
       ]
     })
     .compileComponents();

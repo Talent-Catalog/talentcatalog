@@ -1,13 +1,30 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Injectable, OnDestroy} from '@angular/core';
 import {catchError, map} from "rxjs/operators";
 import {JwtResponse} from "../model/jwt-response";
 import {Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
-import {LocalStorageService} from "angular-2-local-storage";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
 import {AuthenticateInContextTranslationRequest} from "./auth.service";
 import {LoginRequest} from "../model/base";
+import {LocalStorageService} from "./local-storage.service";
+import {CandidateStatus} from "../model/candidate";
 
 /**
  * Manages authentication - ie login/logout.
@@ -19,6 +36,8 @@ import {LoginRequest} from "../model/base";
 })
 export class AuthenticationService implements OnDestroy {
   apiUrl = environment.apiUrl + '/auth';
+
+  private candidateStatus: CandidateStatus;
 
   /**
    * Stores current logged in state
@@ -74,6 +93,14 @@ export class AuthenticationService implements OnDestroy {
     return this.getLoggedInUser() != null;
   }
 
+  isRegistered(): boolean {
+    //Recover status from storage - may have been lost during browser refresh.
+    if (this.candidateStatus == null) {
+      this.candidateStatus = this.localStorageService.get("candidateStatus");
+    }
+    return this.candidateStatus != null && this.candidateStatus != CandidateStatus.draft;
+  }
+
   login(credentials: LoginRequest) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       map((response: JwtResponse) => {
@@ -95,10 +122,16 @@ export class AuthenticationService implements OnDestroy {
     this.localStorageService.remove('access-token');
     localStorage.clear();
 
-    this.setLoggedInUser(null)
+    this.setLoggedInUser(null);
+    this.setCandidateStatus(null);
   }
 
-  setLoggedInUser(loggedInUser: User) {
+  setCandidateStatus(candidateStatus: CandidateStatus) {
+    this.candidateStatus = candidateStatus;
+    this.localStorageService.set('candidateStatus', this.candidateStatus);
+  }
+
+  private setLoggedInUser(loggedInUser: User) {
     this.loggedInUser = loggedInUser;
     this.localStorageService.set('user', this.loggedInUser);
     this.loggedInUser$.next(this.loggedInUser);

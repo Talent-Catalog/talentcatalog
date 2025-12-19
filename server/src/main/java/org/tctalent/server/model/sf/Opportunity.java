@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.tctalent.server.logging.LogBuilder;
 
 /**
  * Represents a Salesforce Opportunity.
@@ -47,6 +49,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
+@Slf4j
 public class Opportunity extends SalesforceObjectBase {
 
     @JsonSetter("Name")
@@ -106,9 +109,58 @@ public class Opportunity extends SalesforceObjectBase {
     @JsonSetter("Hiring_Commitment__c")
     private Long hiringCommitment;
 
+    private String replaceNulls(String s) {
+        if (s != null && s.indexOf('\u0000') >= 0) {
+            //Replace nulls with '?'.
+            s = s.replaceAll("\u0000", "?");
+            LogBuilder.builder(log)
+                .action("replaceNulls")
+                .message("SF opportunity " + name + " property has nulls: '" + s + "'")
+                .logError();
+        }
+        return s;
+    }
+
+    public String getName() {
+        return replaceNulls(name);
+    }
+
+    public String getAccountId() {
+        return replaceNulls(accountId);
+    }
+
+    public String getCandidateId() {
+        return replaceNulls(candidateId);
+    }
+
+    public String getClosingComments() {
+        return replaceNulls(closingComments);
+    }
+
+    public String getClosingCommentsForCandidate() {
+        return replaceNulls(closingCommentsForCandidate);
+    }
+
+    public String getEmployerFeedback() {
+        return replaceNulls(employerFeedback);
+    }
+
+    public String getNextStep() {
+        return replaceNulls(nextStep);
+    }
+
+    public String getOpportunityScore() {
+        return replaceNulls(opportunityScore);
+    }
+
     @Override
     String getSfObjectName() {
         return "Opportunity";
+    }
+
+    public enum OpportunityType {
+        JOB,
+        CANDIDATE
     }
 
 }

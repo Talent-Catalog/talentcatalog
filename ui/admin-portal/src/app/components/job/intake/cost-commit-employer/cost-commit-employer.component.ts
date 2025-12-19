@@ -1,23 +1,57 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
-import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
+import {UntypedFormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
+import {
+  JoiDataComponent
+} from "../joi-data/joi-data.component";
+import {BUTTONS, NgxWigToolbarService} from "ngx-wig";
+import {CUSTOM_CLEAR_FORMAT_BUTTON} from "../../../../util/clear-format";
 
 @Component({
   selector: 'app-cost-commit-employer',
   templateUrl: './cost-commit-employer.component.html',
-  styleUrls: ['./cost-commit-employer.component.scss']
+  styleUrls: ['./cost-commit-employer.component.scss'],
+  providers: [
+    {
+      provide: BUTTONS,
+      multi: true,
+      useFactory: (toolbar: NgxWigToolbarService) => {
+        // Get the default buttons
+        const defaultButtons = toolbar.getToolbarButtons(); // Use the service to get existing buttons
+        // Merge the custom button with the default ones
+        return { ...defaultButtons, ...CUSTOM_CLEAR_FORMAT_BUTTON };
+      },
+      deps: [NgxWigToolbarService],
+    },
+  ]
+
 })
-export class CostCommitEmployerComponent extends JobIntakeComponentBase implements OnInit {
+export class CostCommitEmployerComponent extends JoiDataComponent implements OnInit {
 
-  constructor(fb: FormBuilder, jobService: JobService) {
+  constructor(fb: UntypedFormBuilder, jobService: JobService) {
     super(fb, jobService);
-  }
 
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      employerCostCommitment: [{value: this.jobIntakeData?.employerCostCommitment, disabled: !this.editable}],
-    });
+    //These inputs are predefined for this component
+    this.formFieldName = "employerCostCommitment";
+    this.componentKey="JOI.COST_COMMITMENT"
+    this.richText=true
+    this.required=true
   }
 
   onSuccessfulSave() {

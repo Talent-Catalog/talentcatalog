@@ -3,7 +3,7 @@ name: Terraform Plan
 on:
   pull_request:
     paths:
-      - 'infra/aws/**'
+      - 'infra/aws/terraform/**'
   workflow_dispatch: #this attribute will enable the manual run to the pipeline
 
 

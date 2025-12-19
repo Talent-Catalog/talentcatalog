@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,14 +17,14 @@
 import {User} from './user';
 import {CandidateNote} from "./candidate-note";
 
-fdescribe('CandidateNote Model', () => {
+describe('CandidateNote Model', () => {
   let user1: User;
   let user2: User;
   let candidateNote: CandidateNote;
 
   beforeEach(() => {
     user1 = { id: 1, name: 'John Doe', email: 'john.doe@example.com' } as User;
-    user2 = { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' } as User; 
+    user2 = { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' } as User;
 
     candidateNote = {
       id: 1,

@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - 'infra/aws/**'
+      - 'infra/aws/terraform/**'
 
   workflow_dispatch: #this attribute will enable the manual run to the pipeline
 
@@ -30,32 +30,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository to the GitHub Actions runner
-      - name: Checkout
-        uses: actions/checkout@v3
+      # Make this temporarily disabled
+      - name: No-op
+        run: echo "Terraform deployment temporarily disabled."
 
-      - name: Setup AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-          aws-region: ${{ env.TERRAFORM_REGION }}
-
-      # Install the latest version of Terraform CLI and configure the Terraform
-      # CLI configuration file with a Terraform Cloud user API token
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: Init Terraform
-        id: init
-        run: |
-          terraform init -upgrade
-        working-directory: ${{ env.INFRA_PATH }}
-
-      # Apply the infrastructure to the related environment
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false
-        # TODO: terraform.tfvars should be copied from github secrets to the env.INFRA_PATH directory
-        working-directory: ${{ env.INFRA_PATH }}
+#      # Checkout the repository to the GitHub Actions runner
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: Setup AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v2
+#        with:
+#          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+#          aws-region: ${{ env.TERRAFORM_REGION }}
+#
+#      # Install the latest version of Terraform CLI and configure the Terraform
+#      # CLI configuration file with a Terraform Cloud user API token
+#      - name: Setup Terraform
+#        uses: hashicorp/setup-terraform@v2
+#        with:
+#          terraform_version: ${{ env.TERRAFORM_VERSION }}
+#
+#      - name: Init Terraform
+#        id: init
+#        run: |
+#          terraform init -upgrade
+#        working-directory: ${{ env.INFRA_PATH }}
+#
+#      # Apply the infrastructure to the related environment
+#      - name: Terraform Apply
+#        run: terraform apply -auto-approve -input=false
+#        # TODO: terraform.tfvars should be copied from github secrets to the env.INFRA_PATH directory
+#        working-directory: ${{ env.INFRA_PATH }}

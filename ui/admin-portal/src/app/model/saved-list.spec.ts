@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {
 } from "./saved-list";
 import {CandidateStatus} from "./candidate";
 
-fdescribe('SavedList Interface Tests', () => {
+describe('SavedList Interface Tests', () => {
 
   // Sample SavedList object for testing
   let testSavedList: SavedList;
@@ -37,7 +37,7 @@ fdescribe('SavedList Interface Tests', () => {
       fileJdName: 'JD Document',
       folderlink: 'https://example.com/folder',
       publishedDocLink: 'https://example.com/published-doc',
-      tbbShortName: 'sample-short-name',
+      tcShortName: 'sample-short-name',
       sfJobCountry: 'Sample Country',
       sfJobStage: 'Stage 1',
       tasks: [],
@@ -50,7 +50,7 @@ fdescribe('SavedList Interface Tests', () => {
     expect(testSavedList.id).toBe(1);
     expect(testSavedList.name).toBe('Sample Saved List');
     expect(testSavedList.fileJdLink).toBe('https://example.com/file-jd.pdf');
-    expect(testSavedList.tbbShortName).toBe('sample-short-name');
+    expect(testSavedList.tcShortName).toBe('sample-short-name');
     expect(testSavedList.sfJobCountry).toBe('Sample Country');
     expect(testSavedList.registeredJob).toBe(true);
   });
@@ -61,7 +61,7 @@ fdescribe('SavedList Interface Tests', () => {
 
 });
 
-fdescribe('UpdateSavedListContentsRequest Interface Tests', () => {
+describe('UpdateSavedListContentsRequest Interface Tests', () => {
 
   // Sample UpdateSavedListContentsRequest object for testing
   let updateRequest: UpdateSavedListContentsRequest;
@@ -92,7 +92,7 @@ fdescribe('UpdateSavedListContentsRequest Interface Tests', () => {
 
 });
 
-fdescribe('PublishedDocColumnDef Class Tests', () => {
+describe('PublishedDocColumnDef Class Tests', () => {
 
   // Sample PublishedDocColumnDef object for testing
   let columnDef: PublishedDocColumnDef;

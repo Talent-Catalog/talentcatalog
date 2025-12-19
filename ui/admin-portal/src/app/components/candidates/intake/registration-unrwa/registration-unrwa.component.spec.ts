@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ import {CandidateService} from '../../../../services/candidate.service';
 import {NotRegisteredStatus, YesNoUnsure} from "../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-fdescribe('RegistrationUnrwaComponent', () => {
+describe('RegistrationUnrwaComponent', () => {
   let component: RegistrationUnrwaComponent;
   let fixture: ComponentFixture<RegistrationUnrwaComponent>;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,8 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {SystemLanguage} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {CreateLanguageComponent} from "./create/create-language.component";
@@ -33,7 +32,7 @@ export class SearchLanguagesComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -41,39 +40,16 @@ export class SearchLanguagesComponent implements OnInit {
   results: SystemLanguage[];
 
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private languageService: LanguageService,
               private modalService: NgbModal,
               private authService: AuthorizationService) {
   }
 
   ngOnInit() {
-
-    /* SET UP FORM */
-    this.searchForm = this.fb.group({
-      keyword: [''],
-      status: ['active'],
-    });
-    this.pageNumber = 1;
-    this.pageSize = 50;
-
-    this.onChanges();
-  }
-
-  onChanges(): void {
-    /* SEARCH ON CHANGE*/
-    this.searchForm.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(res => {
-        this.search();
-      });
     this.search();
   }
-
-  /* SEARCH FORM */
+  
   search() {
     this.loading = true;
     this.languageService.listSystemLanguages().subscribe(results => {

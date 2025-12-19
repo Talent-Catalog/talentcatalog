@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -35,6 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.LanguageTestData.getLanguageLevel;
+import static org.tctalent.server.data.LanguageTestData.getLanguageLevelList;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -77,9 +80,9 @@ class LanguageLevelAdminApiTest extends ApiTestBase {
     private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
     private static final String SEARCH_PATH = "/search";
 
-    private static final List<LanguageLevel> languageLevelList = AdminApiTestUtil.getLanguageLevelList();
-    private static final LanguageLevel languageLevel = AdminApiTestUtil.getLanguageLevel();
-    private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
+    private static final List<LanguageLevel> languageLevelList = getLanguageLevelList();
+    private static final LanguageLevel languageLevel = getLanguageLevel();
+    private static final SystemLanguage systemLanguage = getSystemLanguage();
 
     private final Page<LanguageLevel> languageLevelPage =
             new PageImpl<>(

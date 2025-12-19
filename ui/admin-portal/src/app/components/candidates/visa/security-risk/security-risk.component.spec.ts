@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,14 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {SecurityRiskComponent} from './security-risk.component';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('SecurityRiskComponent', () => {
+describe('SecurityRiskComponent', () => {
   let component: SecurityRiskComponent;
   let fixture: ComponentFixture<SecurityRiskComponent>;
 
@@ -30,7 +30,7 @@ fdescribe('SecurityRiskComponent', () => {
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       declarations: [SecurityRiskComponent,AutosaveStatusComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         {
           provide: CandidateVisaCheckService,
           useValue: jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod'])

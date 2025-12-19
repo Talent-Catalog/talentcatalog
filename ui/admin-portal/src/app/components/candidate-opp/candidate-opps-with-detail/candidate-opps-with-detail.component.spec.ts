@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {CandidateOppsWithDetailComponent} from "./candidate-opps-with-detail.component";
 import {ComponentFixture, fakeAsync, TestBed} from "@angular/core/testing";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
@@ -6,17 +22,16 @@ import {SearchOppsBy} from "../../../model/base";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {CandidateOppsComponent} from "../candidate-opps/candidate-opps.component";
 
-fdescribe('CandidateOppsWithDetailComponent', () => {
+describe('CandidateOppsWithDetailComponent', () => {
   let component: CandidateOppsWithDetailComponent;
   let fixture: ComponentFixture<CandidateOppsWithDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CandidateOppsWithDetailComponent,CandidateOppsComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule],
 
     })
     .compileComponents();

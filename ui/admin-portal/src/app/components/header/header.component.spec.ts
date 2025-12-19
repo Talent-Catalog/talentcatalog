@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,14 +27,12 @@ import {Candidate} from "../../model/candidate";
 import {MockCandidate} from "../../MockData/MockCandidate";
 import {RouterLinkStubDirective} from "../login/login.component.spec";
 import {RouterTestingModule} from "@angular/router/testing";
-import {
-  CandidateNameNumSearchComponent
-} from "../util/candidate-name-num-search/candidate-name-num-search.component";
+import {CandidateNameNumSearchComponent} from "../util/candidate-name-num-search/candidate-name-num-search.component";
 import {User} from "../../model/user";
 import {CreatedByComponent} from "../util/user/created-by/created-by.component";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 
-fdescribe('HeaderComponent', () => {
+describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthorizationService>;
@@ -54,7 +52,7 @@ fdescribe('HeaderComponent', () => {
   };
   beforeEach(async () => {
     const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['canViewCandidateName', 'isAnAdmin', 'isSystemAdminOnly','isEmployerPartner']);
-    const candidateServiceSpyObj = jasmine.createSpyObj('CandidateService', ['findByCandidateNumberOrName', 'findByExternalId', 'findByCandidateEmailOrPhone']);
+    const candidateServiceSpyObj = jasmine.createSpyObj('CandidateService', ['findByCandidateNumberOrName', 'findByExternalId', 'findByCandidateEmailPhoneOrWhatsapp']);
     const brandingServiceSpyObj = jasmine.createSpyObj('BrandingService', ['getBrandingInfo']);
     const authenticationServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser', 'logout']);
 
@@ -155,22 +153,22 @@ fdescribe('HeaderComponent', () => {
     tick(300); // debounceTime
   }));
 
-  it('should perform email or phone search', fakeAsync(() => {
-    candidateServiceSpy.findByCandidateEmailOrPhone.and.returnValue(of(mockCandidateSearchResult));
+  it('should perform email phone or whatsapp search', fakeAsync(() => {
+    candidateServiceSpy.findByCandidateEmailPhoneOrWhatsapp.and.returnValue(of(mockCandidateSearchResult));
 
     const searchText$ = of('email@example.com');
-    component.doEmailOrPhoneSearch(searchText$).subscribe(result => {
+    component.doEmailPhoneOrWhatsappSearch(searchText$).subscribe(result => {
       expect(result).toEqual(candidates);
     });
 
     tick(300); // debounceTime
   }));
 
-  it('should handle email or phone search error', fakeAsync(() => {
-    candidateServiceSpy.findByCandidateEmailOrPhone.and.returnValue(throwError('Error'));
+  it('should handle email phone or whatsapp search error', fakeAsync(() => {
+    candidateServiceSpy.findByCandidateEmailPhoneOrWhatsapp.and.returnValue(throwError('Error'));
 
     const searchText$ = of('email@example.com');
-    component.doEmailOrPhoneSearch(searchText$).subscribe(result => {
+    component.doEmailPhoneOrWhatsappSearch(searchText$).subscribe(result => {
       expect(result).toEqual([]);
       expect(component.searchFailed).toBeTrue();
     });

@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
+@import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 button.custom-emoji-btn {
   color: #444 !important;
@@ -40,4 +41,33 @@ emoji-mart#editorPicker {
 
 #quillToolbar {
   position: relative;
+  border-radius: 0.8rem 0.8rem 0 0;
+}
+
+:host ::ng-deep .ql-container.ql-snow {
+  border-radius: 0 0 0.8rem 0.8rem;
+  border:none;
+  @include shadow-lg;
+}
+
+button.custom-link-btn {
+  color: #444 !important;
+  padding-top: 1px !important;
+}
+
+button.custom-link-btn:hover {
+  color: #0066cc !important;
+  padding-top: 1px !important;
+}
+
+button.custom-link-btn-selected {
+  color: #0066cc !important;
+  padding-top: 1px !important;
+}
+
+/* Mobile screen styling */
+@media only screen and (max-width: 600px) {
+  button.custom-link-btn:hover {
+    color: #444 !important;
+  }
 }

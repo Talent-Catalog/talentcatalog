@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -30,16 +30,15 @@ import {CandidateExamService} from "../../../../../services/candidate-exam.servi
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
-fdescribe('CandidateMiniIntakeTabComponent', () => {
+describe('CandidateMiniIntakeTabComponent', () => {
   let component: CandidateMiniIntakeTabComponent;
   let fixture: ComponentFixture<CandidateMiniIntakeTabComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [CandidateMiniIntakeTabComponent],
       providers: [
         CandidateService,

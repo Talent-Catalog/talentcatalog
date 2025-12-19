@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {LanguageLevel} from '../model/language-level';
 import {SystemLanguage} from '../model/language';
 import {SearchResults} from '../model/search-results';
 
-fdescribe('LanguageLevelService', () => {
+describe('LanguageLevelService', () => {
   let service: LanguageLevelService;
   let httpMock: HttpTestingController;
 
@@ -60,7 +60,7 @@ fdescribe('LanguageLevelService', () => {
   });
 
   it('should list language levels', () => {
-    const mockLanguageLevels: LanguageLevel[] = [{ id: 1, name:'Basic', level: 1, status: 'active'}];
+    const mockLanguageLevels: LanguageLevel[] = [{ id: 1, name:'Basic', level: 1, cefrLevel: 'A1', status: 'active'}];
 
     service.listLanguageLevels().subscribe(languageLevels => {
       expect(languageLevels).toEqual(mockLanguageLevels);
@@ -73,7 +73,7 @@ fdescribe('LanguageLevelService', () => {
 
   it('should search language levels', () => {
     const request = { query: 'A1' };
-    const mockSearchResults: SearchResults<LanguageLevel> = { content: [{  id: 1, name:'Basic', level: 1, status: 'active' }], totalElements: 1 } as SearchResults<LanguageLevel>;
+    const mockSearchResults: SearchResults<LanguageLevel> = { content: [{  id: 1, name:'Basic', level: 1, cefrLevel: 'A1', status: 'active' }], totalElements: 1 } as SearchResults<LanguageLevel>;
 
     service.search(request).subscribe(searchResults => {
       expect(searchResults).toEqual(mockSearchResults);
@@ -86,7 +86,7 @@ fdescribe('LanguageLevelService', () => {
   });
 
   it('should get a language level by id', () => {
-    const mockLanguageLevel: LanguageLevel = { id: 1, name:'Basic', level: 1, status: 'active'}
+    const mockLanguageLevel: LanguageLevel = { id: 1, name:'Basic', level: 1, cefrLevel: 'A1', status: 'active'}
 
     service.get(1).subscribe(languageLevel => {
       expect(languageLevel).toEqual(mockLanguageLevel);
@@ -98,7 +98,7 @@ fdescribe('LanguageLevelService', () => {
   });
 
   it('should create a new language level', () => {
-    const details = { level: 2, name: 'Intermediate', status: 'active' };
+    const details = { level: 2, name: 'Intermediate', cefrLevel: 'B1', status: 'active' };
     const mockLanguageLevel: LanguageLevel = { id: 2, ...details };
 
     service.create(details).subscribe(languageLevel => {
@@ -113,7 +113,7 @@ fdescribe('LanguageLevelService', () => {
 
   it('should update a language level', () => {
     const id = 1;
-    const details = { level: 3, name: 'Advance', status: 'active' };
+    const details = { level: 3, name: 'Advanced', cefrLevel: 'B2', status: 'active' };
     const mockLanguageLevel: LanguageLevel = { id: 1, ...details };
 
     service.update(id, details).subscribe(languageLevel => {

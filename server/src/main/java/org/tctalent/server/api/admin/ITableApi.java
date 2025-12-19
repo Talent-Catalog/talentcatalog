@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,8 +19,8 @@ package org.tctalent.server.api.admin;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -85,7 +87,8 @@ public interface ITableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogWebApi 
      * @throws NoSuchObjectException if there is no such record with the given id
      */
     @GetMapping("{id}")
-    default @NotNull Map<String, Object> get(@PathVariable("id") long id)
+    default @NotNull Map<String, Object> get(@PathVariable("id") long id,
+        @RequestParam(name = "dtoType", required = false, defaultValue = "EXTENDED") DtoType dtoType)
             throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "get");
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,7 +28,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {CandidateCertification} from "../../../../../model/candidate-certification";
 
-fdescribe('EditCandidateCertificationComponent', () => {
+describe('EditCandidateCertificationComponent', () => {
   let component: EditCandidateCertificationComponent;
   let fixture: ComponentFixture<EditCandidateCertificationComponent>;
   let candidateCertificationServiceSpy: jasmine.SpyObj<CandidateCertificationService>;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular
 import {LanguageService} from "../../../../services/language.service";
 import {CountryService} from "../../../../services/country.service";
 import {TranslationService} from "../../../../services/translation.service";
-import {FormArray, FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
@@ -30,13 +30,13 @@ import {SearchResults} from "../../../../model/search-results";
 import {TranslatedObject} from "../../../../model/translated-object";
 import {Translation} from "../../../../model/translation";
 
-fdescribe('DropdownTranslationsComponent', () => {
+describe('DropdownTranslationsComponent', () => {
   let component: DropdownTranslationsComponent;
   let fixture: ComponentFixture<DropdownTranslationsComponent>;
   let languageServiceSpy: jasmine.SpyObj<LanguageService>;
   let countryServiceSpy: jasmine.SpyObj<CountryService>;
   let translationServiceSpy: jasmine.SpyObj<TranslationService>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   const systemLanguages: SystemLanguage[] = [
     {id:1, language: 'fr', label: 'French',rtl:false },
     {id:2, language: 'es', label: 'Spanish',rtl:false }
@@ -67,7 +67,7 @@ fdescribe('DropdownTranslationsComponent', () => {
         { provide: LanguageService, useValue: languageServiceSpyObj },
         { provide: CountryService, useValue: countryServiceSpyObj },
         { provide: TranslationService, useValue: translationServiceSpyObj },
-        FormBuilder,
+        UntypedFormBuilder,
         NgbModal,
       ]
     }).compileComponents();
@@ -75,7 +75,7 @@ fdescribe('DropdownTranslationsComponent', () => {
     languageServiceSpy = TestBed.inject(LanguageService) as jasmine.SpyObj<LanguageService>;
     countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
     translationServiceSpy = TestBed.inject(TranslationService) as jasmine.SpyObj<TranslationService>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   }));
 
   beforeEach(() => {
@@ -110,7 +110,7 @@ fdescribe('DropdownTranslationsComponent', () => {
       pageSize: component.pageSize
     });
     expect(component.results).toEqual(results);
-    expect((component.topLevelForm.get('translations')  as FormArray).length).toBe(2);
+    expect((component.topLevelForm.get('translations')  as UntypedFormArray).length).toBe(2);
     expect(component.loading).toBeFalse();
   }));
 

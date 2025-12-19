@@ -1,25 +1,41 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ChatsWithPostsComponent} from "./chats-with-posts.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {ChatService} from "../../../services/chat.service";
-import {JobChat} from "../../../model/chat";
+import {JobChat, JobChatType} from "../../../model/chat";
 import {By} from "@angular/platform-browser";
 import {ChatsComponent} from "../chats/chats.component";
 import {ViewChatPostsComponent} from "../view-chat-posts/view-chat-posts.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {of} from "rxjs";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 import {ViewPostComponent} from "../view-post/view-post.component";
 import {CreateUpdatePostComponent} from "../create-update-post/create-update-post.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {QuillModule} from "ngx-quill";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {MockUser} from "../../../MockData/MockUser";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {TranslateModule} from "@ngx-translate/core";
 
-fdescribe('ChatsWithPostsComponent', () => {
+describe('ChatsWithPostsComponent', () => {
   let component: ChatsWithPostsComponent;
   let fixture: ComponentFixture<ChatsWithPostsComponent>;
   let chatService: jasmine.SpyObj<ChatService>;
@@ -31,10 +47,11 @@ fdescribe('ChatsWithPostsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsWithPostsComponent, ChatsComponent, ViewChatPostsComponent, ViewPostComponent, CreateUpdatePostComponent ],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbTooltipModule,FormsModule,ReactiveFormsModule,QuillModule],
+      imports: [HttpClientTestingModule,NgbTooltipModule,FormsModule,ReactiveFormsModule,QuillModule,
+        TranslateModule.forRoot({})],
 
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: ChatService, useValue: chatServiceSpy },
         { provide: AuthenticationService, useValue: authSpy }
       ]
@@ -62,13 +79,6 @@ fdescribe('ChatsWithPostsComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Select a chat');
   });
 
-  it('should render selected chat name when a chat is selected', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
-    component.selectedChat = mockChat;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Test Chat');
-  });
-
   it('should render error message when error is present', () => {
     const errorMessage = 'An error occurred!';
     component.error = errorMessage;
@@ -81,7 +91,7 @@ fdescribe('ChatsWithPostsComponent', () => {
   });
 
   it('should emit chatSelection event when a chat is selected', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     spyOn(component.chatSelection, 'emit');
     component.onChatSelected(mockChat);
     expect(component.selectedChat).toEqual(mockChat);
@@ -89,7 +99,7 @@ fdescribe('ChatsWithPostsComponent', () => {
   });
 
   it('should call chatService.markChatAsRead when a chat is marked as read', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     component.selectedChat = mockChat;
     fixture.detectChanges();
     component.onMarkChatAsRead();

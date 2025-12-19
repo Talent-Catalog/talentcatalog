@@ -1,34 +1,67 @@
-<nav ngbNav #nav="ngbNav" class="nav-tabs mt-2" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
-  <ng-container ngbNavItem="MyLists">
-    <a ngbNavLink title="Lists that I created">My Lists</a>
-    <ng-template ngbNavContent>
+<tc-tabs class="mt-2"
+         [activeTabId]="activeTabId"
+         (tabChanged)="onTabChanged($event)"
+         [defaultTabId]="defaultTabId"
+>
+
+  <tc-tab [id]="'MyLists'"
+          [description]="'Lists that I created'"
+  >
+    <tc-tab-header>
+      My Lists
+    </tc-tab-header>
+    <tc-tab-content>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedList"
         [searchBy]="SearchBy.mine" >
       </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container ngbNavItem="ListsSharedWithMe">
-    <a ngbNavLink title="Starred Lists (eg those I am working with)"><i class="fas fa-star"></i>Lists</a>
-    <ng-template ngbNavContent>
+  <tc-tab [id]="'ListsSharedWithMe'"
+          [description]="'Starred Lists (e.g. those I am working with)'"
+  >
+    <tc-tab-header>
+      <i class="fas fa-star"></i>
+      Lists
+    </tc-tab-header>
+    <tc-tab-content>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedList"
         [searchBy]="SearchBy.sharedWithMe">
       </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container *ngIf="seesPublicLists()" ngbNavItem="PublicLists">
-    <a ngbNavLink title="Lists associated with a public web link">Lists With External Links</a>
-    <ng-template ngbNavContent>
+  <tc-tab *ngIf="seesPublicLists() && canSeeJobDetails()"
+          [id]="'PublicLists'"
+          [description]="'Lists With External Links'"
+  >
+    <tc-tab-header>
+      Lists With External Links
+    </tc-tab-header>
+    <tc-tab-content>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedList"
         [searchBy]="SearchBy.externalLink">
       </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-</nav>
-<div [ngbNavOutlet]="nav" class="mt-2"></div>
+</tc-tabs>

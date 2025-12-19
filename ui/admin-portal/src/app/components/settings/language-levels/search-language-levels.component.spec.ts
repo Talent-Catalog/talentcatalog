@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,7 +29,7 @@ import {CreateLanguageLevelComponent} from "./create/create-language-level.compo
 import {EditLanguageLevelComponent} from "./edit/edit-language-level.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
-fdescribe('SearchLanguageLevelsComponent', () => {
+describe('SearchLanguageLevelsComponent', () => {
   let component: SearchLanguageLevelsComponent;
   let fixture: ComponentFixture<SearchLanguageLevelsComponent>;
   let languageLevelServiceSpy: jasmine.SpyObj<LanguageLevelService>;
@@ -42,7 +42,7 @@ fdescribe('SearchLanguageLevelsComponent', () => {
     size: 0,
     totalPages: 0,
     totalElements: 1,
-    content: [{id:1, name:'IELTS', level:3, status:'Active'}]
+    content: [{id:1, name:'IELTS', level:3, cefrLevel: 'B1', status:'Active'}]
   };
   beforeEach(async () => {
     const languageLevelSpy = jasmine.createSpyObj('LanguageLevelService', ['search', 'delete', 'addSystemLanguageTranslations']);

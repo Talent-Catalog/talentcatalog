@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {CandidateDestination, describeFamilyInDestination} from "./candidate-destination";
+import {CandidateDestination} from "./candidate-destination";
 import {MockCandidate} from "../MockData/MockCandidate";
-import {CandidateIntakeData, FamilyRelations, YesNoUnsure} from "./candidate";
+import {YesNoUnsure} from "./candidate";
 
-fdescribe('CandidateDestination Interface', () => {
+describe('CandidateDestination Interface', () => {
   const mockCandidate = new MockCandidate();
   it('should create an object that conforms to the CandidateDestination interface', () => {
     const destination: CandidateDestination = {
@@ -26,8 +26,6 @@ fdescribe('CandidateDestination Interface', () => {
       country: mockCandidate.country,
       candidate: mockCandidate,
       interest: YesNoUnsure.Yes,
-      family: FamilyRelations.Other,
-      location: 'City X',
       notes: 'Additional notes'
     };
 
@@ -35,8 +33,6 @@ fdescribe('CandidateDestination Interface', () => {
     expect(destination.id).toBe(1);
     expect(destination.country?.name).toBe('United States');
     expect(destination.interest).toBe(YesNoUnsure.Yes);
-    expect(destination.family).toBe(FamilyRelations.Other);
-    expect(destination.location).toBe('City X');
     expect(destination.notes).toBe('Additional notes');
   });
 
@@ -46,8 +42,6 @@ fdescribe('CandidateDestination Interface', () => {
       country: mockCandidate.country,
       candidate: mockCandidate,
       interest: YesNoUnsure.Yes,
-      family: FamilyRelations.Child,
-      location: 'City X',
       notes: 'Additional notes'
     };
 
@@ -55,65 +49,6 @@ fdescribe('CandidateDestination Interface', () => {
     expect(typeof destination.country).toBe('object'); // Assuming Country is a complex object
     expect(typeof destination.candidate).toBe('object'); // Assuming Candidate is a complex object
     expect(typeof destination.interest).toBe('string');
-    expect(typeof destination.family).toBe('string');
-    expect(typeof destination.location).toBe('string');
     expect(typeof destination.notes).toBe('string');
-  });
-
-  it('should return correct family description when family and location are present', () => {
-    const countryId = 1;
-    const candidateIntakeData = {
-      candidateDestinations: [
-        { country: { id: 1 }, family: 'Parents', location: 'City Y' }
-      ]
-    } as unknown as CandidateIntakeData;
-
-    const result = describeFamilyInDestination(countryId, candidateIntakeData);
-    expect(result).toBe('Parents in City Y');
-  });
-
-
-  it('should return correct family description when only family is present', () => {
-    const countryId = 1;
-    const candidateIntakeData = {
-      candidateDestinations: [
-        { country: { id: 1 }, family: 'Siblings' }
-      ]
-    } as unknown as CandidateIntakeData;
-
-    const result = describeFamilyInDestination(countryId, candidateIntakeData);
-    expect(result).toBe('Siblings');
-  });
-
-  it('should return "No family entered" when family is not present', () => {
-    const countryId = 1;
-    const candidateIntakeData = {
-      candidateDestinations: [
-        { country: { id: 1 } }
-      ]
-    } as unknown as CandidateIntakeData;
-
-    const result = describeFamilyInDestination(countryId, candidateIntakeData);
-    expect(result).toBe('No family entered');
-  });
-
-  it('should return "No family entered" when destination for countryId is not found', () => {
-    const countryId = 1;
-    const candidateIntakeData = {
-      candidateDestinations: [
-        { country: { id: 2 }, family: 'Parents' }
-      ]
-    } as unknown as CandidateIntakeData;
-
-    const result = describeFamilyInDestination(countryId, candidateIntakeData);
-    expect(result).toBe('No family entered');
-  });
-
-  it('should return "No family entered" when candidateIntakeData is null or undefined', () => {
-    const countryId = 1;
-    const candidateIntakeData = null;
-
-    const result = describeFamilyInDestination(countryId, candidateIntakeData);
-    expect(result).toBe('No family entered');
   });
 });

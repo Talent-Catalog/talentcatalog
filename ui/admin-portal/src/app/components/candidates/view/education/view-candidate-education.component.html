@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,87 +14,105 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div class="card" *ngIf="!loading">
+
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
 
   <!-- HEADER -->
-  <div class="card-header">
+  <tc-card-header>
+    <span>
+      Education
+      <span *ngIf="candidate.maxEducationLevel">
+        (Max Level: {{candidate.maxEducationLevel?.name}})
+      </span>
+    </span>
 
-    <span>Education</span>
-    <small class="space-before" *ngIf="candidate.maxEducationLevel">
-      (Max Level: {{candidate.maxEducationLevel?.name}})
-    </small>
-
-    <div class="float-end" *ngIf="editable">
-      <button class="btn btn-primary btn-sm" (click)="createCandidateEducation()">
+    <div class="d-flex justify-content-end gap-2"
+         *ngIf="editable"
+    >
+      <tc-button (onClick)="createCandidateEducation()"
+                 [type]="'solid'"
+                 [size]="'sm'"
+                 [color]="'primary'"
+      >
         <i class="fas fa-plus"></i>
-      </button>
-    </div>
+      </tc-button>
 
-  </div>
+      <tc-button (onClick)="editMaxEducationLevel()"
+                 [type]="'outline'"
+                 [size]="'sm'"
+                 [color]="'primary'"
+      >
+        <i class="fas fa-edit"></i>
+      </tc-button>
+    </div>
+  </tc-card-header>
 
   <!-- BODY -->
-  <div class="card-body">
-    <!-- EMPTY STATE -->
-    <p class="m-0" *ngIf="!candidateEducations || candidateEducations.length == 0">
-      No education data has been entered by this candidate.
-    </p>
+  <!-- EMPTY STATE -->
+  <p class="m-0" *ngIf="!candidate.candidateEducations || candidate.candidateEducations.length == 0">
+    No education data has been entered by this candidate.
+  </p>
 
-    <!-- EDUCATION CARDS -->
-    <div *ngFor="let edu of candidateEducations">
+  <!-- EDUCATION CARDS -->
+  <div *ngFor="let edu of candidate.candidateEducations; let i = index">
 
-      <div class="row">
+    <hr *ngIf="i > 0">
 
-        <div class="col-6">
-          <span class="card-title"
-                [innerHtml]="edu.educationType + ' in ' + edu.educationMajor?.name + ' : ' + edu.courseName"
+    <div class="row">
+
+      <div class="col-6">
+        <span class="card-title"
+              [innerHtml]="edu.educationType + ' in ' + edu.educationMajor?.name + ' : ' + edu.courseName"
+              appHighlightSearch>
+        </span>
+        <div class="col-12">
+          <span class="text-muted"
+                [innerHtml]="edu.institution + ', ' + edu.country.name"
                 appHighlightSearch>
           </span>
-          <div class="col-12">
-            <span class="text-muted"
-                  [innerHtml]="edu.institution + ', ' + edu.country.name"
-                  appHighlightSearch>
-            </span>
-          </div>
-
-          <div class="col-12">
-          <span class="text-muted" [ngSwitch]="">
-            {{edu.yearCompleted}}
-            <span *ngIf="edu.incomplete">Candidate has not completed</span>
-          </span>
-          </div>
         </div>
 
-        <div class="col-6" *ngIf="editable">
-          <div class="btn-group float-end">
-            <button type="button" class="btn btn-default" (click)="editCandidateEducation(edu)">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateEducation(edu)">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
+        <div class="col-12">
+        <span class="text-muted" [ngSwitch]="">
+          {{edu.yearCompleted}}
+          <span *ngIf="edu.incomplete">Candidate has not completed</span>
+        </span>
         </div>
-
-
-
       </div>
 
-      <hr/>
-
+      <div class="col-6" *ngIf="editable">
+        <div class="d-flex justify-content-end gap-2">
+          <tc-button [type]="'plain'"
+                     [color]="'secondary'"
+                     (onClick)="editCandidateEducation(edu)"
+          >
+            <i class="fas fa-edit"></i>
+          </tc-button>
+          <tc-button *ngIf="adminUser"
+                     (onClick)="deleteCandidateEducation(edu)"
+                     [type]="'plain'"
+                     [color]="'gray'"
+          >
+            <i class="fas fa-trash"></i>
+          </tc-button>
+        </div>
+      </div>
     </div>
 
   </div>
+
   <div *ngIf="candidate.migrationEducationMajor" class="card-footer">
       <span class="text-muted"
-            [innerHtml]="'Migrated Major: ' +candidate.migrationEducationMajor.name"
-            appHighlightSearch>
-      </span>
+            [innerHtml]="'Migrated Major: ' + candidate.migrationEducationMajor.name"
+            appHighlightSearch
+      ></span>
   </div>
 
-</div>
+</tc-card>

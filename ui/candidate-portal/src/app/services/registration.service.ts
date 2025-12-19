@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -63,25 +63,35 @@ export class RegistrationService {
       section: 6
     },
     {
+      key: 'exam',
+      title: 'Provide details of your language exams',
+      section: 7
+    },
+    {
       key: 'certifications',
       title: 'Do you have any other professional certifications?',
-      section: 7
+      section: 8
+    },
+    {
+      key: 'destinations',
+      title: 'Do you have any destination preferences?',
+      section: 8
     },
     {
       key: 'additional',
       title: 'How did you hear about us?',
-      section: 8
+      section: 9
     },
     {
       key: 'upload',
       title: 'Do you have any files to upload?',
-      section: 9
+      section: 10
     },
     {
       key: 'complete',
       title: '',
       hideHeader: true,
-      section: 9
+      section: 10
     }
   ];
   public totalSections: number = Math.max(...this.steps.map(s => s.section));

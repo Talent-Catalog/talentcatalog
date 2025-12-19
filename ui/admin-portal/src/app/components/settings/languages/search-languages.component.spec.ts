@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ import {of} from "rxjs";
 import {CreateLanguageComponent} from "./create/create-language.component";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('SearchLanguagesComponent', () => {
+describe('SearchLanguagesComponent', () => {
   let component: SearchLanguagesComponent;
   let fixture: ComponentFixture<SearchLanguagesComponent>;
   let languageServiceSpy: jasmine.SpyObj<LanguageService>;
@@ -65,13 +65,6 @@ fdescribe('SearchLanguagesComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should initialize form and set default values', () => {
-    component.ngOnInit();
-    expect(component.searchForm).toBeDefined();
-    expect(component.pageNumber).toBe(1);
-    expect(component.pageSize).toBe(50);
   });
 
 

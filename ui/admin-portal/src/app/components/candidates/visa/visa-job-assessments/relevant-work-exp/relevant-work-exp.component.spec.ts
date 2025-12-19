@@ -1,12 +1,28 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {RelevantWorkExpComponent} from './relevant-work-exp.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('RelevantWorkExpComponent', () => {
+describe('RelevantWorkExpComponent', () => {
   let component: RelevantWorkExpComponent;
   let fixture: ComponentFixture<RelevantWorkExpComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
@@ -18,7 +34,7 @@ fdescribe('RelevantWorkExpComponent', () => {
       declarations: [RelevantWorkExpComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
       ]
     }).compileComponents();
@@ -60,13 +76,13 @@ fdescribe('RelevantWorkExpComponent', () => {
   });
 
   it('should render textarea with correct placeholder', () => {
-    const textareaElement: HTMLTextAreaElement = fixture.nativeElement.querySelector('#visaJobRelevantWorkExp');
+    const textareaElement: HTMLTextAreaElement = fixture.nativeElement.querySelector('tc-textarea textarea');
     expect(textareaElement).toBeTruthy();
     expect(textareaElement.placeholder).toBe('');
   });
 
   it('should display the correct helper text', () => {
-    const smallElement: HTMLElement = fixture.nativeElement.querySelector('small');
-    expect(smallElement.textContent).toContain('Please include the date that this is recorded');
+    const helperElement: HTMLElement = fixture.nativeElement.querySelector('tc-description');
+    expect(helperElement.textContent).toContain('Please include the date that this is recorded');
   });
 });

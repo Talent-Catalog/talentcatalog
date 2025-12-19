@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,11 +28,8 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateCitizenship;
 import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-citizenship")
@@ -37,6 +37,7 @@ import java.util.Map;
 public class CandidateCitizenshipAdminApi implements IJoinedTableApi<CreateCandidateCitizenshipRequest,
         CreateCandidateCitizenshipRequest, CreateCandidateCitizenshipRequest> {
 
+    private final CountryService countryService;
     private final CandidateCitizenshipService candidateCitizenshipService;
 
     /**
@@ -71,17 +72,9 @@ public class CandidateCitizenshipAdminApi implements IJoinedTableApi<CreateCandi
     private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("nationality", countryDto())
+                .add("nationality", countryService.selectBuilder())
                 .add("hasPassport")
                 .add("notes")
                 ;
     }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
 }

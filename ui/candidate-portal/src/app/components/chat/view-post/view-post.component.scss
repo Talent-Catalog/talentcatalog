@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,13 +15,20 @@
  */
 
 button.reaction-btn {
+  display: flex;
+  align-items: center;
+  background-color: #eaeaea;
+  justify-content: center;
+  border-radius: 1.5rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 1rem;
   border: none;
-  background-color: inherit;
-  color: #444;
 }
 
 button.reaction-btn:hover {
   color: #0066cc;
+  background-color: rgba(78, 154, 234, 0.12);
+  z-index: 0;
 }
 
 button.reaction-btn-selected {
@@ -66,4 +73,86 @@ div#reactionTooltipEmoji {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 2;
+}
+
+.chat-message {
+  display: flex;
+  align-items: flex-start;
+  margin: 0.6rem 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #b0b0b0;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  color: #fff;
+  margin-right: 0.6rem;
+}
+
+.avatar.post-author {
+  background-color: rgba(20, 176, 227, 0.15);
+  color: #14b0e3;
+}
+
+.message-content {
+  max-width: 25rem;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+.partner {
+  color: black;
+  margin-right: 0.3rem;
+}
+
+.abbreviation {
+  color: #888;
+  font-size: .8rem;
+}
+
+.timestamp {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: lighter;
+  margin-left: 0.5rem;
+}
+
+.reactions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reaction {
+  display: flex;
+  align-items: center;
+  background-color: #e6f7ff;
+  border: 1px solid #007bff;
+  border-radius: 1.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+  color: #007bff;
+}
+
+.emoji {
+  margin-right: 0.25rem;
+}
+
+.count {
+  margin-left: 0.25rem;
+}
+
+.message-text p {
+  margin-bottom: 0.25rem;
 }

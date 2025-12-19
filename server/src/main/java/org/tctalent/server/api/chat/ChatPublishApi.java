@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,11 +22,15 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.JobChatUserService;
 import org.tctalent.server.service.db.UserService;
 
 /**
@@ -51,6 +55,7 @@ public class ChatPublishApi {
     private final ChatPostService chatPostService;
     private final JobChatService jobChatService;
     private final UserService userService;
+    private final JobChatUserService jobChatUserService;
 
     /**
      * Receives a post on the given chat from the currently logged in user,
@@ -62,9 +67,35 @@ public class ChatPublishApi {
      */
     @MessageMapping("/chat/{chatId}")
     @SendTo(ChatPostService.CHAT_PUBLISH_ROOT + "/{chatId}")
-    public Map<String, Object> sendPost(Post post, @DestinationVariable Long chatId) {
-        JobChat jobChat = jobChatService.getJobChat(chatId);
-        ChatPost chatPost = chatPostService.createPost(post, jobChat, userService.getLoggedInUser());
+    public Map<String, Object> sendPost(Post post, @DestinationVariable("chatId") Long chatId) {
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new UnauthorisedActionException("publish post");
+        }
+
+        Candidate candidate = loggedInUser.getCandidate();
+        if (candidate != null && candidate.isMuted()) {
+            throw new UnauthorisedActionException("publish post");
+        }
+
+        JobChat chat = jobChatService.getJobChat(chatId);
+
+        //Remember whether the chat was read by the user prior to this post.
+        boolean wasReadByUser = jobChatUserService.isChatReadByUser(chat, loggedInUser);
+
+        //Now create and add the post to the chat.
+        ChatPost chatPost = chatPostService.createPost(post, chat, loggedInUser);
+
+        if (wasReadByUser) {
+            //We do special processing of posts for the user that originated them.
+            //A user's own posts do not change their read state of the chat.
+            //If the chat was read by the user prior to their post, update the JobChatUser info
+            //so that the chat is still marked as read - taking into account the new post.
+            //This just means setting the last read post in the JobChatUser info to the new post.
+            //That is what markChatAsRead does.
+            jobChatUserService.markChatAsRead(chat, loggedInUser, chatPost);
+        }
+
         return chatPostService.getChatPostDtoBuilder().build(chatPost);
     }
 

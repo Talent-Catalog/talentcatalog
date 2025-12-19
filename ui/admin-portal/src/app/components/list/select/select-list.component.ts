@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,12 @@
 
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {isSubmissionList, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {JobNameAndId} from "../../../model/job";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 
 export interface TargetListSelection {
@@ -52,10 +53,13 @@ export class SelectListComponent implements OnInit {
 
   error: string = null;
   excludeList: SavedList;
-  form: FormGroup;
+  form: UntypedFormGroup;
   jobName: string;
   jobId: number;
   loading: boolean;
+  canChangeStatuses: boolean = true;
+  readOnly: boolean = false;
+  employerPartner: boolean = false;
   saving: boolean;
   action: string = "Save";
   title: string = "Select List";
@@ -67,7 +71,8 @@ export class SelectListComponent implements OnInit {
   constructor(
     private savedListService: SavedListService,
     private activeModal: NgbActiveModal,
-    private fb: FormBuilder) { }
+    private fb: UntypedFormBuilder,
+    private authorizationService: AuthorizationService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -97,9 +102,12 @@ export class SelectListComponent implements OnInit {
     this.loading = true;
     const request: SearchSavedListRequest = {
       owned: true,
-      shared: true,
-      global: true,
-      fixed: false
+      shared: !this.readOnly,
+      global: !this.employerPartner && !this.readOnly,
+      fixed: false,
+      ownedByMyPartner: this.employerPartner && !this.readOnly,
+      // Don't allow selection of a list if it is a closed submission list
+      sfOppClosed: false
     };
 
     this.savedListService.search(request).subscribe(
@@ -129,6 +137,10 @@ export class SelectListComponent implements OnInit {
     if (this.changeStatuses) {
       selection.statusUpdateInfo = this.statusUpdateInfo;
     }
+    // for submission lists we need to set replace to false
+    if (this.selectedSubmissionList()) {
+      selection.replace = false;
+    }
     this.activeModal.close(selection);
   }
 
@@ -157,15 +169,28 @@ export class SelectListComponent implements OnInit {
   }
 
   private nonBlankListName() {
-    return (group: FormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): { [key: string]: any } => {
       const newList: boolean = group.controls['newList'].value;
       if (newList) {
         const newListName: string = group.controls['newListName'].value;
         if (!newListName) {
           return { invalidName: "Name can't be blank" }
         }
+      } else {
+        const existingList: string = group.controls['savedList'].value;
+        if (!existingList){
+          return { invalidName: "List can't be blank"}
+        }
       }
       return {}
     }
+  }
+
+  selectedSubmissionList(): boolean {
+    return isSubmissionList(this.savedList);
+  }
+
+  isListMine(): boolean {
+    return this.authorizationService.isCandidateSourceMine(this.savedList);
   }
 }

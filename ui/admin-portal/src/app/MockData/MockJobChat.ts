@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {JobChat} from "../model/chat";
+import {JobChat, JobChatType} from "../model/chat";
 
 export class MockJobChat implements JobChat  {
   id:number =  1;
+  type = JobChatType.CandidateProspect;
+
   name:string = "John";
 }

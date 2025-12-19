@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,7 +24,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {SavedSearch} from '../../../model/saved-search';
 import {SavedSearchService} from "../../../services/saved-search.service";
@@ -39,7 +39,7 @@ import {SearchCandidateSourcesRequest} from "../../../model/base";
 })
 export class JoinSavedSearchComponent implements OnInit, OnChanges {
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -56,7 +56,7 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
   @Output() addBaseSearch = new EventEmitter<SavedSearch>();
   @Output() deleteBaseSearch = new EventEmitter();
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private savedSearchService: SavedSearchService) {
   }
@@ -106,8 +106,9 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
     }
 
     // If base search loaded from database (memory)
-    if (changes && changes.baseSearch && changes.baseSearch.previousValue === null && changes.baseSearch.currentValue !== null && this.selectedBaseSearch === null) {
-      this.selected(changes.baseSearch.currentValue.id);
+    if (changes && changes.baseSearch && changes.baseSearch.previousValue === null
+      && changes.baseSearch.currentValue !== null && this.selectedBaseSearch === null) {
+      this.selectedBaseSearch = changes.baseSearch.currentValue;
     }
   }
 

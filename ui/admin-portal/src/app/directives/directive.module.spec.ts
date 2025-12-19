@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {LowercaseDirective} from './lowercase.directive';
@@ -23,16 +23,18 @@ import {DirectiveModule} from './directive.module';
 import {By} from '@angular/platform-browser';
 import {NgControl} from "@angular/forms";
 import {Subject} from "rxjs";
+import {ReadOnlyInputsDirective} from "./read-only-inputs.directive";
 
 @Component({
   template: `
     <div appLowercase></div>
     <div appHighlightSearch class="highlight">Angular</div>
+    <input type="text" [appReadOnlyInputs]="true" value="Text input">
   `
 })
 class TestComponent {}
 
-fdescribe('DirectiveModule', () => {
+describe('DirectiveModule', () => {
   let fixture: ComponentFixture<TestComponent>;
   let debugElement: DebugElement;
   let searchTerms$: Subject<string[]>;
@@ -58,6 +60,11 @@ fdescribe('DirectiveModule', () => {
   it('should declare HighlightSearchDirective', () => {
     const highlightSearchDirective = debugElement.query(By.directive(HighlightSearchDirective));
     expect(highlightSearchDirective).toBeTruthy();
+  });
+
+  it('should declare ReadOnlyInputsDirective', () => {
+    const readOnlyInputsDirective = debugElement.query(By.directive(ReadOnlyInputsDirective));
+    expect(readOnlyInputsDirective).toBeTruthy();
   });
 
 

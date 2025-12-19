@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,13 +19,14 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {StatReport} from "../model/stat-report";
+import {Stat} from "../model/stat";
 
 export interface CandidateStatsRequest {
-  runOldStats?: boolean;
   listId?: number;
   searchId?: number;
   dateFrom?: string;
   dateTo?: string;
+  selectedStats?: Stat[];
 }
 
 @Injectable({providedIn: 'root'})

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -52,7 +52,7 @@ export interface SavedList extends CandidateSource {
   folderlink?: string;
   folderjdlink?: string;
   publishedDocLink?: string;
-  tbbShortName?: string;
+  tcShortName?: string;
   sfJobCountry?: string;
   sfJobStage?: string;
   tasks?: Task[];
@@ -65,11 +65,15 @@ export interface ShortSavedList {
 }
 
 export function externalDocLink(savedList: SavedList): string {
-  return savedList?.tbbShortName ? environment.publishUrl + "/" + savedList.tbbShortName : null;
+  return savedList?.tcShortName ? environment.publishUrl + "/" + savedList.tcShortName : null;
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {
   return source == null ? false : !isSavedSearch(source);
+}
+
+export function isSubmissionList(source: CandidateSource): source is SavedList {
+  return isSavedList(source) && source.registeredJob && source.sfJobOpp != null;
 }
 
 export interface UpdateSavedListInfoRequest {
@@ -111,9 +115,10 @@ export interface IHasSetOfCandidates {
  * See Java PublishedDocValueSource for documentation
  */
 export class PublishedDocValueSource {
+  constant?: any;
   fieldName?: string;
   propertyName?: string;
-  constant?: any;
+  propertyType?: string;
 }
 
 export class PublishedDocFieldSource extends PublishedDocValueSource {
@@ -236,6 +241,7 @@ export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
   shortName?: boolean;
   registeredJob?: boolean;
   sfOppClosed?: boolean;
+  ownedByMyPartner?: boolean;
 }
 
 export class SavedListGetRequest extends PagedSearchRequest {
@@ -249,5 +255,5 @@ export interface UpdateSharingRequest {
 
 export interface UpdateShortNameRequest {
   savedListId: number;
-  tbbShortName: string;
+  tcShortName: string;
 }

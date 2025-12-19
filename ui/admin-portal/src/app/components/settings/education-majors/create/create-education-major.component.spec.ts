@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,18 +17,18 @@ import {CreateEducationMajorComponent} from "./create-education-major.component"
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {EducationMajorService} from "../../../../services/education-major.service";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {EducationMajor} from "../../../../model/education-major";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateEducationMajorComponent', () => {
+describe('CreateEducationMajorComponent', () => {
   let component: CreateEducationMajorComponent;
   let fixture: ComponentFixture<CreateEducationMajorComponent>;
   let educationMajorServiceSpy: jasmine.SpyObj<EducationMajorService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
   beforeEach(async () => {
     const educationMajorServiceSpyObj = jasmine.createSpyObj('EducationMajorService', ['create']);
@@ -45,7 +45,7 @@ fdescribe('CreateEducationMajorComponent', () => {
 
     educationMajorServiceSpy = TestBed.inject(EducationMajorService) as jasmine.SpyObj<EducationMajorService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

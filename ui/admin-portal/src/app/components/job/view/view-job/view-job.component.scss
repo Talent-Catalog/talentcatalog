@@ -1,0 +1,48 @@
+/*!
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+@import 'src/scss/color-mixins';
+@import 'src/scss/_color-classes.scss';
+
+.job-summary-container {
+  background-color: color(gray, 100);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  &.from-url {
+    width: 50%;
+    margin-bottom: 0;
+  }
+  &.prep-item-highlight {
+    @include background-color-red;
+  }
+}
+
+.job-header-container {
+  flex: 1 1 auto;
+  align-self: start;
+  .job-name-container {
+    display: flex;
+    align-items: center;
+    tc-icon {
+      padding-left: 14px;
+      position: relative;
+    }
+  }
+}
+
+tc-dropdown-button {
+  position: relative;
+}

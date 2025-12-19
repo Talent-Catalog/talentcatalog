@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ import {Industry} from '../model/industry';
 import {SearchResults} from '../model/search-results';
 import {environment} from "../../environments/environment";
 
-fdescribe('IndustryService', () => {
+describe('IndustryService', () => {
   let service: IndustryService;
   let httpTestingController: HttpTestingController;
   const apiUrl = `${environment.apiUrl}/industry`;

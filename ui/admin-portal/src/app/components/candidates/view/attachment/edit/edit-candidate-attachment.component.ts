@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateAttachment} from "../../../../../model/candidate-attachment";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   CandidateAttachmentService,
@@ -35,9 +35,9 @@ export class EditCandidateAttachmentComponent implements OnInit {
 
   // Set in the parent component, by referencing the comoponent instance
   attachment: CandidateAttachment;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private modal: NgbActiveModal,
               private candidateAttachmentService: CandidateAttachmentService) { }
 
@@ -47,7 +47,7 @@ export class EditCandidateAttachmentComponent implements OnInit {
       name: [this.attachment.name, Validators.required],
     });
     if (this.attachment.type === 'link') {
-      this.form.addControl('location', new FormControl(this.attachment.location, [Validators.required]));
+      this.form.addControl('location', new UntypedFormControl(this.attachment.location, [Validators.required]));
     }
   }
 

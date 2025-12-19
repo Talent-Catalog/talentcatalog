@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,12 +15,11 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable, Subject} from 'rxjs/index';
+import {Observable} from 'rxjs/index';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {CandidateNote} from '../model/candidate-note';
-import {tap} from 'rxjs/operators';
 
 export interface CreateCandidateNoteRequest {
   candidateId: number;
@@ -33,12 +32,6 @@ export class CandidateNoteService {
 
   private apiUrl = environment.apiUrl + '/candidate-note';
 
-  private newNoteSource = new Subject();
-  newNote$ = this.newNoteSource.asObservable();
-
-  private updatedNoteSource = new Subject();
-  updatedNote$ = this.updatedNoteSource.asObservable();
-
   constructor(private http: HttpClient) {}
 
   list(id: number): Observable<CandidateNote[]> {
@@ -50,19 +43,11 @@ export class CandidateNoteService {
   }
 
   create(request: CreateCandidateNoteRequest): Observable<CandidateNote>  {
-    return this.http.post<CandidateNote>(`${this.apiUrl}`, request).pipe(
-      tap(() => {
-        this.newNoteSource.next()
-      })
-    )
+    return this.http.post<CandidateNote>(`${this.apiUrl}`, request);
   }
 
   update(id: number, details): Observable<CandidateNote>  {
-    return this.http.put<CandidateNote>(`${this.apiUrl}/${id}`, details).pipe(
-      tap(() => {
-        this.updatedNoteSource.next()
-      })
-    )
+    return this.http.put<CandidateNote>(`${this.apiUrl}/${id}`, details);
   }
 
 }

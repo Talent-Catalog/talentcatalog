@@ -1,21 +1,31 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.service.db.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -24,18 +34,13 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.*;
-
+@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 public class TextExtractLibrariesTest {
 
@@ -45,7 +50,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test PDFBox PDF text extraction (two ways)
      */
-//    @Test
+    @Test
     void pdfBoxMethods() throws IOException {
         File file = new File("src/test/resources/text/EnglishPdf.pdf");
         assertTrue(file.exists());
@@ -80,7 +85,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test IText PDF text extraction
      */
-//    @Test
+    @Test
     void iTextMethodsPdf() throws IOException {
 //        String src = "src/test/resources/text/EnglishPdf.pdf";
 //        PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
@@ -99,7 +104,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test Docx Extraction on English file
      */
-//    @Test
+    @Test
     void apachePoiMethodDocx() throws IOException {
         File cv = new File("src/test/resources/text/EnglishDocx.docx");
         FileInputStream fis = new FileInputStream(cv);
@@ -113,7 +118,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test Docx Text Extraction on Arabic file
      */
-//    @Test
+    @Test
     void apachePoiMethodDocxArabic() throws IOException {
         File cv = new File("src/test/resources/text/ArabicDocx.docx");
         FileInputStream fis = new FileInputStream(cv);
@@ -127,7 +132,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test TXT file text extraction
      */
-//    @Test
+    @Test
     void txtFileExtraction() throws IOException {
         String data = new String(Files.readAllBytes(Paths.get("src/test/resources/text/EnglishTxt.txt")));
         assertNotEquals("", data);
@@ -147,7 +152,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test file type extraction
      */
-//    @Test
+    @Test
     void testFileExtensionExtraction(){
         File pdfFile = new File("src/test/resources/text/EnglishPdf.pdf");
         String typePdf = getFileExtension(pdfFile);

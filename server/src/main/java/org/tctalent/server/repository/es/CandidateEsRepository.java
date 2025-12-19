@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,10 +19,8 @@ package org.tctalent.server.repository.es;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.tctalent.server.model.es.CandidateEs;
-import org.tctalent.server.service.db.impl.CandidateServiceImpl;
 
 /**
  * This provides access to Candidate documents in the Elasticsearch server.
@@ -41,17 +39,22 @@ public interface CandidateEsRepository
 
     /**
      * Supports Elasticsearch Simple Query String Query as described here:
-     * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html">
+     *     In the Elasticsearch doc</a>
      * <p/>
      * Uses Query annotation as described here:
-     * https://docs.spring.io/spring-data/elasticsearch/docs/current-SNAPSHOT/reference/html/#elasticsearch.query-methods.at-query
+     * <a href="https://docs.spring.io/spring-data/elasticsearch/reference/elasticsearch/repositories/elasticsearch-repository-queries.html#elasticsearch.query-methods.at-query">
+     *     In the Spring Data Elasticsearch Repository doc</a>
      * @param searchQuery Query string
      * @param pageable Paging and sorting
      * @return Requested page of results matching the query
-     * @deprecated Easier to use {@link NativeSearchQueryBuilder} -
-     * see {@link CandidateServiceImpl}, as described here
-     * https://www.baeldung.com/spring-data-elasticsearch-tutorial
      */
     @Query("{\"simple_query_string\": {\"query\": \"?0\"}}")
     Page<CandidateEs> simpleQueryString(String searchQuery, Pageable pageable);
+
+    /**
+     * Deletes candidate with given candidate number
+     * @param candidateNumber Candidate number
+     */
+    void deleteByCandidateNumber(String candidateNumber);
 }

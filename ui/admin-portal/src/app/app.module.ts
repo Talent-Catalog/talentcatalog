@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -37,7 +37,6 @@ import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {ErrorInterceptor} from './services/error.interceptor';
 import {AuthorizationService} from './services/authorization.service';
-import {LocalStorageModule} from 'angular-2-local-storage';
 import {LoginComponent} from './components/login/login.component';
 import {SettingsComponent} from './components/settings/settings.component';
 import {SearchUsersComponent} from './components/settings/users/search-users.component';
@@ -233,7 +232,7 @@ import {
 import {
   BrowseCandidateSourcesComponent
 } from './components/candidates/show/browse/browse-candidate-sources.component';
-import {ChartsModule} from 'ng2-charts';
+import {NgChartsModule} from 'ng2-charts';
 import {InfographicComponent} from './components/infographics/infographic.component';
 import {ChartComponent} from './components/infographics/chart/chart.component';
 import {MonthPickerComponent} from './components/util/month-picker/month-picker.component';
@@ -334,12 +333,6 @@ import {
 import {
   AsylumYearComponent
 } from './components/candidates/intake/asylum-year/asylum-year.component';
-import {
-  DestinationComponent
-} from './components/candidates/intake/destinations/destination/destination.component';
-import {
-  DestinationsComponent
-} from './components/candidates/intake/destinations/destinations.component';
 import {
   VisaAssessmentComponent
 } from './components/candidates/intake/visa-assessment/visa-assessment.component';
@@ -466,9 +459,6 @@ import {
 import {
   QualificationRelevantComponent
 } from "./components/candidates/visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
-import {
-  VisaFinalAssessmentComponent
-} from "./components/candidates/visa/visa-job-assessments/visa-final-assessment/visa-final-assessment.component";
 import {
   JobOccupationComponent
 } from "./components/candidates/visa/visa-job-assessments/job-occupation/job-occupation.component";
@@ -648,32 +638,9 @@ import {AdminApiComponent} from './components/settings/admin-api/admin-api.compo
 import {
   JobIntakeTabComponent
 } from './components/job/view/tab/job-intake-tab/job-intake-tab.component';
-import {JobBenefitsComponent} from './components/job/intake/job-benefits/job-benefits.component';
-import {
-  JobExperienceComponent
-} from './components/job/intake/job-experience/job-experience.component';
-import {JobEducationComponent} from './components/job/intake/job-education/job-education.component';
-import {JobSkillsComponent} from './components/job/intake/job-skills/job-skills.component';
-import {JobLocationComponent} from './components/job/intake/job-location/job-location.component';
-import {
-  JobLocationDetailsComponent
-} from './components/job/intake/job-location-details/job-location-details.component';
-import {JobSalaryComponent} from './components/job/intake/job-salary/job-salary.component';
-import {
-  OccupationCodeComponent
-} from './components/job/intake/occupation-code/occupation-code.component';
-import {MinSalaryComponent} from './components/job/intake/min-salary/min-salary.component';
-import {VisaPathwaysComponent} from './components/job/intake/visa-pathways/visa-pathways.component';
-import {
-  RecruitmentProcessComponent
-} from './components/job/intake/recruitment-process/recruitment-process.component';
 import {
   CostCommitEmployerComponent
 } from './components/job/intake/cost-commit-employer/cost-commit-employer.component';
-import {JobLanguageComponent} from './components/job/intake/job-language/job-language.component';
-import {
-  VisaEligibilityAssessmentComponent
-} from './components/candidates/visa/visa-eligibility-assessment/visa-eligibility-assessment.component';
 import {
   CandidateJobsTabComponent
 } from './components/candidates/view/tab/candidate-jobs-tab/candidate-jobs-tab.component';
@@ -767,9 +734,6 @@ import {
 import {
   LanguageThresholdComponent
 } from './components/candidates/visa/visa-job-assessments/language-threshold/language-threshold.component';
-import {
-  MonitoringEvaluationConsentComponent
-} from './components/candidates/intake/monitoring-evaluation-consent/monitoring-evaluation-consent.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {
   UserChangePasswordComponent
@@ -795,7 +759,85 @@ import {SelectJobCopyComponent} from './components/util/select-job-copy/select-j
 import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
-import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
+import {PreviewLinkComponent} from './components/chat/preview-link/preview-link.component';
+import {BuildLinkComponent} from './util/build-link/build-link.component';
+import {LinkTooltipComponent} from './util/link-tooltip/link-tooltip.component';
+import {
+  CandidatesWithChatComponent
+} from './components/chat/candidates-with-chat/candidates-with-chat.component';
+import {
+  ShowCandidatesWithChatComponent
+} from './components/chat/show-candidates-with-chat/show-candidates-with-chat.component';
+import {
+  ViewCandidateDestinationsComponent
+} from './components/candidates/view/destinations/view-candidate-destinations.component';
+import {
+  EditCandidateDestinationsComponent
+} from './components/candidates/view/destinations/edit/edit-candidate-destinations/edit-candidate-destinations.component';
+import {
+  DestinationFamilyComponent
+} from './components/candidates/visa/destination-family/destination-family.component';
+import {
+  ViewCandidateExamComponent
+} from "./components/candidates/view/exam/view-candidate-exam.component";
+import {
+  CreateCandidateExamComponent
+} from "./components/candidates/view/exam/create/create-candidate-exam.component";
+import {
+  EditCandidateExamComponent
+} from "./components/candidates/view/exam/edit/edit-candidate-exam.component";
+import {JoiDataComponent} from './components/job/intake/joi-data/joi-data.component';
+import {
+  FindCandidateSourceComponent
+} from './components/candidates/find-candidate-source/find-candidate-source.component';
+import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
+import {
+  PotentialDuplicateIconComponent
+} from './components/candidates/potential-duplicates/potential-duplicate-icon/potential-duplicate-icon.component';
+import {
+  DuplicatesDetailComponent
+} from './components/candidates/potential-duplicates/duplicates-detail/duplicates-detail.component';
+import {
+  ImportDuolingoCouponsComponent
+} from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
+import {
+  DetScoreValidationComponent
+} from './components/util/det-score-validation/det-score-validation.component';
+import {
+  DuolingoAssignmentComponent
+} from './components/util/duolingo-assignment/duolingo-assignment.component';
+import {VerifyEmailComponent} from './components/account/verify-email/verify-email.component';
+import {
+  VerifyEmailToastComponent
+} from './components/account/verify-email-toast/verify-email-toast.component';
+import {PresetEmbedComponent} from './components/intelligence/preset-embed/preset-embed.component';
+import {
+  LoadingIndicatorComponent
+} from './components/util/loading-indicator/loading-indicator.component';
+import {ErrorDisplayComponent} from './components/util/error-display/error-display.component';
+import {IntelligenceComponent} from './components/intelligence/intelligence.component';
+import {
+  OfferToAssistComponent
+} from './components/settings/offer-to-assist/offer-to-assist.component';
+import {
+  IntlPhoneInputComponent
+} from './components/util/intl-phone-input/intl-phone-input.component';
+import {
+  EditMaxEducationLevelComponent
+} from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
+import {SharedModule} from "./shared/shared.module";
+import {PartnerDpaComponent} from './components/util/partner-dpa/partner-dpa.component';
+import {SafeHtmlPipe} from './pipes/safehtml.pipe';
+import {
+  ChatMuteToggleButtonComponent
+} from './components/chat/chat-mute-toggle-button/chat-mute-toggle-button.component';
+import {
+  ViewPrivacyPolicyInfoComponent
+} from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
+import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
+import {
+  CandidateCvTextTabComponent
+} from './components/candidates/view/tab/candidate-cv-text-tab/candidate-cv-text-tab.component';
 
 @NgModule({
   declarations: [
@@ -927,14 +969,11 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
     RegistrationUnrwaComponent,
     HomeLocationComponent,
     AsylumYearComponent,
-    DestinationComponent,
-    DestinationsComponent,
     VisaAssessmentComponent,
     VisaCheckAuComponent,
     VisaCheckCaComponent,
     VisaCheckNzComponent,
     VisaCheckUkComponent,
-    DestinationsComponent,
     DestinationLimitComponent,
     FixedInputComponent,
     ConfirmContactComponent,
@@ -971,7 +1010,6 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
     SecurityRiskComponent,
     TravelDocumentComponent,
     RiskAssessmentComponent,
-    VisaFinalAssessmentComponent,
     JobOccupationComponent,
     SalaryTsmitComponent,
     RegionalAreaComponent,
@@ -1052,20 +1090,7 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
     ViewJobSourceContactsComponent,
     AdminApiComponent,
     JobIntakeTabComponent,
-    JobBenefitsComponent,
-    JobExperienceComponent,
-    JobEducationComponent,
-    JobSkillsComponent,
-    JobLocationComponent,
-    JobLocationDetailsComponent,
-    JobSalaryComponent,
-    OccupationCodeComponent,
-    MinSalaryComponent,
-    VisaPathwaysComponent,
-    RecruitmentProcessComponent,
     CostCommitEmployerComponent,
-    JobLanguageComponent,
-    VisaEligibilityAssessmentComponent,
     CandidateJobsTabComponent,
     ViewCandidateJobsComponent,
     ViewCandidateOppFromUrlComponent,
@@ -1108,7 +1133,6 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
     ChatReadStatusComponent,
     ListHomeComponent,
     LanguageThresholdComponent,
-    MonitoringEvaluationConsentComponent,
     ResetPasswordComponent,
     UserChangePasswordComponent,
     NclcScoreValidationComponent,
@@ -1119,7 +1143,40 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
     SfJoblinkComponent,
     SelectJobCopyComponent,
     VisaJobCheckUkComponent,
-    PreviewLinkComponent
+    PreviewLinkComponent,
+    BuildLinkComponent,
+    LinkTooltipComponent,
+    VisaJobCheckUkComponent,
+    CandidatesWithChatComponent,
+    ShowCandidatesWithChatComponent,
+    ViewCandidateDestinationsComponent,
+    EditCandidateDestinationsComponent,
+    DestinationFamilyComponent,
+    ViewCandidateExamComponent,
+    CreateCandidateExamComponent,
+    EditCandidateExamComponent,
+    JoiDataComponent,
+    FindCandidateSourceComponent,
+    PotentialDuplicateIconComponent,
+    DuplicatesDetailComponent,
+    ImportDuolingoCouponsComponent,
+    DetScoreValidationComponent,
+    DuolingoAssignmentComponent,
+    VerifyEmailComponent,
+    VerifyEmailToastComponent,
+    DuolingoAssignmentComponent,
+    PresetEmbedComponent,
+    LoadingIndicatorComponent,
+    ErrorDisplayComponent,
+    IntelligenceComponent,
+    OfferToAssistComponent,
+    IntlPhoneInputComponent,
+    EditMaxEducationLevelComponent,
+    ChatMuteToggleButtonComponent,
+    ViewPrivacyPolicyInfoComponent,
+    PartnerDpaComponent,
+    SafeHtmlPipe,
+    CandidateCvTextTabComponent
   ],
   imports: [
     BrowserModule,
@@ -1129,14 +1186,11 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
     NgbModule,
     FormsModule,
     InfiniteScrollModule,
-    ChartsModule,
+    NgChartsModule,
     NgxWigModule,
     NgSelectModule,
     DirectiveModule,
-    LocalStorageModule.forRoot({
-      prefix: 'tbb-admin',
-      storageType: 'localStorage'
-    }),
+    SharedModule,
     DragulaModule.forRoot(),
     QuillModule.forRoot(),
     PickerModule,
@@ -1151,6 +1205,7 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {
@@ -1162,12 +1217,14 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
     {provide: RxStompService},
     AuthorizationService,
     RoleGuardService,
+    UnsavedChangesGuard,
     Title,
     DatePipe, TitleCasePipe
   ],
   exports: [
     ViewChatPostsComponent,
-    ChatReadStatusComponent
+    ChatReadStatusComponent,
+    CandidateExamCardComponent
   ],
   bootstrap: [AppComponent]
 })

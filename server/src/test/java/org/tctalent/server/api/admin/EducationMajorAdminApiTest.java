@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -35,6 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getEducationMajors;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -77,9 +79,9 @@ class EducationMajorAdminApiTest extends ApiTestBase {
   private static final String SYSTEM_LANGUAGE_TRANSLATION_PATH = "/system/{langCode}";
   private static final String SEARCH_PAGED_PATH = "/search";
 
-  private final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
+  private final SystemLanguage systemLanguage = getSystemLanguage();
 
-  private final List<EducationMajor> educationMajors = AdminApiTestUtil.getEducationMajors();
+  private final List<EducationMajor> educationMajors = getEducationMajors();
 
   private final Page<EducationMajor> educationLevelPage =
       new PageImpl<>(

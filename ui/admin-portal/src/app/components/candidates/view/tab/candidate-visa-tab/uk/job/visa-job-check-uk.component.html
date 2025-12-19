@@ -1,26 +1,37 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <!-- ERROR -->
-<div *ngIf="error" class="alert alert-danger">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 
-<ngb-accordion *ngIf="selectedJobCheck" #visaJobUk="ngbAccordion" [destroyOnHide]="false">
-
-  <ngb-panel id="family-assessment" title="Family Assessment">
-    <ng-template ngbPanelContent>
-      <div>
-        <app-relocating-dependants
-          [candidateOpp]="candidateOpportunity"
-          [candidateId]="candidate.id">
-        </app-relocating-dependants>
-      </div>
-      <div class="card card-body intake-data">
-        <div class="mb-3 h6">Dependant Family</div>
-        <app-dependants
-          [candidateIntakeData]="candidateIntakeData"
-          [candidate]="candidate"
-          [editable]="false">
-        </app-dependants>`
-      </div>
-    </ng-template>
-  </ngb-panel>
-</ngb-accordion>
+<tc-accordion *ngIf="selectedJobCheck" [allOpen]="true">
+  <tc-accordion-item id="family-assessment" header="Family Assessment">
+    <div>
+      <app-relocating-dependants
+        [candidateOpp]="candidateOpportunity"
+        [candidateId]="candidate.id">
+      </app-relocating-dependants>
+    </div>
+    <div class="card card-body intake-data">
+      <div class="mb-3 h6">Dependant Family</div>
+      <app-dependants
+        [candidateIntakeData]="candidateIntakeData"
+        [candidate]="candidate"
+        [editable]="false">
+      </app-dependants>`
+    </div>
+  </tc-accordion-item>
+</tc-accordion>

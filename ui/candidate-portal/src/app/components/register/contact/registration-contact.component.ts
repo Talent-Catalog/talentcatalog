@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,12 +15,14 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {CandidateService} from "../../../services/candidate.service";
 import {Candidate} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {EMAIL_REGEX} from "../../../model/base";
+import {CountryService} from "../../../services/country.service";
+import {Country} from "../../../model/country";
 
 @Component({
   selector: 'app-registration-contact',
@@ -34,7 +36,7 @@ export class RegistrationContactComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   // Form states
   loading: boolean;
@@ -42,13 +44,15 @@ export class RegistrationContactComponent implements OnInit {
   // Candidate data
   authenticated: boolean;
   candidate: Candidate;
+  countries: Country[];
 
   usAfghan: boolean;
 
   readonly emailRegex: string = EMAIL_REGEX;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
+              private countryService: CountryService,
               private authenticationService: AuthenticationService,
               private registrationService: RegistrationService) { }
 
@@ -64,6 +68,13 @@ export class RegistrationContactComponent implements OnInit {
 
     if (this.authenticationService.isAuthenticated()) {
       this.authenticated = true;
+      this.countryService.listCountries().subscribe(
+        (results) => {
+          this.countries = results;
+        }, (error) => {
+          this.error = error;
+        }
+      )
       this.candidateService.getCandidateContact().subscribe(
         (candidate) => {
           this.candidate = candidate;
@@ -72,6 +83,11 @@ export class RegistrationContactComponent implements OnInit {
             phone: candidate.phone,
             whatsapp: candidate.whatsapp,
           });
+          this.form.addControl('relocatedAddress', new UntypedFormControl(candidate.relocatedAddress));
+          this.form.addControl('relocatedCity', new UntypedFormControl(candidate.relocatedCity));
+          this.form.addControl('relocatedState', new UntypedFormControl(candidate.relocatedState));
+          this.form.addControl('relocatedCountryId',
+            new UntypedFormControl(candidate.relocatedCountry ? candidate.relocatedCountry.id : null));
           this.loading = false;
         },
         (error) => {
@@ -105,13 +121,6 @@ export class RegistrationContactComponent implements OnInit {
     this.saving = true;
     this.error = null;
     if (this.authenticationService.isAuthenticated()) {
-
-      // If the candidate hasn't changed anything, skip the update service call
-      if (this.form.pristine) {
-        this.registrationService.next();
-        this.onSave.emit();
-        return;
-      }
 
       // The user has already registered and is either revisiting this page or updating it for the
       // first time

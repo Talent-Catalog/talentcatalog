@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {MainSidePanelBase} from "../../../../util/split/MainSidePanelBase";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../model/chat";
@@ -17,6 +33,7 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
 
   @Input() job: Job;
   @Input() editable: boolean;
+  @Input() fromUrl: boolean;
 
   chatHeader: string;
   error: any;
@@ -35,15 +52,22 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   ngOnInit(): void {
     this.computeChatHeader();
 
-    if (this.authorizationService.isSourcePartner()
-        && !this.authorizationService.isDefaultSourcePartner()) {
-      //Source partners (other than the default source partner) auto select and can only
-      //display their chat.
+    if (this.authorizationService.isViewingAsSource()) {
+      //Source partners auto select and can only
+      //display their chat with the destination partner associated with the job.
       this.selectedSourcePartner = this.authenticationService.getLoggedInUser().partner;
       this.displayChat();
 
       //Selection can't change
       this.selectable = false;
+    }
+
+    /** If this component is viewed from the side panel (not from a URL view) then we want to stack the panels so that
+     * the chat and table have full width for better UI experience.
+     */
+    if (!this.fromUrl) {
+      this.mainPanelColWidth = 12;
+      this.sidePanelColWidth = 12;
     }
   }
 
@@ -81,15 +105,15 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   private computeChatHeader() {
     let name: string = "";
 
-    if (this.authorizationService.isJobCreator()) {
+    if (this.authorizationService.isViewingAsSource()) {
+      if (this.job) {
+        name = "recruiter (" + this.job.jobCreator?.name + ")";
+      }
+    } else {
       if (this.selectedSourcePartner) {
-        name = this.selectedSourcePartner.name;
+        name = "source partner: " + this.selectedSourcePartner.name;
       } else {
         name = ": Select partner to display chat with them"
-      }
-    } else if (this.authorizationService.isSourcePartner()) {
-      if (this.job) {
-        name = this.job.jobCreator?.name;
       }
     }
     this.chatHeader = "Chat with " + name;
@@ -100,5 +124,9 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
       this.chatService.markChatAsRead(this.selectedSourcePartnerChat);
     }
 
+  }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
   }
 }

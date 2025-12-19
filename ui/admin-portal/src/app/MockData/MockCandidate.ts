@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,6 +17,7 @@
 
 import {
   Candidate,
+  CandidateDestination,
   DrivingLicenseStatus,
   Exam,
   Gender,
@@ -35,6 +36,8 @@ import {CandidateLanguage} from "../model/candidate-language";
 import {CandidateOccupation} from "../model/candidate-occupation";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {Status} from "../model/base";
+import {Partner} from "../model/partner";
+import {MockPartner} from "./MockPartner";
 
 const mockUser = new MockUser();
 export class MockCandidate implements Candidate {
@@ -42,6 +45,8 @@ export class MockCandidate implements Candidate {
   id: number = 1;
   candidateNumber: string = "123456";
   status: string = "active";
+  allNotifications = false;
+  muted: boolean = false;
   gender: string = Gender.male;
   dob: Date = new Date('1990-01-01');
   address1: string = "123 Main St";
@@ -93,6 +98,10 @@ export class MockCandidate implements Candidate {
   unhcrStatus: UnhcrStatus = UnhcrStatus.RegisteredAsylum;
   ieltsScore: string = "7.5";
   numberDependants: number = 2;
+  relocatedAddress: string = "123 Sesame Street"
+  relocatedCity: string = "Melbourne"
+  relocatedState: string = "Victoria"
+  relocatedCountry: any = { id: 1, name: "Australia", status: "active", translatedName: "Australia" }
   candidateExams: any[] = [
     { id: 1, exam: Exam.IELTSGen, score: "7.5", year: 2020 }
   ];
@@ -109,6 +118,21 @@ export class MockCandidate implements Candidate {
       updatedDate: 1620000000000,
       migrated: false,
       cv: false,
+      uploadType: UploadType.other,
+      fileType: 'pdf'
+    },
+    {
+      id: 2,
+      type: AttachmentType.file,
+      name: 'Attachment 2',
+      location: 'location2',
+      url: 'http://example.com/attachment2',
+      createdBy: mockUser,
+      createdDate: 1620000000000,
+      updatedBy: mockUser,
+      updatedDate: 1620000000000,
+      migrated: false,
+      cv: true,
       uploadType: UploadType.cv,
       fileType: 'pdf'
     }
@@ -128,7 +152,7 @@ export class MockCandidate implements Candidate {
         description: 'Submit your latest CV.',
         displayName: 'CV Submission',
         optional: false,
-        helpLink: 'http://example.com/cv-help',
+        docLink: 'http://example.com/cv-help',
         taskType: TaskType.Upload,
         uploadType: UploadType.cv,
         uploadSubfolderName: 'cvs',
@@ -151,7 +175,7 @@ export class MockCandidate implements Candidate {
         description: 'Answer the provided questions.',
         displayName: 'Questionnaire',
         optional: false,
-        helpLink: 'http://example.com/questionnaire-help',
+        docLink: 'http://example.com/questionnaire-help',
         taskType: TaskType.Question,
         uploadType: UploadType.other,
         uploadSubfolderName: '',
@@ -174,7 +198,7 @@ export class MockCandidate implements Candidate {
         description: 'Upload a scan of your passport.',
         displayName: 'Passport Upload',
         optional: true,
-        helpLink: 'http://example.com/passport-help',
+        docLink: 'http://example.com/passport-help',
         taskType: TaskType.Upload,
         uploadType: UploadType.passport,
         uploadSubfolderName: 'passports',
@@ -191,6 +215,7 @@ export class MockCandidate implements Candidate {
   miniIntakeCompletedDate: number = 19900101;
   fullIntakeCompletedBy: any = { id: 1, username: "admin", email: "admin@example.com" };
   fullIntakeCompletedDate: number = 19900101;
+  potentialDuplicate: boolean = false;
   candidateCertifications?: any[];
   candidateEducations?: CandidateEducation[] = [
     {
@@ -255,12 +280,14 @@ export class MockCandidate implements Candidate {
         id: 1,
         name: "Fluent",
         level: 3,
+        cefrLevel: "C2",
         status: "Active"
       },
       writtenLevel: {
         id: 2,
         name: "Advanced",
         level: 1,
+        cefrLevel: "C1",
         status: "Active"
       },
       migrationLanguage: "French"
@@ -298,7 +325,24 @@ export class MockCandidate implements Candidate {
       updatedDate: 2024
     }
   ];
-
+  candidateDestinations: CandidateDestination[] = [
+    {
+      id: 1,
+      country: { id: 1, name: "Australia", status: "active", translatedName: "Australia" },
+      interest: YesNoUnsure.Yes,
+      notes: "I like this country."
+    },
+    {
+      id: 1,
+      country: { id: 2, name: "Canada", status: "active", translatedName: "Canada" },
+      interest: YesNoUnsure.No,
+      notes: "I do not like Toronto."
+    },
+  ];
+  // privacy policy info
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: MockPartner;
 
   constructor() {}
 }

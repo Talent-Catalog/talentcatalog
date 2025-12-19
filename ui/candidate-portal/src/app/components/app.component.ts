@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -55,7 +55,7 @@ export class AppComponent implements OnInit {
 
     //Register for language translation upload start and end events - which
     //drive the loading status.
-    LanguageLoader.languageLoading$.subscribe(
+    this.languageLoader.languageLoading$.subscribe(
       (loading: boolean) => {
         this.loading = loading;
       })
@@ -106,6 +106,7 @@ export class AppComponent implements OnInit {
    *
    * See, for example, https://blog.mestwin.net/add-google-analytics-to-angular-application-in-3-easy-steps
    */
+  
   trackPageViews() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {

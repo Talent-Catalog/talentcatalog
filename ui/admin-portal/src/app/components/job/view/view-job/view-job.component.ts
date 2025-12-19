@@ -1,16 +1,38 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
-import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
 import {AuthorizationService} from "../../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../../services/salesforce.service";
 import {JobService} from "../../../../services/job.service";
 import {SlackService} from "../../../../services/slack.service";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
-import {isStarredByMe} from "../../../../model/base";
 import {
   JobPrepDueDate,
   JobPrepItem,
@@ -21,7 +43,9 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
+import {
+  CandidateSourceCandidateService
+} from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
 import {forkJoin, Observable} from "rxjs";
@@ -30,6 +54,7 @@ import {ChatService} from "../../../../services/chat.service";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {JobOppIntake} from "../../../../model/job-opp-intake";
+import {LocalStorageService} from "../../../../services/local-storage.service";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -47,6 +72,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
    * detail display of a selected job
    */
   @Input() showBreadcrumb: boolean = true;
+
+  /**
+   * True if the view job comes from the viewJobFromUrl component, false if the job comes from the jobsWithDetail component.
+   * Depending where it comes from will depending how the chat view appears (as chat is much smaller on side panel).
+   */
+  @Input() fromUrl: boolean;
+
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;
@@ -116,8 +148,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     }
   }
 
-  get editable(): boolean {
-    return this.loggedInUser && !this.loggedInUser.readOnly
+  /**
+   * Job is editable only by the user who created it or the contact user.
+   * Also by a non read only user working for the default job creator.
+   */
+  isEditable(): boolean {
+    return this.authorizationService.isJobMine(this.job) ||
+      (this.authorizationService.isDefaultJobCreator() && !this.authorizationService.isReadOnly());
   }
 
   private fetchGroupChats() {
@@ -184,7 +221,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   get visible(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     let visible = false;
-    if (this.authorizationService.isJobCreator()) {
+    if (this.authorizationService.isJobCreatorPartner()) {
       //Only the actual job creator (and the default job creator) see this chat
       visible = this.authorizationService.isDefaultJobCreator() ? true :
                 this.job.jobCreator.id == loggedInUser.partner.id;
@@ -212,8 +249,8 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     this.activeTabId = defaultActiveTabID;
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   private setActiveTabId(id: string) {
@@ -231,7 +268,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
       let mess = "At the minimum you need to supply a job summary, job description document " +
         "and job opportunity intake " +
         "before publishing a job. Otherwise our source colleagues won't have enough information to " +
-        "work with. Please consider providing more information than the absolute minimum " +
+        "work with.<br><br> Please consider providing more information than the absolute minimum " +
         "if you have it, as suggested in the preparation items. " +
         "The more information source has about the job, the better the results for employer and " +
         "candidates, and the less work for our source staff.";
@@ -283,8 +320,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
       centered: true, backdrop: 'static'});
     showReport.componentInstance.title = "Published job: " + this.job.name;
     showReport.componentInstance.showCancel = false;
-    let mess = "Job has been updated to 'Candidate Search' if it wasn't already at that stage or " +
-      "later. Also posted to Slack.";
+    let mess =
+      "Job has been set to 'Candidate Search' or 'Visa Eligibility' (if 'Skip candidate search' " +
+      "was selected) if it was previously at an earlier stage.";
+
+    if (this.authorizationService.isDefaultJobCreator()) {
+      mess += " Also posted to Slack."
+    }
 
     showReport.componentInstance.message = mess;
   }
@@ -298,8 +340,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     )
   }
 
+  doSearchSkills() {
+    //Route to NewSearch Page with the job id as a parameter.
+    this.router.navigate(['/searches'], {queryParams: {tab: 'NewSearch', job: this.job.id}});
+  }
+
   isStarred(): boolean {
-    return isStarredByMe(this.job?.starringUsers, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.job?.starringUsers);
   }
 
   onPrepItemSelected(item: JobPrepItem) {
@@ -328,5 +375,9 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
    */
   onIntakeChanged(joi: JobOppIntake) {
     this.job.jobOppIntake = joi;
+  }
+
+  public canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
   }
 }

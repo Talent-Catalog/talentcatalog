@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,8 +36,7 @@ export class ReactionService {
         return this.http.post<Reaction[]>(`${this.apiUrl}/${chatPostId}/add-reaction`, request);
     }
 
-    modifyReaction(id: number): Observable<Reaction[]> {
-        return this.http.put<Reaction[]>(`${this.apiUrl}/${id}/modify-reaction`, null);
+    modifyReaction(chatPostId: number, id: number): Observable<Reaction[]> {
+        return this.http.put<Reaction[]>(`${this.apiUrl}/${chatPostId}/modify-reaction/${id}`, null);
     }
-
 }

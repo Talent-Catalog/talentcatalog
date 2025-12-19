@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {CreateUpdatePostComponent} from "./create-update-post.component";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {RxStompService} from "../../../services/rx-stomp.service";
@@ -8,8 +24,10 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {QuillModule} from "ngx-quill";
 import {of} from "rxjs";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {TranslateModule} from "@ngx-translate/core";
+import {JobChatType} from "../../../model/chat";
 
-fdescribe('CreateUpdatePostComponent', () => {
+describe('CreateUpdatePostComponent', () => {
   let component: CreateUpdatePostComponent;
   let fixture: ComponentFixture<CreateUpdatePostComponent>;
   let modalService: jasmine.SpyObj<NgbModal>;
@@ -23,7 +41,8 @@ fdescribe('CreateUpdatePostComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateUpdatePostComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,QuillModule],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,QuillModule,
+        TranslateModule.forRoot({})],
       providers: [
         { provide: NgbModal, useValue: modalServiceSpy },
         { provide: RxStompService, useValue: rxStompServiceSpy },
@@ -71,7 +90,7 @@ fdescribe('CreateUpdatePostComponent', () => {
   });
 
   it('should send a post', () => {
-    component.chat = { id: 1 }; // Mock chat object
+    component.chat = { id: 1, type: JobChatType.CandidateProspect }; // Mock chat object
     const content = 'Test content';
     const expectedBody = {
       content,
@@ -101,7 +120,7 @@ fdescribe('CreateUpdatePostComponent', () => {
     chatPostService.uploadFile.and.returnValue(of({ url: 'file_url' }));
 
     // Initialize the chat object
-    component.chat = { id: 1 };
+    component.chat = { id: 1, type: JobChatType.CandidateProspect };
 
 
     component.uploadFile();
@@ -128,10 +147,12 @@ fdescribe('CreateUpdatePostComponent', () => {
     component.quillEditorRef = quillEditorRefSpy;
 
     const event = { emoji: { native: '😊' } };
+    const index: number = component.quillEditorRef.selection.savedRange.index;
+    const emojiLength = 2;
     component.onSelectEmoji(event);
     expect(component.emojiPickerVisible).toBe(false); // Emoji picker should be closed after selection
     expect(quillEditorRefSpy.insertText).toHaveBeenCalledWith(jasmine.any(Number), '😊', 'user');
-    expect(quillEditorRefSpy.setSelection).toHaveBeenCalledWith(2, 0); // Concrete values here
+    expect(quillEditorRefSpy.setSelection).toHaveBeenCalledWith(index + emojiLength, 0); // Concrete values here
   });
 
   it('should toggle emoji picker', () => {

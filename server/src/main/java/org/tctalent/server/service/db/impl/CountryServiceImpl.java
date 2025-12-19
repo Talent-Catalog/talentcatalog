@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -47,15 +47,16 @@ import org.tctalent.server.request.country.UpdateCountryRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.TranslationService;
+import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.locale.LocaleHelper;
 
 @Service
 @Slf4j
 public class CountryServiceImpl implements CountryService, InitializingBean {
 
-    @Value("${tbb.destinations}")
-    private String[] tbbDestinations;
-    private List<Country> tbbDestinationCountries;
+    @Value("${tc.destinations}")
+    private String[] tcDestinations;
+    private List<Country> tcDestinationCountries;
 
     private Map<Long, Country> cache = null;
     private final CandidateRepository candidateRepository;
@@ -76,18 +77,18 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        //Extract the TBB destination countries array from the configuration
-        tbbDestinationCountries = new ArrayList<>();
-        for (String tbbDestination : tbbDestinations) {
-            Country country = countryRepository.findByNameIgnoreCase(tbbDestination);
+        //Extract the TC destination countries array from the configuration
+        tcDestinationCountries = new ArrayList<>();
+        for (String tcDestination : tcDestinations) {
+            Country country = countryRepository.findByNameIgnoreCase(tcDestination);
             if (country == null) {
                 LogBuilder.builder(log)
                     .action("CountryServiceImpl")
-                    .message("Error in application.yml file. See tbb.destinations. " +
-                            "No country found called " + tbbDestination)
+                    .message("Error in application.yml file. See tc.destinations. " +
+                            "No country found called " + tcDestination)
                     .logError();
             } else {
-                tbbDestinationCountries.add(country);
+                tcDestinationCountries.add(country);
             }
         }
     }
@@ -113,7 +114,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
         if (restricted) {
             // Restrict access if there are source countries associated to admin user
-            if(user != null && user.getSourceCountries().size() > 0 ){
+            if(user != null && !user.getSourceCountries().isEmpty()){
                 countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
             } else {
                 //Note: Can't use cache because translationService modifies it adding
@@ -130,8 +131,13 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
-    public List<Country> getTBBDestinations() {
-        return tbbDestinationCountries;
+    public List<Country> getTCDestinations() {
+        return tcDestinationCountries;
+    }
+
+    @Override
+    public boolean isTCDestination(long countryId) {
+        return tcDestinationCountries.stream().anyMatch(c -> c.getId() == countryId);
     }
 
     @Override
@@ -162,8 +168,15 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
         return country;
     }
 
+    @NonNull
     @Override
-    public Country findCountryByName(String name) {
+    public Country findByIsoCode(String isoCode) {
+        return countryRepository.findByIsoCode(isoCode)
+            .orElseThrow(() ->new NoSuchObjectException(Country.class, isoCode));
+    }
+
+    @Override
+    public Country findByName(String name) {
         return countryRepository.findByNameIgnoreCase(name);
     }
 
@@ -208,6 +221,16 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
+    public DtoBuilder selectBuilder() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("isoCode")
+            .add("status")
+            ;
+    }
+
+    @Override
     public String updateIsoCodes() {
         StringBuilder sb = new StringBuilder();
 
@@ -226,7 +249,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
             final String name = country.getName().trim();
             String code = nameToCode.get(name);
             if (code == null) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                    sb.append(",");
                 }
                 sb.append(name);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ package org.tctalent.server.model.db;
  * Note that the string values of this enum MUST match the actual stage names for candidate
  * opportunities on Salesforce.
  * See https://docs.google.com/document/d/1B6DmpYaONV_yNmyAqL76cu0TUQcpNgKtOmKELCkpRoc/edit#heading=h.qx7je1tuwoqv
- * 
+ *
  */
 public enum CandidateOpportunityStage {
         prospect ("Prospect"),
@@ -53,12 +53,16 @@ public enum CandidateOpportunityStage {
         notEligibleForVisa ("Not eligible for visa", true, false, false),
         noInterview ("No interview", true, false, false),
         candidateLeavesDestination ("Candidate leaves destination", true, true, false),
+        candidateMistakenProspect("Candidate was mistakenly proposed as a prospect for the job", true, false, false),
         candidateRejectsOffer ("Candidate rejects offer", true, false, false),
         candidateUnreachable ("Candidate unreachable", true, false, false),
         candidateWithdraws ("Candidate withdraws", true, false, false),
+        jobIneligible("Job ineligible", true, false, false),
         jobOfferRetracted ("Job offer retracted", true, false, false),
+        jobWithdrawn("Job withdrawn", true, false, false),
         relocatedNoJobOfferPathway("Relocated no job offer pathway", true, false, false),
-        trainingNotCompleted("Training not completed", true, false, false)
+        trainingNotCompleted("Training not completed", true, false, false),
+        programSuspended("Program suspended", true, false, false),
         ;
 
         private final String salesforceStageName;

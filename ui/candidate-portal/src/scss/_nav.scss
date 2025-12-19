@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "variables";
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/buttons";
+@import "./variables";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/buttons";
 
 .nav-tabs .nav-link {
   background-color: white;
@@ -43,5 +43,14 @@
   &:hover {
     background-color: #6e6f78;
     color: white;
+  }
+}
+
+.navbar-nav .nav-link {
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: underline;
+    color: #15c7ff;
   }
 }

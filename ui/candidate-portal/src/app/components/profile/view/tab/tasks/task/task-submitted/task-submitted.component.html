@@ -1,0 +1,11 @@
+<div class="d-sm-flex flex-column align-items-end mt-4">
+  <div>
+    <ng-container *ngIf="selectedTask?.completedDate">
+      <h5 class="text-success">{{ 'TASKS.TASK.COMPLETEDDATE' | translate }} {{selectedTask?.completedDate | date}}</h5>
+    </ng-container>
+  </div>
+
+  <button class="btn btn-sm btn-secondary" (click)="returnToTasksClicked()">
+    <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
+  </button>
+</div>

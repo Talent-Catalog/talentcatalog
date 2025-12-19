@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,12 +14,21 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<span *ngIf="typing">
-   <i class="far fa-keyboard fa-sm"></i>
-</span>
-<span *ngIf="saving">
-   <i class="fas fa-spinner fa-spin fa-sm"></i>
-</span>
-<span *ngIf="!typing && !saving">
-   <i class="far fa-save fa-sm"></i>
-</span>
+<tc-icon *ngIf="typing"
+         [size]="size"
+         [color]="'gray'"
+>
+   <i class="far fa-keyboard"></i>
+</tc-icon>
+<tc-icon *ngIf="saving"
+         [size]="size"
+         [color]="'gray'"
+>
+   <i class="fas fa-spinner fa-spin"></i>
+</tc-icon>
+<tc-icon *ngIf="!typing && !saving"
+         [size]="size"
+         [color]="'gray'"
+>
+   <i class="far fa-save"></i>
+</tc-icon>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,7 @@ interface DummyResult {
   name: string;
 }
 
-fdescribe('SearchResults', () => {
+describe('SearchResults', () => {
   let searchResults: SearchResults<DummyResult>;
 
   beforeEach(() => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,15 +16,15 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -35,11 +35,38 @@ import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.service.db.CandidateStatsService;
 
 /**
- * Methods performing our standard candidate stats.
- * <p/>
- * Note that I have been forced to go to native queries for these more complex queries.
- * The non-native queries seem a bit buggy.
- * Anyway - I couldn't get them working. Simpler to use normal SQL. JC.
+ * <p>
+ * Our basic approach to collecting stats is to start by constructing a query which returns all
+ * the candidate ids that match the candidates whose stats are being collected.
+ * </p><p>
+ *   This query will be like the following (note that this is the same basic query used
+ *   when retrieving a saved search - we are reusing that SQL code generation):
+ *   <p>
+ *       <code>
+ *           select distinct candidate.id from candidate where ...eg all female candidates...
+ *       </code>
+ *   </p>
+ *   <p>
+ *       Then another query will collect statistics on those candidates, for example:
+ *       <p>
+ *           <code>
+ *               select language.name, count(distinct candidate) as PeopleCount
+ *               <br>
+ *               where candidate.id in (...the above select...)
+ *               <br>
+ *               group by language.name order by PeopleCount desc
+ *           </code>
+ *       </p>
+ *   </p>
+ *   <p>
+ *       The returned results of all those queries will be a list of some value - eg a language
+ *       name in the above example, and a count of people associated with that value - eg the
+ *       number of candidates with that language.
+ *   </p><p>
+ *      The above two values make up a {@link DataRow}. As you can see below, all the stats return
+ *      a List of DataRows.
+ *   </p>
+ * </p>
  */
 @Service
 @RequiredArgsConstructor
@@ -60,6 +87,8 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
             + "(select id from saved_list where name = 'TestCandidates' and global = true))";
     private static final String countingStandardFilter =
         " and users.status = 'active' and candidate.status != 'draft'" + notTestCandidateCondition;
+    private static final String countingFilterIncludeDraft =
+        " and users.status = 'active'" + notTestCandidateCondition;
     private static final String dateConditionFilter =
         " users.created_date >= :dateFrom and users.created_date <= :dateTo";
     private static final String excludeIneligible = " and candidate.status != 'ineligible'";
@@ -394,8 +423,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
                          where
             """;
 
-        selectSql += standardConstraints(
-            candidateIds, sourceCountryIds, constraint, false);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint, true);
 
         String groupBySql = " group by DATE(users.created_date) order by DATE(users.created_date) asc";
         String sql = selectSql + groupBySql;
@@ -489,7 +517,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
             where gender like :gender and lower(country.name) like :country and
             """;
 
-        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint, true);
 
         String groupBySql = " group by candidate.status order by PeopleCount desc";
         String sql = selectSql + groupBySql;
@@ -695,15 +723,17 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraint) {
         return standardConstraints(
-            candidateIds, sourceCountryIds, constraint, true);
+            candidateIds, sourceCountryIds, constraint, false);
     }
 
     private static String standardConstraints(
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraint, boolean applyCountingFilter) {
+        @Nullable String constraint, boolean includeDraft) {
 
         String s = dateConditionFilter;
-        if (applyCountingFilter) {
+        if (includeDraft) {
+            s += countingFilterIncludeDraft;
+        } else {
             s += countingStandardFilter;
         }
         if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
@@ -732,7 +762,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         for (Object obj: objects) {
             Object[] row = (Object[]) obj;
             String label = row[0] == null ? "undefined" : row[0].toString();
-            DataRow dataRow = new DataRow(label, (BigInteger)row[1]);
+            DataRow dataRow = new DataRow(label, BigInteger.valueOf((Long)row[1]));
             dataRows.add(dataRow);
         }
         return dataRows;

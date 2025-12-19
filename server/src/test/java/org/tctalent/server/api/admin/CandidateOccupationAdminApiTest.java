@@ -1,38 +1,20 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.api.admin;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateOccupation;
-import org.tctalent.server.model.db.Occupation;
-import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
-import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
-import org.tctalent.server.service.db.CandidateOccupationService;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -51,9 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateOccupation;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getListOfCandidateOccupations;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getListOfOccupations;
+import static org.tctalent.server.data.CandidateTestData.getCandidateOccupation;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateOccupations;
+import static org.tctalent.server.data.CandidateTestData.getListOfOccupations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -66,6 +48,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
+import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
+import org.tctalent.server.service.db.CandidateOccupationService;
+import org.tctalent.server.service.db.OccupationService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Candidate Occupation Admin Api endpoints.
@@ -82,10 +71,11 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
     private static final String GET_ALL_OCCUPATIONS_PATH = "/occupation";
     private static final String GET_CANDIDATE_OCCUPATIONS_BY_ID_PATH = "/{id}/list";
 
-    private static final List<Occupation> occupationsList = AdminApiTestUtil.getListOfOccupations();
-    private static final CandidateOccupation candidateOccupation = AdminApiTestUtil.getCandidateOccupation();
-    private static final List<CandidateOccupation> candidateOccupationsList = AdminApiTestUtil.getListOfCandidateOccupations();
+    private static final List<Occupation> occupationsList = getListOfOccupations();
+    private static final CandidateOccupation candidateOccupation = getCandidateOccupation();
+    private static final List<CandidateOccupation> candidateOccupationsList = getListOfCandidateOccupations();
 
+    @MockBean OccupationService occupationService;
     @MockBean CandidateOccupationService candidateOccupationService;
 
     @Autowired MockMvc mockMvc;
@@ -109,6 +99,9 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
         given(candidateOccupationService
                 .listOccupations())
                 .willReturn(occupationsList);
+        given(occupationService
+                .selectBuilder())
+                .willReturn(new DtoBuilder().add("name"));
 
         mockMvc.perform(get(BASE_PATH + GET_ALL_OCCUPATIONS_PATH)
                         .header("Authorization", "Bearer " + "jwt-token")

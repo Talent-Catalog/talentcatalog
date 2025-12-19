@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,15 @@
 
 package org.tctalent.server.request.language.level;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.model.db.CefrLevel;
 import org.tctalent.server.model.db.Status;
 
+@Getter
+@Setter
 public class CreateLanguageLevelRequest {
 
     @NotBlank
@@ -28,31 +32,9 @@ public class CreateLanguageLevelRequest {
 
     private int level;
 
+    private CefrLevel cefrLevel;
+
     @NotNull
     private Status status;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 
 }

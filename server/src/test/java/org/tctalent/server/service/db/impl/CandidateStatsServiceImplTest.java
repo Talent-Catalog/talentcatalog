@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,7 +41,9 @@ import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CandidateStatsService;
+import org.tctalent.server.service.db.SavedSearchService;
 
+@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 class CandidateStatsServiceImplTest {
     @Autowired
@@ -50,6 +54,8 @@ class CandidateStatsServiceImplTest {
     private CandidateRepository candidateRepository;
     @Autowired
     private CountryRepository countryRepository;
+    @Autowired
+    private SavedSearchService savedSearchService;
 
     private LocalDate dateFrom;
     private LocalDate dateTo;
@@ -77,7 +83,7 @@ class CandidateStatsServiceImplTest {
     void tearDown() {
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing birth year stats")
     void compareOldAndNewBirthYearStats() {
 
@@ -90,7 +96,7 @@ class CandidateStatsServiceImplTest {
         //New way of running stats is to restrict data over which stats are run by adding a
         //constraint that the candidates should belong to the search query extracted from the
         //search request.
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
@@ -117,7 +123,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing max education level stats")
     void compareOldAndNewMaxEducationLevelStats() {
 
@@ -125,7 +131,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
@@ -147,7 +153,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing most common occupation stats")
     void compareOldAndNewMostCommonOccupationStats() {
 
@@ -155,7 +161,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
@@ -177,7 +183,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing nationality stats")
     void compareOldAndNewNationalityStats() {
 
@@ -185,7 +191,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -227,7 +233,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing status stats")
     void compareOldAndNewStatusStats() {
 
@@ -235,7 +241,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -277,7 +283,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing survey stats")
     void compareOldAndNewSurveyStats() {
 
@@ -285,7 +291,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -327,7 +333,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing occupation stats")
     void compareOldAndNewOccupationStats() {
 
@@ -335,7 +341,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
@@ -357,7 +363,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing referrer stats")
     void compareOldAndNewReferrerStats() {
 
@@ -365,7 +371,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -387,7 +393,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing source country stats")
     void compareOldAndNewSourceCountryStats() {
 
@@ -395,7 +401,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -417,7 +423,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing spoken language stats")
     void compareOldAndNewSpokenLanguageStats() {
 
@@ -426,7 +432,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(60);
         request.setGender(Gender.female);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -448,7 +454,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing gender stats")
     void compareOldAndNewGenderStats() {
 
@@ -456,7 +462,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeGenderStats(
@@ -477,7 +483,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing language stats")
     void compareOldAndNewLanguageStats() {
 
@@ -486,7 +492,7 @@ class CandidateStatsServiceImplTest {
         request.setGender(Gender.female);
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLanguageStats(
@@ -507,7 +513,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing LinkedIn exists stats")
     void compareOldAndNewLinkedInExistsStats() {
 
@@ -515,7 +521,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLinkedInExistsStats(
@@ -536,7 +542,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing LinkedIn stats")
     void compareOldAndNewLinkedInStats() {
 
@@ -544,7 +550,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLinkedInStats(
@@ -565,7 +571,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing Registration stats")
     void compareOldAndNewRegistrationStats() {
 
@@ -573,7 +579,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeRegistrationStats(
@@ -594,7 +600,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing Registration Occupataion stats")
     void compareOldAndNewRegistrationOccupationStats() {
 
@@ -602,7 +608,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeRegistrationOccupationStats(
@@ -623,7 +629,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing unhcr registered stats")
     void compareOldAndNewUNHCRRegisteredStats() {
 
@@ -631,7 +637,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeUnhcrRegisteredStats(
@@ -652,7 +658,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    //@Test
+    @Test
     @DisplayName("Compare old and new ways of doing unhcr_status stats")
     void compareOldAndNewUNHCRStatusStats() {
 
@@ -660,7 +666,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractSQL(true);
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeUnhcrStatusStats(

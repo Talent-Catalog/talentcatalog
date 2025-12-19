@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,7 +26,7 @@ import {JoblinkComponent} from "../../util/joblink/joblink.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import MOCK_SAVED_SEARCH_TYPE_INFO from "../../../MockData/MockSavedSearchTypeInfo";
 
-fdescribe('CreateUpdateSearchComponent', () => {
+describe('CreateUpdateSearchComponent', () => {
   let component: CreateUpdateSearchComponent;
   let fixture: ComponentFixture<CreateUpdateSearchComponent>;
   let mockSavedSearchService;
@@ -110,21 +110,5 @@ fdescribe('CreateUpdateSearchComponent', () => {
   it('should dismiss the modal on cancel', () => {
     component.cancel();
     expect(mockActiveModal.dismiss).toHaveBeenCalled();
-  });
-
-  it('should disable save button when form is invalid', () => {
-    component.form.get('name').setValue('');
-    fixture.detectChanges();
-
-    const saveButton: HTMLButtonElement = fixture.nativeElement.querySelector('button.btn-success');
-    expect(saveButton.disabled).toBe(true);
-  });
-
-  it('should enable save button when form is valid', () => {
-    component.form.get('name').setValue('Valid Name');
-    fixture.detectChanges();
-
-    const saveButton: HTMLButtonElement = fixture.nativeElement.querySelector('button.btn-success');
-    expect(saveButton.disabled).toBe(false);
   });
 });

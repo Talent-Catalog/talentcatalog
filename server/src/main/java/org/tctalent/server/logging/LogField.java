@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
  * The following are the available log fields:
  *
  * <ul>
+ *     <li>CPU_UTILIZATION - CPU Utilization field</li>
+ *     <li>MEMORY_UTILIZATION - Memory Utilization field</li>
  *     <li>USER_ID - User ID field</li>
  *     <li>CANDIDATE_ID - Candidate ID field</li>
  *     <li>JOB_ID - Job ID field</li>
@@ -52,6 +54,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum LogField {
 
+  CPU_UTILIZATION("cpu", 98),
+  MEMORY_UTILIZATION("mem", 99),
   USER_ID("uid", 100),
   CANDIDATE_ID("cid", 101),
   JOB_ID("jid", 102),

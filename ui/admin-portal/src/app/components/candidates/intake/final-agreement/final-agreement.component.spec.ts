@@ -1,14 +1,38 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {FinalAgreementComponent} from './final-agreement.component';
+import {AuthenticationService} from "../../../../services/authentication.service";
+import {MockUser} from "../../../../MockData/MockUser";
 
 describe('FinalAgreementComponent', () => {
   let component: FinalAgreementComponent;
   let fixture: ComponentFixture<FinalAgreementComponent>;
 
+  const mockAuthenticationService =
+    jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FinalAgreementComponent ]
+      declarations: [ FinalAgreementComponent ],
+      providers: [
+        {provide: AuthenticationService, useValue: mockAuthenticationService}
+      ],
     })
     .compileComponents();
   }));
@@ -16,6 +40,8 @@ describe('FinalAgreementComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FinalAgreementComponent);
     component = fixture.componentInstance;
+    mockAuthenticationService.getLoggedInUser.and.returnValue(new MockUser());
+
     fixture.detectChanges();
   });
 

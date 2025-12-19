@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,8 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.validation.Valid;
 import java.util.Map;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,17 +30,23 @@ import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/portal/job-experience")
 public class CandidateJobExperiencePortalApi {
-
     private final CandidateJobExperienceService candidateJobExperienceService;
+    private final CountryService countryService;
+    private final OccupationService occupationService;
 
     @Autowired
-    public CandidateJobExperiencePortalApi(CandidateJobExperienceService candidateJobExperienceService) {
+    public CandidateJobExperiencePortalApi(OccupationService occupationService,
+        CandidateJobExperienceService candidateJobExperienceService, CountryService countryService) {
+        this.occupationService = occupationService;
         this.candidateJobExperienceService = candidateJobExperienceService;
+        this.countryService = countryService;
     }
 
     @PostMapping()
@@ -66,7 +70,7 @@ public class CandidateJobExperiencePortalApi {
     private DtoBuilder jobExperienceDto() {
         return new DtoBuilder()
             .add("id")
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             .add("candidateOccupation", candidateOccupationDto())
             .add("companyName")
             .add("role")
@@ -81,21 +85,7 @@ public class CandidateJobExperiencePortalApi {
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 ;
     }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("name")
-            ;
-    }
-
 }

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,64 +14,98 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [heading]="title"
+          [showCancel]="true"
+          [actionText]="action"
+          (onAction)="select()"
+          [disableAction]="saving || (form.errors !== null)"
+          [showClose]="true">
 
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <form [formGroup]="form">
-    <div class="mb-3">
-      <div *ngIf="!newList">
-        <label class="form-label">Existing list</label>
+
+    <div class="btn-group" role="group">
+      <tc-radio [formControlName]="'newList'" id="btnradio1" [value]="true" label="New List"></tc-radio>
+      <tc-radio [formControlName]="'newList'" id="btnradio2" [value]="false" label="Existing List"></tc-radio>
+    </div>
+
+    <hr>
+
+    <div *ngIf="!newList" >
+
+      <tc-field class="mb-3">
+        <tc-label>Existing list</tc-label>
         <ng-select
+          class="tc-select"
           id="savedList"
           [items]="lists"
-          [closeOnSelect]="false"
           [clearable]="false"
           [searchable]="true"
           placeholder="Select or type..."
           bindLabel="name"
           formControlName="savedList">
         </ng-select>
+      </tc-field>
+
+      <div *ngIf="selectedSubmissionList()" class="form-text mb-2">
+        <span class="fw-bold">Note: </span>
+        Adding candidate(s) to a submission list will create candidate opportunities.
+        <br>
+        Once added they cannot be removed from the submission list, however candidate
+        opportunities can be closed.
+        <br>
+        Closed candidate opportunities are hidden unless checkbox 'view closed cases' is checked.
+        <br>
+        Submission list contents can't be replaced.
       </div>
+
+      <tc-field *ngIf="!selectedSubmissionList() && isListMine()"
+                class="mb-3"
+                [checkbox]="true">
+        <tc-label [for]="'replace'">
+          Replace my existing list contents?
+        </tc-label>
+        <tc-input [type]="'checkbox'" [formControlName]="'replace'" [id]="'replace'"></tc-input>
+      </tc-field>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label" for="newList">New list?</label>
-      <input type="checkbox" [formControlName]="'newList'" id="newList">
-    </div>
     <div *ngIf="newList">
-      <div class="mb-3">
-        <label class="form-label" for="name">Name</label>
-        <input type="text" class="form-control" [formControlName]="'newListName'" [readOnly]="loading" id="name">
-        <div *ngIf="form.errors?.invalidName" class="alert alert-danger" >
-          {{form.errors.invalidName}}
+      <tc-field class="mb-3">
+        <tc-label [for]="'name'">Name</tc-label>
+        <tc-input [type]="'text'"
+                  [formControlName]="'newListName'"
+                  [readonly]="loading"
+                  [id]="'name'">
+        </tc-input>
+        <tc-alert type="warning" *ngIf="form.errors?.invalidName">
+          <div>{{form.errors.invalidName}}</div>
+        </tc-alert>
+      </tc-field>
+
+      <tc-field>
+        <div class="d-flex align-items-baseline mb-3">
+            <tc-label [for]="'name'" class="me-2">OR copy job name</tc-label>
+            <app-joblink (jobSelection)="onJobSelection($event)" class="flex-fill"></app-joblink>
         </div>
-      </div>
-
-      <app-joblink (jobSelection)="onJobSelection($event)"
-      ></app-joblink>
+      </tc-field>
 
     </div>
 
-    <div class="mb-3">
-      <label class="form-label" for="replace">Replace existing list contents?</label>
-      <input type="checkbox" [formControlName]="'replace'" id="replace">
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="changeStatuses">Change status for all candidates in list?</label>
-      <input type="checkbox" [formControlName]="'changeStatuses'" id="changeStatuses">
-    </div>
+    <tc-field *ngIf="canChangeStatuses"
+              [checkbox]="true"
+              class="mb-3">
+      <tc-label [for]="changeStatuses">
+        Change status for all candidates
+        {{action == "Save" ? "selected" : "in list"}}?
+      </tc-label>
+      <tc-input [type]="'checkbox'"
+                [formControlName]="'changeStatuses'"
+                [id]="'changeStatuses'">
+      </tc-input>
+    </tc-field>
 
     <div *ngIf="changeStatuses" class="mb-3">
       <app-candidate-status-selector
@@ -80,13 +114,7 @@
       >
       </app-candidate-status-selector>
     </div>
-  </form>
-</div>
 
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="select()"
-          [disabled]="saving || form.errors">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    {{action}}
-  </button>
-</div>
+  </form>
+
+</tc-modal>

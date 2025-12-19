@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="container">
 
   <app-error [error]="error"></app-error>
@@ -7,7 +23,8 @@
   <ng-container *ngIf="!loading">
 
     <!-- TABS -->
-    <nav ngbNav #nav="ngbNav" class="nav-pills nav-fill" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+    <nav ngbNav #nav="ngbNav" class="nav-pills nav-fill flex-nowrap" [activeId]="activeTabId"
+         (navChange)="onTabChanged($event)">
 
       <!-- PROFILE -->
       <ng-container ngbNavItem="Profile">
@@ -38,7 +55,7 @@
       </ng-container>
 
       <!-- JOBS (Candidate Opportunities) -->
-      <ng-container ngbNavItem="Opps">
+      <ng-container *ngIf="canSeeJobTab" ngbNavItem="Opps">
         <a ngbNavLink>
           <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
           <fa-icon icon="briefcase" class="me-2"></fa-icon>
@@ -48,13 +65,14 @@
         </a>
         <ng-template ngbNavContent>
           <app-candidate-opps
-            [candidate]="candidate">
+            [candidate]="candidate"
+            [filteredOpps]="filteredOpps">
           </app-candidate-opps>
         </ng-template>
       </ng-container>
 
       <!-- CHAT with source partner -->
-      <ng-container *ngIf="sourceChatHasPosts" ngbNavItem="Chat">
+      <ng-container *ngIf="canSeeChatTab" ngbNavItem="Chat">
         <a ngbNavLink>
           <span class="me-2 d-none d-md-inline">{{ 'CHAT.HEADER' | translate }}</span>
           <fa-icon icon="message" class="me-2"></fa-icon>
@@ -64,15 +82,33 @@
           </app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
-
-          <div class="mt-4 h4 text-center">
+          <div class="chat-title">
+          <app-tab-header >
+            <h3>
             {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+            </h3>
+            </app-tab-header>
           </div>
-
           <app-view-chat-posts
             [chat]="sourceChat"
+            [readOnly]="isCandidateMuted()"
           >
           </app-view-chat-posts>
+        </ng-template>
+      </ng-container>
+
+      <!-- SERVICES -->
+      <ng-container ngbNavItem="Services" *ngIf="activeDuolingoTask">
+        <a ngbNavLink>
+          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
+          <fa-icon icon="handshake"></fa-icon>
+        </a>
+        <ng-template ngbNavContent>
+          <app-services
+            [candidate]="candidate"
+            [activeDuolingoTask]="activeDuolingoTask"
+            (refresh)="fetchCandidate()">
+          </app-services>
         </ng-template>
       </ng-container>
     </nav>

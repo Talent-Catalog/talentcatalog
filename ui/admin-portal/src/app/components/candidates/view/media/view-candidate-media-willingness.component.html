@@ -1,12 +1,33 @@
-<div class="card">
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
-  <div class="card-header">
+<tc-card>
+
+  <tc-card-header>
     Is candidate open to media?
-    <div class="float-end" *ngIf="editable">
-      <button class="btn btn-sm btn-secondary" (click)="editMediaWillingness()">
-        <i class="fas fa-edit"></i></button>
+    <div class="d-flex justify-content-end" *ngIf="editable">
+      <tc-button (onClick)="editMediaWillingness()"
+                 [type]="'solid'"
+                 [color]="'primary'"
+                 [size]="'sm'"
+      >
+        <i class="fas fa-edit"></i>
+      </tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
   <div class="card-body">
     <p [innerHtml]="candidate?.mediaWillingness"
@@ -14,4 +35,4 @@
     </p>
   </div>
 
-</div>
+</tc-card>

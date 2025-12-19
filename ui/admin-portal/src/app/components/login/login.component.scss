@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,48 +17,30 @@
 @import '../../../scss/variables';
 
 :host {
-  flex: 1 0 100%;
   display: flex;
   flex-direction: column;
-}
-
-.login {
-  flex: 1 0 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  justify-content: center;
+  min-height: 80vh;
 }
 
 .background-image-wrapper {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
-  opacity: 0.15; // Set the opacity of the wrapper
+  opacity: 0.08; // Set the opacity of the wrapper
   z-index: -1; // Ensure it stays behind the content
 }
 
-input {
-  padding: 1em;
-  margin-bottom: 25px;
-  border-radius: 4px;
-  width: 80%;
-  max-width: 500px;
-  height: auto !important;
+.login-logo {
+  margin-bottom: 20px;
 }
 
-button {
-  width: 50%;
-  max-width: 250px;
-  padding: 1em;
+form {
+  width: 30%;
 }

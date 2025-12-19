@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>New Chat Posts Notification</title>
+</head>
+<body>
+<div>
+    <p>Dear <span th:text="${displayName}"></span>,</p>
+
+    <p>
+        In the last 24 hours the Talent Catalog has detected that new posts have been added to
+        chats that you are subscribed to and have not marked as read.
+    </p>
+    <p>
+        Click on any link to see the details.
+    </p>
+
+    <ul>
+        <li th:each="link : ${links}">
+            <a th:href="${link.link()}" th:text="${link.name()}"></a>
+            <span th:text="'(Chat ' + ${link.id()} + ')'"></span>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

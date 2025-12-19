@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
-fdescribe('CreateCandidateLanguageComponent', () => {
+describe('CreateCandidateLanguageComponent', () => {
   let component: CreateCandidateLanguageComponent;
   let fixture: ComponentFixture<CreateCandidateLanguageComponent>;
   let mockLanguageService: jasmine.SpyObj<LanguageService>;
@@ -33,9 +33,9 @@ fdescribe('CreateCandidateLanguageComponent', () => {
   let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
 
   const mockLanguageLevels: LanguageLevel[] = [
-    { id: 1, name: 'Beginner', level: 1, status: 'Active' },
-    { id: 2, name: 'Intermediate', level: 2, status: 'Active' },
-    { id: 3, name: 'Advanced', level: 3, status: 'Active' },
+    { id: 1, name: 'Beginner', level: 1, cefrLevel: 'A1', status: 'Active' },
+    { id: 2, name: 'Intermediate', level: 2, cefrLevel: 'A2', status: 'Active' },
+    { id: 3, name: 'Advanced', level: 3, cefrLevel: 'B2', status: 'Active' },
   ];
   const mockCandidate =  new MockCandidate();
   beforeEach(async () => {

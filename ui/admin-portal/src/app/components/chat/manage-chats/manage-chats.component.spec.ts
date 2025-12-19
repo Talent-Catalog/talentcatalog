@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ManageChatsComponent} from "./manage-chats.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {ChatService} from "../../../services/chat.service";
@@ -6,7 +22,7 @@ import {MockJobChat} from "../../../MockData/MockJobChat";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 
-fdescribe('ManageChatsComponent', () => {
+describe('ManageChatsComponent', () => {
   let component: ManageChatsComponent;
   let fixture: ComponentFixture<ManageChatsComponent>;
   let chatService: jasmine.SpyObj<ChatService>;

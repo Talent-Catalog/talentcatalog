@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,6 +36,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.LinkPreview;
 import org.tctalent.server.repository.db.LinkPreviewRepository;
 import org.tctalent.server.service.db.LinkPreviewService;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,8 +53,11 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (EntityReferencedException | InvalidRequestException e) {
       LogBuilder.builder(log)
           .action("DeleteLinkPreview")
-          .message("Link preview with ID " + linkPreviewId + " could not be deleted.")
-          .logError(e);
+          .message(
+              "Link preview with ID " + linkPreviewId + " could not be deleted. Details: " +
+              e.getMessage()
+          )
+          .logError();
 
       return false;
     }
@@ -79,21 +83,21 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       // A valid domain name is the minimal threshold content for displaying a preview.
       String domain = getDomain(doc, url);
       if (domain != null) {
-        linkPreview.setDomain(domain);
+        linkPreview.setDomain(HtmlSanitizer.sanitize(domain));
       } else return null;
 
-      linkPreview.setTitle(getTitle(doc));
-      linkPreview.setDescription(getDescription(doc));
-      linkPreview.setImageUrl(getImageUrl(doc));
-      linkPreview.setFaviconUrl(getFaviconUrl(doc));
+      linkPreview.setTitle(HtmlSanitizer.sanitize(getTitle(doc)));
+      linkPreview.setDescription(HtmlSanitizer.sanitize(getDescription(doc)));
+      linkPreview.setImageUrl(HtmlSanitizer.sanitize(getImageUrl(doc)));
+      linkPreview.setFaviconUrl(HtmlSanitizer.sanitize(getFaviconUrl(doc)));
 
       return linkPreview;
 
     } catch (IOException e) {
       LogBuilder.builder(log)
           .action("BuildLinkPreview")
-          .message("Jsoup was unable to retrieve a valied HTML document from this URL.")
-          .logError(e);
+          .message("Jsoup was unable to retrieve a valied HTML document from " + url)
+          .logError();
 
       return null;
     }
@@ -197,8 +201,8 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (IllegalArgumentException | MalformedURLException e) {
       LogBuilder.builder(log)
           .action("ConvertUrlToDomain")
-          .message("String provided doesn't match URI or URL scheme.")
-          .logError(e);
+          .message(url + " doesn't match URI or URL scheme")
+          .logError();
 
       return "";
     }
@@ -309,8 +313,8 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (IOException e) {
       LogBuilder.builder(log)
           .action("CheckImageIsAccessible")
-          .message("URL doesn't point to an accessible image")
-          .logError(e);
+          .message(imageUrl + " doesn't point to an accessible image")
+          .logError();
 
       // Return false if there was an exception or non-200 status
       return false;

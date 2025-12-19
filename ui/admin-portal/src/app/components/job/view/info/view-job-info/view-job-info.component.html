@@ -1,139 +1,118 @@
-<div class="card">
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
-  <div class="card-header">
-    Job Information
-    <div class="float-end" *ngIf="editable" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
-      <button class="btn btn-sm btn-secondary" (click)="editJobInfo()">
+<tc-card>
+  <tc-card-header>
+   Job Information
+    <div *ngIf="editable" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
+      <tc-button id="edit-job-info-btn"
+                 ariaLabel="Edit Job Information"
+                 type="solid"
+                 color="primary"
+                 (onClick)="editJobInfo()">
         <i class="fas fa-edit"></i>
-      </button>
+      </tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
-    <div class="row">
+  <tc-description-list direction="column">
+    <tc-description-item icon="fas fa-globe" label="Country">
+      {{job.country?.name}}
+    </tc-description-item>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-globe"></i>Country</label>
-        <div class="form-control-plaintext">
-          {{job.country?.name}}
-        </div>
+    <tc-description-item icon="fa-solid fa-building" label="Employer">
+      {{job.employerEntity?.name}}
+      <span *ngIf="job.employerEntity?.website">
+        <a target="_blank" href="{{job.employerEntity.website}}">
+          ({{job.employerEntity.website}})
+        </a>
+      </span>
+    </tc-description-item>
+
+    <tc-description-item icon="fas fa-sync" label="Evergreen">
+      {{job.evergreen ? "Yes" : "No"}}
+    </tc-description-item>
+
+    <tc-description-item icon="fas fa-eye-slash" label="Skip candidate search">
+      {{job.skipCandidateSearch ? "Yes" : "No"}}
+    </tc-description-item>
+
+    <tc-description-item icon="fas fa-rectangle-list" label="Submission List"
+                         title="Potential candidates should be added to this list"
+                         [ngClass]="{'alert alert-danger': highlightCandidates()}">
+      <span>
+        <a [routerLink]="['/list',job.submissionList.id]">{{displaySavedList(job.submissionList)}}</a>
+      </span>
+    </tc-description-item>
+
+    <tc-description-item
+      *ngIf="job.suggestedList && canSeeJobDetails()"
+      icon="fas fa-list" label="Suggested List"
+      title="Potential candidates should be added to this list">
+    <span>
+      <a [routerLink]="['/list',job.suggestedList.id]">{{displaySavedList(job.suggestedList)}}</a>
+    </span>
+    </tc-description-item>
+
+    <tc-description-item
+      *ngIf="job.exclusionList && canSeeJobDetails()"
+      icon="fas fa-list" label="Exclusion List"
+      title="Candidates who have already been considered and rejected for this job should be added to this list">
+      <span><a [routerLink]="['/list',job.exclusionList.id]">{{displaySavedList(job.exclusionList)}}</a></span>
+    </tc-description-item>
+
+    <tc-description-item *ngIf="job.jobCreator" icon="fas fa-id-badge" label="Recruiter">
+      <a target="_blank" href="{{job.jobCreator.websiteUrl}}">{{job.jobCreator.name}}</a>
+    </tc-description-item>
+
+    <tc-description-item *ngIf="getContactUser()" icon="fas fa-user" label="Destination Contact for Job">
+      <div>{{showUser(getContactUser())}}</div>
+      <a *ngIf="canSeeJobDetails()" target="_blank" href="{{showEmailUrl(getContactUser().email)}}">
+        {{getContactUser().email}}
+      </a>
+    </tc-description-item>
+
+    <tc-description-item *ngIf="canSeeJobDetails()" icon="fa-regular fa-calendar-days" label="Submission Due"
+                         [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
+      <span>{{job.submissionDueDate | date}}</span>
+    </tc-description-item>
+
+    <tc-description-item *ngIf="job.createdDate" icon="fa-regular fa-calendar-days" label="Created">
+      <span>{{job.createdDate | date: 'customDateTime'}}</span>
+      <span *ngIf="job.createdBy" >
+      <div>{{showUser(job.createdBy)}}</div>
+      <div>
+        <a *ngIf="canSeeJobDetails()" target="_blank" href="{{showEmailUrl(job.createdBy.email)}}">{{job.createdBy.email}}</a>
       </div>
+    </span>
+    </tc-description-item>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-solid fa-building"></i>Employer</label>
-        <div class="form-control-plaintext">
-          {{job.employerEntity?.name}}
-          <span *ngIf="job.employerEntity?.website">
-            <a target="_blank" href="{{job.employerEntity.website}}">({{job.employerEntity.website}})</a></span>
-        </div>
-      </div>
+    <tc-description-item *ngIf="job.updatedDate" icon="fa-regular fa-calendar-days" label="Updated">
+      <span>{{job.updatedDate | date: 'customDateTime'}}</span>
+      <span *ngIf="job.updatedBy"><div>{{showUser(job.updatedBy)}}</div>
+     <a *ngIf="canSeeJobDetails()" target="_blank" href="{{showEmailUrl(job.updatedBy.email)}}">{{job.updatedBy.email}}</a>
+    </span>
+    </tc-description-item>
 
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-sync"></i>Evergreen</label>
-        <div class="form-control-plaintext">
-          {{job.evergreen ? "Yes" : "No"}}
-        </div>
-      </div>
+    <tc-description-item *ngIf="job.publishedDate" icon="fa-regular fa-calendar-days" label="Published">
+      <span>{{job.publishedDate | date: 'customDateTime'}}</span>
+      <span *ngIf="job.publishedBy" ><div>{{showUser(job.publishedBy)}}</div>
+      <a *ngIf="canSeeJobDetails()" target="_blank" href="{{showEmailUrl(job.publishedBy.email)}}">{{job.publishedBy.email}}</a>
+    </span>
+    </tc-description-item>
 
-      <div *ngIf="job.submissionList" class="mb-3 col-sm-12 col-md-4">
-        <label title="Potential candidates should be added to this list" class="col-form-label"
-               [ngClass]="{'alert alert-danger': highlightCandidates()}">
-          <i class="fas fa-rectangle-list"></i>Submission List</label>
-
-        <div class="form-control-plaintext">
-          <span><a [routerLink]="['/list',job.submissionList.id]">{{displaySavedList(job.submissionList)}}</a></span>
-        </div>
-      </div>
-
-      <div *ngIf="job.suggestedList" class="mb-3 col-sm-12 col-md-4">
-        <label title="Potential candidates should be added to this list" class="col-form-label">
-          <i class="fas fa-list"></i>Suggested List</label>
-
-        <div class="form-control-plaintext">
-          <span><a [routerLink]="['/list',job.suggestedList.id]">{{displaySavedList(job.suggestedList)}}</a></span>
-        </div>
-      </div>
-
-      <div *ngIf="job.exclusionList" class="mb-3 col-sm-12 col-md-4">
-        <label title="Candidates who have already been considered and rejected for this job should be added to this list" class="col-form-label">
-          <i class="fas fa-list"></i>Exclusion List</label>
-
-        <div class="form-control-plaintext">
-          <span><a [routerLink]="['/list',job.exclusionList.id]">{{displaySavedList(job.exclusionList)}}</a></span>
-        </div>
-      </div>
-
-      <div *ngIf="job.jobCreator" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-id-badge"></i>Recruiter</label>
-
-        <div class="form-control-plaintext">
-          <a target="_blank" href="{{job.jobCreator.websiteUrl}}">
-            {{job.jobCreator.name}}
-          </a>
-        </div>
-      </div>
-
-      <div *ngIf="getContactUser()" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-user"></i>Destination Contact for Job</label>
-
-        <div *ngIf="getContactUser()" class="form-control-plaintext">
-          <div>{{showUser(getContactUser())}}</div>
-          <div>
-            <a target="_blank" href="{{showEmailUrl(getContactUser().email)}}">{{getContactUser().email}}</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
-          <i class="fa-regular fa-calendar-days"></i>Submission Due</label>
-
-        <div class="form-control-plaintext">
-          <span>{{job.submissionDueDate | date}}</span>
-        </div>
-      </div>
-
-      <div *ngIf="job.createdDate" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Created</label>
-
-        <div class="form-control-plaintext">
-          <span>{{job.createdDate | date: 'customDateTime'}}</span>
-          <span *ngIf="job.createdBy" >
-            <div>{{showUser(job.createdBy)}}</div>
-            <div>
-            <a target="_blank" href="{{showEmailUrl(job.createdBy.email)}}">{{job.createdBy.email}}</a>
-            </div>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="job.updatedDate" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Updated</label>
-
-        <div class="form-control-plaintext">
-          <span>{{job.updatedDate | date: 'customDateTime'}}</span>
-          <span *ngIf="job.updatedBy" >
-            <div>{{showUser(job.updatedBy)}}</div>
-            <div>
-            <a target="_blank" href="{{showEmailUrl(job.updatedBy.email)}}">{{job.updatedBy.email}}</a>
-            </div>
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="job.publishedDate" class="mb-3 col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa-regular fa-calendar-days"></i>Published</label>
-
-        <div class="form-control-plaintext">
-          <span>{{job.publishedDate | date: 'customDateTime'}}</span>
-          <span *ngIf="job.publishedBy" >
-            <div>{{showUser(job.publishedBy)}}</div>
-            <div>
-            <a target="_blank" href="{{showEmailUrl(job.publishedBy.email)}}">{{job.publishedBy.email}}</a>
-            </div>
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+  </tc-description-list>
+</tc-card>

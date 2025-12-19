@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,13 +17,14 @@ import {EditTaskAssignmentComponent} from "./edit-task-assignment.component";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {TaskAssignmentService} from "../../../../../services/task-assignment.service";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {LOCALE_ID, NO_ERRORS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {By} from "@angular/platform-browser";
 import {TaskAssignment} from "../../../../../model/task-assignment";
 import {of, throwError} from "rxjs";
-fdescribe('EditTaskAssignmentComponent', () => {
+
+describe('EditTaskAssignmentComponent', () => {
   let component: EditTaskAssignmentComponent;
   let fixture: ComponentFixture<EditTaskAssignmentComponent>;
   let mockActiveModal: NgbActiveModal;
@@ -39,7 +40,7 @@ fdescribe('EditTaskAssignmentComponent', () => {
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: TaskAssignmentService, useValue: mockTaskAssignmentService },
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: LOCALE_ID, useValue: 'en-US' }
       ],
       schemas: [NO_ERRORS_SCHEMA]
@@ -70,15 +71,6 @@ fdescribe('EditTaskAssignmentComponent', () => {
     expect(component.form.value.dueDate).toBe(component.formatTbbDate(component.taskAssignment.dueDate));
     expect(component.form.value.complete).toBe(component.isComplete);
   });
-
-  it('should show loading spinner when loading is true', fakeAsync(() => {
-    component.loading = true;
-    fixture.detectChanges();
-    tick();
-
-    const spinner = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(spinner).toBeTruthy();
-  }));
 
   it('should display error message when error is set', fakeAsync(() => {
     component.error = 'Sample error message';

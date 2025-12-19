@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -52,17 +52,14 @@ import {
   CandidateExam,
   CandidateIntakeData,
   Exam,
-  FamilyRelations,
-  HasPassport, YesNo,
+  HasPassport,
+  YesNo,
   YesNoUnsure
 } from "../../../../../model/candidate";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {
   CandidateCitizenshipCardComponent
 } from "../../../intake/citizenships/card/candidate-citizenship-card.component";
-import {
-  MonitoringEvaluationConsentComponent
-} from "../../../intake/monitoring-evaluation-consent/monitoring-evaluation-consent.component";
 import {CrimeComponent} from "../../../intake/crime/crime.component";
 import {ConflictComponent} from "../../../intake/conflict/conflict.component";
 import {FinalAgreementComponent} from "../../../intake/final-agreement/final-agreement.component";
@@ -101,6 +98,12 @@ import {
 import {
   IeltsScoreValidationComponent
 } from "../../../../util/ielts-score-validation/ielts-score-validation.component";
+import {
+  DetScoreValidationComponent
+} from "../../../../util/det-score-validation/det-score-validation.component";
+import {AuthorizationService} from "../../../../../services/authorization.service";
+import {DirectiveModule} from "../../../../../directives/directive.module";
+import {MockUser} from "../../../../../MockData/MockUser";
 
 const mockCitizenship: CandidateCitizenship = {
   id: 1,
@@ -121,8 +124,6 @@ const mockCandidateDestination: CandidateDestination = {
   id: 1,
   country:MockJob.country,
   interest: YesNoUnsure.Yes,
-  family: FamilyRelations.Child,
-  location:'USA',
   notes:'SimpleNote'
 }
 export const mockCandidateIntakeData: CandidateIntakeData = {
@@ -137,7 +138,7 @@ export const mockCandidateIntakeData: CandidateIntakeData = {
   candidateDestinations:[mockCandidateDestination]
   // Add more properties with predefined values here
 };
-fdescribe('CandidateIntakeTabComponent', () => {
+describe('CandidateIntakeTabComponent', () => {
   let component: CandidateIntakeTabComponent;
   let fixture: ComponentFixture<CandidateIntakeTabComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
@@ -150,16 +151,20 @@ fdescribe('CandidateIntakeTabComponent', () => {
   let candidateCitizenshipServiceSpy: jasmine.SpyObj<CandidateCitizenshipService>;
   let candidateExamServiceSpy: jasmine.SpyObj<CandidateExamService>;
   let candidateDependantServiceSpy: jasmine.SpyObj<CandidateDependantService>;
+  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
+
   const mockCandidate = new MockCandidate();
 
   beforeEach(async () => {
-    const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData']);
-    const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTBBDestinations']);
+    const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData',  'candidateUpdated', 'updateCandidate']);
+    const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTCDestinations']);
     const educationSpy = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     const occupationSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
     const languageSpy = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
     const noteSpy = jasmine.createSpyObj('CandidateNoteService', ['getIntakeData']);
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['']);
+    const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    const authorizationSpy = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate', 'canAccessSalesforce']);
+    candidateSpy.candidateUpdated.and.returnValue(of(null));
 
     const citizenshipSpy = jasmine.createSpyObj('CandidateCitizenshipService', ['create']);
     citizenshipSpy.create.and.returnValue(of(null));
@@ -173,16 +178,16 @@ fdescribe('CandidateIntakeTabComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [CandidateIntakeTabComponent,ExamsComponent,
         CandidateCitizenshipCardComponent,CitizenshipsComponent,IntRecruitmentComponent,
-        RuralComponent,MonitoringEvaluationConsentComponent,ConfirmContactComponent,
+        RuralComponent,ConfirmContactComponent,
         CrimeComponent,ConflictComponent,FinalAgreementComponent,CovidVaccinationComponent,
         CandidateExamCardComponent,LangAssessmentComponent,ViewCandidateLanguageComponent,
         DependantsComponent,ResidenceStatusComponent,WorkPermitComponent,WorkStatusComponent,
         DrivingLicenseComponent,VisaIssuesComponent,VisaRejectComponent,
         MilitaryServiceComponent,FamilyComponent,MaritalStatusComponent,RegistrationUnhcrComponent,HostChallengesComponent,
         HomeLocationComponent,ResettlementThirdComponent,HostEntryComponent,
-        DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,
+        DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,DetScoreValidationComponent,
         AutosaveStatusComponent,FixedInputComponent,ExportPdfComponent],
-      imports: [HttpClientTestingModule,NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule],
+      imports: [HttpClientTestingModule,NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule, DirectiveModule],
       providers: [
         { provide: CandidateService, useValue: candidateSpy },
         { provide: CountryService, useValue: countrySpy },
@@ -194,6 +199,7 @@ fdescribe('CandidateIntakeTabComponent', () => {
         { provide: CandidateCitizenshipService, useValue: citizenshipSpy },
         { provide: CandidateExamService, useValue: examSpy },
         { provide: CandidateDependantService, useValue: dependantSpy },
+        { provide: AuthorizationService, useValue: authorizationSpy },
         NgbAccordion
       ]
     }).compileComponents();
@@ -214,11 +220,13 @@ fdescribe('CandidateIntakeTabComponent', () => {
     candidateCitizenshipServiceSpy = TestBed.inject(CandidateCitizenshipService) as jasmine.SpyObj<CandidateCitizenshipService>;
     candidateExamServiceSpy = TestBed.inject(CandidateExamService) as jasmine.SpyObj<CandidateExamService>;
     candidateDependantServiceSpy = TestBed.inject(CandidateDependantService) as jasmine.SpyObj<CandidateDependantService>;
+    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
 
     // Mock candidate data
     component.candidate = mockCandidate;
     component.candidateIntakeData = mockCandidateIntakeData;
     candidateCitizenshipServiceSpy.create.and.returnValue(of(mockCitizenship));
+    authServiceSpy.getLoggedInUser.and.returnValue(new MockUser());
     fixture.detectChanges();
   });
 

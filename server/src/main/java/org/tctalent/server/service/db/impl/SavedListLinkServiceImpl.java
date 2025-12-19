@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -79,9 +79,9 @@ public class SavedListLinkServiceImpl implements SavedListLinkService {
 //        SavedListLink link = this.savedListLinkRepository.findById(id)
 //                .orElseThrow(() -> new NoSuchObjectException(Occupation.class, id));
 //
-//        checkDuplicates(id, request.getSavedListId(), request.getTbbShortName());
+//        checkDuplicates(id, request.getSavedListId(), request.getTcShortName());
 //
-//        link.setLink(request.getTbbShortName());
+//        link.setLink(request.getTcShortName());
 //        return savedListLinkRepository.save(link);
 //    }
 //

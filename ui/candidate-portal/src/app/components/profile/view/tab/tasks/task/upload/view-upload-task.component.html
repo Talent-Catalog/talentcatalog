@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <app-error [error]="error"></app-error>
 <section>
   <div class="section-heading d-flex justify-content-between">
@@ -9,12 +25,13 @@
   </div>
   <div class="card">
     <div>
-      <app-file-upload [uploading]="uploading" (uploadStarted)="completeUploadTask($event)"></app-file-upload>
-      <div *ngIf="uploading">
-        {{ 'TASKS.UPLOAD.LOADING' | translate }} <fa-icon  [spin]="true" icon="spinner"></fa-icon>
-      </div>
+      <app-file-upload [uploading]="uploading"
+                       (uploadStarted)="completeUploadTask($event)"
+      ></app-file-upload>
       <div *ngFor="let file of filesUploaded; let i = index;">
-        <p>{{ 'TASKS.UPLOAD.SUCCESS' | translate }} {{getFileName(file.name)}}!</p>
+        <p class="text-success">
+          {{ 'TASKS.UPLOAD.SUCCESS' | translate }} {{file.name}}
+        </p>
       </div>
     </div>
   </div>

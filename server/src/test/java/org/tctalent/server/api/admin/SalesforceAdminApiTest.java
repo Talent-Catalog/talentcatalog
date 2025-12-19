@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.OpportunityTestData.getOpportunityForJob;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.configuration.SalesforceRecordTypeConfig;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
@@ -60,9 +62,10 @@ class SalesforceAdminApiTest extends ApiTestBase {
   private static final String SF_OPPORTUNITY_PATH = "/opportunity";
   private static final String UPDATE_EMPLOYER_OPPORTUNITY_PATH = "/update-emp-opp";
 
-  private final Opportunity opportunity = AdminApiTestUtil.getSalesforceOpportunity();
+  private final Opportunity opportunity = getOpportunityForJob();
 
   @MockBean SalesforceService salesforceService;
+  @MockBean SalesforceRecordTypeConfig salesforceRecordTypeConfig;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
@@ -82,9 +85,13 @@ class SalesforceAdminApiTest extends ApiTestBase {
   @DisplayName("get opportunity succeeds")
   void getOpportunitySucceeds() throws Exception {
 
+    opportunity.setRecordTypeId("employer-record-id");
+
     given(salesforceService
-        .findOpportunity(anyString()))
+        .fetchJobOpportunity(anyString()))
         .willReturn(opportunity);
+
+    given(salesforceRecordTypeConfig.getEmployerJob()).willReturn("employer-record-id");
 
     mockMvc.perform(get(BASE_PATH + SF_OPPORTUNITY_PATH)
             .header("Authorization", "Bearer " + "jwt-token")
@@ -93,9 +100,9 @@ class SalesforceAdminApiTest extends ApiTestBase {
 
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name", is("SF Opportunity")));
+        .andExpect(jsonPath("$.name", is("Opportunity for job")));
 
-    verify(salesforceService).findOpportunity(anyString());
+    verify(salesforceService).fetchJobOpportunity(anyString());
   }
 
   @Test
@@ -103,7 +110,7 @@ class SalesforceAdminApiTest extends ApiTestBase {
   void getOpportunityFailsWithSalesforceException() throws Exception {
 
     given(salesforceService
-        .findOpportunity(anyString()))
+        .fetchJobOpportunity(anyString()))
         .willThrow(new SalesforceException("SalesforceException message"));
 
     mockMvc.perform(get(BASE_PATH + SF_OPPORTUNITY_PATH)
@@ -116,7 +123,7 @@ class SalesforceAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.code", is("salesforce")))
         .andExpect(jsonPath("$.message", is("SalesforceException message")));
 
-    verify(salesforceService).findOpportunity(anyString());
+    verify(salesforceService).fetchJobOpportunity(anyString());
   }
 
   @Test

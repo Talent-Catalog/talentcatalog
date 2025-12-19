@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 import {CreateCandidateNoteComponent} from "./create-candidate-note.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -24,7 +24,7 @@ import {CandidateNoteService} from "../../../../../services/candidate-note.servi
 import {CountryService} from "../../../../../services/country.service";
 import {of} from "rxjs";
 
-fdescribe('CreateCandidateNoteComponent', () => {
+describe('CreateCandidateNoteComponent', () => {
   let component: CreateCandidateNoteComponent;
   let fixture: ComponentFixture<CreateCandidateNoteComponent>;
   let mockActiveModal: any;
@@ -40,7 +40,7 @@ fdescribe('CreateCandidateNoteComponent', () => {
       declarations: [ CreateCandidateNoteComponent ],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: CandidateNoteService, useValue: mockCandidateNoteService },
         { provide: CountryService, useValue: mockCountryService }

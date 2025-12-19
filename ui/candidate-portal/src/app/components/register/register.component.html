@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -28,22 +28,24 @@
       {{ 'REGISTRATION.HEADER.EXPLANATION' | translate }}
     </p>
 
-    <p *ngIf="registrationService?.currentStep?.section === 0" class="explain">
-      {{ 'REGISTRATION.HEADER.ACCOUNT.EXPLANATION' | translate }}
+    <p *ngIf="registrationService?.currentStep?.section === 0" class="explain"
+       [innerHTML]="'REGISTRATION.HEADER.ACCOUNT.EXPLANATION' | translate"
+    >
     </p>
 
   </div>
 
   <div class="step-progress">
-
-    <div class="step-progress-bar" *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8, 9];let i = index;"
+    <div class="step-progress-bar" *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; let i = index;"
          [class.selected]="registrationService?.currentStep?.section === i + 1"></div>
-
   </div>
+
 
 </div>
 
-<div class="step-body" [ngSwitch]="registrationService?.currentStepKey">
+<div class="step-body"
+     [ngClass]="{'register-submit' : !isRegistered() && registrationService?.currentStepKey == 'complete'}"
+     [ngSwitch]="registrationService?.currentStepKey">
 
   <app-registration-create-account *ngSwitchCase="'account'">
   </app-registration-create-account>
@@ -51,8 +53,7 @@
   <app-registration-contact *ngSwitchCase="'contact'">
   </app-registration-contact>
 
-  <app-registration-personal *ngSwitchCase="'personal'"
-                             (onPartnerAssignment)="setPartnerName()">
+  <app-registration-personal *ngSwitchCase="'personal'">
   </app-registration-personal>
 
   <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
@@ -60,15 +61,17 @@
 
   <app-registration-work-experience *ngSwitchCase="'experience'">
   </app-registration-work-experience>
-
   <app-registration-education *ngSwitchCase="'education'">
   </app-registration-education>
-
   <app-registration-language *ngSwitchCase="'language'">
   </app-registration-language>
+  <app-registration-candidate-exam  *ngSwitchCase="'exam'"></app-registration-candidate-exam>
 
   <app-registration-certifications *ngSwitchCase="'certifications'">
   </app-registration-certifications>
+
+  <app-registration-destinations *ngSwitchCase="'destinations'">
+  </app-registration-destinations>
 
   <app-registration-additional-info *ngSwitchCase="'additional'">
   </app-registration-additional-info>
@@ -76,27 +79,36 @@
   <app-registration-upload-file *ngSwitchCase="'upload'">
   </app-registration-upload-file>
 
-  <div class="container text-center" *ngSwitchCase="'complete'">
+  <div *ngSwitchCase="'complete'">
+    <!-- If candidate is not registered display submit component-->
+    <ng-container *ngIf="!isRegistered()">
+      <app-registration-submit>
+      </app-registration-submit>
+    </ng-container>
 
-    <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
+    <ng-container *ngIf="isRegistered()" >
+      <div class="container text-center">
+        <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
 
-    <p>{{ 'REGISTRATION.COMPLETE.PARA1' | translate:{partner: getPartnerName()} }}</p>
+        <p>{{ 'REGISTRATION.COMPLETE.PARA1' | translate:{partner: partnerName} }}</p>
 
-    <div class="text-center my-4">
-      <a class="btn btn-primary" [routerLink]="'/profile'">
-        {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate}}
-      </a>
-    </div>
+        <div class="text-center my-4">
+          <a class="btn btn-primary" [routerLink]="'/profile'">
+            {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate}}
+          </a>
+        </div>
 
-    <div class="text-center my-4">
-      <app-download-cv></app-download-cv>
-    </div>
+        <div class="text-center my-4">
+          <app-download-cv></app-download-cv>
+        </div>
 
-    <div class="text-center">
-      <button class="btn btn-outline-primary" (click)="logout()">
-        {{ 'REGISTRATION.COMPLETE.BUTTON.LOGOUT' | translate}}
-      </button>
-    </div>
+        <div class="text-center">
+          <button class="btn btn-outline-primary" (click)="logout()">
+            {{ 'REGISTRATION.COMPLETE.BUTTON.LOGOUT' | translate}}
+          </button>
+        </div>
+      </div>
+    </ng-container>
 
   </div>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ const mockDataRow: DataRow = {
 };
 const mockChartType: ChartType = 'bar'; // or any valid ChartType
 
-fdescribe('StatReport Interface', () => {
+describe('StatReport Interface', () => {
   it('should have a name property of type string', () => {
     const statReport: StatReport = {
       name: 'Sample Report',

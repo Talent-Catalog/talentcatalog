@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.api.dto.DtoType;
 
 /**
  * Request that may include paging and sorting fields.
@@ -35,14 +36,17 @@ import org.springframework.lang.Nullable;
 public class PagedSearchRequest {
 
     /**
-     * If non-null and true, means that only minimal data is required to be returned for each
-     * search result.
+     * If non-null Specifies the type of DTO data to be returned for each search result.
      */
     @Nullable
-    private Boolean minimalData;
+    private DtoType dtoType;
     private Integer pageSize;
     private Integer pageNumber;
     private Sort.Direction sortDirection;
+
+    /**
+     * Note that the TC only supports a single sort field even though this is an array.
+     */
     private String[] sortFields;
 
     public PagedSearchRequest(Sort.Direction sortDirection, String[] sortFields) {
@@ -72,4 +76,12 @@ public class PagedSearchRequest {
         return sort;
     }
 
+    /**
+     * If dtoType is null, this method will default to returning {@link DtoType#FULL},.
+     */
+    public DtoType getDtoType() {
+        return dtoType == null
+            ? DtoType.FULL
+            : dtoType;
+    }
 }

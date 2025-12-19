@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,8 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
-import javax.persistence.criteria.Predicate;
-
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.Language;
@@ -26,22 +25,25 @@ import org.tctalent.server.request.language.SearchLanguageRequest;
 public class LanguageSpecification {
 
     public static Specification<Language> buildSearchQuery(final SearchLanguageRequest request) {
-        return (language, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (language, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("LanguageSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(language.get("name")), likeMatchTerm)
-                        ));
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(language.get("name")), likeMatchTerm));
             }
 
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(language.get("status"), request.getStatus()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(language.get("status"), request.getStatus()));
             }
 
             return conjunction;

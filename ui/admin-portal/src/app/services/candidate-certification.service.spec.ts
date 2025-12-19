@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,15 @@
 
 import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {CandidateCertificationService, CreateCandidateCertificationRequest, UpdateCandidateCertificationRequest} from './candidate-certification.service';
+import {
+  CandidateCertificationService,
+  CreateCandidateCertificationRequest,
+  UpdateCandidateCertificationRequest
+} from './candidate-certification.service';
 import {environment} from '../../environments/environment';
 import {CandidateCertification} from '../model/candidate-certification';
 
-fdescribe('CandidateCertificationService', () => {
+describe('CandidateCertificationService', () => {
   let service: CandidateCertificationService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-certification';

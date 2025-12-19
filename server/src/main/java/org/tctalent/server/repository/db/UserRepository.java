@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -59,6 +59,9 @@ public interface UserRepository extends CacheEvictingRepository<User, Long>, Jpa
             + " where (lower(u.email) = lower(:email) )"
             + " and u.status != 'deleted'")
     User findByEmailIgnoreCase(@Param("email") String email);
+
+    @Query("select u from User u where u.emailVerificationToken = :token and u.status != 'deleted'")
+    User findByEmailVerificationToken(@Param("token") String token);
 
     @Query("select u from User u where u.resetToken = :token and u.status != 'deleted'")
     User findByResetToken(@Param("token") String token);

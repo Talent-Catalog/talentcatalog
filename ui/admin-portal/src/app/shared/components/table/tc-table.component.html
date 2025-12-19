@@ -1,0 +1,31 @@
+<!-- TOP PAGINATION -->
+<ng-container *ngIf="isPagedResults && (paginationPosition === 'top' || paginationPosition === 'both')">
+  <ng-container *ngTemplateOutlet="paginationTemplate"></ng-container>
+</ng-container>
+
+<div class="tc-table">
+  <p class="table-name" *ngIf="name">{{name}}</p>
+
+  <div  *ngIf="!loading" class="table-responsive">
+    <table class="table" [ngClass]="classList">
+      <ng-content></ng-content>
+    </table>
+    <!-- no search results -->
+    <div class="mx-2">
+      <tc-alert *ngIf="hasResults && noResults" type="info">No results</tc-alert>
+    </div>
+  </div>
+
+  <!-- loading -->
+  <tc-loading [loading]="loading"></tc-loading>
+  <!-- BOTTOM PAGINATION -->
+  <ng-container *ngIf="isPagedResults && (paginationPosition === 'bottom' || paginationPosition === 'both')">
+    <ng-container *ngTemplateOutlet="paginationTemplate"></ng-container>
+  </ng-container>
+</div>
+
+<ng-template #paginationTemplate>
+  <tc-pagination *ngIf="totalElements > 0" [totalElements]="totalElements" [pageSize]="pageSize"
+                 [pageNumber]="pageNumber" (pageChange)="onPageChange($event)">
+  </tc-pagination>
+</ng-template>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {CandidateReviewStatusItem} from "../model/candidate-review-status-item";
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('CandidateReviewStatusService', () => {
+describe('CandidateReviewStatusService', () => {
   let service: CandidateReviewStatusService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-reviewstatus';

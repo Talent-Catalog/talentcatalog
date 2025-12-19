@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,6 @@
  */
 import {CandidateSearchCardComponent} from "./candidate-search-card.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
@@ -23,29 +22,36 @@ import {CandidateSource} from "../../../model/base";
 import {Candidate} from "../../../model/candidate";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
+import {LocalStorageService} from "../../../services/local-storage.service";
+import {CandidateService} from "../../../services/candidate.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('CandidateSearchCardComponent', () => {
+describe('CandidateSearchCardComponent', () => {
   let component: CandidateSearchCardComponent;
   let fixture: ComponentFixture<CandidateSearchCardComponent>;
   let localStorageService: jasmine.SpyObj<LocalStorageService>;
   let authService: jasmine.SpyObj<AuthorizationService>;
+  let candidateService: jasmine.SpyObj<CandidateService>;
 
   beforeEach(async () => {
     const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
     const authSpy = jasmine.createSpyObj('AuthorizationService', ['canViewPrivateCandidateInfo']);
+    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
 
     await TestBed.configureTestingModule({
       declarations: [CandidateSearchCardComponent],
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },
-        { provide: AuthorizationService, useValue: authSpy }
+        { provide: AuthorizationService, useValue: authSpy },
+        { provide: CandidateService, userValue: candidateServiceSpy }
       ],
-      imports: [NgbNavModule],
+      imports: [NgbNavModule, HttpClientTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
 
     localStorageService = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
     authService = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
+    candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
   });
 
   beforeEach(() => {

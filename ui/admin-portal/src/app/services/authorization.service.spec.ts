@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,10 +20,14 @@ import {AuthorizationService} from './authorization.service';
 import {Role, User} from '../model/user';
 import {Candidate} from '../model/candidate';
 import {Partner} from "../model/partner";
+import {CandidateSource} from "../model/base";
+import {MockJob} from "../MockData/MockJob";
+import {Job} from "../model/job";
 
-fdescribe('AuthorizationService', () => {
+describe('AuthorizationService', () => {
   let service: AuthorizationService;
   let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
+  let job: Job;
 
   beforeEach(() => {
     const spy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
@@ -37,6 +41,7 @@ fdescribe('AuthorizationService', () => {
 
     service = TestBed.inject(AuthorizationService);
     authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
+    job = MockJob;
   });
 
   it('should be created', () => {
@@ -251,4 +256,65 @@ fdescribe('AuthorizationService', () => {
     const isAdminOrPartnerAdmin = service.isPartnerAdminOrGreater();
     expect(isAdminOrPartnerAdmin).toBeFalse();
   });
+
+  it('should determine if source can be edited', () => {
+    const source: CandidateSource = { fixed: false } as CandidateSource;
+    const user: User = { id: 1, name: 'Limited User', role: 'limited', readOnly: false } as User;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    expect(service.canEditCandidateSource(source)).toBeTrue();
+
+    user.readOnly = true;
+    expect(service.canEditCandidateSource(source)).toBeFalse();
+
+    user.readOnly = false;
+    source.fixed = true;
+    source.createdBy = user;
+    expect(service.canEditCandidateSource(source)).toBeTrue();
+
+    source.createdBy = { ...user, id: 2 };
+    expect(service.canEditCandidateSource(source)).toBeFalse();
+  });
+
+  it('should determine if source is mine', () => {
+    const user: User = { id: 1 } as User;
+    const source: CandidateSource = { createdBy: user } as CandidateSource;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+    expect(service.isCandidateSourceMine(source)).toBeTrue();
+
+    authenticationServiceSpy.getLoggedInUser.and.returnValue({ ...user, id: 2 });
+    expect(service.isCandidateSourceMine(source)).toBeFalse();
+  });
+
+  it('should determine if source is starred by me', () => {
+    const user: User = { id: 1 } as User;
+    const users: User[] = [user];
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+    expect(service.isStarredByMe(users)).toBeTrue();
+
+    authenticationServiceSpy.getLoggedInUser.and.returnValue({ ...user, id: 2 });
+    expect(service.isStarredByMe(users)).toBeFalse();
+  });
+
+  it('should return true for System Admin', () => {
+    const user: User = { id: 2, role: 'systemadmin' } as User; // Not the creator
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    expect(service.canChangeJobName(job)).toBeTrue();
+  })
+
+  it('should return true for job creator', () => {
+    const user: User = { id: 1, role: 'systemadmin' } as User;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    expect(service.canChangeJobName(job)).toBeTrue();
+  })
+
+  it('should return false for a user who is not the creator and not a system admin', () => {
+    const user: User = { id: 2, role: 'admin' } as User; // Not the creator or a System Admin
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    expect(service.canChangeJobName(job)).toBeFalse();
+  });
+
 });

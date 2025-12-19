@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {CandidateReviewStatusItem} from "./candidate-review-status-item";
 import {MockUser} from "../MockData/MockUser";
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
 
-fdescribe('CandidateReviewStatusItem Model', () => {
+describe('CandidateReviewStatusItem Model', () => {
   let user: User;
   let savedSearch: SavedSearch;
   let candidateReviewStatusItem: CandidateReviewStatusItem;

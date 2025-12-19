@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
 
 // Mock implementation for SavedList
 import {SavedList} from "../model/saved-list";
@@ -16,7 +31,7 @@ export const MockSavedList: SavedList = {
   folderlink: 'example.com/folder',
   folderjdlink: 'example.com/folder/jd',
   publishedDocLink: 'example.com/published',
-  tbbShortName: 'TBB',
+  tcShortName: 'TC',
   sfJobCountry: 'USA',
   sfJobStage: 'Prospect',
   fixed: true,
@@ -32,7 +47,7 @@ export const MockSavedList: SavedList = {
     description: 'Task description',
     displayName: 'Task 1',
     optional: false,
-    helpLink: 'example.com/help',
+    docLink: 'example.com/help',
     taskType: TaskType.Question,
     uploadType: UploadType.degree,
     uploadSubfolderName: 'subfolder',

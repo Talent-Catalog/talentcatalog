@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,7 +24,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateCitizenshipCardComponent} from "./card/candidate-citizenship-card.component";
 
-fdescribe('CitizenshipsComponent', () => {
+describe('CitizenshipsComponent', () => {
   let component: CitizenshipsComponent;
   let fixture: ComponentFixture<CitizenshipsComponent>;
 

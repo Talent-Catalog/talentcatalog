@@ -1,6 +1,23 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="input-group">
   <input class="form-control" placeholder="yyyy-mm-dd"
          name="dp" ngbDatepicker
+         #datePicker
          #picker="ngbDatepicker"
          [(ngModel)]="date"
          (ngModelChange)="update()"
@@ -10,16 +27,18 @@
          [minDate]="minDate"
          [maxDate]="maxDate"
          [disabled]="control.disabled">
-  <div class="btn btn-primary"
+  <div class="btn btn-primary" [ngClass]="{'disabled': datePicker.disabled}"
        (click)="picker.toggle()">
     <span>Choose</span>
   </div>
-  <div class="btn btn-danger"
+  <div class="btn btn-danger" [ngClass]="{'disabled': datePicker.disabled}"
        (click)="clear()">
     <span>Clear</span>
   </div>
 </div>
-<small class="text-muted">If day or month unknown, select or type 01.</small>
+<small class="text-muted">
+  If exact day or month unknown, use '01' to approximate, e.g., '2020-07-<b>01</b>'.
+</small>
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>

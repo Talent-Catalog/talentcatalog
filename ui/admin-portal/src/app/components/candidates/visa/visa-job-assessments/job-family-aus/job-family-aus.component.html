@@ -1,16 +1,30 @@
-<div *ngIf="error">
-  {{error}}
-</div>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="mb-3">
-    <label class="form-label" for="visaJobFamilyAus">Do they have family in another part of Australia that may impact this?</label>
-    <div class="float-end">
+  <tc-field *ngIf="editable">
+    <tc-label for="visaJobFamilyAus">Do they have family in another part of Australia that may impact this?
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </div>
-    <ng-select id="visaJobFamilyAus" [formControlName]="'visaJobFamilyAus'" [items]="jobFamilyAusOptions"
+    </tc-label>
+    <ng-select class="tc-select" id="visaJobFamilyAus" [formControlName]="'visaJobFamilyAus'"
+               [items]="jobFamilyAusOptions"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
+  </tc-field>
 </form>

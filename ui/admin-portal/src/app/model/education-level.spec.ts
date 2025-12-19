@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {EducationLevel} from "./education-level";
 
-fdescribe('EducationLevel interface', () => {
+describe('EducationLevel interface', () => {
   it('should create an EducationLevel instance', () => {
     const educationLevel: EducationLevel = {
       id: 1,

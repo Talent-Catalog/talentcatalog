@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {CandidateStatService, CandidateStatsRequest} from './candidate-stat.serv
 import {environment} from '../../environments/environment';
 import {StatReport} from '../model/stat-report';
 
-fdescribe('CandidateStatService', () => {
+describe('CandidateStatService', () => {
   let service: CandidateStatService;
   let httpMock: HttpTestingController;
 
@@ -50,7 +50,6 @@ fdescribe('CandidateStatService', () => {
       ];
 
       const requestPayload: CandidateStatsRequest = {
-        runOldStats: true,
         listId: 123,
         searchId: 456,
         dateFrom: '2021-01-01',
@@ -71,7 +70,6 @@ fdescribe('CandidateStatService', () => {
 
     it('should handle empty response correctly', () => {
       const requestPayload: CandidateStatsRequest = {
-        runOldStats: true,
         listId: 123,
         searchId: 456,
         dateFrom: '2021-01-01',

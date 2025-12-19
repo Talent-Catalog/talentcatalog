@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {of} from "rxjs";
-fdescribe('TailoredCvComponent', () => {
+describe('TailoredCvComponent', () => {
   let component: TailoredCvComponent;
   let fixture: ComponentFixture<TailoredCvComponent>;
   let mockActiveModal: Partial<NgbActiveModal>;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,19 +16,21 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
 import {
   CandidateVisaCheckService,
   CreateCandidateVisaCheckRequest
 } from '../../../../../services/candidate-visa-check.service';
 import {Country} from '../../../../../model/country';
-import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
+import {
+  HasNameSelectorComponent
+} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../model/candidate';
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../../../services/authorization.service";
+import {LocalStorageService} from "../../../../../services/local-storage.service";
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -39,8 +41,8 @@ export class CandidateVisaTabComponent implements OnInit {
   @Input() candidate: Candidate;
   candidateIntakeData: CandidateIntakeData;
   visaChecks: CandidateVisa[];
-  tbbDestinations: Country[];
-  form: FormGroup;
+  tcDestinations: Country[];
+  form: UntypedFormGroup;
   selectedIndex: number;
   selectedCountry: string;
   selectedVisaCheck: CandidateVisa;
@@ -53,7 +55,7 @@ export class CandidateVisaTabComponent implements OnInit {
               private countryService: CountryService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private authService: AuthorizationService) {
   }
@@ -68,12 +70,12 @@ export class CandidateVisaTabComponent implements OnInit {
 
     })
     // FETCH TBB DESTINATIONS
-    this.countryService.listTBBDestinations().subscribe((results) => {
+    this.countryService.listTCDestinations().subscribe((results) => {
       /**
        * todo: Remove/alter this filter once no longer needed or find other solution.
        * It is a temporary filter to only display the TBB destinations (Australia, Canada & UK) that have functioning visa checks.
        */
-      this.tbbDestinations = results.filter(c => c.id == 6191 || c.id == 6216 || c.id == 6179);
+      this.tcDestinations = results.filter(c => c.id == 6191 || c.id == 6216 || c.id == 6179);
     })
 
     this.reloadAndSelectVisaCheck(0)
@@ -87,14 +89,14 @@ export class CandidateVisaTabComponent implements OnInit {
    * Filters out destinations already used in existingRecords
    */
   private get filteredDestinations(): Country[] {
-    if (!this.tbbDestinations) {
+    if (!this.tcDestinations) {
       return [];
     } else if (this.visaChecks?.length <= 0) {
-      return this.tbbDestinations;
+      return this.tcDestinations;
     } else {
       //Extract currently used ids
       const existingIds: number[] = this.visaChecks?.map(record => record.country?.id);
-      return this.tbbDestinations.filter(
+      return this.tcDestinations.filter(
         //Exclude already used ids
         record => !existingIds.includes(record.id)
       );
@@ -188,5 +190,8 @@ export class CandidateVisaTabComponent implements OnInit {
     return this.authService.isSystemAdminOnly();
   }
 
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
+  }
 
 }

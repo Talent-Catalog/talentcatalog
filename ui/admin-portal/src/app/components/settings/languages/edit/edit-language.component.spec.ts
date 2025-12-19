@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,18 +17,18 @@ import {EditLanguageComponent} from "./edit-language.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {LanguageService} from "../../../../services/language.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {Language} from "../../../../model/language";
 import {of, throwError} from "rxjs";
 
-fdescribe('EditLanguageComponent', () => {
+describe('EditLanguageComponent', () => {
   let component: EditLanguageComponent;
   let fixture: ComponentFixture<EditLanguageComponent>;
   let languageServiceSpy: jasmine.SpyObj<LanguageService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   const mockLanguage: Language = { id: 1, name: 'English', status: 'active' };
   const updatedLanguage: Language = { id: 1, name: 'Updated Language', status: 'inactive' };
 
@@ -47,7 +47,7 @@ fdescribe('EditLanguageComponent', () => {
 
     languageServiceSpy = TestBed.inject(LanguageService) as jasmine.SpyObj<LanguageService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

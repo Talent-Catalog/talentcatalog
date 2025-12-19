@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="birthCountryId">
@@ -24,11 +24,12 @@
     </label>
     <div class="float-end">
       <app-autosave-status
+        *ngIf="editable"
         [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
+        [typing]="typing"
+      ></app-autosave-status>
     </div>
-    <ng-select id="birthCountryId" [formControlName]="'birthCountryId'" [items]="countries" [closeOnSelect]="true"
+    <ng-select class="tc-select" id="birthCountryId" [formControlName]="'birthCountryId'" [items]="countries" [closeOnSelect]="true"
                [clearOnBackspace]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
   </div>
 
@@ -37,20 +38,20 @@
       <label class="form-label" for="hostEntryYear">
         What year did you arrive in {{candidate?.country?.name}}?
       </label>
-      <ng-select id="hostEntryYear" [formControlName]="'hostEntryYear'" [items]="years"
+      <ng-select class="tc-select" id="hostEntryYear" [formControlName]="'hostEntryYear'" [items]="years"
                  [clearOnBackspace]="false" placeholder="Select"></ng-select>
     </div>
     <div class="mb-3">
       <label class="form-label" for="hostEntryYearNotes">Notes</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="3"
+      <tc-textarea rows="3"
                 id="hostEntryYearNotes" [formControlName]="'hostEntryYearNotes'"
-                placeholder=""></textarea>
+                placeholder=""></tc-textarea>
     </div>
     <div class="mb-3">
       <label class="form-label" for="asylumYear">
         Date of asylum?
       </label>
-      <app-date-picker id="asylumYear" [control]="form.controls.asylumYear" [allowFuture]="false"></app-date-picker>
+      <tc-date-picker id="asylumYear" [control]="form.controls.asylumYear" [allowFuture]="false"></tc-date-picker>
     </div>
 
     <div *ngIf="showAll">
@@ -58,21 +59,21 @@
         <label class="form-label" for="hostEntryLegally">
           Did you enter legally?
         </label>
-        <ng-select id="hostEntryLegally" [formControlName]="'hostEntryLegally'" (clear)="setNoResponse('hostEntryLegally')"
+        <ng-select class="tc-select" id="hostEntryLegally" [formControlName]="'hostEntryLegally'" (clear)="setNoResponse('hostEntryLegally')"
                    [items]="hostEntryLegallyOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <div *ngIf="enterLegally === 'No'" class="mb-3">
         <label class="form-label" for="hostEntryLegallyNotes">Notes</label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="3"
+        <tc-textarea rows="3"
                   id="hostEntryLegallyNotes" [formControlName]="'hostEntryLegallyNotes'"
-                  placeholder="" ></textarea>
+                  placeholder="" ></tc-textarea>
       </div>
 
       <div class="mb-3">
         <label class="form-label" for="returnedHome">Have you returned to your home country since entering {{candidate.country.name}}?</label>
-        <ng-select id="returnedHome" [formControlName]="'returnedHome'" (clear)="setNoResponse('returnedHome')"
+        <ng-select class="tc-select" id="returnedHome" [formControlName]="'returnedHome'" (clear)="setNoResponse('returnedHome')"
                    [items]="returnedHomeOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
@@ -80,17 +81,17 @@
       <div *ngIf="returnedHome === 'Yes'">
         <div class="mb-3">
           <label class="form-label" for="returnedHomeReason">What was the reason for your return?</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+          <tc-textarea rows="3"
                     id="returnedHomeReason" [formControlName]="'returnedHomeReason'"
-                    placeholder="" ></textarea>
+                    placeholder="" ></tc-textarea>
         </div>
       </div>
       <div *ngIf="returnedHome === 'No'">
         <div class="mb-3">
           <label class="form-label" for="returnedHomeReasonNo">What are the reasons you have not returned?</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+          <tc-textarea rows="3"
                     id="returnedHomeReasonNo" [formControlName]="'returnedHomeReasonNo'"
-                    placeholder="" ></textarea>
+                    placeholder="" ></tc-textarea>
         </div>
       </div>
 
@@ -98,7 +99,7 @@
         <label class="form-label" for="leftHomeReasons">
           What are the primary reasons you left your home country and currently live in {{candidate.country.name}}?
         </label>
-        <ng-select id="leftHomeReasons" [formControlName]="'leftHomeReasons'" [items]="leftHomeReasonOptions"
+        <ng-select class="tc-select" id="leftHomeReasons" [formControlName]="'leftHomeReasons'" [items]="leftHomeReasonOptions"
                    [multiple]="true" [closeOnSelect]="false" [searchable]="false"
                    placeholder="Select one or more" bindLabel="stringValue">
         </ng-select>
@@ -107,15 +108,15 @@
       <div>
         <div class="mb-3">
           <label class="form-label" for="leftHomeNotes">Please explain</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="4"
+          <tc-textarea rows="4"
                     id="leftHomeNotes" [formControlName]="'leftHomeNotes'"
-                    placeholder="" ></textarea>
+                    placeholder="" ></tc-textarea>
         </div>
       </div>
 
       <div class="mb-3">
         <label class="form-label" for="returnHomeSafe">Do you feel it is safe to permanently return to your home country?</label>
-        <ng-select id="returnHomeSafe" [formControlName]="'returnHomeSafe'" (clear)="setNoResponse('returnHomeSafe')"
+        <ng-select class="tc-select" id="returnHomeSafe" [formControlName]="'returnHomeSafe'" (clear)="setNoResponse('returnHomeSafe')"
                    [items]="homeSafeOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
@@ -124,7 +125,7 @@
         <label class="form-label" for="returnHomeFuture">
           Do you plan to return to your country of origin in the near future?
         </label>
-        <ng-select id="returnHomeFuture" [formControlName]="'returnHomeFuture'" (clear)="setNoResponse('returnHomeFuture')"
+        <ng-select class="tc-select" id="returnHomeFuture" [formControlName]="'returnHomeFuture'" (clear)="setNoResponse('returnHomeFuture')"
                    [items]="returnHomeFutureOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
@@ -132,7 +133,7 @@
       <div *ngIf="returnHomeFuture === 'Yes'">
         <div class="mb-3">
           <label class="form-label" for="returnHomeWhen">If yes, when do you plan to return? </label>
-          <input type="text" class="form-control" id="returnHomeWhen" [formControlName]="'returnHomeWhen'">
+          <tc-input id="returnHomeWhen" [formControlName]="'returnHomeWhen'"></tc-input>
         </div>
       </div>
     </div>

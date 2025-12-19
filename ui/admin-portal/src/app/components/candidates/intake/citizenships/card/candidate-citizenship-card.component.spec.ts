@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@ import {CandidateCitizenshipCardComponent} from "./candidate-citizenship-card.co
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CandidateCitizenshipService} from "../../../../../services/candidate-citizenship.service";
@@ -25,7 +25,7 @@ import {Country} from "../../../../../model/country";
 import {CandidateIntakeData, HasPassport} from "../../../../../model/candidate";
 import {of} from "rxjs";
 
-fdescribe('CandidateCitizenshipCardComponent', () => {
+describe('CandidateCitizenshipCardComponent', () => {
   let component: CandidateCitizenshipCardComponent;
   let fixture: ComponentFixture<CandidateCitizenshipCardComponent>;
   let mockCitizenshipService: jasmine.SpyObj<CandidateCitizenshipService>;
@@ -35,7 +35,7 @@ fdescribe('CandidateCitizenshipCardComponent', () => {
       declarations: [ CandidateCitizenshipCardComponent,AutosaveStatusComponent ],
       imports: [HttpClientTestingModule, NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService},
         { provide: CandidateCitizenshipService, useValue: jasmine.createSpyObj('CandidateCitizenshipService', ['delete']) }
       ]

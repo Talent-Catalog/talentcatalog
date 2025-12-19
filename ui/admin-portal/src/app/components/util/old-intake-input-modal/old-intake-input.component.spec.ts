@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,7 +26,7 @@ import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {DatePickerComponent} from "../date-picker/date-picker.component";
 
-fdescribe('OldIntakeInputComponent', () => {
+describe('OldIntakeInputComponent', () => {
   let component: OldIntakeInputComponent;
   let fixture: ComponentFixture<OldIntakeInputComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
@@ -67,13 +67,6 @@ fdescribe('OldIntakeInputComponent', () => {
     expect(component.form.controls.oldIntakeCompletedBy).toBeDefined();
   });
 
-  it('should display loading spinner when loading is true', () => {
-    component.loading = true;
-    fixture.detectChanges();
-    const spinner = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(spinner).toBeTruthy();
-  });
-
   it('should display error message when error is set', () => {
     component.error = 'Some error';
     fixture.detectChanges();
@@ -99,7 +92,7 @@ fdescribe('OldIntakeInputComponent', () => {
     });
     expect(candidateNoteServiceSpy.create).toHaveBeenCalledWith({
       candidateId: 1,
-      title: 'Original intake data entered: Full Intake took place on 2024-01-01 by Tester.',
+      title: 'Original intake data entered: Full Intake conducted on 2024-01-01 by Tester.',
       comment: 'See details below on who/when this data was entered into the TC. Can find original document in candidates Google drive.'
     });
   });

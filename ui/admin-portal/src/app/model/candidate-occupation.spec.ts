@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,7 @@ import {User} from "./user";
 import {Occupation} from "./occupation";
 import {CandidateOccupation} from "./candidate-occupation";
 
-fdescribe('CandidateOccupation Model', () => {
+describe('CandidateOccupation Model', () => {
   let user1: User;
   let user2: User;
   let occupation: Occupation;

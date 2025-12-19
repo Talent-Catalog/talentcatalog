@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,10 +21,10 @@ import {catchError, map} from "rxjs/operators";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
-import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {RegisterCandidateRequest} from "../model/candidate";
+import {LocalStorageService} from "./local-storage.service";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;
@@ -38,13 +38,15 @@ export class AuthService {
   apiUrl = environment.apiUrl + '/auth';
 
   private user: User;
-  private _user: BehaviorSubject<User> = new BehaviorSubject(this.getLoggedInUser());
+  private _user: BehaviorSubject<User>;
   //No longer used - replaced by AuthenticationService.loggedInUser
-  private readonly user$: Observable<User> = this._user.asObservable();
+  private readonly user$: Observable<User>;
 
   constructor(private router: Router,
               private http: HttpClient,
               private localStorageService: LocalStorageService) {
+    this._user = new BehaviorSubject(this.getLoggedInUser());
+    this.user$ = this._user.asObservable()
   }
 
   login(credentials: LoginRequest) {

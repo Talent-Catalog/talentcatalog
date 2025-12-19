@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,10 +15,12 @@
  */
 
 import {InputFilterDirective} from './input-filter.directive';
+import {ElementRef} from '@angular/core';
 
 describe('InputFilterDirective', () => {
   it('should create an instance', () => {
-    const directive = new InputFilterDirective();
+    const mockElementRef = new ElementRef(document.createElement('input'));
+    const directive = new InputFilterDirective(mockElementRef);
     expect(directive).toBeTruthy();
   });
 });

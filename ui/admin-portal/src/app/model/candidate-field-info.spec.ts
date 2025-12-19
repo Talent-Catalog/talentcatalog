@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,11 @@
 
 import {Candidate} from "./candidate";
 import {CandidateFieldInfo} from "./candidate-field-info";
+import {MockSavedList} from "../MockData/MockSavedList";
 
-fdescribe('CandidateFieldInfo Class', () => {
+describe('CandidateFieldInfo Class', () => {
   let candidate: Candidate;
+  const savedSubList = MockSavedList;
 
   beforeEach(() => {
     // Initialize a sample Candidate object before each test
@@ -59,7 +61,7 @@ fdescribe('CandidateFieldInfo Class', () => {
 
     expect(fieldInfo.displayName).toBe('Marital Status');
     expect(fieldInfo.fieldPath).toBe('maritalStatus');
-    expect(fieldInfo.fieldSelector()).toBe(true);
+    expect(fieldInfo.fieldSelector(savedSubList)).toBe(true);
     expect(fieldInfo.sortable).toBe(false);
   });
 
@@ -75,7 +77,7 @@ fdescribe('CandidateFieldInfo Class', () => {
       false
     );
 
-    const tooltip = fieldInfo.getTooltip(candidate);
+    const tooltip = fieldInfo.getTooltip(candidate, savedSubList);
     expect(tooltip).toBe(`Tooltip for ${candidate}`);
   });
 
@@ -91,7 +93,7 @@ fdescribe('CandidateFieldInfo Class', () => {
       false
     );
 
-    const formattedValue = fieldInfo.getValue(candidate);
+    const formattedValue = fieldInfo.getValue(candidate, savedSubList);
     expect(formattedValue).toBe('Formatted John');
   });
 

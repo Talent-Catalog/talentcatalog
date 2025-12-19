@@ -1,0 +1,10 @@
+Dear [(${displayName})],
+
+In the last 24 hours the Talent Catalog has detected that new posts have been added to chats
+that you are subscribed to and have not marked as read.
+
+Copy and paste links to your browser address bar to see details.
+
+[# th:each="link : ${links}"]
+  - [(${link.name()})] : [(${link.link()})] [(${'(Chat ' + link.id() + ')'})]
+[/]

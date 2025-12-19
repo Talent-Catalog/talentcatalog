@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -15,365 +15,394 @@
   -->
 
 <div *ngIf="loading">
-      <i class="fas fa-spinner fa-spin"></i> loading...
+  <tc-loading></tc-loading>
 </div>
 <div *ngIf="error">
-  {{error}}
+  <tc-alert type="danger">{{error}}</tc-alert>
 </div>
 
 <div *ngIf="!loading" id="FullIntakeForm">
-  <div class="d-flex justify-content-between mb-3 ms-2 align-items-end">
+  <div class="d-flex justify-content-between align-items-end">
     <div class="d-flex flex-column justify-content-between">
-      <div class="mb-3 d-flex">
-        <h4>Full Intake</h4><h6 *ngIf="fullIntakeComplete" class="ms-2 mb-1 text-success align-self-center">Completed
-        on {{candidate?.fullIntakeCompletedDate | date}} by {{fullIntakeCompletedBy}}</h6>
+      <div class="mb-3 d-flex flex-column">
+        <h4>Full Intake</h4>
+        <p *ngIf="fullIntakeComplete" class="mb-1 intake-complete">
+          Completed on {{candidate?.fullIntakeCompletedDate | date}} by {{fullIntakeCompletedBy}}
+        </p>
       </div>
       <div class="d-flex">
-        <app-export-pdf [candidate]="candidate" [idToExport]="'FullIntakeForm'"></app-export-pdf>
-
-        <div class="btn-group-sm ms-2">
-          <button (click)="fullIntake.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-          <button (click)="fullIntake.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
-        </div>
+        <app-export-pdf
+          [candidate]="candidate"
+          [idToExport]="'FullIntakeForm'"
+        ></app-export-pdf>
       </div>
     </div>
 
-    <div class="d-flex justify-content-between">
+    <div *ngIf="isEditable()" class="d-flex justify-content-between gap-2">
 
       <div *ngIf="fullIntakeComplete; else notComplete">
-        <button class="btn btn-warning" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
+        <tc-button [color]="'warning'"
+                   (onClick)="createIntakeNote('Full Intake', 'update')"
+                   [disabled]="saving"
+                   [size]="'sm'"
+        >
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Update
-        </button>
+        </tc-button>
       </div>
       <ng-template #notComplete>
-        <button class="btn btn-warning me-3"
-                (click)="inputOldIntake(true)"
-                [disabled]="saving">
+        <tc-button
+          type="solid"
+          [color]="hasPendingRemoteUpdate ? 'warning' : 'info'"
+          [size]="'sm'"
+          [class.highlight-button]="hasPendingRemoteUpdate"
+          (onClick)="onRefreshRequested()"
+        >
+          <i class="fas fa-sync" title="Refresh data"></i>
+          {{ hasPendingRemoteUpdate ? 'Refresh – updated in another tab' : 'Refresh' }}
+        </tc-button>
+        <tc-button [color]="'warning'"
+                   (onClick)="inputOldIntake(true)"
+                   [disabled]="saving"
+                   [size]="'sm'"
+        >
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Input External Intake
-        </button>
-        <button class="btn btn-success"
-                (click)="completeIntake(true)"
-                [disabled]="candidate.fullIntakeCompletedDate != null">
+        </tc-button>
+        <tc-button [color]="'success'"
+                   (onClick)="completeIntake(true)"
+                   [disabled]="candidate.fullIntakeCompletedDate != null"
+                   [size]="'sm'"
+        >
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Complete
-        </button>
+        </tc-button>
       </ng-template>
     </div>
   </div>
 
-  <div>
-    <ngb-accordion #fullIntake="ngbAccordion" [destroyOnHide]="false">
+  <hr>
 
-      <!-- GENERAL INFORMATION -->
-      <ngb-panel id="intake-confirm" title="Confirm General Information">
-        <ng-template ngbPanelContent>
-          <app-confirm-contact
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-confirm-contact>
-        </ng-template>
-      </ngb-panel>
+  <tc-accordion [appReadOnlyInputs]="!isEditable()" [(activeIndexes)]="openIndexes"
+                class="intake-accordion"
+  >
 
-      <!-- INTERNATIONAL RECRUITMENT -->
-      <ngb-panel id="intake-int-recruit" title="Interest in International Recruitment">
-        <ng-template ngbPanelContent>
-          <app-int-recruitment
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-int-recruitment>
-          <app-rural
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-rural>
-        </ng-template>
-      </ngb-panel>
+    <!--    General Information  -->
+    <tc-accordion-item header="Confirm General Information">
+      <app-confirm-contact
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-confirm-contact>
+    </tc-accordion-item>
 
-      <!-- CITIZENSHIPS -->
-      <ngb-panel id="intake-citizenships">
-        <ng-template ngbPanelTitle let-opened="opened">
-          <div class="container-fluid gx-0">
-            <div class="row align-items-center">
-              <div class="col">
-                <p class="mb-0">Citizenships</p>
-                <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
-              </div>
-              <div class="col-1">
-                <button type="button" class="btn btn-primary btn-sm" (click)="addCitizenshipRecord($event)">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-            </div>
+    <!-- INTERNATIONAL RECRUITMENT -->
+    <tc-accordion-item header="Interest in International Recruitment">
+      <app-int-recruitment
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-int-recruitment>
+      <app-rural
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-rural>
+    </tc-accordion-item>
+
+    <!--      CITIZENSHIPS  -->
+    <tc-accordion-item>
+      <div custom-header class="container-fluid gx-0">
+        <div class="row align-items-center">
+          <div class="col">
+            <p class="mb-0">Citizenships</p>
+            <small>Include any potential future citizenships (e.g. are you getting married to someone soon who will give you another citizenship?)</small>
           </div>
-        </ng-template>
-        <ng-template ngbPanelContent>
-          <app-citizenships
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [nationalities]="nationalities">
-          </app-citizenships>
-        </ng-template>
-      </ngb-panel>
+          <div *ngIf="isEditable()" class="col-1 d-flex justify-content-end me-2">
+            <tc-button (onClick)="addCitizenshipRecord()"
+                       [size]="'sm'"
+                       [type]="'solid'"
+                       [color]="'primary'"
+            >
+              <i class="fas fa-plus"></i>
+            </tc-button>
+          </div>
+        </div>
+      </div>
 
-      <!-- EXAMS -->
-      <ngb-panel id="intake-exams">
-        <ng-template ngbPanelTitle let-opened="opened">
-          <div class="container-fluid gx-0">
-            <div class="row">
-              <div class="col-3 border-end">
-                <span>Language Exams</span>
-              </div>
-              <div class="col">
-                <div class="tag-light fw-600">
-                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index">
-                    <span *ngIf="exam.exam != 'Other'; else otherExam" [ngClass]="{'me-4': exam.exam != null}">
-                      {{exam.exam}} <span class="text-info">{{exam.score}}</span>
+      <app-citizenships
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [nationalities]="nationalities"
+        [editable]="true"
+      ></app-citizenships>
+    </tc-accordion-item>
+
+    <!--      EXAMS  -->
+    <tc-accordion-item>
+      <div custom-header class="container-fluid gx-0">
+        <div class="row align-items-center">
+          <div class="col-3 border-end">
+            <span>Language Exams</span>
+          </div>
+          <div class="col">
+            <div class="tag-light fw-600 d-flex">
+              <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i = index">
+                <ng-container *ngIf="exam.exam === 'DETOfficial'; else otherExam">
+                  <!-- DETOfficial Exam Section -->
+                  <span class="d-inline-flex align-items-center me-4"
+                        [title]="getExamInfo(exam.score).tooltip"
+                  >
+                    <img src="assets/images/duo-owl.png" alt="Duo Owl" class="duo-owl-icon" />
+
+                    <span class="me-1 ms-2" [ngClass]="getExamInfo(exam.score).className">
+                      {{ getExamLabel(exam) }}
                     </span>
-                    <ng-template #otherExam>
-                      <span class="me-4">{{exam.otherExam}}
-                        <span class="text-info">{{exam.score}}</span>
-                      </span>
-                    </ng-template>
-                  </ng-container>
-                </div>
 
-              </div>
-              <div class="col-1">
-                <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-        <ng-template ngbPanelContent>
-          <app-exams
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-exams>
-        </ng-template>
-      </ngb-panel>
-
-      <!-- LANGUAGE ASSESSMENT-->
-      <ngb-panel id="intake-language-assessment">
-        <ng-template ngbPanelTitle let-opened="opened">
-          <div class="container-fluid gx-0">
-            <div class="row">
-              <div class="col-3 border-end">
-                <span>Language Assessment</span>
-              </div>
-              <div class="col">
-                <div class="tag-light">
-                  <span *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
-                        [class]="'fw-600'">
-                    Est IELTS
-                    <span class="text-info">{{candidateIntakeData.englishAssessmentScoreIelts}}</span>
+                    <span class="text-info" [attr.title]="getExamInfo(exam.score).tooltip">
+                      {{ exam.score }}
+                    </span>
                   </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-        <ng-template ngbPanelContent>
-          <app-lang-assessment
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-lang-assessment>
-        </ng-template>
-      </ngb-panel>
+                </ng-container>
 
-      <!-- CANDIDATE LANGUAGES-->
-      <ngb-panel id="intake-languages" title="Languages">
-        <ng-template ngbPanelContent>
-          <app-view-candidate-language
-            [candidate]="candidate"
-            [editable]="false"
-            [accordion]="true">
-          </app-view-candidate-language>
-        </ng-template>
-      </ngb-panel>
-
-      <!-- DEPENDANTS -->
-      <ngb-panel id="intake-dependants">
-        <ng-template ngbPanelTitle let-opened="opened">
-          <div class="container-fluid gx-0">
-            <div class="row">
-              <div class="col-3 border-end">
-                <span>Family Members / Dependants</span>
-              </div>
-              <div class="col d-flex justify-content-between">
-                <div *ngIf="candidateIntakeData?.candidateDependants.length > 0" class="tag-light">
-                  <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
-                  <span [class]="'fw-600 me-2'"
-                        [ngClass]="{'text-male': getGender(dep.gender) === 'M',
-                        'text-female': getGender(dep.gender) === 'F'}">
-                    {{getAge(dep.dob)}}{{getGender(dep.gender)}}
+                <ng-template #otherExam>
+                  <span *ngIf="exam.exam !== 'Other'; else otherExamName" [ngClass]="{'me-4': exam.exam != null}">
+                    {{ exam.exam }} <span class="text-info">{{ exam.score }}</span>
                   </span>
-                  </ng-container>
-                </div>
-                <div *ngIf="hasDependantHealthIssues()" class="tag-danger fw-600">
-                  <i class="fa-solid fa-circle-exclamation text-danger"></i>
-                  <span class="ms-2">Health Issues</span>
-                </div>
+                </ng-template>
 
-              </div>
-              <div class="col-1">
-                <button type="button" class="btn btn-primary btn-sm" (click)="addDependantRecord($event)">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
+                <ng-template #otherExamName>
+                  <span class="me-4">
+                    {{ exam.otherExam }}
+                    <span class="text-info">{{ exam.score }}</span>
+                  </span>
+                </ng-template>
+              </ng-container>
             </div>
           </div>
-        </ng-template>
-        <ng-template ngbPanelContent>
-          <app-dependants
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-dependants>
-        </ng-template>
-      </ngb-panel>
-
-      <!-- RESIDENCY AND WORK STATUS -->
-      <ngb-panel id="intake-residency" title="Residency and Work Status">
-        <ng-template ngbPanelContent>
-          <app-residence-status
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-residence-status>
-          <app-work-permit
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-work-permit>
-          <app-work-status
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-work-status>
-          <app-work-abroad
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-work-abroad>
-        </ng-template>
-      </ngb-panel>
-
-      <!-- HOST COUNTRY STATUS -->
-      <ngb-panel id="intake-host-country" title="Host Country Status">
-        <ng-template ngbPanelContent>
-          <app-host-entry
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [countries]="countries">
-          </app-host-entry>
-          <app-home-location
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-home-location>
-          <app-resettlement-third
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-resettlement-third>
-          <app-host-challenges
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-host-challenges>
-        </ng-template>
-      </ngb-panel>
-
-      <!-- REGISTRATION -->
-      <ngb-panel id="intake-registration" title="Registration">
-        <ng-template ngbPanelContent>
-          <div class="card-title h6">
-            UNHCR
+          <div *ngIf="isEditable()" class="col-1 d-flex justify-content-end me-2">
+            <tc-button (onClick)="addExamRecord()"
+                       [size]="'sm'"
+                       [type]="'solid'"
+                       [color]="'primary'"
+            >
+              <i class="fas fa-plus"></i>
+            </tc-button>
           </div>
-          <app-registration-unhcr
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-registration-unhcr>
-          <div *ngIf="isPalestinian()">
-            <div class="card-title h6">
-              UNRWA
+        </div>
+      </div>
+
+      <app-exams [candidate]="candidate"
+                 [candidateIntakeData]="candidateIntakeData"
+                 [editable]="true"
+      ></app-exams>
+    </tc-accordion-item>
+
+
+    <!--     Language Assessment  -->
+    <tc-accordion-item>
+      <div custom-header class="container-fluid gx-0">
+        <div class="row">
+          <div class="col-3 border-end">
+            <span>Language Assessment</span>
+          </div>
+          <div class="col">
+            <div class="tag-light">
+                <span *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
+                      [class]="'fw-600'">
+                  Est IELTS
+                  <span
+                    class="text-info">{{ candidateIntakeData.englishAssessmentScoreIelts }}</span>
+                </span>
             </div>
-            <app-registration-unrwa
-              [entity]="candidate"
-              [candidateIntakeData]="candidateIntakeData">
-            </app-registration-unrwa>
           </div>
-        </ng-template>
-      </ngb-panel>
+        </div>
+      </div>
 
-      <!-- PARTNER INFORMATION -->
-      <ngb-panel id="intake-partner-info" title="Partner Information">
-        <ng-template ngbPanelContent>
-          <app-marital-status
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [educationLevels]="educationLevels"
-            [occupations]="occupations"
-            [languageLevels]="languageLevels"
-            [nationalities]="nationalities">
-          </app-marital-status>
-          <app-family
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-family>
-        </ng-template>
-      </ngb-panel>
+      <app-lang-assessment
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-lang-assessment>
+    </tc-accordion-item>
 
-      <!-- ADDITIONAL ELIGIBILITY -->
-      <ngb-panel id="intake-additional-eligibility" title="Additional Eligibility">
-        <ng-template ngbPanelContent>
-          <app-crime
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-crime>
-          <app-military-service
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-military-service>
-          <app-conflict
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-conflict>
-          <app-visa-reject
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-visa-reject>
-          <app-visa-issues
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-visa-issues>
-          <app-driving-license
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData"
-            [countries]="countries">
-          </app-driving-license>
-          <app-covid-vaccination
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-covid-vaccination>
-        </ng-template>
-      </ngb-panel>
 
-      <!-- FINAL AGREEMENT -->
-      <ngb-panel id="intake-final-agreement" title="End of Intake">
-        <ng-template ngbPanelContent>
-          <app-monitoring-evaluation-consent
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-monitoring-evaluation-consent>
-          <hr>
-          <app-final-agreement>
-          </app-final-agreement>
-        </ng-template>
-      </ngb-panel>
-    </ngb-accordion>
-  </div>
+    <!-- CANDIDATE LANGUAGES -->
+    <tc-accordion-item header="Languages">
+      <app-view-candidate-language
+        [candidate]="candidate"
+        [editable]="false"
+        [accordion]="true">
+      </app-view-candidate-language>
+    </tc-accordion-item>
 
-  <div class="float-end mt-3">
-    <div *ngIf="fullIntakeComplete; else notComplete">
-      <button class="btn btn-warning" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
+    <!--     DEPENDANTS  -->
+    <tc-accordion-item>
+      <div custom-header class="container-fluid gx-0">
+        <div class="row align-items-center">
+          <div class="col-3 border-end">
+            <span>Family Members / Dependants</span>
+          </div>
+          <div class="col d-flex justify-content-between align-items-center">
+            <div *ngIf="candidateIntakeData?.candidateDependants.length > 0" class="tag-light">
+              <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
+                <span [class]="'fw-600 me-2'"
+                      [ngClass]="{'text-male': getGender(dep.gender) === 'M',
+                      'text-female': getGender(dep.gender) === 'F'}">
+                  {{getAge(dep.dob)}}{{getGender(dep.gender)}}
+                </span>
+              </ng-container>
+            </div>
+            <div *ngIf="hasDependantHealthIssues()" class="tag-danger fw-600">
+              <i class="fa-solid fa-circle-exclamation text-danger"></i>
+              <span class="ms-2">Health Issues</span>
+            </div>
+
+            <div *ngIf="isEditable()" class="col-1 d-flex justify-content-end me-2">
+              <tc-button (onClick)="addDependantRecord()"
+                         [size]="'sm'"
+                         [type]="'solid'"
+                         [color]="'primary'"
+              >
+                <i class="fas fa-plus"></i>
+              </tc-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <app-dependants
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="isEditable()">
+      </app-dependants>
+    </tc-accordion-item>
+
+    <!-- RESIDENCY AND WORK STATUS -->
+    <tc-accordion-item header="Residency and Work Status">
+      <app-residence-status
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-residence-status>
+      <app-work-permit
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-work-permit>
+      <app-work-status
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-work-status>
+      <app-work-abroad
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-work-abroad>
+    </tc-accordion-item>
+
+    <!-- HOST COUNTRY STATUS  -->
+    <tc-accordion-item header="Host Country Status">
+      <app-host-entry
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [countries]="countries">
+      </app-host-entry>
+      <app-home-location
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-home-location>
+      <app-resettlement-third
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-resettlement-third>
+      <app-host-challenges
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-host-challenges>
+    </tc-accordion-item>
+
+    <!-- REGISTRATION  -->
+    <tc-accordion-item header="Registration">
+      <div class="card-title h6 mb-2">
+        UNHCR
+      </div>
+      <app-registration-unhcr
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-registration-unhcr>
+      <div *ngIf="isPalestinian()">
+        <div class="card-title h6">
+          UNRWA
+        </div>
+        <app-registration-unrwa
+          [entity]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-registration-unrwa>
+      </div>
+    </tc-accordion-item>
+
+    <!-- Partner Information  -->
+    <tc-accordion-item header="Partner Information">
+      <app-marital-status
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [educationLevels]="educationLevels"
+        [occupations]="occupations"
+        [languageLevels]="languageLevels"
+        [nationalities]="nationalities">
+      </app-marital-status>
+      <app-family
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family>
+    </tc-accordion-item>
+
+    <!-- Additional Eligibility  -->
+    <tc-accordion-item header="Additional Eligibility">
+      <app-crime
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-crime>
+      <app-military-service
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-military-service>
+      <app-conflict
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-conflict>
+      <app-visa-reject
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-visa-reject>
+      <app-visa-issues
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-visa-issues>
+      <app-driving-license
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [countries]="countries">
+      </app-driving-license>
+      <app-covid-vaccination
+        [entity]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-covid-vaccination>
+    </tc-accordion-item>
+
+    <!-- FINAL AGREEMENT   -->
+    <tc-accordion-item header="End of Intake">
+      <app-final-agreement>
+      </app-final-agreement>
+    </tc-accordion-item>
+
+  </tc-accordion>
+
+  <hr>
+
+  <div *ngIf="isEditable()" class="float-end">
+    <div *ngIf="fullIntakeComplete; else notComplete" class="mb-2">
+      <tc-button (onClick)="createIntakeNote('Full Intake', 'update')"
+                 [disabled]="saving"
+                 [size]="'sm'"
+                 [color]="'warning'"
+      >
         Update
-      </button>
+      </tc-button>
     </div>
     <ng-template #notComplete></ng-template>
   </div>

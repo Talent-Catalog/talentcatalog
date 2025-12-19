@@ -1,0 +1,60 @@
+@import "bootstrap/scss/bootstrap.scss";
+
+.duolingo {
+  padding: 0 !important;
+}
+
+.service-title {
+  background-color: #CFF1B5;
+  padding: 2rem;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coupons {
+  padding: 2rem;
+}
+
+.ticket {
+  width: 250px;
+  height: 100px;
+}
+
+.ticket-container {
+  width: 276px;
+  height: 98px;
+  background-image: url('../../../../../../../assets/images/services/ticket-background.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.ticket-container p {
+  margin-bottom: .5rem;
+}
+
+img {
+  max-width: 205px;
+  margin-left: 1rem;
+
+  @include media-breakpoint-down(sm) {
+    width: 90px;
+    max-height: fit-content;
+  }
+}
+
+.exam-result{
+  padding: 2rem;
+}

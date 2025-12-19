@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 import {ChatPost, CreateChatRequest, JobChat, JobChatType, JobChatUserInfo, Post} from "./chat";
 import {User} from "./user";
 
-fdescribe('Job Chat and Post interface', () => {
+describe('Job Chat and Post interface', () => {
   it('should create a Post instance', () => {
     const post: Post = {
       linkPreviews: [],
@@ -34,6 +34,7 @@ fdescribe('Job Chat and Post interface', () => {
   it('should create a JobChat instance', () => {
     const jobChat: JobChat = {
       id: 1,
+      type: JobChatType.CandidateProspect,
       name: 'Sample Job Chat'
     };
 
@@ -58,7 +59,7 @@ fdescribe('Job Chat and Post interface', () => {
   it('should create a ChatPost instance', () => {
     const createdBy: User = { id: 1, username: 'user1' } as User;
     const updatedBy: User = { id: 2, username: 'user2' } as User;
-    const jobChat: JobChat = { id: 1, name: 'Sample Job Chat' };
+    const jobChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Sample Job Chat' };
 
     const chatPost: ChatPost = {
       id: 1,

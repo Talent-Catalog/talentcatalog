@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-fdescribe('ViewResponseComponent', () => {
+
+describe('ViewResponseComponent', () => {
   let component: ViewResponseComponent;
   let fixture: ComponentFixture<ViewResponseComponent>;
   let mockActiveModal: NgbActiveModal;
@@ -53,23 +54,16 @@ fdescribe('ViewResponseComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display task display name and answer', () => {
-    const strongElement = fixture.debugElement.query(By.css('strong'));
-    const pElement = fixture.debugElement.query(By.css('p'));
+  it('should display task display answer', () => {
+    const descriptionItemDebug =
+      fixture.debugElement.query(By.css('tc-description-item'));
 
-    expect(strongElement.nativeElement.textContent).toContain('CV Submission');
-    expect(pElement.nativeElement.textContent).toContain('Sample Answer');
+    expect(descriptionItemDebug).toBeTruthy();
+
+    // Check the rendered answer text
+    const answerText = descriptionItemDebug.nativeElement.textContent.trim();
+    expect(answerText).toBe(component.taskAssignment.answer);
   });
-
-  it('should show loading spinner when loading is true', fakeAsync(() => {
-    component.loading = true;
-    fixture.detectChanges();
-    tick();
-
-    const spinner = fixture.debugElement.query(By.css('.fa-spinner'));
-
-    expect(spinner).toBeTruthy();
-  }));
 
   it('should display error message when error is set', fakeAsync(() => {
     component.error = 'Sample error message';

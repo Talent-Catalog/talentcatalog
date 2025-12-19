@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,10 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
+@import "src/scss/variables";
 @import 'bootstrap/scss/bootstrap-reboot';
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap/scss/pagination';
+@import "src/scss/color-mixins";
 
 .section {
   padding: 10px 0;
@@ -41,7 +42,7 @@
     text-decoration: $link-hover-decoration;
   }
 }
-
+// TODO REMOVE THIS PAGINATION CSS ONCE MOVED OVER TO NEW STYLE
 .page-link {
   position: relative;
   display: block;
@@ -77,26 +78,6 @@
     border-color: $light;
     // Opinionated: remove the "hand" cursor set previously for .page-link
     cursor: auto;
-  }
-}
-
-table {
-  background-color: $white;
-  border: $white;
-  border-radius: 5px;
-  td {
-    white-space: nowrap;
-    a {
-      > i {
-        color: $info;
-        &:hover {
-          color: $accent1;
-        }
-      }
-      &:hover {
-        color: $secondary;
-      }
-    }
   }
 }
 
@@ -146,12 +127,12 @@ table {
 
 //// The right hand side panels showing more detail of selected item
 .detail-panel {
-  border-radius: 5px;
-  padding: 1rem;
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
 }
 
 .side-panel-color {
-  background-color: fade-out($accent3, 0.7);
+  @include background-color-soft;
 }
 
 .text-female {
@@ -164,4 +145,22 @@ table {
 
 .fw-600 {
   font-weight: 600;
+}
+
+// Custom css to make ng-select appear disabled, applied in the read only directive
+ng-select.read-only {
+  .ng-select-container {
+    pointer-events: none;
+    background-color: #e9ecef;
+  }
+}
+
+// Custom css to make ngx-wig appear disabled, applied in the read only directive
+ngx-wig.read-only {
+  .ng-wig {
+    pointer-events: none;
+  }
+  .nw-editor {
+    background-color: #e9ecef;
+  }
 }
