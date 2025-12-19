@@ -18,13 +18,13 @@ package org.tctalent.server.util.jpa;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import jakarta.persistence.Query;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TupleElement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.TupleElement;
 import org.springframework.stereotype.Service;
 
 /**
@@ -43,7 +43,7 @@ public class QueryHelper {
     }
 
     /**
-     * Converts the results of a JPA query into a List of objects of the given class.
+     * Converts the results of a JPA query into a List of objects belonging to the given class.
      * <p/>
      * Note that the JPA query must have been created to return {@link Tuple}'s.
      * <p/>
@@ -56,13 +56,13 @@ public class QueryHelper {
      *   }
      *  ...
      *   Query query = entityManager.createNativeQuery("SELECT param1, param2 param3 ... ", Tuple.class);
-     *   List&lt;MyClass&gt; results = parseTupleResult(query.getResultList(), CustomDTO.class);
+     *   List&lt;MyClass&gt; results = parseTupleResult(query.getResultList(), MyClass.class);
      *
      * </pre>
      *
      * @param queryResultList Results returned by a call to {@link Query#getResultList()}
      * @param clz             Class of objects used to store the results
-     * @return List of instances of the requested class
+     * @return List of instances belonging to the requested class
      * @throws RuntimeException if the results were not from a query created to return Tuples.
      */
     public <T> List<T> parseTupleResult(List<?> queryResultList, Class<T> clz) {
@@ -76,8 +76,9 @@ public class QueryHelper {
     /**
      * Converts list of tuples to a list of maps.
      * <p/>
-     * Taken from 
-     * https://stackoverflow.com/questions/29082749/spring-data-jpa-map-the-native-query-result-to-non-entity-pojo 
+     * Taken from
+     * <a href="https://stackoverflow.com/questions/29082749/spring-data-jpa-map-the-native-query-result-to-non-entity-pojo">
+     *     Stackoverflow</a>
      * @param tuples List of Tuple
      * @return List of Map
      */
