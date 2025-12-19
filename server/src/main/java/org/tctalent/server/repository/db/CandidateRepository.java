@@ -24,6 +24,7 @@ import java.util.Set;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -137,6 +138,14 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(" select c from Candidate c "
             + " where c.user.id = :id ")
     Candidate findByUserId(@Param("id") Long userId);
+
+    @EntityGraph(attributePaths = {
+        "candidateOccupations", "candidateExams", "candidateCertifications",
+        "candidateDestinations", "candidateLanguages"
+    })
+    @Query(" select c from Candidate c "
+            + " where c.id in (:ids) ")
+    List<Candidate> findByIdsFetchAllEntities(@Param("ids") Iterable<Long> ids);
 
     @Query(" select c from Candidate c "
             + " where c.id in (:ids) ")

@@ -2010,7 +2010,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
-        List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
+//        List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
+        List<Candidate> candidatesUnsorted = candidateRepository.findByIdsFetchAllEntities(ids);
 
         end = System.currentTimeMillis();
         long fetchEntitiesTime = end - start;
@@ -2049,7 +2050,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         long countTime = end - start;
 
         LogBuilder.builder(log).action("findCandidates")
-            .message("Timings: fetch: " + fetchIdsTime
+            .message("Timings: fetchIds: " + fetchIdsTime
                 + " convert: " + convertTime
                 + " fetchEntities: " + fetchEntitiesTime
                 + " sort: " + sortTime
