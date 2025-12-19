@@ -141,7 +141,11 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     @EntityGraph(attributePaths = {
         "candidateOccupations", "candidateExams", "candidateCertifications",
-        "candidateDestinations", "candidateLanguages"
+        "candidateDestinations", "candidateLanguages", "candidateReviewStatusItems",
+        "candidateAttachments", "taskAssignments",
+        "candidateOpportunities",
+        "candidateProperties", "candidateEducations", "candidateJobExperiences",
+        "candidateSkills", "candidateNotes"
     })
     @Query(" select c from Candidate c "
             + " where c.id in (:ids) ")

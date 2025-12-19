@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
@@ -1571,7 +1572,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 setUnhcrRegistered(unhcrRegistered);
             }
 
-            List<CandidateLanguage> candidateLanguagesList = candidate.getCandidateLanguages();
+            Set<CandidateLanguage> candidateLanguagesList = candidate.getCandidateLanguages();
             final String languagesSpoken = candidateLanguagesList.stream()
                 .map(candidateLanguage -> Optional.ofNullable(candidateLanguage.getLanguage())
                     .map(Language::getName)
@@ -1604,7 +1605,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 setMaxEducationLevel(maxEducationLevel);
             }
 
-            List<CandidateOccupation> candidateOccupationsList = candidate.getCandidateOccupations();
+            Set<CandidateOccupation> candidateOccupationsList = candidate.getCandidateOccupations();
             final String occupations = candidateOccupationsList.stream()
                 .map(candidateOccupation -> Optional.ofNullable(candidateOccupation.getOccupation())
                     .map(Occupation::getName)
@@ -1640,7 +1641,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
 
         private String getSpecificLanguageSpeakingLevel(
-            List<CandidateLanguage> candidateLanguagesList, String languageToFind
+            Set<CandidateLanguage> candidateLanguagesList, String languageToFind
         ) {
             CandidateLanguage languageToCheck = candidateLanguagesList.stream()
                 .filter(cl -> cl.getLanguage() != null)

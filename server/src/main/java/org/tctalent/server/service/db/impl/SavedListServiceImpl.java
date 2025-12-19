@@ -274,7 +274,7 @@ public class SavedListServiceImpl implements SavedListService {
      */
     @NonNull
     private Set<TaskImpl> findActiveCandidateTasks(Candidate candidate) {
-        final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
+        final Set<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
         //Extract tasks which are actively assigned to the candidate.
         // We don't want to duplicate them.
         Set<TaskImpl> activeCandidateTasks = candidateTaskAssignments.stream()
@@ -338,7 +338,7 @@ public class SavedListServiceImpl implements SavedListService {
         if (!listTasks.isEmpty()) {
             final User loggedInUser = userService.getLoggedInUser();
 
-            final List<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
+            final Set<TaskAssignmentImpl> candidateTaskAssignments = candidate.getTaskAssignments();
 
             for (TaskAssignmentImpl taskAssignment : candidateTaskAssignments) {
                 //If this candidate task assignment is related to this list - and it is still
@@ -367,7 +367,7 @@ public class SavedListServiceImpl implements SavedListService {
         for (Candidate candidate : candidates) {
             //Deactivate any active, incomplete candidate task assignments for this task and
             //related to this list.
-            final List<TaskAssignmentImpl> taskAssignments = candidate.getTaskAssignments();
+            final Set<TaskAssignmentImpl> taskAssignments = candidate.getTaskAssignments();
             for (TaskAssignmentImpl taskAssignment : taskAssignments) {
                 if (taskAssignment.getTask().equals(task)
                     && isActiveIncompleteListRelatedTaskAssignment(taskAssignment, list)) {
