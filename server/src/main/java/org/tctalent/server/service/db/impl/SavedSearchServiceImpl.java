@@ -1988,17 +1988,33 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
 
+        long start = System.currentTimeMillis();
+        long end;
+
         //Get results
         final List<?> results = query.getResultList();
+
+        end = System.currentTimeMillis();
+        long fetchIdsTime = end - start;
+        start = end;
+
         //Process the results
         List<IdAndRank> idAndRanks =
             CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+
+        end = System.currentTimeMillis();
+        long convertTime = end - start;
+        start = end;
 
         //Get ids of sorted candidates
         List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
         List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
+
+        end = System.currentTimeMillis();
+        long fetchEntitiesTime = end - start;
+        start = end;
 
         //Candidates need to be sorted the same as the ids.
         //Map the unsorted candidates by their ids
@@ -2019,11 +2035,27 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             candidatesSorted.add(candidate);
         }
 
+        end = System.currentTimeMillis();
+        long sortTime = end - start;
+        start = end;
+
         //Compute count
         String countSql = extractCountSQL(request, user, excludedCandidates);
         LogBuilder.builder(log).action("countCandidates")
             .message("Query: " + countSql).logInfo();
         long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+
+        end = System.currentTimeMillis();
+        long countTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: fetch: " + fetchIdsTime
+                + " convert: " + convertTime
+                + " fetchEntities: " + fetchEntitiesTime
+                + " sort: " + sortTime
+                + " count: " + countTime
+            ).logInfo();
+
         return new PageImpl<>(candidatesSorted, pageRequest, total);
     }
 
