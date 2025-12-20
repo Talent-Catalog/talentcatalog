@@ -106,7 +106,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private Map<String, CandidateProperty> candidateProperties;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<TaskAssignmentImpl> taskAssignments;
+    @OrderBy("activatedDate DESC")
+    private List<TaskAssignmentImpl> taskAssignments;
 
     private String phone;
     private String whatsapp;
@@ -288,35 +289,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateOccupation> candidateOccupations;
+    private List<CandidateOccupation> candidateOccupations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("updatedDate DESC")
     private List<CandidateNote> candidateNotes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateEducation> candidateEducations;
+    @OrderBy("yearCompleted DESC")
+    private List<CandidateEducation> candidateEducations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateLanguage> candidateLanguages;
+    private List<CandidateLanguage> candidateLanguages;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateJobExperience> candidateJobExperiences;
+    @OrderBy("startDate DESC")
+    private List<CandidateJobExperience> candidateJobExperiences;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateCertification> candidateCertifications;
+    @OrderBy("dateCompleted DESC")
+    private List<CandidateCertification> candidateCertifications;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<CandidateReviewStatusItem> candidateReviewStatusItems;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateSkill> candidateSkills;
+    private List<CandidateSkill> candidateSkills;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateAttachment> candidateAttachments;
+    private List<CandidateAttachment> candidateAttachments;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateOpportunity> candidateOpportunities;
+    private List<CandidateOpportunity> candidateOpportunities;
 
     /**
      * Url link to corresponding candidate folder on Google Drive, if one exists.
@@ -422,19 +426,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      */
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateCitizenship> candidateCitizenships;
+    private List<CandidateCitizenship> candidateCitizenships;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateDependant> candidateDependants;
+    private List<CandidateDependant> candidateDependants;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateDestination> candidateDestinations;
+    private List<CandidateDestination> candidateDestinations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateExam> candidateExams;
+    private List<CandidateExam> candidateExams;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateVisaCheck> candidateVisaChecks;
+    private List<CandidateVisaCheck> candidateVisaChecks;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -844,7 +848,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @Nullable
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DuolingoCoupon> coupons = new ArrayList<>();
-
     public Candidate() {
     }
 
@@ -1315,11 +1318,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         this.user = user;
     }
 
-    public Set<CandidateOccupation> getCandidateOccupations() {
+    public List<CandidateOccupation> getCandidateOccupations() {
         return candidateOccupations;
     }
 
-    public void setCandidateOccupations(Set<CandidateOccupation> entities) {
+    public void setCandidateOccupations(List<CandidateOccupation> entities) {
         this.candidateOccupations = entities;
         if (entities != null) {
             entities.forEach(entity -> entity.setCandidate(this));
@@ -1339,11 +1342,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateOpportunity> getCandidateOpportunities() {
+    public List<CandidateOpportunity> getCandidateOpportunities() {
         return candidateOpportunities;
     }
 
-    public void setCandidateOpportunities(Set<CandidateOpportunity> entities) {
+    public void setCandidateOpportunities(List<CandidateOpportunity> entities) {
         this.candidateOpportunities = entities;
         if (entities != null) {
             for (CandidateOpportunity entity : entities) {
@@ -1360,11 +1363,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         this.candidateProperties = properties;
     }
 
-    public Set<CandidateEducation> getCandidateEducations() {
+    public List<CandidateEducation> getCandidateEducations() {
         return candidateEducations;
     }
 
-    public void setCandidateEducations(Set<CandidateEducation> entities) {
+    public void setCandidateEducations(List<CandidateEducation> entities) {
         this.candidateEducations = entities;
         if (entities != null) {
             for (CandidateEducation entity : entities) {
@@ -1373,11 +1376,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateLanguage> getCandidateLanguages() {
+    public List<CandidateLanguage> getCandidateLanguages() {
         return candidateLanguages;
     }
 
-    public void setCandidateLanguages(Set<CandidateLanguage> entities) {
+    public void setCandidateLanguages(List<CandidateLanguage> entities) {
         this.candidateLanguages = entities;
         if (entities != null) {
             for (CandidateLanguage entity : entities) {
@@ -1386,11 +1389,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateJobExperience> getCandidateJobExperiences() {
+    public List<CandidateJobExperience> getCandidateJobExperiences() {
         return candidateJobExperiences;
     }
 
-    public void setCandidateJobExperiences(Set<CandidateJobExperience> entities) {
+    public void setCandidateJobExperiences(List<CandidateJobExperience> entities) {
         this.candidateJobExperiences = entities;
         if (entities != null) {
             for (CandidateJobExperience entity : entities) {
@@ -1399,11 +1402,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateCertification> getCandidateCertifications() {
+    public List<CandidateCertification> getCandidateCertifications() {
         return candidateCertifications;
     }
 
-    public void setCandidateCertifications(Set<CandidateCertification> entities) {
+    public void setCandidateCertifications(List<CandidateCertification> entities) {
         this.candidateCertifications = entities;
         if (entities != null) {
             for (CandidateCertification entity : entities) {
@@ -1425,11 +1428,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateSkill> getCandidateSkills() {
+    public List<CandidateSkill> getCandidateSkills() {
         return candidateSkills;
     }
 
-    public void setCandidateSkills(Set<CandidateSkill> entities) {
+    public void setCandidateSkills(List<CandidateSkill> entities) {
         this.candidateSkills = entities;
         if (entities != null) {
             for (CandidateSkill entity : entities) {
@@ -1438,9 +1441,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateAttachment> getCandidateAttachments() { return candidateAttachments; }
+    public List<CandidateAttachment> getCandidateAttachments() { return candidateAttachments; }
 
-    public void setCandidateAttachments(Set<CandidateAttachment> entities) {
+    public void setCandidateAttachments(List<CandidateAttachment> entities) {
         this.candidateAttachments = entities;
         if (entities != null) {
             for (CandidateAttachment entity : entities) {
@@ -1449,11 +1452,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateCitizenship> getCandidateCitizenships() {
+    public List<CandidateCitizenship> getCandidateCitizenships() {
         return candidateCitizenships;
     }
 
-    public void setCandidateCitizenships(Set<CandidateCitizenship> entities) {
+    public void setCandidateCitizenships(List<CandidateCitizenship> entities) {
         this.candidateCitizenships = entities;
         if (entities != null) {
             for (CandidateCitizenship entity : entities) {
@@ -1462,9 +1465,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateExam> getCandidateExams() { return candidateExams; }
+    public List<CandidateExam> getCandidateExams() { return candidateExams; }
 
-    public void setCandidateExams(Set<CandidateExam> entities) {
+    public void setCandidateExams(List<CandidateExam> entities) {
         this.candidateExams = entities;
         if (entities != null) {
             for (CandidateExam entity : entities) {
@@ -1473,11 +1476,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateVisaCheck> getCandidateVisaChecks() {
+    public List<CandidateVisaCheck> getCandidateVisaChecks() {
+        if (candidateVisaChecks != null) {
+            candidateVisaChecks.sort(null);
+        }
         return candidateVisaChecks;
     }
 
-    public void setCandidateVisaChecks(Set<CandidateVisaCheck> entities) {
+    public void setCandidateVisaChecks(List<CandidateVisaCheck> entities) {
         this.candidateVisaChecks = entities;
         if (entities != null) {
             for (CandidateVisaCheck entity : entities) {
@@ -1882,9 +1888,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public void setAsylumYear(@Nullable LocalDate asylumYear) { this.asylumYear = asylumYear; }
 
     @Nullable
-    public Set<CandidateDependant> getCandidateDependants() { return candidateDependants; }
+    public List<CandidateDependant> getCandidateDependants() { return candidateDependants; }
 
-    public void setCandidateDependants(Set<CandidateDependant> entities) {
+    public void setCandidateDependants(List<CandidateDependant> entities) {
         this.candidateDependants = entities;
         if (entities != null) {
             for (CandidateDependant entity : entities) {
@@ -1893,11 +1899,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateDestination> getCandidateDestinations() {
+    public List<CandidateDestination> getCandidateDestinations() {
+        if (candidateDestinations != null) {
+            candidateDestinations.sort(null);
+        }
         return candidateDestinations;
     }
 
-    public void setCandidateDestinations(Set<CandidateDestination> entities) {
+    public void setCandidateDestinations(List<CandidateDestination> entities) {
         this.candidateDestinations = entities;
         if (entities != null) {
             for (CandidateDestination entity : entities) {
@@ -2491,11 +2500,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<TaskAssignmentImpl> getTaskAssignments() {
+    public List<TaskAssignmentImpl> getTaskAssignments() {
         return taskAssignments;
     }
 
-    public void setTaskAssignments(Set<TaskAssignmentImpl> taskAssignments) {
+    public void setTaskAssignments(List<TaskAssignmentImpl> taskAssignments) {
         this.taskAssignments = taskAssignments;
     }
 

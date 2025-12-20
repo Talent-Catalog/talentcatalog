@@ -576,7 +576,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate addMissingDestinations(Candidate candidate) {
         //Check candidate's preferred destinations
-        Set<CandidateDestination> destinations = candidate.getCandidateDestinations();
+        List<CandidateDestination> destinations = candidate.getCandidateDestinations();
         //Construct hashset of country ids for quick checking
         Set<Long> candidateDestinationCountryIds = new HashSet<>();
         for (CandidateDestination destination : destinations) {
@@ -625,7 +625,7 @@ public class CandidateServiceImpl implements CandidateService {
      * Sets transient fields on the given task assignments.
      * @param taskAssignments Task assignments
      */
-    private void populateTransientTaskAssignmentFields(Set<TaskAssignmentImpl> taskAssignments) {
+    private void populateTransientTaskAssignmentFields(List<TaskAssignmentImpl> taskAssignments) {
         for (TaskAssignmentImpl taskAssignment : taskAssignments) {
             populateTransientTaskAssignmentFields(taskAssignment);
         }
@@ -682,7 +682,7 @@ public class CandidateServiceImpl implements CandidateService {
 
                     //See if we already have an entry for this exam
                     Optional<CandidateExam> examO = Optional.empty();
-                    final Set<CandidateExam> candidateExams = candidate.getCandidateExams();
+                    final List<CandidateExam> candidateExams = candidate.getCandidateExams();
                     if (candidateExams != null) {
                         examO = candidateExams.stream().filter(
                             e -> e.getExam().equals(examType)).findFirst();
@@ -1325,7 +1325,7 @@ public class CandidateServiceImpl implements CandidateService {
     private boolean isCandidateInfoComplete(Candidate candidate) {
         //We accept it as complete as long as we have an occupation
         boolean complete = false;
-        final Set<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
+        final List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
         if (candidateOccupations != null && !candidateOccupations.isEmpty()) {
             complete = true;
         }
@@ -1501,7 +1501,7 @@ public class CandidateServiceImpl implements CandidateService {
     private void updateCitizenships(Candidate candidate, List<Country> nationalities) {
         //Remove any citizenships that don't appear in the nationalities
         List<CandidateCitizenship> removed = new ArrayList<>();
-        Set<CandidateCitizenship> citizenships = candidate.getCandidateCitizenships();
+        List<CandidateCitizenship> citizenships = candidate.getCandidateCitizenships();
         for (CandidateCitizenship citizenship : citizenships) {
             if (!nationalities.contains(citizenship.getNationality())) {
                 //Remove the citizenship
@@ -1685,7 +1685,7 @@ public class CandidateServiceImpl implements CandidateService {
 
                     //See if we already have an entry for this exam
                     Optional<CandidateExam> examO = Optional.empty();
-                    final Set<CandidateExam> candidateExams = candidate.getCandidateExams();
+                    final List<CandidateExam> candidateExams = candidate.getCandidateExams();
                     if (candidateExams != null) {
                         examO = candidateExams.stream().filter(
                             e -> e.getExam().equals(examType)).findFirst();
@@ -2387,7 +2387,7 @@ public class CandidateServiceImpl implements CandidateService {
         return "https://tctalent.org/admin-portal/candidate/" + candidateNumber;
     }
 
-    public String formatCandidateMajor(Set<CandidateEducation> candidateEducations){
+    public String formatCandidateMajor(List<CandidateEducation> candidateEducations){
         StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateEducations)){
             for (CandidateEducation candidateEducation : candidateEducations) {
@@ -2400,7 +2400,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     }
 
-    public String formatCandidateOccupation(Set<CandidateOccupation> candidateOccupations){
+    public String formatCandidateOccupation(List<CandidateOccupation> candidateOccupations){
         StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateOccupations)){
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
@@ -2413,7 +2413,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     }
 
-    public String getEnglishSpokenProficiency(Set<CandidateLanguage> candidateLanguages){
+    public String getEnglishSpokenProficiency(List<CandidateLanguage> candidateLanguages){
         StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateLanguages)){
             for (CandidateLanguage candidateLanguage : candidateLanguages) {
@@ -3309,7 +3309,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private void resolveOutstandingRequiredTaskAssignments(Candidate candidate) {
-        Set<TaskAssignmentImpl> taskAssignments = candidate.getTaskAssignments();
+        List<TaskAssignmentImpl> taskAssignments = candidate.getTaskAssignments();
         for (TaskAssignmentImpl ta : taskAssignments) {
             // All outstanding required tasks, need to be set as completed. And if not abandoned, need to also be set as abandoned.
             if (ta.getStatus() != Status.deleted) {

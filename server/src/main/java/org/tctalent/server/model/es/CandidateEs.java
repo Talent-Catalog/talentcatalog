@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -316,7 +315,7 @@ public class CandidateEs {
         this.minEnglishSpokenLevel = null;
         this.minEnglishWrittenLevel = null;
         this.otherLanguages = new ArrayList<>();
-        Set<CandidateLanguage> proficiencies = candidate.getCandidateLanguages();
+        List<CandidateLanguage> proficiencies = candidate.getCandidateLanguages();
         if (proficiencies != null) {
             for (CandidateLanguage proficiency : proficiencies) {
                 //Protect against bad data
@@ -346,7 +345,7 @@ public class CandidateEs {
         }
 
         this.certifications = new ArrayList<>();
-        Set<CandidateCertification> certifications = candidate.getCandidateCertifications();
+        List<CandidateCertification> certifications = candidate.getCandidateCertifications();
         if (certifications != null) {
             for (CandidateCertification certification : certifications) {
                 final String text = certification.getName();
@@ -357,7 +356,7 @@ public class CandidateEs {
         }
 
         this.cvs = new ArrayList<>();
-        Set<CandidateAttachment> candidateAttachments = candidate.getCandidateAttachments();
+        List<CandidateAttachment> candidateAttachments = candidate.getCandidateAttachments();
         if (candidateAttachments != null) {
             for (CandidateAttachment attachment : candidateAttachments) {
                 final String textExtract = attachment.getTextExtract();
@@ -368,7 +367,7 @@ public class CandidateEs {
         }
 
         //Copy education related data
-        Set<CandidateEducation> candidateEducations = candidate.getCandidateEducations();
+        List<CandidateEducation> candidateEducations = candidate.getCandidateEducations();
 
         //Course names are extracted as searchable text
         this.educations = new ArrayList<>();
@@ -389,7 +388,7 @@ public class CandidateEs {
 
 
         this.jobExperiences = new ArrayList<>();
-        Set<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
+        List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
         if (jobs != null) {
             for (CandidateJobExperience job : jobs) {
                 String role = job.getRole();
@@ -414,7 +413,7 @@ public class CandidateEs {
         }
 
         this.occupations = new ArrayList<>();
-        Set<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
+        List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
         if (candidateOccupations != null) {
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
                 if (candidateOccupation != null && candidateOccupation.getOccupation() != null) {
@@ -433,7 +432,7 @@ public class CandidateEs {
         }
 
         this.skills = new ArrayList<>();
-        Set<CandidateSkill> skills = candidate.getCandidateSkills();
+        List<CandidateSkill> skills = candidate.getCandidateSkills();
         if (skills != null) {
             for (CandidateSkill skill : skills) {
                 if (skill != null && skill.getSkill() != null) {
