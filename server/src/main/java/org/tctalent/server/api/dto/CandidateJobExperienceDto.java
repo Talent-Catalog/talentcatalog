@@ -16,8 +16,11 @@
 
 package org.tctalent.server.api.dto;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.Country;
 
 /**
  * TODO JC Doc
@@ -30,5 +33,13 @@ public class CandidateJobExperienceDto {
     private Long id;
     private String companyName;
     private String role;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Boolean fullTime;
+    private Boolean paid;
     private String description;
+    private Country country;
+    private CandidateOccupation candidateOccupation;
+
+
 }
