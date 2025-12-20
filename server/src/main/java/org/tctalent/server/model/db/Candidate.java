@@ -56,6 +56,7 @@ import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
 import org.tctalent.server.api.admin.SystemAdminApi;
+import org.tctalent.server.api.dto.CandidateSimpleAttributes;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.es.CandidateEs;
@@ -67,7 +68,8 @@ import org.tctalent.server.util.SalesforceHelper;
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
 @Slf4j
-public class Candidate extends AbstractAuditableDomainObject<Long> implements HasPublicId {
+public class Candidate extends AbstractAuditableDomainObject<Long>
+    implements HasPublicId, CandidateSimpleAttributes {
 
     private String candidateNumber;
     private String publicId;
