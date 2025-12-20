@@ -60,7 +60,7 @@ public class CandidateReadRepository {
         //attributes in the Candidate entity.
         String sql = """
             with base as (
-              select c.id, c.candidate_number, c.public_id
+              select c.id, c.candidate_number, c.public_id, c.user_id
               from candidate c
               where c.id = any(:ids)
             )
@@ -68,6 +68,27 @@ public class CandidateReadRepository {
               b.id,
               b.candidate_number,
               b.public_id,
+              b.user_id,
+
+              coalesce((
+                select jsonb_build_object(
+                  'firstName', u.first_name,
+                  'lastName', u.last_name,
+                  'username', u.username,
+                  'email', u.email,
+                  'partner',
+                        jsonb_build_object(
+                          'id', partner.id,
+                          'publicId', partner.public_id,
+                          'abbreviation', partner.abbreviation,
+                          'name', partner.name,
+                          'websiteUrl', partner.website_url
+                        )
+                )
+                from users u
+                left join partner on partner.id = u.partner_id
+                where u.id = b.user_id
+              ), '[]'::jsonb) as "user",
 
               coalesce((
                 select jsonb_agg(jsonb_build_object(
