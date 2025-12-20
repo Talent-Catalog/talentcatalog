@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 import org.springframework.data.domain.Page;
+import org.tctalent.server.api.dto.CandidateDto;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -92,6 +93,14 @@ public interface SavedSearchService {
      * @return Page of candidates
      */
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
+
+    /**
+     * Returns the requested page of candidates which match the attributes in
+     * the request.
+     * @param request Request specifying which candidates to return
+     * @return Page of candidates
+     */
+    Page<CandidateDto> searchCandidateDtos(SearchCandidateRequest request);
 
     /**
      * Returns the requested page of candidates of the given saved search.

@@ -416,6 +416,42 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    @Override
+    @Transactional
+    public Page<CandidateDto> searchCandidateDtos(SearchCandidateRequest request) {
+        Page<CandidateDto> candidates;
+        User user = userService.getLoggedInUser();
+        if (user == null) {
+            candidates = doSearchCandidateDtos(request);
+        } else {
+            SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
+            // If searching a default search, update the default search with every search (aka Autosave).
+            // Else it is a saved search and those are updated upon 'Update Search' button only.
+            if (savedSearch.getDefaultSearch()) {
+                UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+                updateRequest.setSearchCandidateRequest(request);
+                //Set other fields - no changes there
+                updateRequest.setName(savedSearch.getName());
+                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setFixed(savedSearch.getFixed());
+                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
+                updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
+                //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
+                updateSavedSearch(savedSearch.getId(), updateRequest);
+            }
+
+            //Do the search
+            candidates = doSearchCandidateDtos(request);
+
+            //TODO JC Need to get select lists working
+            //Add in any selections
+//            markUserSelectedCandidates(savedSearch.getId(), candidates);
+        }
+
+        return candidates;
+    }
+
     /**
      * Mark the Candidate objects with any context associated with the
      * selection list of the saved search.
@@ -1923,6 +1959,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    private Page<CandidateDto> doSearchCandidateDtos(SearchCandidateRequest searchRequest) {
+
+        Page<CandidateDto> candidates;
+
+        // Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
+
+        // Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(searchRequest);
+
+        candidates = doSQLSearchCandidateDtos(searchRequest, excludedCandidates);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .searchId(searchRequest.getSavedSearchId())
+            .action("doSearchCandidateDtos")
+            .message("Found " + candidates.getTotalElements() + " candidates in search")
+            .logInfo();
+
+        return candidates;
+    }
+
     /**
      * Do a paged search for candidates according to the given request but excluding the given
      * candidates. Sorting and paging are supported as specified in the request.
@@ -2039,6 +2098,100 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         List<Candidate> candidatesSorted = new ArrayList<>();
         for (IdAndRank idAndRank : idAndRanks) {
             final Candidate candidate = candidatesById.get(idAndRank.id());
+
+            //Optionally update candidate data with any ranking values.
+            final Number rank = idAndRank.rank();
+            //Rank is a transient field so no need to set to null
+            if (rank != null) {
+                candidate.setRank(rank);
+            }
+            candidatesSorted.add(candidate);
+        }
+
+        end = System.currentTimeMillis();
+        long sortTime = end - start;
+        start = end;
+
+        //Compute count
+        String countSql = extractCountSQL(request, user, excludedCandidates);
+        LogBuilder.builder(log).action("countCandidates")
+            .message("Query: " + countSql).logInfo();
+        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+
+        end = System.currentTimeMillis();
+        long countTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: fetchIds: " + fetchIdsTime
+                + " convert: " + convertTime
+                + " fetchEntities: " + fetchEntitiesTime
+                + " fetchDtos: " + fetchDtosTime
+                + " sort: " + sortTime
+                + " count: " + countTime
+            ).logInfo();
+
+        return new PageImpl<>(candidatesSorted, pageRequest, total);
+    }
+
+    private Page<CandidateDto> doSQLSearchCandidateDtos(
+        SearchCandidateRequest request, @Nullable Set<Candidate> excludedCandidates) {
+        User user = userService.getLoggedInUser();
+        final PageRequest pageRequest = request.getPageRequest();
+
+        String sql = extractFetchSQL(request, user, excludedCandidates, true);
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Query: " + sql).logInfo();
+
+        //Create and execute the query to return the candidate ids
+        Query query = entityManager.createNativeQuery(sql);
+        query.setFirstResult((int) pageRequest.getOffset());
+        query.setMaxResults(pageRequest.getPageSize());
+
+        long start = System.currentTimeMillis();
+        long end;
+
+        //Get results
+        final List<?> results = query.getResultList();
+
+        end = System.currentTimeMillis();
+        long fetchIdsTime = end - start;
+        start = end;
+
+        //Process the results
+        List<IdAndRank> idAndRanks =
+            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+
+        end = System.currentTimeMillis();
+        long convertTime = end - start;
+        start = end;
+
+        //Get ids of sorted candidates
+        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
+
+        end = System.currentTimeMillis();
+        long fetchEntitiesTime = end - start;
+        start = end;
+
+        List<CandidateDto> candidatesUnsorted;
+        try {
+            candidatesUnsorted = candidateDtoService.findByIds(ids);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        end = System.currentTimeMillis();
+        long fetchDtosTime = end - start;
+        start = end;
+
+        //Candidates need to be sorted the same as the ids.
+        //Map the unsorted candidates by their ids
+        Map<Long, CandidateDto> candidatesById = candidatesUnsorted.stream()
+            .collect(toMap(CandidateDto::getId, c -> c));
+
+        //Construct a sorted list of the candidates in the same order as the returned ids.
+        List<CandidateDto> candidatesSorted = new ArrayList<>();
+        for (IdAndRank idAndRank : idAndRanks) {
+            final CandidateDto candidate = candidatesById.get(idAndRank.id());
 
             //Optionally update candidate data with any ranking values.
             final Number rank = idAndRank.rank();

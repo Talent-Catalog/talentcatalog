@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.anonymization.model.RegisterCandidate201Response;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.api.dto.CandidateDto;
 import org.tctalent.server.api.dto.CandidateIntakeDataBuilderSelector;
 import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.exception.ExportFailedException;
@@ -105,7 +106,7 @@ public class CandidateAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
-        Page<Candidate> candidates = savedSearchService.searchCandidates(request);
+        Page<CandidateDto> candidates = savedSearchService.searchCandidateDtos(request);
 
         long start = System.currentTimeMillis();
         long end;

@@ -33,4 +33,7 @@ public class CandidateDto implements CandidateSimpleAttributes {
     private String publicId;
 
     private List<CandidateJobExperienceDto> candidateJobExperiences;
+
+    private Number rank;
+    private boolean selected;
 }
