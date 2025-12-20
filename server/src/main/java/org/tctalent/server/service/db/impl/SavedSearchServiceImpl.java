@@ -26,6 +26,7 @@ import static org.tctalent.server.util.StringHelper.getStringListFromString;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.opencsv.CSVWriter;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -73,6 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.tctalent.server.api.dto.CandidateDto;
 import org.tctalent.server.exception.CircularReferencedException;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityExistsException;
@@ -133,6 +135,7 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -164,6 +167,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
+    private final CandidateDtoService candidateDtoService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
@@ -2016,6 +2020,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         long fetchEntitiesTime = end - start;
         start = end;
 
+        try {
+            final List<CandidateDto> dtos = candidateDtoService.findByIds(ids);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        end = System.currentTimeMillis();
+        long fetchDtosTime = end - start;
+        start = end;
+
         //Candidates need to be sorted the same as the ids.
         //Map the unsorted candidates by their ids
         Map<Long, Candidate> candidatesById = candidatesUnsorted.stream()
@@ -2049,9 +2063,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         long countTime = end - start;
 
         LogBuilder.builder(log).action("findCandidates")
-            .message("Timings: fetch: " + fetchIdsTime
+            .message("Timings: fetchIds: " + fetchIdsTime
                 + " convert: " + convertTime
                 + " fetchEntities: " + fetchEntitiesTime
+                + " fetchDtos: " + fetchDtosTime
                 + " sort: " + sortTime
                 + " count: " + countTime
             ).logInfo();
