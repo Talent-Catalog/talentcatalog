@@ -25,7 +25,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.tctalent.server.api.dto.CandidateFlatDto;
+import org.tctalent.server.repository.db.read.dao.CandidateReadDao;
+import org.tctalent.server.repository.db.read.dto.CandidateFlatDto;
 
 /**
  * TODO JC Doc
@@ -34,10 +35,10 @@ import org.tctalent.server.api.dto.CandidateFlatDto;
  */
 @Tag("skip-test-in-gradle-build")
 @SpringBootTest
-class CandidateReadRepositoryTest {
+class CandidateReadDaoTest {
 
     @Autowired
-    private CandidateReadRepository candidateReadRepository;
+    private CandidateReadDao candidateReadDao;
 
     @BeforeEach
     void setUp() {
@@ -45,9 +46,9 @@ class CandidateReadRepositoryTest {
 
     @Test
     void findByIds() {
-        assertNotNull(candidateReadRepository);
+        assertNotNull(candidateReadDao);
 
-        final List<CandidateFlatDto> flatDtos = candidateReadRepository.findByIds(Set.of(27673L));
+        final List<CandidateFlatDto> flatDtos = candidateReadDao.findByIds(Set.of(27673L));
         assertNotNull(flatDtos);
 
     }

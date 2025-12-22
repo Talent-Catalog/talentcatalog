@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.repository.db;
+package org.tctalent.server.repository.db.read.dao;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.tctalent.server.api.dto.CandidateFlatDto;
+import org.tctalent.server.repository.db.read.dto.CandidateFlatDto;
 
 /**
  * TODO JC Doc
@@ -36,7 +36,7 @@ import org.tctalent.server.api.dto.CandidateFlatDto;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class CandidateReadRepository {
+public class CandidateReadDao {
     private final NamedParameterJdbcTemplate jdbc;
 
     /**

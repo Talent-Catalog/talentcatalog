@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.dto;
+package org.tctalent.server.repository.db.read.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.api.dto.CandidateJobExperienceDto;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateCertification;
@@ -67,7 +68,7 @@ import org.tctalent.server.model.db.YesNoUnsure;
  */
 @Getter
 @Setter
-public class CandidateDto implements CandidateSimpleAttributes {
+public class CandidateReadDto implements CandidateSimpleAttributes {
     private Long id;
     private String candidateNumber;
     private String publicId;

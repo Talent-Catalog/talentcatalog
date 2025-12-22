@@ -14,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.dto;
+package org.tctalent.server.repository.db.read.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * TODO JC Doc
+ * TODO JC Doc - Maybe not needed with annotation
  *
  * @author John Cameron
  */

@@ -25,28 +25,28 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.api.dto.CandidateDto;
-import org.tctalent.server.api.dto.CandidateFlatDto;
-import org.tctalent.server.repository.db.CandidateReadRepository;
+import org.tctalent.server.repository.db.read.dao.CandidateReadDao;
+import org.tctalent.server.repository.db.read.dto.CandidateFlatDto;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.service.db.CandidateDtoService;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CandidateDtoServiceImpl implements CandidateDtoService {
-    private final CandidateReadRepository candidateReadRepository;
+    private final CandidateReadDao candidateReadDao;
     private final ObjectMapper jsonMapper;
 
     @Override
-    public List<CandidateDto> findByIds(Collection<Long> ids) throws JsonProcessingException {
+    public List<CandidateReadDto> findByIds(Collection<Long> ids) throws JsonProcessingException {
 
         //This should fetch everything from the database in a single access
-        final List<CandidateFlatDto> flatDtos = candidateReadRepository.findByIds(ids);
+        final List<CandidateFlatDto> flatDtos = candidateReadDao.findByIds(ids);
 
         //Decode the joined attributes
-        List<CandidateDto> dtos = new ArrayList<>();
+        List<CandidateReadDto> dtos = new ArrayList<>();
         for (CandidateFlatDto candidateFlatDto : flatDtos) {
-            CandidateDto dto = new CandidateDto();
+            CandidateReadDto dto = new CandidateReadDto();
 
             //todo This could be done using a mapstruct mapper - constrained to all simple attributes
             dto.setId(candidateFlatDto.getId());

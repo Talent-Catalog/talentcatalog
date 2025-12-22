@@ -19,7 +19,7 @@ package org.tctalent.server.service.db;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Collection;
 import java.util.List;
-import org.tctalent.server.api.dto.CandidateDto;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 /**
  * Service interface for managing Candidate DTOs.
@@ -36,6 +36,6 @@ public interface CandidateDtoService {
      * @param ids Ids of candidates to be fetched
      * @return List of CandidateDTOs
      */
-    List<CandidateDto> findByIds(Collection<Long> ids) throws JsonProcessingException;
+    List<CandidateReadDto> findByIds(Collection<Long> ids) throws JsonProcessingException;
 
 }

@@ -74,7 +74,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.tctalent.server.api.dto.CandidateDto;
 import org.tctalent.server.exception.CircularReferencedException;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityExistsException;
@@ -122,6 +121,7 @@ import org.tctalent.server.repository.db.SavedSearchSpecification;
 import org.tctalent.server.repository.db.SearchJoinRepository;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -418,8 +418,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     @Transactional
-    public Page<CandidateDto> searchCandidateDtos(SearchCandidateRequest request) {
-        Page<CandidateDto> candidates;
+    public Page<CandidateReadDto> searchCandidateDtos(SearchCandidateRequest request) {
+        Page<CandidateReadDto> candidates;
         User user = userService.getLoggedInUser();
         if (user == null) {
             candidates = doSearchCandidateDtos(request);
@@ -1959,9 +1959,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
-    private Page<CandidateDto> doSearchCandidateDtos(SearchCandidateRequest searchRequest) {
+    private Page<CandidateReadDto> doSearchCandidateDtos(SearchCandidateRequest searchRequest) {
 
-        Page<CandidateDto> candidates;
+        Page<CandidateReadDto> candidates;
 
         // Compute the candidates which should be excluded from search
         Set<Candidate> excludedCandidates =
@@ -2080,7 +2080,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         start = end;
 
         try {
-            final List<CandidateDto> dtos = candidateDtoService.findByIds(ids);
+            final List<CandidateReadDto> dtos = candidateDtoService.findByIds(ids);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -2133,7 +2133,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return new PageImpl<>(candidatesSorted, pageRequest, total);
     }
 
-    private Page<CandidateDto> doSQLSearchCandidateDtos(
+    private Page<CandidateReadDto> doSQLSearchCandidateDtos(
         SearchCandidateRequest request, @Nullable Set<Candidate> excludedCandidates) {
         User user = userService.getLoggedInUser();
         final PageRequest pageRequest = request.getPageRequest();
@@ -2172,7 +2172,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         long fetchEntitiesTime = end - start;
         start = end;
 
-        List<CandidateDto> candidatesUnsorted;
+        List<CandidateReadDto> candidatesUnsorted;
         try {
             candidatesUnsorted = candidateDtoService.findByIds(ids);
         } catch (JsonProcessingException e) {
@@ -2185,13 +2185,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Candidates need to be sorted the same as the ids.
         //Map the unsorted candidates by their ids
-        Map<Long, CandidateDto> candidatesById = candidatesUnsorted.stream()
-            .collect(toMap(CandidateDto::getId, c -> c));
+        Map<Long, CandidateReadDto> candidatesById = candidatesUnsorted.stream()
+            .collect(toMap(CandidateReadDto::getId, c -> c));
 
         //Construct a sorted list of the candidates in the same order as the returned ids.
-        List<CandidateDto> candidatesSorted = new ArrayList<>();
+        List<CandidateReadDto> candidatesSorted = new ArrayList<>();
         for (IdAndRank idAndRank : idAndRanks) {
-            final CandidateDto candidate = candidatesById.get(idAndRank.id());
+            final CandidateReadDto candidate = candidatesById.get(idAndRank.id());
 
             //Optionally update candidate data with any ranking values.
             final Number rank = idAndRank.rank();

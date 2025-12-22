@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.dto;
+package org.tctalent.server.repository.db.read.dto;
 
 /**
- * TODO JC Doc
+ * TODO JC Doc- no longer needed given annotation which can identify simply attirbutes  
  *
  * @author John Cameron
  */
