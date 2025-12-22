@@ -16,16 +16,18 @@
 
 package org.tctalent.server.repository.db.read.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.tctalent.server.repository.db.read.dto.CandidateFlatDto;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
+import org.tctalent.server.repository.db.read.mapper.CandidateReadMapper;
+import org.tctalent.server.repository.db.read.sql.SqlJsonQueryBuilder;
 
 /**
  * TODO JC Doc
@@ -34,78 +36,33 @@ import org.tctalent.server.repository.db.read.dto.CandidateFlatDto;
  */
 @Repository
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 @Slf4j
 public class CandidateReadDao {
+    private final CandidateReadMapper mapper;
     private final NamedParameterJdbcTemplate jdbc;
+    private final SqlJsonQueryBuilder sqlJsonQueryBuilder;
 
-    /**
-     * Creates a CandidateFlatDto from a ResultSet.
-     */
-    private RowMapper<CandidateFlatDto> candidateFlatDtoRowMapper =
-        (rs, rowNum) -> {
-            CandidateFlatDto flatDto = new CandidateFlatDto();
-            flatDto.setId(rs.getLong("id"));
-            flatDto.setCandidateNumber(rs.getString("candidate_number"));
-            flatDto.setPublicId(rs.getString("public_id"));
-            flatDto.setCandidateJobExperiences(rs.getString("candidateJobExperiences"));
-            return flatDto;
-    };
+    public CandidateReadDao(NamedParameterJdbcTemplate jdbc, ObjectMapper objectMapper,
+        SqlJsonQueryBuilder sqlJsonQueryBuilder) {
+        this.jdbc = jdbc;
+        this.mapper = new CandidateReadMapper(objectMapper);
+        this.sqlJsonQueryBuilder = sqlJsonQueryBuilder;
+    }
 
-    public List<CandidateFlatDto> findByIds(Collection<Long> ids) {
+    public List<CandidateReadDto> findByIds(@Nullable Collection<Long> candidateIds) {
+        if (candidateIds == null || candidateIds.isEmpty()) {
+            return List.of();
+        }
+        
+        String sql = sqlJsonQueryBuilder.buildByIdsQuery(
+            CandidateReadDto.class,
+            "ids"
+        );
 
-        //TODO JC Construct the sql query - this could be computed in code
-        //It needs to select all the simple attribute fields in CandidateSimpleAttributes
-        //and compute JSONB string fields from joined attributes using the names of the joined
-        //attributes in the Candidate entity.
-        String sql = """
-            with base as (
-              select c.id, c.candidate_number, c.public_id, c.user_id
-              from candidate c
-              where c.id = any(:ids)
-            )
-            select
-              b.id,
-              b.candidate_number,
-              b.public_id,
-              b.user_id,
-
-              coalesce((
-                select jsonb_build_object(
-                  'firstName', u.first_name,
-                  'lastName', u.last_name,
-                  'username', u.username,
-                  'email', u.email,
-                  'partner',
-                        jsonb_build_object(
-                          'id', partner.id,
-                          'publicId', partner.public_id,
-                          'abbreviation', partner.abbreviation,
-                          'name', partner.name,
-                          'websiteUrl', partner.website_url
-                        )
-                )
-                from users u
-                left join partner on partner.id = u.partner_id
-                where u.id = b.user_id
-              ), '[]'::jsonb) as "user",
-
-              coalesce((
-                select jsonb_agg(jsonb_build_object(
-                  'companyName', cje.company_name,
-                  'role', cje.role,
-                  'description', cje.description
-                ))
-                from candidate_job_experience cje
-                where cje.candidate_id = b.id
-              ), '[]'::jsonb) as candidateJobExperiences
-
-            from base b
-            """;
         return jdbc.query(
             sql,
-            Map.of("ids", ids.toArray(Long[]::new)),
-            candidateFlatDtoRowMapper
+            Map.of("ids", candidateIds.toArray(Long[]::new)),
+            mapper
             );
     }
 }
