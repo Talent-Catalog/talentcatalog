@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
-import org.tctalent.server.api.dto.CandidateJobExperienceDto;
+import org.tctalent.server.repository.db.read.dto.CandidateJobExperienceDto;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 public class CandidateReadMapper implements RowMapper<CandidateReadDto> {

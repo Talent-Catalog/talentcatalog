@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.dto;
+package org.tctalent.server.repository.db.read.dto;
 
 import java.time.LocalDate;
 import lombok.Getter;
