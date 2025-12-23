@@ -13,27 +13,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+package org.tctalent.server.repository.db.read.annotation;
 
-package org.tctalent.server.repository.db.read.dto;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
-import org.tctalent.server.repository.db.read.annotation.SqlTable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * TODO JC Doc
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-@SqlTable(name="users", alias = "u")
-@SqlDefaults(mapUnannotatedColumns = true)
-public class UserReadDto {
-    private Long id;
-    
-    private String firstName;
-    
-    private String lastName;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface SqlDefaults {
+    /**
+     * If true, unannotated (non-static, non-transient) fields are treated as scalar DB columns
+     * using camelToSnakeCase(fieldName).
+     * If false, only fields explicitly annotated are mapped.
+     */
+    boolean mapUnannotatedColumns() default false;
 }
