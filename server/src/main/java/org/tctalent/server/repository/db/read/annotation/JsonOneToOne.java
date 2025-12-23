@@ -21,17 +21,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface JsonOneToOne {
-    Class<?> targetType();
-    String table();
-    String alias();
-    String joinLeftColumn();
+    Class<?> type() default Void.class;
+    String joinLeftColumn();              // e.g. c.created_by
     String joinRightColumn() default "id";
 }

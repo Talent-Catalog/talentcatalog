@@ -20,19 +20,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface JsonOneToMany {
-    Class<?> elementType();
-    String table();
-    String alias();
-    String fkColumn();
-    String parentPkColumn() default "id";
+
+    /**
+     * Default is the type deduced from the type of the annotated field 
+     */
+    Class<?> type() default Void.class;  //
+    String joinColumn();                  // column on child table
     String orderBy() default "";
 }
-

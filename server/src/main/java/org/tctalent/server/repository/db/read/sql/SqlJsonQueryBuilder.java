@@ -19,6 +19,8 @@ import static org.tctalent.server.util.RegexHelpers.camelToSnakeCase;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -26,13 +28,14 @@ import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlColumn;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
+import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 @Component
 public class SqlJsonQueryBuilder {
 
     /* ==========================================================
-       Public API
+       Public entry point
        ========================================================== */
 
     public String buildByIdsQuery(Class<?> rootDtoClass, String idsParamName) {
@@ -43,9 +46,8 @@ public class SqlJsonQueryBuilder {
         );
 
         String rootAlias = rootTable.alias();
-        String rootTableName = rootTable.name();
 
-        String rootJson = buildJsonForDto(
+        String rootJson = buildJsonObject(
             rootDtoClass,
             rootAlias,
             rootAlias + ".id"
@@ -60,7 +62,7 @@ public class SqlJsonQueryBuilder {
             """.formatted(
             rootAlias,
             rootJson,
-            rootTableName, rootAlias,
+            rootTable.name(), rootAlias,
             rootAlias, idsParamName
         ).strip();
     }
@@ -69,30 +71,33 @@ public class SqlJsonQueryBuilder {
        Recursive JSON builder
        ========================================================== */
 
-    private String buildJsonForDto(
+    private String buildJsonObject(
         Class<?> dtoType,
         String tableAlias,
         String idExpression
     ) {
-        boolean mapDefaults = shouldMapUnannotated(dtoType);
-
-        List<String> kv = new ArrayList<>();
+        boolean mapDefaults = mapUnannotated(dtoType);
+        List<String> fields = new ArrayList<>();
 
         for (Field f : dtoType.getDeclaredFields()) {
-            if (shouldIgnore(f)) continue;
+            if (ignore(f)) continue;
 
-            // 1️⃣ One-to-many (JSON array)
+            /* ---------- one-to-many ---------- */
             JsonOneToMany otm = f.getAnnotation(JsonOneToMany.class);
             if (otm != null) {
-                String childAlias = otm.alias();
 
-                String childJson = buildJsonForDto(
-                    otm.elementType(),
+                Class<?> childType = resolveOneToManyType(f, otm);
+                SqlTable childTable = childType.getAnnotation(SqlTable.class);
+
+                String childAlias = childTable.alias();
+
+                String childJson = buildJsonObject(
+                    childType,
                     childAlias,
                     childAlias + ".id"
                 );
 
-                kv.add("""
+                fields.add("""
                     '%s', coalesce((
                         select jsonb_agg(%s%s)
                         from %s %s
@@ -102,26 +107,30 @@ public class SqlJsonQueryBuilder {
                     f.getName(),
                     childJson,
                     otm.orderBy().isBlank() ? "" : " order by " + otm.orderBy(),
-                    otm.table(), childAlias,
-                    childAlias, otm.fkColumn(),
+                    childTable.name(), childAlias,
+                    childAlias, otm.joinColumn(),
                     idExpression
                 ).strip());
 
                 continue;
             }
 
-            // 2️⃣ One-to-one (JSON object)
+            /* ---------- one-to-one ---------- */
             JsonOneToOne oto = f.getAnnotation(JsonOneToOne.class);
             if (oto != null) {
-                String nestedAlias = oto.alias();
 
-                String nestedJson = buildJsonForDto(
-                    oto.targetType(),
-                    nestedAlias,
-                    nestedAlias + "." + oto.joinRightColumn()
+                Class<?> targetType = resolveOneToOneType(f, oto);
+                SqlTable targetTable = targetType.getAnnotation(SqlTable.class);
+
+                String targetAlias = targetTable.alias();
+
+                String nestedJson = buildJsonObject(
+                    targetType,
+                    targetAlias,
+                    targetAlias + "." + oto.joinRightColumn()
                 );
 
-                kv.add("""
+                fields.add("""
                     '%s', (
                         select %s
                         from %s %s
@@ -130,20 +139,17 @@ public class SqlJsonQueryBuilder {
                     """.formatted(
                     f.getName(),
                     nestedJson,
-                    oto.table(), nestedAlias,
+                    targetTable.name(), targetAlias,
                     oto.joinLeftColumn(),
-                    nestedAlias, oto.joinRightColumn()
+                    targetAlias, oto.joinRightColumn()
                 ).strip());
 
                 continue;
             }
 
-            // 3️⃣ Scalar column: explicit OR (optional) default
+            /* ---------- scalar ---------- */
             SqlColumn col = f.getAnnotation(SqlColumn.class);
-            if (col == null && !mapDefaults) {
-                // Skip unannotated scalar fields if defaults are disabled for this DTO
-                continue;
-            }
+            if (col == null && !mapDefaults) continue;
 
             String dbColumn = (col != null)
                 ? col.name()
@@ -153,37 +159,98 @@ public class SqlJsonQueryBuilder {
                 ? col.jsonKey()
                 : f.getName();
 
-            kv.add("'" + jsonKey + "', " + tableAlias + "." + dbColumn);
+            fields.add("'" + jsonKey + "', " + tableAlias + "." + dbColumn);
         }
 
-        if (kv.isEmpty()) {
+        if (fields.isEmpty()) {
             throw new IllegalStateException(
-                "DTO " + dtoType.getName() + " has no mappable fields. " +
-                    "Either add @SqlDefaults(mapUnannotatedColumns=true) or annotate fields."
+                "DTO " + dtoType.getName() + " has no mapped fields"
             );
         }
 
-        return "jsonb_build_object(" + String.join(", ", kv) + ")";
+        return "jsonb_build_object(" + String.join(", ", fields) + ")";
     }
 
-    private static boolean shouldMapUnannotated(Class<?> dtoType) {
-        SqlDefaults defaults = dtoType.getAnnotation(SqlDefaults.class);
-        return defaults != null && defaults.mapUnannotatedColumns();
+    /* ==========================================================
+       Type resolution (safe deduction)
+       ========================================================== */
+
+    private Class<?> resolveOneToOneType(Field field, JsonOneToOne oto) {
+        if (oto.type() != Void.class) {
+            return validateConcreteType(oto.type(), field);
+        }
+        return validateConcreteType(field.getType(), field);
+    }
+
+    private Class<?> resolveOneToManyType(Field field, JsonOneToMany otm) {
+        if (otm.type() != Void.class) {
+            return validateConcreteType(otm.type(), field);
+        }
+
+        Type generic = field.getGenericType();
+        if (!(generic instanceof ParameterizedType pt)) {
+            throw new IllegalStateException(
+                "@JsonOneToMany field must be parameterized: " + field
+            );
+        }
+
+        Type arg = pt.getActualTypeArguments()[0];
+        if (!(arg instanceof Class<?> clazz)) {
+            throw new IllegalStateException(
+                "Cannot determine element type for " + field
+            );
+        }
+
+        return validateConcreteType(clazz, field);
+    }
+
+    private Class<?> validateConcreteType(Class<?> type, Field field) {
+
+        if (type.isInterface()) {
+            throw new IllegalStateException(
+                "Type " + type.getName() +
+                    " on field " + field.getName() +
+                    " is an interface"
+            );
+        }
+
+        if (Modifier.isAbstract(type.getModifiers())) {
+            throw new IllegalStateException(
+                "Type " + type.getName() +
+                    " on field " + field.getName() +
+                    " is abstract"
+            );
+        }
+
+        if (type.getAnnotation(SqlTable.class) == null) {
+            throw new IllegalStateException(
+                "Type " + type.getName() +
+                    " on field " + field.getName() +
+                    " is missing @SqlTable"
+            );
+        }
+
+        return type;
     }
 
     /* ==========================================================
        Helpers
        ========================================================== */
 
-    private static boolean shouldIgnore(Field f) {
-        int m = f.getModifiers();
-        return Modifier.isStatic(m) || Modifier.isTransient(m);
+    private static boolean mapUnannotated(Class<?> type) {
+        SqlDefaults d = type.getAnnotation(SqlDefaults.class);
+        return d != null && d.mapUnannotatedColumns();
     }
 
-    private static <T> T require(T value, String message) {
-        if (value == null) throw new IllegalStateException(message);
+    private static boolean ignore(Field f) {
+        int m = f.getModifiers();
+        return Modifier.isStatic(m)
+            || Modifier.isTransient(m)
+            || f.isAnnotationPresent(SqlIgnore.class);
+    }
+
+    private static <T> T require(T value, String msg) {
+        if (value == null) throw new IllegalStateException(msg);
         return value;
     }
 }
-
-

@@ -211,13 +211,13 @@ public class CandidateReadDto {
     private Country country;
     private Country nationality;
     
-    @JsonOneToOne(table="users", alias = "u", joinLeftColumn = "user_id", targetType = UserReadDto.class)
+    @JsonOneToOne(joinLeftColumn = "user_id")
     private UserReadDto user;
 
-    @JsonOneToOne(table="users", alias = "u", joinLeftColumn = "created_by", targetType = UserReadDto.class)
+    @JsonOneToOne(joinLeftColumn = "created_by")
     private UserReadDto createdBy;
 
-    @JsonOneToOne(table="users", alias = "u", joinLeftColumn = "updated_by", targetType = UserReadDto.class)
+    @JsonOneToOne(joinLeftColumn = "updated_by")
     private UserReadDto updatedBy;
 
     private OffsetDateTime createdDate;
@@ -258,8 +258,7 @@ public class CandidateReadDto {
     private List<CandidateAttachment> candidateAttachments;
     private List<CandidateOpportunity> candidateOpportunities;
     
-    @JsonOneToMany(elementType = CandidateJobExperienceDto.class, 
-        table = "candidate_job_experience", alias = "cje", fkColumn = "candidate_id")
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateJobExperienceDto> candidateJobExperiences;
     private List<CandidateDestination> candidateDestinations;
 

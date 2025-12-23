@@ -13,31 +13,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+package org.tctalent.server.repository.db.read.annotation;
 
-package org.tctalent.server.repository.db.read.dto;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
-import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
-import org.tctalent.server.repository.db.read.annotation.SqlTable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * TODO JC Doc
+ * Excludes a field entirely from SQL generation
+ * (even when @SqlDefaults(mapUnannotatedColumns = true) is enabled)
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-@SqlTable(name="users", alias = "u")
-@SqlDefaults(mapUnannotatedColumns = true)
-public class UserReadDto {
-    private Long id;
-    
-    private String firstName;
-    
-    private String lastName;
-    
-    @JsonOneToOne(joinLeftColumn = "partner_id")
-    private PartnerReadDto partnerReadDto;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface SqlIgnore {
 }
