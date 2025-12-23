@@ -21,13 +21,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO JC Doc
+ * Specifies which table a DTO is associated with
  *
  * @author John Cameron
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface SqlTable {
+
+    /**
+     * Name of a table on the database.
+     */
     String name();
-    String alias() default "t";
+
+    /**
+     * Name of the alias for that table in the generated SQL.
+     */
+    String alias();
 }

@@ -20,6 +20,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * This is for annotating DTO fields that are collections of other DTO objects. 
+ * It allows you to specify the 1-many join to another table.
+ * <p>
+ *     For example, the Job Experiences of a Candidate object.
+ * </p>
+ *
+ * @author John Cameron
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface JsonOneToMany {

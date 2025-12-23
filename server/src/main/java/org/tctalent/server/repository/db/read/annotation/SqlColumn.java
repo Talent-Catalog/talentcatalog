@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO JC Doc
+ * Specifies the database column that a DTO field is associated with.
  *
  * @author John Cameron
  */

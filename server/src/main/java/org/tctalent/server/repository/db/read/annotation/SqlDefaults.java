@@ -21,7 +21,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO JC Doc
+ * For some DTO's you don't want to annotate every single field.
+ * The default is to treat the field like a simple SqlColumn (ie no 1-1 or 1-many mapping)
+ * using the name of the DTO field to deduce the name of the corresponding database field
+ * (by converting from camel case to snake case if needed).
  *
  * @author John Cameron
  */
