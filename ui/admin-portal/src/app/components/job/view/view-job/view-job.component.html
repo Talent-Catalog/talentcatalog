@@ -27,7 +27,7 @@
         Job Opportunity #{{job.id}}
       </p>
       <div class="job-name-container" [ngClass]="{'me-3' : showBreadcrumb}">
-        <h2 class="mb-0" [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}</h2>
+        <h2 class="mb-0" [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, '': showBreadcrumb}">{{job.name}}</h2>
         <tc-icon type="button" color="warning" size="lg" *ngIf="!showBreadcrumb"
                  [routerLink]="['/job',job.id]"
                  title="Open Job">
