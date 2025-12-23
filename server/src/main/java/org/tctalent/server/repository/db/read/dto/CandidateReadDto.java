@@ -214,6 +214,14 @@ public class CandidateReadDto {
     @JsonOneToOne(table="users", alias = "u", joinLeftColumn = "user_id", targetType = UserReadDto.class)
     private UserReadDto user;
 
+    @JsonOneToOne(table="users", alias = "u", joinLeftColumn = "created_by", targetType = UserReadDto.class)
+    private UserReadDto createdBy;
+
+    @JsonOneToOne(table="users", alias = "u", joinLeftColumn = "updated_by", targetType = UserReadDto.class)
+    private UserReadDto updatedBy;
+
+    private OffsetDateTime createdDate;
+    private OffsetDateTime updatedDate;
 
     private String folderlink;
     private String folderlinkAddress;
@@ -232,10 +240,6 @@ public class CandidateReadDto {
     private String videolink;
     private Country relocatedCountry;
     private boolean potentialDuplicate;
-    private OffsetDateTime createdDate;
-    private User createdBy;
-    private OffsetDateTime updatedDate;
-    private User updatedBy;
 
     private CandidateAttachment listShareableCv;
     private CandidateAttachment listShareableDoc;

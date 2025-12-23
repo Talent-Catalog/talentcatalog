@@ -18,7 +18,6 @@ package org.tctalent.server.repository.db.read.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -29,15 +28,12 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="users", alias = "u")
+@SqlTable(name="partner", alias = "p")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class UserReadDto {
+public class PartnerReadDto {
     private Long id;
     
-    private String firstName;
+    private String abbreviation;
     
-    private String lastName;
-    
-    @JsonOneToOne(table= "partner", alias = "p", joinLeftColumn = "partner_id", targetType = PartnerReadDto.class)
-    private PartnerReadDto partnerReadDto;
+    private String name;
 }
