@@ -62,6 +62,7 @@ import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlColumn;
+import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
@@ -264,6 +265,8 @@ public class CandidateReadDto {
     private List<CandidateJobExperienceDto> candidateJobExperiences;
     private List<CandidateDestination> candidateDestinations;
 
+    @SqlIgnore
     private Number rank;
+    @SqlIgnore
     private boolean selected;
 }
