@@ -78,8 +78,8 @@ checks as the rest of the project.
 
 ### Documentation
 To improve code readability and maintainability we aspire to document the code with clear 
-explanations of components, classes, functions and variables. The documentation standard we have 
-decided to follow is **JSDoc** for Angular and **Javadoc** for Java code.
+explanations of components, classes, functions and variables. The documentation standard we follow 
+is **JSDoc** for Angular and **Javadoc** for Java code.
 
 For JSDoc follow the JSDoc style using annotations like @description for useful descriptions of 
 components and @example to provide code examples. For Javadoc follow the Javadoc style using @code 
