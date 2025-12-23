@@ -13,26 +13,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-package org.tctalent.server.repository.db.read.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.tctalent.server.repository.db.read.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.SqlColumn;
+import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
  * TODO JC Doc
  *
  * @author John Cameron
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface JsonOneToMany {
-    Class<?> elementType();
-    String table();
-    String alias();
-    String fkColumn();
-    String parentPkColumn() default "id";
-    String orderBy() default "";
+@Getter
+@Setter
+@SqlTable(name="users", alias = "u")
+public class UserReadDto {
+    private Long id;
+    
+    @SqlColumn(name = "first_name")
+    private String firstName;
+    
+    @SqlColumn(name = "last_name")
+    private String lastName;
 }
-

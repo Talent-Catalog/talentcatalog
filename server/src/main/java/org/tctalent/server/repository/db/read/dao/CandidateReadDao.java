@@ -61,7 +61,7 @@ public class CandidateReadDao {
 
         return jdbc.query(
             sql,
-            Map.of("ids", candidateIds.toArray(Long[]::new)),
+            Map.of("ids", candidateIds),
             mapper
             );
     }

@@ -13,10 +13,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
 package org.tctalent.server.repository.db.read.sql;
 
+import static org.tctalent.server.util.RegexHelpers.camelToSnakeCase;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -25,53 +27,74 @@ import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlColumn;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
-
 /**
- * TODO JC Doc
+ * Builds Postgres SQL that returns:
+ *  - one row per root DTO
+ *  - JSON arrays for @JsonOneToMany
+ *  - JSON objects for @JsonOneToOne
  *
- * @author John Cameron
+ * Default behaviour:
+ *  - any non-annotated, non-static field is treated as a scalar column
+ *  - column name = camelToSnakeCase(fieldName)
+ *  - JSON key/output alias = fieldName (unless @SqlColumn.jsonKey overrides)
  */
 @Component
 public class SqlJsonQueryBuilder {
 
+    /* ==========================================================
+       Public API
+       ========================================================== */
+
     public String buildByIdsQuery(Class<?> rootDtoClass, String idsParamName) {
-        SqlTable rootTable = require(rootDtoClass.getAnnotation(SqlTable.class),
-            "Root DTO must have @SqlTable");
 
-        String rootAlias = rootTable.alias();
+        SqlTable rootTable = require(
+            rootDtoClass.getAnnotation(SqlTable.class),
+            "Root DTO must have @SqlTable"
+        );
+
         String rootTableName = rootTable.name();
+        String rootAlias = rootTable.alias();
 
-        // parent scalar selects
-        List<String> parentCols = new ArrayList<>();
-        // json collection selects
+        List<String> scalarSelects = new ArrayList<>();
         List<String> jsonSelects = new ArrayList<>();
 
-        for (Field f : rootDtoClass.getDeclaredFields()) {
-            SqlColumn col = f.getAnnotation(SqlColumn.class);
-            if (col != null) {
-                String outName = outColumnAlias(f, col);
-                parentCols.add(rootAlias + "." + col.name() + " as " + outName);
+        for (Field field : rootDtoClass.getDeclaredFields()) {
+            if (shouldIgnore(field)) continue;
+
+            // Relationship annotations take precedence
+            JsonOneToMany otm = field.getAnnotation(JsonOneToMany.class);
+            if (otm != null) {
+                jsonSelects.add(buildOneToMany(rootAlias, otm, field.getName()));
                 continue;
             }
 
-            JsonOneToMany otm = f.getAnnotation(JsonOneToMany.class);
-            if (otm != null) {
-                jsonSelects.add(buildOneToManyJson(rootAlias, otm, f.getName()));
+            JsonOneToOne oto = field.getAnnotation(JsonOneToOne.class);
+            if (oto != null) {
+                jsonSelects.add(buildRootOneToOne(oto, field.getName()));
+                continue;
             }
+
+            // Scalar column: explicit @SqlColumn OR default
+            SqlColumn col = field.getAnnotation(SqlColumn.class);
+            if (col == null) {
+                //TODO JC For now only process annotated fields
+                continue;
+            }
+            String dbColumn = (col != null) ? col.name() : camelToSnakeCase(field.getName());
+            String outAlias = outputName(field, col);
+
+            scalarSelects.add(rootAlias + "." + dbColumn + " as " + outAlias);
         }
 
-        if (parentCols.isEmpty()) {
-            throw new IllegalArgumentException("No @SqlColumn fields found on " + rootDtoClass.getName());
+        if (scalarSelects.isEmpty()) {
+            throw new IllegalStateException("Root DTO has no scalar fields to select");
         }
 
-        // Base CTE so the rest of the query can refer to b.<pk> cleanly
-        // You can expand base to include more parent scalar columns if you want;
-        // here we keep it minimal: select only ids then join back to root table.
-        String sql = """
+        return """
             with base as (
-              select %s as id
+              select %s.id
               from %s %s
-              where %s.id = any(:%s)
+              where %s.id in (:%s)
             )
             select
               %s
@@ -79,33 +102,52 @@ public class SqlJsonQueryBuilder {
             from %s %s
             join base b on b.id = %s.id
             """.formatted(
-            rootAlias + ".id",
+            rootAlias,
             rootTableName, rootAlias,
             rootAlias, idsParamName,
-            String.join(",\n  ", parentCols),
+            String.join(",\n  ", scalarSelects),
             jsonSelects.isEmpty() ? "" : ",\n  " + String.join(",\n  ", jsonSelects),
             rootTableName, rootAlias,
             rootAlias
-        );
-
-        return sql.strip();
+        ).strip();
     }
 
-    private String buildOneToManyJson(String rootAlias, JsonOneToMany otm, String outputColumnName) {
-        Class<?> elemType = otm.elementType();
-        SqlTable childTableAnn = require(elemType.getAnnotation(SqlTable.class),
-            "Element DTO must have @SqlTable: " + elemType.getName());
+    /* ==========================================================
+       Root 1-to-1
+       ========================================================== */
 
-        String childTable = otm.table();
+    private String buildRootOneToOne(JsonOneToOne oto, String outputColumn) {
+        String nestedAlias = oto.alias();
+        String jsonObject = buildJsonObjectForDto(oto.targetType(), nestedAlias);
+
+        return """
+            (
+              select %s
+              from %s %s
+              where %s = %s.%s
+            ) as %s
+            """.formatted(
+            jsonObject,
+            oto.table(), nestedAlias,
+            oto.joinLeftColumn(),
+            nestedAlias, oto.joinRightColumn(),
+            outputColumn
+        ).strip();
+    }
+
+    /* ==========================================================
+       Root 1-to-Many
+       ========================================================== */
+
+    private String buildOneToMany(String rootAlias, JsonOneToMany otm, String outputColumn) {
+        Class<?> elementType = otm.elementType();
         String childAlias = otm.alias();
 
-        // Build the JSON object for each child row (including nested 1-1 objects)
-        String childJsonObject = buildJsonObjectForDto(elemType, childAlias);
+        String elementJson = buildJsonObjectForDto(elementType, childAlias);
+        String joins = buildNestedJoins(elementType);
 
         String orderBy = otm.orderBy().isBlank() ? "" : " order by " + otm.orderBy();
 
-        // Correlated subquery: returns jsonb array for this parent
-        // IMPORTANT: Note the spaces around '::' to avoid Spring named-param parsing issues.
         return """
             coalesce((
               select jsonb_agg(%s%s)
@@ -114,92 +156,112 @@ public class SqlJsonQueryBuilder {
               where %s.%s = %s.id
             ), '[]' :: jsonb) as %s
             """.formatted(
-            childJsonObject,
+            elementJson,
             orderBy,
-            childTable, childAlias,
-            buildChildJoins(elemType, childAlias),
-            childAlias, otm.fkColumn(), rootAlias,
-            outputColumnName
+            otm.table(), childAlias,
+            joins,
+            childAlias, otm.fkColumn(),
+            rootAlias,
+            outputColumn
         ).strip();
     }
 
-    /**
-     * Builds:
-     *   jsonb_build_object('id', cl.id, 'lang', cl.lang, 'certification', case when cert.id is null then null else jsonb_build_object(...) end)
-     */
+    /* ==========================================================
+       JSON object builders
+       ========================================================== */
+
     private String buildJsonObjectForDto(Class<?> dtoType, String alias) {
-        List<String> kvPairs = new ArrayList<>();
+        List<String> kv = new ArrayList<>();
 
         for (Field f : dtoType.getDeclaredFields()) {
-            SqlColumn col = f.getAnnotation(SqlColumn.class);
-            if (col != null) {
-                String key = jsonKey(f, col);
-                kvPairs.add("'" + key + "', " + alias + "." + col.name());
+            if (shouldIgnore(f)) continue;
+
+            // Nested relationships inside the JSON object
+            JsonOneToOne oto = f.getAnnotation(JsonOneToOne.class);
+            if (oto != null) {
+                kv.add("'" + f.getName() + "', " + buildNestedOneToOne(oto));
                 continue;
             }
 
-            JsonOneToOne oto = f.getAnnotation(JsonOneToOne.class);
-            if (oto != null) {
-                String key = f.getName();
-                kvPairs.add("'" + key + "', " + buildOneToOneJsonObject(oto));
+            // Scalar value: explicit @SqlColumn OR default
+            SqlColumn col = f.getAnnotation(SqlColumn.class);
+            if (col == null) {
+                //TODO JC Don't process unnotated columns
+                continue;
             }
+            String dbColumn = (col != null) ? col.name() : camelToSnakeCase(f.getName());
+            String key = jsonKey(f, col);
+
+            kv.add("'" + key + "', " + alias + "." + dbColumn);
         }
 
-        if (kvPairs.isEmpty()) {
-            throw new IllegalArgumentException("No mappable fields found on " + dtoType.getName());
+        if (kv.isEmpty()) {
+            throw new IllegalStateException("DTO " + dtoType.getName() + " has no mappable fields");
         }
 
-        return "jsonb_build_object(" + String.join(", ", kvPairs) + ")";
+        return "jsonb_build_object(" + String.join(", ", kv) + ")";
     }
 
-    private String buildChildJoins(Class<?> childDtoType, String childAlias) {
-        // Collect LEFT JOINs for any @JsonOneToOne on child DTO
+    private String buildNestedOneToOne(JsonOneToOne oto) {
+        String nestedAlias = oto.alias();
+        String nestedJson = buildJsonObjectForDto(oto.targetType(), nestedAlias);
+
+        return """
+            case
+              when %s.%s is null then null
+              else %s
+            end
+            """.formatted(
+            nestedAlias, oto.joinRightColumn(),
+            nestedJson
+        ).strip();
+    }
+
+    /* ==========================================================
+       JOIN builders (for nested 1-1 inside 1-many)
+       ========================================================== */
+
+    private String buildNestedJoins(Class<?> elementType) {
         List<String> joins = new ArrayList<>();
-        for (Field f : childDtoType.getDeclaredFields()) {
+
+        for (Field f : elementType.getDeclaredFields()) {
+            if (shouldIgnore(f)) continue;
+
             JsonOneToOne oto = f.getAnnotation(JsonOneToOne.class);
             if (oto != null) {
-                String nestedAlias = oto.alias();
-                joins.add("left join " + oto.table() + " " + nestedAlias +
-                    " on " + oto.joinLeftColumn() + " = " + nestedAlias + "." + oto.joinRightColumn());
+                joins.add(
+                    "left join " + oto.table() + " " + oto.alias() +
+                        " on " + oto.joinLeftColumn() +
+                        " = " + oto.alias() + "." + oto.joinRightColumn()
+                );
             }
         }
+
         return joins.isEmpty() ? "" : String.join("\n  ", joins);
     }
 
-    private String buildOneToOneJsonObject(JsonOneToOne oto) {
-        Class<?> targetType = oto.targetType();
-        SqlTable nestedTableAnn = require(targetType.getAnnotation(SqlTable.class),
-            "1-1 target DTO must have @SqlTable: " + targetType.getName());
+    /* ==========================================================
+       Helpers
+       ========================================================== */
 
-        String nestedAlias = oto.alias();
-
-        // build nested jsonb_build_object from target DTO columns
-        List<String> nestedPairs = new ArrayList<>();
-        for (Field nf : targetType.getDeclaredFields()) {
-            SqlColumn col = nf.getAnnotation(SqlColumn.class);
-            if (col != null) {
-                nestedPairs.add("'" + jsonKey(nf, col) + "', " + nestedAlias + "." + col.name());
-            }
-        }
-
-        String nestedObj = "jsonb_build_object(" + String.join(", ", nestedPairs) + ")";
-
-        // Optional 1-1: return null when missing
-        return "case when " + nestedAlias + ".id is null then null else " + nestedObj + " end";
+    private static boolean shouldIgnore(Field f) {
+        // ignore constants/loggers/etc; include private fields (normal DTO style)
+        int m = f.getModifiers();
+        return Modifier.isStatic(m) || Modifier.isTransient(m);
     }
 
-    private static String outColumnAlias(Field f, SqlColumn col) {
-        // SQL output column alias (snake/camel doesn’t matter; you’ll map from ResultSet)
-        // Use field name unless overridden in jsonKey (handy when you share mapping).
+    private static String outputName(Field f, SqlColumn col) {
+        if (col == null) return f.getName();
         return col.jsonKey().isBlank() ? f.getName() : col.jsonKey();
     }
 
     private static String jsonKey(Field f, SqlColumn col) {
+        if (col == null) return f.getName();
         return col.jsonKey().isBlank() ? f.getName() : col.jsonKey();
     }
 
     private static <T> T require(T value, String message) {
-        if (value == null) throw new IllegalArgumentException(message);
+        if (value == null) throw new IllegalStateException(message);
         return value;
     }
 }

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.repository.db.read.dao.CandidateReadDao;
-import org.tctalent.server.repository.db.read.dto.CandidateFlatDto;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 /**
  * TODO JC Doc
@@ -48,8 +48,8 @@ class CandidateReadDaoTest {
     void findByIds() {
         assertNotNull(candidateReadDao);
 
-        final List<CandidateFlatDto> flatDtos = candidateReadDao.findByIds(Set.of(27673L));
-        assertNotNull(flatDtos);
+        final List<CandidateReadDto> dtos = candidateReadDao.findByIds(Set.of(27673L));
+        assertNotNull(dtos);
 
     }
 }

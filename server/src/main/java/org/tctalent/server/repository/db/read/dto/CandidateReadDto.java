@@ -59,6 +59,10 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VaccinationStatus;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
+import org.tctalent.server.repository.db.read.annotation.SqlColumn;
+import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
  * TODO JC Doc
@@ -67,8 +71,11 @@ import org.tctalent.server.model.db.YesNoUnsure;
  */
 @Getter
 @Setter
-public class CandidateReadDto implements CandidateSimpleAttributes {
+@SqlTable(name="candidate", alias = "c")
+public class CandidateReadDto {
     private Long id;
+    
+    @SqlColumn(name = "candidate_number")
     private String candidateNumber;
     private String publicId;
     private CandidateStatus status;
@@ -203,7 +210,9 @@ public class CandidateReadDto implements CandidateSimpleAttributes {
     private EducationLevel maxEducationLevel;
     private Country country;
     private Country nationality;
-    private User user;
+    
+    @JsonOneToOne(table="users", alias = "u", joinLeftColumn = "user_id", targetType = UserReadDto.class)
+    private UserReadDto user;
 
 
     private String folderlink;
@@ -244,6 +253,9 @@ public class CandidateReadDto implements CandidateSimpleAttributes {
     private List<CandidateSkill> candidateSkills;
     private List<CandidateAttachment> candidateAttachments;
     private List<CandidateOpportunity> candidateOpportunities;
+    
+    @JsonOneToMany(elementType = CandidateJobExperienceDto.class, 
+        table = "candidate_job_experience", alias = "cje", fkColumn = "candidate_id")
     private List<CandidateJobExperienceDto> candidateJobExperiences;
     private List<CandidateDestination> candidateDestinations;
 

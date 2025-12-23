@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 public @interface JsonOneToOne {
     Class<?> targetType();
     String table();
-    String alias() default "o";
+    String alias();
     String joinLeftColumn();
     String joinRightColumn() default "id";
 }

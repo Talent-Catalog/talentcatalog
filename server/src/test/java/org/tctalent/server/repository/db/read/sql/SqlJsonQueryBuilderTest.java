@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db.read.sql;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 /**
  * TODO JC Doc
@@ -26,11 +27,16 @@ import org.junit.jupiter.api.Test;
  */
 class SqlJsonQueryBuilderTest {
 
+    SqlJsonQueryBuilder sqlJsonQueryBuilder;
+    
     @BeforeEach
     void setUp() {
+        sqlJsonQueryBuilder = new SqlJsonQueryBuilder();
     }
 
     @Test
     void buildByIdsQuery() {
+        final String sql = sqlJsonQueryBuilder.buildByIdsQuery(CandidateReadDto.class, "ids");
+        System.out.println(sql);
     }
 }

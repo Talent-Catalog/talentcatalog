@@ -17,16 +17,13 @@
 package org.tctalent.server.service.db.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.repository.db.read.dao.CandidateReadDao;
-import org.tctalent.server.repository.db.read.dto.CandidateFlatDto;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.service.db.CandidateDtoService;
 
@@ -40,30 +37,31 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
     @Override
     public List<CandidateReadDto> findByIds(Collection<Long> ids) throws JsonProcessingException {
 
-        //This should fetch everything from the database in a single access
-        final List<CandidateFlatDto> flatDtos = candidateReadDao.findByIds(ids);
-
-        //Decode the joined attributes
-        List<CandidateReadDto> dtos = new ArrayList<>();
-        for (CandidateFlatDto candidateFlatDto : flatDtos) {
-            CandidateReadDto dto = new CandidateReadDto();
-
-            //todo This could be done using a mapstruct mapper - constrained to all simple attributes
-            dto.setId(candidateFlatDto.getId());
-            dto.setCandidateNumber(candidateFlatDto.getCandidateNumber());
-            dto.setPublicId(candidateFlatDto.getPublicId());
-
-            //Decode the joined attributes
-            dto.setCandidateJobExperiences(
-                jsonMapper.readValue(candidateFlatDto.getCandidateJobExperiences(),
-                    new TypeReference<>() {})
-            );
-
-            //TODO JC Other joined attributes
-
-            dtos.add(dto);
-        }
-
-        return dtos;
+        return candidateReadDao.findByIds(ids);
+//        //This should fetch everything from the database in a single access
+//        final List<CandidateFlatDto> flatDtos = candidateReadDao.findByIds(ids);
+//
+//        //Decode the joined attributes
+//        List<CandidateReadDto> dtos = new ArrayList<>();
+//        for (CandidateFlatDto candidateFlatDto : flatDtos) {
+//            CandidateReadDto dto = new CandidateReadDto();
+//
+//            //todo This could be done using a mapstruct mapper - constrained to all simple attributes
+//            dto.setId(candidateFlatDto.getId());
+//            dto.setCandidateNumber(candidateFlatDto.getCandidateNumber());
+//            dto.setPublicId(candidateFlatDto.getPublicId());
+//
+//            //Decode the joined attributes
+//            dto.setCandidateJobExperiences(
+//                jsonMapper.readValue(candidateFlatDto.getCandidateJobExperiences(),
+//                    new TypeReference<>() {})
+//            );
+//
+//            //TODO JC Other joined attributes
+//
+//            dtos.add(dto);
+//        }
+//
+//        return dtos;
     }
 }

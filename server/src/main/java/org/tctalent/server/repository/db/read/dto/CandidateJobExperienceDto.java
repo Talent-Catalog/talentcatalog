@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.repository.db.read.annotation.SqlColumn;
+import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
  * TODO JC Doc
@@ -29,9 +31,14 @@ import org.tctalent.server.model.db.Country;
  */
 @Getter
 @Setter
+@SqlTable(name="candidate_job_experience", alias = "cje")
 public class CandidateJobExperienceDto {
     private Long id;
+    
+    @SqlColumn(name="company_name")
     private String companyName;
+
+    @SqlColumn(name="role")
     private String role;
     private LocalDate startDate;
     private LocalDate endDate;
