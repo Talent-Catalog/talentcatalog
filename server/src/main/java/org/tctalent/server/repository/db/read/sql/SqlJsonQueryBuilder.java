@@ -31,28 +31,97 @@ import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
+/**
+ * Generates SQL for fetching candidate data from the database.
+ * <p>
+ *     The SQL is automatically generated from the candidate related dtos.
+ *     The root candidate DTO is 
+ *     {@link org.tctalent.server.repository.db.read.dto.CandidateReadDto CandidateReadDto}.
+ *     It relates to the {@link org.tctalent.server.model.db.Candidate Candidate} JPA entity.
+ * </p>
+ * <p>
+ *     CandidateReadDTO is constructed from other DTOs corresponding to the other equivalent 
+ *     candidate related entities.
+ * </p>
+ * <p>
+ *     Below is an example of what the generated SQL can look like. This is generated from a
+ *     simplified CandidateReadDto in that a lot of standard fields have been removed.
+ *     But it shows how nesting works - in that it encodes a Candidate, including its nested User,
+ *     which in turn has a nested Partner.*     
+ * </p>
+ * <p>
+ *     It also shows how it constructs the encoding of the 1-many job experiences associated with 
+ *     the candidate.
+ * </p>
+ * <pre>{@code
+ * select
+ *   c.id,
+ *   jsonb_build_object('candidateNumber', c.candidate_number, 'user', (
+ *     select jsonb_build_object('id', u.id, 'firstName', u.first_name, 'lastName', u.last_name, 'partnerReadDto', (
+ *     select jsonb_build_object('id', p.id, 'abbreviation', p.abbreviation, 'name', p.name)
+ *     from partner p
+ *     where partner_id = p.id
+ * ))
+ *     from users u
+ *     where user_id = u.id
+ * ), 'createdBy', (
+ *     select jsonb_build_object('id', u.id, 'firstName', u.first_name, 'lastName', u.last_name, 'partnerReadDto', (
+ *     select jsonb_build_object('id', p.id, 'abbreviation', p.abbreviation, 'name', p.name)
+ *     from partner p
+ *     where partner_id = p.id
+ * ))
+ *     from users u
+ *     where created_by = u.id
+ * ), 'updatedBy', (
+ *     select jsonb_build_object('id', u.id, 'firstName', u.first_name, 'lastName', u.last_name, 'partnerReadDto', (
+ *     select jsonb_build_object('id', p.id, 'abbreviation', p.abbreviation, 'name', p.name)
+ *     from partner p
+ *     where partner_id = p.id
+ * ))
+ *     from users u
+ *     where updated_by = u.id
+ * ), 'candidateJobExperiences', coalesce((
+ *     select jsonb_agg(jsonb_build_object('companyName', cje.company_name, 'role', cje.role))
+ *     from candidate_job_experience cje
+ *     where cje.candidate_id = c.id
+ * ), '[]' :: jsonb)) as data
+ * from candidate c
+ * where c.id in (:ids)
+ *  }
+ *  </pre>
+ */
 @Component
 public class SqlJsonQueryBuilder {
 
-    /* ==========================================================
-       Public entry point
-       ========================================================== */
-
+    /**
+     * Compute the SQL required to fetch data with the 
+     * @param rootDtoClass Root DTO class we want to receive data
+     * @param idsParamName Name of parameter in the SQL which will receive the ids of the data to
+     *                     be fetched by the SQL.
+     * @return SQL query string which will retrieve the data
+     */
     public String buildByIdsQuery(Class<?> rootDtoClass, String idsParamName) {
 
+        //SQL is generated automatically from DTO objects. Annotations on the DTO classes are used
+        //to drive the SQL generation.
         SqlTable rootTable = require(
             rootDtoClass.getAnnotation(SqlTable.class),
             "Root DTO must have @SqlTable"
         );
 
-        String rootAlias = rootTable.alias();
+        //This the database table associated with the root DTO. 
+        //For example, the Candidate table for the CandidateReadDTO. You will see this table
+        //specified on the @SQLTable annotation on the CandidateReadDTO.
+        String rootTableAlias = rootTable.alias();
 
-        String rootJson = buildJsonObject(
-            rootDtoClass,
-            rootAlias,
-            rootAlias + ".id"
-        );
+        //Matching data is retrieved in the form of a single String field containing JSON.
+        //This creates the Postgres SQL which populates the returned JSON. It uses Postgres
+        //jsonb support, specifically jsonb_agg and jsonb_build_object.
+        String rootJson = buildJsonObject(rootDtoClass, rootTableAlias,rootTableAlias + ".id");
 
+        //The SQL is just a select where id matches one of the ids passed in.
+        //There is a row for each id. Each row just has two fields: the id and the JSON encoded data. 
+        //The json "data" field encodes a single object encoding an instance of the rootDtoClass.
         return """
             select
               %s.id,
@@ -60,16 +129,12 @@ public class SqlJsonQueryBuilder {
             from %s %s
             where %s.id in (:%s)
             """.formatted(
-            rootAlias,
+            rootTableAlias,
             rootJson,
-            rootTable.name(), rootAlias,
-            rootAlias, idsParamName
+            rootTable.name(), rootTableAlias,
+            rootTableAlias, idsParamName
         ).strip();
     }
-
-    /* ==========================================================
-       Recursive JSON builder
-       ========================================================== */
 
     private String buildJsonObject(
         Class<?> dtoType,
@@ -171,14 +236,12 @@ public class SqlJsonQueryBuilder {
         return "jsonb_build_object(" + String.join(", ", fields) + ")";
     }
 
-    /* ==========================================================
-       Type resolution (safe deduction)
-       ========================================================== */
-
     private Class<?> resolveOneToOneType(Field field, JsonOneToOne oto) {
         if (oto.type() != Void.class) {
+            //If a type is specified, use it.
             return validateConcreteType(oto.type(), field);
         }
+        //Otherwise we assume the type to be returned is the type of the DTO field
         return validateConcreteType(field.getType(), field);
     }
 
@@ -187,6 +250,7 @@ public class SqlJsonQueryBuilder {
             return validateConcreteType(otm.type(), field);
         }
 
+        //One-to-many relationships will return a collection (eg List) of the base type.
         Type generic = field.getGenericType();
         if (!(generic instanceof ParameterizedType pt)) {
             throw new IllegalStateException(

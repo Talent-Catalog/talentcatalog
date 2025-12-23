@@ -65,7 +65,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlColumn;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
- * TODO JC Doc
+ * This is the ROOT DTO for all candidate data.
  *
  * @author John Cameron
  */

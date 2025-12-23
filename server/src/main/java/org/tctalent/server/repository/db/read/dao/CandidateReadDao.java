@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,13 @@ import org.tctalent.server.repository.db.read.mapper.CandidateReadMapper;
 import org.tctalent.server.repository.db.read.sql.SqlJsonQueryBuilder;
 
 /**
- * TODO JC Doc
+ * Data Access Object which fetches candidate data from the Postgres database in the form of a List 
+ * of {@link CandidateReadDto} objects.
+ * <p>
+ *     Note that this does not return JPA entities. Instead, it returns DTO objects which will
+ *     not typically be modified (except to maybe add extra computed or tagging data fields which
+ *     are not present on the database). It is optimized for performance.
+ * </p>
  *
  * @author John Cameron
  */
@@ -42,27 +49,36 @@ public class CandidateReadDao {
     private final NamedParameterJdbcTemplate jdbc;
     private final SqlJsonQueryBuilder sqlJsonQueryBuilder;
 
+    /**
+     * Initialize repository
+     * @param jdbc Autowired jdbc support 
+     * @param objectMapper Autowired Jackson object for mapping between JSON and Java
+     * @param sqlJsonQueryBuilder Code which constructs the SQL query from DTO definitions.
+     */
     public CandidateReadDao(NamedParameterJdbcTemplate jdbc, ObjectMapper objectMapper,
         SqlJsonQueryBuilder sqlJsonQueryBuilder) {
         this.jdbc = jdbc;
+        
+        //Create a RowMapper to convert the database response to the query SQL into CandidateReadDto
+        //objets.
         this.mapper = new CandidateReadMapper(objectMapper);
+        
         this.sqlJsonQueryBuilder = sqlJsonQueryBuilder;
     }
 
+    /**
+     * Return the candidates with the given candidate ids.
+     * @param candidateIds Ids of candidates required
+     * @return Candidate data. May be empty if non found. 
+     */
+    @NonNull
     public List<CandidateReadDto> findByIds(@Nullable Collection<Long> candidateIds) {
         if (candidateIds == null || candidateIds.isEmpty()) {
             return List.of();
         }
         
-        String sql = sqlJsonQueryBuilder.buildByIdsQuery(
-            CandidateReadDto.class,
-            "ids"
-        );
+        String sql = sqlJsonQueryBuilder.buildByIdsQuery(CandidateReadDto.class,"ids");
 
-        return jdbc.query(
-            sql,
-            Map.of("ids", candidateIds),
-            mapper
-            );
+        return jdbc.query(sql, Map.of("ids", candidateIds), mapper);
     }
 }
