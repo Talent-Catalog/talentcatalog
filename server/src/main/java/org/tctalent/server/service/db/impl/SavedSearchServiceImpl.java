@@ -2079,6 +2079,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         long fetchEntitiesTime = end - start;
         start = end;
 
+        //TODO JC Get rid of this?
         try {
             final List<CandidateReadDto> dtos = candidateDtoService.findByIds(ids);
         } catch (JsonProcessingException e) {
@@ -2088,6 +2089,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         end = System.currentTimeMillis();
         long fetchDtosTime = end - start;
         start = end;
+        
+        
 
         //Candidates need to be sorted the same as the ids.
         //Map the unsorted candidates by their ids
