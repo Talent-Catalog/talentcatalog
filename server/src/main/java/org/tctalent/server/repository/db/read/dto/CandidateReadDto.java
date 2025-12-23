@@ -73,12 +73,12 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @Setter
 @SqlTable(name="candidate", alias = "c")
 public class CandidateReadDto {
-    @SqlColumn(name = "id")
+    @SqlColumn
     private Long id;
     
-    @SqlColumn(name = "candidate_number")
+    @SqlColumn
     private String candidateNumber;
-    @SqlColumn(name = "public_id")
+    @SqlColumn
     private String publicId;
     private CandidateStatus status;
     private boolean muted;

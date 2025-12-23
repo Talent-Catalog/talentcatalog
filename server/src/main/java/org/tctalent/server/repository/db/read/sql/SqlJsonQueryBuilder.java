@@ -216,7 +216,7 @@ public class SqlJsonQueryBuilder {
             SqlColumn col = f.getAnnotation(SqlColumn.class);
             if (col == null && !mapDefaults) continue;
 
-            String dbColumn = (col != null)
+            String dbColumn = (col != null && !col.name().isBlank())
                 ? col.name()
                 : camelToSnakeCase(f.getName());
 

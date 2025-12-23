@@ -21,13 +21,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Specifies the database column that a DTO field is associated with.
+ * Specifies the database column that a DTO field is associated with (defaulting to the name of 
+ * the annotated field, converted to snake case.
  *
  * @author John Cameron
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface SqlColumn {
-    String name();
+
+    /**
+     * Default name is taken from the annotated field name, converted to snake case if needed.
+     */
+    String name() default "";
+
+    /**
+     * Defaults to the name.
+     */
     String jsonKey() default "";
 }

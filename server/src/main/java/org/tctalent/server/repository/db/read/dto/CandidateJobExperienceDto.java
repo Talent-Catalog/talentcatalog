@@ -35,10 +35,10 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateJobExperienceDto {
     private Long id;
     
-    @SqlColumn(name="company_name")
+    @SqlColumn
     private String companyName;
 
-    @SqlColumn(name="role")
+    @SqlColumn
     private String role;
     private LocalDate startDate;
     private LocalDate endDate;
