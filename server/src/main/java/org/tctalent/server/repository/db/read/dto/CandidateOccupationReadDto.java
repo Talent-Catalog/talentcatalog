@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
@@ -28,10 +30,15 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="occupation", alias = "occ")
+@SqlTable(name="candidate_occupation", alias = "cocc")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class OccupationReadDto {
+public class CandidateOccupationReadDto {
+    private List<CandidateJobExperienceReadDto> candidateJobExperiences;
+    private UserReadDto createdBy;
+    private OffsetDateTime createdDate;
     private Long id;
-    private String isco08Code;
-    private String name;
+    private OccupationReadDto occupation;
+    private UserReadDto updatedBy;
+    private OffsetDateTime updatedDate;
+    private String yearsExperience;
 }

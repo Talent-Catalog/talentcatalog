@@ -31,8 +31,8 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="country", alias = "cou")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CountryReadDto {
-    private String abbreviation;
     private Long id;
+    private String isoCode;
     private String name;
-    private String publicId;
+    private String status;
 }

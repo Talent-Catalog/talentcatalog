@@ -28,10 +28,10 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="occupation", alias = "occ")
+@SqlTable(name="candidate_education", alias = "cedu")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class OccupationReadDto {
+public class CandidateReviewStatusItemReadDto {
     private Long id;
-    private String isco08Code;
-    private String name;
+    private String reviewStatus;
+    private SavedSearchReadDto savedSearch;
 }
