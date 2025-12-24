@@ -93,6 +93,8 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @Component
 public class SqlJsonQueryBuilder {
 
+    private static final int JSON_FIELDS_PER_CHUNK = 40;
+
     /**
      * Compute the SQL required to fetch data with the 
      * @param rootDtoClass Root DTO class we want to receive data
@@ -135,14 +137,13 @@ public class SqlJsonQueryBuilder {
             rootTableAlias, idsParamName
         ).strip();
     }
-
     private String buildJsonObject(
         Class<?> dtoType,
         String tableAlias,
         String idExpression
     ) {
         boolean mapDefaults = mapUnannotated(dtoType);
-        List<String> fields = new ArrayList<>();
+        List<String> kvPairs = new ArrayList<>();
 
         for (Field f : dtoType.getDeclaredFields()) {
             if (ignore(f)) continue;
@@ -162,7 +163,7 @@ public class SqlJsonQueryBuilder {
                     childAlias + ".id"
                 );
 
-                fields.add("""
+                kvPairs.add("""
                     '%s', coalesce((
                         select jsonb_agg(%s%s)
                         from %s %s
@@ -195,7 +196,7 @@ public class SqlJsonQueryBuilder {
                     targetAlias + "." + oto.joinRightColumn()
                 );
 
-                fields.add("""
+                kvPairs.add("""
                     '%s', (
                         select %s
                         from %s %s
@@ -216,7 +217,7 @@ public class SqlJsonQueryBuilder {
             SqlColumn col = f.getAnnotation(SqlColumn.class);
             if (col == null && !mapDefaults) continue;
 
-            String dbColumn = (col != null && !col.name().isBlank())
+            String dbColumn = (col != null)
                 ? col.name()
                 : camelToSnakeCase(f.getName());
 
@@ -224,24 +225,49 @@ public class SqlJsonQueryBuilder {
                 ? col.jsonKey()
                 : f.getName();
 
-            fields.add("'" + jsonKey + "', " + tableAlias + "." + dbColumn);
+            kvPairs.add("'" + jsonKey + "', " + tableAlias + "." + dbColumn);
         }
 
-        if (fields.isEmpty()) {
+        if (kvPairs.isEmpty()) {
             throw new IllegalStateException(
                 "DTO " + dtoType.getName() + " has no mapped fields"
             );
         }
 
-        return "jsonb_build_object(" + String.join(", ", fields) + ")";
+        return buildChunkedJsonObject(kvPairs);
     }
+
+    /* ==========================================================
+       JSON chunking logic (NEW)
+       ========================================================== */
+
+    private String buildChunkedJsonObject(List<String> kvPairs) {
+
+        List<String> chunks = new ArrayList<>();
+
+        for (int i = 0; i < kvPairs.size(); i += JSON_FIELDS_PER_CHUNK) {
+            List<String> slice = kvPairs.subList(
+                i,
+                Math.min(i + JSON_FIELDS_PER_CHUNK, kvPairs.size())
+            );
+
+            chunks.add(
+                "jsonb_build_object(" + String.join(", ", slice) + ")"
+            );
+        }
+
+        // Merge all chunks into a single JSON object
+        return String.join(" || ", chunks);
+    }
+
+    /* ==========================================================
+       Type resolution (unchanged)
+       ========================================================== */
 
     private Class<?> resolveOneToOneType(Field field, JsonOneToOne oto) {
         if (oto.type() != Void.class) {
-            //If a type is specified, use it.
             return validateConcreteType(oto.type(), field);
         }
-        //Otherwise we assume the type to be returned is the type of the DTO field
         return validateConcreteType(field.getType(), field);
     }
 
@@ -250,7 +276,6 @@ public class SqlJsonQueryBuilder {
             return validateConcreteType(otm.type(), field);
         }
 
-        //One-to-many relationships will return a collection (eg List) of the base type.
         Type generic = field.getGenericType();
         if (!(generic instanceof ParameterizedType pt)) {
             throw new IllegalStateException(
@@ -317,4 +342,5 @@ public class SqlJsonQueryBuilder {
         if (value == null) throw new IllegalStateException(msg);
         return value;
     }
+
 }
