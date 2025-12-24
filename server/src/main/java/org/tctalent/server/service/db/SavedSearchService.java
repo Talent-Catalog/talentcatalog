@@ -30,6 +30,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -92,6 +93,14 @@ public interface SavedSearchService {
      * @return Page of candidates
      */
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
+
+    /**
+     * Returns the requested page of candidates which match the attributes in
+     * the request.
+     * @param request Request specifying which candidates to return
+     * @return Page of candidates
+     */
+    Page<CandidateReadDto> searchCandidateDtos(SearchCandidateRequest request);
 
     /**
      * Returns the requested page of candidates of the given saved search.
