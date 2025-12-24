@@ -40,6 +40,8 @@ public class CandidateReadDto {
 
     private OffsetDateTime acceptedPrivacyPolicyDate;
     private String acceptedPrivacyPolicyId;
+    
+    @JsonOneToOne(joinLeftColumn = "accepted_privacy_policy_partner_id")
     private PartnerReadDto acceptedPrivacyPolicyPartner;
     private String additionalInfo;
     private String address1;
@@ -76,11 +78,14 @@ public class CandidateReadDto {
     private List<CandidateReviewStatusItemReadDto> candidateReviewStatusItems;
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateSkillReadDto> candidateSkills;
-    @JsonOneToMany(joinColumn = "candidate_id")
+    
+    @SqlIgnore //TODO JC Doesnt seem to handle these
+//    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateVisaCheckReadDto> candidateVisaChecks;
     private String candidateNumber;
     private String city;
     private String conflict;
+    @SqlIgnore //todo Computed field
     private String contextNote;
     @JsonOneToOne(joinLeftColumn = "country_id")
     private CountryReadDto country;
@@ -117,9 +122,13 @@ public class CandidateReadDto {
     @JsonOneToOne(joinLeftColumn = "mini_intake_completed_by")
     private UserReadDto miniIntakeCompletedBy;
     private String muted;
+    @JsonOneToOne(joinLeftColumn = "nationality_id")
     private CountryReadDto nationality;
+    
+    @SqlIgnore //todo Computed field
     private String numberDependants;
     private String partnerRef;
+    @SqlIgnore //todo Computed field
     private String pendingTerms;
     private String phone;
     private String potentialDuplicate;
@@ -147,7 +156,9 @@ public class CandidateReadDto {
     @SqlIgnore
     private String selected;
     private String sflink;
+    @SqlIgnore //todo Computed field
     private String shareableCv;
+    @SqlIgnore //todo Computed field
     private String shareableDoc;
     private String shareableNotes;
     private String state;

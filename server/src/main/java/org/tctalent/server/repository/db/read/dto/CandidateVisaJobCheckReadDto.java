@@ -19,6 +19,7 @@ package org.tctalent.server.repository.db.read.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
+import org.tctalent.server.repository.db.read.annotation.SqlColumn;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -33,7 +34,9 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateVisaJobCheckReadDto {
     private String ageRequirement;
+    @SqlColumn(name="eligible_186")
     private Boolean eligible186;
+    @SqlColumn(name="eligible_494")
     private Boolean eligible494;
     private String eligibleOther;
     private Boolean interest;

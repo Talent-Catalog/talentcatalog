@@ -2080,11 +2080,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         start = end;
 
         //TODO JC Get rid of this?
-        try {
-            final List<CandidateReadDto> dtos = candidateDtoService.findByIds(ids);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            final List<CandidateReadDto> dtos = candidateDtoService.findByIds(ids);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
 
         end = System.currentTimeMillis();
         long fetchDtosTime = end - start;
