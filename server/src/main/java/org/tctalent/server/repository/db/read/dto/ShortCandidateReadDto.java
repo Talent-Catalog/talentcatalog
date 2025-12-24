@@ -16,36 +16,22 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
-import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
- * TODO JC Doc
+ * This is a short summary for a candidate.
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-@SqlTable(name="candidate_job_experience", alias = "cje")
+@SqlTable(name="candidate", alias = "sc")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class CandidateJobExperienceReadDto {
-//TODO JC Circular reference    
-//    @JsonOneToOne(joinLeftColumn = "candidate_occupation_id")
-    @SqlIgnore
-    private CandidateOccupationReadDto candidateOccupation;
-    private String companyName;
-    @JsonOneToOne(joinLeftColumn = "country_id")
-    private CountryReadDto country;
-    private String description;
-    private LocalDate endDate;
-    private String fullTime;
+public class ShortCandidateReadDto {
+    private String candidateNumber;
     private Long id;
-    private String paid;
-    private String role;
-    private LocalDate startDate;
+    private String publicId;
 }

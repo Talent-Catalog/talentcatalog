@@ -33,7 +33,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="candidate_citizenship", alias = "ccit")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateCitizenshipReadDto {
-    private Boolean hasPassport;
+    private String hasPassport;
     private Long id;
     @JsonOneToOne(joinLeftColumn = "nationality_id")
     private CountryReadDto nationality;

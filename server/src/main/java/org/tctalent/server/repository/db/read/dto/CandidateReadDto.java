@@ -114,6 +114,10 @@ public class CandidateReadDto {
     private String intRecruitReasons;
     private String intRecruitRural;
     private String linkedInLink;
+    @SqlIgnore //todo Computed field
+    private String listShareableCv;
+    @SqlIgnore //todo Computed field
+    private String listShareableDoc;
     private String maritalStatus;
     @JsonOneToOne(joinLeftColumn = "max_education_level_id")
     private EducationLevelReadDto maxEducationLevel;
@@ -166,6 +170,10 @@ public class CandidateReadDto {
     @JsonOneToOne(joinLeftColumn = "survey_type_id")
     private SurveyTypeReadDto surveyType;
     private String surveyComment;
+    
+    @SqlIgnore //TODO JC Not done yet
+//    @JsonOneToMany(joinColumn = "candidate_id")
+    private List<TaskAssignmentReadDto> taskAssignments;
     private String unhcrConsent;
     private String unhcrNumber;
     private String unhcrRegistered;

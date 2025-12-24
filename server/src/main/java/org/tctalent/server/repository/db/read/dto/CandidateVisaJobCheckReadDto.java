@@ -35,18 +35,18 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateVisaJobCheckReadDto {
     private String ageRequirement;
     @SqlColumn(name="eligible_186")
-    private Boolean eligible186;
+    private String eligible186;
     @SqlColumn(name="eligible_494")
-    private Boolean eligible494;
+    private String eligible494;
     private String eligibleOther;
-    private Boolean interest;
+    private String interest;
     private Long id;
     @JsonOneToOne(joinLeftColumn = "job_opp_id")
     private SalesforceJobOppReadDto jobOpp;
     @JsonOneToOne(joinLeftColumn = "occupation_id")
     private OccupationReadDto occupation;
-    private Boolean putForward;
-    private Boolean regional;
+    private String putForward;
+    private String regional;
     private String salaryTsmit;
     private String tbbEligibility;
 }

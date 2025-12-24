@@ -34,7 +34,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateDependantReadDto {
     private LocalDate dob;
     private String gender;
-    private Boolean healthConcern;
+    private String healthConcern;
     private String healthNotes;
     private Long id;
     private String name;
