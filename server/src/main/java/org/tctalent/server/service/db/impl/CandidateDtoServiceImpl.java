@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,36 +31,10 @@ import org.tctalent.server.service.db.CandidateDtoService;
 @Slf4j
 public class CandidateDtoServiceImpl implements CandidateDtoService {
     private final CandidateReadDao candidateReadDao;
-    private final ObjectMapper jsonMapper;
 
     @Override
     public List<CandidateReadDto> findByIds(Collection<Long> ids) throws JsonProcessingException {
 
         return candidateReadDao.findByIds(ids);
-//        //This should fetch everything from the database in a single access
-//        final List<CandidateFlatDto> flatDtos = candidateReadDao.findByIds(ids);
-//
-//        //Decode the joined attributes
-//        List<CandidateReadDto> dtos = new ArrayList<>();
-//        for (CandidateFlatDto candidateFlatDto : flatDtos) {
-//            CandidateReadDto dto = new CandidateReadDto();
-//
-//            //todo This could be done using a mapstruct mapper - constrained to all simple attributes
-//            dto.setId(candidateFlatDto.getId());
-//            dto.setCandidateNumber(candidateFlatDto.getCandidateNumber());
-//            dto.setPublicId(candidateFlatDto.getPublicId());
-//
-//            //Decode the joined attributes
-//            dto.setCandidateJobExperiences(
-//                jsonMapper.readValue(candidateFlatDto.getCandidateJobExperiences(),
-//                    new TypeReference<>() {})
-//            );
-//
-//            //TODO JC Other joined attributes
-//
-//            dtos.add(dto);
-//        }
-//
-//        return dtos;
     }
 }
