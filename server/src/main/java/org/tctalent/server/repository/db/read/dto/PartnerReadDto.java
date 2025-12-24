@@ -31,9 +31,9 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="partner", alias = "p")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class PartnerReadDto {
-    private Long id;
-    
     private String abbreviation;
-    
+    private Long id;
     private String name;
+    private String publicId;
+    private String websiteUrl;
 }

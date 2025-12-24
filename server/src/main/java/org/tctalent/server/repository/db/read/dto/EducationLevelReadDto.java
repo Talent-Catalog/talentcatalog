@@ -16,12 +16,9 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.CandidateOccupation;
-import org.tctalent.server.model.db.Country;
-import org.tctalent.server.repository.db.read.annotation.SqlColumn;
+import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
@@ -31,22 +28,10 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="candidate_job_experience", alias = "cje")
-public class CandidateJobExperienceDto {
+@SqlTable(name="education_level", alias = "edulev")
+@SqlDefaults(mapUnannotatedColumns = true)
+public class EducationLevelReadDto {
     private Long id;
-    
-    @SqlColumn
-    private String companyName;
-
-    @SqlColumn
-    private String role;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private Boolean fullTime;
-    private Boolean paid;
-    private String description;
-    private Country country;
-    private CandidateOccupation candidateOccupation;
-
-
+    private String level;
+    private String name;
 }

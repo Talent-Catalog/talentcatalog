@@ -16,10 +16,8 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
-import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -30,20 +28,22 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="users", alias = "u")
+@SqlTable(name="candidate_visa_check", alias = "cvisac")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class UserReadDto {
-    private OffsetDateTime createdDate;
-    private String email;
-    private String emailVerified;
-    private String firstName;
+public class CandidateVisaCheckReadDto {
+    private String ageRequirement;
+    private String characterAssessment;
+    private CountryReadDto country;
+    private String destinationFamily;
+    private String englishThreshold;
+    private String healthAssessment;
     private Long id;
-    private OffsetDateTime lastLogin;
-    private String lastName;
-
-    @JsonOneToOne(joinLeftColumn = "partner_id")
-    private PartnerReadDto partner;
-
-    private OffsetDateTime updatedDate;
-    private String username;
+    private String languagesRequired;
+    private String languagesThresholdMet;
+    private String overallRisk;
+    private String pathwayAssessment;
+    private String protection;
+    private String securityRisk;
+    private String validTravelDocs;
+    private List<CandidateVisaJobCheckReadDto> candidateVisaJobChecks;
 }

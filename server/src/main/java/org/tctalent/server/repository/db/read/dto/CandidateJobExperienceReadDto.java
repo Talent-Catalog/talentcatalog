@@ -16,10 +16,9 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -30,20 +29,16 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="users", alias = "u")
+@SqlTable(name="candidate_job_experience", alias = "cje")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class UserReadDto {
-    private OffsetDateTime createdDate;
-    private String email;
-    private String emailVerified;
-    private String firstName;
+public class CandidateJobExperienceReadDto {
+    private String companyName;
+    private CountryReadDto country;
+    private String description;
+    private LocalDate endDate;
+    private String fullTime;
     private Long id;
-    private OffsetDateTime lastLogin;
-    private String lastName;
-
-    @JsonOneToOne(joinLeftColumn = "partner_id")
-    private PartnerReadDto partner;
-
-    private OffsetDateTime updatedDate;
-    private String username;
+    private String paid;
+    private String role;
+    private LocalDate startDate;
 }
