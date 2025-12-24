@@ -19,6 +19,7 @@ package org.tctalent.server.repository.db.read.dto;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -33,11 +34,13 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateNoteReadDto {
     private String comment;
+    @JsonOneToOne(joinLeftColumn = "created_by")
     private UserReadDto createdBy;
     private OffsetDateTime createdDate;
     private Long id;
     private String noteType;
     private String title;
+    @JsonOneToOne(joinLeftColumn = "updated_by")
     private UserReadDto updatedBy;
     private OffsetDateTime updatedDate;
 }

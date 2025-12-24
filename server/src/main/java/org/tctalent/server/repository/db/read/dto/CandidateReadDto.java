@@ -45,28 +45,44 @@ public class CandidateReadDto {
     private String address1;
     private String allNotifications;
     private String candidateMessage;
+
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateAttachmentReadDto> candidateAttachments;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateCertificationReadDto> candidateCertifications;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateCitizenshipReadDto> candidateCitizenships;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateDependantReadDto> candidateDependants;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateDestinationReadDto> candidateDestinations;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateEducationReadDto> candidateEducations;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateExamReadDto> candidateExams;
-    
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateJobExperienceReadDto> candidateJobExperiences;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateLanguageReadDto> candidateLanguages;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateNoteReadDto> candidateNotes;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateOccupationReadDto> candidateOccupations;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateOpportunityReadDto> candidateOpportunities;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidatePropertyReadDto> candidateProperties;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateReviewStatusItemReadDto> candidateReviewStatusItems;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateSkillReadDto> candidateSkills;
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateVisaCheckReadDto> candidateVisaChecks;
     private String candidateNumber;
     private String city;
     private String conflict;
     private String contextNote;
+    @JsonOneToOne(joinLeftColumn = "country_id")
     private CountryReadDto country;
     private OffsetDateTime createdDate;
     private LocalDate dob;
@@ -80,6 +96,7 @@ public class CandidateReadDto {
     private String folderlink;
     private String frenchAssessmentScoreNclc;
     private OffsetDateTime fullIntakeCompletedDate;
+    @JsonOneToOne(joinLeftColumn = "full_intake_completed_by")
     private UserReadDto fullIntakeCompletedBy;
     private String gender;
     private String healthIssues;
@@ -93,9 +110,11 @@ public class CandidateReadDto {
     private String intRecruitRural;
     private String linkedInLink;
     private String maritalStatus;
+    @JsonOneToOne(joinLeftColumn = "max_education_level_id")
     private EducationLevelReadDto maxEducationLevel;
     private String mediaWillingness;
     private OffsetDateTime miniIntakeCompletedDate;
+    @JsonOneToOne(joinLeftColumn = "mini_intake_completed_by")
     private UserReadDto miniIntakeCompletedBy;
     private String muted;
     private CountryReadDto nationality;
@@ -114,9 +133,11 @@ public class CandidateReadDto {
     private String regoUtmMedium;
     private String regoUtmSource;
     private String regoUtmTerm;
+    @JsonOneToOne(joinLeftColumn = "registered_by")
     private PartnerReadDto registeredBy;
     private String relocatedAddress;
     private String relocatedCity;
+    @JsonOneToOne(joinLeftColumn = "relocated_country_id")
     private CountryReadDto relocatedCountry;
     private String relocatedState;
     private String residenceStatus;
@@ -131,6 +152,7 @@ public class CandidateReadDto {
     private String shareableNotes;
     private String state;
     private String status;
+    @JsonOneToOne(joinLeftColumn = "survey_type_id")
     private SurveyTypeReadDto surveyType;
     private String surveyComment;
     private String unhcrConsent;

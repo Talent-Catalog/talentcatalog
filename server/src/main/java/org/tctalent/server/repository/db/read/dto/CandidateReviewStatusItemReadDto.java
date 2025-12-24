@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db.read.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -28,10 +29,11 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="candidate_education", alias = "cedu")
+@SqlTable(name="candidate_review_item", alias = "crev")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateReviewStatusItemReadDto {
     private Long id;
     private String reviewStatus;
+    @JsonOneToOne(joinLeftColumn = "saved_search_id")
     private SavedSearchReadDto savedSearch;
 }

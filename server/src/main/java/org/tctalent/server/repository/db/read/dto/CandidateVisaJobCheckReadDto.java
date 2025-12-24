@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db.read.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -37,9 +38,12 @@ public class CandidateVisaJobCheckReadDto {
     private String eligibleOther;
     private Boolean interest;
     private Long id;
+    @JsonOneToOne(joinLeftColumn = "job_opp_id")
+    private SalesforceJobOppReadDto jobOpp;
+    @JsonOneToOne(joinLeftColumn = "occupation_id")
+    private OccupationReadDto occupation;
     private Boolean putForward;
     private Boolean regional;
     private String salaryTsmit;
-    private JobReadDto jobOpp;
     private String tbbEligibility;
 }

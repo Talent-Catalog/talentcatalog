@@ -19,6 +19,7 @@ package org.tctalent.server.repository.db.read.dto;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -32,7 +33,10 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="candidate_job_experience", alias = "cje")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateJobExperienceReadDto {
+    @JsonOneToOne(joinLeftColumn = "candidate_occupation_id")
+    private CandidateOccupationReadDto candidateOccupation;
     private String companyName;
+    @JsonOneToOne(joinLeftColumn = "country_id")
     private CountryReadDto country;
     private String description;
     private LocalDate endDate;

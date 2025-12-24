@@ -29,12 +29,13 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="candidate_destination", alias = "cdest")
+@SqlTable(name="salesforce_job_opp", alias = "job")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class CandidateDestinationReadDto {
+public class JobOppReadDto {
     @JsonOneToOne(joinLeftColumn = "country_id")
     private CountryReadDto country;
     private Long id;
-    private String interest;
-    private String notes;
+    private String name;
+    @JsonOneToOne(joinLeftColumn = "submission_list_id")
+    private SavedListReadDto submissionList;
 }

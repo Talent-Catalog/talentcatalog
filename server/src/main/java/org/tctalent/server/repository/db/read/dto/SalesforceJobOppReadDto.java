@@ -16,8 +16,11 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -28,11 +31,17 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
-@SqlTable(name="salesforce_job_opp", alias = "job")
+@SqlTable(name="salesforce_job_opp", alias = "sfjob")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class JobReadDto {
+public class SalesforceJobOppReadDto {
+    @JsonOneToOne(joinLeftColumn = "country_id")
     private CountryReadDto country;
+    @JsonOneToOne(joinLeftColumn = "employer_id")
+    private EmployerEntityReadDto employerEntity;
+    private String employerHiredInternationally;
+    private String hiringCommitment;
     private Long id;
-    private String name;
-    private SavedListReadDto submissionList;
+    private OffsetDateTime publishedDate;
+    private String stage;
+    private LocalDate submissionDueDate;
 }

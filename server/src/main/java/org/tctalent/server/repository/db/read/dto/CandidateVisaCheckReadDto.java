@@ -16,8 +16,11 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -33,6 +36,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateVisaCheckReadDto {
     private String ageRequirement;
     private String characterAssessment;
+    @JsonOneToOne(joinLeftColumn = "country_id")
     private CountryReadDto country;
     private String destinationFamily;
     private String englishThreshold;
@@ -45,5 +49,6 @@ public class CandidateVisaCheckReadDto {
     private String protection;
     private String securityRisk;
     private String validTravelDocs;
+    @JsonOneToMany(joinColumn = "candidate_visa_check_id")
     private List<CandidateVisaJobCheckReadDto> candidateVisaJobChecks;
 }

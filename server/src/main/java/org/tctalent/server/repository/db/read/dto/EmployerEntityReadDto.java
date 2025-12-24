@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db.read.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -31,6 +32,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="employer", alias = "empe")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class EmployerEntityReadDto {
+    @JsonOneToOne(joinLeftColumn = "country_id")
     private CountryReadDto country;
     private Boolean hasHiredInternationally;
     private Long id;

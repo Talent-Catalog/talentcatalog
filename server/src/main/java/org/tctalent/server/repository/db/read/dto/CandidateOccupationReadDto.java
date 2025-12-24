@@ -20,6 +20,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -33,11 +35,15 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="candidate_occupation", alias = "cocc")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateOccupationReadDto {
+    @JsonOneToMany(joinColumn = "candidate_occupation_id")
     private List<CandidateJobExperienceReadDto> candidateJobExperiences;
+    @JsonOneToOne(joinLeftColumn = "created_by")
     private UserReadDto createdBy;
     private OffsetDateTime createdDate;
     private Long id;
+    @JsonOneToOne(joinLeftColumn = "occupation_id")
     private OccupationReadDto occupation;
+    @JsonOneToOne(joinLeftColumn = "updated_by")
     private UserReadDto updatedBy;
     private OffsetDateTime updatedDate;
     private String yearsExperience;

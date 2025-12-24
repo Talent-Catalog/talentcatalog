@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -35,16 +36,19 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateOpportunityReadDto {
     private String closingComments;
     private String closingCommentsForCandidate;
+    @JsonOneToOne(joinLeftColumn = "created_by")
     private UserReadDto createdBy;
     private OffsetDateTime createdDate;
     private String employerFeedback;
     private Long id;
-    private JobReadDto jobOpp;
+    @JsonOneToOne(joinLeftColumn = "job_opp_id")
+    private JobOppReadDto jobOpp;
     private String lastActiveStage;
     private String name;
     private String nextStep;
     private LocalDate nextStepDueDate;
     private String stage;
+    @JsonOneToOne(joinLeftColumn = "updated_by")
     private UserReadDto updatedBy;
     private OffsetDateTime updatedDate;
 }

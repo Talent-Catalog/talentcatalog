@@ -19,6 +19,7 @@ package org.tctalent.server.repository.db.read.dto;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -34,6 +35,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateCitizenshipReadDto {
     private Boolean hasPassport;
     private Long id;
+    @JsonOneToOne(joinLeftColumn = "nationality_id")
     private CountryReadDto nationality;
     private String notes;
     private LocalDate passportExp;
