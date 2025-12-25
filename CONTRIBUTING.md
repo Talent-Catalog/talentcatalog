@@ -27,6 +27,45 @@ We aspire to following the
 
 We aspire to following the [Angular style guide](https://angular.io/guide/styleguide).
 
+### Copyright Headers ###
+
+All source files must include a copyright header in the following format:
+
+```
+/*
+ * Copyright (c) [YEAR] Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+```
+
+The earliest copyright year that appears in file-level headers in this repository is 2024, even 
+though the project itself originated earlier (2019). This is because, in 2024, we made a one-time 
+decision to re-stamp the copyright year to 2024 across the repository. While this was not strictly 
+required (as a file’s original year of first publication would also have been legally valid), it 
+now serves as the baseline for our current convention.
+
+From that point onward, the year in file headers is treated as the year a file was first introduced 
+(or first stamped) under this convention, rather than as an exact record of its earliest historical 
+origin.
+
+Files introduced in 2025 correctly carry a 2025 year; new files introduced in 2026 will carry 2026, 
+and so on. We do not retroactively adjust years for files that predate this baseline, as version 
+control already provides a precise historical record and further mass updates would introduce 
+unnecessary churn without legal or practical benefit.
+
+This approach avoids the need for annual copyright-only update PRs and keeps the repository 
+consistent, and in line with GPL licensing and common open-source conventions.
 
 ## Standard tools
 
