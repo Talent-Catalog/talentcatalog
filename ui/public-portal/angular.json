@@ -93,21 +93,21 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "port": 4202,
-            "browserTarget": "public-portal:build"
+            "buildTarget": "public-portal:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "public-portal:build:production"
+              "buildTarget": "public-portal:build:production"
             },
             "staging": {
-              "browserTarget": "public-portal:build:staging"
+              "buildTarget": "public-portal:build:staging"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "public-portal:build"
+            "buildTarget": "public-portal:build"
           }
         },
         "test": {
