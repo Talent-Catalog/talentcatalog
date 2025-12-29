@@ -32,7 +32,14 @@ import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
- * Generates SQL for fetching candidate data from the database.
+ * Generates SQL for fetching candidate data from the database encoded as a single String of JSON.
+ * <p>
+ *     The result set consists of one row per candidate. Each row contains:
+ *     <ul>
+ *         <li>id (long) - candidate id</li>
+ *         <li>json (string) - candidate data encoded as a JSON object</li>*         
+ *     </ul>
+ * </p>
  * <p>
  *     The SQL is automatically generated from the candidate related dtos.
  *     The root candidate DTO is 
@@ -123,11 +130,11 @@ public class SqlJsonQueryBuilder {
 
         //The SQL is just a select where id matches one of the ids passed in.
         //There is a row for each id. Each row just has two fields: the id and the JSON encoded data. 
-        //The json "data" field encodes a single object encoding an instance of the rootDtoClass.
+        //The json string field encodes a single object encoding an instance of the rootDtoClass.
         return """
             select
               %s.id,
-              %s as data
+              %s as json
             from %s %s
             where %s.id in (:%s)
             """.formatted(

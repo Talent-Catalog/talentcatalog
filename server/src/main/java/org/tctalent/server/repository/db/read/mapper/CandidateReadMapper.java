@@ -42,8 +42,9 @@ public class CandidateReadMapper implements RowMapper<CandidateReadDto> {
     @Override
     public CandidateReadDto mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-        //SqlJsonQueryBuilder returns a single String "data" field containing JSON for each candidate 
-        String json = rs.getString("data");
+        //SqlJsonQueryBuilder SQL query returns a result set containing a String field called "json" 
+        // containing JSON for each candidate 
+        String json = rs.getString("json");
 
         if (json == null || json.isBlank()) {
             return null;
@@ -54,7 +55,7 @@ public class CandidateReadMapper implements RowMapper<CandidateReadDto> {
             return objectMapper.readValue(json, CandidateReadDto.class);
         } catch (Exception e) {
             throw new SQLException(
-                "Failed to map JSON column 'data' to CandidateReadDto: " + json,
+                "Failed to map JSON column 'json' to CandidateReadDto: " + json,
                 e
             );
         }
