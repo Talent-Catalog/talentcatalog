@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.repository.db.read.cache.CandidateVersionDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.service.db.CandidateDtoService;
 
