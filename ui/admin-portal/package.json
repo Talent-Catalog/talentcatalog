@@ -52,7 +52,7 @@
     "ng2-dragula": "^5.1.0",
     "ngx-infinite-scroll": "^17.0.0",
     "ngx-quill": "^16.2.1",
-    "ngx-wig": "^16.0.0",
+    "ngx-wig": "^17.0.0",
     "protractor-http-mock": "^0.10.0",
     "quill": "^1.3.7",
     "rxjs": "^6.5.5",
