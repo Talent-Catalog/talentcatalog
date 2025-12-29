@@ -14,14 +14,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
       - name: Set up Java 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
+
       - name: Install credential helper - for jib
         run: sudo apt update && sudo apt install amazon-ecr-credential-helper
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -43,5 +46,6 @@ jobs:
           GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
           GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
           SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
+
       - name: Deploy with Jib
         run: ./gradlew jib -Pprod-tc-system
