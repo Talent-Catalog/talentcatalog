@@ -57,7 +57,7 @@
     "@angular/cli": "^17.3.17",
     "@angular/compiler-cli": "^17.3.12",
     "@angular/language-service": "^17.3.12",
-    "@types/node": "~12.11.7",
+    "@types/node": "^18.0.0",
     "codelyzer": "^6.0.2",
     "protractor": "~7.0.0",
     "jasmine-spec-reporter": "^7.0.0",
