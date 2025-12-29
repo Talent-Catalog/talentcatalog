@@ -18,13 +18,17 @@ package org.tctalent.server.service.db;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 /**
  * Service interface for managing Candidate DTOs.
  * <p>
- *     CandidateDTOs are different to Candidate entities in that are read-only.
+ *     CandidateDTOs are different to Candidate entities in that they are intended to be
+ *     used as read-only objects. They can be changed but there will be no side effects,
+ *     unlike Candidate entities where changes typically generate SQL requests to update the
+ *     associated database.
  * </p>
  *
  * @author John Cameron
@@ -32,10 +36,12 @@ import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 public interface CandidateDtoService {
 
     /**
-     * Returns a list of CandidateDTOs for the given candidate IDs.
+     * Loads Candidate DTOs into a Map of ids to CandidateReadDto objects 
+     * for the given candidate IDs.
      * @param ids Ids of candidates to be fetched
-     * @return List of CandidateDTOs
+     * @return Map of candidate ids to CandidateDTOs
      */
-    List<CandidateReadDto> findByIds(Collection<Long> ids) throws JsonProcessingException;
+    @NonNull
+    Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) throws JsonProcessingException;
 
 }

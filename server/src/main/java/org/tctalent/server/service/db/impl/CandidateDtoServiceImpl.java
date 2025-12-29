@@ -18,9 +18,11 @@ package org.tctalent.server.service.db.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.repository.db.read.dao.CandidateReadDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
@@ -33,8 +35,11 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
     private final CandidateReadDao candidateReadDao;
 
     @Override
-    public List<CandidateReadDto> findByIds(Collection<Long> ids) throws JsonProcessingException {
-
-        return candidateReadDao.findByIds(ids);
+    @NonNull
+    public Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) throws JsonProcessingException {
+        Map<Long, CandidateReadDto> result = new HashMap<>();
+        //TODO JC populate result
+        return result;
+//        return candidateReadDao.findByIds(ids);
     }
 }

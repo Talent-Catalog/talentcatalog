@@ -2175,9 +2175,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         long fetchEntitiesTime = end - start;
         start = end;
 
-        List<CandidateReadDto> candidatesUnsorted;
+        Map<Long, CandidateReadDto> candidatesByIdUnsorted;
         try {
-            candidatesUnsorted = candidateDtoService.findByIds(ids);
+            candidatesByIdUnsorted = candidateDtoService.loadByIds(ids);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -2187,14 +2187,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         start = end;
 
         //Candidates need to be sorted the same as the ids.
-        //Map the unsorted candidates by their ids
-        Map<Long, CandidateReadDto> candidatesById = candidatesUnsorted.stream()
-            .collect(toMap(CandidateReadDto::getId, c -> c));
 
         //Construct a sorted list of the candidates in the same order as the returned ids.
         List<CandidateReadDto> candidatesSorted = new ArrayList<>();
         for (IdAndRank idAndRank : idAndRanks) {
-            final CandidateReadDto candidate = candidatesById.get(idAndRank.id());
+            final CandidateReadDto candidate = candidatesByIdUnsorted.get(idAndRank.id());
 
             //Optionally update candidate data with any ranking values.
             final Number rank = idAndRank.rank();
