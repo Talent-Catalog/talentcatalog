@@ -119,6 +119,7 @@ Your patch should follow the same conventions & pass the same code quality
 checks as the rest of the project.
 
 ### Documentation
+
 To improve code readability and maintainability we aspire to document the code with clear 
 explanations of components, classes, functions and variables. The documentation standard we follow 
 is **JSDoc** for Angular and **Javadoc** for Java code.
@@ -133,10 +134,10 @@ See:
 
 ## Make a Pull Request
 
-At this point, you should switch back to your master branch and make sure it's
-up to date with the ("upstream") talentcatalog master branch:
+At this point, you should switch back to your staging branch and make sure it's
+up to date with the ("upstream") talentcatalog staging branch:
 
-Then update your feature branch from your local copy of master, and push it!
+Then update your feature branch from your local copy of staging, and push it!
 
 Finally, go to GitHub and [make a Pull Request] 
 
