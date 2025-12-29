@@ -27,15 +27,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.repository.db.read.cache.CandidateJsonCache;
+import org.tctalent.server.repository.db.read.cache.CandidateJsonCacheDao;
 import org.tctalent.server.repository.db.read.cache.CandidateVersionDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
+import org.tctalent.server.repository.db.read.sql.CandidateJsonDao;
 import org.tctalent.server.service.db.CandidateDtoService;
 
 /**
  * Strict read service for CandidateReadDto.
  *
  * Architecture:
- *   L1: Redis (shared, versioned keys)
+ *   L1: Redis (shared, versioned keys)  //Todo 
  *   L2: Postgres JSON cache (candidate_json_cache)
  *   L3: Postgres recomputation (SqlJsonQueryBuilder)
  *
@@ -51,7 +54,8 @@ import org.tctalent.server.service.db.CandidateDtoService;
 @RequiredArgsConstructor
 @Slf4j
 public class CandidateDtoServiceImpl implements CandidateDtoService {
-    private final CandidateRedisCache redisCache;
+    //TODO JC I have commented out the use of CandidateRedisCache
+//    private final CandidateRedisCache redisCache;
     private final CandidateVersionDao versionDao;
     private final CandidateJsonCacheDao pgCacheDao;
     private final CandidateJsonDao jsonDao;
@@ -85,6 +89,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
             .toList();
 
         if (!missingCandidates.isEmpty()) {
+            //TODO JC Use our LogBuilder
             log.error(
                 "Requested candidate IDs not found in candidate table. requestedIds={}, missingIds={}",
                 ids, missingCandidates
@@ -99,8 +104,9 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
         // ------------------------------------------------------------
 
         Map<Long, String> jsonById =
-            new HashMap<>(redisCache.multiGet(versions));
-
+//            new HashMap<>(redisCache.multiGet(versions));
+            new HashMap<>();
+        
         // ------------------------------------------------------------
         // Step 2: L2 Postgres JSON cache lookup (for Redis misses)
         // ------------------------------------------------------------
@@ -111,42 +117,42 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
 
         if (!redisMissIds.isEmpty()) {
 
-            List<CachedCandidateRow> pgRows =
+            List<CandidateJsonCache> pgRows =
                 pgCacheDao.fetchCached(redisMissIds);
 
-            Map<Long, CandidateRedisCache.VersionedJson> redisWarm =
-                new HashMap<>();
+//            Map<Long, CandidateRedisCache.VersionedJson> redisWarm =
+//                new HashMap<>();
 
-            for (CachedCandidateRow row : pgRows) {
+            for (CandidateJsonCache jsonCache : pgRows) {
 
                 // Cache hit only if versions match
-                if (row.isCacheHit()) {
+                if (jsonCache.isCacheHit()) {
 
                     // ASSERTION: DB cache JSON must never be null
-                    if (row.jsonData() == null || row.jsonData().isBlank()) {
+                    if (jsonCache.json() == null || jsonCache.json().isBlank()) {
                         throw new IllegalStateException(
                             "Null/blank JSON in candidate_json_cache for candidateId="
-                                + row.candidateId()
+                                + jsonCache.candidateId()
                         );
                     }
 
-                    jsonById.put(row.candidateId(), row.jsonData());
+                    jsonById.put(jsonCache.candidateId(), jsonCache.json());
 
-                    redisWarm.put(
-                        row.candidateId(),
-                        new CandidateRedisCache.VersionedJson(
-                            row.candidateId(),
-                            row.candidateVersion(),
-                            row.jsonData()
-                        )
-                    );
+//                    redisWarm.put(
+//                        jsonCache.candidateId(),
+//                        new CandidateRedisCache.VersionedJson(
+//                            jsonCache.candidateId(),
+//                            jsonCache.candidateVersion(),
+//                            jsonCache.json()
+//                        )
+//                    );
                 }
             }
 
-            // Warm Redis from Postgres hits (shared benefit across nodes)
-            if (!redisWarm.isEmpty()) {
-                redisCache.putAll(redisWarm);
-            }
+//            // Warm Redis from Postgres hits (shared benefit across nodes)
+//            if (!redisWarm.isEmpty()) {
+//                redisCache.putAll(redisWarm);
+//            }
         }
 
         // ------------------------------------------------------------
@@ -162,8 +168,8 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
             Map<Long, String> recomputed =
                 jsonDao.loadJsonByIds(remainingMissIds);
 
-            Map<Long, CandidateRedisCache.VersionedJson> redisWrites =
-                new HashMap<>();
+//            Map<Long, CandidateRedisCache.VersionedJson> redisWrites =
+//                new HashMap<>();
 
             for (Long id : remainingMissIds) {
                 String json = recomputed.get(id);
@@ -181,18 +187,18 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
                 pgCacheDao.upsert(id, version, json);
 
                 // Prepare Redis write (versioned key)
-                redisWrites.put(
-                    id,
-                    new CandidateRedisCache.VersionedJson(id, version, json)
-                );
+//                redisWrites.put(
+//                    id,
+//                    new CandidateRedisCache.VersionedJson(id, version, json)
+//                );
 
                 // Merge into in-memory results
                 jsonById.put(id, json);
             }
 
-            if (!redisWrites.isEmpty()) {
-                redisCache.putAll(redisWrites);
-            }
+//            if (!redisWrites.isEmpty()) {
+//                redisCache.putAll(redisWrites);
+//            }
         }
 
         // ------------------------------------------------------------
