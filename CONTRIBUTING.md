@@ -74,7 +74,7 @@ See [the README for the standard tools we use for development](README.md).
 In particular, we use Intellij to edit, build and run code as well as using
 its Git and GitHub integration. Our standard Intellij configuration is 
 checked into version control which imposes many of our standards.
-It is certainly not necessary to use Intellij in order to contribute that is
+It is certainly not necessary to use Intellij in order to contribute but is
 probably the simplest way to go.
 
 
@@ -101,6 +101,9 @@ A good branch name would be (where issue #325 is the one you're working on):
 git checkout -b 325-add-french-translations
 ```
 
+> **Note:** Please create your branch from `staging`. This branch contains the latest features 
+> and code used in the staging environment, where active development and testing take place.
+
 ## Implement your fix or feature
 
 At this point, you're ready to make your changes! Feel free to ask for help;
@@ -116,6 +119,7 @@ Your patch should follow the same conventions & pass the same code quality
 checks as the rest of the project.
 
 ### Documentation
+
 To improve code readability and maintainability we aspire to document the code with clear 
 explanations of components, classes, functions and variables. The documentation standard we follow 
 is **JSDoc** for Angular and **Javadoc** for Java code.
@@ -130,10 +134,10 @@ See:
 
 ## Make a Pull Request
 
-At this point, you should switch back to your master branch and make sure it's
-up to date with the ("upstream") talentcatalog master branch:
+At this point, you should switch back to your staging branch and make sure it's
+up to date with the ("upstream") talentcatalog staging branch:
 
-Then update your feature branch from your local copy of master, and push it!
+Then update your feature branch from your local copy of staging, and push it!
 
 Finally, go to GitHub and [make a Pull Request] 
 
@@ -142,18 +146,18 @@ Github Actions will run our test suite. Your PR won't be merged until all tests 
 ## Keeping your Pull Request updated
 
 If a maintainer asks you to "merge" your PR, they're saying that a lot of code
-has changed, and that you need to update your branch by merging the current 
-master with it. Let the maintainer know if you have problems doing that.
+has changed, and that you need to update your branch by merging the current
+staging with it. Let the maintainer know if you have problems doing that.
 
 ## Merging a PR (maintainers only)
 
-A PR can only be merged into master by a maintainer if:
+A PR can only be merged into staging by a maintainer if:
 
 * It is passing all tests.
 * It has been approved by at least two maintainers. If it was a maintainer who
   opened the PR, only one extra approval is needed.
 * It has no requested changes.
-* It is up to date with current master.
+* It is up to date with current staging.
 
 Any maintainer is allowed to merge a PR if all of these conditions are
 met.
@@ -170,44 +174,57 @@ applied only once and in proper sequence on each TC instance.
 
 ### The Flyways branch
 
-We utilise a 'Flyways' development branch to manage the sequence of DB migrations and thereby 
+We utilise a 'Flyways' development branch to manage the sequence of DB migrations and thereby
 minimise the potential for build errors with a team of developers working independently.
 
-When you are confident of the changes you wish to make, follow these steps, observing carefully the 
-amendments in the following section, if they include the modification or dropping of an existing 
+When you are confident of the changes you wish to make, follow these steps, observing carefully the
+amendments in the following section, if they include the modification or dropping of an existing
 column or table:
-1. Merge a current version of 'Staging' into your current branch and commit or shelve any changes. 
-2. Check out the 'Flyways' branch. 
-3. Merge a current version of 'Staging' into 'Flyways'. 
-4. Add a file containing your SQL command(s) to the db.migration folder, observing the naming convention and taking the next number in sequence. 
-5. Notify your fellow developers of the number you've claimed in the [#tool-tcsoftware-tech-int](https://refugeejobsmarket.slack.com/archives/C0583HJ9CHM) Slack channel. 
-6. Commit and push your changes. 
-7. Check out your working branch and merge 'Flyways' into it. 
+
+1. Merge a current version of 'Staging' into your current branch and commit or shelve any changes.
+2. Check out the 'Flyways' branch.
+3. Merge a current version of 'Staging' into 'Flyways'.
+4. Add a file containing your SQL command(s) to the db.migration folder, observing the naming
+   convention and taking the next number in sequence.
+5. Notify your fellow developers of the number you've claimed in the
+   [#tool-tcsoftware-tech-int](https://refugeejobsmarket.slack.com/archives/C0583HJ9CHM) Slack
+   channel.
+6. Commit and push your changes.
+7. Check out your working branch and merge 'Flyways' into it.
 8. Restart the Spring service and the changes will be applied to your local DB.
 9. Check the 'Amend' box (if using IntelliJ) and commit and push your changes.
 10. Open a PR to merge your working branch into Staging.
 
-Observing these simple steps means that other developers needing to make DB changes can do so with 
+Observing these simple steps means that other developers needing to make DB changes can do so with
 minimal coordination and potential for time-consuming errors.
 
 ### Modifying or dropping existing columns or tables
 
-When renaming or dropping an existing column or table, following the above process without amendment 
-would break the build for other developers who don't yet have your code. It could also cause issues 
-for TC users during deployment of a new release. For that reason, we separate the process across two 
+When renaming or dropping an existing column or table, following the above process without amendment
+would break the build for other developers who don't yet have your code. It could also cause issues
+for TC users during deployment of a new release. For that reason, we separate the process across two
 release cycles, as follows.
 
 #### Modifying
-* Instead of directly editing a table or column, follow the usual process to create a _new_ version reflecting your desired changes.
-* As appropriate, include in your migration the required SQL command(s) to transfer current data to the new version.
-* Submit a PR for code that eliminates all references to the old version and points instead to your new version.
+
+* Instead of directly editing a table or column, follow the usual process to create a _new_ version
+  reflecting your desired changes.
+* As appropriate, include in your migration the required SQL command(s) to transfer current data to
+  the new version.
+* Submit a PR for code that eliminates all references to the old version and points instead to your
+  new version.
 
 #### Dropping
-* In the current release cycle you will only submit a PR for code that eliminates all references to the column or table to be dropped.
+
+* In the current release cycle you will only submit a PR for code that eliminates all references to
+  the column or table to be dropped.
 
 In both cases:
-* Create a GitHub issue _marked for the next release_, to complete this process by submitting a migration to drop the redundant column or table. 
-* Provide the necessary SQL commands and context, so a different developer could pick up your issue and action it without further analysis.
+
+* Create a GitHub issue _marked for the next release_, to complete this process by submitting a
+  migration to drop the redundant column or table.
+* Provide the necessary SQL commands and context, so a different developer could pick up your issue
+  and action it without further analysis.
 * In the next release cycle, the usual process can now be followed without risk of unwanted effects.
 
 ### Backing out changes
