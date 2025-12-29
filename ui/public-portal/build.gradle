@@ -28,8 +28,26 @@ java {
   targetCompatibility = JavaVersion.VERSION_17
 }
 
+// Read Node.js version from root .nvmrc file
+// Note: rootProject.projectDir always resolves to the root project directory
+// regardless of which task triggers the build (e.g., ./gradlew server:build)
+def nvmrcFile = file("${rootProject.projectDir}/.nvmrc")
+def nodeVersion = nvmrcFile.exists() ? nvmrcFile.text.trim() : '18.20.7'
+
+// Log the Node.js version being used (always visible)
+afterEvaluate {
+  println "> ${project.name}: Using Node.js version ${nodeVersion} (from ${nvmrcFile.exists() ? '.nvmrc' : 'fallback'})"
+}
+
+// Log the resolved path for debugging (only in verbose mode)
+if (project.hasProperty('verbose') || project.gradle.startParameter.logLevel.toString().contains('DEBUG')) {
+  println "[${project.name}] Root project dir: ${rootProject.projectDir}"
+  println "[${project.name}] Looking for .nvmrc at: ${nvmrcFile.absolutePath}"
+  println "[${project.name}] Node version resolved: ${nodeVersion}"
+}
+
 node {
-  version = '16.17.0'
+  version = nodeVersion
   download = true
 }
 
