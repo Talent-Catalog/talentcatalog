@@ -146,18 +146,18 @@ Github Actions will run our test suite. Your PR won't be merged until all tests 
 ## Keeping your Pull Request updated
 
 If a maintainer asks you to "merge" your PR, they're saying that a lot of code
-has changed, and that you need to update your branch by merging the current 
-master with it. Let the maintainer know if you have problems doing that.
+has changed, and that you need to update your branch by merging the current
+staging with it. Let the maintainer know if you have problems doing that.
 
 ## Merging a PR (maintainers only)
 
-A PR can only be merged into master by a maintainer if:
+A PR can only be merged into staging by a maintainer if:
 
 * It is passing all tests.
 * It has been approved by at least two maintainers. If it was a maintainer who
   opened the PR, only one extra approval is needed.
 * It has no requested changes.
-* It is up to date with current master.
+* It is up to date with current staging.
 
 Any maintainer is allowed to merge a PR if all of these conditions are
 met.
