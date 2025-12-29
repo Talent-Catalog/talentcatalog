@@ -101,6 +101,9 @@ A good branch name would be (where issue #325 is the one you're working on):
 git checkout -b 325-add-french-translations
 ```
 
+> **Note:** Please create your branch from `staging`. This branch contains the latest features 
+> and code used in the staging environment, where active development and testing take place.
+
 ## Implement your fix or feature
 
 At this point, you're ready to make your changes! Feel free to ask for help;
