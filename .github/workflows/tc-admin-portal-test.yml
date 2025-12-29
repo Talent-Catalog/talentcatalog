@@ -14,13 +14,15 @@ jobs:
     steps:
       # Step 1: Checkout the repository
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js for Angular
+      # Step 2: Set up Node.js for Angular using version from .nvmrc
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '16.x' 
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: ui/admin-portal/package-lock.json
 
       # Step 3: Install project dependencies
       - name: Install dependencies
