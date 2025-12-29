@@ -174,44 +174,57 @@ applied only once and in proper sequence on each TC instance.
 
 ### The Flyways branch
 
-We utilise a 'Flyways' development branch to manage the sequence of DB migrations and thereby 
+We utilise a 'Flyways' development branch to manage the sequence of DB migrations and thereby
 minimise the potential for build errors with a team of developers working independently.
 
-When you are confident of the changes you wish to make, follow these steps, observing carefully the 
-amendments in the following section, if they include the modification or dropping of an existing 
+When you are confident of the changes you wish to make, follow these steps, observing carefully the
+amendments in the following section, if they include the modification or dropping of an existing
 column or table:
-1. Merge a current version of 'Staging' into your current branch and commit or shelve any changes. 
-2. Check out the 'Flyways' branch. 
-3. Merge a current version of 'Staging' into 'Flyways'. 
-4. Add a file containing your SQL command(s) to the db.migration folder, observing the naming convention and taking the next number in sequence. 
-5. Notify your fellow developers of the number you've claimed in the [#tool-tcsoftware-tech-int](https://refugeejobsmarket.slack.com/archives/C0583HJ9CHM) Slack channel. 
-6. Commit and push your changes. 
-7. Check out your working branch and merge 'Flyways' into it. 
+
+1. Merge a current version of 'Staging' into your current branch and commit or shelve any changes.
+2. Check out the 'Flyways' branch.
+3. Merge a current version of 'Staging' into 'Flyways'.
+4. Add a file containing your SQL command(s) to the db.migration folder, observing the naming
+   convention and taking the next number in sequence.
+5. Notify your fellow developers of the number you've claimed in the
+   [#tool-tcsoftware-tech-int](https://refugeejobsmarket.slack.com/archives/C0583HJ9CHM) Slack
+   channel.
+6. Commit and push your changes.
+7. Check out your working branch and merge 'Flyways' into it.
 8. Restart the Spring service and the changes will be applied to your local DB.
 9. Check the 'Amend' box (if using IntelliJ) and commit and push your changes.
 10. Open a PR to merge your working branch into Staging.
 
-Observing these simple steps means that other developers needing to make DB changes can do so with 
+Observing these simple steps means that other developers needing to make DB changes can do so with
 minimal coordination and potential for time-consuming errors.
 
 ### Modifying or dropping existing columns or tables
 
-When renaming or dropping an existing column or table, following the above process without amendment 
-would break the build for other developers who don't yet have your code. It could also cause issues 
-for TC users during deployment of a new release. For that reason, we separate the process across two 
+When renaming or dropping an existing column or table, following the above process without amendment
+would break the build for other developers who don't yet have your code. It could also cause issues
+for TC users during deployment of a new release. For that reason, we separate the process across two
 release cycles, as follows.
 
 #### Modifying
-* Instead of directly editing a table or column, follow the usual process to create a _new_ version reflecting your desired changes.
-* As appropriate, include in your migration the required SQL command(s) to transfer current data to the new version.
-* Submit a PR for code that eliminates all references to the old version and points instead to your new version.
+
+* Instead of directly editing a table or column, follow the usual process to create a _new_ version
+  reflecting your desired changes.
+* As appropriate, include in your migration the required SQL command(s) to transfer current data to
+  the new version.
+* Submit a PR for code that eliminates all references to the old version and points instead to your
+  new version.
 
 #### Dropping
-* In the current release cycle you will only submit a PR for code that eliminates all references to the column or table to be dropped.
+
+* In the current release cycle you will only submit a PR for code that eliminates all references to
+  the column or table to be dropped.
 
 In both cases:
-* Create a GitHub issue _marked for the next release_, to complete this process by submitting a migration to drop the redundant column or table. 
-* Provide the necessary SQL commands and context, so a different developer could pick up your issue and action it without further analysis.
+
+* Create a GitHub issue _marked for the next release_, to complete this process by submitting a
+  migration to drop the redundant column or table.
+* Provide the necessary SQL commands and context, so a different developer could pick up your issue
+  and action it without further analysis.
 * In the next release cycle, the usual process can now be followed without risk of unwanted effects.
 
 ### Backing out changes
