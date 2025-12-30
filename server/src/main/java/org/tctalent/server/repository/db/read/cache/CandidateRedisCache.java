@@ -28,15 +28,18 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Redis-backed L1 cache for candidate JSON.
- *
+ * <p>
  * Keys are versioned:
  *   candidate:json:{candidateId}:v:{dataVersion}
- *
+ * </p>
+ * <p>
  * Versioned keys mean:
  *  - no explicit invalidation
  *  - stale entries become unreachable automatically
- *
+ * </p>
+ * <p>
  * TTL (if configured) is for memory hygiene only, not correctness.
+ * </p>
  */
 @Repository
 @RequiredArgsConstructor
@@ -47,8 +50,9 @@ public class CandidateRedisCache {
     /**
      * Optional TTL for Redis entries.
      * Can be null to disable expiry.
-     *
+     * <p>
      * In practice, 7–30 days is a reasonable default.
+     * </p>
      */
     private final Duration ttl = null; //todo Pick up from config
 
@@ -100,11 +104,13 @@ public class CandidateRedisCache {
 
     /**
      * Store multiple JSON blobs in Redis.
-     *
+     * <p>
      * Uses individual SET operations because Redis MSET
      * does not support per-key TTL.
-     *
+     * </p>
+     * <p>
      * If TTL is null, entries are stored without expiry.
+     * </p>
      */
     public void putAll(Map<Long, VersionedJson> rows) {
 
@@ -124,7 +130,7 @@ public class CandidateRedisCache {
     }
 
     /**
-     * Simple value holder used when warming Redis from DB cache
+     * Simple value holder used when loading Redis from DB cache
      * or after recomputation.
      */
     public record VersionedJson(
