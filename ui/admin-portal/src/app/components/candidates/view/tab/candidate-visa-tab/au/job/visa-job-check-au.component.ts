@@ -32,7 +32,7 @@ import {CandidateOccupation} from "../../../../../../../model/candidate-occupati
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {Occupation} from "../../../../../../../model/occupation";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {TcAccordionComponent} from "../../../../../../../shared/components/accordion/tc-accordion.component";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
@@ -46,7 +46,7 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
 
-  @ViewChild('visaJobAus') visaJobAus: NgbAccordion;
+  @ViewChild('visaJobAus') visaJobAus: TcAccordionComponent;
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
@@ -96,7 +96,7 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     if(this.visaJobAus){
-      this.visaJobAus.expandAll();
+      this.visaJobAus.openAll();
     }
   }
 

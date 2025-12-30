@@ -21,7 +21,7 @@ import {
   CandidateVisa,
   CandidateVisaJobCheck
 } from "../../../../../../../model/candidate";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {TcAccordionComponent} from "../../../../../../../shared/components/accordion/tc-accordion.component";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
@@ -35,7 +35,7 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
 
-  @ViewChild('visaJobUk') visaJobUk: NgbAccordion;
+  @ViewChild('visaJobUk') visaJobUk: TcAccordionComponent;
 
   candidateOpportunity: CandidateOpportunity;
 
@@ -50,7 +50,7 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     if(this.visaJobUk){
-      this.visaJobUk.expandAll();
+      this.visaJobUk.openAll();
     }
   }
 }
