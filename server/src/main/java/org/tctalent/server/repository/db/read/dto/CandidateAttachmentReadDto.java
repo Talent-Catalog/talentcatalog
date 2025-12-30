@@ -19,6 +19,8 @@ package org.tctalent.server.repository.db.read.dto;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.AttachmentType;
+import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
@@ -43,8 +45,8 @@ public class CandidateAttachmentReadDto {
     private String location;
     private String migrated;
     private String name;
-    private String type;
-    private String uploadType;
+    private AttachmentType type;
+    private UploadType uploadType;
     
     @SqlIgnore //todo This is a computed field
     private String url;
