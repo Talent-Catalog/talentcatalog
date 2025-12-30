@@ -50,7 +50,7 @@ public class CandidateRedisCache {
      *
      * In practice, 7–30 days is a reasonable default.
      */
-    private final Duration ttl;
+    private final Duration ttl = null; //todo Pick up from config
 
     private ValueOperations<String, String> values() {
         return redisTemplate.opsForValue();
