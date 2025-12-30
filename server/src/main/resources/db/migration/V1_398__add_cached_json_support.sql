@@ -28,18 +28,23 @@ create or replace function bump_candidate_self_version()
     returns trigger language plpgsql as
 $$
 begin
-    update candidate
-    set data_version = data_version + 1
-    where id = coalesce(new.id, old.id);
+    -- Note that this logic is different from updates on other tables because updating fields on the 
+    -- candidate table will change the data_version field on the candidate table, which will trigger
+    -- another update - and so on, resulting in an infinite loop.
+    -- Only bump version if something other than data_version changed
+    if new is distinct from old then
+        new.data_version := old.data_version + 1;
+    end if;
 
-    return null; -- return value ignored for AFTER triggers
+    -- Return NEW to apply the modified row
+    return new;
 end;
 $$;
 
 drop trigger if exists candidate_bump_version on candidate;
 
 create trigger candidate_bump_version
-    after insert or update or delete on candidate
+    before update on candidate
     for each row execute function bump_candidate_self_version();
 
 
