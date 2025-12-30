@@ -21,17 +21,20 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * DAO for the Postgres-backed candidate JSON cache.
- *
+ * <p>
  * Stores exactly one JSON blob per candidate, together with the data_version
  * it was computed against.
- *
+ * </p>
+ * <p>
  * This cache is authoritative for stored JSON, but correctness is governed by
  * candidate.data_version, not by this table alone.
+ * </p>
  */
 @Repository
 @Transactional
@@ -42,19 +45,23 @@ public class CandidateJsonCacheDao {
 
     /**
      * Fetch cached JSON rows for the given candidate IDs.
-     *
+     * <p>
      * This method returns:
-     *  - candidate_id
-     *  - candidate.data_version      (authoritative)
-     *  - cached.data_version         (what the JSON was built against)
-     *  - cached JSON (may be null if no cache row exists)
-     *
+     * <ul>
+     *  <li>candidate_id</li> 
+     *  <li>candidate.data_version (authoritative)</li>
+     *  <li>cached.data_version (what the JSON was built against)</li>
+     *  <li>cached JSON (may be null if no cache row exists)</li>
+     * </ul>
+     * </p>
+     * <p>
      * Callers decide whether the cache row is valid by comparing versions.
+     * </p>
      */
     @Transactional(readOnly = true)
-    public List<CandidateJsonCache> fetchCached(Collection<Long> candidateIds) {
+    public List<CandidateJsonCache> findByIds(@Nullable Collection<Long> ids) {
 
-        if (candidateIds == null || candidateIds.isEmpty()) {
+        if (ids == null || ids.isEmpty()) {
             return List.of();
         }
 
@@ -70,7 +77,7 @@ public class CandidateJsonCacheDao {
               on cj.candidate_id = c.id
             where c.id in (:ids)
             """,
-            Map.of("ids", candidateIds),
+            Map.of("ids", ids),
             (rs, rowNum) -> new CandidateJsonCache(
                 rs.getLong("candidate_id"),
                 rs.getLong("candidate_version"),
@@ -82,13 +89,15 @@ public class CandidateJsonCacheDao {
 
     /**
      * Insert or update cached JSON for a candidate.
-     *
+     * <p>
      * Uses Postgres UPSERT (ON CONFLICT) so callers do not need to care
      * whether a cache row already exists.
-     *
+     * </p>
+     * <p>
      * STRICT:
      *  - JSON must never be null or blank here
      *  - If it is, this indicates a serious upstream bug
+     * </p>
      */
     public void upsert(long candidateId, long dataVersion, String json) {
 

@@ -116,7 +116,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
         if (!redisMissIds.isEmpty()) {
 
             List<CandidateJsonCache> pgRows =
-                pgCacheDao.fetchCached(redisMissIds);
+                pgCacheDao.findByIds(redisMissIds);
 
             Map<Long, CandidateRedisCache.VersionedJson> redisUpdates =
                 new HashMap<>();
