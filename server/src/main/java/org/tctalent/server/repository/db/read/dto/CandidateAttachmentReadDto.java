@@ -23,7 +23,6 @@ import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
-import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
@@ -39,15 +38,17 @@ public class CandidateAttachmentReadDto {
     private OffsetDateTime createdDate;
     @JsonOneToOne(joinLeftColumn = "created_by")
     private UserReadDto createdBy;
-    private String cv;
+    private boolean cv;
     private String fileType;
     private Long id;
     private String location;
-    private String migrated;
+    private boolean migrated;
     private String name;
     private AttachmentType type;
     private UploadType uploadType;
-    
-    @SqlIgnore //todo This is a computed field
-    private String url;
+
+    public String getUrl() {
+        return location;
+    }
+
 }
