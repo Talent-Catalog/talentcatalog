@@ -27,8 +27,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.repository.db.read.cache.CandidateJsonCache;
 import org.tctalent.server.repository.db.read.cache.CandidateJsonCacheDao;
+import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.repository.db.read.cache.CandidateVersionDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.repository.db.read.sql.CandidateJsonDao;
@@ -36,26 +39,28 @@ import org.tctalent.server.service.db.CandidateDtoService;
 
 /**
  * Strict read service for CandidateReadDto.
- *
+ * <p>
  * Architecture:
  *   L1: Redis (shared, versioned keys)  //Todo 
  *   L2: Postgres JSON cache (candidate_json_cache)
  *   L3: Postgres recomputation (SqlJsonQueryBuilder)
- *
+ * </p>
+ * <p>
  * Correctness invariant:
  *   candidate.data_version is the source of truth.
  *   Cached JSON is valid IFF it was built against the same data_version.
- *
+ * </p>
+ * <p>
  * This service guarantees:
  *   - No stale JSON is ever returned
  *   - Every requested candidateId is returned or an exception is thrown
+ * </p>
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CandidateDtoServiceImpl implements CandidateDtoService {
-    //TODO JC I have commented out the use of CandidateRedisCache
-//    private final CandidateRedisCache redisCache;
+    private final CandidateRedisCache redisCache;
     private final CandidateVersionDao versionDao;
     private final CandidateJsonCacheDao pgCacheDao;
     private final CandidateJsonDao jsonDao;
@@ -63,14 +68,13 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
 
     /**
      * Load CandidateReadDto for the given IDs.
-     *
-     * STRICT:
-     *  - If any requested ID cannot be resolved to JSON, this method throws.
-     *  - Silent partial results are never returned.
+     * @throws JsonProcessingException if JSON cannot be processed
+     * @throws NoSuchObjectException if any of the ids are bad - ie do not correspond a candidate.
      */
     @Override
     @NonNull
-    public Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) throws JsonProcessingException {
+    public Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) 
+        throws NoSuchObjectException, JsonProcessingException {
 
         if (ids == null || ids.isEmpty()) {
             return Map.of();
@@ -83,19 +87,19 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
         Map<Long, Long> versions =
             versionDao.fetchCandidateVersions(new ArrayList<>(ids));
 
-        // STRICT: all requested candidates must exist
-        List<Long> missingCandidates = ids.stream()
+        // STRICT: check that all ids are valid - ie correspond to a candidate on the db.
+        List<Long> badIds = ids.stream()
             .filter(id -> !versions.containsKey(id))
             .toList();
 
-        if (!missingCandidates.isEmpty()) {
-            //TODO JC Use our LogBuilder
-            log.error(
-                "Requested candidate IDs not found in candidate table. requestedIds={}, missingIds={}",
-                ids, missingCandidates
-            );
-            throw new IllegalStateException(
-                "Candidates not found: " + missingCandidates
+        if (!badIds.isEmpty()) {
+            LogBuilder.builder(log)
+                .action("CandidateDtoService.loadByIds")
+                .message("Requested candidate IDs not found in candidate table. " 
+                    + "requestedIds=" + ids + ", missingIds=" + badIds)
+                .logError();
+            throw new NoSuchObjectException(
+                "Candidates not found with ids: " + badIds
             );
         }
 
@@ -104,8 +108,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
         // ------------------------------------------------------------
 
         Map<Long, String> jsonById =
-//            new HashMap<>(redisCache.multiGet(versions));
-            new HashMap<>();
+            new HashMap<>(redisCache.multiGet(versions));
         
         // ------------------------------------------------------------
         // Step 2: L2 Postgres JSON cache lookup (for Redis misses)
@@ -120,8 +123,8 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
             List<CandidateJsonCache> pgRows =
                 pgCacheDao.fetchCached(redisMissIds);
 
-//            Map<Long, CandidateRedisCache.VersionedJson> redisWarm =
-//                new HashMap<>();
+            Map<Long, CandidateRedisCache.VersionedJson> redisUpdates =
+                new HashMap<>();
 
             for (CandidateJsonCache jsonCache : pgRows) {
 
@@ -138,21 +141,21 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
 
                     jsonById.put(jsonCache.candidateId(), jsonCache.json());
 
-//                    redisWarm.put(
-//                        jsonCache.candidateId(),
-//                        new CandidateRedisCache.VersionedJson(
-//                            jsonCache.candidateId(),
-//                            jsonCache.candidateVersion(),
-//                            jsonCache.json()
-//                        )
-//                    );
+                    redisUpdates.put(
+                        jsonCache.candidateId(),
+                        new CandidateRedisCache.VersionedJson(
+                            jsonCache.candidateId(),
+                            jsonCache.candidateVersion(),
+                            jsonCache.json()
+                        )
+                    );
                 }
             }
 
-//            // Warm Redis from Postgres hits (shared benefit across nodes)
-//            if (!redisWarm.isEmpty()) {
-//                redisCache.putAll(redisWarm);
-//            }
+            // Update Redis from Postgres hits (shared benefit across nodes)
+            if (!redisUpdates.isEmpty()) {
+                redisCache.putAll(redisUpdates);
+            }
         }
 
         // ------------------------------------------------------------
@@ -168,8 +171,8 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
             Map<Long, String> recomputed =
                 jsonDao.loadJsonByIds(remainingMissIds);
 
-//            Map<Long, CandidateRedisCache.VersionedJson> redisWrites =
-//                new HashMap<>();
+            Map<Long, CandidateRedisCache.VersionedJson> redisWrites =
+                new HashMap<>();
 
             for (Long id : remainingMissIds) {
                 String json = recomputed.get(id);
@@ -187,36 +190,36 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
                 pgCacheDao.upsert(id, version, json);
 
                 // Prepare Redis write (versioned key)
-//                redisWrites.put(
-//                    id,
-//                    new CandidateRedisCache.VersionedJson(id, version, json)
-//                );
+                redisWrites.put(
+                    id,
+                    new CandidateRedisCache.VersionedJson(id, version, json)
+                );
 
                 // Merge into in-memory results
                 jsonById.put(id, json);
             }
 
-//            if (!redisWrites.isEmpty()) {
-//                redisCache.putAll(redisWrites);
-//            }
+            //Update the redis cache
+            redisCache.putAll(redisWrites);
         }
 
         // ------------------------------------------------------------
         // Step 4: STRICT completeness check
         // ------------------------------------------------------------
 
-        List<Long> stillMissing = ids.stream()
+        List<Long> unprocessedIds = ids.stream()
             .filter(id -> !jsonById.containsKey(id))
             .toList();
 
-        if (!stillMissing.isEmpty()) {
-            log.error(
-                "Candidate JSON missing after Redis + Postgres cache + recompute. " +
-                    "requestedIds={}, missingIds={}, versions={}",
-                ids, stillMissing, versions
-            );
-            throw new IllegalStateException(
-                "Missing candidate JSON for ids=" + stillMissing
+        if (!unprocessedIds.isEmpty()) {
+            LogBuilder.builder(log)
+                .action("CandidateDtoService.loadByIds")
+                .message("Candidate JSON missing after Redis + Postgres cache + recompute. " 
+                    + "requestedIds=" + ids + ", unprocessedIds=" + unprocessedIds 
+                    + ", versions=" + versions)
+                .logError();
+            throw new NoSuchObjectException(
+                "Candidates not found with ids: " + badIds
             );
         }
 
@@ -231,13 +234,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
         return out;
     }
 
-    private CandidateReadDto deserialize(String json) {
-        try {
-            return objectMapper.readValue(json, CandidateReadDto.class);
-        } catch (Exception e) {
-            throw new IllegalStateException(
-                "Failed to deserialize candidate JSON", e
-            );
-        }
+    private CandidateReadDto deserialize(String json) throws JsonProcessingException {
+        return objectMapper.readValue(json, CandidateReadDto.class);
     }
 }
