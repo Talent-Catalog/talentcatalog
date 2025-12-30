@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Collection;
 import java.util.Map;
 import org.springframework.lang.NonNull;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 /**
@@ -38,10 +39,14 @@ public interface CandidateDtoService {
     /**
      * Loads Candidate DTOs into a Map of ids to CandidateReadDto objects 
      * for the given candidate IDs.
+     *  
      * @param ids Ids of candidates to be fetched
      * @return Map of candidate ids to CandidateDTOs
+     * @throws JsonProcessingException if JSON cannot be processed
+     * @throws NoSuchObjectException if any of the ids are bad - ie do not correspond a candidate.
      */
     @NonNull
-    Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) throws JsonProcessingException;
+    Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) 
+        throws NoSuchObjectException, JsonProcessingException;
 
 }

@@ -66,11 +66,6 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
     private final CandidateJsonDao jsonDao;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Load CandidateReadDto for the given IDs.
-     * @throws JsonProcessingException if JSON cannot be processed
-     * @throws NoSuchObjectException if any of the ids are bad - ie do not correspond a candidate.
-     */
     @Override
     @NonNull
     public Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) 
