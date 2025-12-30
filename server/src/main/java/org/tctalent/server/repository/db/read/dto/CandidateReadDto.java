@@ -158,7 +158,7 @@ public class CandidateReadDto {
     private String returnHomeFuture;
     private String returnHomeSafe;
     @SqlIgnore
-    private String selected;
+    private boolean selected;
     private String sflink;
     @SqlIgnore //todo Computed field
     private String shareableCv;

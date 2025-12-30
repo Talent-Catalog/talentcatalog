@@ -444,9 +444,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Do the search
             candidates = doSearchCandidateDtos(request);
 
-            //TODO JC Need to get select lists working
             //Add in any selections
-//            markUserSelectedCandidates(savedSearch.getId(), candidates);
+            markUserSelectedCandidateDtos(savedSearch.getId(), candidates);
         }
 
         return candidates;
@@ -1556,8 +1555,33 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (selectionList != null) {
                 Set<Candidate> selectedCandidates = selectionList.getCandidates();
                 if (!selectedCandidates.isEmpty()) {
+                    Set<Long> selectedIds = selectedCandidates.stream().map(Candidate::getId).collect(Collectors.toSet());
                     for (Candidate candidate : candidates) {
-                        if (selectedCandidates.contains(candidate)) {
+                        if (selectedIds.contains(candidate.getId())) {
+                            candidate.setSelected(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void markUserSelectedCandidateDtos(
+        @Nullable Long savedSearchId, Page<CandidateReadDto> candidates) {
+        if (savedSearchId != null) {
+            //Check for selection list to set the selected attribute on returned
+            // candidates.
+            SavedList selectionList = null;
+            User user = userService.getLoggedInUser();
+            if (user != null) {
+                selectionList = getSelectionList(savedSearchId, user.getId());
+            }
+            if (selectionList != null) {
+                Set<Candidate> selectedCandidates = selectionList.getCandidates();
+                if (!selectedCandidates.isEmpty()) {
+                    Set<Long> selectedIds = selectedCandidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+                    for (CandidateReadDto candidate : candidates) {
+                        if (selectedIds.contains(candidate.getId())) {
                             candidate.setSelected(true);
                         }
                     }
