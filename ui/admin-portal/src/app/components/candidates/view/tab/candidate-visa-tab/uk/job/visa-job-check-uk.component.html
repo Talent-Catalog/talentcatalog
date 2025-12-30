@@ -17,7 +17,7 @@
 <!-- ERROR -->
 <tc-alert *ngIf="error">{{error}}</tc-alert>
 
-<tc-accordion *ngIf="selectedJobCheck" [allOpen]="true">
+<tc-accordion *ngIf="selectedJobCheck" #visaJobUk [allOpen]="true">
   <tc-accordion-item id="family-assessment" header="Family Assessment">
     <div>
       <app-relocating-dependants
