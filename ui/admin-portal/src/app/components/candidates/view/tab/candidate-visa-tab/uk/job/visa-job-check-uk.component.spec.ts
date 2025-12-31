@@ -70,10 +70,10 @@ describe('VisaJobCheckUkComponent', () => {
 
   it('should expand all panels after view init', () => {
     fixture.detectChanges(); // ngOnInit() gets called here
-    component.visaJobUk = { expandAll: jasmine.createSpy('expandAll') } as any;
+    component.visaJobUk = { openAll: jasmine.createSpy('openAll') } as any;
 
     component.ngAfterViewInit();
 
-    expect(component.visaJobUk.expandAll).toHaveBeenCalled();
+    expect(component.visaJobUk.openAll).toHaveBeenCalled();
   });
 });
