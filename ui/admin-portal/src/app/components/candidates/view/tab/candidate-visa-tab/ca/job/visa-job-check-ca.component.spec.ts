@@ -28,6 +28,7 @@ import {
 } from "../../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {TcAccordionComponent} from "../../../../../../../shared/components/accordion/tc-accordion.component";
 import {TcAccordionItemComponent} from "../../../../../../../shared/components/accordion/accordion-item/tc-accordion-item.component";
+import {By} from "@angular/platform-browser";
 import {of, throwError} from "rxjs";
 import {DependantsComponent} from "../../../../../intake/dependants/dependants.component";
 import {
@@ -164,10 +165,12 @@ describe('VisaJobCheckCaComponent', () => {
   it('should open all panels after view init', () => {
     fixture.detectChanges(); // ngOnInit() gets called here
 
-    // The accordion should have allOpen="true" set, which opens all panels during initialization
-    // Verify that the accordion is rendered with allOpen input
-    const accordionElement = fixture.nativeElement.querySelector('tc-accordion');
-    expect(accordionElement).toBeTruthy();
+    // Get the accordion component instance
+    const accordionDebugElement = fixture.debugElement.query(By.directive(TcAccordionComponent));
+    expect(accordionDebugElement).toBeTruthy();
+
     // The accordion items should be open (this is handled by the accordion component's allOpen input)
+    const accordionComponent = accordionDebugElement.componentInstance as TcAccordionComponent;
+    expect(accordionComponent.allOpen).toBe(true);
   });
 });
