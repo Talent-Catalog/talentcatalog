@@ -53,6 +53,7 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChatUserInfo;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -106,8 +107,43 @@ public class CandidateAdminApi {
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = savedSearchService.searchCandidates(request);
+
+        long start = System.currentTimeMillis();
+        long end;
+
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
-        return builder.buildPage(candidates);
+        final Map<String, Object> stringObjectMap = builder.buildPage(candidates);
+
+
+        end = System.currentTimeMillis();
+        long computeDtoTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: computeDto: " + computeDtoTime
+            ).logInfo();
+
+        return stringObjectMap;
+    }
+
+    @PostMapping("search-fast")
+    public Map<String, Object> searchFast(@RequestBody SearchCandidateRequest request) {
+        Page<CandidateReadDto> candidates = savedSearchService.searchCandidateDtos(request);
+
+        long start = System.currentTimeMillis();
+        long end;
+
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
+        final Map<String, Object> stringObjectMap = builder.buildPage(candidates);
+
+
+        end = System.currentTimeMillis();
+        long computeDtoTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: computeDto: " + computeDtoTime
+            ).logInfo();
+
+        return stringObjectMap;
     }
 
     @PostMapping("findbyemail")
