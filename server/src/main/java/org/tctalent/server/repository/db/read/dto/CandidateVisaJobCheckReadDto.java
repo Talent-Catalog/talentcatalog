@@ -41,9 +41,9 @@ public class CandidateVisaJobCheckReadDto {
     private String eligibleOther;
     private String interest;
     private Long id;
-    @JsonOneToOne(joinLeftColumn = "job_opp_id")
+    @JsonOneToOne(joinColumn = "job_opp_id")
     private SalesforceJobOppReadDto jobOpp;
-    @JsonOneToOne(joinLeftColumn = "occupation_id")
+    @JsonOneToOne(joinColumn = "occupation_id")
     private OccupationReadDto occupation;
     private String putForward;
     private String regional;

@@ -35,11 +35,11 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateJobExperienceReadDto {
 //TODO JC Circular reference    
-//    @JsonOneToOne(joinLeftColumn = "candidate_occupation_id")
+//    @JsonOneToOne(joinColumn = "candidate_occupation_id")
     @SqlIgnore
     private CandidateOccupationReadDto candidateOccupation;
     private String companyName;
-    @JsonOneToOne(joinLeftColumn = "country_id")
+    @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private String description;
     private LocalDate endDate;

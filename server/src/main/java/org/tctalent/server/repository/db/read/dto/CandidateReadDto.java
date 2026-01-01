@@ -41,7 +41,7 @@ public class CandidateReadDto {
     private OffsetDateTime acceptedPrivacyPolicyDate;
     private String acceptedPrivacyPolicyId;
     
-    @JsonOneToOne(joinLeftColumn = "accepted_privacy_policy_partner_id")
+    @JsonOneToOne(joinColumn = "accepted_privacy_policy_partner_id")
     private PartnerReadDto acceptedPrivacyPolicyPartner;
     private String additionalInfo;
     private String address1;
@@ -87,7 +87,7 @@ public class CandidateReadDto {
     private String conflict;
     @SqlIgnore //todo Computed field
     private String contextNote;
-    @JsonOneToOne(joinLeftColumn = "country_id")
+    @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private OffsetDateTime createdDate;
     private LocalDate dob;
@@ -101,7 +101,7 @@ public class CandidateReadDto {
     private String folderlink;
     private String frenchAssessmentScoreNclc;
     private OffsetDateTime fullIntakeCompletedDate;
-    @JsonOneToOne(joinLeftColumn = "full_intake_completed_by")
+    @JsonOneToOne(joinColumn = "full_intake_completed_by")
     private UserReadDto fullIntakeCompletedBy;
     private String gender;
     private String healthIssues;
@@ -119,14 +119,14 @@ public class CandidateReadDto {
     @SqlIgnore //todo Computed field
     private String listShareableDoc;
     private String maritalStatus;
-    @JsonOneToOne(joinLeftColumn = "max_education_level_id")
+    @JsonOneToOne(joinColumn = "max_education_level_id")
     private EducationLevelReadDto maxEducationLevel;
     private String mediaWillingness;
     private OffsetDateTime miniIntakeCompletedDate;
-    @JsonOneToOne(joinLeftColumn = "mini_intake_completed_by")
+    @JsonOneToOne(joinColumn = "mini_intake_completed_by")
     private UserReadDto miniIntakeCompletedBy;
     private String muted;
-    @JsonOneToOne(joinLeftColumn = "nationality_id")
+    @JsonOneToOne(joinColumn = "nationality_id")
     private CountryReadDto nationality;
     
     @SqlIgnore //todo Computed field
@@ -146,11 +146,11 @@ public class CandidateReadDto {
     private String regoUtmMedium;
     private String regoUtmSource;
     private String regoUtmTerm;
-    @JsonOneToOne(joinLeftColumn = "registered_by")
+    @JsonOneToOne(joinColumn = "registered_by")
     private PartnerReadDto registeredBy;
     private String relocatedAddress;
     private String relocatedCity;
-    @JsonOneToOne(joinLeftColumn = "relocated_country_id")
+    @JsonOneToOne(joinColumn = "relocated_country_id")
     private CountryReadDto relocatedCountry;
     private String relocatedState;
     private String residenceStatus;
@@ -167,7 +167,7 @@ public class CandidateReadDto {
     private String shareableNotes;
     private String state;
     private String status;
-    @JsonOneToOne(joinLeftColumn = "survey_type_id")
+    @JsonOneToOne(joinColumn = "survey_type_id")
     private SurveyTypeReadDto surveyType;
     private String surveyComment;
     
@@ -182,7 +182,7 @@ public class CandidateReadDto {
     private String unrwaRegistered;
     private OffsetDateTime updatedDate;
     
-    @JsonOneToOne(joinLeftColumn = "user_id")
+    @JsonOneToOne(joinColumn = "user_id")
     private UserReadDto user;
     private String videolink;
     private String whatsapp;

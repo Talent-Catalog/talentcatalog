@@ -37,6 +37,5 @@ public @interface JsonOneToOne {
      * Default is the type deduced from the type of the annotated field 
      */
     Class<?> type() default Void.class;
-    String joinLeftColumn();              // e.g. c.created_by
-    String joinRightColumn() default "id";
+    String joinColumn();              // e.g. c.created_by
 }

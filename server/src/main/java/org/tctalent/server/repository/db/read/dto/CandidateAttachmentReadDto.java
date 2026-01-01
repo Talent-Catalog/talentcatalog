@@ -36,7 +36,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateAttachmentReadDto {
     private OffsetDateTime createdDate;
-    @JsonOneToOne(joinLeftColumn = "created_by")
+    @JsonOneToOne(joinColumn = "created_by")
     private UserReadDto createdBy;
     private boolean cv;
     private String fileType;

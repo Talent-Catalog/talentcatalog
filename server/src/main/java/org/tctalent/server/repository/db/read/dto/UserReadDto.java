@@ -41,7 +41,7 @@ public class UserReadDto {
     private OffsetDateTime lastLogin;
     private String lastName;
 
-    @JsonOneToOne(joinLeftColumn = "partner_id")
+    @JsonOneToOne(joinColumn = "partner_id")
     private PartnerReadDto partner;
 
     private OffsetDateTime updatedDate;

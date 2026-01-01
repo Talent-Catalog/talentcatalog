@@ -35,7 +35,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateCitizenshipReadDto {
     private String hasPassport;
     private Long id;
-    @JsonOneToOne(joinLeftColumn = "nationality_id")
+    @JsonOneToOne(joinColumn = "nationality_id")
     private CountryReadDto nationality;
     private String notes;
     private LocalDate passportExp;

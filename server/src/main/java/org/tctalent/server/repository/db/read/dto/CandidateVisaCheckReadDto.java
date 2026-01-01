@@ -36,7 +36,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateVisaCheckReadDto {
     private String ageRequirement;
     private String characterAssessment;
-    @JsonOneToOne(joinLeftColumn = "country_id")
+    @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private String destinationFamily;
     private String englishThreshold;

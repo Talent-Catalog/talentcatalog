@@ -34,16 +34,16 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="candidate_opportunity", alias = "cop")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateOpportunityReadDto {
-    @JsonOneToOne(joinLeftColumn = "candidate_id")
+    @JsonOneToOne(joinColumn = "candidate_id")
     private ShortCandidateReadDto candidate;
     private String closingComments;
     private String closingCommentsForCandidate;
-    @JsonOneToOne(joinLeftColumn = "created_by")
+    @JsonOneToOne(joinColumn = "created_by")
     private UserReadDto createdBy;
     private OffsetDateTime createdDate;
     private String employerFeedback;
     private Long id;
-    @JsonOneToOne(joinLeftColumn = "job_opp_id")
+    @JsonOneToOne(joinColumn = "job_opp_id")
     private JobOppReadDto jobOpp;
     private String lastActiveStage;
     private String name;
@@ -52,7 +52,7 @@ public class CandidateOpportunityReadDto {
     private String relocatingDependantIds;
     private String sfId;
     private String stage;
-    @JsonOneToOne(joinLeftColumn = "updated_by")
+    @JsonOneToOne(joinColumn = "updated_by")
     private UserReadDto updatedBy;
     private OffsetDateTime updatedDate;
 }

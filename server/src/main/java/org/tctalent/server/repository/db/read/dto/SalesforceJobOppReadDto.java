@@ -34,9 +34,9 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="salesforce_job_opp", alias = "sfjob")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class SalesforceJobOppReadDto {
-    @JsonOneToOne(joinLeftColumn = "country_id")
+    @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
-    @JsonOneToOne(joinLeftColumn = "employer_id")
+    @JsonOneToOne(joinColumn = "employer_id")
     private EmployerEntityReadDto employerEntity;
     private String employerHiredInternationally;
     private String hiringCommitment;

@@ -37,13 +37,13 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateOccupationReadDto {
     @JsonOneToMany(joinColumn = "candidate_occupation_id")
     private List<CandidateJobExperienceReadDto> candidateJobExperiences;
-    @JsonOneToOne(joinLeftColumn = "created_by")
+    @JsonOneToOne(joinColumn = "created_by")
     private UserReadDto createdBy;
     private OffsetDateTime createdDate;
     private Long id;
-    @JsonOneToOne(joinLeftColumn = "occupation_id")
+    @JsonOneToOne(joinColumn = "occupation_id")
     private OccupationReadDto occupation;
-    @JsonOneToOne(joinLeftColumn = "updated_by")
+    @JsonOneToOne(joinColumn = "updated_by")
     private UserReadDto updatedBy;
     private OffsetDateTime updatedDate;
     private String yearsExperience;

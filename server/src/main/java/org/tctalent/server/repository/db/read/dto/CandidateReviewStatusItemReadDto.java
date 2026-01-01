@@ -34,6 +34,6 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateReviewStatusItemReadDto {
     private Long id;
     private String reviewStatus;
-    @JsonOneToOne(joinLeftColumn = "saved_search_id")
+    @JsonOneToOne(joinColumn = "saved_search_id")
     private SavedSearchReadDto savedSearch;
 }

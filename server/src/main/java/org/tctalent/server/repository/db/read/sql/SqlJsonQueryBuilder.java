@@ -22,7 +22,11 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
@@ -96,29 +100,73 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  * where c.id in (:ids)
  *  }
  *  </pre>
+ * <p>
+ * Builds PostgreSQL SQL that returns:
+ * </p>
+ *
+ * <ul>
+ *   <li><p>{@code id} (root table primary key)</p></li>
+ *   <li><p>{@code json} (a {@code jsonb} object containing DTO fields)</p></li>
+ * </ul>
+ *
+ * <p>
+ * The builder supports:
+ * </p>
+ *
+ * <ul>
+ *   <li><p>Scalar columns (via {@code @SqlColumn} or optional default mapping)</p></li>
+ *   <li><p>Nested one-to-one objects (via {@code @JsonOneToOne})</p></li>
+ *   <li><p>Nested one-to-many arrays (via {@code @JsonOneToMany})</p></li>
+ *   <li><p>Ignoring fields (via {@code @SqlIgnore})</p></li>
+ * </ul>
+ *
+ * <p>
+ * Notes:
+ * </p>
+ *
+ * <ul>
+ *   <li><p>Table/alias are sourced from {@code @SqlTable} on each DTO class.</p></li>
+ *   <li><p>Type for one-to-one/many is deduced from the annotated field type; an exception is thrown if unsuitable.</p></li>
+ *   <li><p>To avoid Postgres function argument limits, JSON objects are built in chunks and concatenated.</p></li>
+ * </ul>
+ *
+ * @author John Cameron
+
  */
 @Component
 public class SqlJsonQueryBuilder {
 
-    private static final int JSON_FIELDS_PER_CHUNK = 40;
+    /**
+     * <p>
+     * Maximum number of key/value pairs per {@code jsonb_build_object(...)} call.
+     * </p>
+     *
+     * <p>
+     * Keep this comfortably under typical engine limits. Each pair contributes two arguments.
+     * </p>
+     */
+    private static final int JSONB_BUILD_OBJECT_MAX_PAIRS = 40;
 
     /**
-     * Compute the SQL required to fetch data with the 
-     * @param rootDtoClass Root DTO class we want to receive data
-     * @param idsParamName Name of parameter in the SQL which will receive the ids of the data to
-     *                     be fetched by the SQL.
-     * @return SQL query string which will retrieve the data
+     * <p>
+     * Builds a query returning {@code id} and {@code json}.
+     * </p>
+     *
+     * <p>
+     * The returned {@code json} column is aliased as {@code json}.
+     * </p>
+     *
+     * @param rootDtoClass Root DTO class annotated with {@code @SqlTable}
+     * @param idsParamName Named parameter used in {@code IN (:<param>)} predicate
+     * @return SQL string
      */
-    public String buildByIdsQuery(Class<?> rootDtoClass, String idsParamName) {
+    public String buildByIdsQuery(@NonNull Class<?> rootDtoClass, @NonNull String idsParamName) {
 
         //SQL is generated automatically from DTO objects. Annotations on the DTO classes are used
         //to drive the SQL generation.
-        SqlTable rootTable = require(
-            rootDtoClass.getAnnotation(SqlTable.class),
-            "Root DTO must have @SqlTable"
-        );
+        SqlTable rootTable = requireSqlTable(rootDtoClass);
 
-        //This the database table associated with the root DTO. 
+        //This is the database table associated with the root DTO. 
         //For example, the Candidate table for the CandidateReadDTO. You will see this table
         //specified on the @SQLTable annotation on the CandidateReadDTO.
         String rootTableAlias = rootTable.alias();
@@ -126,7 +174,8 @@ public class SqlJsonQueryBuilder {
         //Matching data is retrieved in the form of a single String field containing JSON.
         //This creates the Postgres SQL which populates the returned JSON. It uses Postgres
         //jsonb support, specifically jsonb_agg and jsonb_build_object.
-        String rootJson = buildJsonObject(rootDtoClass, rootTableAlias,rootTableAlias + ".id");
+        BuildContext ctx = new BuildContext();
+        String jsonExpr = buildJsonExpression(rootDtoClass, rootTableAlias, ctx);
 
         //The SQL is just a select where id matches one of the ids passed in.
         //There is a row for each id. Each row just has two fields: the id and the JSON encoded data. 
@@ -139,215 +188,511 @@ public class SqlJsonQueryBuilder {
             where %s.id in (:%s)
             """.formatted(
             rootTableAlias,
-            rootJson,
+            jsonExpr,
             rootTable.name(), rootTableAlias,
             rootTableAlias, idsParamName
         ).strip();
     }
-    private String buildJsonObject(
-        Class<?> dtoType,
-        String tableAlias,
-        String idExpression
-    ) {
-        boolean mapDefaults = mapUnannotated(dtoType);
-        List<String> kvPairs = new ArrayList<>();
 
-        for (Field f : dtoType.getDeclaredFields()) {
-            if (ignore(f)) continue;
 
-            /* ---------- one-to-many ---------- */
-            JsonOneToMany otm = f.getAnnotation(JsonOneToMany.class);
-            if (otm != null) {
+    /**
+     * <p>
+     * Builds a SQL expression that produces a {@code jsonb} object representing
+     * the given DTO type, using the provided table alias as the current SQL scope.
+     * </p>
+     *
+     * <p>
+     * This method is the core recursive entry point of the SQL JSON builder.
+     * It inspects the fields of the DTO class and, for each field, generates
+     * the appropriate SQL expression based on annotations and conventions.
+     * </p>
+     *
+     * <p>
+     * Supported field mappings:
+     * </p>
+     *
+     * <ul>
+     *   <li><p>
+     *     Scalar fields mapped to columns via {@link SqlColumn}, or via optional
+     *     default column mapping when enabled on the DTO.
+     *   </p></li>
+     *   <li><p>
+     *     Nested one-to-one relationships via {@link JsonOneToOne}, implemented
+     *     as correlated subqueries that return a single JSON object or {@code null}.
+     *   </p></li>
+     *   <li><p>
+     *     Nested one-to-many relationships via {@link JsonOneToMany}, implemented
+     *     as correlated subqueries that return JSON arrays (empty rather than
+     *     {@code null}).
+     *   </p></li>
+     * </ul>
+     *
+     * <p>
+     * For nested relationships, this method is called recursively with a new
+     * table alias representing the immediate child scope. Alias uniqueness is
+     * managed by {@link BuildContext}.
+     * </p>
+     *
+     * <p>
+     * JSON key names are always derived from DTO field names. This method
+     * produces only the SQL <em>value</em> expressions for each field; key
+     * assignment is handled centrally when assembling the JSON object.
+     * </p>
+     *
+     * <p>
+     * To avoid PostgreSQL function argument limits, the generated key/value
+     * pairs are assembled using {@link #buildJsonbObjectInChunks(List)}.
+     * </p>
+     *
+     * <p>
+     * Fields may be excluded from processing if they are:
+     * </p>
+     *
+     * <ul>
+     *   <li><p>Annotated with {@link SqlIgnore}.</p></li>
+     *   <li><p>Static, transient, or synthetic.</p></li>
+     * </ul>
+     *
+     * <p>
+     * If default column mapping is enabled for the DTO and a field appears to
+     * be a complex type but lacks relationship annotations, this method fails
+     * fast with an exception to avoid silently generating incorrect SQL.
+     * </p>
+     *
+     * @param dtoType DTO class to convert into a JSON object
+     * @param tableAlias SQL alias representing the current table scope
+     * @param ctx build context used to ensure alias uniqueness across recursion
+     * @return SQL expression producing a {@code jsonb} object
+     */
+    private String buildJsonExpression(Class<?> dtoType, String tableAlias, BuildContext ctx) {
+        List<Pair> pairs = new ArrayList<>();
 
-                Class<?> childType = resolveOneToManyType(f, otm);
-                SqlTable childTable = childType.getAnnotation(SqlTable.class);
+        boolean defaultColumnsEnabled = isDefaultColumnsEnabled(dtoType);
 
-                String childAlias = childTable.alias();
+        for (Field field : dtoType.getDeclaredFields()) {
+            if (shouldSkipField(field)) {
+                continue;
+            }
+            if (field.isAnnotationPresent(SqlIgnore.class)) {
+                continue;
+            }
 
-                String childJson = buildJsonObject(
-                    childType,
+            JsonOneToMany oneToMany = field.getAnnotation(JsonOneToMany.class);
+            if (oneToMany != null) {
+                Class<?> elementType = deduceCollectionElementType(field);
+                SqlTable childTable = requireSqlTable(elementType);
+
+                String childAlias = ctx.uniqueAlias(childTable.alias());
+                String valueExpr = buildOneToManyExpression(
+                    elementType,
+                    childTable,
                     childAlias,
-                    childAlias + ".id"
+                    oneToMany.joinColumn(),
+                    tableAlias
                 );
 
-                kvPairs.add("""
-                    '%s', coalesce((
-                        select jsonb_agg(%s%s)
-                        from %s %s
-                        where %s.%s = %s
-                    ), '[]' :: jsonb)
-                    """.formatted(
-                    f.getName(),
-                    childJson,
-                    otm.orderBy().isBlank() ? "" : " order by " + otm.orderBy(),
-                    childTable.name(), childAlias,
-                    childAlias, otm.joinColumn(),
-                    idExpression
-                ).strip());
-
+                pairs.add(new Pair(field.getName(), valueExpr));
                 continue;
             }
 
-            /* ---------- one-to-one ---------- */
-            JsonOneToOne oto = f.getAnnotation(JsonOneToOne.class);
-            if (oto != null) {
+            JsonOneToOne oneToOne = field.getAnnotation(JsonOneToOne.class);
+            if (oneToOne != null) {
+                Class<?> targetType = deduceOneToOneTargetType(field);
+                SqlTable childTable = requireSqlTable(targetType);
 
-                Class<?> targetType = resolveOneToOneType(f, oto);
-                SqlTable targetTable = targetType.getAnnotation(SqlTable.class);
-
-                String targetAlias = targetTable.alias();
-
-                String nestedJson = buildJsonObject(
+                String childAlias = ctx.uniqueAlias(childTable.alias());
+                String valueExpr = buildOneToOneExpression(
                     targetType,
-                    targetAlias,
-                    targetAlias + "." + oto.joinRightColumn()
+                    childTable,
+                    childAlias,
+                    oneToOne.joinColumn(),
+                    tableAlias
                 );
 
-                kvPairs.add("""
-                    '%s', (
-                        select %s
-                        from %s %s
-                        where %s = %s.%s
-                    )
-                    """.formatted(
-                    f.getName(),
-                    nestedJson,
-                    targetTable.name(), targetAlias,
-                    oto.joinLeftColumn(),
-                    targetAlias, oto.joinRightColumn()
-                ).strip());
-
+                pairs.add(new Pair(field.getName(), valueExpr));
                 continue;
             }
 
-            /* ---------- scalar ---------- */
-            SqlColumn col = f.getAnnotation(SqlColumn.class);
-            if (col == null && !mapDefaults) continue;
+            SqlColumn sqlColumn = field.getAnnotation(SqlColumn.class);
+            if (sqlColumn != null) {
+                String columnName = sqlColumn.name().isBlank()
+                    ? camelToSnakeCase(field.getName())
+                    : sqlColumn.name();
 
-            String dbColumn = (col != null)
-                ? col.name()
-                : camelToSnakeCase(f.getName());
+                pairs.add(new Pair(field.getName(), tableAlias + "." + columnName));
+                continue;
+            }
 
-            String jsonKey = (col != null && !col.jsonKey().isBlank())
-                ? col.jsonKey()
-                : f.getName();
+            if (defaultColumnsEnabled) {
+                if (looksLikeComplexType(field.getType())) {
+                    throw new IllegalStateException(
+                        "Field '" + dtoType.getSimpleName() + "." + field.getName()
+                            + "' looks like a complex type but is not annotated with @JsonOneToOne/@JsonOneToMany or @SqlIgnore"
+                    );
+                }
 
-            kvPairs.add("'" + jsonKey + "', " + tableAlias + "." + dbColumn);
+                String columnName = camelToSnakeCase(field.getName());
+                pairs.add(new Pair(field.getName(), tableAlias + "." + columnName));
+            }
         }
 
-        if (kvPairs.isEmpty()) {
-            throw new IllegalStateException(
-                "DTO " + dtoType.getName() + " has no mapped fields"
-            );
+        return buildJsonbObjectInChunks(pairs);
+    }
+
+    /**
+     * <p>
+     * Builds a SQL expression that produces a nested JSON object for a one-to-one
+     * relationship.
+     * </p>
+     *
+     * <p>
+     * The returned SQL expression:
+     * </p>
+     *
+     * <ul>
+     *   <li><p>Runs a correlated subquery against the target table.</p></li>
+     *   <li><p>Builds a JSON object representing the target DTO.</p></li>
+     *   <li><p>Returns {@code null} if no matching target row exists.</p></li>
+     * </ul>
+     *
+     * <p>
+     * Correlation is performed using a foreign-key column on the parent table
+     * that references {@code targetAlias.id}. This reflects the common
+     * one-to-one pattern where the parent owns the relationship.
+     * </p>
+     *
+     * <p>
+     * As with one-to-many relationships, this method does not determine the JSON
+     * field name. The caller is responsible for associating the returned
+     * expression with the correct JSON key.
+     * </p>
+     *
+     * @param targetType DTO class representing the one-to-one target
+     * @param targetTable {@link SqlTable} describing the target table
+     * @param targetAlias SQL alias to use for the target table
+     * @param joinColumnOnParent foreign-key column on the parent table referencing
+     *                           {@code targetAlias.id}
+     * @param parentAlias SQL alias of the parent table
+     * @return SQL expression producing a {@code jsonb} object or {@code null}
+     */
+    private String buildOneToOneExpression(
+        Class<?> targetType,
+        SqlTable targetTable,
+        String targetAlias,
+        String joinColumnOnParent,
+        String parentAlias
+    ) {
+        BuildContext nestedCtx = new BuildContext();
+        String nestedJson = buildJsonExpression(targetType, targetAlias, nestedCtx);
+
+        return ("""
+            (
+              select %s
+              from %s %s
+              where %s.%s = %s.id
+            )
+            """).formatted(
+            nestedJson,
+            targetTable.name(),
+            targetAlias,
+            parentAlias,
+            joinColumnOnParent,
+            targetAlias
+        ).trim();
+    }
+
+    /**
+     * <p>
+     * Builds a SQL expression that produces a JSON array for a one-to-many
+     * relationship.
+     * </p>
+     *
+     * <p>
+     * The returned SQL expression:
+     * </p>
+     *
+     * <ul>
+     *   <li><p>Runs a correlated subquery against the child table.</p></li>
+     *   <li><p>Aggregates child rows using {@code jsonb_agg(...)}.</p></li>
+     *   <li><p>Returns an empty JSON array ({@code []}) rather than {@code null}
+     *       when no child rows exist.</p></li>
+     * </ul>
+     *
+     * <p>
+     * Correlation is performed against the <em>immediate parent alias</em>
+     * provided to this method. This is critical for supporting nested
+     * one-to-many relationships; child rows must join to their direct parent,
+     * not to the root table.
+     * </p>
+     *
+     * <p>
+     * This method is intentionally unaware of the JSON field name. The caller
+     * is responsible for associating the returned expression with a JSON key
+     * corresponding to the DTO field name.
+     * </p>
+     *
+     * @param elementType DTO class representing the element type of the collection
+     * @param childTable {@link SqlTable} describing the child table
+     * @param childAlias SQL alias to use for the child table
+     * @param joinColumnOnChild foreign-key column on the child table referencing
+     *                          {@code parentAlias.id}
+     * @param parentAlias SQL alias of the immediate parent table
+     * @return SQL expression producing a {@code jsonb} array
+     */
+    private String buildOneToManyExpression(
+        Class<?> elementType,
+        SqlTable childTable,
+        String childAlias,
+        String joinColumnOnChild,
+        String parentAlias
+    ) {
+        BuildContext nestedCtx = new BuildContext();
+        String elementJson = buildJsonExpression(elementType, childAlias, nestedCtx);
+
+        return ("""
+            (
+              select coalesce(jsonb_agg(%s), '[]'::jsonb)
+              from %s %s
+              where %s.%s = %s.id
+            )
+            """).formatted(
+            elementJson,
+            childTable.name(),
+            childAlias,
+            childAlias,
+            joinColumnOnChild,
+            parentAlias
+        ).trim();
+    }
+
+
+    /**
+     * <p>
+     * Builds a {@code jsonb} object expression from the given key/value pairs,
+     * splitting the object into multiple {@code jsonb_build_object(...)} calls
+     * if necessary and concatenating them.
+     * </p>
+     *
+     * <p>
+     * This method exists to avoid PostgreSQL's function argument limits.
+     * {@code jsonb_build_object} takes one argument per JSON key and one per
+     * value, so a JSON object with many fields can easily exceed the maximum
+     * allowed number of arguments in a single function call.
+     * </p>
+     *
+     * <p>
+     * To work around this, the pairs are partitioned into chunks of at most
+     * {@link #JSONB_BUILD_OBJECT_MAX_PAIRS} key/value pairs. Each chunk is built
+     * as its own {@code jsonb_build_object(...)} expression, and the resulting
+     * objects are merged using the {@code ||} operator.
+     * </p>
+     *
+     * <p>
+     * PostgreSQL's {@code jsonb || jsonb} operator merges objects such that:
+     * </p>
+     *
+     * <ul>
+     *   <li><p>All keys from both objects are present in the result.</p></li>
+     *   <li><p>If the same key appears in both objects, the value from the right-hand
+     *       operand wins.</p></li>
+     * </ul>
+     *
+     * <p>
+     * In this builder, keys are guaranteed to be unique across chunks, so
+     * overwriting cannot occur.
+     * </p>
+     *
+     * <p>
+     * If no pairs are provided, this method returns an empty JSON object
+     * literal ({@code '{}'::jsonb}).
+     * </p>
+     *
+     * @param pairs ordered list of JSON field names and their SQL value expressions
+     * @return SQL expression producing a {@code jsonb} object
+     */
+    private String buildJsonbObjectInChunks(List<Pair> pairs) {
+        if (pairs.isEmpty()) {
+            return "'{}'::jsonb";
         }
 
-        return buildChunkedJsonObject(kvPairs);
+        List<String> chunkExprs = new ArrayList<>();
+        for (int i = 0; i < pairs.size(); i += JSONB_BUILD_OBJECT_MAX_PAIRS) {
+            int end = Math.min(i + JSONB_BUILD_OBJECT_MAX_PAIRS, pairs.size());
+            List<Pair> chunk = pairs.subList(i, end);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("jsonb_build_object(");
+            for (int j = 0; j < chunk.size(); j++) {
+                Pair p = chunk.get(j);
+                if (j > 0) sb.append(", ");
+                sb.append("'").append(p.jsonKey).append("', ");
+                sb.append(p.valueExpr);
+            }
+            sb.append(")");
+            chunkExprs.add(sb.toString());
+        }
+
+        // Concatenate chunked objects. jsonb "||" merges objects (later keys overwrite earlier, but keys are unique here).
+        if (chunkExprs.size() == 1) {
+            return chunkExprs.get(0);
+        }
+
+        StringBuilder merged = new StringBuilder();
+        merged.append(chunkExprs.get(0));
+        for (int i = 1; i < chunkExprs.size(); i++) {
+            merged.append(" || ").append(chunkExprs.get(i));
+        }
+        return merged.toString();
     }
 
     /* ==========================================================
-       JSON chunking logic (NEW)
+       Type resolution
        ========================================================== */
 
-    private String buildChunkedJsonObject(List<String> kvPairs) {
+    private boolean looksLikeComplexType(Class<?> type) {
+        if (type.isPrimitive()) return false;
+        if (Number.class.isAssignableFrom(type)) return false;
+        if (CharSequence.class.isAssignableFrom(type)) return false;
+        if (Boolean.class.equals(type)) return false;
+        if (Enum.class.isAssignableFrom(type)) return false;
 
-        List<String> chunks = new ArrayList<>();
+        // Date/time are treated as scalar columns in SQL.
+        if (java.time.temporal.Temporal.class.isAssignableFrom(type)) return false;
 
-        for (int i = 0; i < kvPairs.size(); i += JSON_FIELDS_PER_CHUNK) {
-            List<String> slice = kvPairs.subList(
-                i,
-                Math.min(i + JSON_FIELDS_PER_CHUNK, kvPairs.size())
-            );
+        // Collections are handled via @JsonOneToMany; unannotated collections are suspicious.
+        if (Collection.class.isAssignableFrom(type)) return true;
 
-            chunks.add(
-                "jsonb_build_object(" + String.join(", ", slice) + ")"
-            );
-        }
-
-        // Merge all chunks into a single JSON object
-        return String.join(" || ", chunks);
+        // DTO types and other objects should be annotated explicitly.
+        return true;
     }
 
-    /* ==========================================================
-       Type resolution (unchanged)
-       ========================================================== */
+    private Class<?> deduceOneToOneTargetType(Field field) {
+        Class<?> t = field.getType();
 
-    private Class<?> resolveOneToOneType(Field field, JsonOneToOne oto) {
-        if (oto.type() != Void.class) {
-            return validateConcreteType(oto.type(), field);
+        if (t.isInterface()) {
+            throw new IllegalStateException("Field '" + field.getDeclaringClass().getSimpleName() + "." + field.getName()
+                + "' type is an interface; cannot deduce @JsonOneToOne target type safely.");
         }
-        return validateConcreteType(field.getType(), field);
+        if (t.isPrimitive()) {
+            throw new IllegalStateException("Field '" + field.getDeclaringClass().getSimpleName() + "." + field.getName()
+                + "' is primitive; @JsonOneToOne requires an object type.");
+        }
+        if (Collection.class.isAssignableFrom(t)) {
+            throw new IllegalStateException("Field '" + field.getDeclaringClass().getSimpleName() + "." + field.getName()
+                + "' is a collection; use @JsonOneToMany.");
+        }
+
+        return t;
     }
 
-    private Class<?> resolveOneToManyType(Field field, JsonOneToMany otm) {
-        if (otm.type() != Void.class) {
-            return validateConcreteType(otm.type(), field);
+    private Class<?> deduceCollectionElementType(Field field) {
+        if (!Collection.class.isAssignableFrom(field.getType())) {
+            throw new IllegalStateException("Field '" + field.getDeclaringClass().getSimpleName() + "." + field.getName()
+                + "' must be a Collection type for @JsonOneToMany.");
         }
 
-        Type generic = field.getGenericType();
-        if (!(generic instanceof ParameterizedType pt)) {
-            throw new IllegalStateException(
-                "@JsonOneToMany field must be parameterized: " + field
-            );
+        Type gt = field.getGenericType();
+        if (!(gt instanceof ParameterizedType pt)) {
+            throw new IllegalStateException("Field '" + field.getDeclaringClass().getSimpleName() + "." + field.getName()
+                + "' must be parameterized (e.g. List<Foo>) for @JsonOneToMany.");
         }
 
-        Type arg = pt.getActualTypeArguments()[0];
-        if (!(arg instanceof Class<?> clazz)) {
-            throw new IllegalStateException(
-                "Cannot determine element type for " + field
-            );
+        Type arg0 = pt.getActualTypeArguments()[0];
+        if (!(arg0 instanceof Class<?> elementType)) {
+            throw new IllegalStateException("Cannot deduce element type for field '"
+                + field.getDeclaringClass().getSimpleName() + "." + field.getName() + "'.");
         }
 
-        return validateConcreteType(clazz, field);
+        if (elementType.isInterface()) {
+            throw new IllegalStateException("Element type is an interface for field '"
+                + field.getDeclaringClass().getSimpleName() + "." + field.getName() + "'.");
+        }
+
+        return elementType;
     }
 
-    private Class<?> validateConcreteType(Class<?> type, Field field) {
-
-        if (type.isInterface()) {
-            throw new IllegalStateException(
-                "Type " + type.getName() +
-                    " on field " + field.getName() +
-                    " is an interface"
-            );
+    private SqlTable requireSqlTable(Class<?> dtoType) {
+        SqlTable st = dtoType.getAnnotation(SqlTable.class);
+        if (st == null) {
+            throw new IllegalStateException("Missing @SqlTable on " + dtoType.getName());
         }
-
-        if (Modifier.isAbstract(type.getModifiers())) {
-            throw new IllegalStateException(
-                "Type " + type.getName() +
-                    " on field " + field.getName() +
-                    " is abstract"
-            );
+        if (st.name() == null || st.name().isBlank()) {
+            throw new IllegalStateException("@SqlTable.name is blank on " + dtoType.getName());
         }
-
-        if (type.getAnnotation(SqlTable.class) == null) {
-            throw new IllegalStateException(
-                "Type " + type.getName() +
-                    " on field " + field.getName() +
-                    " is missing @SqlTable"
-            );
+        if (st.alias() == null || st.alias().isBlank()) {
+            throw new IllegalStateException("@SqlTable.alias is blank on " + dtoType.getName());
         }
-
-        return type;
+        return st;
     }
 
-    /* ==========================================================
-       Helpers
-       ========================================================== */
+    private boolean shouldSkipField(Field field) {
+        int m = field.getModifiers();
+        return field.isSynthetic()
+            || Modifier.isStatic(m)
+            || Modifier.isTransient(m);
+    }
 
-    private static boolean mapUnannotated(Class<?> type) {
-        SqlDefaults d = type.getAnnotation(SqlDefaults.class);
+    private boolean isDefaultColumnsEnabled(Class<?> dtoType) {
+        SqlDefaults d = dtoType.getAnnotation(SqlDefaults.class);
         return d != null && d.mapUnannotatedColumns();
     }
+    
+    /**
+     * <p>
+     * Maintains SQL alias uniqueness during recursive SQL generation.
+     * </p>
+     *
+     * <p>
+     * {@code SqlJsonQueryBuilder} generates nested correlated subqueries when
+     * building JSON for one-to-one and one-to-many relationships. Each level
+     * of nesting introduces new table aliases.
+     * </p>
+     *
+     * <p>
+     * {@code BuildContext} ensures that aliases derived from {@link SqlTable#alias()}
+     * remain unique within the generated SQL statement. If the same base alias
+     * is requested more than once (for example, when the same DTO type appears
+     * multiple times in different branches), a numeric suffix is appended:
+     * </p>
+     *
+     * <ul>
+     *   <li><p>{@code co}</p></li>
+     *   <li><p>{@code co2}</p></li>
+     *   <li><p>{@code co3}</p></li>
+     * </ul>
+     *
+     * <p>
+     * This avoids alias collisions while keeping aliases readable and
+     * deterministic.
+     * </p>
+     *
+     * <p>
+     * {@code BuildContext} is intentionally short-lived and scoped to a single
+     * SQL build operation. It does not cache state across invocations.
+     * </p>
+     */
+    private static final class BuildContext {
+        private final Map<String, Integer> aliasCounts = new HashMap<>();
 
-    private static boolean ignore(Field f) {
-        int m = f.getModifiers();
-        return Modifier.isStatic(m)
-            || Modifier.isTransient(m)
-            || f.isAnnotationPresent(SqlIgnore.class);
+        private String uniqueAlias(String baseAlias) {
+            Integer count = aliasCounts.get(baseAlias);
+            if (count == null) {
+                aliasCounts.put(baseAlias, 1);
+                return baseAlias;
+            }
+            int next = count + 1;
+            aliasCounts.put(baseAlias, next);
+            return baseAlias + next;
+        }
     }
 
-    private static <T> T require(T value, String msg) {
-        if (value == null) throw new IllegalStateException(msg);
-        return value;
-    }
+    private static final class Pair {
+        private final String jsonKey;
+        private final String valueExpr;
 
+        private Pair(String jsonKey, String valueExpr) {
+            this.jsonKey = jsonKey;
+            this.valueExpr = valueExpr;
+        }
+    }
 }

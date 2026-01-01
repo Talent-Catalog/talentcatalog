@@ -34,13 +34,13 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateNoteReadDto {
     private String comment;
-    @JsonOneToOne(joinLeftColumn = "created_by")
+    @JsonOneToOne(joinColumn = "created_by")
     private UserReadDto createdBy;
     private OffsetDateTime createdDate;
     private Long id;
     private String noteType;
     private String title;
-    @JsonOneToOne(joinLeftColumn = "updated_by")
+    @JsonOneToOne(joinColumn = "updated_by")
     private UserReadDto updatedBy;
     private OffsetDateTime updatedDate;
 }

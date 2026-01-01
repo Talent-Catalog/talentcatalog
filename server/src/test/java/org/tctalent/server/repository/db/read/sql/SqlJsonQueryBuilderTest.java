@@ -16,15 +16,12 @@
 
 package org.tctalent.server.repository.db.read.sql;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 class SqlJsonQueryBuilderTest {
 
     SqlJsonQueryBuilder sqlJsonQueryBuilder;
@@ -39,4 +36,30 @@ class SqlJsonQueryBuilderTest {
         final String sql = sqlJsonQueryBuilder.buildByIdsQuery(CandidateReadDto.class, "ids");
         System.out.println(sql);
     }
+
+    @Test
+    void nested_one_to_many_uses_sqltable_for_table_and_correlates_to_parent_alias() {
+
+        // when
+        String sql = sqlJsonQueryBuilder.buildByIdsQuery(CandidateReadDto.class, "ids");
+
+        // then
+        // ---------------------------------------------------------------------
+        // Table resolution should come from @SqlTable on each DTO.
+        // ---------------------------------------------------------------------
+
+        assertThat(sql)
+            .contains("from candidate c")                 // CandidateReadDto @SqlTable
+            .contains("from candidate_occupation cocc")     // CandidateOccupationReadDto @SqlTable
+            .contains("from candidate_job_experience cje");// CandidateJobExperienceReadDto @SqlTable
+
+        //Job experiences per candidate occupation are fetched
+        assertThat(sql)
+            .contains("cje.candidate_occupation_id = cocc.id");
+
+        //All job experiences from a candidate are fetched
+        assertThat(sql)
+            .contains("cje.candidate_id = c.id");
+    }
+
 }

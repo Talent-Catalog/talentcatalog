@@ -32,7 +32,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="employer", alias = "empe")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class EmployerEntityReadDto {
-    @JsonOneToOne(joinLeftColumn = "country_id")
+    @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private Boolean hasHiredInternationally;
     private Long id;

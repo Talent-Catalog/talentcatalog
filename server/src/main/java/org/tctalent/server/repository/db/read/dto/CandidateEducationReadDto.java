@@ -33,10 +33,10 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateEducationReadDto {
     private String courseName;
-    @JsonOneToOne(joinLeftColumn = "country_id")
+    @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private String educationType;
-    @JsonOneToOne(joinLeftColumn = "major_id")
+    @JsonOneToOne(joinColumn = "major_id")
     private MajorReadDto educationMajor;
     private Long id;
     private String incomplete;

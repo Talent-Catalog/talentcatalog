@@ -33,10 +33,10 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateLanguageReadDto {
     private Long id;
-    @JsonOneToOne(joinLeftColumn = "language_id")
+    @JsonOneToOne(joinColumn = "language_id")
     private LanguageReadDto language;
-    @JsonOneToOne(joinLeftColumn = "spoken_level_id")
+    @JsonOneToOne(joinColumn = "spoken_level_id")
     private LanguageLevelReadDto spokenLevel;
-    @JsonOneToOne(joinLeftColumn = "written_level_id")
+    @JsonOneToOne(joinColumn = "written_level_id")
     private LanguageLevelReadDto writtenLevel;
 }
