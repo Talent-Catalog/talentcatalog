@@ -478,6 +478,21 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("get resource by code fails when service throws exception")
+  void getResourceByCodeFailsWithException() throws Exception {
+    doThrow(new RuntimeException("Database error"))
+        .when(candidateAssistanceService).getResourceForResourceCode(RESOURCE_CODE);
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
+            + "/resource/" + RESOURCE_CODE)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
   @DisplayName("update resource status succeeds")
   void updateResourceStatusSucceeds() throws Exception {
     UpdateServiceResourceStatusRequest request = new UpdateServiceResourceStatusRequest();
