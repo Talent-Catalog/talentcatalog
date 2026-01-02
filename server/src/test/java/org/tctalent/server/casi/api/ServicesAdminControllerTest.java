@@ -301,6 +301,44 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("assign to list succeeds with partial assignments")
+  void assignToListSucceedsWithPartialAssignments() throws Exception {
+    // Create a second assignment for a different candidate
+    ServiceAssignment assignment2 = ServiceAssignment.builder()
+        .id(2L)
+        .provider(ServiceProvider.DUOLINGO)
+        .serviceCode(ServiceCode.TEST_PROCTORED)
+        .resource(testResource)
+        .candidateId(789L) // Different candidate
+        .actorId(testUser.getId())
+        .status(AssignmentStatus.ASSIGNED)
+        .assignedAt(LocalDateTime.now())
+        .build();
+
+    // simulate partial success: only 2 assignments returned (some candidates already had assignments)
+    List<ServiceAssignment> partialAssignments = List.of(testAssignment, assignment2);
+    given(candidateAssistanceService.assignToList(LIST_ID, testUser))
+        .willReturn(partialAssignments);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
+            + "/assign/list/" + LIST_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$.length()", is(2))) // Only 2 assignments (partial success)
+        .andExpect(jsonPath("$[0].id", is(1)))
+        .andExpect(jsonPath("$[1].id", is(2)));
+
+    verify(candidateAssistanceService).assignToList(LIST_ID, testUser);
+  }
+
+  @Test
   @DisplayName("get assignments for candidate succeeds")
   void getAssignmentsForCandidateSucceeds() throws Exception {
     List<ServiceAssignment> assignments = List.of(testAssignment);
