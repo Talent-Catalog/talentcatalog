@@ -22,6 +22,7 @@ import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 
@@ -127,6 +128,7 @@ public interface CandidateAssistanceService {
    * Update the status of a specific resource.
    * @param resourceCode the unique resource code
    * @param status the new status to set
+   * @throws NoSuchObjectException if the resource with the given code is not found
    */
-  void updateResourceStatus(String resourceCode, ResourceStatus status);
+  void updateResourceStatus(String resourceCode, ResourceStatus status) throws NoSuchObjectException;
 }
