@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.ServiceException;
@@ -163,6 +164,37 @@ public class ErrorHandler {
         LogBuilder.builder(log)
             .action("InvalidSessionException")
             .message("Processing : InvalidSessionException: " + ex)
+            .logInfo();
+
+        return new ErrorDTO(ex.getErrorCode(), ex.getMessage());
+    }
+
+    /**
+     * Handles NoSuchObjectException by returning HTTP 404 (Not Found).
+     * <p>
+     * This exception is thrown when a requested resource (e.g., candidate, entity) does not exist.
+     * While NoSuchObjectException extends ServiceException (which would normally return 400 Bad
+     * Request), this specific handler returns 404 Not Found, which is the semantically correct HTTP
+     * status code for missing resources.
+     * <p>
+     * <b>Thrown from:</b>
+     * <ul>
+     *   <li>CASI module: AssignmentEngine when candidate not found</li>
+     *   <li>CASI module: ServicesAdminController (assignToCandidate, assignToList) when
+     *   candidate/resource not found</li>
+     *   <li>Various service implementations when entities are not found in the database</li>
+     * </ul>
+     *
+     * @param ex the NoSuchObjectException that was thrown
+     * @return ErrorDTO with error code "missing_object" and the exception message
+     */
+    @ExceptionHandler(NoSuchObjectException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorDTO processNoSuchObjectException(NoSuchObjectException ex) {
+        LogBuilder.builder(log)
+            .action("NoSuchObjectException")
+            .message("Processing : NoSuchObjectException: " + ex)
             .logInfo();
 
         return new ErrorDTO(ex.getErrorCode(), ex.getMessage());
