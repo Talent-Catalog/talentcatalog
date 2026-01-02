@@ -512,6 +512,26 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("update resource status fails when service throws exception")
+  void updateResourceStatusFailsWithException() throws Exception {
+    UpdateServiceResourceStatusRequest request = new UpdateServiceResourceStatusRequest();
+    request.setResourceCode(RESOURCE_CODE);
+    request.setStatus(ResourceStatus.DISABLED);
+
+    doThrow(new RuntimeException("Database error"))
+        .when(candidateAssistanceService).updateResourceStatus(RESOURCE_CODE, ResourceStatus.DISABLED);
+
+    mockMvc.perform(put(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/resources/status")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
   @DisplayName("count available resources succeeds")
   void countAvailableResourcesSucceeds() throws Exception {
     given(candidateAssistanceService.countAvailableForProviderAndService())
