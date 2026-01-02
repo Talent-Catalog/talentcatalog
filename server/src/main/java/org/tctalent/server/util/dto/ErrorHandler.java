@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.tctalent.server.exception.InvalidCredentialsException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.ServiceException;
@@ -118,6 +119,53 @@ public class ErrorHandler {
             .logInfo();
 
         return new ErrorDTO("recaptcha_invalid", ex.getMessage());
+    }
+
+    /**
+     * Handles InvalidSessionException by returning HTTP 401 (Unauthorized).
+     * <p>
+     * This exception is thrown when a user attempts to access a protected resource
+     * but has no active session (i.e., is not logged in). While InvalidSessionException
+     * extends ServiceException (which would normally return 400 Bad Request), this
+     * specific handler catches it and returns 401 Unauthorized, which is the semantically
+     * correct HTTP status code for authentication failures.
+     * <p>
+     * This distinguishes it from InvalidCredentialsException, which is used when
+     * incorrect credentials are provided during login. InvalidSessionException is
+     * used when a session is missing or expired during API calls.
+     * <p>
+     * <b>Frontend Integration:</b> The Angular error interceptors in the admin-portal and
+     * candidate-portal automatically detect 401 responses and trigger user logout and
+     * redirect to the login page. This handler will handle users with expired or invalid sessions
+     * so they are properly logged out and can re-authenticate. See:
+     * <ul>
+     *   <li>ui/admin-portal/src/app/services/error.interceptor.ts</li>
+     *   <li>ui/candidate-portal/src/app/services/error.interceptor.ts</li>
+     *   <li>ui/admin-portal/src/app/services/auth-expiry.interceptor.ts</li>
+     * </ul>
+     * <p>
+     * <b>Thrown from:</b>
+     * <ul>
+     *   <li>CASI module: ServicesAdminController (assignToCandidate, assignToList)</li>
+     *   <li>UserServiceImpl: fetchLoggedInUser() when no active session exists</li>
+     *   <li>SavedSearchServiceImpl: various methods requiring authentication</li>
+     *   <li>JobServiceImpl: methods requiring logged-in user</li>
+     *   <li>Various service implementations when authService.getLoggedInUser() returns empty</li>
+     * </ul>
+     *
+     * @param ex the InvalidSessionException that was thrown
+     * @return ErrorDTO with error code "invalid_session" and the exception message
+     */
+    @ExceptionHandler(InvalidSessionException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorDTO processInvalidSessionException(InvalidSessionException ex) {
+        LogBuilder.builder(log)
+            .action("InvalidSessionException")
+            .message("Processing : InvalidSessionException: " + ex)
+            .logInfo();
+
+        return new ErrorDTO(ex.getErrorCode(), ex.getMessage());
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
