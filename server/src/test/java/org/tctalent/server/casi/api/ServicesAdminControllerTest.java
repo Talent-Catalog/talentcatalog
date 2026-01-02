@@ -360,6 +360,38 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("get assignments for candidate returns empty list when no assignments")
+  void getAssignmentsForCandidateReturnsEmptyList() throws Exception {
+    given(queryService.listForCandidate(CANDIDATE_ID))
+        .willReturn(Collections.emptyList());
+
+    mockMvc.perform(get(BASE_PATH + "/assignments/candidate/" + CANDIDATE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$").isEmpty());
+
+    verify(queryService).listForCandidate(CANDIDATE_ID);
+  }
+
+  @Test
+  @DisplayName("get assignments for candidate fails when query service throws exception")
+  void getAssignmentsForCandidateFailsWithException() throws Exception {
+    doThrow(new RuntimeException("Database error"))
+        .when(queryService).listForCandidate(CANDIDATE_ID);
+
+    mockMvc.perform(get(BASE_PATH + "/assignments/candidate/" + CANDIDATE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
   @DisplayName("list available resources succeeds")
   void listAvailableResourcesSucceeds() throws Exception {
     List<ServiceResource> resources = List.of(testResource);
