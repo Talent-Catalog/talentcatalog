@@ -229,6 +229,22 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("assign to candidate fails when candidate not found")
+  void assignToCandidateFailsWhenCandidateNotFound() throws Exception {
+    doThrow(new NoSuchObjectException("Candidate with ID " + CANDIDATE_ID + " not found"))
+        .when(candidateAssistanceService).assignToCandidate(CANDIDATE_ID, testUser);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
+            + "/assign/candidate/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
   @DisplayName("assign to list succeeds")
   void assignToListSucceeds() throws Exception {
     List<ServiceAssignment> assignments = List.of(testAssignment);
