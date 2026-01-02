@@ -17,6 +17,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
+import {SharedModule} from './shared/shared.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -362,6 +363,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     FormsModule,
     NgbModule,
     NgbCollapseModule,
+    SharedModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
