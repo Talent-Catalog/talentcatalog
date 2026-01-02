@@ -64,6 +64,7 @@ import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.security.AuthService;
 
@@ -271,6 +272,22 @@ class ServicesAdminControllerTest extends ApiTestBase {
   @DisplayName("assign to list fails with insufficient resources")
   void assignToListFailsWithInsufficientResources() throws Exception {
     doThrow(new NoSuchObjectException("Not enough resources"))
+        .when(candidateAssistanceService).assignToList(LIST_ID, testUser);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
+            + "/assign/list/" + LIST_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("assign to list fails when list not found")
+  void assignToListFailsWhenListNotFound() throws Exception {
+    doThrow(new NoSuchObjectException(SavedList.class, LIST_ID))
         .when(candidateAssistanceService).assignToList(LIST_ID, testUser);
 
     mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
