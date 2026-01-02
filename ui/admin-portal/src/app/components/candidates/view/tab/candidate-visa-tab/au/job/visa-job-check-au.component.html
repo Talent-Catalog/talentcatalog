@@ -17,7 +17,7 @@
 <!-- ERROR -->
 <tc-alert *ngIf="error">{{error}}</tc-alert>
 
-<tc-accordion *ngIf="selectedJobCheck">
+<tc-accordion *ngIf="selectedJobCheck" [allOpen]="true">
   <tc-accordion-item id="emp-eligibility" header="Employer Eligibility">
     <app-job-occupation
       [visaJobCheck]="selectedJobCheck"

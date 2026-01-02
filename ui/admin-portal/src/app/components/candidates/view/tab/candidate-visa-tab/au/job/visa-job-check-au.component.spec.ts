@@ -32,8 +32,10 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../../../../services/candidate.service";
 import {UpdatedByComponent} from "../../../../../../util/user/updated-by/updated-by.component";
-import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
+import {TcAccordionComponent} from "../../../../../../../shared/components/accordion/tc-accordion.component";
+import {TcAccordionItemComponent} from "../../../../../../../shared/components/accordion/accordion-item/tc-accordion-item.component";
 import {MockCandidateVisaJobCheck} from "../../../../../../../MockData/MockCandidateVisaCheck";
+import {By} from "@angular/platform-browser";
 
 describe('VisaJobCheckAuComponent', () => {
   let component: VisaJobCheckAuComponent;
@@ -50,8 +52,11 @@ describe('VisaJobCheckAuComponent', () => {
     const candidateOccupationServiceSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     const occupationServiceSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule,NgSelectModule],
-      declarations: [ VisaJobCheckAuComponent,UpdatedByComponent],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
+      declarations: [ VisaJobCheckAuComponent,UpdatedByComponent,
+        TcAccordionComponent,
+        TcAccordionItemComponent
+      ],
       providers: [
         { provide: CandidateEducationService, useValue: candidateEducationServiceSpy },
         { provide: CandidateOccupationService, useValue: candidateOccupationServiceSpy },
@@ -87,7 +92,19 @@ describe('VisaJobCheckAuComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   })
-  //
+
+  it('should open all panels after view init', () => {
+    fixture.detectChanges(); // ngOnInit() gets called here
+
+    // Get the accordion component instance
+    const accordionDebugElement = fixture.debugElement.query(By.directive(TcAccordionComponent));
+    expect(accordionDebugElement).toBeTruthy();
+
+    // The accordion items should be open (this is handled by the accordion component's allOpen input)
+    const accordionComponent = accordionDebugElement.componentInstance as TcAccordionComponent;
+    expect(accordionComponent.allOpen).toBe(true);
+  });
+
   // it('should fetch candidate occupations, qualifications, and occupations on init', () => {
   //   expect(candidateEducationService.list).toHaveBeenCalledWith(1);
   //   expect(candidateOccupationService.get).toHaveBeenCalledWith(1);

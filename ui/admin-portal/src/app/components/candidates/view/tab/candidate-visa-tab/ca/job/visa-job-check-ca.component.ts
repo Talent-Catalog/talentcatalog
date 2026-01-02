@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
@@ -30,7 +30,6 @@ import {
 } from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
@@ -38,13 +37,11 @@ import {CandidateOpportunity} from "../../../../../../../model/candidate-opportu
   templateUrl: './visa-job-check-ca.component.html',
   styleUrls: ['./visa-job-check-ca.component.scss']
 })
-export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
+export class VisaJobCheckCaComponent implements OnInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-
-  @ViewChild('visaJobCanada') visaJobCanada: NgbAccordion;
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
@@ -89,12 +86,6 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
     this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
     this.candidateOpportunity = this.candidate.candidateOpportunities
       .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
-  }
-
-  ngAfterViewInit() {
-    if(this.visaJobCanada){
-      this.visaJobCanada.expandAll();
-    }
   }
 }
 
