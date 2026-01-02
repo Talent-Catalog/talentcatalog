@@ -15,6 +15,11 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {RouterTestingModule} from '@angular/router/testing';
+import {RegistrationService} from '../../../services/registration.service';
+import {SharedModule} from '../../../shared/shared.module';
 
 import {RegistrationUploadFileComponent} from './registration-upload-file.component';
 
@@ -24,7 +29,17 @@ describe('UploadFileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RegistrationUploadFileComponent ]
+      declarations: [ RegistrationUploadFileComponent ],
+      imports: [
+        SharedModule,
+        HttpClientTestingModule,
+        RouterTestingModule,
+        TranslateModule.forRoot()
+      ],
+      providers: [
+        RegistrationService,
+        TranslateService
+      ]
     })
     .compileComponents();
   });
@@ -37,5 +52,17 @@ describe('UploadFileComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize activeIndexes to 0 when edit is false', () => {
+    component.edit = false;
+    component.ngOnInit();
+    expect(component.activeIndexes).toBe(0);
+  });
+
+  it('should initialize activeIndexes to null when edit is true', () => {
+    component.edit = true;
+    component.ngOnInit();
+    expect(component.activeIndexes).toBeNull();
   });
 });

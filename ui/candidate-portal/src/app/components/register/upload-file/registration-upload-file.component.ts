@@ -36,7 +36,7 @@ export class RegistrationUploadFileComponent implements OnInit {
   error: any;
   // Component states
   saving: boolean;
-  activeIds: string;
+  activeIndexes: number | null;
 
 
   constructor(public registrationService: RegistrationService, private translateService: TranslateService) {
@@ -44,10 +44,11 @@ export class RegistrationUploadFileComponent implements OnInit {
 
   ngOnInit() {
     // Make the accordions closed if editing (to allow better view of footer navigation)
+    // For tc-accordion, activeIndexes uses 0-based index: 0 = first panel, null = all closed
     if (!this.edit) {
-      this.activeIds = 'upload-cv'
+      this.activeIndexes = 0; // 'upload-cv' corresponds to the first panel (index 0)
     } else {
-      this.activeIds = ''
+      this.activeIndexes = null; // '' corresponds to all panels closed
     }
 
     this.translateService.get('REGISTRATION.ATTACHMENTS.CV.WARNING').subscribe((translated: string) => {

@@ -1,0 +1,142 @@
+$colors: (
+  core: (
+    white: #FFFFFF,
+    black: #000000,
+  ),
+  primary: (
+    50:  #f0f9fc,
+    100: #e5f3fa,
+    200: #cce6f6,
+    300: #aad7f0,
+    400: #99ceed,
+    500: #0084d1,  // Main color shade
+    600: #339dda,
+    800: #006aa7,
+    900: #004f7d
+  ),
+  secondary: (
+      50:  #f3fcfc,
+      100: #ebf8f8,
+      200: #d6f1f1,
+      300: #bfeaea,
+      400: #a7dede,
+      500: #33bbbb,  // Main color shade
+      600: #85d6d6,
+      800: #299696,
+      900: #1f7070
+  ),
+  gray: (
+    50:  #FAFAFA,
+    100: #F5F5F5,
+    200: #E5E5E5,
+    300: #D4D4D4,
+    400: #A3A3A3,
+    500: #737373,
+    600: #525252,
+    700: #404040,
+    800: #262626,
+    900: #171717,
+  ),
+  red: (
+    50:  #FEF2F2,
+    100: #FEE2E2,
+    200: #FECACA,
+    300: #FCA5A5,
+    400: #F87171,
+    500: #EF4444,
+    600: #DC2626,
+    700: #B91C1C,
+    800: #991B1B,
+    900: #7F1D1D,
+  ),
+  blue: (
+    50:  #EFF6FF,
+    100: #DBEAFE,
+    200: #BFDBFE,
+    300: #93C5FD,
+    400: #60A5FA,
+    500: #3B82F6,
+    600: #2563EB,
+    700: #1D4ED8,
+    800: #1E40AF,
+    900: #1E3A8A,
+  ),
+  purple: (
+    50:  #FAF5FF,
+    100: #EDE9FE,
+    200: #DDD6FF,
+    300: #C4B4FF,
+    400: #A684FF,
+    500: #8E51FF,
+    600: #7F22FE,
+    700: #7008E7,
+    800: #5D0EC0,
+  ),
+  pink: (
+    50:  #FDF2F8,
+    100: #FCE7F3,
+    200: #FCCEE8,
+    300: #FDA5D5,
+    400: #FB64B6,
+    500: #F6339A,
+    600: #E60076,
+    700: #C6005C,
+    800: #A3004C,
+  ),
+  orange: (
+    50:  #FFF7ED,
+    100: #FFEDD4,
+    200: #FFD6A7,
+    300: #FFB86A,
+    400: #FF8904,
+    500: #FF6900,
+    600: #EA580C,
+    700: #CA3500,
+    800: #9F2D00,
+    900: #7C2D12,
+  ),
+  yellow: (
+    50:  #FFFBEB,
+    100: #FEF3C7,
+    200: #FDE68A,
+    300: #FCD34D,
+    400: #FBBF24,
+    500: #F59E0B,
+    600: #D97706,
+    700: #B45309,
+    800: #92400E,
+    900: #713F12,
+  ),
+  green: (
+    50:  #ECFDF5,
+    100: #D0FAE5,
+    200: #A4F4CF,
+    300: #5EE9B5,
+    400: #00D492,
+    500: #00BC7D,
+    600: #009966,
+    700: #007A55,
+    800: #006045,
+    900: #064E3B,
+  ),
+);
+
+
+/*
+  Helper function
+  Example Usage of the `color()` Helper Function
+body {
+  background-color: color(core, white);
+  color: color(core, black);
+}
+
+.button {
+  background-color: color(primary, 500);
+}
+*/
+
+@function color($category, $shade: 500) {
+  @return map-get(map-get($colors, $category), $shade);
+}
+
+

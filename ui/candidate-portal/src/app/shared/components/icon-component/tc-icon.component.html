@@ -1,0 +1,40 @@
+<ng-template #content>
+  <ng-content></ng-content>
+</ng-template>
+
+<ng-container [ngSwitch]="type">
+  <ng-container *ngSwitchCase="'link'">
+    <ng-container *ngIf="routerLink">
+      <a [routerLink]="routerLink"
+         [attr.aria-label]="ariaLabel"
+         [ngClass]="classList"
+      >
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+      </a>
+    </ng-container>
+    <ng-container *ngIf="!routerLink">
+      <a [href]="href"
+         [attr.aria-label]="ariaLabel"
+         [ngClass]="classList"
+         [target]="target"
+      >
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+      </a>
+    </ng-container>
+  </ng-container>
+
+  <button *ngSwitchCase="'button'"
+          type="button"
+          [attr.aria-label]="ariaLabel"
+          [ngClass]="classList"
+          (click)="handleClick($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </button>
+
+  <span *ngSwitchDefault
+        [attr.aria-label]="ariaLabel"
+        [ngClass]="classList"
+        (click)="handleClick($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </span>
+</ng-container>
