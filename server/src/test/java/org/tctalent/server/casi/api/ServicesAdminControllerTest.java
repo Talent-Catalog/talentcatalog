@@ -174,6 +174,28 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("import inventory fails when invalid provider/service code")
+  void importInventoryFailsWithInvalidProviderServiceCode() throws Exception {
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", "test content".getBytes()
+    );
+
+    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
+        .willThrow(new NoSuchObjectException("Unknown candidate service for provider: INVALID, serviceCode: INVALID"));
+
+    mockMvc.perform(multipart(BASE_PATH + "/INVALID/INVALID/import")
+            .file(file)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
+  }
+
+  @Test
   @DisplayName("assign to candidate succeeds")
   void assignToCandidateSucceeds() throws Exception {
     given(candidateAssistanceService.assignToCandidate(CANDIDATE_ID, testUser))
@@ -245,6 +267,39 @@ class ServicesAdminControllerTest extends ApiTestBase {
 
         .andDo(print())
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("assign to candidate fails when service throws exception")
+  void assignToCandidateFailsWithServiceException() throws Exception {
+    doThrow(new RuntimeException("Database error"))
+        .when(candidateAssistanceService).assignToCandidate(CANDIDATE_ID, testUser);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
+            + "/assign/candidate/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @DisplayName("assign to candidate fails when invalid provider/service code")
+  void assignToCandidateFailsWithInvalidProviderServiceCode() throws Exception {
+    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
+        .willThrow(new NoSuchObjectException("Unknown candidate service for provider: INVALID, serviceCode: INVALID"));
+
+    mockMvc.perform(post(BASE_PATH + "/INVALID/INVALID/assign/candidate/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
   }
 
   @Test
@@ -338,6 +393,39 @@ class ServicesAdminControllerTest extends ApiTestBase {
         .andExpect(jsonPath("$[1].id", is(2)));
 
     verify(candidateAssistanceService).assignToList(LIST_ID, testUser);
+  }
+
+  @Test
+  @DisplayName("assign to list fails when service throws exception")
+  void assignToListFailsWithServiceException() throws Exception {
+    doThrow(new RuntimeException("Database error"))
+        .when(candidateAssistanceService).assignToList(LIST_ID, testUser);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
+            + "/assign/list/" + LIST_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @DisplayName("assign to list fails when invalid provider/service code")
+  void assignToListFailsWithInvalidProviderServiceCode() throws Exception {
+    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
+        .willThrow(new NoSuchObjectException("Unknown candidate service for provider: INVALID, serviceCode: INVALID"));
+
+    mockMvc.perform(post(BASE_PATH + "/INVALID/INVALID/assign/list/" + LIST_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
   }
 
   @Test
@@ -511,6 +599,22 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("get resource by code fails when invalid provider/service code")
+  void getResourceByCodeFailsWithInvalidProviderServiceCode() throws Exception {
+    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
+        .willThrow(new NoSuchObjectException("Unknown candidate service for provider: INVALID, serviceCode: INVALID"));
+
+    mockMvc.perform(get(BASE_PATH + "/INVALID/INVALID/resource/" + RESOURCE_CODE)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
+  }
+
+  @Test
   @DisplayName("update resource status succeeds")
   void updateResourceStatusSucceeds() throws Exception {
     UpdateServiceResourceStatusRequest request = new UpdateServiceResourceStatusRequest();
@@ -569,6 +673,28 @@ class ServicesAdminControllerTest extends ApiTestBase {
 
         .andDo(print())
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @DisplayName("update resource status fails when invalid provider/service code")
+  void updateResourceStatusFailsWithInvalidProviderServiceCode() throws Exception {
+    UpdateServiceResourceStatusRequest request = new UpdateServiceResourceStatusRequest();
+    request.setResourceCode(RESOURCE_CODE);
+    request.setStatus(ResourceStatus.DISABLED);
+
+    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
+        .willThrow(new NoSuchObjectException("Unknown candidate service for provider: INVALID, serviceCode: INVALID"));
+
+    mockMvc.perform(put(BASE_PATH + "/INVALID/INVALID/resources/status")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
   }
 
   @Test
