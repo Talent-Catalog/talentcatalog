@@ -825,6 +825,10 @@ class ServicesAdminControllerTest extends ApiTestBase {
     List<ServiceResource> resources = List.of(testResource);
     given(candidateAssistanceService.getAvailableResources())
         .willReturn(resources);
+    
+    // Mock the registry call with lowercase values (registry normalizes internally)
+    given(candidateServiceRegistry.forProviderAndServiceCode("duolingo", "test_proctored"))
+        .willReturn(candidateAssistanceService);
 
     // Test with lowercase
     mockMvc.perform(get(BASE_PATH + "/duolingo/test_proctored/available")
