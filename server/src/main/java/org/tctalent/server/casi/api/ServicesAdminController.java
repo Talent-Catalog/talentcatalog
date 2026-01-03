@@ -85,6 +85,9 @@ public class ServicesAdminController {
           .logInfo();
 
       return Map.of("status", "success", "message", "Service resources imported successfully.");
+    } catch (NoSuchObjectException e) {
+      // Let NoSuchObjectException propagate so ErrorHandler can return 404
+      throw e;
     } catch (RuntimeException e) {
       LogBuilder.builder(log)
           .action("importInventory")
