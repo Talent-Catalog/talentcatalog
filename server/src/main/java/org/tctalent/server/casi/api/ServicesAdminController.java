@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.casi.api.dto.CountResponseDto;
 import org.tctalent.server.casi.api.dto.ServiceAssignmentDto;
 import org.tctalent.server.casi.api.dto.ServiceResourceDto;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
@@ -175,17 +176,15 @@ public class ServicesAdminController {
 
   // Endpoint to count the available inventory for a provider and service
   @GetMapping("/{provider}/{serviceCode}/available/count")
-  public Map<String, Object> countAvailable(@PathVariable String provider,
+  public CountResponseDto countAvailable(@PathVariable String provider,
       @PathVariable String serviceCode) {
-    try {
-      long count = serviceFor(provider, serviceCode)
-          .countAvailableForProviderAndService();
-      return Map.of("status", "success", "count", count);
-    } catch (RuntimeException e) {
-      return Map.of("status", "failure", "message", "Failed to count available coupons.");
-    }
-  }
+    long count = serviceFor(provider, serviceCode)
+        .countAvailableForProviderAndService();
 
+    return CountResponseDto.builder()
+        .count(count)
+        .build();
+  }
 
   private CandidateAssistanceService serviceFor(String provider, String serviceCode) {
     CandidateAssistanceService svc = services.forProviderAndServiceCode(provider, serviceCode);
