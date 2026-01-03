@@ -628,6 +628,56 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("list provider resources for candidate returns empty list")
+  void listProviderResourcesForCandidateReturnsEmptyList() throws Exception {
+    given(candidateAssistanceService.getResourcesForCandidate(CANDIDATE_ID))
+        .willReturn(Collections.emptyList());
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
+            + "/resources/candidate/" + CANDIDATE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$").isEmpty());
+
+    verify(candidateAssistanceService).getResourcesForCandidate(CANDIDATE_ID);
+  }
+
+  @Test
+  @DisplayName("list provider resources for candidate fails with service exception")
+  void listProviderResourcesForCandidateFailsWithServiceException() throws Exception {
+    doThrow(new RuntimeException("Database error"))
+        .when(candidateAssistanceService).getResourcesForCandidate(CANDIDATE_ID);
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE
+            + "/resources/candidate/" + CANDIDATE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @DisplayName("list provider resources for candidate fails with invalid provider/service code")
+  void listProviderResourcesForCandidateFailsWithInvalidProviderServiceCode() throws Exception {
+    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
+        .willReturn(null);
+
+    mockMvc.perform(get(BASE_PATH + "/INVALID/INVALID/resources/candidate/" + CANDIDATE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
+  }
+
+  @Test
   @DisplayName("invalid provider and service code combination fails")
   void invalidProviderServiceCodeFails() throws Exception {
     given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
