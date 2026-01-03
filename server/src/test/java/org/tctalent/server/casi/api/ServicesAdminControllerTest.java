@@ -448,14 +448,16 @@ class ServicesAdminControllerTest extends ApiTestBase {
   @DisplayName("list available resources fails when invalid provider/service code")
   void listAvailableResourcesFailsWithInvalidProviderServiceCode() throws Exception {
     given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
-        .willThrow(new IllegalStateException("No service found"));
+        .willThrow(new NoSuchObjectException("Unknown candidate service for provider: INVALID, serviceCode: INVALID"));
 
     mockMvc.perform(get(BASE_PATH + "/INVALID/INVALID/available")
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON))
 
         .andDo(print())
-        .andExpect(status().isInternalServerError());
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
   }
 
   @Test
@@ -607,7 +609,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
   @DisplayName("count available resources fails when invalid provider/service code")
   void countAvailableResourcesFailsWithInvalidProviderServiceCode() throws Exception {
     given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
-        .willReturn(null);
+        .willThrow(new NoSuchObjectException("Unknown candidate service for provider: INVALID, serviceCode: INVALID"));
 
     mockMvc.perform(get(BASE_PATH + "/INVALID/INVALID/available/count")
             .header("Authorization", "Bearer " + "jwt-token")
@@ -679,7 +681,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
   @DisplayName("list provider resources for candidate fails with invalid provider/service code")
   void listProviderResourcesForCandidateFailsWithInvalidProviderServiceCode() throws Exception {
     given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
-        .willReturn(null);
+        .willThrow(new NoSuchObjectException("Unknown candidate service for provider: INVALID, serviceCode: INVALID"));
 
     mockMvc.perform(get(BASE_PATH + "/INVALID/INVALID/resources/candidate/" + CANDIDATE_ID)
             .header("Authorization", "Bearer " + "jwt-token")
