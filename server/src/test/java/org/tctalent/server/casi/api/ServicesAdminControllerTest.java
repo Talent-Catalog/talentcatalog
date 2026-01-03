@@ -17,6 +17,7 @@
 package org.tctalent.server.casi.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,6 +65,7 @@ import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.security.AuthService;
@@ -566,16 +568,15 @@ class ServicesAdminControllerTest extends ApiTestBase {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.status", is("success")))
         .andExpect(jsonPath("$.count", is(5)));
 
     verify(candidateAssistanceService).countAvailableForProviderAndService();
   }
 
   @Test
-  @DisplayName("count available resources fails with exception")
-  void countAvailableResourcesFails() throws Exception {
-    doThrow(new RuntimeException("Database error"))
+  @DisplayName("count available resources fails with service exception")
+  void countAvailableResourcesFailsWithServiceException() throws Exception {
+    doThrow(new ServiceException("count_failed", "Failed to count available resources"))
         .when(candidateAssistanceService).countAvailableForProviderAndService();
 
     mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/available/count")
@@ -583,9 +584,9 @@ class ServicesAdminControllerTest extends ApiTestBase {
             .contentType(MediaType.APPLICATION_JSON))
 
         .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status", is("failure")))
-        .andExpect(jsonPath("$.message", is("Failed to count available coupons.")));
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code", is("count_failed")))
+        .andExpect(jsonPath("$.message", is("Failed to count available resources")));
   }
 
   @Test
@@ -599,9 +600,9 @@ class ServicesAdminControllerTest extends ApiTestBase {
             .contentType(MediaType.APPLICATION_JSON))
 
         .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status", is("failure")))
-        .andExpect(jsonPath("$.message", is("Failed to count available coupons.")));
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
   }
 
   @Test
