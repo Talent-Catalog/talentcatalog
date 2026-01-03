@@ -445,6 +445,20 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("list available resources fails when invalid provider/service code")
+  void listAvailableResourcesFailsWithInvalidProviderServiceCode() throws Exception {
+    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
+        .willThrow(new IllegalStateException("No service found"));
+
+    mockMvc.perform(get(BASE_PATH + "/INVALID/INVALID/available")
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isInternalServerError());
+  }
+
+  @Test
   @DisplayName("get resource by code succeeds")
   void getResourceByCodeSucceeds() throws Exception {
     given(candidateAssistanceService.getResourceForResourceCode(RESOURCE_CODE))
@@ -675,20 +689,6 @@ class ServicesAdminControllerTest extends ApiTestBase {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.code", is("missing_object")))
         .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
-  }
-
-  @Test
-  @DisplayName("invalid provider and service code combination fails")
-  void invalidProviderServiceCodeFails() throws Exception {
-    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
-        .willThrow(new IllegalStateException("No service found"));
-
-    mockMvc.perform(get(BASE_PATH + "/INVALID/INVALID/available")
-            .header("Authorization", "Bearer " + "jwt-token")
-            .contentType(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isInternalServerError());
   }
 
   @Test
