@@ -187,12 +187,8 @@ public class ServicesAdminController {
   }
 
   private CandidateAssistanceService serviceFor(String provider, String serviceCode) {
-    CandidateAssistanceService svc = services.forProviderAndServiceCode(provider, serviceCode);
-    if (svc == null) {
-      throw new NoSuchObjectException("Unknown candidate service for provider: " + provider +
-          ", serviceCode: " + serviceCode);
-    }
-    return svc;
+    // Registry throws NoSuchObjectException when service not found, which ErrorHandler maps to 404
+    return services.forProviderAndServiceCode(provider, serviceCode);
   }
 }
 
