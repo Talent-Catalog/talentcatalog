@@ -32,6 +32,7 @@ import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
+import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
@@ -200,16 +201,16 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   }
 
   // Update resource status (e.g., mark a coupon as USED or DISABLED)
-  // No action if resource not found
+  // Throws NoSuchObjectException if resource not found
   @Override
   @Transactional
-  public void updateResourceStatus(String resourceCode, ResourceStatus status) {
-    resourceRepository
+  public void updateResourceStatus(String resourceCode, ResourceStatus status) throws NoSuchObjectException {
+    ServiceResourceEntity resource = resourceRepository
         .findByProviderAndResourceCode(provider(), resourceCode)
-        .ifPresent(resource -> {
-          resource.setStatus(status);
-          resourceRepository.save(resource);
-        });
+        .orElseThrow(() -> new NoSuchObjectException("Resource with code " + resourceCode + " not found"));
+    
+    resource.setStatus(status);
+    resourceRepository.save(resource);
   }
 
   // Count available resources for this provider (e.g., count all available Duolingo coupons
