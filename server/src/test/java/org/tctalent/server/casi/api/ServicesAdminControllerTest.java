@@ -584,7 +584,24 @@ class ServicesAdminControllerTest extends ApiTestBase {
 
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status", is("failure")));
+        .andExpect(jsonPath("$.status", is("failure")))
+        .andExpect(jsonPath("$.message", is("Failed to count available coupons.")));
+  }
+
+  @Test
+  @DisplayName("count available resources fails when invalid provider/service code")
+  void countAvailableResourcesFailsWithInvalidProviderServiceCode() throws Exception {
+    given(candidateServiceRegistry.forProviderAndServiceCode("INVALID", "INVALID"))
+        .willReturn(null);
+
+    mockMvc.perform(get(BASE_PATH + "/INVALID/INVALID/available/count")
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status", is("failure")))
+        .andExpect(jsonPath("$.message", is("Failed to count available coupons.")));
   }
 
   @Test
