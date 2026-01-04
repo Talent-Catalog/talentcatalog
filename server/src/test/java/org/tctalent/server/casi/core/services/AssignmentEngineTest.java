@@ -289,6 +289,17 @@ class AssignmentEngineTest {
 
     // Verify no previous assignments were updated
     verify(assignmentRepository, never()).save(existingAssignment);
+
+    // Verify no reassigned event was published (no previous assignments)
+    verify(eventPublisher, never()).publishEvent(any(ServiceReassignedEvent.class));
+
+    // Verify one assigned event was published (from the new assignment)
+    ArgumentCaptor<ServiceAssignedEvent> assignedEventCaptor =
+        ArgumentCaptor.forClass(ServiceAssignedEvent.class);
+    verify(eventPublisher, org.mockito.Mockito.times(1))
+        .publishEvent(assignedEventCaptor.capture());
+    assertThat(assignedEventCaptor.getValue().assignment()).isNotNull();
+    assertThat(assignedEventCaptor.getValue().assignment().getCandidateId()).isEqualTo(CANDIDATE_ID);
   }
 
 }
