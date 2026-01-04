@@ -258,5 +258,38 @@ class AssignmentEngineTest {
     verify(assignmentRepository, never()).save(any());
   }
 
+  @Test
+  @DisplayName("reassign handles candidate with no previous assignments")
+  void reassignHandlesNoPreviousAssignments() {
+    // Arrange
+    when(allocator.getProvider()).thenReturn(ServiceProvider.DUOLINGO);
+    when(allocator.getServiceCode()).thenReturn(ServiceCode.TEST_PROCTORED);
+    when(candidateRepository.findByCandidateNumber(CANDIDATE_NUMBER))
+        .thenReturn(candidate);
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(List.of());
+    when(candidateRepository.findById(CANDIDATE_ID))
+        .thenReturn(Optional.of(candidate));
+    when(allocator.allocateFor(candidate)).thenReturn(resource);
+    when(resourceRepository.getReferenceById(1L)).thenReturn(resourceEntity);
+    when(assignmentRepository.save(any(ServiceAssignmentEntity.class)))
+        .thenAnswer(invocation -> {
+          ServiceAssignmentEntity entity = invocation.getArgument(0);
+          entity.setId(1L);
+          return entity;
+        });
+
+    // Act
+    ServiceAssignment result = assignmentEngine.reassign(allocator, CANDIDATE_NUMBER, actor);
+
+    // Assert
+    assertThat(result).isNotNull();
+    assertThat(result.getCandidateId()).isEqualTo(CANDIDATE_ID);
+
+    // Verify no previous assignments were updated
+    verify(assignmentRepository, never()).save(existingAssignment);
+  }
+
 }
 
