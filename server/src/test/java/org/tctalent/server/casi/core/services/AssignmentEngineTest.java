@@ -155,5 +155,22 @@ class AssignmentEngineTest {
     assertThat(event.assignment().getCandidateId()).isEqualTo(CANDIDATE_ID);
   }
 
+  @Test
+  @DisplayName("assign fails when candidate not found")
+  void assignFailsWhenCandidateNotFound() {
+    // Arrange
+    when(candidateRepository.findById(CANDIDATE_ID))
+        .thenReturn(Optional.empty());
+
+    // Act & Assert
+    assertThatThrownBy(() -> assignmentEngine.assign(allocator, CANDIDATE_ID, actor))
+        .isInstanceOf(NoSuchObjectException.class)
+        .hasMessageContaining("Candidate with ID " + CANDIDATE_ID + " not found");
+
+    verify(allocator, never()).allocateFor(any());
+    verify(assignmentRepository, never()).save(any());
+    verify(eventPublisher, never()).publishEvent(any());
+  }
+
 }
 
