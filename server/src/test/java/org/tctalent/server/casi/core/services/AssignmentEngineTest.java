@@ -189,5 +189,58 @@ class AssignmentEngineTest {
     verify(assignmentRepository, never()).save(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
+
+  @Test
+  @DisplayName("reassign succeeds and marks previous assignments")
+  void reassignSucceeds() {
+    // Arrange
+    when(allocator.getProvider()).thenReturn(ServiceProvider.DUOLINGO);
+    when(allocator.getServiceCode()).thenReturn(ServiceCode.TEST_PROCTORED);
+    when(candidateRepository.findByCandidateNumber(CANDIDATE_NUMBER))
+        .thenReturn(candidate);
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(List.of(existingAssignment));
+    when(candidateRepository.findById(CANDIDATE_ID))
+        .thenReturn(Optional.of(candidate));
+    when(allocator.allocateFor(candidate)).thenReturn(resource);
+    when(resourceRepository.getReferenceById(1L)).thenReturn(resourceEntity);
+    when(assignmentRepository.save(any(ServiceAssignmentEntity.class)))
+        .thenAnswer(invocation -> {
+          ServiceAssignmentEntity entity = invocation.getArgument(0);
+          if (entity.getId() == null) {
+            entity.setId(2L);
+          }
+          return entity;
+        });
+
+    // Act
+    ServiceAssignment result = assignmentEngine.reassign(allocator, CANDIDATE_NUMBER, actor);
+
+    // Assert
+    assertThat(result).isNotNull();
+    assertThat(result.getCandidateId()).isEqualTo(CANDIDATE_ID);
+
+    // Verify previous assignment was marked as REASSIGNED
+    verify(assignmentRepository).save(existingAssignment);
+    assertThat(existingAssignment.getStatus()).isEqualTo(AssignmentStatus.REASSIGNED);
+
+    // Verify resource was disabled
+    verify(resourceRepository).save(resourceEntity);
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.DISABLED);
+
+    // Verify reassigned event was published
+    ArgumentCaptor<ServiceReassignedEvent> eventCaptor =
+        ArgumentCaptor.forClass(ServiceReassignedEvent.class);
+    verify(eventPublisher).publishEvent(eventCaptor.capture());
+    assertThat(eventCaptor.getValue().assignment()).isNotNull();
+
+    // Verify new assignment event was published
+    ArgumentCaptor<ServiceAssignedEvent> assignedEventCaptor =
+        ArgumentCaptor.forClass(ServiceAssignedEvent.class);
+    verify(eventPublisher, org.mockito.Mockito.atLeastOnce())
+        .publishEvent(assignedEventCaptor.capture());
+  }
+
 }
 
