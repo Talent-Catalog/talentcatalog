@@ -172,5 +172,22 @@ class AssignmentEngineTest {
     verify(eventPublisher, never()).publishEvent(any());
   }
 
+  @Test
+  @DisplayName("assign fails when no resources available")
+  void assignFailsWhenNoResourcesAvailable() {
+    // Arrange
+    when(candidateRepository.findById(CANDIDATE_ID))
+        .thenReturn(Optional.of(candidate));
+    when(allocator.allocateFor(candidate))
+        .thenThrow(new NoSuchObjectException("No available resources"));
+
+    // Act & Assert
+    assertThatThrownBy(() -> assignmentEngine.assign(allocator, CANDIDATE_ID, actor))
+        .isInstanceOf(NoSuchObjectException.class)
+        .hasMessageContaining("No available resources");
+
+    verify(assignmentRepository, never()).save(any());
+    verify(eventPublisher, never()).publishEvent(any());
+  }
 }
 
