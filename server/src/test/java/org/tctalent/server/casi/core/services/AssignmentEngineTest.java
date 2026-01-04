@@ -111,6 +111,8 @@ class AssignmentEngineTest {
   @DisplayName("assign succeeds and publishes event")
   void assignSucceeds() {
     // Arrange
+    when(allocator.getProvider()).thenReturn(ServiceProvider.DUOLINGO);
+    when(allocator.getServiceCode()).thenReturn(ServiceCode.TEST_PROCTORED);
     when(candidateRepository.findById(CANDIDATE_ID))
         .thenReturn(Optional.of(candidate));
     when(allocator.allocateFor(candidate)).thenReturn(resource);
@@ -131,6 +133,8 @@ class AssignmentEngineTest {
     assertThat(result.getCandidateId()).isEqualTo(CANDIDATE_ID);
     assertThat(result.getActorId()).isEqualTo(actor.getId());
     assertThat(result.getStatus()).isEqualTo(AssignmentStatus.ASSIGNED);
+    assertThat(result.getProvider()).isEqualTo(ServiceProvider.DUOLINGO);
+    assertThat(result.getServiceCode()).isEqualTo(ServiceCode.TEST_PROCTORED);
     assertThat(result.getResource()).isNotNull();
     assertThat(result.getResource().getResourceCode()).isEqualTo(RESOURCE_CODE);
 
@@ -143,6 +147,8 @@ class AssignmentEngineTest {
     assertThat(savedEntity.getCandidate().getId()).isEqualTo(CANDIDATE_ID);
     assertThat(savedEntity.getActor().getId()).isEqualTo(actor.getId());
     assertThat(savedEntity.getStatus()).isEqualTo(AssignmentStatus.ASSIGNED);
+    assertThat(savedEntity.getProvider()).isEqualTo(ServiceProvider.DUOLINGO);
+    assertThat(savedEntity.getServiceCode()).isEqualTo(ServiceCode.TEST_PROCTORED);
     assertThat(savedEntity.getAssignedAt()).isNotNull();
 
     // Capture and verify ServiceAssignedEvent
@@ -153,6 +159,8 @@ class AssignmentEngineTest {
 
     assertThat(event.assignment()).isNotNull();
     assertThat(event.assignment().getCandidateId()).isEqualTo(CANDIDATE_ID);
+    assertThat(event.assignment().getProvider()).isEqualTo(ServiceProvider.DUOLINGO);
+    assertThat(event.assignment().getServiceCode()).isEqualTo(ServiceCode.TEST_PROCTORED);
   }
 
   @Test
