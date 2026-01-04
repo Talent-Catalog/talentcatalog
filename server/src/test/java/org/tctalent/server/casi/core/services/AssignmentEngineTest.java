@@ -344,6 +344,24 @@ class AssignmentEngineTest {
     verify(assignmentRepository).save(assignment2);
     assertThat(existingAssignment.getStatus()).isEqualTo(AssignmentStatus.REASSIGNED);
     assertThat(assignment2.getStatus()).isEqualTo(AssignmentStatus.REASSIGNED);
+
+    // Verify 2 reassigned events were published (one for each previous assignment)
+    ArgumentCaptor<ServiceReassignedEvent> reassignedEventCaptor =
+        ArgumentCaptor.forClass(ServiceReassignedEvent.class);
+    verify(eventPublisher, org.mockito.Mockito.times(2))
+        .publishEvent(reassignedEventCaptor.capture());
+    List<ServiceReassignedEvent> reassignedEvents = reassignedEventCaptor.getAllValues();
+    assertThat(reassignedEvents).hasSize(2);
+    assertThat(reassignedEvents.get(0).assignment()).isNotNull();
+    assertThat(reassignedEvents.get(1).assignment()).isNotNull();
+
+    // Verify 1 assigned event was published (for the new assignment)
+    ArgumentCaptor<ServiceAssignedEvent> assignedEventCaptor =
+        ArgumentCaptor.forClass(ServiceAssignedEvent.class);
+    verify(eventPublisher, org.mockito.Mockito.times(1))
+        .publishEvent(assignedEventCaptor.capture());
+    assertThat(assignedEventCaptor.getValue().assignment()).isNotNull();
+    assertThat(assignedEventCaptor.getValue().assignment().getCandidateId()).isEqualTo(CANDIDATE_ID);
   }
 }
 
