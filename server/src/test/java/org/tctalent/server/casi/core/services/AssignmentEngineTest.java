@@ -242,5 +242,21 @@ class AssignmentEngineTest {
         .publishEvent(assignedEventCaptor.capture());
   }
 
+  @Test
+  @DisplayName("reassign fails when candidate not found")
+  void reassignFailsWhenCandidateNotFound() {
+    // Arrange
+    when(candidateRepository.findByCandidateNumber(CANDIDATE_NUMBER))
+        .thenReturn(null);
+
+    // Act & Assert
+    assertThatThrownBy(() -> assignmentEngine.reassign(allocator, CANDIDATE_NUMBER, actor))
+        .isInstanceOf(NoSuchObjectException.class)
+        .hasMessageContaining("Candidate with Number " + CANDIDATE_NUMBER + " not found");
+
+    verify(allocator, never()).allocateFor(any());
+    verify(assignmentRepository, never()).save(any());
+  }
+
 }
 
