@@ -196,5 +196,106 @@ class DuolingoCouponImporterTest {
     verify(serviceResourceRepository, times(1)).saveAll(any());
   }
 
+  // Date Parsing Tests
+
+  @Test
+  @DisplayName("import file parses date with seconds format")
+  void importFileParsesDateWithSeconds() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), couponList.get(0).getExpiresAt());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file parses date without seconds format")
+  void importFileParsesDateWithoutSeconds() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        code1,,2024/12/31 23:59,2024/12/01 10:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59), couponList.get(0).getExpiresAt());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file handles empty date field")
+  void importFileHandlesEmptyDateField() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        code1,,,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertNull(couponList.get(0).getExpiresAt());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file fails when date format is invalid")
+  void importFileFailsWhenDateFormatInvalid() {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        code1,,2024-12-31,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+
+    // Act & Assert
+    assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
+        .isInstanceOf(ImportFailedException.class)
+        .hasRootCauseMessage("Invalid date format");
+  }
+
 
 }
