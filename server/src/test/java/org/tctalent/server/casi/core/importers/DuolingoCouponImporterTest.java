@@ -294,7 +294,7 @@ class DuolingoCouponImporterTest {
     // Act & Assert
     assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
         .isInstanceOf(ImportFailedException.class)
-        .hasRootCauseMessage("Invalid date format");
+        .hasRootCauseMessage("Invalid date format: 2024-12-31");
   }
 
 

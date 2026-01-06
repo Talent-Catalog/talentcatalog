@@ -93,8 +93,11 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
       // Save all the new coupons to the repository if there are any
       saveCoupons(newCoupons);
 
-    } catch (ImportFailedException | IOException | CsvValidationException e) {
-      // Catch any exceptions related to the import process
+    } catch (ImportFailedException e) {
+      // Re-throw ImportFailedException as-is (already wrapped)
+      throw e;
+    } catch (IOException | CsvValidationException | RuntimeException e) {
+      // Catch any other exceptions related to the import process and wrap them
       throw new ImportFailedException(e);
     }
   }
