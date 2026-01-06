@@ -79,7 +79,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     if (importer == null) {
       throw new ImportFailedException("Import not supported for " + provider());
     }
-    importer.importFile(file, serviceCode().name());
+    importer.importFile(file, serviceCode());
   }
 
   // Assignments

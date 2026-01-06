@@ -69,7 +69,7 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
 
   @Override
   @Transactional
-  public void importFile(MultipartFile file, String serviceCode) throws ImportFailedException {
+  public void importFile(MultipartFile file, ServiceCode serviceCode) throws ImportFailedException {
     List<ServiceResourceEntity> newCoupons = new ArrayList<>();
     // Set to track coupon codes that have already been processed (avoids duplicates)
     Set<String> seenCouponCodes = new HashSet<>();
