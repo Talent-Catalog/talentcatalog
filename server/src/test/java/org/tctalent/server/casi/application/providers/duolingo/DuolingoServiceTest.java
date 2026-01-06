@@ -535,5 +535,38 @@ class DuolingoServiceTest {
         .hasMessageContaining("Candidate with Number " + CANDIDATE_NUMBER + " not found");
   }
 
+  // Get Assignments for Candidate Tests
+
+  @Test
+  @DisplayName("get assignments for candidate returns assignments")
+  void getAssignmentsForCandidateReturnsAssignments() {
+    // Arrange
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(List.of(assignmentEntity));
+
+    // Act
+    List<ServiceAssignment> result = duolingoService.getAssignmentsForCandidate(CANDIDATE_ID);
+
+    // Assert
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getCandidateId()).isEqualTo(CANDIDATE_ID);
+  }
+
+  @Test
+  @DisplayName("get assignments for candidate returns empty list when no assignments")
+  void getAssignmentsForCandidateReturnsEmptyList() {
+    // Arrange
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(Collections.emptyList());
+
+    // Act
+    List<ServiceAssignment> result = duolingoService.getAssignmentsForCandidate(CANDIDATE_ID);
+
+    // Assert
+    assertThat(result).isEmpty();
+  }
+
 }
 
