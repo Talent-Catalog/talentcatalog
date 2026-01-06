@@ -484,8 +484,8 @@ class DuolingoServiceTest {
   }
 
   @Test
-  @DisplayName("assign to list fails when assignment engine throws exception")
-  void assignToListFailsWhenAssignmentEngineThrowsException() {
+  @DisplayName("assign to list fails when all assignments fail")
+  void assignToListFailsWhenAllAssignmentsFail() {
     // Arrange
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
     when(resourceRepository.findByProviderAndServiceCodeAndStatus(
@@ -500,105 +500,91 @@ class DuolingoServiceTest {
     // Act & Assert
     assertThatThrownBy(() -> duolingoService.assignToList(LIST_ID, user))
         .isInstanceOf(NoSuchObjectException.class)
-        .hasMessageContaining("Candidate with ID " + CANDIDATE_ID + " not found");
+        .hasMessageContaining("Failed to assign")
+        .hasMessageContaining("to any candidates")
+        .hasMessageContaining("1 assignment(s) failed");
   }
 
-
-  // Reassign Tests
-
   @Test
-  @DisplayName("reassign for candidate succeeds")
-  void reassignForCandidateSucceeds() {
+  @DisplayName("assign to list returns partial success when some assignments fail")
+  void assignToListReturnsPartialSuccessWhenSomeAssignmentsFail() {
     // Arrange
-    when(assignmentEngine.reassign(duolingoAllocator, CANDIDATE_NUMBER, user))
-        .thenReturn(assignment);
+    Candidate candidate2 = new Candidate();
+    candidate2.setId(789L);
+    candidate2.setCandidateNumber("C789");
+    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+
+    ServiceAssignment assignment2 = ServiceAssignment.builder()
+        .id(2L)
+        .provider(ServiceProvider.DUOLINGO)
+        .serviceCode(ServiceCode.TEST_PROCTORED)
+        .resource(resource)
+        .candidateId(789L)
+        .actorId(user.getId())
+        .status(AssignmentStatus.ASSIGNED)
+        .build();
+
+    when(savedListService.get(LIST_ID)).thenReturn(savedList);
+    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
+        .thenReturn(List.of(resourceEntity, resourceEntity));
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(789L), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    // First candidate assignment fails
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(CANDIDATE_ID), eq(user)))
+        .thenThrow(new NoSuchObjectException("Candidate with ID " + CANDIDATE_ID + " not found"));
+    // Second candidate assignment succeeds
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(789L), eq(user)))
+        .thenReturn(assignment2);
 
     // Act
-    ServiceAssignment result = duolingoService.reassignForCandidate(CANDIDATE_NUMBER, user);
+    List<ServiceAssignment> result = duolingoService.assignToList(LIST_ID, user);
 
     // Assert
-    assertThat(result).isNotNull();
-    assertThat(result.getCandidateId()).isEqualTo(CANDIDATE_ID);
-    verify(assignmentEngine).reassign(duolingoAllocator, CANDIDATE_NUMBER, user);
+    assertThat(result).hasSize(1);
+    assertThat(result).containsExactly(assignment2);
+    verify(assignmentEngine).assign(duolingoAllocator, CANDIDATE_ID, user);
+    verify(assignmentEngine).assign(duolingoAllocator, 789L, user);
   }
 
   @Test
-  @DisplayName("reassign for candidate fails when candidate not found")
-  void reassignForCandidateFailsWhenCandidateNotFound() {
+  @DisplayName("assign to list fails when all multiple assignments fail")
+  void assignToListFailsWhenAllMultipleAssignmentsFail() {
     // Arrange
-    when(assignmentEngine.reassign(duolingoAllocator, CANDIDATE_NUMBER, user))
-        .thenThrow(new NoSuchObjectException("Candidate with Number " + CANDIDATE_NUMBER + " not found"));
+    Candidate candidate2 = new Candidate();
+    candidate2.setId(789L);
+    candidate2.setCandidateNumber("C789");
+    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+
+    when(savedListService.get(LIST_ID)).thenReturn(savedList);
+    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
+        .thenReturn(List.of(resourceEntity, resourceEntity));
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(789L), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    // Both assignments fail
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(CANDIDATE_ID), eq(user)))
+        .thenThrow(new NoSuchObjectException("Candidate with ID " + CANDIDATE_ID + " not found"));
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(789L), eq(user)))
+        .thenThrow(new NoSuchObjectException("There are no available TEST_PROCTORED coupons to assign"));
 
     // Act & Assert
-    assertThatThrownBy(() -> duolingoService.reassignForCandidate(CANDIDATE_NUMBER, user))
+    assertThatThrownBy(() -> duolingoService.assignToList(LIST_ID, user))
         .isInstanceOf(NoSuchObjectException.class)
-        .hasMessageContaining("Candidate with Number " + CANDIDATE_NUMBER + " not found");
-  }
+        .hasMessageContaining("Failed to assign")
+        .hasMessageContaining("to any candidates")
+        .hasMessageContaining("2 assignment(s) failed");
 
-  // Get Assignments for Candidate Tests
-
-  @Test
-  @DisplayName("get assignments for candidate returns assignments")
-  void getAssignmentsForCandidateReturnsAssignments() {
-    // Arrange
-    when(assignmentRepository.findByCandidateAndProviderAndService(
-        CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
-        .thenReturn(List.of(assignmentEntity));
-
-    // Act
-    List<ServiceAssignment> result = duolingoService.getAssignmentsForCandidate(CANDIDATE_ID);
-
-    // Assert
-    assertThat(result).hasSize(1);
-    assertThat(result.get(0).getCandidateId()).isEqualTo(CANDIDATE_ID);
-  }
-
-  @Test
-  @DisplayName("get assignments for candidate returns empty list when no assignments")
-  void getAssignmentsForCandidateReturnsEmptyList() {
-    // Arrange
-    when(assignmentRepository.findByCandidateAndProviderAndService(
-        CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
-        .thenReturn(Collections.emptyList());
-
-    // Act
-    List<ServiceAssignment> result = duolingoService.getAssignmentsForCandidate(CANDIDATE_ID);
-
-    // Assert
-    assertThat(result).isEmpty();
-  }
-
-  // Get Resources for Candidate Tests
-
-  @Test
-  @DisplayName("get resources for candidate returns resources")
-  void getResourcesForCandidateReturnsResources() {
-    // Arrange
-    when(assignmentRepository.findByCandidateAndProviderAndService(
-        CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
-        .thenReturn(List.of(assignmentEntity));
-
-    // Act
-    List<ServiceResource> result = duolingoService.getResourcesForCandidate(CANDIDATE_ID);
-
-    // Assert
-    assertThat(result).hasSize(1);
-    assertThat(result.get(0).getResourceCode()).isEqualTo(RESOURCE_CODE);
-  }
-
-  @Test
-  @DisplayName("get resources for candidate returns empty list when no assignments")
-  void getResourcesForCandidateReturnsEmptyList() {
-    // Arrange
-    when(assignmentRepository.findByCandidateAndProviderAndService(
-        CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
-        .thenReturn(Collections.emptyList());
-
-    // Act
-    List<ServiceResource> result = duolingoService.getResourcesForCandidate(CANDIDATE_ID);
-
-    // Assert
-    assertThat(result).isEmpty();
+    verify(assignmentEngine).assign(duolingoAllocator, CANDIDATE_ID, user);
+    verify(assignmentEngine).assign(duolingoAllocator, 789L, user);
   }
 
 }
