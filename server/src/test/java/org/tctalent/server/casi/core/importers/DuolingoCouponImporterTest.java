@@ -617,8 +617,8 @@ class DuolingoCouponImporterTest {
   }
 
   @Test
-  @DisplayName("import file does not set service code for unmatched prefix")
-  void importFileDoesNotSetServiceCodeForUnmatchedPrefix() throws Exception {
+  @DisplayName("import file skips coupons with unrecognized prefix")
+  void importFileSkipsCouponsWithUnrecognizedPrefix() throws Exception {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
@@ -635,9 +635,40 @@ class DuolingoCouponImporterTest {
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
 
     // Assert
+    // Coupons with unrecognized prefixes should be skipped, so saveAll should not be called
+    verify(serviceResourceRepository, never()).saveAll(any());
+  }
+
+  @Test
+  @DisplayName("import file imports recognized coupons and skips unrecognized ones")
+  void importFileImportsRecognizedAndSkipsUnrecognized() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        UNKNOWN456,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        NONP789,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "UNKNOWN456")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "NONP789")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
-      assertNull(couponList.get(0).getServiceCode());
+      // Should only import recognized prefixes (ACC123 and NONP789), skip UNKNOWN456
+      assertEquals(2, couponList.size());
+      // Verify the recognized coupons are present
+      assertThat(couponList.stream().map(ServiceResourceEntity::getResourceCode))
+          .containsExactlyInAnyOrder("ACC123", "NONP789");
       return true;
     }));
   }
