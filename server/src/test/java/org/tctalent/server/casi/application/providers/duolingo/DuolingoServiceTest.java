@@ -233,8 +233,6 @@ class DuolingoServiceTest {
     when(assignmentRepository.findByCandidateAndProviderAndService(
         CANDIDATE_ID, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
         .thenReturn(Collections.emptyList());
-    when(duolingoAllocator.getProvider()).thenReturn(ServiceProvider.DUOLINGO);
-    when(duolingoAllocator.getServiceCode()).thenReturn(ServiceCode.TEST_PROCTORED);
     when(assignmentEngine.assign(duolingoAllocator, CANDIDATE_ID, user))
         .thenReturn(assignment);
 
@@ -259,8 +257,8 @@ class DuolingoServiceTest {
     // Act & Assert
     assertThatThrownBy(() -> duolingoService.assignToCandidate(CANDIDATE_ID, user))
         .isInstanceOf(EntityExistsException.class)
-        .hasMessageContaining("TEST_PROCTORED resources")
-        .hasMessageContaining("for this candidate");
+        .hasMessageContaining("ASSIGNED TEST_PROCTORED resource")
+        .hasMessageContaining("already exists: for this candidate");
 
     verify(assignmentEngine, never()).assign(any(), any(), any());
   }

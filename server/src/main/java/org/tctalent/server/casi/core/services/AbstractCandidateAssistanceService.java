@@ -90,7 +90,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
     for (ServiceAssignment a : assignments) {
       if (a.getStatus().equals(AssignmentStatus.ASSIGNED)) {
-        throw new EntityExistsException(serviceCode() + " resources", "for this candidate");
+        throw new EntityExistsException(AssignmentStatus.ASSIGNED.name() + " " + serviceCode()
+            + " resource", "for this candidate");
       }
     }
 
