@@ -510,5 +510,137 @@ class DuolingoCouponImporterTest {
     }));
   }
 
+  // Service Code Detection Tests
+
+  @Test
+  @DisplayName("import file detects TEST_NON_PROCTORED for ACCNONPROC prefix")
+  void importFileDetectsTestNonProctoredForAccnonprocPrefix() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACCNONPROC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACCNONPROC123")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(ServiceCode.TEST_NON_PROCTORED, couponList.get(0).getServiceCode());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file detects TEST_NON_PROCTORED for NONP prefix")
+  void importFileDetectsTestNonProctoredForNonpPrefix() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        NONP123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "NONP123")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(ServiceCode.TEST_NON_PROCTORED, couponList.get(0).getServiceCode());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file detects TEST_PROCTORED for ACC prefix")
+  void importFileDetectsTestProctoredForAccPrefix() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(ServiceCode.TEST_PROCTORED, couponList.get(0).getServiceCode());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file detects TEST_PROCTORED for PROC prefix")
+  void importFileDetectsTestProctoredForProcPrefix() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        PROC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "PROC123")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(ServiceCode.TEST_PROCTORED, couponList.get(0).getServiceCode());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file does not set service code for unmatched prefix")
+  void importFileDoesNotSetServiceCodeForUnmatchedPrefix() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        UNKNOWN123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "UNKNOWN123")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertNull(couponList.get(0).getServiceCode());
+      return true;
+    }));
+  }
+
 
 }
