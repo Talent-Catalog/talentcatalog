@@ -684,6 +684,40 @@ class DuolingoServiceTest {
     assertThat(result).isEmpty();
   }
 
+  // Get Available Resources Tests
+
+  @Test
+  @DisplayName("get available resources returns resources")
+  void getAvailableResourcesReturnsResources() {
+    // Arrange
+    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
+        .thenReturn(List.of(resourceEntity));
+
+    // Act
+    List<ServiceResource> result = duolingoService.getAvailableResources();
+
+    // Assert
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getResourceCode()).isEqualTo(RESOURCE_CODE);
+    assertThat(result.get(0).getStatus()).isEqualTo(ResourceStatus.AVAILABLE);
+  }
+
+  @Test
+  @DisplayName("get available resources returns empty list when no resources")
+  void getAvailableResourcesReturnsEmptyList() {
+    // Arrange
+    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
+        .thenReturn(Collections.emptyList());
+
+    // Act
+    List<ServiceResource> result = duolingoService.getAvailableResources();
+
+    // Assert
+    assertThat(result).isEmpty();
+  }
+
 
 }
 
