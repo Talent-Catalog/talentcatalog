@@ -718,6 +718,126 @@ class DuolingoServiceTest {
     assertThat(result).isEmpty();
   }
 
+  // Get Resource by Code Tests
+
+  @Test
+  @DisplayName("get resource by code returns resource when found")
+  void getResourceByCodeReturnsResourceWhenFound() {
+    // Arrange
+    when(resourceRepository.findByProviderAndResourceCode(
+        ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+
+    // Act
+    ServiceResource result = duolingoService.getResourceForResourceCode(RESOURCE_CODE);
+
+    // Assert
+    assertThat(result).isNotNull();
+    assertThat(result.getResourceCode()).isEqualTo(RESOURCE_CODE);
+  }
+
+  @Test
+  @DisplayName("get resource by code throws exception when not found")
+  void getResourceByCodeThrowsExceptionWhenNotFound() {
+    // Arrange
+    when(resourceRepository.findByProviderAndResourceCode(
+        ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.empty());
+
+    // Act & Assert
+    assertThatThrownBy(() -> duolingoService.getResourceForResourceCode(RESOURCE_CODE))
+        .isInstanceOf(NoSuchObjectException.class)
+        .hasMessageContaining("Coupon with code " + RESOURCE_CODE + " not found");
+  }
+
+  // Get Candidate for Resource Code Tests
+
+  @Test
+  @DisplayName("get candidate for resource code returns candidate when assigned")
+  void getCandidateForResourceCodeReturnsCandidateWhenAssigned() {
+    // Arrange
+    when(resourceRepository.findByProviderAndResourceCode(
+        ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(assignmentRepository.findTopByProviderAndServiceAndResource(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, 1L))
+        .thenReturn(Optional.of(assignmentEntity));
+
+    // Act
+    Candidate result = duolingoService.getCandidateForResourceCode(RESOURCE_CODE);
+
+    // Assert
+    assertThat(result).isNotNull();
+    assertThat(result.getId()).isEqualTo(CANDIDATE_ID);
+  }
+
+  @Test
+  @DisplayName("get candidate for resource code returns null when not assigned")
+  void getCandidateForResourceCodeReturnsNullWhenNotAssigned() {
+    // Arrange
+    when(resourceRepository.findByProviderAndResourceCode(
+        ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(assignmentRepository.findTopByProviderAndServiceAndResource(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, 1L))
+        .thenReturn(Optional.empty());
+
+    // Act
+    Candidate result = duolingoService.getCandidateForResourceCode(RESOURCE_CODE);
+
+    // Assert
+    assertThat(result).isNull();
+  }
+
+  @Test
+  @DisplayName("get candidate for resource code throws exception when resource not found")
+  void getCandidateForResourceCodeThrowsExceptionWhenResourceNotFound() {
+    // Arrange
+    when(resourceRepository.findByProviderAndResourceCode(
+        ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.empty());
+
+    // Act & Assert
+    assertThatThrownBy(() -> duolingoService.getCandidateForResourceCode(RESOURCE_CODE))
+        .isInstanceOf(NoSuchObjectException.class)
+        .hasMessageContaining("Coupon with code " + RESOURCE_CODE + " not found");
+  }
+
+  // Update Resource Status Tests
+
+  @Test
+  @DisplayName("update resource status succeeds")
+  void updateResourceStatusSucceeds() {
+    // Arrange
+    when(resourceRepository.findByProviderAndResourceCode(
+        ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    // Act
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.DISABLED);
+
+    // Assert
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.DISABLED);
+    verify(resourceRepository).save(resourceEntity);
+  }
+
+  @Test
+  @DisplayName("update resource status throws exception when resource not found")
+  void updateResourceStatusThrowsExceptionWhenResourceNotFound() {
+    // Arrange
+    when(resourceRepository.findByProviderAndResourceCode(
+        ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.empty());
+
+    // Act & Assert
+    assertThatThrownBy(() -> duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.DISABLED))
+        .isInstanceOf(NoSuchObjectException.class)
+        .hasMessageContaining("Resource with code " + RESOURCE_CODE + " not found");
+
+    verify(resourceRepository, never()).save(any());
+  }
+
 
 }
 
