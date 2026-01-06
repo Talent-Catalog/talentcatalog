@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.casi.domain.mappers.ServiceAssignmentMapper;
@@ -39,6 +40,7 @@ import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.SavedListService;
@@ -50,6 +52,7 @@ import org.tctalent.server.service.db.SavedListService;
  *
  * @author sadatmalik
  */
+@Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractCandidateAssistanceService implements CandidateAssistanceService {
 
@@ -110,7 +113,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   // Assign all candidates in a saved list
   // Skip candidates who already have an active assignment
   // Fail if not enough resources to assign to all candidates
-  // Return list of assignments done
+  // Continue processing remaining candidates if individual assignments fail
+  // Return list of successful assignments
   // SM -- TODO -- add pagination for large lists
   @Override
   @Transactional
@@ -128,6 +132,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     }
 
     List<ServiceAssignment> done = new ArrayList<>();
+    int failureCount = 0;
+    
     for (Candidate candidate : candidates) {
       boolean hasSentCoupon = assignmentRepository
           .findByCandidateAndProviderAndService(candidate.getId(), provider(), serviceCode())
@@ -135,9 +141,26 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
           .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
 
       if (!hasSentCoupon) {
-        done.add(assignToCandidate(candidate.getId(), user));
+        try {
+          done.add(assignToCandidate(candidate.getId(), user));
+        } catch (Exception e) {
+          failureCount++;
+          LogBuilder.builder(log)
+              .action("assignToList")
+              .message("Failed to assign " + serviceCode() + " to candidate " 
+                  + candidate.getId() + " (" + candidate.getCandidateNumber() + "): " + e.getMessage())
+              .logError(e);
+        }
       }
     }
+    
+    if (failureCount > 0 && done.isEmpty()) {
+      // If all assignments failed, throw an exception
+      throw new NoSuchObjectException(
+          "Failed to assign " + serviceCode() + " to any candidates in the list. "
+              + failureCount + " assignment(s) failed.");
+    }
+    
     return done;
   }
 
