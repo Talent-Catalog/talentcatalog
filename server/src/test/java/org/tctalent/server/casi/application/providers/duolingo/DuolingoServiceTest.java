@@ -838,6 +838,64 @@ class DuolingoServiceTest {
     verify(resourceRepository, never()).save(any());
   }
 
+  // Count Operations Tests
 
+  @Test
+  @DisplayName("count available for provider and service returns count")
+  void countAvailableForProviderAndServiceReturnsCount() {
+    // Arrange
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(5L);
+
+    // Act
+    long result = duolingoService.countAvailableForProviderAndService();
+
+    // Assert
+    assertThat(result).isEqualTo(5L);
+  }
+
+  @Test
+  @DisplayName("count available for provider returns count")
+  void countAvailableForProviderReturnsCount() {
+    // Arrange
+    when(resourceRepository.countAvailableByProvider(ServiceProvider.DUOLINGO))
+        .thenReturn(10L);
+
+    // Act
+    long result = duolingoService.countAvailableForProvider();
+
+    // Assert
+    assertThat(result).isEqualTo(10L);
+  }
+
+  @Test
+  @DisplayName("count available for provider and service returns zero when no resources")
+  void countAvailableForProviderAndServiceReturnsZero() {
+    // Arrange
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(0L);
+
+    // Act
+    long result = duolingoService.countAvailableForProviderAndService();
+
+    // Assert
+    assertThat(result).isEqualTo(0L);
+  }
+
+  @Test
+  @DisplayName("count available for provider returns zero when no resources")
+  void countAvailableForProviderReturnsZero() {
+    // Arrange
+    when(resourceRepository.countAvailableByProvider(ServiceProvider.DUOLINGO))
+        .thenReturn(0L);
+
+    // Act
+    long result = duolingoService.countAvailableForProvider();
+
+    // Assert
+    assertThat(result).isEqualTo(0L);
+  }
 }
 
