@@ -503,5 +503,37 @@ class DuolingoServiceTest {
         .hasMessageContaining("Candidate with ID " + CANDIDATE_ID + " not found");
   }
 
+
+  // Reassign Tests
+
+  @Test
+  @DisplayName("reassign for candidate succeeds")
+  void reassignForCandidateSucceeds() {
+    // Arrange
+    when(assignmentEngine.reassign(duolingoAllocator, CANDIDATE_NUMBER, user))
+        .thenReturn(assignment);
+
+    // Act
+    ServiceAssignment result = duolingoService.reassignForCandidate(CANDIDATE_NUMBER, user);
+
+    // Assert
+    assertThat(result).isNotNull();
+    assertThat(result.getCandidateId()).isEqualTo(CANDIDATE_ID);
+    verify(assignmentEngine).reassign(duolingoAllocator, CANDIDATE_NUMBER, user);
+  }
+
+  @Test
+  @DisplayName("reassign for candidate fails when candidate not found")
+  void reassignForCandidateFailsWhenCandidateNotFound() {
+    // Arrange
+    when(assignmentEngine.reassign(duolingoAllocator, CANDIDATE_NUMBER, user))
+        .thenThrow(new NoSuchObjectException("Candidate with Number " + CANDIDATE_NUMBER + " not found"));
+
+    // Act & Assert
+    assertThatThrownBy(() -> duolingoService.reassignForCandidate(CANDIDATE_NUMBER, user))
+        .isInstanceOf(NoSuchObjectException.class)
+        .hasMessageContaining("Candidate with Number " + CANDIDATE_NUMBER + " not found");
+  }
+
 }
 
