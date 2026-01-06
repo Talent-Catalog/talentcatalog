@@ -141,6 +141,7 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
 
   /**
    * Processes each coupon line from the CSV and adds it to the newCoupons list if it's valid.
+   * Coupons with unrecognized prefixes are logged and skipped.
    * @param line the current line from the CSV
    * @param headers the array of headers from the CSV
    * @param columnIndex the map of column names to their indices
@@ -170,11 +171,23 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
           coupon.setStatus(mapDuolingoStatusToResource(rawStatus));
 
           // Set test type based on coupon code prefix
+          ServiceCode detectedServiceCode = null;
           if (couponCode.startsWith("ACCNONPROC") || couponCode.startsWith("NONP")) {
-            coupon.setServiceCode(ServiceCode.TEST_NON_PROCTORED);
+            detectedServiceCode = ServiceCode.TEST_NON_PROCTORED;
           } else if (couponCode.startsWith("ACC") || couponCode.startsWith("PROC")) {
-            coupon.setServiceCode(ServiceCode.TEST_PROCTORED);
+            detectedServiceCode = ServiceCode.TEST_PROCTORED;
           }
+
+          if (detectedServiceCode == null) {
+            // Log and skip coupons with unrecognized prefixes
+            LogBuilder.builder(log)
+                .action("processCouponLine")
+                .message("Skipping coupon with unrecognized prefix: " + couponCode)
+                .logWarn();
+            return; // Skip this coupon, don't add it to newCoupons
+          }
+
+          coupon.setServiceCode(detectedServiceCode);
           newCoupons.add(coupon);
         }
       }
