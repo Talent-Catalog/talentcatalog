@@ -41,6 +41,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
+import org.tctalent.server.casi.core.services.AbstractCandidateAssistanceService;
 import org.tctalent.server.casi.core.services.AssignmentEngine;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
@@ -148,6 +149,80 @@ class DuolingoServiceTest {
     assertThat(providerKey).isEqualTo("DUOLINGO::TEST_PROCTORED");
   }
 
+  // Import Inventory Tests
+
+  @Test
+  @DisplayName("import inventory succeeds with importer")
+  void importInventorySucceedsWithImporter() throws Exception {
+    // Arrange
+    MultipartFile file = mock(MultipartFile.class);
+
+    // Act
+    duolingoService.importInventory(file);
+
+    // Assert
+    verify(duolingoImporter).importFile(file, ServiceCode.TEST_PROCTORED.name());
+  }
+
+  @Test
+  @DisplayName("import inventory fails when importer is null")
+  void importInventoryFailsWhenImporterIsNull() {
+    // Arrange
+    MultipartFile file = mock(MultipartFile.class);
+    // Create a service without importer by using a different constructor approach
+    // Since DuolingoService always has an importer, I'm testing the abstract class behavior
+    // by creating a test subclass without importer
+    AbstractCandidateAssistanceServiceWithoutImporter serviceWithoutImporter =
+        new AbstractCandidateAssistanceServiceWithoutImporter(
+            assignmentRepository, resourceRepository, assignmentEngine, savedListService);
+
+    // Act & Assert
+    assertThatThrownBy(() -> serviceWithoutImporter.importInventory(file))
+        .isInstanceOf(ImportFailedException.class)
+        .hasMessageContaining("Import not supported");
+  }
+
+  @Test
+  @DisplayName("import inventory fails when importer throws exception")
+  void importInventoryFailsWhenImporterThrowsException() throws Exception {
+    // Arrange
+    MultipartFile file = mock(MultipartFile.class);
+    doThrow(new ImportFailedException("Invalid file format"))
+        .when(duolingoImporter).importFile(file, ServiceCode.TEST_PROCTORED.name());
+
+    // Act & Assert
+    assertThatThrownBy(() -> duolingoService.importInventory(file))
+        .isInstanceOf(ImportFailedException.class)
+        .hasMessageContaining("Invalid file format");
+
+    verify(duolingoImporter).importFile(file, ServiceCode.TEST_PROCTORED.name());
+  }
+
+  // Helper class for testing without importer
+  private static class AbstractCandidateAssistanceServiceWithoutImporter extends AbstractCandidateAssistanceService {
+    public AbstractCandidateAssistanceServiceWithoutImporter(
+        ServiceAssignmentRepository assignmentRepo,
+        ServiceResourceRepository resourceRepo,
+        AssignmentEngine assignmentEngine,
+        SavedListService savedListService) {
+      super(assignmentRepo, resourceRepo, assignmentEngine, savedListService);
+    }
+
+    @Override
+    protected ServiceProvider provider() {
+      return ServiceProvider.DUOLINGO;
+    }
+
+    @Override
+    protected ServiceCode serviceCode() {
+      return ServiceCode.TEST_PROCTORED;
+    }
+
+    @Override
+    protected ResourceAllocator allocator() {
+      return null;
+    }
+  }
 
 }
 
