@@ -16,13 +16,17 @@
 
 package org.tctalent.server.casi.core.importers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.opencsv.exceptions.CsvValidationException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -41,6 +45,7 @@ import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
+import org.tctalent.server.exception.ImportFailedException;
 
 class DuolingoCouponImporterTest {
 
@@ -58,8 +63,8 @@ class DuolingoCouponImporterTest {
   }
 
   @Test
-  @DisplayName("importCoupons - successfully imports coupons")
-  void testImportCoupons() throws IOException, CsvValidationException {
+  @DisplayName("import file successfully imports coupons")
+  void importFileSucceeds() throws Exception {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status,Test Status
@@ -72,26 +77,124 @@ class DuolingoCouponImporterTest {
     );
 
     when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER,"code2")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code2")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
 
     // Assert
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
-      // Convert Iterable to List for easier assertions
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
-
-      // Verify the size and contents
       assertEquals(2, couponList.size());
       assertEquals("code1", couponList.get(0).getResourceCode());
       assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), couponList.get(0).getExpiresAt());
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(0).getStatus());
-
       assertEquals("code2", couponList.get(1).getResourceCode());
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(1).getStatus());
-
       return true;
     }));
   }
+
+  // Header Validation Tests
+
+  @Test
+  @DisplayName("import file fails when CSV header is missing")
+  void importFileFailsWhenHeaderMissing() {
+    // Arrange
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", "".getBytes(StandardCharsets.UTF_8)
+    );
+
+    // Act & Assert
+    assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
+        .isInstanceOf(ImportFailedException.class)
+        .hasRootCauseMessage("CSV header is missing");
+  }
+
+  @Test
+  @DisplayName("import file fails when required column Coupon Code is missing")
+  void importFileFailsWhenCouponCodeColumnMissing() {
+    // Arrange
+    String csvContent = """
+        Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    // Act & Assert
+    assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
+        .isInstanceOf(ImportFailedException.class)
+        .hasRootCauseMessage("Missing required column: coupon code");
+  }
+
+  @Test
+  @DisplayName("import file fails when required column Expiration Date is missing")
+  void importFileFailsWhenExpirationDateColumnMissing() {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Date Sent,Coupon Status
+        code1,,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    // Act & Assert
+    assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
+        .isInstanceOf(ImportFailedException.class)
+        .hasRootCauseMessage("Missing required column: expiration date");
+  }
+
+  @Test
+  @DisplayName("import file succeeds with case-insensitive column names")
+  void importFileSucceedsWithCaseInsensitiveColumns() throws Exception {
+    // Arrange
+    String csvContent = """
+        COUPON CODE,Assignee Email,EXPIRATION DATE,DATE SENT,COUPON STATUS,Test Status
+        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE,
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(1, couponList.size());
+      assertEquals("code1", couponList.get(0).getResourceCode());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file succeeds with BOM in header")
+  void importFileSucceedsWithBOMInHeader() throws Exception {
+    // Arrange
+    String csvContent = "\uFEFFCoupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status\n"
+        + "code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE\n";
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(any());
+  }
+
+
 }
