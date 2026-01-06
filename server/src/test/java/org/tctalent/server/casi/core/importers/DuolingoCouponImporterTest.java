@@ -75,7 +75,7 @@ class DuolingoCouponImporterTest {
     when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER,"code2")).thenReturn(false);
 
     // Act
-    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED.name());
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
 
     // Assert
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
