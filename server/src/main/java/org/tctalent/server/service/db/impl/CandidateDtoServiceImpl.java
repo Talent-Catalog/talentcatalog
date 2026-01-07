@@ -214,7 +214,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
                     + ", versions=" + versions)
                 .logError();
             throw new NoSuchObjectException(
-                "Candidates not found with ids: " + badIds
+                "Candidates not found with ids: " + unprocessedIds
             );
         }
 
