@@ -520,16 +520,16 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,available
-        code2,,2024/12/31 23:59:59,2024/12/01 10:00:00,Assigned
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,available
+        ACC456,,2024/12/31 23:59:59,2024/12/01 10:00:00,Assigned
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code2")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC456")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -539,6 +539,62 @@ class DuolingoCouponImporterTest {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(0).getStatus());
       assertEquals(ResourceStatus.RESERVED, couponList.get(1).getStatus());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file handles mixed statuses in same file")
+  void importFileHandlesMixedStatusesInSameFile() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        ACC456,,2024/12/31 23:59:59,2024/12/01 10:00:00,ASSIGNED
+        ACC789,,2024/12/31 23:59:59,2024/12/01 10:00:00,SENT
+        NONP123,,2024/12/31 23:59:59,2024/12/01 10:00:00,REDEEMED
+        NONP456,,2024/12/31 23:59:59,2024/12/01 10:00:00,EXPIRED
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC456")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC789")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "NONP123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "NONP456")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(5, couponList.size());
+      // Verify all statuses are correctly mapped by finding each coupon
+      ServiceResourceEntity acc123 = couponList.stream()
+          .filter(c -> "ACC123".equals(c.getResourceCode()))
+          .findFirst().orElseThrow();
+      ServiceResourceEntity acc456 = couponList.stream()
+          .filter(c -> "ACC456".equals(c.getResourceCode()))
+          .findFirst().orElseThrow();
+      ServiceResourceEntity acc789 = couponList.stream()
+          .filter(c -> "ACC789".equals(c.getResourceCode()))
+          .findFirst().orElseThrow();
+      ServiceResourceEntity nonp123 = couponList.stream()
+          .filter(c -> "NONP123".equals(c.getResourceCode()))
+          .findFirst().orElseThrow();
+      ServiceResourceEntity nonp456 = couponList.stream()
+          .filter(c -> "NONP456".equals(c.getResourceCode()))
+          .findFirst().orElseThrow();
+      
+      assertEquals(ResourceStatus.AVAILABLE, acc123.getStatus());
+      assertEquals(ResourceStatus.RESERVED, acc456.getStatus()); // ASSIGNED -> RESERVED
+      assertEquals(ResourceStatus.SENT, acc789.getStatus());
+      assertEquals(ResourceStatus.REDEEMED, nonp123.getStatus());
+      assertEquals(ResourceStatus.EXPIRED, nonp456.getStatus());
       return true;
     }));
   }
@@ -950,6 +1006,43 @@ class DuolingoCouponImporterTest {
       assertEquals(2, couponList.size());
       assertEquals(ServiceCode.TEST_PROCTORED, couponList.get(0).getServiceCode());
       assertEquals(ServiceCode.TEST_NON_PROCTORED, couponList.get(1).getServiceCode());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file handles large file with many coupons")
+  void importFileHandlesLargeFileWithManyCoupons() throws Exception {
+    // Arrange - Create a CSV with 100 coupons
+    StringBuilder csvContent = new StringBuilder();
+    csvContent.append("Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status\n");
+    
+    for (int i = 1; i <= 100; i++) {
+      String couponCode = String.format("ACC%03d", i);
+      csvContent.append(String.format("%s,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE\n", couponCode));
+      when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, couponCode)).thenReturn(false);
+    }
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.toString().getBytes(StandardCharsets.UTF_8)
+    );
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(100, couponList.size());
+      // Verify all coupons have correct properties
+      for (int i = 0; i < 100; i++) {
+        ServiceResourceEntity coupon = couponList.get(i);
+        String expectedCode = String.format("ACC%03d", i + 1);
+        assertEquals(expectedCode, coupon.getResourceCode());
+        assertEquals(ServiceCode.TEST_PROCTORED, coupon.getServiceCode());
+        assertEquals(ResourceStatus.AVAILABLE, coupon.getStatus());
+        assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), coupon.getExpiresAt());
+      }
       return true;
     }));
   }
