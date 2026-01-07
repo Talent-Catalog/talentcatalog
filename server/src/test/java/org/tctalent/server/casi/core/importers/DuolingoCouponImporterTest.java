@@ -282,18 +282,19 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024-12-31,2024/12/01 10:00:00,AVAILABLE
+        ACC123,,2024-12-31,2024/12/01 10:00:00,AVAILABLE
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act & Assert
     assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
         .isInstanceOf(ImportFailedException.class)
+        .hasRootCauseInstanceOf(RuntimeException.class)
         .hasRootCauseMessage("Invalid date format: 2024-12-31");
   }
 
