@@ -57,6 +57,8 @@ export class CandidateSourceBaseComponent {
   @Input() candidateSource: CandidateSource;
   //Temporary - todo to be removed when we no longer use Elasticsearch or CandidateSpecifications
   @Input() useOldSearch: boolean;
+  //Temporary - todo to be removed when we always use fast search.
+  @Input() useFastSearch: boolean;
 
   selectedFields: CandidateFieldInfo[] = [];
 
