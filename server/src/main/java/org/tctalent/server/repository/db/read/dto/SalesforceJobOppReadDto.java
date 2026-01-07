@@ -25,7 +25,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
- * TODO JC Doc
+ * See also JobOppReadDto.
  *
  * @author John Cameron
  */
@@ -34,7 +34,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="salesforce_job_opp", alias = "sfjob")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class SalesforceJobOppReadDto {
-    @JsonOneToOne(joinColumn = "country_id")
+    @JsonOneToOne(joinColumn = "country_object_id")
     private CountryReadDto country;
     @JsonOneToOne(joinColumn = "employer_id")
     private EmployerEntityReadDto employerEntity;
