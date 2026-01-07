@@ -758,5 +758,111 @@ class DuolingoCouponImporterTest {
     verify(serviceResourceRepository, never()).saveAll(any());
   }
 
+  // Edge Cases Tests
+
+  @Test
+  @DisplayName("import file handles empty file with only header")
+  void importFileHandlesEmptyFileWithOnlyHeader() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, never()).saveAll(any());
+  }
+
+  @Test
+  @DisplayName("import file skips lines with insufficient columns")
+  void importFileSkipsLinesWithInsufficientColumns() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        ACC456,,
+        ACC789,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC789")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(2, couponList.size()); // code1 and code3, code2 skipped
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file handles whitespace in coupon codes")
+  void importFileHandlesWhitespaceInCouponCodes() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123 ,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123 ")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals("ACC123 ", couponList.get(0).getResourceCode()); // Trailing whitespace preserved
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file handles mixed service codes in same file")
+  void importFileHandlesMixedServiceCodes() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        NONP456,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "NONP456")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(2, couponList.size());
+      assertEquals(ServiceCode.TEST_PROCTORED, couponList.get(0).getServiceCode());
+      assertEquals(ServiceCode.TEST_NON_PROCTORED, couponList.get(1).getServiceCode());
+      return true;
+    }));
+  }
+
 
 }
