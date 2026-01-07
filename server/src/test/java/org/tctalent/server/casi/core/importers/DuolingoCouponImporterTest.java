@@ -758,6 +758,33 @@ class DuolingoCouponImporterTest {
     verify(serviceResourceRepository, never()).saveAll(any());
   }
 
+  @Test
+  @DisplayName("import file skips all coupons when all have unrecognized prefixes")
+  void importFileSkipsAllWhenAllHaveUnrecognizedPrefixes() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        UNKNOWN123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        INVALID456,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        BAD789,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "UNKNOWN123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "INVALID456")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "BAD789")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    // All coupons have unrecognized prefixes, so saveAll should not be called
+    verify(serviceResourceRepository, never()).saveAll(any());
+  }
+
   // Edge Cases Tests
 
   @Test
