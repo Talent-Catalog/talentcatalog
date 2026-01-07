@@ -673,5 +673,90 @@ class DuolingoCouponImporterTest {
     }));
   }
 
+  // Duplicate Handling Tests
+
+  @Test
+  @DisplayName("import file skips duplicate coupon codes within file")
+  void importFileSkipsDuplicateCodesInFile() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        NONP456,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "NONP456")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(2, couponList.size()); // ACC123 once, NONP456 once
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file skips coupon codes that already exist in database")
+  void importFileSkipsExistingCodesInDatabase() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        NONP456,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(true); // Exists
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "NONP456")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(1, couponList.size()); // Only code2
+      assertEquals("NONP456", couponList.get(0).getResourceCode());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file skips all coupons when all are duplicates or exist in db")
+  void importFileSkipsAllWhenAllDuplicatesOrExist() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        NONP456,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(true); // Exists
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "NONP456")).thenReturn(true); // Exists
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, never()).saveAll(any());
+  }
+
 
 }
