@@ -68,16 +68,16 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status,Test Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE,
-        code2,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE,
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE,
+        ACC456,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE,
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code2")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC456")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -86,10 +86,10 @@ class DuolingoCouponImporterTest {
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
       assertEquals(2, couponList.size());
-      assertEquals("code1", couponList.get(0).getResourceCode());
+      assertEquals("ACC123", couponList.get(0).getResourceCode());
       assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), couponList.get(0).getExpiresAt());
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(0).getStatus());
-      assertEquals("code2", couponList.get(1).getResourceCode());
+      assertEquals("ACC456", couponList.get(1).getResourceCode());
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(1).getStatus());
       return true;
     }));
@@ -108,7 +108,7 @@ class DuolingoCouponImporterTest {
     // Act & Assert
     assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
         .isInstanceOf(ImportFailedException.class)
-        .hasRootCauseMessage("CSV header is missing");
+        .hasMessageContaining("CSV header is missing");
   }
 
   @Test
@@ -127,7 +127,7 @@ class DuolingoCouponImporterTest {
     // Act & Assert
     assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
         .isInstanceOf(ImportFailedException.class)
-        .hasRootCauseMessage("Missing required column: coupon code");
+        .hasMessageContaining("Missing required column: coupon code");
   }
 
   @Test
@@ -136,7 +136,7 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Date Sent,Coupon Status
-        code1,,2024/12/01 10:00:00,AVAILABLE
+        ACC123,,2024/12/01 10:00:00,AVAILABLE
         """;
 
     MockMultipartFile file = new MockMultipartFile(
@@ -146,7 +146,7 @@ class DuolingoCouponImporterTest {
     // Act & Assert
     assertThatThrownBy(() -> importer.importFile(file, ServiceCode.TEST_NON_PROCTORED))
         .isInstanceOf(ImportFailedException.class)
-        .hasRootCauseMessage("Missing required column: expiration date");
+        .hasMessageContaining("Missing required column: expiration date");
   }
 
   @Test
@@ -155,14 +155,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         COUPON CODE,Assignee Email,EXPIRATION DATE,DATE SENT,COUPON STATUS,Test Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE,
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE,
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -171,7 +171,7 @@ class DuolingoCouponImporterTest {
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
       assertEquals(1, couponList.size());
-      assertEquals("code1", couponList.get(0).getResourceCode());
+      assertEquals("ACC123", couponList.get(0).getResourceCode());
       return true;
     }));
   }
@@ -181,13 +181,13 @@ class DuolingoCouponImporterTest {
   void importFileSucceedsWithBOMInHeader() throws Exception {
     // Arrange
     String csvContent = "\uFEFFCoupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status\n"
-        + "code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE\n";
+        + "ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE\n";
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -204,14 +204,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -230,14 +230,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59,2024/12/01 10:00,AVAILABLE
+        ACC123,,2024/12/31 23:59,2024/12/01 10:00,AVAILABLE
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -338,14 +338,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -364,14 +364,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,ASSIGNED
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,ASSIGNED
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -390,14 +390,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,SENT
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,SENT
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -416,14 +416,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,REDEEMED
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,REDEEMED
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -442,14 +442,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,EXPIRED
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,EXPIRED
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -468,14 +468,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -494,14 +494,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,2024/12/31 23:59:59,2024/12/01 10:00:00,UNKNOWN_STATUS
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,UNKNOWN_STATUS
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -816,7 +816,7 @@ class DuolingoCouponImporterTest {
     // Assert
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
-      assertEquals(1, couponList.size()); // Only code2
+      assertEquals(1, couponList.size()); // Only NONP456
       assertEquals("NONP456", couponList.get(0).getResourceCode());
       return true;
     }));
@@ -949,7 +949,7 @@ class DuolingoCouponImporterTest {
     // Assert
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
-      assertEquals(2, couponList.size()); // code1 and code3, code2 skipped
+      assertEquals(2, couponList.size()); // ACC123 and ACC789, ACC456 skipped
       return true;
     }));
   }
@@ -1076,7 +1076,7 @@ class DuolingoCouponImporterTest {
     // This is tricky to simulate, but we can create malformed CSV
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        "code1",,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        "ACC123",,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
         """;
 
     MockMultipartFile file = new MockMultipartFile(
@@ -1085,7 +1085,7 @@ class DuolingoCouponImporterTest {
 
     // Note: This test may not actually trigger CsvValidationException
     // as opencsv is quite lenient. The test documents the expected behavior.
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act - should not throw for this case, but if it does, it should be ImportFailedException
     // This test verifies the exception handling structure
