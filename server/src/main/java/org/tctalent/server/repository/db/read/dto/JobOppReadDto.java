@@ -23,7 +23,8 @@ import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 /**
- * TODO JC Doc
+ * This is an alternate short version of SalesforceJobOpp used to represent job opportunities
+ * mainly to include the submission list. See also SalesforceJobOppReadDto.
  *
  * @author John Cameron
  */
@@ -32,7 +33,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="salesforce_job_opp", alias = "job")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class JobOppReadDto {
-    @JsonOneToOne(joinColumn = "country_id")
+    @JsonOneToOne(joinColumn = "country_object_id")
     private CountryReadDto country;
     private Long id;
     private String name;
