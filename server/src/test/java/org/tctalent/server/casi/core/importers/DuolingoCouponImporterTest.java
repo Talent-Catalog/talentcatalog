@@ -256,14 +256,14 @@ class DuolingoCouponImporterTest {
     // Arrange
     String csvContent = """
         Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
-        code1,,,2024/12/01 10:00:00,AVAILABLE
+        ACC123,,,2024/12/01 10:00:00,AVAILABLE
         """;
 
     MockMultipartFile file = new MockMultipartFile(
         "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
     );
 
-    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "code1")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
 
     // Act
     importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
@@ -272,6 +272,38 @@ class DuolingoCouponImporterTest {
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
       assertNull(couponList.get(0).getExpiresAt());
+      return true;
+    }));
+  }
+
+  @Test
+  @DisplayName("import file handles multiple date formats in same file")
+  void importFileHandlesMultipleDateFormatsInSameFile() throws Exception {
+    // Arrange
+    String csvContent = """
+        Coupon Code,Assignee Email,Expiration Date,Date Sent,Coupon Status
+        ACC123,,2024/12/31 23:59:59,2024/12/01 10:00:00,AVAILABLE
+        ACC456,,2024/12/31 23:59,2024/12/01 10:00,AVAILABLE
+        """;
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file", "coupons.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8)
+    );
+
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC123")).thenReturn(false);
+    when(serviceResourceRepository.existsByProviderAndResourceCode(PROVIDER, "ACC456")).thenReturn(false);
+
+    // Act
+    importer.importFile(file, ServiceCode.TEST_NON_PROCTORED);
+
+    // Assert
+    verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
+      List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
+      assertEquals(2, couponList.size());
+      // First coupon uses format with seconds
+      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), couponList.get(0).getExpiresAt());
+      // Second coupon without seconds
+      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59), couponList.get(1).getExpiresAt());
       return true;
     }));
   }
