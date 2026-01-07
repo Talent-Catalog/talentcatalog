@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
@@ -71,8 +72,20 @@ public class SavedSearchCandidateAdminApi implements
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
         candidateService.populateCandidatesTransientTaskAssignments(candidates);
 
+        long start = System.currentTimeMillis();
+        long end;
+
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
-        return builder.buildPage(candidates);
+        final Map<String, Object> stringObjectMap = builder.buildPage(candidates);
+
+        end = System.currentTimeMillis();
+        long computeDtoTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: computeDto: " + computeDtoTime
+            ).logInfo();
+
+        return stringObjectMap;
     }
 
     @GetMapping(value = "{id}/is-empty")

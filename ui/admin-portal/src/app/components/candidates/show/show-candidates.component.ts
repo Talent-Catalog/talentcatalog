@@ -372,6 +372,20 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         }
       }
     }
+
+    //Redo existing search if the type of search changes
+    if (changes.useOldSearch || changes.useFastSearch) {
+      if (this.searchRequest) {
+        if (changes.useFastSearch) {
+          this.searchRequest.useFastSearch = changes.useFastSearch.currentValue ;
+        }
+        if (changes.useOldSearch) {
+          this.searchRequest.useOldSearch = changes.useOldSearch.currentValue ;
+        }
+      }
+      this.doSearch(true);
+    }
+
     // If there is a search request associated (saved search view) and the saved search request changes, update the search.
     if (changes.searchRequest) {
       if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
@@ -423,6 +437,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     const request = this.searchRequest;
 
     //todo jc Display a text sort toggle if there is a query string
+
+    console.log("applying search request: Fast = " + request.useFastSearch + ", Old = " + request.useOldSearch);
 
     //Guard against the case where we have a text sort where there is no query string.
     let queryString = request.simpleQueryString;

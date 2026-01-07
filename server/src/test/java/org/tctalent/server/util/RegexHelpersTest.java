@@ -58,5 +58,8 @@ class RegexHelpersTest {
 
         s = RegexHelpers.camelToSnakeCase("candidate.ieltsScore");
         Assertions.assertEquals("candidate.ielts_score", s);
+
+        s = RegexHelpers.camelToSnakeCase("isco08Code");
+        Assertions.assertEquals("isco08_code", s);
     }
 }
