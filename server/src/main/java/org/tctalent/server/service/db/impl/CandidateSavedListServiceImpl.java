@@ -16,10 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -271,7 +271,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     private void publishDoc(@Nullable CandidateAttachment doc)
         throws UnauthorisedActionException {
         if (doc != null && doc.getType() == AttachmentType.googlefile) {
-            GoogleFileSystemFile file = new GoogleFileSystemFile(doc.getUrl());
+            GoogleFileSystemFile file = new GoogleFileSystemFile(doc.getLocation());
             try {
                 fileSystemService.publishFile(file);
             } catch (IOException e) {

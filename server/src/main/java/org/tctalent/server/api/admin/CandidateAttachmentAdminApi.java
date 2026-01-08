@@ -186,7 +186,6 @@ public class CandidateAttachmentAdminApi {
                 .add("fileType")
                 .add("migrated")
                 .add("cv")
-                .add("url")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

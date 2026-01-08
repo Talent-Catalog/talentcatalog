@@ -24,11 +24,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.task.UploadType;
 
 @Getter
@@ -48,11 +45,7 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private String name;
 
     /**
-     * For links {@link AttachmentType#link} and Google Docs
-     * {@link AttachmentType#googlefile}, the associated url.
-     * <p>
-     * For S3 files {@link AttachmentType#file}, it is the unique filename
-     * generated on S3.
+     * The attachment's url.
      */
     private String location;
 
@@ -72,20 +65,6 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     @Enumerated(EnumType.STRING)
     private UploadType uploadType;
 
-    @Transient
-    @Nullable
-    private String url;
-
     public CandidateAttachment() {
     }
-
-    public String getUrl() {
-        if (type == AttachmentType.file) {
-            url = "https://s3.us-east-1.amazonaws.com/files.tbbtalent.org/candidate/" + (migrated ? "migrated" : candidate.getCandidateNumber()) + '/' + location;
-        } else {
-            url = location;
-        }
-        return url;
-    }
-
 }

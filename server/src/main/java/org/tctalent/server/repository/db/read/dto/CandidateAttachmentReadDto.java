@@ -46,9 +46,4 @@ public class CandidateAttachmentReadDto {
     private String name;
     private AttachmentType type;
     private UploadType uploadType;
-
-    public String getUrl() {
-        return location;
-    }
-
 }

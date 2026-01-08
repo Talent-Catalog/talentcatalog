@@ -156,12 +156,12 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
                 try {
                     // Get the list specific shareable CV or Doc if exists,
                     // otherwise get the field name supplied.
-                    if (fieldName.equals("shareableCv.url")
+                    if (fieldName.equals("shareableCv.location")
                         && candidate.getListShareableCv() != null) {
-                        val = candidate.extractField("listShareableCv.url");
-                    } else if (fieldName.equals("shareableDoc.url")
+                        val = candidate.extractField("listShareableCv.location");
+                    } else if (fieldName.equals("shareableDoc.location")
                         && candidate.getListShareableDoc() != null) {
-                        val = candidate.extractField("listShareableDoc.url");
+                        val = candidate.extractField("listShareableDoc.location");
                     } else if (fieldName.equals("autoCvLink")) {
                         val = "https://tctalent.org/public-portal/cv/"
                             + candidateTokenProvider.generateToken(
@@ -169,9 +169,9 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
                     } else if (fieldName.equals("smartCvLink")) {
                         // If a candidate has a shareable CV use that link, otherwise use the autogen CV link.
                         if (candidate.getListShareableCv() != null) {
-                            val = candidate.extractField("listShareableCv.url");
+                            val = candidate.extractField("listShareableCv.location");
                         } else if (candidate.getShareableCv() != null) {
-                            val = candidate.extractField("shareableCv.url");
+                            val = candidate.extractField("shareableCv.location");
                         } else {
                             val = "https://tctalent.org/public-portal/cv/"
                                 + candidateTokenProvider.generateToken(

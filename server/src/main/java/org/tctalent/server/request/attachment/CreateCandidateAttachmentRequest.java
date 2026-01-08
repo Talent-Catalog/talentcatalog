@@ -40,10 +40,7 @@ public class CreateCandidateAttachmentRequest {
     private String fileType;
 
     /**
-     * For links {@link AttachmentType#link} and
-     * Google docs {@link AttachmentType#googlefile}, the associated url.
-     * For S3 files {@link AttachmentType#file}, it is the unique filename
-     * generated on S3.
+     * The attachment's url.
      */
     private String location;
 

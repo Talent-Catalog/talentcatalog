@@ -497,7 +497,6 @@ public class CandidateBuilderSelector {
             .add("cv")
             .add("createdDate")
             .add("uploadType")
-            .add("url")
             ;
 
         if (!DtoType.PREVIEW.equals(type)) {
