@@ -23,9 +23,15 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.casi.domain.model.ResourceStatus;
+import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
+import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.User;
 
 class CandidateServiceRegistryTest {
 
@@ -48,53 +54,53 @@ class CandidateServiceRegistryTest {
       }
 
       @Override
-      public void importInventory(org.springframework.web.multipart.MultipartFile file) {
+      public void importInventory(MultipartFile file) {
       }
 
       @Override
-      public org.tctalent.server.casi.domain.model.ServiceAssignment assignToCandidate(
-          Long candidateId, org.tctalent.server.model.db.User actor) {
+      public ServiceAssignment assignToCandidate(
+          Long candidateId, User actor) {
         return null;
       }
 
       @Override
-      public java.util.List<org.tctalent.server.casi.domain.model.ServiceAssignment> assignToList(
-          Long listId, org.tctalent.server.model.db.User actor) {
+      public List<ServiceAssignment> assignToList(
+          Long listId, User actor) {
         return null;
       }
 
       @Override
-      public org.tctalent.server.casi.domain.model.ServiceAssignment reassignForCandidate(
-          String candidateNumber, org.tctalent.server.model.db.User actor) {
+      public ServiceAssignment reassignForCandidate(
+          String candidateNumber, User actor) {
         return null;
       }
 
       @Override
-      public java.util.List<org.tctalent.server.casi.domain.model.ServiceAssignment>
+      public List<ServiceAssignment>
           getAssignmentsForCandidate(Long candidateId) {
         return null;
       }
 
       @Override
-      public java.util.List<org.tctalent.server.casi.domain.model.ServiceResource>
+      public List<ServiceResource>
           getAvailableResources() {
         return null;
       }
 
       @Override
-      public java.util.List<org.tctalent.server.casi.domain.model.ServiceResource>
+      public List<ServiceResource>
           getResourcesForCandidate(Long candidateId) {
         return null;
       }
 
       @Override
-      public org.tctalent.server.casi.domain.model.ServiceResource getResourceForResourceCode(
+      public ServiceResource getResourceForResourceCode(
           String resourceCode) {
         return null;
       }
 
       @Override
-      public org.tctalent.server.model.db.Candidate getCandidateForResourceCode(
+      public Candidate getCandidateForResourceCode(
           String resourceCode) {
         return null;
       }
@@ -112,7 +118,7 @@ class CandidateServiceRegistryTest {
       @Override
       public void updateResourceStatus(
           String resourceCode,
-          org.tctalent.server.casi.domain.model.ResourceStatus status) {
+          ResourceStatus status) {
       }
     };
   }
