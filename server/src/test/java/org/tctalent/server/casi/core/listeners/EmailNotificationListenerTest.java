@@ -17,6 +17,7 @@
 package org.tctalent.server.casi.core.listeners;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -106,12 +107,12 @@ class EmailNotificationListenerTest {
   }
 
   @Test
-  @DisplayName("onAssigned does not send email for non-Duolingo service")
-  void onAssignedDoesNotSendEmailForNonDuolingo() {
+  @DisplayName("onAssigned sends email for Duolingo service with different service code")
+  void onAssignedSendsEmailForDuolingoWithDifferentServiceCode() {
     // Arrange
     ServiceResource otherResource = ServiceResource.builder()
         .id(2L)
-        .provider(ServiceProvider.DUOLINGO) // Still DUOLINGO but different service
+        .provider(ServiceProvider.DUOLINGO)
         .serviceCode(ServiceCode.TEST_NON_PROCTORED)
         .resourceCode("OTHER123")
         .status(ResourceStatus.AVAILABLE)
@@ -137,10 +138,12 @@ class EmailNotificationListenerTest {
     listener.onAssigned(event);
 
     // Assert
-    // Note: Current implementation only checks provider, not service code
-    // This test verifies current behavior - may need update if logic changes
+    // Current implementation sends emails for all Duolingo services regardless of service code
     verify(emailHelper).sendDuolingoCouponEmail(candidateUser);
   }
+
+  // TODO: Add test for "onAssigned does not send email for non-Duolingo service"
+  // when ServiceProvider enum includes providers other than DUOLINGO
 
   @Test
   @DisplayName("onAssigned handles missing candidate ID gracefully")
@@ -189,7 +192,7 @@ class EmailNotificationListenerTest {
     // Arrange
     when(candidateRepository.findById(CANDIDATE_ID))
         .thenReturn(Optional.of(candidate));
-    org.mockito.Mockito.doThrow(new RuntimeException("Email service unavailable"))
+    doThrow(new RuntimeException("Email service unavailable"))
         .when(emailHelper).sendDuolingoCouponEmail(candidateUser);
 
     ServiceAssignedEvent event = new ServiceAssignedEvent(assignment);
