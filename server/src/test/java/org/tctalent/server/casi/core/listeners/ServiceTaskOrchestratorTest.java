@@ -18,6 +18,7 @@ package org.tctalent.server.casi.core.listeners;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -218,7 +219,7 @@ class ServiceTaskOrchestratorTest {
     orchestrator.onReassigned(event);
 
     // Assert
-    verify(taskAssignmentService, never()).update(any(), any(), any(), any(), any());
+    verify(taskAssignmentService, never()).update(any(), any(), anyBoolean(), any(), any());
   }
 
   @Test
@@ -293,7 +294,7 @@ class ServiceTaskOrchestratorTest {
     orchestrator.onExpired(event);
 
     // Assert
-    verify(taskAssignmentService, never()).update(any(), any(), any(), any(), any());
+    verify(taskAssignmentService, never()).update(any(), any(), anyBoolean(), any(), any());
   }
 }
 
