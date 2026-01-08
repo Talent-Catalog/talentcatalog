@@ -17,6 +17,7 @@
 package org.tctalent.server.casi.core.listeners;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -158,6 +159,21 @@ class ServiceTaskOrchestratorTest {
   }
 
   @Test
+  @DisplayName("onAssigned throws exception when policy not found")
+  void onAssignedThrowsExceptionWhenPolicyNotFound() {
+    // Arrange
+    when(policyRegistry.forProvider(ServiceProvider.DUOLINGO))
+        .thenThrow(new IllegalStateException("No policy for DUOLINGO"));
+
+    ServiceAssignedEvent event = new ServiceAssignedEvent(assignment);
+
+    // Act & Assert
+    assertThatThrownBy(() -> orchestrator.onAssigned(event))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("No policy for DUOLINGO");
+  }
+
+  @Test
   @DisplayName("onRedeemed assigns tasks from policy")
   void onRedeemedAssignsTasks() {
     // Arrange
@@ -174,6 +190,21 @@ class ServiceTaskOrchestratorTest {
     verify(taskService).getByName(TASK_NAME_2);
     verify(taskAssignmentService).assignTaskToCandidate(
         any(User.class), eq(task2), any(Candidate.class), isNull(), isNull());
+  }
+
+  @Test
+  @DisplayName("onRedeemed throws exception when policy not found")
+  void onRedeemedThrowsExceptionWhenPolicyNotFound() {
+    // Arrange
+    when(policyRegistry.forProvider(ServiceProvider.DUOLINGO))
+        .thenThrow(new IllegalStateException("No policy for DUOLINGO"));
+
+    ServiceRedeemedEvent event = new ServiceRedeemedEvent(assignment);
+
+    // Act & Assert
+    assertThatThrownBy(() -> orchestrator.onRedeemed(event))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("No policy for DUOLINGO");
   }
 
   @Test
@@ -220,6 +251,21 @@ class ServiceTaskOrchestratorTest {
 
     // Assert
     verify(taskAssignmentService, never()).update(any(), any(), anyBoolean(), any(), any());
+  }
+
+  @Test
+  @DisplayName("onReassigned throws exception when policy not found")
+  void onReassignedThrowsExceptionWhenPolicyNotFound() {
+    // Arrange
+    when(policyRegistry.forProvider(ServiceProvider.DUOLINGO))
+        .thenThrow(new IllegalStateException("No policy for DUOLINGO"));
+
+    ServiceReassignedEvent event = new ServiceReassignedEvent(assignment);
+
+    // Act & Assert
+    assertThatThrownBy(() -> orchestrator.onReassigned(event))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("No policy for DUOLINGO");
   }
 
   @Test
@@ -295,6 +341,21 @@ class ServiceTaskOrchestratorTest {
 
     // Assert
     verify(taskAssignmentService, never()).update(any(), any(), anyBoolean(), any(), any());
+  }
+
+  @Test
+  @DisplayName("onExpired throws exception when policy not found")
+  void onExpiredThrowsExceptionWhenPolicyNotFound() {
+    // Arrange
+    when(policyRegistry.forProvider(ServiceProvider.DUOLINGO))
+        .thenThrow(new IllegalStateException("No policy for DUOLINGO"));
+
+    ServiceExpiredEvent event = new ServiceExpiredEvent(assignment);
+
+    // Act & Assert
+    assertThatThrownBy(() -> orchestrator.onExpired(event))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("No policy for DUOLINGO");
   }
 }
 
