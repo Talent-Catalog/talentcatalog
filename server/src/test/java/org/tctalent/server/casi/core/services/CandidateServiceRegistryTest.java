@@ -195,8 +195,8 @@ class CandidateServiceRegistryTest {
 
     // Act & Assert
     assertThatThrownBy(() -> registry.forProviderAndServiceCode("DUOLINGO", "TEST_PROCTORED"))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("No service for");
+        .isInstanceOf(NoSuchObjectException.class)
+        .hasMessageContaining("Unknown candidate service for provider: DUOLINGO, serviceCode: TEST_PROCTORED");
   }
 
   @Test
