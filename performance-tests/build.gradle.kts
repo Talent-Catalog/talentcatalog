@@ -14,22 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-val scalaVersion: String = "3.4.1"
-val typesafeConfigVersion: String = "1.4.3"
-val postgresVersion: String = "42.6.0"
-val gatlingVersion: String = "0.10.3"
-val highchartsVersion: String = "3.9.5"
+val scalaVersion = "2.13.12"
+val typesafeConfigVersion = "1.4.3"
+val postgresVersion = "42.6.0"
+
+// JDBC plugin version variable; it's NOT the Gatling version.
+val gatlingJdbcPluginVersion = "0.10.3"
+
+// Gatling versions should match plugin / core dependencies.
+val gatlingVersion = "3.10.5"
+val highchartsVersion = "3.9.5"
+
 val javaTargetVersion = JavaVersion.VERSION_17
-val scalaCompileOpts: String = "-release:17"
-val testName: String = "gatlingTest"
+val scalaCompileOpts = listOf("-release:17")
 
 plugins {
     id("io.gatling.gradle") version "3.10.5.1"
     scala
-}
-
-scala {
-    version = scalaVersion
+    java
 }
 
 group = "org.talentcatalog"
@@ -39,33 +41,76 @@ repositories {
     mavenCentral()
 }
 
+java {
+    // Compile our Java source code as Java 17 source.
+    sourceCompatibility = javaTargetVersion
+    targetCompatibility = javaTargetVersion
+}
+
+scala {
+    // It speeds up Scala compilation by recompiling only what changed
+    zincVersion = "1.9.6"
+}
+
 dependencies {
-    implementation("org.scala-lang:scala3-library_3:3.4.1")
-    testImplementation("io.gatling.highcharts:gatling-charts-highcharts:$highchartsVersion")
-    testImplementation("ru.tinkoff:gatling-jdbc-plugin_2.13:$gatlingVersion")
-    testImplementation("org.postgresql:postgresql:$postgresVersion")
-    testImplementation("com.typesafe:config:$typesafeConfigVersion")
+    // Scala runtime for existing Scala simulations
+    implementation("org.scala-lang:scala-library:$scalaVersion")
+
+    // Gatling core + charts (Scala)
+    gatlingImplementation("io.gatling:gatling-core:$gatlingVersion")
+    gatlingImplementation("io.gatling.highcharts:gatling-charts-highcharts:$highchartsVersion")
+
+    // Java DSL modules (correct ones)
+    gatlingImplementation("io.gatling:gatling-core-java:$gatlingVersion")
+
+    // If you plan to write Java HTTP simulations (recommended to include)
+    gatlingImplementation("io.gatling:gatling-http-java:$gatlingVersion")
+
+    // JDBC plugin (Scala 2.13 binary)
+    gatlingImplementation("ru.tinkoff:gatling-jdbc-plugin_2.13:$gatlingJdbcPluginVersion")
+
+    // DB + config dependencies used by existing simulations
+    gatlingImplementation("org.postgresql:postgresql:$postgresVersion")
+    gatlingImplementation("com.typesafe:config:$typesafeConfigVersion")
+}
+
+
+gatling {
+    // Ensures Gatling uses src/gatling/** conventions
+    includeMainOutput = false
+    includeTestOutput = false
 }
 
 tasks {
-    create<JavaExec>("gatlingTest") {
-        description = "Run Gatling tests"
-        classpath = sourceSets["test"].runtimeClasspath
-        mainClass = "io.gatling.app.Gatling"
-        args = listOf(
-            "-s", "org.talentcatalog.PostgresLoadTest", "-rf", "build/reports/gatling"
-        )
-    }
 
+    // Standard: compile Scala with JDK 17 compatibility
     withType<ScalaCompile> {
-        scalaCompileOptions.additionalParameters = listOf(scalaCompileOpts)
+        scalaCompileOptions.additionalParameters = scalaCompileOpts
         scalaCompileOptions.forkOptions.apply {
             memoryMaximumSize = "1g"
             jvmArgs = listOf("-XX:MaxMetaspaceSize=512m")
         }
     }
 
-    withType<Test> {
-        dependsOn(testName)
+    /**
+     * Custom task: run Gatling simulation by class name
+     * Usage:
+     *   ./gradlew :performance-tests:gatlingTest -PsimClass=org.talentcatalog.PostgresLoadTest
+     *   ./gradlew :performance-tests:gatlingTest -PsimClass=org.talentcatalog.JavaSimulationExample
+     */
+    register<JavaExec>("gatlingTest") {
+        description = "Run Gatling performance tests (Scala or Java)"
+        group = "verification"
+
+        val simClass = (project.findProperty("simClass") as String?)
+            ?: "org.talentcatalog.PostgresLoadTest"
+
+        classpath = sourceSets["gatling"].runtimeClasspath
+        mainClass.set("io.gatling.app.Gatling")
+
+        args = listOf(
+            "-s", simClass,
+            "-rf", "build/reports/gatling"
+        )
     }
 }
