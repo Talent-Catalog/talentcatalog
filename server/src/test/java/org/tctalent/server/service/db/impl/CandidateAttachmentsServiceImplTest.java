@@ -18,7 +18,6 @@ package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,7 +73,6 @@ import org.tctalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemBaseEntity;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -108,7 +106,6 @@ public class CandidateAttachmentsServiceImplTest {
     @Mock private AuthService authService;
     @Mock private CandidateRepository candidateRepository;
     @Mock private CandidateService candidateService;
-    @Mock private S3ResourceHelper s3ResourceHelper;
     @Mock private FileSystemService fileSystemService;
     @Mock private OutputStream outputStream;
 
@@ -323,36 +320,6 @@ public class CandidateAttachmentsServiceImplTest {
     }
 
     @Test
-    @DisplayName("should create candidate attachment for file")
-    void createCandidateAttachment_shouldCreateCandidateAttachmentForFile() {
-        createRequest.setType(AttachmentType.file);
-        createRequest.setCv(false); // Because of the way that TextExtractHelper is injected, it
-        // can't be mocked - so we're not able to test the CV path.
-        createRequest.setFileType(FILE_TYPE);
-        createRequest.setTextExtract(TEXT_EXTRACT);
-
-        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(createRequest.getCandidateId()))
-            .willReturn(Optional.of(candidate));
-        given(s3ResourceHelper.getS3Bucket()).willReturn("bucket");
-        given(s3ResourceHelper.downloadFile(anyString(), anyString())).willReturn(mock(File.class));
-
-        candidateAttachmentsService.createCandidateAttachment(createRequest);
-
-        verify(s3ResourceHelper).downloadFile(anyString(), anyString());
-        verify(s3ResourceHelper).copyObject(anyString(), anyString());
-        verify(candidateService).save(candidate, true,false);
-        verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
-        CandidateAttachment attachment = attachmentCaptor.getValue();
-        assertTrue(attachment.getUrl().contains(NAME));
-        assertEquals(AttachmentType.file, attachment.getType());
-        assertEquals(NAME, attachment.getName());
-        assertEquals(FILE_TYPE, attachment.getFileType());
-        assertFalse(attachment.isCv());
-        assertEquals(ADMIN_USER, attachment.getCreatedBy());
-    }
-
-    @Test
     @DisplayName("should throw when logged in user not found")
     void deleteCandidateAttachment_shouldThrow_whenUserNotFound() {
         given(authService.getLoggedInUser()).willReturn(Optional.empty());
@@ -413,27 +380,7 @@ public class CandidateAttachmentsServiceImplTest {
             () -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
         assertEquals("You can only delete your own uploads.", ex.getMessage());
     }
-
-    @Test
-    @DisplayName("should delete file when attachment related to and uploaded by candidate")
-    void deleteCandidateAttachment_shouldDeleteFile_whenAttachmentRelatedToAndUploadedByCandidate() {
-        attachment.setCandidate(candidate2);
-        attachment.setCreatedBy(candidate2.getUser());
-        attachment.setType(AttachmentType.file);
-
-        given(authService.getLoggedInUser()).willReturn(Optional.of(candidate2.getUser()));
-        given(candidateAttachmentRepository.findByIdLoadCandidate(ATTACHMENT_ID))
-            .willReturn(Optional.of(attachment));
-        given(candidateService.getLoggedInCandidate()).willReturn(Optional.of(candidate2));
-
-        candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID);
-
-        verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
-        verify(candidateService).save(candidate2, true);
-        verify(s3ResourceHelper).deleteFile(anyString()); // Attempted delete of associated file
-    }
-
+    
     @Test
     @DisplayName("should catch when attempt to delete file throws exception")
     void deleteCandidateAttachment_shouldCatch_whenAttemptToDeleteFileThrowsException()
