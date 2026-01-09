@@ -369,8 +369,9 @@ public interface SavedListService {
      * list will be returned through {@link Candidate#getContextNote()}
      * @param savedListId ID of saved list
      * @param candidates Candidate objects to be marked with the list context. Note that this
-     *                   is a transient property only found on the given objects (ie it is not
-     *                   stored in the database).
+     *                   is a transient property on the candidate objects because it depends on
+     *                   the list context. It does not come from the Candidate table, it comes
+     *                   from the CandidateSavedList table, depending on the particular list. 
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 
