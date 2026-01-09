@@ -161,8 +161,13 @@ public class TaskServiceImpl implements TaskService {
                 qt.setAllowedAnswers(allowedAnswers);
             }
         } else if (field == null && qt.getExplicitAllowedAnswers() != null){
-            // There is no answer field associated with question (it should be stored as a property) but there are explicit allowed answers provided.
-            // We need to then set the allowed answers for to these explicit answers, so that they can be displayed in the front end.
+            //TODO JC This needs a review - can some logic go into the getAnswer method of QuestionTaskImpl?
+            
+            //TODO JC I don't really understand what this is doing - create an issue for fixing this?
+            // There is no answer field associated with question (it should be stored as a property)
+            // but there are explicit allowed answers provided.
+            // We need to then set the allowed answers for to these explicit answers, 
+            // so that they can be displayed in the front end.
             List<AllowedQuestionTaskAnswer> allowedAnswers = new ArrayList<>();
             for (String answer : qt.getExplicitAllowedAnswers()) {
                 allowedAnswers.add(new AllowedQuestionTaskAnswer(
