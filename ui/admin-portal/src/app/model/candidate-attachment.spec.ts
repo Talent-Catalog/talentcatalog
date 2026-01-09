@@ -94,7 +94,6 @@ describe('CandidateAttachment', () => {
       id: 1,
       type: AttachmentType.file,
       name: 'Test File',
-      location: 'uploads/test-file.pdf',
       url: 'http://example.com/uploads/test-file.pdf',
       createdBy,
       createdDate: Date.now(),
@@ -109,7 +108,6 @@ describe('CandidateAttachment', () => {
     expect(attachment.id).toBe(1);
     expect(attachment.type).toBe(AttachmentType.file);
     expect(attachment.name).toBe('Test File');
-    expect(attachment.location).toBe('uploads/test-file.pdf');
     expect(attachment.url).toBe('http://example.com/uploads/test-file.pdf');
     expect(attachment.createdBy).toBe(createdBy);
     expect(attachment.createdDate).toBeTruthy();

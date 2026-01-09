@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
@@ -156,11 +154,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         if (request.getType().equals(AttachmentType.link)) {
 
             attachment.setType(AttachmentType.link);
-            attachment.setLocation(request.getLocation());
+            attachment.setUrl(request.getUrl());
             attachment.setName(request.getName());
 
         } else if (request.getType().equals(AttachmentType.googlefile)) {
-            attachment.setLocation(request.getLocation());
+            attachment.setUrl(request.getUrl());
             attachment.setName(request.getName());
             attachment.setType(AttachmentType.googlefile);
             attachment.setFileType(request.getFileType());
@@ -168,48 +166,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             attachment.setTextExtract(request.getTextExtract());
 
         } else if (request.getType().equals(AttachmentType.file)) {
-            // Prepend the filename with a UUID to ensure an existing file doesn't get overwritten on S3
-            String uniqueFilename = UUID.randomUUID() + "_" + request.getName();
-            // Source is temporary folder where the file got uploaded, destination is the candidates unique folder
-            String source = "temp/" + request.getFolder() + "/" + request.getName();
-            String destination = "candidate/" + candidate.getCandidateNumber() + "/" + uniqueFilename;
-            // Download the file from the S3 temporary file before it is copying over
-            File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), source);
-            // Copy the file from temp folder in s3 into the candidate's folder on S3
-            this.s3ResourceHelper.copyObject(source, destination);
-
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("CreateCandidateAttachment")
-                .message("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]")
-                .logInfo();
-
-            // The location is set to the filename because we can derive it's location from the candidate number
-            attachment.setLocation(uniqueFilename);
-            attachment.setName(request.getName());
-            attachment.setType(AttachmentType.file);
-            attachment.setFileType(request.getFileType());
-
-            // Extract text from the file
-            if(request.getCv()) {
-                try {
-                    textExtract = TextExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
-                    if(StringUtils.hasText(textExtract)) {
-                        attachment.setTextExtract(textExtract);
-                        candidateAttachmentRepository.save(attachment);
-                    }
-                } catch (Exception e) {
-                    LogBuilder.builder(log)
-                        .user(authService.getLoggedInUser())
-                        .action("CreateCandidateAttachment")
-                        .message("Could not extract text from uploaded cv file")
-                        .logError(e);
-
-                    attachment.setTextExtract(null);
-                }
-                attachment.setCv(request.getCv());
-            }
-
+            throw new InvalidRequestException("Creation of S3 file is no longer supported. Please upload to Google Drive instead.");
         }
 
 
@@ -275,13 +232,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         if (attachmentType != null) {
             switch (attachmentType) {
                 case file:
-                    String folder = BooleanUtils.isTrue(
-                            candidateAttachment.isMigrated()) ? "migrated"
-                            : candidate.getCandidateNumber();
-                    s3ResourceHelper.deleteFile("candidate/" + folder + "/" + candidateAttachment.getLocation());
-                    break;
+                    throw new InvalidRequestException("Deletion of old S3 files is no longer supported.");
                 case googlefile:
-                    GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getLocation());
+                    GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getUrl());
                     if (!authService.hasAdminPrivileges(user.getRole())) {
                         fsf.setName("RemovedByCandidate_" + candidateAttachment.getName());
                         try {
@@ -330,7 +283,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             if (!creator && !mine) {
                 throw new InvalidRequestException("You don't have permission to download this attachment.");
             } else {
-                GoogleFileSystemFile file = new GoogleFileSystemFile(attachment.getLocation());
+                GoogleFileSystemFile file = new GoogleFileSystemFile(attachment.getUrl());
                 fileSystemService.downloadFile(file, out);
             }
         } else if (user.getRole().equals(Role.limited) || user.getRole().equals(Role.semilimited)) {
@@ -344,7 +297,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             //To get around that, we actually download a copy of the Google
             //file and return that copy to the user's browser.
             if (attachment.getType() == AttachmentType.googlefile) {
-                GoogleFileSystemFile file = new GoogleFileSystemFile(attachment.getLocation());
+                GoogleFileSystemFile file = new GoogleFileSystemFile(attachment.getUrl());
                 fileSystemService.downloadFile(file, out);
             }
         }
@@ -374,7 +327,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 candidateAttachment.setName(request.getName());
                 if (attachmentType == AttachmentType.googlefile) {
                     //For Google files we also rename the uploaded file
-                    GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getLocation());
+                    GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getUrl());
                     fsf.setName(request.getName());
                     fileSystemService.renameFile(fsf);
                 }
@@ -385,46 +338,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             //Only AWS/S3 files support this CV to not CV and vice versa
             //for CV to non CV and vice versa only applies to AWS/S3 files
             if (attachmentType == AttachmentType.file) {
-                // Run text extraction if attachment changed from not CV to a CV
-                // or remove if changed from CV to not CV.
-                if (!request.getCv() && candidateAttachment.isCv()) {
-                    //Was tagged as a CV and now it isn't. Set extracted text to null.
-                    candidateAttachment.setTextExtract(null);
-                    extractedCvTextChanged = true;
-                } else if (request.getCv() && !candidateAttachment.isCv()) {
-                    try {
-                        String uniqueFilename = candidateAttachment.getLocation();
-                        String destination;
-                        if (candidateAttachment.isMigrated()) {
-                            destination = "candidate/migrated/" + uniqueFilename;
-                        } else {
-                            destination =
-                                "candidate/" + candidateAttachment.getCandidate().getCandidateNumber()
-                                    + "/" + uniqueFilename;
-                        }
-                        File srcFile = this.s3ResourceHelper.downloadFile(
-                            this.s3ResourceHelper.getS3Bucket(), destination);
-                        String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile,
-                            candidateAttachment.getFileType());
-                        if (StringUtils.hasText(extractedText)) {
-                            candidateAttachment.setTextExtract(extractedText);
-                            candidateAttachmentRepository.save(candidateAttachment);
-                        }
-                    } catch (Exception e) {
-                        LogBuilder.builder(log)
-                            .user(authService.getLoggedInUser())
-                            .action("UpdateCandidateAttachment")
-                            .message("Unable to extract text from file " + candidateAttachment.getLocation())
-                            .logError(e);
-
-                        candidateAttachment.setTextExtract(null);
-                    }
-                    extractedCvTextChanged = true;
-                }
+                throw new InvalidRequestException("Updating old S3 files is no longer supported.");
             }
             // UPDATE THE URL LOCATION (IF LINK)
             if (candidateAttachment.getType().equals(AttachmentType.link)) {
-                candidateAttachment.setLocation(request.getLocation());
+                candidateAttachment.setUrl(request.getUrl());
             }
             candidateAttachment.setAuditFields(user);
             candidateAttachment = candidateAttachmentRepository.save(candidateAttachment);
@@ -515,7 +433,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setType(AttachmentType.googlefile);
         req.setName(uploadedFileName);
         req.setFileType(fileType);
-        req.setLocation(uploadedFile.getUrl());
+        req.setUrl(uploadedFile.getUrl());
         req.setUploadType(uploadType);
         req.setCv(uploadType == UploadType.cv);
         if(StringUtils.hasText(textExtract)) {

@@ -121,12 +121,12 @@ public class CandidateAttachmentsServiceImplTest {
     void setUp() {
         attachment = new CandidateAttachment();
         attachment.setName("an old name");
-        attachment.setLocation("www.apreviouslocation.com");
+        attachment.setUrl("www.apreviouslocation.com");
         attachmentPage = new PageImpl<>(List.of(attachment, attachment));
         attachmentList = List.of(attachment, attachment);
         createRequest = new CreateCandidateAttachmentRequest();
         createRequest.setCandidateId(candidateId);
-        createRequest.setLocation(LOCATION);
+        createRequest.setUrl(LOCATION);
         createRequest.setName(NAME);
         candidate = getCandidate();
         candidateId = candidate.getId();
@@ -291,7 +291,7 @@ public class CandidateAttachmentsServiceImplTest {
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
-        assertEquals(LOCATION, attachment.getLocation());
+        assertEquals(LOCATION, attachment.getUrl());
         assertEquals(AttachmentType.link, attachment.getType());
         assertEquals(ADMIN_USER, attachment.getCreatedBy());
     }
@@ -314,7 +314,7 @@ public class CandidateAttachmentsServiceImplTest {
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
-        assertEquals(LOCATION, attachment.getLocation());
+        assertEquals(LOCATION, attachment.getUrl());
         assertEquals(AttachmentType.googlefile, attachment.getType());
         assertTrue(attachment.isCv());
         assertEquals(TEXT_EXTRACT, attachment.getTextExtract());
@@ -344,7 +344,7 @@ public class CandidateAttachmentsServiceImplTest {
         verify(candidateService).save(candidate, true,false);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
-        assertTrue(attachment.getLocation().contains(NAME));
+        assertTrue(attachment.getUrl().contains(NAME));
         assertEquals(AttachmentType.file, attachment.getType());
         assertEquals(NAME, attachment.getName());
         assertEquals(FILE_TYPE, attachment.getFileType());
@@ -692,7 +692,7 @@ public class CandidateAttachmentsServiceImplTest {
         final String newName = "new name";
         updateRequest.setName(newName);
         final String newLocation = "new location";
-        updateRequest.setLocation(newLocation);
+        updateRequest.setUrl(newLocation);
         attachment.setCandidate(candidate);
         attachment.setType(AttachmentType.link);
 
@@ -705,7 +705,7 @@ public class CandidateAttachmentsServiceImplTest {
         candidateAttachmentsService.updateCandidateAttachment(ATTACHMENT_ID, updateRequest);
 
         assertEquals(newName, attachment.getName());
-        assertEquals(newLocation, attachment.getLocation());
+        assertEquals(newLocation, attachment.getUrl());
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true, false);
         assertEquals(ADMIN_USER, attachment.getUpdatedBy());

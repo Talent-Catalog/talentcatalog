@@ -42,7 +42,7 @@ public class CreateCandidateAttachmentRequest {
     /**
      * The attachment's url.
      */
-    private String location;
+    private String url;
 
     private Boolean cv;
 

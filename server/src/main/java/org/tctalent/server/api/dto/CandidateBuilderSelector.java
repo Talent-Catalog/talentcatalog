@@ -491,7 +491,7 @@ public class CandidateBuilderSelector {
             .add("id")
             .add("type")
             .add("name")
-            .add("location")
+            .add("url")
             .add("fileType")
             .add("migrated")
             .add("cv")

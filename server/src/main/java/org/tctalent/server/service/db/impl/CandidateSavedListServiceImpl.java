@@ -271,7 +271,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     private void publishDoc(@Nullable CandidateAttachment doc)
         throws UnauthorisedActionException {
         if (doc != null && doc.getType() == AttachmentType.googlefile) {
-            GoogleFileSystemFile file = new GoogleFileSystemFile(doc.getLocation());
+            GoogleFileSystemFile file = new GoogleFileSystemFile(doc.getUrl());
             try {
                 fileSystemService.publishFile(file);
             } catch (IOException e) {

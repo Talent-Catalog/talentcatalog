@@ -41,7 +41,7 @@ public class CandidateAttachmentReadDto {
     private boolean cv;
     private String fileType;
     private Long id;
-    private String location;
+    private String url;
     private boolean migrated;
     private String name;
     private AttachmentType type;

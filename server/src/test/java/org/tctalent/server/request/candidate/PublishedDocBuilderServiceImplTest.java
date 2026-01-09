@@ -53,7 +53,7 @@ class PublishedDocBuilderServiceImplTest {
     candidate.setId(1234L);
     candidate.setCandidateNumber("1234");
     CandidateAttachment attachment = new CandidateAttachment();
-    attachment.setLocation("https://candidateCVLink");
+    attachment.setUrl("https://candidateCVLink");
     candidate.setShareableCv(attachment);
     User user = new User();
     candidate.setUser(user);

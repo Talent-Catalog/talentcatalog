@@ -16,6 +16,7 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -47,7 +48,8 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     /**
      * The attachment's url.
      */
-    private String location;
+    @Column(name = "location") //Originally this field was called location
+    private String url;
 
     /**
      * This is recorded just as the suffix of the attachment filename
