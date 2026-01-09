@@ -53,7 +53,6 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateAttachmentService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -68,19 +67,17 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final FileSystemService fileSystemService;
     private final AuthService authService;
-    private final S3ResourceHelper s3ResourceHelper;
 
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
                                            CandidateService candidateService,
                                            CandidateAttachmentRepository candidateAttachmentRepository,
-                                           FileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
+                                           FileSystemService fileSystemService,
                                            AuthService authService) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.fileSystemService = fileSystemService;
-        this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
     }
 
@@ -134,7 +131,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate;
-        String textExtract;
 
         if (request.getCandidateId() != null) {
             candidate = candidateRepository.findById(request.getCandidateId())
@@ -232,7 +228,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         if (attachmentType != null) {
             switch (attachmentType) {
                 case file:
-                    throw new InvalidRequestException("Deletion of old S3 files is no longer supported.");
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("DeleteCandidateAttachment")
+                        .message("Delete attachment record on db but can no longer delete on S3: " + candidateAttachment.getName())
+                        .logInfo();
+                    break;
                 case googlefile:
                     GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getUrl());
                     if (!authService.hasAdminPrivileges(user.getRole())) {
