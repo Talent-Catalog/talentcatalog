@@ -166,6 +166,9 @@ export class CandidateSourceBaseComponent {
     const request = this.createSearchRequest(keyword, showClosedOpps);
     request.dtoType = dtoType;
 
+    //todo jc This is where we could flag fast retrieval for both lists and searches
+    request.useCachedDtos = this.useFastSearch;
+
     // Return the observable so the caller can subscribe to it
     return this.candidateSourceCandidateService.searchPaged(this.candidateSource, request).pipe(
       tap(results => {

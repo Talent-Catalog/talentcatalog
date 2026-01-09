@@ -49,6 +49,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
@@ -154,6 +155,8 @@ public interface CandidateService {
     Set<Long> searchCandidatesUsingSql(String sql) throws PersistenceException;
 
     Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request);
+    
+    Page<CandidateReadDto> getSavedListCandidateDtos(SavedList savedList, SavedListGetRequest request);
 
     List<Candidate> getSavedListCandidatesUnpaged(SavedList savedList, SavedListGetRequest request);
 

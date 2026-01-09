@@ -75,6 +75,7 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
@@ -129,6 +130,7 @@ import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
 import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -392,6 +394,15 @@ public class CandidateServiceImpl implements CandidateService {
             .logInfo();
 
         return candidatesPage;
+    }
+
+    @Override
+    public Page<CandidateReadDto> getSavedListCandidateDtos(
+        SavedList savedList, SavedListGetRequest request) {
+        //TODO JC Fetch the ids using sql query to get ids from list filtering by request 
+        //TODO JC Fetch the dtos
+        //TODO JC getSavedListCandidateDtos not implemented in CandidateServiceImpl
+        throw new NotImplementedException("CandidateServiceImpl", "getSavedListCandidateDtos");
     }
 
     @Override

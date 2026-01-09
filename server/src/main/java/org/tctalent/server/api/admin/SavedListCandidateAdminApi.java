@@ -47,6 +47,7 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
@@ -173,6 +174,25 @@ public class SavedListCandidateAdminApi implements
 
         savedListService.setCandidateContext(savedListId, candidates);
 
+        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
+        candidateService.populateCandidatesTransientTaskAssignments(candidates);
+
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
+        return builder.buildPage(candidates);
+    }
+
+    @PostMapping("{id}/search-paged-fast")
+    public @NotNull Map<String, Object> searchPagedFast(
+            long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
+        SavedList savedList = savedListService.get(savedListId);
+
+        Page<CandidateReadDto> candidates = candidateService
+            .getSavedListCandidateDtos(savedList, request);
+
+        savedListService.setCandidateDtoContext(savedListId, candidates);
+
+        //TODO JC Not sure I like this - but it could be done by passing in task assignment dtos, not candidates.
+        //Also I think we may replace QuestionTasks with FormTasks 
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
         candidateService.populateCandidatesTransientTaskAssignments(candidates);
 
