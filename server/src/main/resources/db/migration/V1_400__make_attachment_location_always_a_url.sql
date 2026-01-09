@@ -7,4 +7,4 @@ set location = concat('https://s3.us-east-1.amazonaws.com/files.tbbtalent.org/ca
       '/',
       location
    )
-where location not like 'https:%';
+where type = 'file' and location not like 'https:%';
