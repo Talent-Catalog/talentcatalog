@@ -27,7 +27,7 @@
   border: 2px solid transparent;
   box-shadow: none;
 
-  * {
+  > *:not(.upload-btn) {
     width: 200px;
     margin-left: auto;
     margin-right: auto;
@@ -58,4 +58,8 @@
   margin: 1em 0 ;
 }
 
-
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

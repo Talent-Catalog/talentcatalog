@@ -25,17 +25,18 @@
   <span class="or text-muted">{{ 'FORM.ATTACHMENT.LABEL.OR' | translate }}</span>
 
   <span>
-    <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
+    <button class="btn btn-primary upload-btn gap-2" [disabled]="uploading" (click)="input.click()">
       <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.FILE' | translate }}</ng-container>
-      <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}
-        <fa-icon [spin]="true" icon="spinner"></fa-icon>
+      <ng-container *ngIf="uploading">
+        {{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}
+        <i class="fas fa-spinner fa-spin"></i>
       </ng-container>
     </button>
   </span>
 </div>
 
 <div class="d-lg-none">
-  <div  *ngIf="!uploading" class="d-flex justify-content-between">
+  <div *ngIf="!uploading" class="d-flex justify-content-between">
     <div class="file-input">
       <input #inputFile type="file" id="file" class="file" (change)="handleFileChanged($event, 'file')">
       <span>
