@@ -28,8 +28,10 @@
 
     <div class="text-end" *ngIf="!preview && attachment.createdBy.id == user?.id">
       <button class="btn btn-secondary btn-card"
-              (click)="editCandidateAttachment(attachment)">
-        <fa-icon class="d-flex" icon="edit" size="xs"></fa-icon></button>
+              (click)="editCandidateAttachment(attachment)"
+      >
+        <i class="d-flex fas fa-edit fa-xs"></i>
+      </button>
 
       <button class="btn btn-danger btn-card"
               [disabled]="deleting"
@@ -70,12 +72,17 @@
         <div *ngIf="editTarget?.id == attachment.id" class="mb-3">
           <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</h6>
           <div class="d-flex">
-            <input type="text" class="form-control" placeholder="" id="attachmentName" [(ngModel)]="attachment.name">
+            <input type="text"
+                   class="form-control"
+                   placeholder="" id="attachmentName"
+                   [(ngModel)]="attachment.name"
+            >
             <div>
-              <button class="btn btn-sm"
-                      (click)="updateAttachmentName(attachment, i)">
+              <button class="ms-2 btn btn-primary"
+                      (click)="updateAttachmentName(attachment, i)"
+              >
                 <span *ngIf="!saving">{{ 'FORM.LABEL.SAVE' | translate }}</span>
-                <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+                <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
               </button>
 
             </div>
