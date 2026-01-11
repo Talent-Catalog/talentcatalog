@@ -20,7 +20,10 @@
           (click)="deleteCertificate()">&times;</button>
   <button class="btn btn-primary btn-card pb-1"
           [disabled]="disabled"
-          (click)="editCertificate()"><fa-icon icon="edit" size="xs"></fa-icon></button>
+          (click)="editCertificate()"
+  >
+    <i class="fas fa-edit fa-xs"></i>
+  </button>
 </div>
 
 <p>{{certificate.dateCompleted | date}}</p>
