@@ -30,8 +30,8 @@
       <ng-container ngbNavItem="Profile">
 
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.PROFILE' | translate }}</span>
-          <fa-icon icon="user"></fa-icon>
+          <span class="d-none d-md-inline">{{ 'PROFILE.TAB.PROFILE' | translate }}</span>
+          <i class="fas fa-user mx-2"></i>
         </a>
         <ng-template ngbNavContent>
           <app-candidate-profile
@@ -43,8 +43,8 @@
       <!-- TASKS -->
       <ng-container ngbNavItem="Tasks">
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.TASKS' | translate }}</span>
-          <fa-icon icon="list-check"></fa-icon>
+          <span class="d-none d-md-inline">{{ 'PROFILE.TAB.TASKS' | translate }}</span>
+          <i class="fas fa-list-check mx-2"></i>
         </a>
         <ng-template ngbNavContent>
           <app-candidate-tasks
@@ -57,8 +57,8 @@
       <!-- JOBS (Candidate Opportunities) -->
       <ng-container *ngIf="canSeeJobTab" ngbNavItem="Opps">
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
-          <fa-icon icon="briefcase" class="me-2"></fa-icon>
+          <span class="d-none d-md-inline">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
+          <i class="fas fa-briefcase mx-2"></i>
           <app-chat-read-status
             [chats]="chatsForAllJobs"
           ></app-chat-read-status>
@@ -74,8 +74,8 @@
       <!-- CHAT with source partner -->
       <ng-container *ngIf="canSeeChatTab" ngbNavItem="Chat">
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'CHAT.HEADER' | translate }}</span>
-          <fa-icon icon="message" class="me-2"></fa-icon>
+          <span class="d-none d-md-inline">{{ 'CHAT.HEADER' | translate }}</span>
+          <i class="fas fa-message mx-2"></i>
           <app-chat-read-status
             [chats]="[sourceChat]"
           >
@@ -100,8 +100,8 @@
       <!-- SERVICES -->
       <ng-container ngbNavItem="Services" *ngIf="activeDuolingoTask">
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
-          <fa-icon icon="handshake"></fa-icon>
+          <span class="d-none d-md-inline">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
+          <i class="fas fa-handshake mx-2"></i>
         </a>
         <ng-template ngbNavContent>
           <app-services
