@@ -290,7 +290,12 @@ public interface SavedListService {
     @Nullable
     SavedList get(@NonNull User user, String listName);
 
-    //TODO JC Doc
+    /**
+     * Fetches candidate dtos from the given list according the given request.
+     * @param savedList Saved List whose candidates are to be fetched
+     * @param request Defines which candidates to fetch (if not all)
+     * @return Candidate dtos.
+     */
     Page<CandidateReadDto> getSavedListCandidateDtos(
         @NonNull SavedList savedList, SavedListGetRequest request);
 
@@ -381,7 +386,9 @@ public interface SavedListService {
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 
-    //TODO JC Doc
+    /**
+     * Candidate dto version of {@link #setCandidateContext(long, Iterable)}.
+     */
     void setCandidateDtoContext(long savedListId, Iterable<CandidateReadDto> candidates);
 
     void setPublicIds(List<SavedList> savedLists);

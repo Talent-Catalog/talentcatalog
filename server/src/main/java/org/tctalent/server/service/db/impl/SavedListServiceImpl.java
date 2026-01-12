@@ -814,8 +814,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public void setCandidateDtoContext(long savedListId, Iterable<CandidateReadDto> candidates) {
         for (CandidateReadDto candidate : candidates) {
-            //TODO JC dto needs to support this transient field
-//            candidate.setContextSavedListId(savedListId);
+            candidate.setContextSavedListId(savedListId);
         }
     }
 

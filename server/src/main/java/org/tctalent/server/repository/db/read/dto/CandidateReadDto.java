@@ -40,7 +40,7 @@ public class CandidateReadDto {
 
     private OffsetDateTime acceptedPrivacyPolicyDate;
     private String acceptedPrivacyPolicyId;
-    
+
     @JsonOneToOne(joinColumn = "accepted_privacy_policy_partner_id")
     private PartnerReadDto acceptedPrivacyPolicyPartner;
     private String additionalInfo;
@@ -78,15 +78,17 @@ public class CandidateReadDto {
     private List<CandidateReviewStatusItemReadDto> candidateReviewStatusItems;
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateSkillReadDto> candidateSkills;
-    
+
     @SqlIgnore //TODO JC Doesnt seem to handle these
 //    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateVisaCheckReadDto> candidateVisaChecks;
     private String candidateNumber;
     private String city;
     private String conflict;
-    @SqlIgnore //todo Computed field
+    @SqlIgnore //todo Computed field - computed using contextSavedListId below
     private String contextNote;
+    @SqlIgnore //todo manually set before sending
+    private Long contextSavedListId;
     @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private OffsetDateTime createdDate;
@@ -128,7 +130,7 @@ public class CandidateReadDto {
     private String muted;
     @JsonOneToOne(joinColumn = "nationality_id")
     private CountryReadDto nationality;
-    
+
     @SqlIgnore //todo Computed field
     private String numberDependants;
     private String partnerRef;
@@ -170,7 +172,7 @@ public class CandidateReadDto {
     @JsonOneToOne(joinColumn = "survey_type_id")
     private SurveyTypeReadDto surveyType;
     private String surveyComment;
-    
+
     @SqlIgnore //TODO JC Not done yet
 //    @JsonOneToMany(joinColumn = "candidate_id")
     private List<TaskAssignmentReadDto> taskAssignments;
@@ -181,10 +183,10 @@ public class CandidateReadDto {
     private String unrwaNumber;
     private String unrwaRegistered;
     private OffsetDateTime updatedDate;
-    
+
     @JsonOneToOne(joinColumn = "user_id")
     private UserReadDto user;
     private String videolink;
     private String whatsapp;
-    
+
 }
