@@ -183,18 +183,17 @@ public class SavedListCandidateAdminApi implements
 
     @PostMapping("{id}/search-paged-fast")
     public @NotNull Map<String, Object> searchPagedFast(
-            long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
+        @PathVariable("id") long savedListId, @Valid @RequestBody SavedListGetRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(savedListId);
 
-        Page<CandidateReadDto> candidates = candidateService
+        Page<CandidateReadDto> candidates = savedListService
             .getSavedListCandidateDtos(savedList, request);
 
         savedListService.setCandidateDtoContext(savedListId, candidates);
 
         //TODO JC Not sure I like this - but it could be done by passing in task assignment dtos, not candidates.
-        //Also I think we may replace QuestionTasks with FormTasks 
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
-        candidateService.populateCandidatesTransientTaskAssignments(candidates);
+//        candidateService.populateCandidatesTransientTaskAssignments(candidates);
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);

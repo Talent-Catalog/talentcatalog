@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,6 +70,7 @@ import org.tctalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tctalent.server.repository.db.GetSavedListsQuery;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
@@ -77,6 +79,7 @@ import org.tctalent.server.request.candidate.PublishedDocColumnDef;
 import org.tctalent.server.request.candidate.PublishedDocColumnSetUp;
 import org.tctalent.server.request.candidate.PublishedDocColumnType;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -88,6 +91,7 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
+import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DocPublisherService;
 import org.tctalent.server.service.db.ExportColumnsService;
@@ -98,6 +102,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -115,6 +120,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
     private final CandidateRepository candidateRepository;
+    private final CandidateDtoService candidateDtoService;
     private final CandidateSavedListRepository candidateSavedListRepository;
     private final CandidateOpportunityService candidateOpportunityService;
     private final ExportColumnsService exportColumnsService;
@@ -134,6 +140,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Autowired
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
+        CandidateDtoService candidateDtoService,
         CandidateSavedListRepository candidateSavedListRepository,
         CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
@@ -145,6 +152,7 @@ public class SavedListServiceImpl implements SavedListService {
         UserRepository userRepository,
         UserService userService) {
         this.candidateRepository = candidateRepository;
+        this.candidateDtoService = candidateDtoService;
         this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateOpportunityService = candidateOpportunityService;
         this.exportColumnsService = exportColumnsService;
@@ -551,6 +559,102 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public Page<CandidateReadDto> getSavedListCandidateDtos(
+        @NonNull SavedList savedList, SavedListGetRequest request) {
+        User user = userService.getLoggedInUser();
+        final PageRequest pageRequest = request.getPageRequest();
+
+        long savedListId = savedList.getId();
+        String sql = extractFetchSQL(savedListId, request, user, true);
+        String countSql = extractCountSQL(savedListId, request, user);
+
+        return candidateDtoService.doFetchCandidateDtos(sql, countSql, pageRequest);
+    }
+
+    private String extractCountSQL(long savedListId, SavedListGetRequest request, User user) {
+        String joinAndWhereSql = extractJoinAndWhereSQL(savedListId, request, user,false);
+        String selectSql = extractCountSelectSql();
+        return selectSql + joinAndWhereSql;
+    }
+
+    private String extractCountSelectSql() {
+        return "select count(distinct candidate.id) from candidate";
+    }
+
+    private String extractFetchSQL(
+        long savedListId, SavedListGetRequest request, User user, boolean ordered) {
+        String joinAndWhereSql = extractJoinAndWhereSQL(savedListId, request, user, ordered);
+
+        String selectSql = extractFetchSelectSql(request, ordered);
+
+        String sql = selectSql + joinAndWhereSql;
+
+        if (ordered) {
+            Sort sort = request.getSort();
+            String orderBySql = CandidateSearchUtils.buildOrderByClause(sort);
+            sql += orderBySql;
+        }
+
+        return sql;
+    }
+
+    private String extractFetchSelectSql(SavedListGetRequest request, boolean ordered) {
+        String sql;
+        if (!ordered) {
+            sql = "select distinct candidate.id from candidate";
+        } else {
+            Sort sort = request.getSort();
+
+            sql = "select distinct candidate.id";
+            String nonIdSortFields =
+                CandidateSearchUtils.buildNonIdFieldList(sort, null);
+            if (!nonIdSortFields.isEmpty()) {
+                sql += "," + nonIdSortFields;
+            }
+            sql += " from candidate";
+        }
+        return sql;
+    }
+
+    private String extractJoinAndWhereSQL(long savedListId, SavedListGetRequest request, User user, boolean ordered) {
+        //Uses a LinkedHashSet so that ordering is predictable - which helps unit testing
+        Set<String> joins = new LinkedHashSet<>();
+        List<String> ands = new ArrayList<>();
+
+        //TODO JC in list filtering
+        joins.add("candidate_saved_list");
+        ands.add(
+            "candidate.id in (select candidate_id from candidate_saved_list where saved_list_id = "
+                + savedListId + ")");
+
+        //TODO JC keyword filtering
+        //TODO JC show closed opps filtering
+
+        if (ordered) {
+            List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(request.getSort());
+            if (!tableSet.isEmpty()) {
+                joins.addAll(tableSet);
+            }
+        }
+
+        String joinClause = joins.stream()
+            .map(CandidateSearchUtils::getTableJoin)
+            .collect(Collectors.joining(" left join "));
+
+        String whereClause = String.join(" and ", ands);
+
+        String query = "";
+        if (!joinClause.isEmpty()) {
+            query += " left join " + joinClause;
+        }
+        if (!whereClause.isEmpty()) {
+            query += " where " + whereClause;
+        }
+
+        return query;
+    }
+
+    @Override
     public boolean isEmpty(long id) throws NoSuchObjectException {
         SavedList savedList = get(id);
         return savedList.getCandidates().isEmpty();
@@ -688,6 +792,14 @@ public class SavedListServiceImpl implements SavedListService {
     public void setCandidateContext(long savedListId, Iterable<Candidate> candidates) {
         for (Candidate candidate : candidates) {
             candidate.setContextSavedListId(savedListId);
+        }
+    }
+
+    @Override
+    public void setCandidateDtoContext(long savedListId, Iterable<CandidateReadDto> candidates) {
+        for (CandidateReadDto candidate : candidates) {
+            //TODO JC dto needs to support this transient field
+//            candidate.setContextSavedListId(savedListId);
         }
     }
 

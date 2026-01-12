@@ -34,9 +34,11 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -288,6 +290,10 @@ public interface SavedListService {
     @Nullable
     SavedList get(@NonNull User user, String listName);
 
+    //TODO JC Doc
+    Page<CandidateReadDto> getSavedListCandidateDtos(
+        @NonNull SavedList savedList, SavedListGetRequest request);
+
     /**
      * Returns true if there are no candidates in the list
      * @param id ID of list
@@ -371,9 +377,12 @@ public interface SavedListService {
      * @param candidates Candidate objects to be marked with the list context. Note that this
      *                   is a transient property on the candidate objects because it depends on
      *                   the list context. It does not come from the Candidate table, it comes
-     *                   from the CandidateSavedList table, depending on the particular list. 
+     *                   from the CandidateSavedList table, depending on the particular list.
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
+
+    //TODO JC Doc
+    void setCandidateDtoContext(long savedListId, Iterable<CandidateReadDto> candidates);
 
     void setPublicIds(List<SavedList> savedLists);
 
