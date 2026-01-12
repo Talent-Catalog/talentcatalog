@@ -30,8 +30,8 @@
       <ng-container ngbNavItem="Profile">
 
         <a ngbNavLink>
-          <span class="d-none d-md-inline">{{ 'PROFILE.TAB.PROFILE' | translate }}</span>
-          <i class="fas fa-user mx-2"></i>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.PROFILE' | translate }}</span>
+          <i class="fas fa-user"></i>
         </a>
         <ng-template ngbNavContent>
           <app-candidate-profile
@@ -43,8 +43,8 @@
       <!-- TASKS -->
       <ng-container ngbNavItem="Tasks">
         <a ngbNavLink>
-          <span class="d-none d-md-inline">{{ 'PROFILE.TAB.TASKS' | translate }}</span>
-          <i class="fas fa-list-check mx-2"></i>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.TASKS' | translate }}</span>
+          <i class="fas fa-list-check"></i>
         </a>
         <ng-template ngbNavContent>
           <app-candidate-tasks
@@ -57,8 +57,8 @@
       <!-- JOBS (Candidate Opportunities) -->
       <ng-container *ngIf="canSeeJobTab" ngbNavItem="Opps">
         <a ngbNavLink>
-          <span class="d-none d-md-inline">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
-          <i class="fas fa-briefcase mx-2"></i>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
+          <i class="fas fa-briefcase me-1"></i>
           <app-chat-read-status
             [chats]="chatsForAllJobs"
           ></app-chat-read-status>
@@ -74,34 +74,32 @@
       <!-- CHAT with source partner -->
       <ng-container *ngIf="canSeeChatTab" ngbNavItem="Chat">
         <a ngbNavLink>
-          <span class="d-none d-md-inline">{{ 'CHAT.HEADER' | translate }}</span>
-          <i class="fas fa-message mx-2"></i>
+          <span class="d-none d-md-inline me-2">{{ 'CHAT.HEADER' | translate }}</span>
+          <i class="fas fa-message me-1"></i>
           <app-chat-read-status
             [chats]="[sourceChat]"
-          >
-          </app-chat-read-status>
+          ></app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
           <div class="chat-title">
-          <app-tab-header >
-            <h3>
-            {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
-            </h3>
+            <app-tab-header>
+              <h3>
+                {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+              </h3>
             </app-tab-header>
           </div>
           <app-view-chat-posts
             [chat]="sourceChat"
             [readOnly]="isCandidateMuted()"
-          >
-          </app-view-chat-posts>
+          ></app-view-chat-posts>
         </ng-template>
       </ng-container>
 
       <!-- SERVICES -->
       <ng-container ngbNavItem="Services" *ngIf="activeDuolingoTask">
         <a ngbNavLink>
-          <span class="d-none d-md-inline">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
-          <i class="fas fa-handshake mx-2"></i>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
+          <i class="fas fa-handshake"></i>
         </a>
         <ng-template ngbNavContent>
           <app-services
