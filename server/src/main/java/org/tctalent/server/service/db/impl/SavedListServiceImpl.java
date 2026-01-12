@@ -45,6 +45,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.EntityExistsException;
@@ -561,18 +562,16 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public Page<CandidateReadDto> getSavedListCandidateDtos(
         @NonNull SavedList savedList, SavedListGetRequest request) {
-        User user = userService.getLoggedInUser();
         final PageRequest pageRequest = request.getPageRequest();
 
-        long savedListId = savedList.getId();
-        String sql = extractFetchSQL(savedListId, request, user, true);
-        String countSql = extractCountSQL(savedListId, request, user);
+        String sql = extractFetchSQL(savedList, request, true);
+        String countSql = extractCountSQL(savedList, request);
 
         return candidateDtoService.doFetchCandidateDtos(sql, countSql, pageRequest);
     }
 
-    private String extractCountSQL(long savedListId, SavedListGetRequest request, User user) {
-        String joinAndWhereSql = extractJoinAndWhereSQL(savedListId, request, user,false);
+    private String extractCountSQL(SavedList savedList, SavedListGetRequest request) {
+        String joinAndWhereSql = extractJoinAndWhereSQL(savedList, request, false);
         String selectSql = extractCountSelectSql();
         return selectSql + joinAndWhereSql;
     }
@@ -582,8 +581,8 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     private String extractFetchSQL(
-        long savedListId, SavedListGetRequest request, User user, boolean ordered) {
-        String joinAndWhereSql = extractJoinAndWhereSQL(savedListId, request, user, ordered);
+        SavedList savedList, SavedListGetRequest request, boolean ordered) {
+        String joinAndWhereSql = extractJoinAndWhereSQL(savedList, request, ordered);
 
         String selectSql = extractFetchSelectSql(request, ordered);
 
@@ -616,19 +615,36 @@ public class SavedListServiceImpl implements SavedListService {
         return sql;
     }
 
-    private String extractJoinAndWhereSQL(long savedListId, SavedListGetRequest request, User user, boolean ordered) {
+    private String extractJoinAndWhereSQL(
+        @NonNull SavedList savedList, SavedListGetRequest request, boolean ordered) {
+        long savedListId = savedList.getId();
+        Long jobOppId = savedList.getSfJobOpp() == null ? null : savedList.getSfJobOpp().getId();
+
         //Uses a LinkedHashSet so that ordering is predictable - which helps unit testing
         Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
 
-        //TODO JC in list filtering
+        //Candidates must be in list
         joins.add("candidate_saved_list");
         ands.add(
             "candidate.id in (select candidate_id from candidate_saved_list where saved_list_id = "
                 + savedListId + ")");
 
-        //TODO JC keyword filtering
-        //TODO JC show closed opps filtering
+        //Filter on key word (matching candidate number or name)
+        if (StringUtils.hasText(request.getKeyword())) {
+            joins.add("users");
+            String keyword = request.getKeyword().toLowerCase();
+            ands.add("(lower(candidate_number) like '%" + keyword + "%'"
+                + " or lower(concat(users.first_name, ' ', users.last_name)) like '%" + keyword + "%')" );
+        }
+
+        //Filter only if this list has an associated jobOpp and the request is NOT to show closed
+        //opportunities.
+        //The exception is that we do want to see "won" opportunities even though won is a closed state.
+        if (jobOppId != null && request.getShowClosedOpps() != null && !request.getShowClosedOpps()) {
+            ands.add("candidate.id in (select candidate_id from candidate_opportunity where job_opp_id ="
+                + jobOppId + " and closed = false or won = true)");
+        }
 
         if (ordered) {
             List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(request.getSort());
