@@ -99,7 +99,6 @@ import org.tctalent.server.model.db.HasTcQueryParameters;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.PartnerImpl;
-import org.tctalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.RootRequest;
 import org.tctalent.server.model.db.SavedList;
@@ -116,7 +115,6 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.Task;
-import org.tctalent.server.model.db.task.TaskAssignment;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateExamRepository;
@@ -183,7 +181,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SystemNotificationService;
-import org.tctalent.server.service.db.TaskService;
+import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
@@ -268,7 +266,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final PublicIDService publicIDService;
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
-    private final TaskService taskService;
+    private final TaskAssignmentService taskAssignmentService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
@@ -609,42 +607,9 @@ public class CandidateServiceImpl implements CandidateService {
         final Candidate candidate = candidateRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
-        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
 
         return candidate;
-    }
-
-    @Override
-    public void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates) {
-        for (Candidate candidate : candidates) {
-            populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
-        }
-    }
-
-    /**
-     * Sets transient fields on the given task assignments.
-     * @param taskAssignments Task assignments
-     */
-    private void populateTransientTaskAssignmentFields(List<TaskAssignmentImpl> taskAssignments) {
-        for (TaskAssignmentImpl taskAssignment : taskAssignments) {
-            populateTransientTaskAssignmentFields(taskAssignment);
-        }
-    }
-
-    private void populateTransientTaskAssignmentFields(TaskAssignment taskAssignment) {
-
-        taskService.populateTransientFields(taskAssignment.getTask());
-
-        //If task is completed, see if there is any transient data to be populated - eg the
-        //answer on a question task
-        if (taskAssignment.getCompletedDate() != null) {
-            if (taskAssignment instanceof QuestionTaskAssignmentImpl) {
-                QuestionTaskAssignment qta = (QuestionTaskAssignmentImpl) taskAssignment;
-                String answer = fetchCandidateTaskAnswer(qta);
-                qta.setAnswer(answer);
-            }
-        }
-
     }
 
     /**
@@ -1902,8 +1867,7 @@ public class CandidateServiceImpl implements CandidateService {
             return Optional.empty();
         }
         Candidate candidate = candidateRepository.findByUserId(user.getId());
-
-        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
 
         return Optional.of(candidate);
     }
@@ -1934,7 +1898,7 @@ public class CandidateServiceImpl implements CandidateService {
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
         Candidate candidate = candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
                 .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
-        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
         return candidate;
     }
 

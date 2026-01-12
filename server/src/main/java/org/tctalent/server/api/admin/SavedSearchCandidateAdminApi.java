@@ -38,8 +38,8 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
-import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -55,9 +55,9 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class SavedSearchCandidateAdminApi implements
     IManyToManyApi<SavedSearchGetRequest, UpdateSavedListContentsRequest> {
 
-    private final SavedSearchService savedSearchService;
-    private final CandidateService candidateService;
     private final CandidateBuilderSelector builderSelector;
+    private final SavedSearchService savedSearchService;
+    private final TaskAssignmentService taskAssignmentService;
 
     @Override
     public @NotNull Map<String, Object> searchPaged(
@@ -70,7 +70,9 @@ public class SavedSearchCandidateAdminApi implements
         savedSearchService.setCandidateContext(savedSearchId, candidates);
 
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
-        candidateService.populateCandidatesTransientTaskAssignments(candidates);
+        for (Candidate candidate : candidates) {
+            taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        }
 
         long start = System.currentTimeMillis();
         long end;
