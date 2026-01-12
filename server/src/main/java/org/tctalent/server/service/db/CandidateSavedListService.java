@@ -31,10 +31,13 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 
 /**
  * Handle anything to do with deletion of candidate savedList relationships.
- * <p/>
+ * <p>
  * Relying on Cascading from SavedList or Candidate candidateSavedList
  * collections doesn't work.
+ * </p>
+ * <p>
  * See doc on SavedList and Candidate where candidateSavedList is declared
+ * </p>
  */
 public interface CandidateSavedListService {
 
