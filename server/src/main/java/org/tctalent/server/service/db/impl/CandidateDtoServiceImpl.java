@@ -18,6 +18,9 @@ package org.tctalent.server.service.db.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -36,12 +42,14 @@ import org.tctalent.server.repository.db.read.cache.CandidateVersionDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.repository.db.read.sql.CandidateJsonDao;
 import org.tctalent.server.service.db.CandidateDtoService;
+import org.tctalent.server.util.CandidateSearchUtils;
+import org.tctalent.server.util.textExtract.IdAndRank;
 
 /**
  * Strict read service for CandidateReadDto.
  * <p>
  * Architecture:
- *   L1: Redis (shared, versioned keys)  //Todo 
+ *   L1: Redis (shared, versioned keys)
  *   L2: Postgres JSON cache (candidate_json_cache)
  *   L3: Postgres recomputation (SqlJsonQueryBuilder)
  * </p>
@@ -60,15 +68,104 @@ import org.tctalent.server.service.db.CandidateDtoService;
 @RequiredArgsConstructor
 @Slf4j
 public class CandidateDtoServiceImpl implements CandidateDtoService {
-    private final CandidateRedisCache redisCache;
-    private final CandidateVersionDao versionDao;
-    private final CandidateJsonCacheDao pgCacheDao;
+    @PersistenceContext
+    private EntityManager entityManager;
     private final CandidateJsonDao jsonDao;
     private final ObjectMapper objectMapper;
+    private final CandidateJsonCacheDao pgCacheDao;
+    private final CandidateRedisCache redisCache;
+    private final CandidateVersionDao versionDao;
+
+    @Override
+    public Page<CandidateReadDto> doFetchCandidateDtos(
+        String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest) {
+        //Create and execute the query to return the candidate ids
+        Query query = entityManager.createNativeQuery(fetchIdsSql);
+        query.setFirstResult((int) pageRequest.getOffset());
+        query.setMaxResults(pageRequest.getPageSize());
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Query: " + fetchIdsSql).logInfo();
+        long start = System.currentTimeMillis();
+        long end;
+
+        //Get results
+        final List<?> results = query.getResultList();
+
+        end = System.currentTimeMillis();
+        long fetchIdsTime = end - start;
+
+        start = end;
+
+        //Process the results
+        List<IdAndRank> idAndRanks =
+            CandidateSearchUtils.processIdRankSearchResults(results, pageRequest.getSort());
+
+        end = System.currentTimeMillis();
+        long convertTime = end - start;
+        start = end;
+
+        //Get ids of sorted candidates
+        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
+
+        end = System.currentTimeMillis();
+        long fetchEntitiesTime = end - start;
+        start = end;
+
+        Map<Long, CandidateReadDto> candidatesByIdUnsorted;
+        try {
+            candidatesByIdUnsorted = loadByIds(ids);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        end = System.currentTimeMillis();
+        long fetchDtosTime = end - start;
+        start = end;
+
+        //Candidates need to be sorted the same as the ids.
+
+        //Construct a sorted list of the candidates in the same order as the returned ids.
+        List<CandidateReadDto> candidatesSorted = new ArrayList<>();
+        for (IdAndRank idAndRank : idAndRanks) {
+            final CandidateReadDto candidate = candidatesByIdUnsorted.get(idAndRank.id());
+
+            //Optionally update candidate data with any ranking values.
+            final Number rank = idAndRank.rank();
+            //Rank is a transient field so no need to set to null
+            if (rank != null) {
+                candidate.setRank(rank);
+            }
+            candidatesSorted.add(candidate);
+        }
+
+        end = System.currentTimeMillis();
+        long sortTime = end - start;
+
+        LogBuilder.builder(log).action("countCandidates")
+            .message("Query: " + countSql).logInfo();
+        start = end;
+        //Compute count
+        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+
+        end = System.currentTimeMillis();
+        long countTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: fetchIds: " + fetchIdsTime
+                + " convert: " + convertTime
+                + " fetchEntities: " + fetchEntitiesTime
+                + " fetchDtos: " + fetchDtosTime
+                + " sort: " + sortTime
+                + " count: " + countTime
+            ).logInfo();
+
+        return new PageImpl<>(candidatesSorted, pageRequest, total);
+    }
 
     @Override
     @NonNull
-    public Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) 
+    public Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids)
         throws NoSuchObjectException, JsonProcessingException {
 
         if (ids == null || ids.isEmpty()) {
@@ -90,7 +187,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
         if (!badIds.isEmpty()) {
             LogBuilder.builder(log)
                 .action("CandidateDtoService.loadByIds")
-                .message("Requested candidate IDs not found in candidate table. " 
+                .message("Requested candidate IDs not found in candidate table. "
                     + "requestedIds=" + ids + ", missingIds=" + badIds)
                 .logError();
             throw new NoSuchObjectException(
@@ -104,7 +201,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
 
         Map<Long, String> jsonById =
             new HashMap<>(redisCache.multiGet(versions));
-        
+
         // ------------------------------------------------------------
         // Step 2: L2 Postgres JSON cache lookup (for Redis misses)
         // ------------------------------------------------------------
@@ -209,8 +306,8 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
         if (!unprocessedIds.isEmpty()) {
             LogBuilder.builder(log)
                 .action("CandidateDtoService.loadByIds")
-                .message("Candidate JSON missing after Redis + Postgres cache + recompute. " 
-                    + "requestedIds=" + ids + ", unprocessedIds=" + unprocessedIds 
+                .message("Candidate JSON missing after Redis + Postgres cache + recompute. "
+                    + "requestedIds=" + ids + ", unprocessedIds=" + unprocessedIds
                     + ", versions=" + versions)
                 .logError();
             throw new NoSuchObjectException(

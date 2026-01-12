@@ -26,7 +26,6 @@ import static org.tctalent.server.util.StringHelper.getStringListFromString;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.opencsv.CSVWriter;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -2152,89 +2151,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         final PageRequest pageRequest = request.getPageRequest();
 
         String sql = extractFetchSQL(request, user, excludedCandidates, true);
-        LogBuilder.builder(log).action("findCandidates")
-            .message("Query: " + sql).logInfo();
-
-        //Create and execute the query to return the candidate ids
-        Query query = entityManager.createNativeQuery(sql);
-        query.setFirstResult((int) pageRequest.getOffset());
-        query.setMaxResults(pageRequest.getPageSize());
-
-        long start = System.currentTimeMillis();
-        long end;
-
-        //Get results
-        final List<?> results = query.getResultList();
-
-        end = System.currentTimeMillis();
-        long fetchIdsTime = end - start;
-        start = end;
-
-        //Process the results
-        List<IdAndRank> idAndRanks =
-            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
-
-        end = System.currentTimeMillis();
-        long convertTime = end - start;
-        start = end;
-
-        //Get ids of sorted candidates
-        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
-
-        end = System.currentTimeMillis();
-        long fetchEntitiesTime = end - start;
-        start = end;
-
-        Map<Long, CandidateReadDto> candidatesByIdUnsorted;
-        try {
-            candidatesByIdUnsorted = candidateDtoService.loadByIds(ids);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        end = System.currentTimeMillis();
-        long fetchDtosTime = end - start;
-        start = end;
-
-        //Candidates need to be sorted the same as the ids.
-
-        //Construct a sorted list of the candidates in the same order as the returned ids.
-        List<CandidateReadDto> candidatesSorted = new ArrayList<>();
-        for (IdAndRank idAndRank : idAndRanks) {
-            final CandidateReadDto candidate = candidatesByIdUnsorted.get(idAndRank.id());
-
-            //Optionally update candidate data with any ranking values.
-            final Number rank = idAndRank.rank();
-            //Rank is a transient field so no need to set to null
-            if (rank != null) {
-                candidate.setRank(rank);
-            }
-            candidatesSorted.add(candidate);
-        }
-
-        end = System.currentTimeMillis();
-        long sortTime = end - start;
-        start = end;
-
-        //Compute count
         String countSql = extractCountSQL(request, user, excludedCandidates);
-        LogBuilder.builder(log).action("countCandidates")
-            .message("Query: " + countSql).logInfo();
-        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
 
-        end = System.currentTimeMillis();
-        long countTime = end - start;
-
-        LogBuilder.builder(log).action("findCandidates")
-            .message("Timings: fetchIds: " + fetchIdsTime
-                + " convert: " + convertTime
-                + " fetchEntities: " + fetchEntitiesTime
-                + " fetchDtos: " + fetchDtosTime
-                + " sort: " + sortTime
-                + " count: " + countTime
-            ).logInfo();
-
-        return new PageImpl<>(candidatesSorted, pageRequest, total);
+        return candidateDtoService.doFetchCandidateDtos(sql, countSql, pageRequest);
     }
 
 

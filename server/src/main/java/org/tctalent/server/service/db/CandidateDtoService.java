@@ -19,6 +19,8 @@ package org.tctalent.server.service.db;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Collection;
 import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
@@ -37,16 +39,27 @@ import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 public interface CandidateDtoService {
 
     /**
-     * Loads Candidate DTOs into a Map of ids to CandidateReadDto objects 
+     * Fetches a page of Candidate DTOs from the database by executing the given SQL queries.
+     * @param fetchIdsSql Sql which just returns the ids (and possible ranks) of the candidates
+     *                    to be fetched
+     * @param countSql Sql which returns the total number of candidates matching the query
+     * @param pageRequest Page request specifying the page number and page size and sort (if any).
+     * @return Page of Candidate DTOs
+     */
+    Page<CandidateReadDto> doFetchCandidateDtos(
+        String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest);
+
+    /**
+     * Loads Candidate DTOs into a Map of ids to CandidateReadDto objects
      * for the given candidate IDs.
-     *  
+     *
      * @param ids Ids of candidates to be fetched
      * @return Map of candidate ids to CandidateDTOs
      * @throws JsonProcessingException if JSON cannot be processed
      * @throws NoSuchObjectException if any of the ids are bad - ie do not correspond a candidate.
      */
     @NonNull
-    Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) 
+    Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids)
         throws NoSuchObjectException, JsonProcessingException;
 
 }
