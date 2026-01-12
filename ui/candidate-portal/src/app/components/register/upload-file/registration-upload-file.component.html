@@ -24,11 +24,16 @@
         <ngb-panel id="upload-cv">
           <ng-template ngbPanelTitle>
             <div class="container">
-              <strong class="link underline"> {{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}
-                <span triggers="mouseenter:mouseleave" [autoClose]="false" placement="end"
-                      [ngbPopover]="cvWarningHtml">
-                  <fa-icon icon="circle-question" class="fa-s"
-                           style="color: #10B0E3;"></fa-icon></span></strong>
+              <strong class="link underline">{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}<span triggers="click"
+                      placement="end"
+                      [ngbPopover]="cvWarningHtml"
+                      (click)="$event.stopPropagation()"
+                >
+                  <i class="mx-1 fas fa-circle-question fa-sm"
+                     style="color: #10B0E3;"
+                  ></i>
+                </span>
+              </strong>
               <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}  </p>
             </div>
           </ng-template>
