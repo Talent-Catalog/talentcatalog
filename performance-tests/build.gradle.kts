@@ -62,8 +62,6 @@ dependencies {
 
     // Java DSL modules (correct ones)
     gatlingImplementation("io.gatling:gatling-core-java:$gatlingVersion")
-
-    // If you plan to write Java HTTP simulations (recommended to include)
     gatlingImplementation("io.gatling:gatling-http-java:$gatlingVersion")
 
     // JDBC plugin (Scala 2.13 binary)
