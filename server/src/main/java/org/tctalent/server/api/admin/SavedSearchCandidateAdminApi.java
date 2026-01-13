@@ -39,7 +39,6 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -57,7 +56,6 @@ public class SavedSearchCandidateAdminApi implements
 
     private final CandidateBuilderSelector builderSelector;
     private final SavedSearchService savedSearchService;
-    private final TaskAssignmentService taskAssignmentService;
 
     @Override
     public @NotNull Map<String, Object> searchPaged(
@@ -69,10 +67,11 @@ public class SavedSearchCandidateAdminApi implements
 
         savedSearchService.setCandidateContext(savedSearchId, candidates);
 
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
-        for (Candidate candidate : candidates) {
-            taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
-        }
+//        for (Candidate candidate : candidates) {
+//            taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+//        }
 
         long start = System.currentTimeMillis();
         long end;

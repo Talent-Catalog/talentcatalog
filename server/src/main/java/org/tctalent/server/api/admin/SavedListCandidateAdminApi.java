@@ -174,8 +174,12 @@ public class SavedListCandidateAdminApi implements
 
         savedListService.setCandidateContext(savedListId, candidates);
 
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
-        candidateService.populateCandidatesTransientTaskAssignments(candidates);
+//        for (Candidate candidate : candidates) {
+//            taskAssignmentService.populateTransientTaskAssignmentFields(
+//                candidate.getTaskAssignments());
+//        }
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);
@@ -191,9 +195,14 @@ public class SavedListCandidateAdminApi implements
 
         savedListService.setCandidateDtoContext(savedListId, candidates);
 
-        //TODO JC Not sure I like this - but it could be done by passing in task assignment dtos, not candidates.
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
-//        candidateService.populateCandidatesTransientTaskAssignments(candidates);
+//        for (CandidateReadDto candidate : candidates) {
+//            final List<TaskAssignmentReadDto> tas = candidate.getTaskAssignments();
+//            for (TaskAssignmentReadDto ta : tas) {
+//                taskAssignmentService.populateTransientTaskAssignmentDtoFields(ta);
+//            }
+//        }
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);
