@@ -79,7 +79,7 @@ public class CandidateReadDto {
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateSkillReadDto> candidateSkills;
 
-    @SqlIgnore //TODO JC Doesnt seem to handle these
+    @SqlIgnore //TODO JC Doesnt seem to handle these - see issue 2950
 //    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateVisaCheckReadDto> candidateVisaChecks;
     private String candidateNumber;
