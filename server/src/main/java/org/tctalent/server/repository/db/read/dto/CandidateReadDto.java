@@ -173,8 +173,7 @@ public class CandidateReadDto {
     private SurveyTypeReadDto surveyType;
     private String surveyComment;
 
-    @SqlIgnore //TODO JC Not done yet
-//    @JsonOneToMany(joinColumn = "candidate_id")
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<TaskAssignmentReadDto> taskAssignments;
     private String unhcrConsent;
     private String unhcrNumber;
