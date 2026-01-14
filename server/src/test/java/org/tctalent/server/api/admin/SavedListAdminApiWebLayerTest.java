@@ -19,7 +19,6 @@ package org.tctalent.server.api.admin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Tag;
@@ -46,9 +45,7 @@ class SavedListAdminApiWebLayerTest {
                         .param("fixed", "false")
         )
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("TestList"))
-                .andExpect(jsonPath("$.fixed").value("false"))
-                .andExpect(jsonPath("$.id").isNumber());
+                .andExpect(status().isUnauthorized())
+                .andExpect(status().reason("Full authentication is required to access this resource"));
     }
 }

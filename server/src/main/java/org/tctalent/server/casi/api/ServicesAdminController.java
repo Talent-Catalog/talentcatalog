@@ -17,7 +17,6 @@
 package org.tctalent.server.casi.api;
 
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -30,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.casi.api.dto.CountResponseDto;
+import org.tctalent.server.casi.api.dto.ImportResponseDto;
 import org.tctalent.server.casi.api.dto.ServiceAssignmentDto;
 import org.tctalent.server.casi.api.dto.ServiceResourceDto;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
@@ -70,7 +71,7 @@ public class ServicesAdminController {
   @PostMapping(
       path = "/{provider}/{serviceCode}/import",
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public Map<String, Object> importInventory(@PathVariable String provider,
+  public ImportResponseDto importInventory(@PathVariable String provider,
       @PathVariable String serviceCode,
       @RequestParam("file") MultipartFile file) {
     try {
@@ -83,14 +84,23 @@ public class ServicesAdminController {
           .message(provider + "::" + serviceCode + " - resources imported successfully from file")
           .logInfo();
 
-      return Map.of("status", "success", "message", "Service resources imported successfully.");
+      return ImportResponseDto.builder()
+          .status("success")
+          .message("Service resources imported successfully.")
+          .build();
+    } catch (NoSuchObjectException e) {
+      // Let NoSuchObjectException propagate so ErrorHandler can return 404
+      throw e;
     } catch (RuntimeException e) {
       LogBuilder.builder(log)
           .action("importInventory")
-          .message("Failed to import coupons from file")
+          .message("Failed to import service resources from file")
           .logError();
       // Return error response
-      return Map.of("status", "failure", "message", "Failed to import service resources from file.");
+      return ImportResponseDto.builder()
+          .status("failure")
+          .message("Failed to import service resources from file.")
+          .build();
     }
   }
 
@@ -175,25 +185,19 @@ public class ServicesAdminController {
 
   // Endpoint to count the available inventory for a provider and service
   @GetMapping("/{provider}/{serviceCode}/available/count")
-  public Map<String, Object> countAvailable(@PathVariable String provider,
+  public CountResponseDto countAvailable(@PathVariable String provider,
       @PathVariable String serviceCode) {
-    try {
-      long count = serviceFor(provider, serviceCode)
-          .countAvailableForProviderAndService();
-      return Map.of("status", "success", "count", count);
-    } catch (RuntimeException e) {
-      return Map.of("status", "failure", "message", "Failed to count available coupons.");
-    }
+    long count = serviceFor(provider, serviceCode)
+        .countAvailableForProviderAndService();
+
+    return CountResponseDto.builder()
+        .count(count)
+        .build();
   }
 
-
   private CandidateAssistanceService serviceFor(String provider, String serviceCode) {
-    CandidateAssistanceService svc = services.forProviderAndServiceCode(provider, serviceCode);
-    if (svc == null) {
-      throw new NoSuchObjectException("Unknown candidate service for provider: " + provider +
-          ", serviceCode: " + serviceCode);
-    }
-    return svc;
+    // Registry throws NoSuchObjectException when service not found, which ErrorHandler maps to 404
+    return services.forProviderAndServiceCode(provider, serviceCode);
   }
 }
 

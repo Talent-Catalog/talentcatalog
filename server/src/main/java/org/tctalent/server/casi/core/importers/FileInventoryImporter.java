@@ -17,6 +17,7 @@
 package org.tctalent.server.casi.core.importers;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.exception.ImportFailedException;
 
 
@@ -37,7 +38,9 @@ public interface FileInventoryImporter {
    * This method processes a file containing service resource data (e.g. coupon codes)
    * and adds the resources to the database. It is useful for bulk importing coupons.
    *
-   * @param file the MultipartFile representing the file to import.
+   * @param file the MultipartFile representing the file to import
+   * @param serviceCode the service code enum for the resources being imported
+   * @throws ImportFailedException if the import fails
    */
-  void importFile(MultipartFile file, String serviceCode) throws ImportFailedException;
+  void importFile(MultipartFile file, ServiceCode serviceCode) throws ImportFailedException;
 }
