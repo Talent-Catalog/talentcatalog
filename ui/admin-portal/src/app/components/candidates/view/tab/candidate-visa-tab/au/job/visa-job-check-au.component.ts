@@ -90,6 +90,14 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
     this.familyInAus = describeFamilyInDestination(this.visaCheckRecord);
     const dobDate = new Date(this.candidate.dob);
     this.candidateAge = calculateAge(dobDate);
+    const selectedJobOppId = this.selectedJobCheck?.jobOpp?.id;
+
+    if (!selectedJobOppId) {
+      // no linked job opportunity
+      this.candidateOpportunity = null;
+      return;
+    }
+
     this.candidateOpportunity = this.candidate.candidateOpportunities
       .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
   }
