@@ -190,6 +190,7 @@ export class CandidateVisaJobComponent implements OnInit {
   }
 
   fetchCandidateOppIdForJob(jobId: number): number {
+    if (!jobId) return null;
     if (this.hasJobOpps) {
       return this.candidate.candidateOpportunities.find(
         co => co.jobOpp.id === jobId).id;
