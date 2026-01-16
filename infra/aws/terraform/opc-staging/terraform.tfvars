@@ -1,0 +1,10 @@
+app                = "talent-catalog"
+env                = "staging"
+site_domain        = "staging.example.org"
+container_image    = "123456789012.dkr.ecr.us-east-1.amazonaws.com/app:staging"
+container_port     = 8080
+db_enable          = true
+db_public_access   = false
+db_multi_az         = false
+db_instance_class  = "db.t3.medium"
+ecs_tasks_count    = 2
