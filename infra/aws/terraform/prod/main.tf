@@ -69,8 +69,8 @@ module "website" {
   spring_db_pool_min              = var.spring_db_pool_min
   spring_servlet_max_file_size    = var.spring_servlet_max_file_size
   spring_servlet_max_request_size = var.spring_servlet_max_request_size
-  tbb_cors_urls                   = var.tbb_cors_urls
-  tbb_db_copy_config              = var.tbb_db_copy_config
+  tc_cors_urls                    = var.tc_cors_urls
+  tc_db_copy_config               = var.tc_db_copy_config
   translation_password            = var.translation_password
   web_admin                       = var.web_admin
   web_portal                      = var.web_portal

@@ -244,14 +244,14 @@ variable "spring_servlet_max_request_size" {
   description = "Spring servlet multipart max request size"
 }
 
-variable "tbb_cors_urls" {
+variable "tc_cors_urls" {
   type        = string
-  description = "TBB CORS URLs"
+  description = "TC CORS URLs"
 }
 
-variable "tbb_db_copy_config" {
+variable "tc_db_copy_config" {
   type        = string
-  description = "TBB partner DB copy config"
+  description = "TC partner DB copy config"
 }
 
 variable "translation_password" {
