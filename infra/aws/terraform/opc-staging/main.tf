@@ -27,19 +27,24 @@ provider "aws" {
 module "tc-opc-staging" {
   source = "../"
 
-  app = "talent-catalog"
-  env = "staging"
-  site_domain = "staging.example.org"
-  container_image = "123456789012.dkr.ecr.us-east-1.amazonaws.com/app:staging"
+  # ECS
+  app = "tc-plus"
+  env = "opc-staging"
+  site_domain = "plus.tctalent.org"
+  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/app:opc-staging"
   container_port = 8080
   db_enable = true
   db_public_access = false
   db_multi_az =  false
   db_instance_class = "db.t3.medium"
   ecs_tasks_count = 2
+
+  # Spring
   aws_access_key = "<REPLACE_ME>"
   aws_secret_key = "<REPLACE_ME>"
+
   s3_bucket = "<REPLACE_ME>"
+
   es_password = "<REPLACE_ME>"
   es_url = "<REPLACE_ME>"
   es_username = "<REPLACE_ME>"
