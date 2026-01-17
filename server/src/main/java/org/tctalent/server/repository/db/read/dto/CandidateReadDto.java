@@ -85,10 +85,10 @@ public class CandidateReadDto {
     private String candidateNumber;
     private String city;
     private String conflict;
-    @SqlIgnore //todo Computed field - computed using contextSavedListId below
+
+    @SqlIgnore //Loaded later if there is a list context
     private String contextNote;
-    @SqlIgnore //todo manually set before sending
-    private Long contextSavedListId;
+
     @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private OffsetDateTime createdDate;
@@ -116,10 +116,10 @@ public class CandidateReadDto {
     private String intRecruitReasons;
     private String intRecruitRural;
     private String linkedInLink;
-    @SqlIgnore //todo Computed field
-    private String listShareableCv;
-    @SqlIgnore //todo Computed field
-    private String listShareableDoc;
+    @SqlIgnore //todo Computed field based on list context
+    private CandidateAttachmentReadDto listShareableCv;
+    @SqlIgnore //todo Computed field based on list context
+    private CandidateAttachmentReadDto listShareableDoc;
     private String maritalStatus;
     @JsonOneToOne(joinColumn = "max_education_level_id")
     private EducationLevelReadDto maxEducationLevel;
@@ -131,11 +131,11 @@ public class CandidateReadDto {
     @JsonOneToOne(joinColumn = "nationality_id")
     private CountryReadDto nationality;
 
-    @SqlIgnore //todo Computed field
-    private String numberDependants;
+    @SqlIgnore //Computed field
+    private int numberDependants;
     private String partnerRef;
-    @SqlIgnore //todo Computed field
-    private String pendingTerms;
+    @SqlIgnore //Computed field
+    private boolean pendingTerms;
     private String phone;
     private String potentialDuplicate;
     private String publicId;
@@ -162,10 +162,11 @@ public class CandidateReadDto {
     @SqlIgnore
     private boolean selected;
     private String sflink;
-    @SqlIgnore //todo Computed field
-    private String shareableCv;
-    @SqlIgnore //todo Computed field
-    private String shareableDoc;
+
+    @JsonOneToOne(joinColumn = "shareable_cv_attachment_id")
+    private CandidateAttachmentReadDto shareableCv;
+    @JsonOneToOne(joinColumn = "shareable_doc_attachment_id")
+    private CandidateAttachmentReadDto shareableDoc;
     private String shareableNotes;
     private String state;
     private String status;
