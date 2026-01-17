@@ -811,13 +811,6 @@ public class SavedListServiceImpl implements SavedListService {
         }
     }
 
-    @Override
-    public void setCandidateDtoContext(long savedListId, Iterable<CandidateReadDto> candidates) {
-        for (CandidateReadDto candidate : candidates) {
-            candidate.setContextSavedListId(savedListId);
-        }
-    }
-
     @Transactional
     @Override
     public void setPublicIds(List<SavedList> savedLists) {

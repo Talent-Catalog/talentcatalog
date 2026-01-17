@@ -386,11 +386,6 @@ public interface SavedListService {
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 
-    /**
-     * Candidate dto version of {@link #setCandidateContext(long, Iterable)}.
-     */
-    void setCandidateDtoContext(long savedListId, Iterable<CandidateReadDto> candidates);
-
     void setPublicIds(List<SavedList> savedLists);
 
     /**
