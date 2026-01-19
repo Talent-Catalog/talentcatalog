@@ -123,4 +123,13 @@ module "tc-plus-staging" {
     Purpose     = "tls"
     ManagedBy   = "terraform"
   }
+
+  alb_tags = {
+    Project     = "OPC"
+    Application = "TC-Plus"
+    Environment = "staging"
+    Component   = "alb"
+    Purpose     = "public-ingress"
+    ManagedBy   = "terraform"
+  }
 }

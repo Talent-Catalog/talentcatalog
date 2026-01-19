@@ -58,6 +58,12 @@ variable "acm_certificate_tags" {
   default     = {}
 }
 
+variable "alb_tags" {
+  type        = map(string)
+  description = "Tags to apply to the Application Load Balancer"
+  default     = {}
+}
+
 variable "site_domain" {
   type        = string
   description = "The domain name of the website"

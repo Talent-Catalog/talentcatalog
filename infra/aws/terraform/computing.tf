@@ -134,6 +134,13 @@ module "alb" {
       }
     }
   ]
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.alb_tags
+  )
 }
 
 # CloudWatch Logs
