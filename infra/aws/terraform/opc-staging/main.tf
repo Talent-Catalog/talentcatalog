@@ -114,4 +114,13 @@ module "tc-plus-staging" {
 
   web_admin = "https://test.plus.tctalent.org/admin-portal"
   web_portal = "https://test.plus.tctalent.org/candidate-portal"
+
+  acm_certificate_tags = {
+    Project     = "OPC"
+    Application = "TC-Plus"
+    Environment = "staging"
+    Component   = "acm"
+    Purpose     = "tls"
+    ManagedBy   = "terraform"
+  }
 }

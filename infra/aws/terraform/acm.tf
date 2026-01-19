@@ -7,9 +7,12 @@ resource "aws_acm_certificate" "this" {
     create_before_destroy = true
   }
 
-  tags = {
-    Name = "${var.app}-${var.env}"
-  }
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.acm_certificate_tags
+  )
 }
 
 # Route53 validation records for ACM certificate

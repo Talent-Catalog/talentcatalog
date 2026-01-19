@@ -52,6 +52,12 @@ variable "db_name" {
   default     = "tbbtalent"
 }
 
+variable "acm_certificate_tags" {
+  type        = map(string)
+  description = "Tags to apply to the ACM certificate"
+  default     = {}
+}
+
 variable "site_domain" {
   type        = string
   description = "The domain name of the website"
