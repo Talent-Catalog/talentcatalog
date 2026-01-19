@@ -92,7 +92,7 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
-import org.tctalent.server.service.db.CandidateDtoService;
+import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DocPublisherService;
 import org.tctalent.server.service.db.ExportColumnsService;
@@ -121,7 +121,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
     private final CandidateRepository candidateRepository;
-    private final CandidateDtoService candidateDtoService;
+    private final CandidateDtoFetchService candidateDtoFetchService;
     private final CandidateSavedListRepository candidateSavedListRepository;
     private final CandidateOpportunityService candidateOpportunityService;
     private final ExportColumnsService exportColumnsService;
@@ -141,7 +141,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Autowired
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
-        CandidateDtoService candidateDtoService,
+        CandidateDtoFetchService candidateDtoFetchService,
         CandidateSavedListRepository candidateSavedListRepository,
         CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
@@ -153,7 +153,7 @@ public class SavedListServiceImpl implements SavedListService {
         UserRepository userRepository,
         UserService userService) {
         this.candidateRepository = candidateRepository;
-        this.candidateDtoService = candidateDtoService;
+        this.candidateDtoFetchService = candidateDtoFetchService;
         this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateOpportunityService = candidateOpportunityService;
         this.exportColumnsService = exportColumnsService;
@@ -567,7 +567,7 @@ public class SavedListServiceImpl implements SavedListService {
         String sql = extractFetchSQL(savedList, request, true);
         String countSql = extractCountSQL(savedList, request);
 
-        return candidateDtoService.doFetchCandidateDtos(sql, countSql, pageRequest);
+        return candidateDtoFetchService.fetchPage(sql, countSql, pageRequest);
     }
 
     private String extractCountSQL(SavedList savedList, SavedListGetRequest request) {

@@ -26,7 +26,10 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 /**
- * Service interface for managing Candidate DTOs.
+ * Service interface for fetching Candidate DTOs from the database.
+ * <p>
+ *     Supports caching of CandidateDTOs.
+ * </p>
  * <p>
  *     CandidateDTOs are different to Candidate entities in that they are intended to be
  *     used as read-only objects. They can be changed but there will be no side effects,
@@ -36,7 +39,7 @@ import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
  *
  * @author John Cameron
  */
-public interface CandidateDtoService {
+public interface CandidateDtoFetchService {
 
     /**
      * Fetches a page of Candidate DTOs from the database by executing the given SQL queries.
@@ -46,11 +49,11 @@ public interface CandidateDtoService {
      * @param pageRequest Page request specifying the page number and page size and sort (if any).
      * @return Page of Candidate DTOs
      */
-    Page<CandidateReadDto> doFetchCandidateDtos(
+    Page<CandidateReadDto> fetchPage(
         String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest);
 
     /**
-     * Loads Candidate DTOs into a Map of ids to CandidateReadDto objects
+     * Fetches Candidate DTOs into a Map of ids to CandidateReadDto objects
      * for the given candidate IDs.
      *
      * @param ids Ids of candidates to be fetched
@@ -59,7 +62,7 @@ public interface CandidateDtoService {
      * @throws NoSuchObjectException if any of the ids are bad - ie do not correspond a candidate.
      */
     @NonNull
-    Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids)
+    Map<Long, CandidateReadDto> fetchByIds(Collection<Long> ids)
         throws NoSuchObjectException, JsonProcessingException;
 
 }

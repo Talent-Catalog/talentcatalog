@@ -204,9 +204,6 @@ public class SavedListCandidateAdminApi implements
             .getSavedListCandidateDtos(savedList, request);
 
         populateComputedFields(candidates, savedListId);
-//todo The above call replaces this...
-//      savedListService.setCandidateDtoContext(savedListId, candidates);
-//todo That is because the population of completed fields in not done in the entity object code.
 
         //TODO JC Review how this is done. Commented out for now. See issue 2989
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab

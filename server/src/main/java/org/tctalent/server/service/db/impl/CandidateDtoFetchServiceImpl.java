@@ -41,7 +41,7 @@ import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.repository.db.read.cache.CandidateVersionDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.repository.db.read.sql.CandidateJsonDao;
-import org.tctalent.server.service.db.CandidateDtoService;
+import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.textExtract.IdAndRank;
 
@@ -67,7 +67,7 @@ import org.tctalent.server.util.textExtract.IdAndRank;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CandidateDtoServiceImpl implements CandidateDtoService {
+public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
     @PersistenceContext
     private EntityManager entityManager;
     private final CandidateJsonDao jsonDao;
@@ -77,7 +77,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
     private final CandidateVersionDao versionDao;
 
     @Override
-    public Page<CandidateReadDto> doFetchCandidateDtos(
+    public Page<CandidateReadDto> fetchPage(
         String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest) {
         //Create and execute the query to return the candidate ids
         Query query = entityManager.createNativeQuery(fetchIdsSql);
@@ -114,7 +114,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
 
         Map<Long, CandidateReadDto> candidatesByIdUnsorted;
         try {
-            candidatesByIdUnsorted = loadByIds(ids);
+            candidatesByIdUnsorted = fetchByIds(ids);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -165,7 +165,7 @@ public class CandidateDtoServiceImpl implements CandidateDtoService {
 
     @Override
     @NonNull
-    public Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids)
+    public Map<Long, CandidateReadDto> fetchByIds(Collection<Long> ids)
         throws NoSuchObjectException, JsonProcessingException {
 
         if (ids == null || ids.isEmpty()) {

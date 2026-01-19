@@ -134,7 +134,7 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateDtoService;
+import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -166,7 +166,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final CandidateDtoService candidateDtoService;
+    private final CandidateDtoFetchService candidateDtoFetchService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
@@ -2153,7 +2153,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         String sql = extractFetchSQL(request, user, excludedCandidates, true);
         String countSql = extractCountSQL(request, user, excludedCandidates);
 
-        return candidateDtoService.doFetchCandidateDtos(sql, countSql, pageRequest);
+        return candidateDtoFetchService.fetchPage(sql, countSql, pageRequest);
     }
 
 
