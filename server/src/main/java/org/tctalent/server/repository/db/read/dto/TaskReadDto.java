@@ -20,7 +20,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlColumn;
@@ -54,7 +53,9 @@ public class TaskReadDto {
     private Long id;
     private String name;
     private boolean optional;
-    private TaskType taskType;
+
+    //TODO JC Can't map to TaskType because TaskType values don't match fields in db.
+    private String taskType;
 
     @SqlColumn(transform = "to_jsonb(string_to_array(%s, ','))") //Convert csv string to jsonb array
     private List<String> uploadableFileTypes;

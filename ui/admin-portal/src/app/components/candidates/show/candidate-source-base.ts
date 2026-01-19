@@ -57,8 +57,9 @@ export class CandidateSourceBaseComponent {
   @Input() candidateSource: CandidateSource;
   //Temporary - todo to be removed when we no longer use Elasticsearch or CandidateSpecifications
   @Input() useOldSearch: boolean;
-  //Temporary - todo to be removed when we always use fast search.
-  @Input() useFastSearch: boolean;
+
+  //Temporary - todo to be removed when we no longer use old fetching
+  useOldFetch: boolean = false;
 
   selectedFields: CandidateFieldInfo[] = [];
 
@@ -166,11 +167,8 @@ export class CandidateSourceBaseComponent {
     const request = this.createSearchRequest(keyword, showClosedOpps);
     request.dtoType = dtoType;
 
-    //todo jc This is where we could flag fast retrieval for both lists and searches
-    request.useCachedDtos = this.useFastSearch;
-
     // Return the observable so the caller can subscribe to it
-    return this.candidateSourceCandidateService.searchPaged(this.candidateSource, request).pipe(
+    return this.candidateSourceCandidateService.searchPaged(this.candidateSource, request, this.useOldFetch).pipe(
       tap(results => {
         this.results = results;
         this.cacheResults();

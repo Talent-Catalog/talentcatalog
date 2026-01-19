@@ -113,11 +113,7 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         start = end;
 
         Map<Long, CandidateReadDto> candidatesByIdUnsorted;
-        try {
-            candidatesByIdUnsorted = fetchByIds(ids);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        candidatesByIdUnsorted = fetchByIds(ids);
 
         end = System.currentTimeMillis();
         long fetchDtosTime = end - start;
@@ -166,7 +162,7 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
     @Override
     @NonNull
     public Map<Long, CandidateReadDto> fetchByIds(Collection<Long> ids)
-        throws NoSuchObjectException, JsonProcessingException {
+        throws NoSuchObjectException {
 
         if (ids == null || ids.isEmpty()) {
             return Map.of();
@@ -321,7 +317,11 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
 
         Map<Long, CandidateReadDto> out = new HashMap<>(jsonById.size());
         for (Map.Entry<Long, String> e : jsonById.entrySet()) {
-            out.put(e.getKey(), deserialize(e.getValue()));
+            try {
+                out.put(e.getKey(), deserialize(e.getValue()));
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         return out;
     }

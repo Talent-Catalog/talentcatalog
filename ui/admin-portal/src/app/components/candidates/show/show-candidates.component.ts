@@ -374,11 +374,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
 
     //Redo existing search if the type of search changes
-    if (changes.useOldSearch || changes.useFastSearch) {
+    if (changes.useOldSearch) {
       if (this.searchRequest) {
-        if (changes.useFastSearch) {
-          this.searchRequest.useFastSearch = changes.useFastSearch.currentValue ;
-        }
         if (changes.useOldSearch) {
           this.searchRequest.useOldSearch = changes.useOldSearch.currentValue ;
         }
@@ -438,7 +435,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
     //todo jc Display a text sort toggle if there is a query string
 
-    console.log("applying search request: Fast = " + request.useFastSearch + ", Old = " + request.useOldSearch);
+    console.log("applying search request: Old = " + request.useOldSearch);
 
     //Guard against the case where we have a text sort where there is no query string.
     let queryString = request.simpleQueryString;
@@ -551,6 +548,11 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   onReviewStatusChange() {
+    this.doSearch(true);
+  }
+
+  toggleFetch() {
+    this.useOldFetch = !this.useOldFetch;
     this.doSearch(true);
   }
 

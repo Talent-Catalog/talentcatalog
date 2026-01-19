@@ -36,8 +36,11 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
+import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -55,15 +58,50 @@ public class SavedSearchCandidateAdminApi implements
     IManyToManyApi<SavedSearchGetRequest, UpdateSavedListContentsRequest> {
 
     private final CandidateBuilderSelector builderSelector;
+    private final CandidateDtoService candidateDtoService;
     private final SavedSearchService savedSearchService;
 
     @Override
     public @NotNull Map<String, Object> searchPaged(
             long savedSearchId, @Valid SavedSearchGetRequest request)
+        throws NoSuchObjectException {
+
+        Page<CandidateReadDto> candidates =
+            savedSearchService.searchCandidateDtos(savedSearchId, request);
+
+        //The selection list provides context for candidates selected from the search results.
+        SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(savedSearchId);
+        candidateDtoService.populateComputedFields(candidates, selectionList.getId());
+
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
+        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
+//        for (Candidate candidate : candidates) {
+//            taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+//        }
+
+        long start = System.currentTimeMillis();
+        long end;
+
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
+        final Map<String, Object> stringObjectMap = builder.buildPage(candidates);
+
+        end = System.currentTimeMillis();
+        long computeDtoTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: computeDto: " + computeDtoTime
+            ).logInfo();
+
+        return stringObjectMap;
+    }
+
+    @PostMapping("{id}/search-paged-old-fetch")
+    public @NotNull Map<String, Object> searchPagedOldFetch(
+        @PathVariable("id") long savedSearchId, @Valid  @RequestBody SavedSearchGetRequest request)
             throws NoSuchObjectException {
 
         Page<Candidate> candidates =
-                savedSearchService.searchCandidates(savedSearchId, request);
+            savedSearchService.searchCandidates(savedSearchId, request);
 
         savedSearchService.setCandidateContext(savedSearchId, candidates);
 

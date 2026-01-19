@@ -51,14 +51,13 @@ export class CandidateSourceCandidateService {
       `${apiUrl}/${source.id}/search`, request)
   }
 
-  searchPaged(source: CandidateSource, request: SearchCandidateSourcesRequest):
+  searchPaged(source: CandidateSource, request: SearchCandidateSourcesRequest, useOldFetch: boolean):
     Observable<SearchResults<Candidate>> {
 
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
-    //todo hack the fast search for lists.
     let suffix = "search-paged";
-    if (!isSavedSearch(source)) suffix = 'search-paged-fast'
+    if (useOldFetch) suffix = 'search-paged-old-fetch'
     return this.http.post<SearchResults<Candidate>>(
       `${apiUrl}/${source.id}/${suffix}`, request)
   }

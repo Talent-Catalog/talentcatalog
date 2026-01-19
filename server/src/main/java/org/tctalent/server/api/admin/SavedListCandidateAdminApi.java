@@ -16,14 +16,11 @@
 
 package org.tctalent.server.api.admin;
 
-import static org.tctalent.server.configuration.SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID;
-
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,18 +46,14 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateAttachment;
-import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.mapper.CandidateAttachmentMapper;
-import org.tctalent.server.repository.db.read.dto.CandidateAttachmentReadDto;
-import org.tctalent.server.repository.db.read.dto.CandidateDependantReadDto;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.list.ContentUpdateType;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
@@ -93,9 +85,9 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class SavedListCandidateAdminApi implements
     IManyToManyApi<SavedListGetRequest, UpdateExplicitSavedListContentsRequest> {
 
+    private final CandidateDtoService candidateDtoService;
     private final CandidateService candidateService;
     private final CandidateSavedListService candidateSavedListService;
-    private final CandidateAttachmentMapper attachmentMapper;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final CandidateBuilderSelector candidateBuilderSelector;
@@ -179,31 +171,10 @@ public class SavedListCandidateAdminApi implements
             long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(savedListId);
 
-        Page<Candidate> candidates = candidateService
-            .getSavedListCandidates(savedList, request);
-
-        savedListService.setCandidateContext(savedListId, candidates);
-
-        //TODO JC Review how this is done. Commented out for now. See issue 2989
-        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
-//        for (Candidate candidate : candidates) {
-//            taskAssignmentService.populateTransientTaskAssignmentFields(
-//                candidate.getTaskAssignments());
-//        }
-
-        DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
-        return builder.buildPage(candidates);
-    }
-
-    @PostMapping("{id}/search-paged-fast")
-    public @NotNull Map<String, Object> searchPagedFast(
-        @PathVariable("id") long savedListId, @Valid @RequestBody SavedListGetRequest request) throws NoSuchObjectException {
-        SavedList savedList = savedListService.get(savedListId);
-
         Page<CandidateReadDto> candidates = savedListService
             .getSavedListCandidateDtos(savedList, request);
 
-        populateComputedFields(candidates, savedListId);
+        candidateDtoService.populateComputedFields(candidates, savedListId);
 
         //TODO JC Review how this is done. Commented out for now. See issue 2989
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
@@ -218,49 +189,25 @@ public class SavedListCandidateAdminApi implements
         return builder.buildPage(candidates);
     }
 
-    //TODO JC This needs to be shared with SavedSearch - there it uses the selection list of the
-    // saved search, only updating candidates in the selection list.
-    private void populateComputedFields(Iterable<CandidateReadDto> candidates, long savedListId) {
+    @PostMapping("{id}/search-paged-old-fetch")
+    public @NotNull Map<String, Object> searchPagedOldFetch(
+        @PathVariable("id") long savedListId, @Valid @RequestBody SavedListGetRequest request) throws NoSuchObjectException {
+        SavedList savedList = savedListService.get(savedListId);
 
-        //Get all CandidateSavedList objects in a single db access.
-        Set<Long> ids = new HashSet<>();
-        for (CandidateReadDto candidate : candidates) {
-            ids.add(candidate.getId());
-        }
-        Map<Long, CandidateSavedList> csls =
-            candidateSavedListService.findByCandidateIds(ids, savedListId);
+        Page<Candidate> candidates = candidateService
+            .getSavedListCandidates(savedList, request);
 
-        //Load all candidates in pending terms list
-        Set<Long> pendingTermsIds = savedListService.fetchCandidateIds(PENDING_TERMS_ACCEPTANCE_LIST_ID);
+        savedListService.setCandidateContext(savedListId, candidates);
 
-        //Populate the computed fields
-        for (CandidateReadDto candidate : candidates) {
-            //Retrieve list context for this candidate
-            CandidateSavedList csl = csls.get(candidate.getId());
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
+        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
+//        for (Candidate candidate : candidates) {
+//            taskAssignmentService.populateTransientTaskAssignmentFields(
+//                candidate.getTaskAssignments());
+//        }
 
-            //If the candidate is in the list then we need to retrieve the list dependant context.
-            if (csl != null) {
-                //Set any context note
-                candidate.setContextNote(csl.getContextNote());
-
-                //Need to retrieve the list dependant attachments if they exist
-                candidate.setListShareableCv(createDto(csl.getShareableCv()));
-                candidate.setListShareableDoc(createDto(csl.getShareableDoc()));
-            }
-
-            //Check whether the candidate is in the pending terms list
-            candidate.setPendingTerms(pendingTermsIds.contains(candidate.getId()));
-
-            //Compute the number of dependants
-            final List<CandidateDependantReadDto> dependants = candidate.getCandidateDependants();
-            candidate.setNumberDependants(dependants == null ? 0 : dependants.size());
-        }
-    }
-
-    @Nullable
-    private CandidateAttachmentReadDto createDto(@Nullable CandidateAttachment attachment) {
-        //TODO JC Will this copy the createdBy user?
-        return attachment == null ? null : attachmentMapper.toDto(attachment);
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
+        return builder.buildPage(candidates);
     }
 
     @Override

@@ -318,6 +318,32 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    @Override
+    public Page<CandidateReadDto> searchCandidateDtos(long savedSearchId,
+        SavedSearchGetRequest request) throws NoSuchObjectException {
+        SearchCandidateRequest searchRequest =
+            loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request.
+        searchRequest.merge(request);
+
+        //If user filters on unverified statuses we bypass performing a full search
+        //Simply return candidates that the user has already reviewed as verified and/or rejected
+        if (request.getReviewStatusFilter() != null &&
+            request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
+            return reviewedCandidateDtos(searchRequest);
+        }
+
+        //Do the search
+        final Page<CandidateReadDto> candidates = doSearchCandidateDtos(searchRequest);
+
+        //Add in any selections
+        markUserSelectedCandidateDtos(savedSearchId, candidates);
+
+        return candidates;
+    }
+
     private Page<Candidate> reviewedCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates = candidateRepository.findReviewedCandidatesBySavedSearchId(
             request.getSavedSearchId(),
@@ -325,6 +351,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.getPageRequestWithoutSort());
 
         return candidates;
+    }
+
+    private Page<CandidateReadDto> reviewedCandidateDtos(SearchCandidateRequest request) {
+        Page<Candidate> candidates = reviewedCandidates(request);
+
+        List<Long> ids = candidates.stream().map(Candidate::getId).collect(Collectors.toList());
+        final Map<Long, CandidateReadDto> dtos = candidateDtoFetchService.fetchByIds(ids);
+
+        //Construct a sortedlist of DTOs in the same order as the ids.
+        List<CandidateReadDto> candidateDtos = new ArrayList<>();
+        for (Long id : ids) {
+            candidateDtos.add(dtos.get(id));
+        }
+
+        return new PageImpl<>(candidateDtos, request.getPageRequest(), candidates.getTotalElements());
     }
 
     @Override

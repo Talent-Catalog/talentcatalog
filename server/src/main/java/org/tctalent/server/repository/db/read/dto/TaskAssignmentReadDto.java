@@ -20,7 +20,6 @@ import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
@@ -43,5 +42,7 @@ public class TaskAssignmentReadDto {
 
     @JsonOneToOne(joinColumn = "task_id")
     private TaskReadDto task;
-    private TaskType taskType;
+
+    //TODO JC Can't map to TaskType because TaskType values don't match fields in db.
+    private String taskType;
 }
