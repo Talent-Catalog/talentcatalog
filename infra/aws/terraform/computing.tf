@@ -83,12 +83,6 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attach
 }
 
 # ALB
-data "aws_acm_certificate" "certificate" {
-  domain      = var.site_domain
-  types       = ["AMAZON_ISSUED"]
-  most_recent = true
-}
-
 module "alb" {
   source             = "terraform-aws-modules/alb/aws"
   version            = "~> 6.0"
@@ -123,7 +117,7 @@ module "alb" {
     {
       port               = 443
       protocol           = "HTTPS"
-      certificate_arn    = data.aws_acm_certificate.certificate.arn
+      certificate_arn    = aws_acm_certificate_validation.this.certificate_arn
       target_group_index = 0
     }
   ]
