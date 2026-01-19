@@ -52,27 +52,9 @@ variable "db_name" {
   default     = "tbbtalent"
 }
 
-variable "acm_certificate_tags" {
+variable "common_tags" {
   type        = map(string)
-  description = "Tags to apply to the ACM certificate"
-  default     = {}
-}
-
-variable "alb_tags" {
-  type        = map(string)
-  description = "Tags to apply to the Application Load Balancer"
-  default     = {}
-}
-
-variable "ecs_tags" {
-  type        = map(string)
-  description = "Tags to apply to ECS cluster and service"
-  default     = {}
-}
-
-variable "rds_tags" {
-  type        = map(string)
-  description = "Tags to apply to RDS database"
+  description = "Common tags to apply to resources"
   default     = {}
 }
 

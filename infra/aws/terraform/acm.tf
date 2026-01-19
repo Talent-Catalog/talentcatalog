@@ -11,7 +11,11 @@ resource "aws_acm_certificate" "this" {
     {
       Name = "${var.app}-${var.env}"
     },
-    var.acm_certificate_tags
+    var.common_tags,
+    {
+      Component = "acm"
+      Purpose   = "tls"
+    }
   )
 }
 

@@ -139,7 +139,11 @@ module "alb" {
     {
       Name = "${var.app}-${var.env}"
     },
-    var.alb_tags
+    var.common_tags,
+    {
+      Component = "alb"
+      Purpose   = "public-ingress"
+    }
   )
 }
 
@@ -190,7 +194,10 @@ module "ecs" {
     {
       Name = "${var.app}-${var.env}"
     },
-    var.ecs_tags
+    var.common_tags,
+    {
+      Component = "ecs"
+    }
   )
 }
 
@@ -218,7 +225,10 @@ resource "aws_ecs_service" "web-app" {
     {
       Name = "${var.app}-${var.env}"
     },
-    var.ecs_tags
+    var.common_tags,
+    {
+      Component = "ecs"
+    }
   )
 }
 

@@ -21,9 +21,20 @@ provider "aws" {
   }
 }
 
+locals {
+  common_tags = {
+    Project     = "OPC"
+    Application = "TC-Plus"
+    Environment = "staging"
+    ManagedBy   = "terraform"
+  }
+}
+
 # Include the shared configuration
 module "tc-plus-staging" {
   source = "../"
+
+  common_tags = local.common_tags
 
   # ECS
   app = "tc-plus"
@@ -115,37 +126,4 @@ module "tc-plus-staging" {
   web_admin = "https://test.plus.tctalent.org/admin-portal"
   web_portal = "https://test.plus.tctalent.org/candidate-portal"
 
-  acm_certificate_tags = {
-    Project     = "OPC"
-    Application = "TC-Plus"
-    Environment = "staging"
-    Component   = "acm"
-    Purpose     = "tls"
-    ManagedBy   = "terraform"
-  }
-
-  alb_tags = {
-    Project     = "OPC"
-    Application = "TC-Plus"
-    Environment = "staging"
-    Component   = "alb"
-    Purpose     = "public-ingress"
-    ManagedBy   = "terraform"
-  }
-
-  ecs_tags = {
-    Project     = "OPC"
-    Application = "TC-Plus"
-    Environment = "staging"
-    Component   = "ecs"
-    ManagedBy   = "terraform"
-  }
-
-  rds_tags = {
-    Project     = "OPC"
-    Application = "TC-Plus"
-    Environment = "staging"
-    Component   = "rds"
-    ManagedBy   = "terraform"
-  }
 }

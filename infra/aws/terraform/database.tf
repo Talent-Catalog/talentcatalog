@@ -58,6 +58,9 @@ module "database" {
     {
       Name = "${var.app}-${var.env}"
     },
-    var.rds_tags
+    var.common_tags,
+    {
+      Component = "rds"
+    }
   )
 }
