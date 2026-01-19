@@ -258,7 +258,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         final List<CandidateSavedList> csls =
             candidateSavedListRepository.findBySavedList_Id(savedListId);
 
-        //Now load the csls into a map by candidate is for easy access.
+        //Now load the csls into a map by candidate id for easy access.
         Map<Long, CandidateSavedList> result = new HashMap<>();
         for (CandidateSavedList csl : csls) {
             result.put(csl.getCandidate().getId(), csl);
