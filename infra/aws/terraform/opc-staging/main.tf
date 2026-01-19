@@ -72,7 +72,7 @@ module "tc-plus-staging" {
 
   email_user = "<REPLACE_ME>" # todo confirm if this is used / needed - it is not configured in the AWS staging task definition
 
-  environment = "plus-staging"
+  environment = "opc-staging"
 
   # todo replicate in OPC workspace
   drive_id = "<REPLACE_ME>"
@@ -92,7 +92,7 @@ module "tc-plus-staging" {
   # todo redis_host, redis_port
 
   server_port = "8080"
-  server_url = "https://plus.test.tctalent.org/"
+  server_url = "https://test.plus.tctalent.org/"
 
   # todo either create for OPC -- or decouple TC+ from SF ?
   sf_base_classic_url = "<REPLACE_ME>"
@@ -114,7 +114,7 @@ module "tc-plus-staging" {
 
   # todo tc_api_key, tc_api_url
 
-  tc_cors_urls = "https://plus.test.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com" # todo amplify urls
+  tc_cors_urls = "https://test.plus.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com" # todo amplify urls
 
   #  todo tc_destinations
 
