@@ -4,10 +4,8 @@
 # it can be changed later to use workspaces instead of directories to follow the DRY concept!
 terraform {
   required_version = ">= 1.3.0"
-}
 
-# Store the terraform state remotely in S3 bucket
-terraform {
+  # Store the terraform state remotely in S3 bucket
   backend "s3" {
     bucket = "tbbtalent-terraform-state-test"
     key    = "terraform.tfstate"

@@ -2,10 +2,8 @@
 # The idea of using a separate directory is to use different remote state backends and roles
 terraform {
   required_version = ">= 1.3.0"
-}
 
-# Store the terraform state remotely in S3 bucket
-terraform {
+  # Store the terraform state remotely in S3 bucket
   backend "s3" {
     bucket         = "opc-shared-terraform-state"
     key            = "staging/talentcatalog/terraform.tfstate"
