@@ -1,5 +1,7 @@
 # This file is the main entry to the opc-staging infrastructure
 # The idea of using a separate directory is to use different remote state backends and roles
+
+# Configure  the opc-staging terraform workspace
 terraform {
   required_version = ">= 1.3.0"
 
@@ -13,6 +15,7 @@ terraform {
   }
 }
 
+# Configure the AWS provider
 provider "aws" {
   region = "eu-west-2"
 
@@ -21,6 +24,7 @@ provider "aws" {
   }
 }
 
+# Define common tags for all resources
 locals {
   common_tags = {
     Project     = "OPC"
@@ -36,7 +40,7 @@ module "tc-plus-staging" {
 
   common_tags = local.common_tags
 
-  # ECS
+  # ECS configuration
   app = "tc-plus"
   env = "opc-staging"
   site_domain = "test.plus.tctalent.org"
@@ -53,7 +57,7 @@ module "tc-plus-staging" {
   ecs_tasks_count = 2
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
-  # Spring
+  # Spring application configuration
 
   # todo -- SM: The below service configuration will be addressed in a follow-up PR / PRs
 
