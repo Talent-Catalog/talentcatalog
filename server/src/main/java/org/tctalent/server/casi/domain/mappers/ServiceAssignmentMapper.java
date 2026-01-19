@@ -45,7 +45,7 @@ public class ServiceAssignmentMapper {
         .serviceCode(e.getServiceCode())
         .resource(ServiceResourceMapper.toModel(re))
         .candidateId(e.getCandidate().getId())
-        .actorId(e.getActor().getId())
+        .actorId(e.getActor() != null ? e.getActor().getId() : null)
         .status(e.getStatus())
         .assignedAt(e.getAssignedAt())
         .build();
