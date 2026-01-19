@@ -28,6 +28,30 @@ variable "db_instance_class" {
   description = "The database instance class"
 }
 
+variable "db_engine_version" {
+  type        = string
+  description = "The PostgreSQL engine version"
+  default     = "14.3"
+}
+
+variable "db_family" {
+  type        = string
+  description = "The database parameter group family"
+  default     = "postgres14"
+}
+
+variable "db_major_engine_version" {
+  type        = string
+  description = "The major version of the database engine"
+  default     = "14"
+}
+
+variable "db_name" {
+  type        = string
+  description = "The name of the database to create (alphanumeric only)"
+  default     = "tbbtalent"
+}
+
 variable "site_domain" {
   type        = string
   description = "The domain name of the website"
