@@ -27,7 +27,7 @@ module "tc-plus-staging" {
 
   # ECS
   app = "tc-plus"
-  env = "plus-staging"
+  env = "opc-staging"
   site_domain = "test.plus.tctalent.org"
   container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/app:tc-plus-staging"
   container_port = 8080
