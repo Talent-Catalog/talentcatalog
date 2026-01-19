@@ -53,4 +53,11 @@ module "database" {
   iam_database_authentication_enabled = true
 
   multi_az = var.db_multi_az
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.rds_tags
+  )
 }

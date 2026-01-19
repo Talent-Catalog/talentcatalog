@@ -185,6 +185,13 @@ module "ecs" {
       weight = 50
     }
   }
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.ecs_tags
+  )
 }
 
 resource "aws_ecs_service" "web-app" {
@@ -206,6 +213,13 @@ resource "aws_ecs_service" "web-app" {
     assign_public_ip = true
   }
   health_check_grace_period_seconds = 300
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.ecs_tags
+  )
 }
 
 resource "aws_ecs_task_definition" "web-app" {

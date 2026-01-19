@@ -132,4 +132,20 @@ module "tc-plus-staging" {
     Purpose     = "public-ingress"
     ManagedBy   = "terraform"
   }
+
+  ecs_tags = {
+    Project     = "OPC"
+    Application = "TC-Plus"
+    Environment = "staging"
+    Component   = "ecs"
+    ManagedBy   = "terraform"
+  }
+
+  rds_tags = {
+    Project     = "OPC"
+    Application = "TC-Plus"
+    Environment = "staging"
+    Component   = "rds"
+    ManagedBy   = "terraform"
+  }
 }

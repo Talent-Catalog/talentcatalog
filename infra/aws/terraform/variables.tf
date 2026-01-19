@@ -64,6 +64,18 @@ variable "alb_tags" {
   default     = {}
 }
 
+variable "ecs_tags" {
+  type        = map(string)
+  description = "Tags to apply to ECS cluster and service"
+  default     = {}
+}
+
+variable "rds_tags" {
+  type        = map(string)
+  description = "Tags to apply to RDS database"
+  default     = {}
+}
+
 variable "site_domain" {
   type        = string
   description = "The domain name of the website"
