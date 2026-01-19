@@ -54,6 +54,9 @@ module "tc-plus-staging" {
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
   # Spring
+
+  # todo -- SM: The below service configuration will be addressed in a follow-up PR / PRs
+
   # todo create s3 access and required buckets
   aws_access_key = "<REPLACE_ME>" # for s3 -- shouldn't be hardcoded todo
   aws_secret_key = "<REPLACE_ME>" # for s3 -- shouldn't be hardcoded todo
