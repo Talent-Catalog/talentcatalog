@@ -40,7 +40,7 @@ import org.tctalent.server.model.db.task.TaskType;
 @SequenceGenerator(name = "seq_gen", sequenceName = "task_id_seq", allocationSize = 1)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "task_type")
-@DiscriminatorValue("Task")
+@DiscriminatorValue("Simple")
 @Getter
 @Setter
 public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Task {

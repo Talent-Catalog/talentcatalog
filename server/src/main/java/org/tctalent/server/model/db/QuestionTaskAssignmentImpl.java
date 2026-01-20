@@ -30,7 +30,7 @@ import org.tctalent.server.model.db.task.QuestionTaskAssignment;
  * @author John Cameron
  */
 @Entity(name="QuestionTaskAssignment")
-@DiscriminatorValue("QuestionTask")
+@DiscriminatorValue("Question")
 @Getter
 @Setter
 public class QuestionTaskAssignmentImpl extends TaskAssignmentImpl implements

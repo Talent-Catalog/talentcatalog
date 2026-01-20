@@ -29,7 +29,7 @@ import org.tctalent.server.model.db.task.TaskType;
  * @author John Cameron
  */
 @Entity(name="FormTask")
-@DiscriminatorValue("FormTask")
+@DiscriminatorValue("Form")
 @Getter
 @Setter
 public class FormTaskImpl extends TaskImpl implements FormTask {
