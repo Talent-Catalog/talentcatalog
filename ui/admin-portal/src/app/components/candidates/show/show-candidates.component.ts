@@ -433,8 +433,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.searching = true;
     const request = this.searchRequest;
 
-    //todo jc Display a text sort toggle if there is a query string
-
     console.log("applying search request: Old = " + request.useOldSearch);
 
     //Guard against the case where we have a text sort where there is no query string.
@@ -459,7 +457,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     request.sortDirection = this.sortDirection;
     request.dtoType = this.searchDetail;
 
-    this.subscription = this.candidateService.search(request).subscribe(
+    this.subscription = this.candidateService.search(request, this.useOldFetch).subscribe(
       results => {
         this.results = results;
         this.cacheResults();
