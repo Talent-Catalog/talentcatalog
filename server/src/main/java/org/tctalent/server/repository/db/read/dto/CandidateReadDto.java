@@ -22,6 +22,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
@@ -171,7 +172,7 @@ public class CandidateReadDto {
     private CandidateAttachmentReadDto shareableDoc;
     private String shareableNotes;
     private String state;
-    private String status;
+    private CandidateStatus status;
     @JsonOneToOne(joinColumn = "survey_type_id")
     private SurveyTypeReadDto surveyType;
     private String surveyComment;

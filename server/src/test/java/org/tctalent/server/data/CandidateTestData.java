@@ -165,13 +165,13 @@ public class CandidateTestData {
         return List.of(
             CandidateReadDto.builder()
                 .user(candidate1userdto).phone("+123-456-789").whatsapp("+123-456-789")
-                .nationality(CountryTestData.PAKISTAN_DTO).build(),
+                .status(CandidateStatus.draft).nationality(CountryTestData.PAKISTAN_DTO).build(),
             CandidateReadDto.builder()
                 .user(candidate2userdto).phone("+234-567-890").whatsapp("+123-456-789")
-                .nationality(CountryTestData.PAKISTAN_DTO).build(),
+                .status(CandidateStatus.draft).nationality(CountryTestData.PAKISTAN_DTO).build(),
             CandidateReadDto.builder()
                 .user(candidate3userdto).phone("+345-678-901").whatsapp("+345-678-901")
-                .nationality(CountryTestData.PAKISTAN_DTO).build()
+                .status(CandidateStatus.draft).nationality(CountryTestData.PAKISTAN_DTO).build()
         );
     }
 
