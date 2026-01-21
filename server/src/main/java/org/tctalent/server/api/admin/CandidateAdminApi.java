@@ -108,6 +108,8 @@ public class CandidateAdminApi {
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = savedSearchService.searchCandidates(request);
 
+        savedSearchService.setCandidateContext(request.getSavedSearchId(), candidates);
+
         long start = System.currentTimeMillis();
         long end;
 

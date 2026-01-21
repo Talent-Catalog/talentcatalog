@@ -206,6 +206,7 @@ class CandidateAdminApiTest extends ApiTestBase {
 
         postSearchRequestAndVerifyResponse(SEARCH_PATH, objectMapper.writeValueAsString(request));
         verify(savedSearchService).searchCandidates(any(SearchCandidateRequest.class));
+        verify(savedSearchService).setCandidateContext(any(), any());
     }
 
     @Test
