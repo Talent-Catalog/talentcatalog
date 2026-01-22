@@ -96,7 +96,7 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
     }
 
     this.candidateOpportunity = this.candidate.candidateOpportunities
-      .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
+      .find(co => co.jobOpp.id == selectedJobOppId);
   }
 
   ngAfterViewInit() {
