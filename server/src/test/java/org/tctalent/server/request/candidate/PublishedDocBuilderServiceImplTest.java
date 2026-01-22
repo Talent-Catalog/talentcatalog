@@ -53,7 +53,7 @@ class PublishedDocBuilderServiceImplTest {
     candidate.setId(1234L);
     candidate.setCandidateNumber("1234");
     CandidateAttachment attachment = new CandidateAttachment();
-    attachment.setLocation("https://candidateCVLink");
+    attachment.setUrl("https://candidateCVLink");
     candidate.setShareableCv(attachment);
     User user = new User();
     candidate.setUser(user);
@@ -81,7 +81,7 @@ class PublishedDocBuilderServiceImplTest {
 
     infoCN = addColumn("cn", "Candidate number",
         new PublishedDocFieldSource("candidateNumber"),
-        new PublishedDocFieldSource("shareableCv.location"));
+        new PublishedDocFieldSource("shareableCv.url"));
 
     infoUser = addColumn("name", "Name", new PublishedDocFieldSource("user"));
 
@@ -89,7 +89,7 @@ class PublishedDocBuilderServiceImplTest {
 
     infoCV = addColumn("cv", "CV",
         new PublishedDocConstantSource("cv"),
-        new PublishedDocFieldSource("shareableCv.location"));
+        new PublishedDocFieldSource("shareableCv.url"));
 
     final PublishedDocPropertySource dependantsSource =
         new PublishedDocPropertySource("dependants");

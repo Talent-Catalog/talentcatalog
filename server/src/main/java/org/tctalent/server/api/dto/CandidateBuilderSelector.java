@@ -491,13 +491,12 @@ public class CandidateBuilderSelector {
             .add("id")
             .add("type")
             .add("name")
-            .add("location")
+            .add("url")
             .add("fileType")
             .add("migrated")
             .add("cv")
             .add("createdDate")
             .add("uploadType")
-            .add("url")
             ;
 
         if (!DtoType.PREVIEW.equals(type)) {

@@ -57,7 +57,7 @@ export enum UploadType {
 export interface CandidateAttachment {
   id?: number;
   name: string;
-  location: string;
+  url: string;
   fileType: string;
   type: AttachmentType;
   migrated: boolean;
