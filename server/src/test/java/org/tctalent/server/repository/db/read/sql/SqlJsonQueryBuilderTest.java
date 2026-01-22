@@ -17,15 +17,33 @@
 package org.tctalent.server.repository.db.read.sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.tctalent.server.repository.db.read.annotation.SqlColumn;
+import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
+import org.tctalent.server.repository.db.read.annotation.SqlTable;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 class SqlJsonQueryBuilderTest {
 
+    @Getter
+    @Setter
+    @SqlTable(name="candidate", alias = "c")
+    @SqlDefaults(mapUnannotatedColumns = true)
+    static class SampleDto {
+        @SqlColumn(transform = "to_jsonb(string_to_array(%s, ','))")
+        private List<String> names;
+        private String somethingElse;
+    }
+
+
     SqlJsonQueryBuilder sqlJsonQueryBuilder;
-    
+
     @BeforeEach
     void setUp() {
         sqlJsonQueryBuilder = new SqlJsonQueryBuilder();
@@ -35,6 +53,18 @@ class SqlJsonQueryBuilderTest {
     void buildByIdsQuery() {
         final String sql = sqlJsonQueryBuilder.buildByIdsQuery(CandidateReadDto.class, "ids");
         System.out.println(sql);
+    }
+
+    @Test
+    void SqlColumnTransforms_are_applied() {
+        final String sql = sqlJsonQueryBuilder.buildByIdsQuery(SampleDto.class, "ids");
+        String expected = """
+            select
+              c.id,
+              jsonb_build_object('names', to_jsonb(string_to_array(c.names, ',')), 'somethingElse', c.something_else) as json
+            from candidate c
+            where c.id in (:ids)""";
+        assertEquals(expected, sql);
     }
 
     @Test

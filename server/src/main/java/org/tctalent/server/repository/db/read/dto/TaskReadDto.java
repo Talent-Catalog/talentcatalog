@@ -17,32 +17,48 @@
 package org.tctalent.server.repository.db.read.dto;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
+import org.tctalent.server.repository.db.read.annotation.SqlColumn;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
 @Getter
 @Setter
-@SqlTable(name="task_assignment", alias = "ctaska")
+@SqlTable(name="task", alias = "ctask")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class TaskAssignmentReadDto {
-    private OffsetDateTime abandonedDate;
+public class TaskReadDto {
+    @SqlIgnore  //This is manually populated (from explicitAllowedAnswers)
+    private List<AllowedQuestionTaskAnswerReadDto> allowedAnswers;
+    private String candidateAnswerField;
 
-    @SqlIgnore //Could be manually populated - but for now it is not being populated
-    private String answer;
-    private String candidateNotes;
-    private OffsetDateTime completedDate;
-    private OffsetDateTime dueDate;
+    @JsonOneToOne(joinColumn = "candidate_form_id")
+    private CandidateFormReadDto candidateForm;
+
+    @JsonOneToOne(joinColumn = "created_by")
+    private UserShortReadDto createdBy;
+    private OffsetDateTime createdDate;
+    private Integer daysToComplete;
+    private String description;
+    private String displayName;
+    private String docLink;
+
+    @SqlColumn(transform = "to_jsonb(string_to_array(%s, ','))") //Convert csv string to jsonb array
+    private List<String> explicitAllowedAnswers;
+
     private Long id;
-    private Status status;
-
-    @JsonOneToOne(joinColumn = "task_id")
-    private TaskReadDto task;
+    private String name;
+    private boolean optional;
 
     //TODO JC Can't map to TaskType because TaskType values don't match fields in db.
     private String taskType;
+
+    @SqlColumn(transform = "to_jsonb(string_to_array(%s, ','))") //Convert csv string to jsonb array
+    private List<String> uploadableFileTypes;
+    private String uploadSubfolderName;
+    private UploadType uploadType;
 }

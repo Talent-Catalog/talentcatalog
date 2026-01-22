@@ -14,20 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.mapper;
+package org.tctalent.server.repository.db.read.dto;
 
-import org.mapstruct.Mapper;
-import org.tctalent.server.model.db.User;
-import org.tctalent.server.repository.db.read.dto.UserReadDto;
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
+import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
-/**
- * User related mappings.
- *
- * @author John Cameron
- */
-@Mapper
-public interface UserMapper {
-    User userIdentityToUser(org.tctalent.anonymization.model.User user);
-
-    UserReadDto toDto(User user);
+@Getter
+@Setter
+@SqlTable(name="candidate_form", alias = "cform")
+@SqlDefaults(mapUnannotatedColumns = true)
+public class CandidateFormReadDto {
+    private String name;
+    private String description;
 }

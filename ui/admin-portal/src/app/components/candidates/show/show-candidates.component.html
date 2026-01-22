@@ -234,6 +234,10 @@
 
   <div class="results-area">
 
+    <div class="col text-center">
+      <input type="checkbox" [checked]="useOldFetch"
+             (change)="toggleFetch()"> Old fetch
+    </div>
 
     <!-- Review status -->
     <div *ngIf="isReviewable()" class="mt-3">

@@ -36,6 +36,8 @@ import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 public class QuestionTaskAssignmentImpl extends TaskAssignmentImpl implements
     QuestionTaskAssignment {
 
+    //TODO JC Shouldn't this have an implementation that fetches the answer using the logic
+    //described in the JavaDoc for QuestionTask.getCandidateAnswerField
     @Transient
     @Nullable
     String answer;

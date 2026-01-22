@@ -17,29 +17,15 @@
 package org.tctalent.server.model.db.mapper;
 
 import org.mapstruct.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.repository.db.read.dto.PartnerReadDto;
-import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.model.db.CandidateAttachment;
+import org.tctalent.server.repository.db.read.dto.CandidateAttachmentReadDto;
 
 /**
- * Maps public object to equivalent entity form local database.
- * <p/>
- * For MapStruct Mapper we need to us abstract class instead of interface so that we can inject in
- * service.
+ * Map CandidateAttachment to a DTO
  *
  * @author John Cameron
  */
 @Mapper
-public abstract class PartnerMapper {
-
-    @Autowired
-    protected PartnerService service;
-
-    public Partner lookUpFromService(
-        org.tctalent.anonymization.model.IdentifiablePartner publicValue) {
-        return publicValue == null ? null : service.findByPublicId(publicValue.getPublicId());
-    }
-
-    abstract public PartnerReadDto toDto(Partner partner);
+public interface CandidateAttachmentMapper {
+  CandidateAttachmentReadDto toDto(CandidateAttachment attachment);
 }
