@@ -47,6 +47,10 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
 
     /**
      * The attachment's url.
+     * 
+     * Historical note: This field maps to the "location" database column for backward 
+     * compatibility. Prior to 2026, this column stored relative S3 paths for file-type 
+     * attachments. Migration V1_400 converted all paths to full URLs.     
      */
     @Column(name = "location") //Originally this field was called location
     private String url;
