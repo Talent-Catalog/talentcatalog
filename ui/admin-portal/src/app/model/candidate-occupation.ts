@@ -16,6 +16,7 @@
 
 import {Occupation} from "./occupation";
 import {User} from "./user";
+import {CandidateJobExperience} from "./candidate-job-experience";
 
 export interface CandidateOccupation {
   id: number;
@@ -26,4 +27,5 @@ export interface CandidateOccupation {
   createdDate: number;
   updatedBy: User;
   updatedDate: number;
+  candidateJobExperiences: CandidateJobExperience[];
 }

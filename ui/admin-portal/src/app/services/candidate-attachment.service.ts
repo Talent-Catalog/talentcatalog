@@ -32,7 +32,7 @@ import {CvText} from "../model/cv-text";
 export interface UpdateCandidateAttachmentRequest {
   id?: number;
   name?: string;
-  location?: string;
+  url?: string;
   cv?: boolean;
 }
 
