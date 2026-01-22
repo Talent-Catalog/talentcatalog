@@ -576,13 +576,8 @@ public class CandidateBuilderSelector {
             .add("createdDate")
             .add("updatedBy", userDto())
             .add("updatedDate")
+            .add("candidateJobExperiences", candidateJobExperienceDto(type))
             ;
-
-            if (DtoType.API.equals(type)) { // include job experiences in candidate occupations for API
-                builder
-                    .add("candidateJobExperiences", candidateJobExperienceDto(type))
-                ;
-            }
 
             return builder;
     }
@@ -599,12 +594,6 @@ public class CandidateBuilderSelector {
             .add("description")
             .add("country", countryService.selectBuilder())
             ;
-
-            if (!DtoType.API.equals(type)) { // do not include candidate occupations in job experiences for API
-                builder
-                    .add("candidateOccupation", candidateOccupationDto(type))
-                ;
-            }
 
             return builder;
     }
