@@ -16,15 +16,11 @@
 
 package org.tctalent.server.service.db;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.Collection;
-import java.util.Map;
-import org.springframework.lang.NonNull;
-import org.tctalent.server.exception.NoSuchObjectException;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
 /**
- * Service interface for managing Candidate DTOs.
+ * Service interface for processing Candidate DTOs.
  * <p>
  *     CandidateDTOs are different to Candidate entities in that they are intended to be
  *     used as read-only objects. They can be changed but there will be no side effects,
@@ -36,17 +32,15 @@ import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
  */
 public interface CandidateDtoService {
 
-    /**
-     * Loads Candidate DTOs into a Map of ids to CandidateReadDto objects 
-     * for the given candidate IDs.
-     *  
-     * @param ids Ids of candidates to be fetched
-     * @return Map of candidate ids to CandidateDTOs
-     * @throws JsonProcessingException if JSON cannot be processed
-     * @throws NoSuchObjectException if any of the ids are bad - ie do not correspond a candidate.
-     */
-    @NonNull
-    Map<Long, CandidateReadDto> loadByIds(Collection<Long> ids) 
-        throws NoSuchObjectException, JsonProcessingException;
 
+    /**
+     * Populates computed fields on the given candidates.
+     * @param candidates Candidates to be updated
+     * @param savedListId Optional id of a saved list serving as the "context" for
+     *                    candidates in that list.
+     *                    Some populated fields - such as "context notes" are populated
+     *                    in the context of a saved list. Candidates who appear in this savedList
+     *                    will have their "context" fields populated.
+     */
+    void populateComputedFields(Iterable<CandidateReadDto> candidates, @Nullable Long savedListId);
 }

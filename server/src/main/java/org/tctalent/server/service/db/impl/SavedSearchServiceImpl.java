@@ -26,7 +26,6 @@ import static org.tctalent.server.util.StringHelper.getStringListFromString;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.opencsv.CSVWriter;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -135,7 +134,7 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateDtoService;
+import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -167,7 +166,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final CandidateDtoService candidateDtoService;
+    private final CandidateDtoFetchService candidateDtoFetchService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
@@ -319,6 +318,32 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    @Override
+    public Page<CandidateReadDto> searchCandidateDtos(long savedSearchId,
+        SavedSearchGetRequest request) throws NoSuchObjectException {
+        SearchCandidateRequest searchRequest =
+            loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request.
+        searchRequest.merge(request);
+
+        //If user filters on unverified statuses we bypass performing a full search
+        //Simply return candidates that the user has already reviewed as verified and/or rejected
+        if (request.getReviewStatusFilter() != null &&
+            request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
+            return reviewedCandidateDtos(searchRequest);
+        }
+
+        //Do the search
+        final Page<CandidateReadDto> candidates = doSearchCandidateDtos(searchRequest);
+
+        //Add in any selections
+        markUserSelectedCandidateDtos(savedSearchId, candidates);
+
+        return candidates;
+    }
+
     private Page<Candidate> reviewedCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates = candidateRepository.findReviewedCandidatesBySavedSearchId(
             request.getSavedSearchId(),
@@ -326,6 +351,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.getPageRequestWithoutSort());
 
         return candidates;
+    }
+
+    private Page<CandidateReadDto> reviewedCandidateDtos(SearchCandidateRequest request) {
+        Page<Candidate> candidates = reviewedCandidates(request);
+
+        List<Long> ids = candidates.stream().map(Candidate::getId).collect(Collectors.toList());
+        final Map<Long, CandidateReadDto> dtos = candidateDtoFetchService.fetchByIds(ids);
+
+        //Construct a sortedlist of DTOs in the same order as the ids.
+        List<CandidateReadDto> candidateDtos = new ArrayList<>();
+        for (Long id : ids) {
+            candidateDtos.add(dtos.get(id));
+        }
+
+        return new PageImpl<>(candidateDtos, request.getPageRequest(), candidates.getTotalElements());
     }
 
     @Override
@@ -2152,89 +2192,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         final PageRequest pageRequest = request.getPageRequest();
 
         String sql = extractFetchSQL(request, user, excludedCandidates, true);
-        LogBuilder.builder(log).action("findCandidates")
-            .message("Query: " + sql).logInfo();
-
-        //Create and execute the query to return the candidate ids
-        Query query = entityManager.createNativeQuery(sql);
-        query.setFirstResult((int) pageRequest.getOffset());
-        query.setMaxResults(pageRequest.getPageSize());
-
-        long start = System.currentTimeMillis();
-        long end;
-
-        //Get results
-        final List<?> results = query.getResultList();
-
-        end = System.currentTimeMillis();
-        long fetchIdsTime = end - start;
-        start = end;
-
-        //Process the results
-        List<IdAndRank> idAndRanks =
-            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
-
-        end = System.currentTimeMillis();
-        long convertTime = end - start;
-        start = end;
-
-        //Get ids of sorted candidates
-        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
-
-        end = System.currentTimeMillis();
-        long fetchEntitiesTime = end - start;
-        start = end;
-
-        Map<Long, CandidateReadDto> candidatesByIdUnsorted;
-        try {
-            candidatesByIdUnsorted = candidateDtoService.loadByIds(ids);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        end = System.currentTimeMillis();
-        long fetchDtosTime = end - start;
-        start = end;
-
-        //Candidates need to be sorted the same as the ids.
-
-        //Construct a sorted list of the candidates in the same order as the returned ids.
-        List<CandidateReadDto> candidatesSorted = new ArrayList<>();
-        for (IdAndRank idAndRank : idAndRanks) {
-            final CandidateReadDto candidate = candidatesByIdUnsorted.get(idAndRank.id());
-
-            //Optionally update candidate data with any ranking values.
-            final Number rank = idAndRank.rank();
-            //Rank is a transient field so no need to set to null
-            if (rank != null) {
-                candidate.setRank(rank);
-            }
-            candidatesSorted.add(candidate);
-        }
-
-        end = System.currentTimeMillis();
-        long sortTime = end - start;
-        start = end;
-
-        //Compute count
         String countSql = extractCountSQL(request, user, excludedCandidates);
-        LogBuilder.builder(log).action("countCandidates")
-            .message("Query: " + countSql).logInfo();
-        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
 
-        end = System.currentTimeMillis();
-        long countTime = end - start;
-
-        LogBuilder.builder(log).action("findCandidates")
-            .message("Timings: fetchIds: " + fetchIdsTime
-                + " convert: " + convertTime
-                + " fetchEntities: " + fetchEntitiesTime
-                + " fetchDtos: " + fetchDtosTime
-                + " sort: " + sortTime
-                + " count: " + countTime
-            ).logInfo();
-
-        return new PageImpl<>(candidatesSorted, pageRequest, total);
+        return candidateDtoFetchService.fetchPage(sql, countSql, pageRequest);
     }
 
 

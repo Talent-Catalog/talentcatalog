@@ -16,36 +16,17 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
-import java.time.OffsetDateTime;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Getter
 @Setter
-@Builder //Useful for constructing unit tests
-@SqlTable(name="users", alias = "u")
+@SqlTable(name="users", alias = "ushort")
 @SqlDefaults(mapUnannotatedColumns = true)
-public class UserReadDto {
-    private OffsetDateTime createdDate;
-    private String email;
-    private String emailVerified;
+public class UserShortReadDto {
     private String firstName;
     private Long id;
-    private OffsetDateTime lastLogin;
     private String lastName;
-
-    @JsonOneToOne(joinColumn = "partner_id")
-    private PartnerReadDto partner;
-
-    private OffsetDateTime updatedDate;
-    private String username;
 }

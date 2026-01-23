@@ -41,27 +41,27 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  *     The result set consists of one row per candidate. Each row contains:
  *     <ul>
  *         <li>id (long) - candidate id</li>
- *         <li>json (string) - candidate data encoded as a JSON object</li>*         
+ *         <li>json (string) - candidate data encoded as a JSON object</li>*
  *     </ul>
  * </p>
  * <p>
  *     The SQL is automatically generated from the candidate related dtos.
- *     The root candidate DTO is 
+ *     The root candidate DTO is
  *     {@link org.tctalent.server.repository.db.read.dto.CandidateReadDto CandidateReadDto}.
  *     It relates to the {@link org.tctalent.server.model.db.Candidate Candidate} JPA entity.
  * </p>
  * <p>
- *     CandidateReadDTO is constructed from other DTOs corresponding to the other equivalent 
+ *     CandidateReadDTO is constructed from other DTOs corresponding to the other equivalent
  *     candidate related entities.
  * </p>
  * <p>
  *     Below is an example of what the generated SQL can look like. This is generated from a
  *     simplified CandidateReadDto in that a lot of standard fields have been removed.
  *     But it shows how nesting works - in that it encodes a Candidate, including its nested User,
- *     which in turn has a nested Partner.*     
+ *     which in turn has a nested Partner.*
  * </p>
  * <p>
- *     It also shows how it constructs the encoding of the 1-many job experiences associated with 
+ *     It also shows how it constructs the encoding of the 1-many job experiences associated with
  *     the candidate.
  * </p>
  * <pre>{@code
@@ -166,7 +166,7 @@ public class SqlJsonQueryBuilder {
         //to drive the SQL generation.
         SqlTable rootTable = requireSqlTable(rootDtoClass);
 
-        //This is the database table associated with the root DTO. 
+        //This is the database table associated with the root DTO.
         //For example, the Candidate table for the CandidateReadDTO. You will see this table
         //specified on the @SQLTable annotation on the CandidateReadDTO.
         String rootTableAlias = rootTable.alias();
@@ -178,7 +178,7 @@ public class SqlJsonQueryBuilder {
         String jsonExpr = buildJsonExpression(rootDtoClass, rootTableAlias, ctx);
 
         //The SQL is just a select where id matches one of the ids passed in.
-        //There is a row for each id. Each row just has two fields: the id and the JSON encoded data. 
+        //There is a row for each id. Each row just has two fields: the id and the JSON encoded data.
         //The json string field encodes a single object encoding an instance of the rootDtoClass.
         return """
             select
@@ -319,7 +319,16 @@ public class SqlJsonQueryBuilder {
                     ? camelToSnakeCase(field.getName())
                     : sqlColumn.name();
 
-                pairs.add(new Pair(field.getName(), tableAlias + "." + columnName));
+                String columnRef = tableAlias + "." + columnName;
+
+                String valueExpr = applyTransformIfPresent(
+                    dtoType,
+                    field,
+                    columnRef,
+                    sqlColumn.transform()
+                );
+
+                pairs.add(new Pair(field.getName(), valueExpr));
                 continue;
             }
 
@@ -636,7 +645,7 @@ public class SqlJsonQueryBuilder {
         SqlDefaults d = dtoType.getAnnotation(SqlDefaults.class);
         return d != null && d.mapUnannotatedColumns();
     }
-    
+
     /**
      * <p>
      * Maintains SQL alias uniqueness during recursive SQL generation.
@@ -684,6 +693,53 @@ public class SqlJsonQueryBuilder {
             aliasCounts.put(baseAlias, next);
             return baseAlias + next;
         }
+    }
+
+    /**
+     * <p>
+     * Applies an optional {@code @SqlColumn.transform} to a resolved column reference.
+     * </p>
+     *
+     * <p>
+     * The transform must contain exactly one {@code %s}, which will be replaced
+     * with the fully-qualified column reference.
+     * </p>
+     *
+     * @param dtoType DTO containing the field
+     * @param field DTO field being mapped
+     * @param columnRef fully-qualified column reference (e.g. {@code c.skills_csv})
+     * @param transform transform template from {@code @SqlColumn.transform}
+     * @return SQL expression for the field value
+     */
+    private String applyTransformIfPresent(
+        Class<?> dtoType,
+        Field field,
+        String columnRef,
+        String transform
+    ) {
+        if (transform == null || transform.isBlank()) {
+            return columnRef;
+        }
+
+        int placeholders = countOccurrences(transform, "%s");
+        if (placeholders != 1) {
+            throw new IllegalStateException(
+                "Invalid @SqlColumn.transform on " + dtoType.getSimpleName() + "." + field.getName()
+                    + " - transform must contain exactly one %s placeholder. Found: " + placeholders
+            );
+        }
+
+        return String.format(transform, columnRef);
+    }
+
+    private int countOccurrences(String s, String token) {
+        int count = 0;
+        int idx = 0;
+        while ((idx = s.indexOf(token, idx)) >= 0) {
+            count++;
+            idx += token.length();
+        }
+        return count;
     }
 
     private static final class Pair {

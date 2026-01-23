@@ -19,8 +19,10 @@ package org.tctalent.server.repository.db.read.dto;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
@@ -34,13 +36,14 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
+@Builder //Useful for constructing unit tests
 @SqlTable(name="candidate", alias = "c")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateReadDto {
 
     private OffsetDateTime acceptedPrivacyPolicyDate;
     private String acceptedPrivacyPolicyId;
-    
+
     @JsonOneToOne(joinColumn = "accepted_privacy_policy_partner_id")
     private PartnerReadDto acceptedPrivacyPolicyPartner;
     private String additionalInfo;
@@ -78,15 +81,17 @@ public class CandidateReadDto {
     private List<CandidateReviewStatusItemReadDto> candidateReviewStatusItems;
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateSkillReadDto> candidateSkills;
-    
-    @SqlIgnore //TODO JC Doesnt seem to handle these
+
+    @SqlIgnore //TODO JC Doesnt seem to handle these - see issue 2950
 //    @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateVisaCheckReadDto> candidateVisaChecks;
     private String candidateNumber;
     private String city;
     private String conflict;
-    @SqlIgnore //todo Computed field
+
+    @SqlIgnore //Loaded later if there is a list context
     private String contextNote;
+
     @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private OffsetDateTime createdDate;
@@ -114,10 +119,10 @@ public class CandidateReadDto {
     private String intRecruitReasons;
     private String intRecruitRural;
     private String linkedInLink;
-    @SqlIgnore //todo Computed field
-    private String listShareableCv;
-    @SqlIgnore //todo Computed field
-    private String listShareableDoc;
+    @SqlIgnore //todo Computed field based on list context
+    private CandidateAttachmentReadDto listShareableCv;
+    @SqlIgnore //todo Computed field based on list context
+    private CandidateAttachmentReadDto listShareableDoc;
     private String maritalStatus;
     @JsonOneToOne(joinColumn = "max_education_level_id")
     private EducationLevelReadDto maxEducationLevel;
@@ -128,12 +133,12 @@ public class CandidateReadDto {
     private String muted;
     @JsonOneToOne(joinColumn = "nationality_id")
     private CountryReadDto nationality;
-    
-    @SqlIgnore //todo Computed field
-    private String numberDependants;
+
+    @SqlIgnore //Computed field
+    private int numberDependants;
     private String partnerRef;
-    @SqlIgnore //todo Computed field
-    private String pendingTerms;
+    @SqlIgnore //Computed field
+    private boolean pendingTerms;
     private String phone;
     private String potentialDuplicate;
     private String publicId;
@@ -160,19 +165,19 @@ public class CandidateReadDto {
     @SqlIgnore
     private boolean selected;
     private String sflink;
-    @SqlIgnore //todo Computed field
-    private String shareableCv;
-    @SqlIgnore //todo Computed field
-    private String shareableDoc;
+
+    @JsonOneToOne(joinColumn = "shareable_cv_attachment_id")
+    private CandidateAttachmentReadDto shareableCv;
+    @JsonOneToOne(joinColumn = "shareable_doc_attachment_id")
+    private CandidateAttachmentReadDto shareableDoc;
     private String shareableNotes;
     private String state;
-    private String status;
+    private CandidateStatus status;
     @JsonOneToOne(joinColumn = "survey_type_id")
     private SurveyTypeReadDto surveyType;
     private String surveyComment;
-    
-    @SqlIgnore //TODO JC Not done yet
-//    @JsonOneToMany(joinColumn = "candidate_id")
+
+    @JsonOneToMany(joinColumn = "candidate_id")
     private List<TaskAssignmentReadDto> taskAssignments;
     private String unhcrConsent;
     private String unhcrNumber;
@@ -181,10 +186,10 @@ public class CandidateReadDto {
     private String unrwaNumber;
     private String unrwaRegistered;
     private OffsetDateTime updatedDate;
-    
+
     @JsonOneToOne(joinColumn = "user_id")
     private UserReadDto user;
     private String videolink;
     private String whatsapp;
-    
+
 }

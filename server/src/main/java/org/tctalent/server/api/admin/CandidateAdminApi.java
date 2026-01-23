@@ -106,7 +106,7 @@ public class CandidateAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
-        Page<Candidate> candidates = savedSearchService.searchCandidates(request);
+        Page<CandidateReadDto> candidates = savedSearchService.searchCandidateDtos(request);
 
         long start = System.currentTimeMillis();
         long end;
@@ -125,9 +125,9 @@ public class CandidateAdminApi {
         return stringObjectMap;
     }
 
-    @PostMapping("search-fast")
-    public Map<String, Object> searchFast(@RequestBody SearchCandidateRequest request) {
-        Page<CandidateReadDto> candidates = savedSearchService.searchCandidateDtos(request);
+    @PostMapping("search-old-fetch")
+    public Map<String, Object> searchOldFetch(@RequestBody SearchCandidateRequest request) {
+        Page<Candidate> candidates = savedSearchService.searchCandidates(request);
 
         long start = System.currentTimeMillis();
         long end;
