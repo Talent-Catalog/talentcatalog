@@ -34,7 +34,7 @@ import org.tctalent.server.model.db.task.TaskType;
  * @author John Cameron
  */
 @Entity(name="QuestionTask")
-@DiscriminatorValue("QuestionTask")
+@DiscriminatorValue("Question")
 @Getter
 @Setter
 public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
