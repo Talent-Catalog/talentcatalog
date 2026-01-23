@@ -111,7 +111,7 @@ describe('CandidateSourceCandidateService', () => {
 
       (service as any).isSavedSearch.and.returnValue(false);
 
-      service.searchPaged(source, request).subscribe(response => {
+      service.searchPaged(source, request, false).subscribe(response => {
         expect(response).toEqual(mockResponse);
       });
 
