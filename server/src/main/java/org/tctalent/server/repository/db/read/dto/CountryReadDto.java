@@ -16,8 +16,10 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.Status;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -28,11 +30,12 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
+@Builder //Useful for constructing unit tests
 @SqlTable(name="country", alias = "cou")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CountryReadDto {
     private Long id;
     private String isoCode;
     private String name;
-    private String status;
+    private Status status;
 }

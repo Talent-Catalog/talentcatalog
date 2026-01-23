@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -45,6 +46,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
+@Builder //Useful for constructing unit tests
 @SqlTable(name="candidate", alias = "c")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateReadDto {
