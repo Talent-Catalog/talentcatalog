@@ -16,20 +16,18 @@
 
 package org.tctalent.server.model.db;
 
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.time.LocalDate;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -43,6 +41,7 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
+    //TODO JC Need to do something like this in CandidateVisaJobCheck after adding Candidate to CandidateVisaJobCheck
     /**
      * Synchronizes the candidate field with the candidate obtained from the associated
      * CandidateOccupation.
