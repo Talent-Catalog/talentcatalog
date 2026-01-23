@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;

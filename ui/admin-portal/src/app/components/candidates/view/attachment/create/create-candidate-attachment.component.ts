@@ -53,7 +53,7 @@ export class CreateCandidateAttachmentComponent implements OnInit {
     this.form = this.fb.group({
       candidateId: [this.candidateId],
       type: [this.type],
-      location: [''],
+      url: [''],
       name: [''],
       cv: [false]
     });
@@ -73,7 +73,7 @@ export class CreateCandidateAttachmentComponent implements OnInit {
     request.candidateId = this.candidateId;
     request.type = this.form.value.type;
     request.name = this.form.value.name;
-    request.location = this.form.value.location;
+    request.url = this.form.value.url;
     request.cv = false;
     request.uploadType = UploadType.other;
     this.candidateAttachmentService.createAttachment(request).subscribe(
