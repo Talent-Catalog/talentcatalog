@@ -41,7 +41,6 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
-    //TODO JC Need to do something like this in CandidateVisaJobCheck after adding Candidate to CandidateVisaJobCheck
     /**
      * Synchronizes the candidate field with the candidate obtained from the associated
      * CandidateOccupation.
