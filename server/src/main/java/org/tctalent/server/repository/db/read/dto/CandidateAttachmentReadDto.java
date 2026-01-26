@@ -22,14 +22,10 @@ import lombok.Setter;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
+import org.tctalent.server.repository.db.read.annotation.SqlColumn;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Getter
 @Setter
 @SqlTable(name="candidate_attachment", alias = "cat")
@@ -41,6 +37,9 @@ public class CandidateAttachmentReadDto {
     private boolean cv;
     private String fileType;
     private Long id;
+
+    //Name on database is still "location".
+    @SqlColumn(name = "location")
     private String url;
     private boolean migrated;
     private String name;
