@@ -44,8 +44,15 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
   constructor() {}
 
   ngOnInit() {
+    const selectedJobOppId = this.selectedJobCheck?.jobOpp?.id;
+
+    if (!selectedJobOppId) {
+      // no linked job opportunity
+      this.candidateOpportunity = null;
+      return;
+    }
     this.candidateOpportunity = this.candidate.candidateOpportunities
-      .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
+      .find(co => co.jobOpp.id == selectedJobOppId);
   }
 
   ngAfterViewInit() {
