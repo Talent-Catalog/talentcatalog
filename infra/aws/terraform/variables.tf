@@ -1,3 +1,5 @@
+### Terraform variables for AWS infrastructure:
+
 variable "app" {
   type        = string
   description = "Name of the application"
@@ -79,14 +81,20 @@ variable "ecs_tasks_count" {
   default     = 1
 }
 
+### Spring application configuration variables:
+
 variable "aws_access_key" {
   type        = string
-  description = "AWS access key to be used by the Java application"
+  description = "AWS access key to be used by the Java application (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "aws_secret_key" {
   type        = string
-  description = "AWS secret key to be used by the Java application"
+  description = "AWS secret key to be used by the Java application (optional - uses placeholder if not provided)"
+  default     = null
+  # NOTE: 'sensitive = true' hides sensitive info in Terraform logs and outputs e.g. in cloud environments
+  sensitive   = true
 }
 
 variable "s3_bucket" {

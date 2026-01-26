@@ -61,9 +61,13 @@ module "tc-plus-staging" {
 
   # todo -- SM: The below service configuration will be addressed in a follow-up PR / PRs
 
-  # todo create s3 access and required buckets
-  aws_access_key = "<REPLACE_ME>" # for s3 -- shouldn't be hardcoded todo
-  aws_secret_key = "<REPLACE_ME>" # for s3 -- shouldn't be hardcoded todo
+  # AWS credentials: Terraform creates SSM parameters with placeholder values.
+  # Update manually after terraform apply (see README.md for AWS CLI commands):
+  # - /tc-plus/opc-staging/AWS_CREDENTIALS_ACCESSKEY (String)
+  # - /tc-plus/opc-staging/AWS_CREDENTIALS_SECRETKEY (SecureString)
+  # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
+
+  # todo create s3 bucket and configure
   s3_bucket = "<REPLACE_ME>" # for s3 -- switch to OPC todo
 
   # todo missing duolingo api secret -- shouldn't be hardcoded

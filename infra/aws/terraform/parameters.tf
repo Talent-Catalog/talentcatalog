@@ -1,13 +1,23 @@
 resource "aws_ssm_parameter" "aws_access_key" {
   name  = "/${var.app}/${var.env}/AWS_CREDENTIALS_ACCESSKEY"
   type  = "String"
-  value = var.aws_access_key
+  value = var.aws_access_key != null ? var.aws_access_key : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  # Prevent Terraform from overwriting the value after initial creation when the placeholder is
+  # replaced manually from the AWS Console or CLI
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "aws_secret_key" {
   name  = "/${var.app}/${var.env}/AWS_CREDENTIALS_SECRETKEY"
   type  = "SecureString"
-  value = var.aws_secret_key
+  value = var.aws_secret_key != null ? var.aws_secret_key : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "s3_bucket" {
