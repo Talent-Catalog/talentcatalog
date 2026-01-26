@@ -51,6 +51,6 @@
   </tc-table>
 </div>
 
-<tc-button class="float-end" (onClick)="importCSV()" [disabled]="!csvData.length || working">
-  <i class="fas fa-spinner fa-spin" *ngIf="working"></i>Import
+<tc-button class="float-end" [loading]="working" (onClick)="importCSV()" [disabled]="!csvData.length || working">
+  Import
 </tc-button>

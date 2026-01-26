@@ -32,12 +32,12 @@
       </p>
       <div class="d-flex gap-2">
         <tc-button
-          type="primary"
+          type="solid"
           size="lg"
           [disabled]="!termsRead || loading"
+          [loading]="loading"
           (onClick)="acceptTerms()">
 
-          <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
           Accept Agreement
         </tc-button>
 

@@ -69,6 +69,7 @@ export class ButtonComponent {
   @Input() type: 'solid' | 'outline' | 'plain' = 'solid';
   @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
   @Input() disabled = false;
+  @Input() loading = false;
   @Input() ariaLabel?: string;
   @Input() routerLink?: string | any[];
   /**
@@ -90,7 +91,7 @@ export class ButtonComponent {
   @Output() onClick = new EventEmitter();
 
   @HostBinding('class.disabled') get isDisabled() {
-    return this.disabled;
+    return this.disabled || this.loading;
   }
 
   get classList(): string[] {
@@ -98,6 +99,7 @@ export class ButtonComponent {
       `btn-${this.size}`,
       `btn-${this.color}`,
       `btn-${this.type}`,
+      ...(this.loading ? ['btn-loading'] : [])
     ];
   }
 
@@ -105,7 +107,9 @@ export class ButtonComponent {
     if (this.stopNativeClickPropagation) {
       e.stopPropagation();
     }
-    this.onClick.emit();
+    if (!this.isDisabled) {
+      this.onClick.emit();
+    }
   }
 
 }
