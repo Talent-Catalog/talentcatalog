@@ -50,7 +50,7 @@
       {{job.skipCandidateSearch ? "Yes" : "No"}}
     </tc-description-item>
 
-    <tc-description-item icon="fas fa-rectangle-list" label="Submission List"
+    <tc-description-item *ngIf="job.submissionList" icon="fas fa-rectangle-list" label="Submission List"
                          title="Potential candidates should be added to this list"
                          [ngClass]="{'alert alert-danger': highlightCandidates()}">
       <span>
