@@ -34,7 +34,6 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 @SqlTable(name="candidate_visa_check", alias = "cvisac")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateVisaCheckReadDto {
-    private String ageRequirement;
     private String characterAssessment;
     @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
