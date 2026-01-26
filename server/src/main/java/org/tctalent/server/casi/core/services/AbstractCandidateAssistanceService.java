@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.casi.domain.mappers.ServiceAssignmentMapper;
@@ -32,12 +33,14 @@ import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
+import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.SavedListService;
@@ -49,6 +52,7 @@ import org.tctalent.server.service.db.SavedListService;
  *
  * @author sadatmalik
  */
+@Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractCandidateAssistanceService implements CandidateAssistanceService {
 
@@ -78,7 +82,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     if (importer == null) {
       throw new ImportFailedException("Import not supported for " + provider());
     }
-    importer.importFile(file, serviceCode().name());
+    importer.importFile(file, serviceCode());
   }
 
   // Assignments
@@ -89,7 +93,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
     for (ServiceAssignment a : assignments) {
       if (a.getStatus().equals(AssignmentStatus.ASSIGNED)) {
-        throw new EntityExistsException(serviceCode() + " resources", "for this candidate");
+        throw new EntityExistsException(AssignmentStatus.ASSIGNED.name() + " " + serviceCode()
+            + " resource", "for this candidate");
       }
     }
 
@@ -108,7 +113,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   // Assign all candidates in a saved list
   // Skip candidates who already have an active assignment
   // Fail if not enough resources to assign to all candidates
-  // Return list of assignments done
+  // Continue processing remaining candidates if individual assignments fail
+  // Return list of successful assignments
   // SM -- TODO -- add pagination for large lists
   @Override
   @Transactional
@@ -126,6 +132,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     }
 
     List<ServiceAssignment> done = new ArrayList<>();
+    int failureCount = 0;
+    
     for (Candidate candidate : candidates) {
       boolean hasSentCoupon = assignmentRepository
           .findByCandidateAndProviderAndService(candidate.getId(), provider(), serviceCode())
@@ -133,9 +141,26 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
           .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
 
       if (!hasSentCoupon) {
-        done.add(assignToCandidate(candidate.getId(), user));
+        try {
+          done.add(assignToCandidate(candidate.getId(), user));
+        } catch (Exception e) {
+          failureCount++;
+          LogBuilder.builder(log)
+              .action("assignToList")
+              .message("Failed to assign " + serviceCode() + " to candidate " 
+                  + candidate.getId() + " (" + candidate.getCandidateNumber() + "): " + e.getMessage())
+              .logError(e);
+        }
       }
     }
+    
+    if (failureCount > 0 && done.isEmpty()) {
+      // If all assignments failed, throw an exception
+      throw new NoSuchObjectException(
+          "Failed to assign " + serviceCode() + " to any candidates in the list. "
+              + failureCount + " assignment(s) failed.");
+    }
+    
     return done;
   }
 
@@ -200,16 +225,16 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   }
 
   // Update resource status (e.g., mark a coupon as USED or DISABLED)
-  // No action if resource not found
+  // Throws NoSuchObjectException if resource not found
   @Override
   @Transactional
-  public void updateResourceStatus(String resourceCode, ResourceStatus status) {
-    resourceRepository
+  public void updateResourceStatus(String resourceCode, ResourceStatus status) throws NoSuchObjectException {
+    ServiceResourceEntity resource = resourceRepository
         .findByProviderAndResourceCode(provider(), resourceCode)
-        .ifPresent(resource -> {
-          resource.setStatus(status);
-          resourceRepository.save(resource);
-        });
+        .orElseThrow(() -> new NoSuchObjectException("Resource with code " + resourceCode + " not found"));
+    
+    resource.setStatus(status);
+    resourceRepository.save(resource);
   }
 
   // Count available resources for this provider (e.g., count all available Duolingo coupons

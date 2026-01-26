@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateDtos;
 import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,8 +49,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.data.SavedListTestData;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
+import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -76,10 +80,19 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
           1
       );
 
+  private final Page<CandidateReadDto> candidateReadDtoPage =
+      new PageImpl<>(
+          getListOfCandidateDtos(),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
+
   @MockBean
   SavedSearchService savedSearchService;
   @MockBean
   CandidateService candidateService;
+  @MockBean
+  CandidateDtoService candidateDtoService;
   @MockBean
   CandidateBuilderSelector candidateBuilderSelector;
 
@@ -109,8 +122,12 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
     SavedSearchGetRequest request = new SavedSearchGetRequest();
 
     given(savedSearchService
-        .searchCandidates(anyLong(), any(SavedSearchGetRequest.class)))
-        .willReturn(candidatePage);
+        .searchCandidateDtos(anyLong(), any(SavedSearchGetRequest.class)))
+        .willReturn(candidateReadDtoPage);
+
+    given(savedSearchService
+        .getSelectionListForLoggedInUser(anyLong()))
+        .willReturn(SavedListTestData.getSavedList());
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH.replace("{id}", Long.toString(SAVED_SEARCH_ID)))
             .with(csrf())
@@ -129,10 +146,11 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.hasNext", is(false)))
         .andExpect(jsonPath("$.content", notNullValue()))
         .andExpect(jsonPath("$.content[0].selected", is(false)))
-        .andExpect(jsonPath("$.content[0].status", is("draft")));
+        .andExpect(jsonPath("$.content[0].status", is("draft")))
+    ;
 
-  verify(savedSearchService).searchCandidates(anyLong(), any(SavedSearchGetRequest.class));
-  verify(savedSearchService).setCandidateContext(anyLong(), any(Page.class));
+  verify(savedSearchService).searchCandidateDtos(anyLong(), any(SavedSearchGetRequest.class));
+  verify(candidateDtoService).populateComputedFields(any(), any());
   }
 
   @Test

@@ -16,6 +16,7 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,11 +25,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.task.UploadType;
 
 @Getter
@@ -48,13 +46,14 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private String name;
 
     /**
-     * For links {@link AttachmentType#link} and Google Docs
-     * {@link AttachmentType#googlefile}, the associated url.
-     * <p>
-     * For S3 files {@link AttachmentType#file}, it is the unique filename
-     * generated on S3.
+     * The attachment's url.
+     * 
+     * Historical note: This field maps to the "location" database column for backward 
+     * compatibility. Prior to 2026, this column stored relative S3 paths for file-type 
+     * attachments. Migration V1_400 converted all paths to full URLs.     
      */
-    private String location;
+    @Column(name = "location") //Originally this field was called location
+    private String url;
 
     /**
      * This is recorded just as the suffix of the attachment filename
@@ -72,20 +71,6 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     @Enumerated(EnumType.STRING)
     private UploadType uploadType;
 
-    @Transient
-    @Nullable
-    private String url;
-
     public CandidateAttachment() {
     }
-
-    public String getUrl() {
-        if (type == AttachmentType.file) {
-            url = "https://s3.us-east-1.amazonaws.com/files.tbbtalent.org/candidate/" + (migrated ? "migrated" : candidate.getCandidateNumber()) + '/' + location;
-        } else {
-            url = location;
-        }
-        return url;
-    }
-
 }

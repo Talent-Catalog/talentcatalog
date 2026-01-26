@@ -51,13 +51,15 @@ export class CandidateSourceCandidateService {
       `${apiUrl}/${source.id}/search`, request)
   }
 
-  searchPaged(source: CandidateSource, request: SearchCandidateSourcesRequest):
+  searchPaged(source: CandidateSource, request: SearchCandidateSourcesRequest, useOldFetch: boolean):
     Observable<SearchResults<Candidate>> {
 
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
+    let suffix = "search-paged";
+    if (useOldFetch) suffix = 'search-paged-old-fetch'
     return this.http.post<SearchResults<Candidate>>(
-      `${apiUrl}/${source.id}/search-paged`, request)
+      `${apiUrl}/${source.id}/${suffix}`, request)
   }
 
   export(source: CandidateSource, request: PagedSearchRequest) {

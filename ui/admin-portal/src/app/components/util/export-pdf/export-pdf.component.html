@@ -16,9 +16,9 @@
 
 <tc-button [color]="'secondary'"
            [size]="'sm'"
+           [loading]="saving"
            (onClick)="exportAsPdf(idToExport)"
            [disabled]="saving"
 >
-  <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
   Export PDF
 </tc-button>

@@ -47,11 +47,13 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.list.ContentUpdateType;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
@@ -83,6 +85,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class SavedListCandidateAdminApi implements
     IManyToManyApi<SavedListGetRequest, UpdateExplicitSavedListContentsRequest> {
 
+    private final CandidateDtoService candidateDtoService;
     private final CandidateService candidateService;
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
@@ -168,13 +171,40 @@ public class SavedListCandidateAdminApi implements
             long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(savedListId);
 
+        Page<CandidateReadDto> candidates = savedListService
+            .getSavedListCandidateDtos(savedList, request);
+
+        candidateDtoService.populateComputedFields(candidates, savedListId);
+
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
+        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
+//        for (CandidateReadDto candidate : candidates) {
+//            final List<TaskAssignmentReadDto> tas = candidate.getTaskAssignments();
+//            for (TaskAssignmentReadDto ta : tas) {
+//                taskAssignmentService.populateTransientTaskAssignmentDtoFields(ta);
+//            }
+//        }
+
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
+        return builder.buildPage(candidates);
+    }
+
+    @PostMapping("{id}/search-paged-old-fetch")
+    public @NotNull Map<String, Object> searchPagedOldFetch(
+        @PathVariable("id") long savedListId, @Valid @RequestBody SavedListGetRequest request) throws NoSuchObjectException {
+        SavedList savedList = savedListService.get(savedListId);
+
         Page<Candidate> candidates = candidateService
             .getSavedListCandidates(savedList, request);
 
         savedListService.setCandidateContext(savedListId, candidates);
 
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
-        candidateService.populateCandidatesTransientTaskAssignments(candidates);
+//        for (Candidate candidate : candidates) {
+//            taskAssignmentService.populateTransientTaskAssignmentFields(
+//                candidate.getTaskAssignments());
+//        }
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);

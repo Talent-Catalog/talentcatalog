@@ -232,16 +232,16 @@ resource "aws_ssm_parameter" "spring_servlet_max_request_size" {
   value = var.spring_servlet_max_request_size
 }
 
-resource "aws_ssm_parameter" "tbb_cors_urls" {
-  name  = "/${var.app}/${var.env}/TBB_CORS_URLS"
+resource "aws_ssm_parameter" "tc_cors_urls" {
+  name  = "/${var.app}/${var.env}/TC_CORS_URLS"
   type  = "String"
-  value = var.tbb_cors_urls
+  value = var.tc_cors_urls
 }
 
-resource "aws_ssm_parameter" "tbb_db_copy_config" {
-  name  = "/${var.app}/${var.env}/TBB_PARTNER_DBCOPY_CONFIG"
+resource "aws_ssm_parameter" "tc_db_copy_config" {
+  name  = "/${var.app}/${var.env}/TC_PARTNER_DBCOPY_CONFIG"
   type  = "String"
-  value = var.tbb_db_copy_config
+  value = var.tc_db_copy_config
 }
 
 resource "aws_ssm_parameter" "translation_password" {

@@ -372,6 +372,17 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         }
       }
     }
+
+    //Redo existing search if the type of search changes
+    if (changes.useOldSearch) {
+      if (this.searchRequest) {
+        if (changes.useOldSearch) {
+          this.searchRequest.useOldSearch = changes.useOldSearch.currentValue ;
+        }
+      }
+      this.doSearch(true);
+    }
+
     // If there is a search request associated (saved search view) and the saved search request changes, update the search.
     if (changes.searchRequest) {
       if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
@@ -422,7 +433,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.searching = true;
     const request = this.searchRequest;
 
-    //todo jc Display a text sort toggle if there is a query string
+    console.log("applying search request: Old = " + request.useOldSearch);
 
     //Guard against the case where we have a text sort where there is no query string.
     let queryString = request.simpleQueryString;
@@ -446,7 +457,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     request.sortDirection = this.sortDirection;
     request.dtoType = this.searchDetail;
 
-    this.subscription = this.candidateService.search(request).subscribe(
+    this.subscription = this.candidateService.search(request, this.useOldFetch).subscribe(
       results => {
         this.results = results;
         this.cacheResults();
@@ -535,6 +546,11 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   onReviewStatusChange() {
+    this.doSearch(true);
+  }
+
+  toggleFetch() {
+    this.useOldFetch = !this.useOldFetch;
     this.doSearch(true);
   }
 

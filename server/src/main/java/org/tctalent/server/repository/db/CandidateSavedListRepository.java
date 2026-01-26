@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.CandidateSavedListKey;
@@ -25,4 +26,6 @@ import org.tctalent.server.model.db.CandidateSavedListKey;
  */
 public interface CandidateSavedListRepository extends
         JpaRepository<CandidateSavedList, CandidateSavedListKey> {
+
+    List<CandidateSavedList> findBySavedList_Id(Long savedListId);
 }

@@ -122,10 +122,7 @@ export class CandidateAttachmentsComponent implements OnInit {
   }
 
   getAttachmentUrl(att: CandidateAttachment) {
-    if (att.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidateNumber) + '/' + att.location;
-    }
-    return att.location;
+    return att.url;
   }
 
   deleteAttachment(attachment: CandidateAttachment) {
