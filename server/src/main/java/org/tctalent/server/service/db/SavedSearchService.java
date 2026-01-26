@@ -114,6 +114,16 @@ public interface SavedSearchService {
         throws NoSuchObjectException;
 
     /**
+     * Returns the requested page of candidates of the given saved search.
+     * @param savedSearchId ID of saved search
+     * @param request Request specifying which page of candidates to return
+     * @return Page of candidates
+     * @throws NoSuchObjectException if no saved search exists with given id.
+     */
+    Page<CandidateReadDto> searchCandidateDtos(
+        long savedSearchId, SavedSearchGetRequest request) throws NoSuchObjectException;
+
+    /**
      * Returns a set of the ids of all candidates matching the given saved search.
      * <p/>
      * WARNING: This method clears the JPA persistence context by calling entityManager.clear().
@@ -131,7 +141,7 @@ public interface SavedSearchService {
 
     SearchCandidateRequest loadSavedSearch(long id);
 
-    SavedSearch getSavedSearch(long id);
+    SavedSearch getSavedSearch(long id) throws NoSuchObjectException;
 
     /**
      * Clears the given user's selections for the given saved search.

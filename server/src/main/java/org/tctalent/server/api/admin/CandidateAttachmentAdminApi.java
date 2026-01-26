@@ -182,7 +182,6 @@ public class CandidateAttachmentAdminApi {
                 .add("id")
                 .add("type")
                 .add("name")
-                .add("location")
                 .add("fileType")
                 .add("migrated")
                 .add("cv")

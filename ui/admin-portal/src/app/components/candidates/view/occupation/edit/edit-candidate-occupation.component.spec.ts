@@ -1,10 +1,10 @@
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {EditCandidateOccupationComponent} from './edit-candidate-occupation.component';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateOccupationService} from '../../../../../services/candidate-occupation.service';
 import {OccupationService} from '../../../../../services/occupation.service';
 import {ReactiveFormsModule} from '@angular/forms';
-import {of, throwError} from 'rxjs';
+import {of} from 'rxjs';
 import {CandidateOccupation} from '../../../../../model/candidate-occupation';
 import {Occupation} from '../../../../../model/occupation';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
@@ -45,7 +45,8 @@ describe('EditCandidateOccupationComponent', () => {
     createdDate: 2004,
     createdBy: new MockUser(),
     updatedBy: new MockUser(),
-    migrationOccupation: null
+    migrationOccupation: null,
+    candidateJobExperiences: []
   };
 
 

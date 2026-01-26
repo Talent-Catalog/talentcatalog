@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Specifies the database column that a DTO field is associated with (defaulting to the name of 
+ * Specifies the database column that a DTO field is associated with (defaulting to the name of
  * the annotated field, converted to snake case.
  *
  * @author John Cameron
@@ -39,4 +39,25 @@ public @interface SqlColumn {
      * Defaults to the name.
      */
     String jsonKey() default "";
+
+    /**
+     * <p>
+     * Optional SQL transform applied to the resolved column expression.
+     * </p>
+     *
+     * <p>
+     * The transform must contain exactly one {@code %s}, which will be replaced
+     * with the fully-qualified column reference (e.g. {@code ctask.uploadable_file_types}).
+     * </p>
+     *
+     * <p>
+     * Example:
+     * </p>
+     *
+     * <pre>{@code
+     * @SqlColumn(transform = "to_jsonb(string_to_array(%s, ','))")
+     * private List<String> uploadableFileTypes;
+     * }</pre>
+     */
+    String transform() default "";
 }

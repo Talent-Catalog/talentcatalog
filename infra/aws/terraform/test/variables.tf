@@ -194,11 +194,11 @@ variable "spring_servlet_max_request_size" {
   type = string
 }
 
-variable "tbb_cors_urls" {
+variable "tc_cors_urls" {
   type = string
 }
 
-variable "tbb_db_copy_config" {
+variable "tc_db_copy_config" {
   type = string
 }
 

@@ -16,22 +16,33 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.task.TaskType;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
+import org.tctalent.server.repository.db.read.annotation.SqlIgnore;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Getter
 @Setter
-@SqlTable(name="task_assignment", alias = "ctask")
+@SqlTable(name="task_assignment", alias = "ctaska")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class TaskAssignmentReadDto {
+    private OffsetDateTime abandonedDate;
+
+    @SqlIgnore //Could be manually populated - but for now it is not being populated
+    private String answer;
+    private String candidateNotes;
+    private OffsetDateTime completedDate;
+    private OffsetDateTime dueDate;
     private Long id;
-    private String name;
-    //TODO JC Complete
+    private Status status;
+
+    @JsonOneToOne(joinColumn = "task_id")
+    private TaskReadDto task;
+
+    private TaskType taskType;
 }

@@ -77,6 +77,8 @@ public class AssignmentEngine {
 
     // Write to central ledger
     ServiceAssignmentEntity e = new ServiceAssignmentEntity();
+    e.setProvider(allocator.getProvider());
+    e.setServiceCode(allocator.getServiceCode());
     e.setResource(resourceRepo.getReferenceById(res.getId()));
     e.setCandidate(c);
     e.setActor(actor);

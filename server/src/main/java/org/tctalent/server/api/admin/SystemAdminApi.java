@@ -20,7 +20,6 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.sql.Connection;
@@ -39,7 +38,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,7 +70,6 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateNote;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -131,7 +128,6 @@ import org.tctalent.server.service.db.cache.CacheService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
-import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -1503,90 +1499,9 @@ public class SystemAdminApi {
             deleteExisting, createElastic, fromPage, toPage);
     }
 
-    @GetMapping("migrate/extract")
-    public void migrateExtract() {
-        Long userId = 1L;
-        if (authService != null) {
-            User loggedInUser = authService.getLoggedInUser().orElse(null);
-            if (loggedInUser != null){
-                userId = loggedInUser.getId();
-            }
-        }
-
-        List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
-        extractTextFromMigratedFiles(types);
-        extractTextFromNewFiles(types);
-    }
-
 //    @GetMapping("es-to-db/unhcr-status")
     public void migrateUnhcrStatus() {
         populateElasticsearchService.populateCandidateFromElastic();
-    }
-
-    private void extractTextFromMigratedFiles(List<String> types) {
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
-        int count = 0;
-        int success = 0;
-        for(CandidateAttachment file : files) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if(StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(file);
-                    success++;
-                }
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message("Unable to extract text from file " + file.getLocation())
-                    .logError(e);
-            }
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message(count + " new files processed, with " + success + " successfully extracted text.")
-                    .logInfo();
-            }
-            count++;
-        }
-    }
-
-    private void extractTextFromNewFiles(List<String> types) {
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
-        int count = 0;
-        int success = 0;
-        for(CandidateAttachment file : files) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if (StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(file);
-                    success++;
-                }
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message("Unable to extract text from new file " + file.getLocation())
-                    .logError(e);
-            }
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message(count + " new files processed, with " + success + " successfully extracted text.")
-                    .logInfo();
-            }
-            count++;
-        }
     }
 
 //    @GetMapping("migrate/survey")

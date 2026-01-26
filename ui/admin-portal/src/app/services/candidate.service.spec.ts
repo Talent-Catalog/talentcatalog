@@ -55,7 +55,7 @@ describe('CandidateService', () => {
     const dummyRequest = {};
     const dummyResponse: SearchResults<Candidate> = { content: [], totalElements: 0 } as SearchResults<Candidate>;
 
-    service.search(dummyRequest).subscribe(response => {
+    service.search(dummyRequest, false).subscribe(response => {
       expect(response).toEqual(dummyResponse);
     });
 
