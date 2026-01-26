@@ -584,7 +584,7 @@
                 </tc-icon>
               </div>
             </td>
-            <td>
+            <td (click)="$event.stopPropagation()">
               <div class="d-flex align-items-center gap-1">
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">{{candidate.candidateNumber}}</a>
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
