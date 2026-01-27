@@ -95,6 +95,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     this.candidateService.candidateUpdated().pipe(
       takeUntil(this.destroy$),
       concatMap(() => {
+        //todo This gets called twice when the candidate profile screen is refreshed.
+        //todo Once here and once below in refreshCandidateProfile() (called just above).
         return this.candidateService.getByNumber(this.candidate.candidateNumber)
       })
       ).subscribe(candidate => {
@@ -139,6 +141,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
           this.setCandidate(candidate);
           this.updateUploadedCvAvailable();
           this.loadLists();
+
+          //todo this only needs to be created lazily as needed.
           this.generateToken();
           this.setChatAccess();
         }
