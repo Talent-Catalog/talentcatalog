@@ -38,7 +38,7 @@
         </div>
         <div class="flex-shrink-0">
           <a class="btn btn-sm btn-primary" target="_blank" href="https://www.talentbeyondboundaries.org/talentcatalog/tasks/overview">
-            {{ 'TASKS.VIEWHELP' | translate }} <fa-icon class="ms-1" icon="question-circle"></fa-icon>
+            {{ 'TASKS.VIEWHELP' | translate }} <i class="ms-1 fas fa-question-circle"></i>
           </a>
         </div>
       </div>
@@ -59,8 +59,8 @@
               <div class="link underline">{{ta.task.displayName}}</div>
             </td>
             <td class="text-center">
-              <fa-icon *ngIf="!ta.task.optional" icon="check" size="xs"></fa-icon>
-              <fa-icon *ngIf="ta.task.optional" icon="times" size="xs"></fa-icon>
+              <i *ngIf="!ta.task.optional" class="fas fa-check fa-xs"></i>
+              <i *ngIf="ta.task.optional" class="fas fa-times fa-xs"></i>
             </td>
             <td class="fw-light date-size text-center" [ngClass]="{'text-danger fw-bolder': isOverdue(ta)}">{{ta.dueDate | date}}</td>
           </tr>
