@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.repository.db.read.dto.CountryReadDto;
 
 public class CountryTestData {
 
@@ -30,6 +31,13 @@ public class CountryTestData {
     public static final Country JORDAN = new Country("Jordan", Status.active);
     public static final Country PAKISTAN = new Country("Pakistan", Status.active);
     public static final Country COSTA_RICA = new Country("Costa Rica", Status.active);
+
+    public static final CountryReadDto LEBANON_DTO = CountryReadDto.builder()
+        .name("Lebanon").status(Status.active).build();
+    public static final CountryReadDto JORDAN_DTO = CountryReadDto.builder()
+        .name("Jordan").status(Status.active).build();
+    public static final CountryReadDto PAKISTAN_DTO = CountryReadDto.builder()
+        .name("Pakistan").status(Status.active).build();
 
     public static List<Country> getSourceCountryList() {
         return new ArrayList<>(List.of(LEBANON, JORDAN));

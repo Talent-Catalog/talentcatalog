@@ -20,7 +20,6 @@ import {CandidateOccupationService} from './candidate-occupation.service';
 import {Occupation} from '../model/occupation';
 import {CandidateOccupation} from '../model/candidate-occupation';
 import {environment} from '../../environments/environment';
-import {User} from '../model/user';
 import {MockUser} from "../MockData/MockUser";
 
 describe('CandidateOccupationService', () => {
@@ -63,8 +62,14 @@ describe('CandidateOccupationService', () => {
 
   it('should retrieve a list of candidate occupations', () => {
     const mockCandidateOccupations: CandidateOccupation[] = [
-      { id: 1, occupation: { id: 1, name: 'Software Developer', isco08Code: '2512', status: 'Active' }, yearsExperience: 5, migrationOccupation: 'Developer', createdBy: mockUser, createdDate: Date.now(), updatedBy: mockUser, updatedDate: Date.now() },
-      { id: 2, occupation: { id: 2, name: 'Data Scientist', isco08Code: '2521', status: 'Active' }, yearsExperience: 3, migrationOccupation: 'Scientist', createdBy: mockUser, createdDate: Date.now(), updatedBy: mockUser, updatedDate: Date.now() }
+      { id: 1, occupation: { id: 1, name: 'Software Developer', isco08Code: '2512', status: 'Active' },
+        yearsExperience: 5, migrationOccupation: 'Developer',
+        createdBy: mockUser, createdDate: Date.now(), updatedBy: mockUser, updatedDate: Date.now(),
+      candidateJobExperiences: []},
+      { id: 2, occupation: { id: 2, name: 'Data Scientist', isco08Code: '2521', status: 'Active' },
+        yearsExperience: 3, migrationOccupation: 'Scientist',
+        createdBy: mockUser, createdDate: Date.now(), updatedBy: mockUser, updatedDate: Date.now(),
+        candidateJobExperiences: []}
     ];
 
     service.get(1).subscribe((candidateOccupations) => {
@@ -86,7 +91,8 @@ describe('CandidateOccupationService', () => {
       createdBy: mockUser,
       createdDate: Date.now(),
       updatedBy: mockUser,
-      updatedDate: Date.now()
+      updatedDate: Date.now(),
+      candidateJobExperiences: []
     };
 
     service.update(1, updatedOccupation).subscribe((occupation) => {
@@ -108,7 +114,8 @@ describe('CandidateOccupationService', () => {
       createdBy: mockUser,
       createdDate: Date.now(),
       updatedBy: mockUser,
-      updatedDate: Date.now()
+      updatedDate: Date.now(),
+      candidateJobExperiences: []
     };
 
     service.create(3, newOccupation).subscribe((occupation) => {
@@ -130,7 +137,8 @@ describe('CandidateOccupationService', () => {
       createdBy: mockUser,
       createdDate: Date.now(),
       updatedBy: mockUser,
-      updatedDate: Date.now()
+      updatedDate: Date.now(),
+      candidateJobExperiences: []
     };
 
     service.delete(1).subscribe((occupation) => {

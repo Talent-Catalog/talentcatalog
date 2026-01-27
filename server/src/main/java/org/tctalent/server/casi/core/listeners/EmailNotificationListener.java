@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.tctalent.server.casi.domain.events.ServiceAssignedEvent;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.service.db.email.EmailHelper;
@@ -72,7 +73,7 @@ public class EmailNotificationListener {
 
     var candidate = optional.get();
     try {
-      if (a.getProvider().equals("DUOLINGO")) {
+      if (a.getProvider() == ServiceProvider.DUOLINGO) {
         emailHelper.sendDuolingoCouponEmail(candidate.getUser());
       }
 

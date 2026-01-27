@@ -17,6 +17,7 @@
 package org.tctalent.server.repository.db.read.dto;
 
 import java.time.OffsetDateTime;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
@@ -30,6 +31,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
  */
 @Getter
 @Setter
+@Builder //Useful for constructing unit tests
 @SqlTable(name="users", alias = "u")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class UserReadDto {

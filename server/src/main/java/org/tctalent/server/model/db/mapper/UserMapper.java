@@ -18,6 +18,7 @@ package org.tctalent.server.model.db.mapper;
 
 import org.mapstruct.Mapper;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.read.dto.UserReadDto;
 
 /**
  * User related mappings.
@@ -27,4 +28,6 @@ import org.tctalent.server.model.db.User;
 @Mapper
 public interface UserMapper {
     User userIdentityToUser(org.tctalent.anonymization.model.User user);
+
+    UserReadDto toDto(User user);
 }

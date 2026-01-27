@@ -83,12 +83,6 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attach
 }
 
 # ALB
-data "aws_acm_certificate" "certificate" {
-  domain      = var.site_domain
-  types       = ["AMAZON_ISSUED"]
-  most_recent = true
-}
-
 module "alb" {
   source             = "terraform-aws-modules/alb/aws"
   version            = "~> 6.0"
@@ -123,7 +117,7 @@ module "alb" {
     {
       port               = 443
       protocol           = "HTTPS"
-      certificate_arn    = data.aws_acm_certificate.certificate.arn
+      certificate_arn    = aws_acm_certificate_validation.this.certificate_arn
       target_group_index = 0
     }
   ]
@@ -140,6 +134,17 @@ module "alb" {
       }
     }
   ]
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "alb"
+      Purpose   = "public-ingress"
+    }
+  )
 }
 
 # CloudWatch Logs
@@ -174,18 +179,26 @@ module "ecs" {
     }
   }
 
-  fargate_capacity_providers = {
+  # Module v7+ uses explicit capacity providers and strategy.
+  cluster_capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+  default_capacity_provider_strategy = {
     FARGATE = {
-      default_capacity_provider_strategy = {
-        weight = 50
-      }
+      weight = 50
     }
     FARGATE_SPOT = {
-      default_capacity_provider_strategy = {
-        weight = 50
-      }
+      weight = 50
     }
   }
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "ecs"
+    }
+  )
 }
 
 resource "aws_ecs_service" "web-app" {
@@ -207,6 +220,16 @@ resource "aws_ecs_service" "web-app" {
     assign_public_ip = true
   }
   health_check_grace_period_seconds = 300
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "ecs"
+    }
+  )
 }
 
 resource "aws_ecs_task_definition" "web-app" {

@@ -36,7 +36,6 @@ import {CandidateLanguage} from "../model/candidate-language";
 import {CandidateOccupation} from "../model/candidate-occupation";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {Status} from "../model/base";
-import {Partner} from "../model/partner";
 import {MockPartner} from "./MockPartner";
 
 const mockUser = new MockUser();
@@ -110,7 +109,6 @@ export class MockCandidate implements Candidate {
       id: 1,
       type: AttachmentType.file,
       name: 'Attachment 1',
-      location: 'location1',
       url: 'http://example.com/attachment1',
       createdBy: mockUser,
       createdDate: 1620000000000,
@@ -125,7 +123,6 @@ export class MockCandidate implements Candidate {
       id: 2,
       type: AttachmentType.file,
       name: 'Attachment 2',
-      location: 'location2',
       url: 'http://example.com/attachment2',
       createdBy: mockUser,
       createdDate: 1620000000000,
@@ -307,7 +304,31 @@ export class MockCandidate implements Candidate {
       createdBy: mockUser,
       createdDate: 2023,
       updatedBy: mockUser,
-      updatedDate: 2024
+      updatedDate: 2024,
+      candidateJobExperiences: [{
+        id: 1,
+        country: MockJob.country,
+        companyName: 'Company A',
+        role: 'Developer',
+        startDate: '2020-01-01',
+        endDate: '2021-01-01',
+        fullTime: 'true',
+        paid: 'true',
+        description: 'Worked as a software developer in Company A',
+        expanded: false,
+      },
+        {
+          id: 2,
+          country: MockJob.country,
+          companyName: 'Company B',
+          role: 'Project Manager',
+          startDate: '2019-05-01',
+          endDate: '2020-06-01',
+          fullTime: 'false',
+          paid: 'true',
+          description: 'Managed multiple projects in Company B',
+          expanded: false,
+        }]
     },
     {
       id: 2,
@@ -322,7 +343,31 @@ export class MockCandidate implements Candidate {
       createdBy: mockUser,
       createdDate: 2023,
       updatedBy: mockUser,
-      updatedDate: 2024
+      updatedDate: 2024,
+      candidateJobExperiences: [{
+        id: 1,
+        country: MockJob.country,
+        companyName: 'Company A',
+        role: 'Developer',
+        startDate: '2020-01-01',
+        endDate: '2021-01-01',
+        fullTime: 'true',
+        paid: 'true',
+        description: 'Worked as a software developer in Company A',
+        expanded: false,
+      },
+        {
+          id: 2,
+          country: MockJob.country,
+          companyName: 'Company B',
+          role: 'Project Manager',
+          startDate: '2019-05-01',
+          endDate: '2020-06-01',
+          fullTime: 'false',
+          paid: 'true',
+          description: 'Managed multiple projects in Company B',
+          expanded: false,
+        }]
     }
   ];
   candidateDestinations: CandidateDestination[] = [

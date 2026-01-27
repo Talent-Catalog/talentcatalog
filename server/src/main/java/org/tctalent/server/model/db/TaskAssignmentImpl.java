@@ -16,14 +16,24 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.task.TaskAssignment;
-
-import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import org.tctalent.server.model.db.task.TaskType;
 
 /**
@@ -36,7 +46,7 @@ import org.tctalent.server.model.db.task.TaskType;
 @SequenceGenerator(name = "seq_gen", sequenceName = "task_assignment_id_seq", allocationSize = 1)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "task_type")
-@DiscriminatorValue("Task")
+@DiscriminatorValue("Simple")
 @Getter
 @Setter
 public class TaskAssignmentImpl extends AbstractDomainObject<Long> implements TaskAssignment {

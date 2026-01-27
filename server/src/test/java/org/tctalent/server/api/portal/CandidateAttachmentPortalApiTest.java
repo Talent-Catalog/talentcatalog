@@ -1,8 +1,12 @@
 package org.tctalent.server.api.portal;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -164,7 +168,7 @@ class CandidateAttachmentPortalApiTest {
     attachment.setId(1L);
     attachment.setName("test.pdf");
     attachment.setType(AttachmentType.file);
-    attachment.setLocation("path/to/test.pdf");
+    attachment.setUrl("path/to/test.pdf");
     attachment.setFileType("application/pdf");
     attachment.setMigrated(true);
     attachment.setCv(true);

@@ -25,16 +25,16 @@ module "database" {
 
   identifier        = "${var.app}-${var.env}"
   engine            = "postgres"
-  engine_version    = "14.3"
+  engine_version    = var.db_engine_version
   instance_class    = var.db_instance_class
   allocated_storage = var.db_capacity
 
-  family                      = "postgres14"
-  major_engine_version        = "14"
+  family                      = var.db_family
+  major_engine_version        = var.db_major_engine_version
   allow_major_version_upgrade = true
   auto_minor_version_upgrade  = true
 
-  db_name                = var.app
+  db_name                = var.db_name
   port                   = "5432"
   username               = var.spring_datasource_username
   password               = var.spring_datasource_password
@@ -53,4 +53,14 @@ module "database" {
   iam_database_authentication_enabled = true
 
   multi_az = var.db_multi_az
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "rds"
+    }
+  )
 }
