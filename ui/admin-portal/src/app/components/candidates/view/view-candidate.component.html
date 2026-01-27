@@ -224,7 +224,9 @@
         <tc-tabs [activeTabId]="activeTabId"
                  (tabChanged)="onTabChanged($event)"
         >
-
+<!--todo We really only need to initialize a tab's when the tab is active? Could pass in active flag.
+ Currently every time the tab changes we reload the candidate. See onTabChanged()
+ -->
           <!-- GENERAL -->
           <tc-tab [id]="'General'">
             <tc-tab-header>
