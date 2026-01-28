@@ -18,6 +18,10 @@ terraform {
 }
 
 # Configure the AWS provider
+# NOTE: Provider configuration MUST remain here (cannot be moved to parent module).
+# Providers cannot have configuration parameters injected via module variables.
+# Each environment targets a different AWS account via different assume_role ARNs.
+# Prod account: 289896345557, Staging account: 164804461258
 provider "aws" {
   region = "eu-west-2"
 
