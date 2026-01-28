@@ -152,7 +152,8 @@ export abstract class IntakeComponentTabBase implements OnInit {
   protected crossTab = inject(CrossTabSyncService);
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
-    this.refreshIntakeDataInternal(true);
+    // todo No need to refresh intake data on initial load
+    // this.refreshIntakeDataInternal(true);
 
     // Listen for candidate update signals and refresh the intake data whenever they occur.
     this.candidateService

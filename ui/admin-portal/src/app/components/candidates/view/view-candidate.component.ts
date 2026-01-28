@@ -89,7 +89,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   ngOnInit() {
-    this.refreshCandidateProfile();
+    this.refreshCandidateProfile(); //todo this loads canidatnumber from route and loads caniddate
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
     this.candidateService.candidateUpdated().pipe(
@@ -127,6 +127,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   refreshCandidateProfile() {
     this.loadingError = false;
+    //todo This subscribe is the original load
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
       this.loading = true;
