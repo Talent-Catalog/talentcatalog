@@ -62,6 +62,12 @@ public enum CandidateStatus {
     ineligible(true),
 
     /**
+     * The candidate was set to ineligible, but that status needs to be reviewed.
+     * Typically used following eligibility policy revision.
+     */
+    ineligibleReview(false),
+
+    /**
      * Candidate has completed registration, but the registration has not yet been reviewed.
      */
     pending(false),
