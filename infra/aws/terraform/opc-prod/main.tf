@@ -1,7 +1,9 @@
 # This file is the main entry to the opc-prod infrastructure
 # The idea of using a separate directory is to use different remote state backends and roles
 
-# Configure  the opc-prod terraform workspace
+# Configure the opc-prod terraform workspace
+# NOTE: The terraform block with backend configuration MUST remain in this file (cannot be moved to parent module).
+# This is because backend configuration can only exist in the root module where terraform init/apply is run
 terraform {
   required_version = ">= 1.3.0"
 
