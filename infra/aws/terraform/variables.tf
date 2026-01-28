@@ -99,7 +99,8 @@ variable "aws_secret_key" {
 
 variable "s3_bucket" {
   type        = string
-  description = "S3 bucket name"
+  description = "S3 bucket name (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "es_password" {

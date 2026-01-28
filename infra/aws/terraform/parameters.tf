@@ -23,7 +23,11 @@ resource "aws_ssm_parameter" "aws_secret_key" {
 resource "aws_ssm_parameter" "s3_bucket" {
   name  = "/${var.app}/${var.env}/AWS_S3_BUCKETNAME"
   type  = "String"
-  value = var.s3_bucket
+  value = var.s3_bucket != null ? var.s3_bucket : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "es_password" {
