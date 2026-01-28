@@ -453,7 +453,11 @@ resource "aws_ssm_parameter" "spring_servlet_max_request_size" {
 resource "aws_ssm_parameter" "tc_cors_urls" {
   name  = "/${var.app}/${var.env}/TC_CORS_URLS"
   type  = "String"
-  value = var.tc_cors_urls
+  value = var.tc_cors_urls != null ? var.tc_cors_urls : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "tc_db_copy_config" {

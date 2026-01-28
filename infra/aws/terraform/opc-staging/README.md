@@ -415,6 +415,14 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update TC CORS URLs (TODO: amplify urls)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/TC_CORS_URLS" \
+  --value "https://test.plus.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -676,6 +684,11 @@ aws ssm get-parameter \
 # Verify TC API URL
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/TC_API_URL" \
+  --region eu-west-2
+
+# Verify TC CORS URLs
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/TC_CORS_URLS" \
   --region eu-west-2
 ```
 

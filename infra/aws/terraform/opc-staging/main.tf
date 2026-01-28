@@ -110,9 +110,8 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE (String)
   # - /tc-plus/opc-staging/TC_API_KEY (SecureString)
   # - /tc-plus/opc-staging/TC_API_URL (String)
+  # - /tc-plus/opc-staging/TC_CORS_URLS (String) - todo: amplify urls
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  tc_cors_urls = "https://test.plus.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com" # todo amplify urls
 
   #  todo tc_destinations
 

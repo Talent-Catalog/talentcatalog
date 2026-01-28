@@ -375,7 +375,8 @@ variable "spring_servlet_max_request_size" {
 
 variable "tc_cors_urls" {
   type        = string
-  description = "TC CORS URLs"
+  description = "TC CORS URLs (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "tc_db_copy_config" {
