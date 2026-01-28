@@ -399,6 +399,22 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update TC API Key
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/TC_API_KEY" \
+  --value "YOUR_TC_API_KEY_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update TC API URL
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/TC_API_URL" \
+  --value "YOUR_TC_API_URL_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -649,6 +665,17 @@ aws ssm get-parameter \
 # Verify Spring Servlet Max Request Size
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE" \
+  --region eu-west-2
+
+# Verify TC API Key (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/TC_API_KEY" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify TC API URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/TC_API_URL" \
   --region eu-west-2
 ```
 

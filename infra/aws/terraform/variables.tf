@@ -383,6 +383,19 @@ variable "tc_db_copy_config" {
   description = "TC partner DB copy config"
 }
 
+variable "tc_api_key" {
+  type        = string
+  description = "TC API key (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
+}
+
+variable "tc_api_url" {
+  type        = string
+  description = "TC API URL (optional - uses placeholder if not provided)"
+  default     = null
+}
+
 variable "translation_password" {
   type        = string
   description = "Translation password"

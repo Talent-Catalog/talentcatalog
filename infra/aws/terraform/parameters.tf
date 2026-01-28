@@ -462,6 +462,26 @@ resource "aws_ssm_parameter" "tc_db_copy_config" {
   value = var.tc_db_copy_config
 }
 
+resource "aws_ssm_parameter" "tc_api_key" {
+  name  = "/${var.app}/${var.env}/TC_API_KEY"
+  type  = "SecureString"
+  value = var.tc_api_key != null ? var.tc_api_key : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "tc_api_url" {
+  name  = "/${var.app}/${var.env}/TC_API_URL"
+  type  = "String"
+  value = var.tc_api_url != null ? var.tc_api_url : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "translation_password" {
   name  = "/${var.app}/${var.env}/TRANSLATION_PASSWORD"
   type  = "SecureString"
