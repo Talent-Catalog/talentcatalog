@@ -222,6 +222,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
       'occupations': this.occupationService.listOccupations(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'intakeData':  this.candidateService.getIntakeData(this.candidate.id),
+      //todo Why load candidate again?
       'candidate': this.candidateService.get(this.candidate.id)
     }).subscribe(results => {
       this.loading = false;
