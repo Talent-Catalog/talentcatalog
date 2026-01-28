@@ -4,7 +4,8 @@ This directory contains the Terraform configuration for the OPC staging environm
 
 ## Deployment
 
-Terraform can be run immediately without any prerequisites. It will create SSM parameters with placeholder values that you'll update manually afterwards.
+Terraform can be run immediately without any prerequisites. It will create SSM parameters with 
+placeholder values that you'll update manually afterwards.
 
 ```bash
 cd infra/aws/terraform/opc-staging
@@ -23,12 +24,16 @@ terraform apply
 
 ### Manual SSM Parameter Setup
 
-After running `terraform apply`, you must update SSM parameters with real values. This approach keeps secrets out of Terraform state files.
+After running `terraform apply`, you must update SSM parameters with real values. This approach 
+keeps secrets out of Terraform state files.
 
 **Security Features:**
-1. **Terraform Protection:** Uses `lifecycle.ignore_changes` so manual updates won't be overwritten by subsequent `terraform apply` runs
-2. **Variable Masking:** Sensitive variables use `sensitive = true` to hide values in Terraform logs and outputs
-3. **No Secrets in State:** Only placeholder values are stored in Terraform state; real secrets are added manually via AWS CLI
+1. Terraform protection: Uses `lifecycle.ignore_changes` in parameters.tf so manual updates won't 
+be overwritten by subsequent `terraform apply` runs
+2. Variable masking: Sensitive variables use `sensitive = true` in variables.tf to hide values in 
+Terraform logs and outputs
+3. No secrets in state: Only placeholder values are stored in Terraform state; real secrets and 
+parameter values are added manually via AWS CLI or in the AWS Console
 
 #### Required SSM Parameters to Update
 
@@ -60,7 +65,8 @@ aws ssm put-parameter \
   --overwrite
 ```
 
-**Note:** Make sure you're authenticated with the correct AWS role that has permissions to update SSM parameters in the OPC staging account.
+**Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
+SSM parameters in the OPC staging account.
 
 To verify the parameters were updated:
 
