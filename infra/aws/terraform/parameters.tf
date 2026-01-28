@@ -500,6 +500,16 @@ resource "aws_ssm_parameter" "tc_destinations" {
   }
 }
 
+resource "aws_ssm_parameter" "tc_skills_extraction_api_url" {
+  name  = "/${var.app}/${var.env}/TC_SKILLS_EXTRACTION_API_URL"
+  type  = "String"
+  value = var.tc_skills_extraction_api_url != null ? var.tc_skills_extraction_api_url : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "translation_password" {
   name  = "/${var.app}/${var.env}/TRANSLATION_PASSWORD"
   type  = "SecureString"

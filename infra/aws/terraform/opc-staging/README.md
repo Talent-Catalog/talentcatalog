@@ -439,6 +439,14 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update TC Skills Extraction API URL
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/TC_SKILLS_EXTRACTION_API_URL" \
+  --value "https://skills.plus.tctalent.org" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -715,6 +723,11 @@ aws ssm get-parameter \
 # Verify TC Partner DB Copy Config
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/TC_PARTNER_DBCOPY_CONFIG" \
+  --region eu-west-2
+
+# Verify TC Skills Extraction API URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/TC_SKILLS_EXTRACTION_API_URL" \
   --region eu-west-2
 ```
 

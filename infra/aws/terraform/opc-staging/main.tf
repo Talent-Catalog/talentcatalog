@@ -113,9 +113,9 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/TC_CORS_URLS (String) - todo: amplify urls
   # - /tc-plus/opc-staging/TC_DESTINATIONS (String)
   # - /tc-plus/opc-staging/TC_PARTNER_DBCOPY_CONFIG (String) - todo: can this be retired?
+  # - /tc-plus/opc-staging/TC_SKILLS_EXTRACTION_API_URL (String)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
 
-  # todo -- tc_skills_extraction_api_url : https://skills.plus.tctalent.org
   translation_password = "<REPLACE_ME>" # can't be hardcoded for repository -- find another way todo
 
   web_admin = "https://test.plus.tctalent.org/admin-portal"

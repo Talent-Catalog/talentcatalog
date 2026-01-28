@@ -404,6 +404,12 @@ variable "tc_destinations" {
   default     = null
 }
 
+variable "tc_skills_extraction_api_url" {
+  type        = string
+  description = "TC skills extraction API URL (optional - uses placeholder if not provided)"
+  default     = null
+}
+
 variable "translation_password" {
   type        = string
   description = "Translation password"
