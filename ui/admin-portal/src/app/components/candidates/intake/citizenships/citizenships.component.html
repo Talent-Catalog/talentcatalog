@@ -19,10 +19,10 @@
   {{error}}
 </tc-alert>
 
-<div *ngIf="candidateIntakeData.candidateCitizenships.length == 0">
+<div *ngIf="candidateIntakeData?.candidateCitizenships?.length == 0">
   <p class="mb-0">No Citizenships Added</p>
 </div>
-<div *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;" class="citizenship-card">
+<div *ngFor="let citizenship of candidateIntakeData?.candidateCitizenships; let i = index;" class="citizenship-card">
   <app-candidate-citizenship-card
     [entity]="candidate"
     [candidateIntakeData]="candidateIntakeData"
