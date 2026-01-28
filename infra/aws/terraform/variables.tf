@@ -1,5 +1,7 @@
 ### Terraform variables for AWS infrastructure:
 
+### ECS container and general application variables:
+
 variable "app" {
   type        = string
   description = "Name of the application"
@@ -9,6 +11,35 @@ variable "env" {
   type        = string
   description = "Name of the environment"
 }
+
+variable "common_tags" {
+  type        = map(string)
+  description = "Common tags to apply to resources"
+  default     = {}
+}
+
+variable "site_domain" {
+  type        = string
+  description = "The domain name of the website"
+}
+
+variable "container_image" {
+  type        = string
+  description = "The ECR URL for the Docker image"
+}
+
+variable "container_port" {
+  type        = number
+  description = "Container port"
+}
+
+variable "ecs_tasks_count" {
+  type        = number
+  description = "The desired number of ECS tasks"
+  default     = 1
+}
+
+### Database configuration variables:
 
 variable "db_public_access" {
   default     = true
@@ -54,31 +85,60 @@ variable "db_name" {
   default     = "tbbtalent"
 }
 
-variable "common_tags" {
-  type        = map(string)
-  description = "Common tags to apply to resources"
-  default     = {}
-}
-
-variable "site_domain" {
-  type        = string
-  description = "The domain name of the website"
-}
-
-variable "container_image" {
-  type        = string
-  description = "The ECR URL for the Docker image"
-}
-
-variable "container_port" {
+variable "db_backup_retention_days" {
   type        = number
-  description = "Container port"
+  description = "Number of days to retain DB backups"
+  default     = 7
 }
 
-variable "ecs_tasks_count" {
+variable "db_backup_window" {
+  type        = string
+  description = "The daily time range during which automated backups for RDS are created (UTC)"
+  default     = "13:00-15:00"
+}
+
+variable "db_maintenance_window" {
+  type        = string
+  description = "The daily time range during which maintenance for RDS is started (UTC)"
+  default     = "Sat:15:00-Sat:17:00"
+}
+
+variable "db_capacity" {
   type        = number
-  description = "The desired number of ECS tasks"
-  default     = 1
+  description = "The Aurora capacity unit of the DB"
+  default     = 20
+}
+
+### Network configuration variables:
+
+variable "vpc_cidr" {
+  type        = string
+  description = "The CIDR block for the VPC"
+  default     = "172.32.0.0/16"
+}
+
+variable "private_subnet_cidr" {
+  type        = list(string)
+  description = "List of CIDR blocks for private subnets"
+  default     = ["172.32.0.0/20", "172.32.16.0/20", "172.32.32.0/20"]
+}
+
+variable "public_subnet_cidr" {
+  type        = list(string)
+  description = "List of CIDR blocks for public subnets"
+  default     = ["172.32.48.0/20", "172.32.64.0/20", "172.32.80.0/20"]
+}
+
+variable "db_subnet_cidr" {
+  type        = list(string)
+  description = "List of CIDR blocks for database subnets"
+  default     = ["172.32.96.0/20", "172.32.112.0/20", "172.32.128.0/20"]
+}
+
+variable "availability_zones" {
+  type        = list(string)
+  description = "List of availability zones"
+  default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
 
 ### Spring application configuration variables:
@@ -439,58 +499,4 @@ variable "web_portal" {
   type        = string
   description = "Candidate portal URL (optional - uses placeholder if not provided)"
   default     = null
-}
-
-variable "vpc_cidr" {
-  type        = string
-  description = "The CIDR block for the VPC"
-  default     = "172.32.0.0/16"
-}
-
-variable "private_subnet_cidr" {
-  type        = list(string)
-  description = "List of CIDR blocks for private subnets"
-  default     = ["172.32.0.0/20", "172.32.16.0/20", "172.32.32.0/20"]
-}
-
-variable "public_subnet_cidr" {
-  type        = list(string)
-  description = "List of CIDR blocks for public subnets"
-  default     = ["172.32.48.0/20", "172.32.64.0/20", "172.32.80.0/20"]
-}
-
-variable "db_subnet_cidr" {
-  type        = list(string)
-  description = "List of CIDR blocks for database subnets"
-  default     = ["172.32.96.0/20", "172.32.112.0/20", "172.32.128.0/20"]
-}
-
-variable "availability_zones" {
-  type        = list(string)
-  description = "List of availability zones"
-  default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
-}
-
-variable "db_backup_retention_days" {
-  type        = number
-  description = "Number of days to retain DB backups"
-  default     = 7
-}
-
-variable "db_backup_window" {
-  type        = string
-  description = "The daily time range during which automated backups for RDS are created (UTC)"
-  default     = "13:00-15:00"
-}
-
-variable "db_maintenance_window" {
-  type        = string
-  description = "The daily time range during which maintenance for RDS is started (UTC)"
-  default     = "Sat:15:00-Sat:17:00"
-}
-
-variable "db_capacity" {
-  type        = number
-  description = "The Aurora capacity unit of the DB"
-  default     = 20
 }
