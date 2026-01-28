@@ -72,11 +72,10 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/ELASTICSEARCH_USERNAME (String) - todo: retire elasticsearch
   # - /tc-plus/opc-staging/EMAIL_DEFAULTEMAIL (String) - todo: confirm if used/needed
   # - /tc-plus/opc-staging/EMAIL_PASSWORD (SecureString)
-  # - /tc-plus/opc-staging/EMAIL_TESTOVERRIDEEMAIL (String) - todo: change to shared address - currently john@
+  # - /tc-plus/opc-staging/EMAIL_TESTOVERRIDEEMAIL (String) - todo: change to shared address
   # - /tc-plus/opc-staging/EMAIL_USER (String) - todo: confirm if used/needed
+  # - /tc-plus/opc-staging/ENVIRONMENT (String)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  environment = "opc-staging"
 
   # todo replicate in OPC workspace
   drive_id = "<REPLACE_ME>"

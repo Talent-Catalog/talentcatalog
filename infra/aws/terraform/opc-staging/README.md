@@ -127,6 +127,14 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update Environment
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/ENVIRONMENT" \
+  --value "opc-staging" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -192,6 +200,11 @@ aws ssm get-parameter \
 # Verify Email User
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/EMAIL_USER" \
+  --region eu-west-2
+
+# Verify Environment
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/ENVIRONMENT" \
   --region eu-west-2
 ```
 

@@ -113,7 +113,11 @@ resource "aws_ssm_parameter" "email_user" {
 resource "aws_ssm_parameter" "environment" {
   name  = "/${var.app}/${var.env}/ENVIRONMENT"
   type  = "String"
-  value = var.environment
+  value = var.environment != null ? var.environment : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "drive_id" {

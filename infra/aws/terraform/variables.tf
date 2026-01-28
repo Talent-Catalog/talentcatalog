@@ -156,7 +156,8 @@ variable "email_user" {
 
 variable "environment" {
   type        = string
-  description = "Denotes running environment"
+  description = "Denotes running environment (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "drive_id" {
