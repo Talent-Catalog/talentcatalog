@@ -254,6 +254,18 @@ variable "preset_workspace_id" {
   sensitive   = true
 }
 
+variable "redis_host" {
+  type        = string
+  description = "Redis host (optional - uses placeholder if not provided)"
+  default     = null
+}
+
+variable "redis_port" {
+  type        = string
+  description = "Redis port (optional - uses placeholder if not provided)"
+  default     = null
+}
+
 variable "server_port" {
   type        = string
   description = "Server port"

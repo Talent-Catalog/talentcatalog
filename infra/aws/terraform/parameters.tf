@@ -260,6 +260,26 @@ resource "aws_ssm_parameter" "preset_workspace_id" {
   }
 }
 
+resource "aws_ssm_parameter" "redis_host" {
+  name  = "/${var.app}/${var.env}/REDIS_HOST"
+  type  = "String"
+  value = var.redis_host != null ? var.redis_host : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "redis_port" {
+  name  = "/${var.app}/${var.env}/REDIS_PORT"
+  type  = "String"
+  value = var.redis_port != null ? var.redis_port : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "server_port" {
   name  = "/${var.app}/${var.env}/SERVER_PORT"
   type  = "String"

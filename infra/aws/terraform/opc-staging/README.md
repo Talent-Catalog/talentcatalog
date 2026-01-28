@@ -247,6 +247,22 @@ aws ssm put-parameter \
   --type "SecureString" \
   --region eu-west-2 \
   --overwrite
+
+# Update Redis Host (TODO: the cache should be created by terraform)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/REDIS_HOST" \
+  --value "YOUR_REDIS_HOST_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Redis Port (TODO: the cache should be created by terraform)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/REDIS_PORT" \
+  --value "6379" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -397,6 +413,16 @@ aws ssm get-parameter \
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/PRESET_WORKSPACE_ID" \
   --with-decryption \
+  --region eu-west-2
+
+# Verify Redis Host
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/REDIS_HOST" \
+  --region eu-west-2
+
+# Verify Redis Port
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/REDIS_PORT" \
   --region eu-west-2
 ```
 

@@ -89,9 +89,9 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/PRESET_API_TOKEN (SecureString)
   # - /tc-plus/opc-staging/PRESET_SECRET (SecureString)
   # - /tc-plus/opc-staging/PRESET_WORKSPACE_ID (SecureString)
+  # - /tc-plus/opc-staging/REDIS_HOST (String) - todo: the cache should be created by terraform
+  # - /tc-plus/opc-staging/REDIS_PORT (String) - todo: the cache should be created by terraform
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  # todo redis_host, redis_port
 
   server_port = "8080"
   server_url = "https://test.plus.tctalent.org/"
