@@ -59,8 +59,6 @@ module "tc-plus-staging" {
 
   # Spring application configuration
 
-  # todo -- SM: The below service configuration will be addressed in a follow-up PR / PRs
-
   # AWS S3 configuration: Terraform creates SSM parameters with placeholder values.
   # Update manually after terraform apply (see README.md for AWS CLI commands):
   # - /tc-plus/opc-staging/AWS_CREDENTIALS_ACCESSKEY (String)
@@ -115,9 +113,8 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/TC_PARTNER_DBCOPY_CONFIG (String) - todo: can this be retired?
   # - /tc-plus/opc-staging/TC_SKILLS_EXTRACTION_API_URL (String)
   # - /tc-plus/opc-staging/TRANSLATION_PASSWORD (SecureString)
+  # - /tc-plus/opc-staging/WEB_ADMIN (String)
+  # - /tc-plus/opc-staging/WEB_PORTAL (String)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  web_admin = "https://test.plus.tctalent.org/admin-portal"
-  web_portal = "https://test.plus.tctalent.org/candidate-portal"
 
 }

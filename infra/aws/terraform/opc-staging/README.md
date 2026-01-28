@@ -455,6 +455,22 @@ aws ssm put-parameter \
   --type "SecureString" \
   --region eu-west-2 \
   --overwrite
+
+# Update Web Admin URL
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/WEB_ADMIN" \
+  --value "https://test.plus.tctalent.org/admin-portal" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Web Portal URL
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/WEB_PORTAL" \
+  --value "https://test.plus.tctalent.org/candidate-portal" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -743,6 +759,16 @@ aws ssm get-parameter \
   --name "/tc-plus/opc-staging/TRANSLATION_PASSWORD" \
   --region eu-west-2 \
   --with-decryption
+
+# Verify Web Admin URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/WEB_ADMIN" \
+  --region eu-west-2
+
+# Verify Web Portal URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/WEB_PORTAL" \
+  --region eu-west-2
 ```
 
 ## Architecture

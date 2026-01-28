@@ -523,11 +523,19 @@ resource "aws_ssm_parameter" "translation_password" {
 resource "aws_ssm_parameter" "web_admin" {
   name  = "/${var.app}/${var.env}/WEB_ADMIN"
   type  = "String"
-  value = var.web_admin
+  value = var.web_admin != null ? var.web_admin : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "web_portal" {
   name  = "/${var.app}/${var.env}/WEB_PORTAL"
   type  = "String"
-  value = var.web_portal
+  value = var.web_portal != null ? var.web_portal : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }

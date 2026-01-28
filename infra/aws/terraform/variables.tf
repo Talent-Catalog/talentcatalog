@@ -419,12 +419,14 @@ variable "translation_password" {
 
 variable "web_admin" {
   type        = string
-  description = "Web admin URL"
+  description = "Web admin URL (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "web_portal" {
   type        = string
-  description = "Candidate portal URL"
+  description = "Candidate portal URL (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "vpc_cidr" {
