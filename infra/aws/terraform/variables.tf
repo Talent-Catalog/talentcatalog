@@ -326,42 +326,51 @@ variable "slack_token" {
 
 variable "spring_client_url" {
   type        = string
-  description = "Spring Boot admin client URL"
+  description = "Spring Boot admin client URL (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "spring_datasource_url" {
   type        = string
-  description = "Spring datasource URL"
+  description = "Spring datasource URL (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "spring_datasource_password" {
   type        = string
-  description = "Spring datasource password"
+  description = "Spring datasource password (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "spring_datasource_username" {
   type        = string
-  description = "Spring datasource username"
+  description = "Spring datasource username (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "spring_db_pool_max" {
   type        = string
-  description = "Spring database max pool size"
+  description = "Spring database max pool size (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "spring_db_pool_min" {
   type        = string
-  description = "Spring database min pool size"
+  description = "Spring database min pool size (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "spring_servlet_max_file_size" {
   type        = string
-  description = "Spring servlet multipart max file size"
+  description = "Spring servlet multipart max file size (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "spring_servlet_max_request_size" {
   type        = string
-  description = "Spring servlet multipart max request size"
+  description = "Spring servlet multipart max request size (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "tc_cors_urls" {

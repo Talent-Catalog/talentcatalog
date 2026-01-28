@@ -373,49 +373,81 @@ resource "aws_ssm_parameter" "slack_token" {
 resource "aws_ssm_parameter" "spring_client_url" {
   name  = "/${var.app}/${var.env}/SPRING_BOOT_ADMIN_CLIENT_URL"
   type  = "String"
-  value = var.spring_client_url
+  value = var.spring_client_url != null ? var.spring_client_url : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "spring_datasource_password" {
   name  = "/${var.app}/${var.env}/SPRING_DATASOURCE_PASSWORD"
   type  = "SecureString"
-  value = var.spring_datasource_password
+  value = var.spring_datasource_password != null ? var.spring_datasource_password : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "spring_datasource_url" {
   name  = "/${var.app}/${var.env}/SPRING_DATASOURCE_URL"
   type  = "String"
-  value = "jdbc:postgresql://${var.db_enable ? module.database[0].db_instance_endpoint : var.spring_datasource_url}/tbbtalent"
+  value = var.db_enable ? "jdbc:postgresql://${module.database[0].db_instance_endpoint}/tbbtalent" : (var.spring_datasource_url != null ? var.spring_datasource_url : "PLACEHOLDER_UPDATE_MANUALLY")
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "spring_datasource_username" {
   name  = "/${var.app}/${var.env}/SPRING_DATASOURCE_USERNAME"
   type  = "String"
-  value = var.spring_datasource_username
+  value = var.spring_datasource_username != null ? var.spring_datasource_username : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "spring_db_pool_max" {
   name  = "/${var.app}/${var.env}/SPRING_DBPOOL_MAX"
   type  = "String"
-  value = var.spring_db_pool_max
+  value = var.spring_db_pool_max != null ? var.spring_db_pool_max : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "spring_db_pool_min" {
   name  = "/${var.app}/${var.env}/SPRING_DBPOOL_MIN"
   type  = "String"
-  value = var.spring_db_pool_min
+  value = var.spring_db_pool_min != null ? var.spring_db_pool_min : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "spring_servlet_max_file_size" {
   name  = "/${var.app}/${var.env}/SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE"
   type  = "String"
-  value = var.spring_servlet_max_file_size
+  value = var.spring_servlet_max_file_size != null ? var.spring_servlet_max_file_size : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "spring_servlet_max_request_size" {
   name  = "/${var.app}/${var.env}/SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE"
   type  = "String"
-  value = var.spring_servlet_max_request_size
+  value = var.spring_servlet_max_request_size != null ? var.spring_servlet_max_request_size : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "tc_cors_urls" {

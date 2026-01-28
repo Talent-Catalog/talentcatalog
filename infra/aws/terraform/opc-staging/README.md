@@ -328,11 +328,75 @@ aws ssm put-parameter \
   --region eu-west-2 \
   --overwrite
 
-# Update Slack Token (TODO: need one for OPC?)
+# Update Slack Token (TODO: need one for OPC)
 aws ssm put-parameter \
   --name "/tc-plus/opc-staging/SLACK_TOKEN" \
   --value "YOUR_SLACK_TOKEN_HERE" \
   --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Spring Boot Admin Client URL (TODO: confirm if used/needed)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SPRING_BOOT_ADMIN_CLIENT_URL" \
+  --value "-" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Spring Datasource Password
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DATASOURCE_PASSWORD" \
+  --value "YOUR_DB_PASSWORD_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Spring Datasource URL (Note: auto-set when db_enable=true)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DATASOURCE_URL" \
+  --value "jdbc:postgresql://YOUR_RDS_ENDPOINT_HERE:5432/tcplus" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Spring Datasource Username
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DATASOURCE_USERNAME" \
+  --value "tctalent" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Spring DB Pool Max
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DBPOOL_MAX" \
+  --value "50" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Spring DB Pool Min
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DBPOOL_MIN" \
+  --value "20" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Spring Servlet Max File Size
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE" \
+  --value "10MB" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Spring Servlet Max Request Size
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE" \
+  --value "10MB" \
+  --type "String" \
   --region eu-west-2 \
   --overwrite
 ```
@@ -544,6 +608,47 @@ aws ssm get-parameter \
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/SLACK_TOKEN" \
   --with-decryption \
+  --region eu-west-2
+
+# Verify Spring Boot Admin Client URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SPRING_BOOT_ADMIN_CLIENT_URL" \
+  --region eu-west-2
+
+# Verify Spring Datasource Password (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DATASOURCE_PASSWORD" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Spring Datasource URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DATASOURCE_URL" \
+  --region eu-west-2
+
+# Verify Spring Datasource Username
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DATASOURCE_USERNAME" \
+  --region eu-west-2
+
+# Verify Spring DB Pool Max
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DBPOOL_MAX" \
+  --region eu-west-2
+
+# Verify Spring DB Pool Min
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SPRING_DBPOOL_MIN" \
+  --region eu-west-2
+
+# Verify Spring Servlet Max File Size
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE" \
+  --region eu-west-2
+
+# Verify Spring Servlet Max Request Size
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE" \
   --region eu-west-2
 ```
 

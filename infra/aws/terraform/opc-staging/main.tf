@@ -100,16 +100,15 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/SF_PRIVATE_KEY (SecureString) - todo: either create for OPC or decouple TC+ from SF
   # - /tc-plus/opc-staging/SF_USER (SecureString) - todo: either create for OPC or decouple TC+ from SF
   # - /tc-plus/opc-staging/SLACK_TOKEN (SecureString) - todo: need one for OPC
+  # - /tc-plus/opc-staging/SPRING_BOOT_ADMIN_CLIENT_URL (String) - todo: confirm if used/needed
+  # - /tc-plus/opc-staging/SPRING_DATASOURCE_PASSWORD (SecureString)
+  # - /tc-plus/opc-staging/SPRING_DATASOURCE_URL (String) - uses RDS endpoint when db_enable=true
+  # - /tc-plus/opc-staging/SPRING_DATASOURCE_USERNAME (String)
+  # - /tc-plus/opc-staging/SPRING_DBPOOL_MAX (String)
+  # - /tc-plus/opc-staging/SPRING_DBPOOL_MIN (String)
+  # - /tc-plus/opc-staging/SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE (String)
+  # - /tc-plus/opc-staging/SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE (String)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  spring_client_url = "-" # todo confirm if this is used or needed, there is no value configured for it in the stating service task definition
-  spring_datasource_password = "<REPLACE_ME>" # shouldn't be hardcoded -- todo
-  spring_datasource_url = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent" # todo after RDS DB is created
-  spring_datasource_username = "tctalent"
-  spring_db_pool_max = "50"
-  spring_db_pool_min = "20"
-  spring_servlet_max_file_size = "10MB"
-  spring_servlet_max_request_size = "10MB"
 
   # todo tc_api_key, tc_api_url
 
