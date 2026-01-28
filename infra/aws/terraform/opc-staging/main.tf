@@ -70,13 +70,11 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/ELASTICSEARCH_PASSWORD (SecureString) - todo: retire elasticsearch
   # - /tc-plus/opc-staging/ELASTICSEARCH_URL (String) - todo: retire elasticsearch
   # - /tc-plus/opc-staging/ELASTICSEARCH_USERNAME (String) - todo: retire elasticsearch
+  # - /tc-plus/opc-staging/EMAIL_DEFAULTEMAIL (String) - todo: confirm if used/needed
+  # - /tc-plus/opc-staging/EMAIL_PASSWORD (SecureString)
+  # - /tc-plus/opc-staging/EMAIL_TESTOVERRIDEEMAIL (String) - todo: change to shared address - currently john@
+  # - /tc-plus/opc-staging/EMAIL_USER (String) - todo: confirm if used/needed
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  email_default = "<REPLACE_ME>" # todo confirm if this is used / needed - it is not configured in the AWS staging task definition
-  email_password = "<REPLACE_ME>" # shouldn't be hardcoded todo
-  email_test_override = "john@cameronfoundation.org" # todo change this to a shared address
-
-  email_user = "<REPLACE_ME>" # todo confirm if this is used / needed - it is not configured in the AWS staging task definition
 
   environment = "opc-staging"
 

@@ -73,25 +73,41 @@ resource "aws_ssm_parameter" "es_username" {
 resource "aws_ssm_parameter" "email_default" {
   name  = "/${var.app}/${var.env}/EMAIL_DEFAULTEMAIL"
   type  = "String"
-  value = var.email_default
+  value = var.email_default != null ? var.email_default : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "email_password" {
   name  = "/${var.app}/${var.env}/EMAIL_PASSWORD"
   type  = "SecureString"
-  value = var.email_password
+  value = var.email_password != null ? var.email_password : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "email_test_override" {
   name  = "/${var.app}/${var.env}/EMAIL_TESTOVERRIDEEMAIL"
   type  = "String"
-  value = var.email_test_override
+  value = var.email_test_override != null ? var.email_test_override : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "email_user" {
   name  = "/${var.app}/${var.env}/EMAIL_USER"
   type  = "String"
-  value = var.email_user
+  value = var.email_user != null ? var.email_user : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "environment" {

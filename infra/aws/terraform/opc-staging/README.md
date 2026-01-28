@@ -95,6 +95,38 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update Email Default (TODO: confirm if used/needed)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_DEFAULTEMAIL" \
+  --value "YOUR_DEFAULT_EMAIL_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Email Password
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_PASSWORD" \
+  --value "YOUR_EMAIL_PASSWORD_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Email Test Override (TODO: change to shared address- currently john@)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_TESTOVERRIDEEMAIL" \
+  --value "YOUR_TEST_OVERRIDE_EMAIL_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Email User (TODO: confirm if used/needed)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_USER" \
+  --value "YOUR_EMAIL_USER_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -139,6 +171,27 @@ aws ssm get-parameter \
 # Verify Elasticsearch Username
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/ELASTICSEARCH_USERNAME" \
+  --region eu-west-2
+
+# Verify Email Default
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_DEFAULTEMAIL" \
+  --region eu-west-2
+
+# Verify Email Password (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_PASSWORD" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Email Test Override
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_TESTOVERRIDEEMAIL" \
+  --region eu-west-2
+
+# Verify Email User
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_USER" \
   --region eu-west-2
 ```
 

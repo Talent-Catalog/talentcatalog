@@ -131,22 +131,27 @@ variable "es_username" {
 
 variable "email_default" {
   type        = string
-  description = "Default email"
+  description = "Default email (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "email_password" {
   type        = string
-  description = "Email password"
+  description = "Email password (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "email_test_override" {
   type        = string
-  description = "Test override email"
+  description = "Test override email (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "email_user" {
   type        = string
-  description = "Email user"
+  description = "Email user (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "environment" {
