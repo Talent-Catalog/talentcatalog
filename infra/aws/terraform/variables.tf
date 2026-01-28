@@ -112,17 +112,21 @@ variable "duolingo_api_secret" {
 
 variable "es_password" {
   type        = string
-  description = "ElasticSearch password"
+  description = "ElasticSearch password (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "es_url" {
   type        = string
-  description = "ElasticSearch URL"
+  description = "ElasticSearch URL (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "es_username" {
   type        = string
-  description = "ElasticSearch username"
+  description = "ElasticSearch username (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "email_default" {

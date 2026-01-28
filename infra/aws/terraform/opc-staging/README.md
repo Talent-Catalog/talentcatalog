@@ -71,6 +71,30 @@ aws ssm put-parameter \
   --type "SecureString" \
   --region eu-west-2 \
   --overwrite
+
+# Update Elasticsearch Password (TODO: retire elasticsearch)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/ELASTICSEARCH_PASSWORD" \
+  --value "YOUR_ELASTICSEARCH_PASSWORD_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Elasticsearch URL (TODO: retire elasticsearch)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/ELASTICSEARCH_URL" \
+  --value "YOUR_ELASTICSEARCH_URL_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Elasticsearch Username (TODO: retire elasticsearch)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/ELASTICSEARCH_USERNAME" \
+  --value "YOUR_ELASTICSEARCH_USERNAME_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -99,6 +123,22 @@ aws ssm get-parameter \
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/DUOLINGO_API_APISECRET" \
   --with-decryption \
+  --region eu-west-2
+
+# Verify Elasticsearch Password (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/ELASTICSEARCH_PASSWORD" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Elasticsearch URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/ELASTICSEARCH_URL" \
+  --region eu-west-2
+
+# Verify Elasticsearch Username
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/ELASTICSEARCH_USERNAME" \
   --region eu-west-2
 ```
 

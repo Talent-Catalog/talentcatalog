@@ -43,19 +43,31 @@ resource "aws_ssm_parameter" "duolingo_api_secret" {
 resource "aws_ssm_parameter" "es_password" {
   name  = "/${var.app}/${var.env}/ELASTICSEARCH_PASSWORD"
   type  = "SecureString"
-  value = var.es_password
+  value = var.es_password != null ? var.es_password : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "es_url" {
   name  = "/${var.app}/${var.env}/ELASTICSEARCH_URL"
   type  = "String"
-  value = var.es_url
+  value = var.es_url != null ? var.es_url : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "es_username" {
   name  = "/${var.app}/${var.env}/ELASTICSEARCH_USERNAME"
   type  = "String"
-  value = var.es_username
+  value = var.es_username != null ? var.es_username : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "email_default" {

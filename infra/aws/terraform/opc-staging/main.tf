@@ -67,12 +67,10 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/AWS_CREDENTIALS_SECRETKEY (SecureString)
   # - /tc-plus/opc-staging/AWS_S3_BUCKETNAME (String)
   # - /tc-plus/opc-staging/DUOLINGO_API_APISECRET (SecureString)
+  # - /tc-plus/opc-staging/ELASTICSEARCH_PASSWORD (SecureString) - todo: retire elasticsearch
+  # - /tc-plus/opc-staging/ELASTICSEARCH_URL (String) - todo: retire elasticsearch
+  # - /tc-plus/opc-staging/ELASTICSEARCH_USERNAME (String) - todo: retire elasticsearch
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  # todo retire elasticsearch
-  es_password = "<REPLACE_ME>" # shouldn't be hardcoded -- remove elasticsearch todo
-  es_url = "<REPLACE_ME>" # -- remove elasticsearch todo
-  es_username = "<REPLACE_ME>" # -- remove elasticsearch todo
 
   email_default = "<REPLACE_ME>" # todo confirm if this is used / needed - it is not configured in the AWS staging task definition
   email_password = "<REPLACE_ME>" # shouldn't be hardcoded todo
