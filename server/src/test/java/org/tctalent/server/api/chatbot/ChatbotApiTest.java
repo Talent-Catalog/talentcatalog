@@ -85,7 +85,7 @@ class ChatbotApiTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.message", is("How can I assist you today?")))
-        .andExpect(jsonPath("$.sender", is("bot")))
+        .andExpect(jsonPath("$.sender", is("BOT")))
         .andExpect(jsonPath("$.sessionId", notNullValue()));
 
     verify(chatbotService).sendMessage("Hello there", SESSION_ID);
@@ -193,7 +193,7 @@ class ChatbotApiTest {
     message.setId(UUID.randomUUID());
     message.setQuestionId(UUID.randomUUID());
     message.setSessionId(UUID.randomUUID());
-    message.setSender(ChatbotMessage.ChatbotSender.bot);
+    message.setSender(ChatbotMessage.ChatbotSender.BOT);
     message.setMessage("How can I assist you today?");
     message.setTimestamp(OffsetDateTime.now());
     return message;

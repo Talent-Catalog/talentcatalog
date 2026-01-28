@@ -58,7 +58,7 @@ class ChatbotMessageRepositoryIntegrationTest {
     assertTrue(retrieved.isPresent());
     assertEquals(sessionId, retrieved.get().getSessionId());
     assertEquals(
-        ChatbotMessage.ChatbotSender.user,
+        ChatbotMessage.ChatbotSender.USER,
         retrieved.get().getSender(),
         "Sender should be persisted");
   }
@@ -82,10 +82,10 @@ class ChatbotMessageRepositoryIntegrationTest {
 
     assertEquals(2, matchedMessages.size());
     assertTrue(
-        matchedMessages.stream().anyMatch(msg -> msg.getSender() == ChatbotMessage.ChatbotSender.user),
+        matchedMessages.stream().anyMatch(msg -> msg.getSender() == ChatbotMessage.ChatbotSender.USER),
         "User message should be persisted");
     assertTrue(
-        matchedMessages.stream().anyMatch(msg -> msg.getSender() == ChatbotMessage.ChatbotSender.bot),
+        matchedMessages.stream().anyMatch(msg -> msg.getSender() == ChatbotMessage.ChatbotSender.BOT),
         "Bot message should be persisted");
   }
 

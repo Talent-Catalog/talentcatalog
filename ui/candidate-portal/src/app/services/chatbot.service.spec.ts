@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -90,7 +90,7 @@ describe('ChatbotService', () => {
       const messages = service.messages;
       expect(messages.length).toBe(1);
       expect(messages[0].message).toBe('Welcome!');
-      expect(messages[0].sender).toBe('bot');
+      expect(messages[0].sender).toBe('BOT');
     });
 
     it('should handle welcome message error by calling getWelcomeMessage', () => {
@@ -111,7 +111,7 @@ describe('ChatbotService', () => {
       const mockBotResponse: ChatbotMessage = {
         id: 'bot-123',
         message: 'Hello user!',
-        sender: 'bot',
+        sender: 'BOT',
         timestamp: new Date()
       };
 
@@ -121,7 +121,7 @@ describe('ChatbotService', () => {
       let currentMessages = service.messages;
       expect(currentMessages.length).toBe(2); // Welcome + user message
       expect(currentMessages[1].message).toBe(testMessage);
-      expect(currentMessages[1].sender).toBe('user');
+      expect(currentMessages[1].sender).toBe('USER');
 
       // Mock backend response
       const req = httpMock.expectOne(`${apiUrl}/send`);
@@ -134,7 +134,7 @@ describe('ChatbotService', () => {
       currentMessages = service.messages;
       expect(currentMessages.length).toBe(3); // Welcome + user + bot
       expect(currentMessages[2].message).toBe('Hello user!');
-      expect(currentMessages[2].sender).toBe('bot');
+      expect(currentMessages[2].sender).toBe('BOT');
     });
 
     it('should handle error when sending message', () => {
@@ -149,7 +149,7 @@ describe('ChatbotService', () => {
       const currentMessages = service.messages;
       expect(currentMessages.length).toBe(3);
       expect(currentMessages[2].message).toContain('encountered an error');
-      expect(currentMessages[2].sender).toBe('bot');
+      expect(currentMessages[2].sender).toBe('BOT');
     });
 
     it('should not send empty or whitespace-only messages', () => {
@@ -205,7 +205,7 @@ describe('ChatbotService', () => {
       const mockResponse: ChatbotMessage = {
         id: 'bot-123',
         message: 'Response',
-        sender: 'bot',
+        sender: 'BOT',
         timestamp: new Date()
       };
 
@@ -221,7 +221,7 @@ describe('ChatbotService', () => {
       const mockBotResponse: ChatbotMessage = {
         id: 'bot-123',
         message: 'Response',
-        sender: 'bot',
+        sender: 'BOT',
         timestamp: new Date()
       };
 
@@ -241,7 +241,7 @@ describe('ChatbotService', () => {
       const mockBotResponse: ChatbotMessage = {
         id: 'bot-123',
         message: 'Response',
-        sender: 'bot',
+        sender: 'BOT',
         timestamp: new Date()
       };
 
@@ -264,7 +264,7 @@ describe('ChatbotService', () => {
       const mockBotResponse: ChatbotMessage = {
         id: 'bot-123',
         message: 'Response',
-        sender: 'bot',
+        sender: 'BOT',
         timestamp: new Date()
       };
 
@@ -289,7 +289,7 @@ describe('ChatbotService', () => {
       const mockBotResponse: ChatbotMessage = {
         id: 'bot-123',
         message: 'Response',
-        sender: 'bot',
+        sender: 'BOT',
         timestamp: new Date()
       };
 

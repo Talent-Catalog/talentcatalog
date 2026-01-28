@@ -28,11 +28,11 @@ public final class ChatbotTestData {
   private ChatbotTestData() {}
 
   public static ChatbotMessage createUserMessage(UUID sessionId, UUID questionId, String message) {
-    return createMessage(sessionId, questionId, ChatbotMessage.ChatbotSender.user, message);
+    return createMessage(sessionId, questionId, ChatbotMessage.ChatbotSender.USER, message);
   }
 
   public static ChatbotMessage createBotMessage(UUID sessionId, UUID questionId, String message) {
-    return createMessage(sessionId, questionId, ChatbotMessage.ChatbotSender.bot, message);
+    return createMessage(sessionId, questionId, ChatbotMessage.ChatbotSender.BOT, message);
   }
 
   public static ChatbotMessage createMessage(

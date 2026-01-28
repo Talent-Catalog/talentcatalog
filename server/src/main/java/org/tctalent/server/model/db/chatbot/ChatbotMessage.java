@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -54,6 +54,10 @@ public class ChatbotMessage {
     @Column(name = "timestamp", nullable = false)
     private OffsetDateTime timestamp;
 
+    /**
+     * List of FAQ IDs that were referenced in generating this bot response.
+     * Used for tracking which FAQs are most commonly used.
+     */
     @Type(JsonBinaryType.class)
     @Column(name = "referenced_faq_ids", columnDefinition = "jsonb")
     private List<String> referencedFaqIds;
@@ -62,6 +66,6 @@ public class ChatbotMessage {
      * Enum representing the sender of a chatbot message.
      */
     public enum ChatbotSender {
-        user, bot
+        USER, BOT
     }
 }

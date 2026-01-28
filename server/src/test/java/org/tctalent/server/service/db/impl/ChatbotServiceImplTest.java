@@ -65,7 +65,7 @@ class ChatbotServiceImplTest {
       ChatbotMessage response = chatbotService.sendMessage("Hello <b>world</b>", SESSION_ID);
 
       assertEquals("Bot response", response.getMessage());
-      assertEquals(ChatbotMessage.ChatbotSender.bot, response.getSender());
+      assertEquals(ChatbotMessage.ChatbotSender.BOT, response.getSender());
 
       ArgumentCaptor<ChatbotMessage> captor = ArgumentCaptor.forClass(ChatbotMessage.class);
       verify(chatbotMessageRepository, times(2)).save(captor.capture());
@@ -73,11 +73,11 @@ class ChatbotServiceImplTest {
       List<ChatbotMessage> savedMessages = captor.getAllValues();
       ChatbotMessage savedUserMessage = savedMessages.get(0);
       assertEquals("Hello world", savedUserMessage.getMessage());
-      assertEquals(ChatbotMessage.ChatbotSender.user, savedUserMessage.getSender());
+      assertEquals(ChatbotMessage.ChatbotSender.USER, savedUserMessage.getSender());
 
       ChatbotMessage savedBotMessage = savedMessages.get(1);
       assertEquals("Bot response", savedBotMessage.getMessage());
-      assertEquals(ChatbotMessage.ChatbotSender.bot, savedBotMessage.getSender());
+      assertEquals(ChatbotMessage.ChatbotSender.BOT, savedBotMessage.getSender());
     }
 
     verify(qaService).loadQAContext();
@@ -106,7 +106,7 @@ class ChatbotServiceImplTest {
       assertEquals(
           "I apologize, but I encountered an error processing your request. Please try again later.",
           response.getMessage());
-      assertEquals(ChatbotMessage.ChatbotSender.bot, response.getSender());
+      assertEquals(ChatbotMessage.ChatbotSender.BOT, response.getSender());
     }
 
     verify(chatbotMessageRepository, times(2)).save(any(ChatbotMessage.class));

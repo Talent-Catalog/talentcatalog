@@ -47,16 +47,16 @@ public class AnthropicProperties {
     /**
      * The Claude model to use for generating responses.
      */
-    private String model = "claude-haiku-4-5-20251001";
+    private String model;
 
     /**
      * Maximum number of tokens to generate in the response.
      */
-    private Integer maxTokens = 20000;
+    private Integer maxTokens;
 
     /**
      * Temperature setting for response generation (0.0 to 2.0).
      */
-    private Double temperature = 1.0;
+    private Double temperature;
 }
 

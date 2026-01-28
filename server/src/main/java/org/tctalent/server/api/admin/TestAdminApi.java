@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -42,7 +42,7 @@ public class TestAdminApi {
         response.put("status", "success");
         response.put("message", "Talent Catalog server is running!");
         response.put("timestamp", LocalDateTime.now().toString());
-        response.put("version", "2.3.0");
+        response.put("version", "2.5.0");
         
         return response;
     }

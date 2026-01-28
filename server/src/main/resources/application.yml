@@ -176,8 +176,6 @@ web:
 
 flyway:
   ignoreMissingMigrations: false
-
-#  Set this to true if you need to repair the Flyway history.
   repair: false
 
 google:

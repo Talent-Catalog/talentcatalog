@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -97,13 +97,13 @@ describe('ChatbotComponent', () => {
         {
           id: '1',
           message: 'Hello',
-          sender: 'user',
+          sender: 'USER',
           timestamp: new Date()
         },
         {
           id: '2',
           message: 'Hi there!',
-          sender: 'bot',
+          sender: 'BOT',
           timestamp: new Date()
         }
       ];

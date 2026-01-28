@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2024 Talent Catalog.
+  ~ Copyright (c) 2026 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -60,8 +60,8 @@
        aria-label="Chat messages">
     <div *ngFor="let message of messages" 
          class="message"
-         [class.user-message]="message.sender === 'user'"
-         [class.bot-message]="message.sender === 'bot'">
+         [class.user-message]="message.sender === 'USER'"
+         [class.bot-message]="message.sender === 'BOT'">
       <div class="message-content">
         <div class="message-text" [innerHTML]="formatMessageText(message.message)"></div>
         <div class="message-time">{{ formatTime(message.timestamp) }}</div>

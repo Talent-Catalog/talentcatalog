@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -64,7 +64,7 @@ public class ChatbotServiceImpl implements ChatbotService {
             userMessage.setId(UUID.randomUUID());
             userMessage.setSessionId(sessionUUID);
             userMessage.setQuestionId(questionId);
-            userMessage.setSender(ChatbotMessage.ChatbotSender.user);
+            userMessage.setSender(ChatbotMessage.ChatbotSender.USER);
             userMessage.setMessage(sanitizedMessage);
             userMessage.setTimestamp(OffsetDateTime.now());
             chatbotMessageRepository.save(userMessage);
@@ -87,7 +87,7 @@ public class ChatbotServiceImpl implements ChatbotService {
             response.setId(UUID.randomUUID());
             response.setSessionId(sessionUUID);
             response.setQuestionId(questionId); // Same question_id links question to answer
-            response.setSender(ChatbotMessage.ChatbotSender.bot);
+            response.setSender(ChatbotMessage.ChatbotSender.BOT);
             response.setMessage(extraction.getCleanedResponse()); // Use cleaned response (without FAQ citations)
             response.setReferencedFaqIds(extraction.getFaqIds()); // Store extracted FAQ IDs
             response.setTimestamp(OffsetDateTime.now());
@@ -114,7 +114,7 @@ public class ChatbotServiceImpl implements ChatbotService {
             response.setId(UUID.randomUUID());
             response.setSessionId(sessionUUID);
             response.setQuestionId(questionId);
-            response.setSender(ChatbotMessage.ChatbotSender.bot);
+            response.setSender(ChatbotMessage.ChatbotSender.BOT);
             response.setMessage("I apologize, but I encountered an error processing your request. Please try again later.");
             response.setTimestamp(OffsetDateTime.now());
             chatbotMessageRepository.save(response);

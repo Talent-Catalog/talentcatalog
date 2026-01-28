@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ export interface ChatbotMessage {
   sessionId?: string; // UUID as string (optional, may not be in all responses)
   questionId?: string; // UUID as string (optional, may not be in all responses)
   message: string; // Message content
-  sender: 'user' | 'bot';
+  sender: 'USER' | 'BOT';
   timestamp: Date;
 }
 

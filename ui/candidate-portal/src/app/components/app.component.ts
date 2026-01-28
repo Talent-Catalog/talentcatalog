@@ -115,11 +115,16 @@ export class AppComponent implements OnInit {
     // Use getBrandingInfoFromApi to get actual partner name for both registered and unregistered users
     this.brandingService.getBrandingInfoFromApi().subscribe(
       (response: BrandingInfo) => {
+        console.log('Branding API response:', response);
+        console.log('Partner name:', response.partnerName);
         this.isTBBPartner = response.partnerName === "Talent Beyond Boundaries";
+        console.log('isTBBPartner set to:', this.isTBBPartner);
       },
       (error) => {
+        console.error('Error fetching branding info:', error);
         // On error, default to hiding chatbot
         this.isTBBPartner = false;
+        console.log('isTBBPartner set to false due to error');
       }
     );
   }

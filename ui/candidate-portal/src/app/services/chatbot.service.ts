@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -110,7 +110,7 @@ export class ChatbotService implements OnDestroy {
     const userMessage: ChatbotMessage = {
       id: this.generateId(),
       message: trimmedMessage,
-      sender: 'user',
+      sender: 'USER',
       timestamp: new Date()
     };
 
@@ -137,7 +137,7 @@ export class ChatbotService implements OnDestroy {
           const errorMessage: ChatbotMessage = {
             id: this.generateId(),
             message: 'Sorry, I encountered an error. Please try again.',
-            sender: 'bot',
+            sender: 'BOT',
             timestamp: new Date()
           };
           this.addMessage(errorMessage);
@@ -159,7 +159,7 @@ export class ChatbotService implements OnDestroy {
           const welcomeMessage: ChatbotMessage = {
             id: this.generateId(),
             message: response.message,
-            sender: 'bot',
+            sender: 'BOT',
             timestamp: new Date()
           };
           this.addMessage(welcomeMessage);
@@ -172,7 +172,7 @@ export class ChatbotService implements OnDestroy {
           const fallbackMessage: ChatbotMessage = {
             id: this.generateId(),
             message: 'Sorry, the chatbot is currently unavailable. Please try again later.',
-            sender: 'bot',
+            sender: 'BOT',
             timestamp: new Date()
           };
           this.addMessage(fallbackMessage);

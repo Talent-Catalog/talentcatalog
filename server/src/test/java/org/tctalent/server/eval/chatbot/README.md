@@ -121,7 +121,7 @@ How it works:
 - Evaluator validates that correct FAQs were referenced
 
 Scoring:
-- Score = (FAQ IDs found / expected FAQ IDs) × 1.0
+- Score = (FAQ IDs found / expected FAQ IDs)
 - Out-of-scope questions: pass only if no FAQ IDs are present
 
 ### Edge Case Tests
