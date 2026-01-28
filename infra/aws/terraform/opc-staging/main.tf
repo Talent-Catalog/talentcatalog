@@ -81,13 +81,12 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/GOOGLE_DRIVE_LISTFOLDERSROOTID (SecureString) - todo: replicate in OPC workspace
   # - /tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEY (SecureString) - todo: replicate in OPC workspace
   # - /tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEYID (SecureString) - todo: replicate in OPC workspace
+  # - /tc-plus/opc-staging/GRADLE_HOME (String)
+  # - /tc-plus/opc-staging/JAVA_HOME (String)
+  # - /tc-plus/opc-staging/JWT_SECRET (SecureString)
+  # - /tc-plus/opc-staging/M2 (String)
+  # - /tc-plus/opc-staging/M2_HOME (String)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  gradle_home = "/usr/local/gradle"
-  java_home = "/usr/lib/jvm/java"
-  jwt_secret = "<REPLACE_ME>" # todo do not hardcode
-  m2 = "/usr/local/apache-maven/bin"
-  m2_home = "/usr/local/apache-maven"
 
   # todo preset_api_token, preset_secret (do not hardcode), preset_workspace_id
   # todo redis_host, redis_port

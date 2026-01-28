@@ -183,6 +183,46 @@ aws ssm put-parameter \
   --type "SecureString" \
   --region eu-west-2 \
   --overwrite
+
+# Update Gradle Home
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/GRADLE_HOME" \
+  --value "/usr/local/gradle" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Java Home
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/JAVA_HOME" \
+  --value "/usr/lib/jvm/java" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update JWT Secret
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/JWT_SECRET" \
+  --value "YOUR_JWT_SECRET_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update M2
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/M2" \
+  --value "/usr/local/apache-maven/bin" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update M2 Home
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/M2_HOME" \
+  --value "/usr/local/apache-maven" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -289,6 +329,32 @@ aws ssm get-parameter \
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEYID" \
   --with-decryption \
+  --region eu-west-2
+
+# Verify Gradle Home
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/GRADLE_HOME" \
+  --region eu-west-2
+
+# Verify Java Home
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/JAVA_HOME" \
+  --region eu-west-2
+
+# Verify JWT Secret (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/JWT_SECRET" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify M2
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/M2" \
+  --region eu-west-2
+
+# Verify M2 Home
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/M2_HOME" \
   --region eu-west-2
 ```
 

@@ -183,31 +183,51 @@ resource "aws_ssm_parameter" "drive_private_key_id" {
 resource "aws_ssm_parameter" "gradle_home" {
   name  = "/${var.app}/${var.env}/GRADLE_HOME"
   type  = "String"
-  value = var.gradle_home
+  value = var.gradle_home != null ? var.gradle_home : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "java_home" {
   name  = "/${var.app}/${var.env}/JAVA_HOME"
   type  = "String"
-  value = var.java_home
+  value = var.java_home != null ? var.java_home : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "jwt_secret" {
   name  = "/${var.app}/${var.env}/JWT_SECRET"
   type  = "SecureString"
-  value = var.jwt_secret
+  value = var.jwt_secret != null ? var.jwt_secret : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "m2" {
   name  = "/${var.app}/${var.env}/M2"
   type  = "String"
-  value = var.m2
+  value = var.m2 != null ? var.m2 : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "m2_home" {
   name  = "/${var.app}/${var.env}/M2_HOME"
   type  = "String"
-  value = var.m2_home
+  value = var.m2_home != null ? var.m2_home : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "server_port" {

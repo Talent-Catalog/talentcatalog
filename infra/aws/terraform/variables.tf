@@ -204,27 +204,33 @@ variable "drive_private_key_id" {
 
 variable "gradle_home" {
   type        = string
-  description = "Gradle home directory"
+  description = "Gradle home directory (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "java_home" {
   type        = string
-  description = "Java home directory"
+  description = "Java home directory (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "jwt_secret" {
   type        = string
-  description = "JWT secret"
+  description = "JWT secret (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "m2" {
   type        = string
-  description = "M2"
+  description = "M2 (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "m2_home" {
   type        = string
-  description = "M2 home directory"
+  description = "M2 home directory (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "server_port" {
