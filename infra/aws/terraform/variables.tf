@@ -373,6 +373,19 @@ variable "spring_servlet_max_request_size" {
   default     = null
 }
 
+variable "tc_api_key" {
+  type        = string
+  description = "TC API key (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
+}
+
+variable "tc_api_url" {
+  type        = string
+  description = "TC API URL (optional - uses placeholder if not provided)"
+  default     = null
+}
+
 variable "tc_cors_urls" {
   type        = string
   description = "TC CORS URLs (optional - uses placeholder if not provided)"
@@ -384,16 +397,9 @@ variable "tc_db_copy_config" {
   description = "TC partner DB copy config"
 }
 
-variable "tc_api_key" {
+variable "tc_destinations" {
   type        = string
-  description = "TC API key (optional - uses placeholder if not provided)"
-  default     = null
-  sensitive   = true
-}
-
-variable "tc_api_url" {
-  type        = string
-  description = "TC API URL (optional - uses placeholder if not provided)"
+  description = "TC destinations configuration (optional - uses placeholder if not provided)"
   default     = null
 }
 

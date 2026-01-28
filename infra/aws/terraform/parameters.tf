@@ -450,6 +450,26 @@ resource "aws_ssm_parameter" "spring_servlet_max_request_size" {
   }
 }
 
+resource "aws_ssm_parameter" "tc_api_key" {
+  name  = "/${var.app}/${var.env}/TC_API_KEY"
+  type  = "SecureString"
+  value = var.tc_api_key != null ? var.tc_api_key : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "tc_api_url" {
+  name  = "/${var.app}/${var.env}/TC_API_URL"
+  type  = "String"
+  value = var.tc_api_url != null ? var.tc_api_url : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "tc_cors_urls" {
   name  = "/${var.app}/${var.env}/TC_CORS_URLS"
   type  = "String"
@@ -466,20 +486,10 @@ resource "aws_ssm_parameter" "tc_db_copy_config" {
   value = var.tc_db_copy_config
 }
 
-resource "aws_ssm_parameter" "tc_api_key" {
-  name  = "/${var.app}/${var.env}/TC_API_KEY"
-  type  = "SecureString"
-  value = var.tc_api_key != null ? var.tc_api_key : "PLACEHOLDER_UPDATE_MANUALLY"
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-}
-
-resource "aws_ssm_parameter" "tc_api_url" {
-  name  = "/${var.app}/${var.env}/TC_API_URL"
+resource "aws_ssm_parameter" "tc_destinations" {
+  name  = "/${var.app}/${var.env}/TC_DESTINATIONS"
   type  = "String"
-  value = var.tc_api_url != null ? var.tc_api_url : "PLACEHOLDER_UPDATE_MANUALLY"
+  value = var.tc_destinations != null ? var.tc_destinations : "PLACEHOLDER_UPDATE_MANUALLY"
 
   lifecycle {
     ignore_changes = [value]

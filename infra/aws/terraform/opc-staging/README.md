@@ -423,6 +423,14 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update TC Destinations
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/TC_DESTINATIONS" \
+  --value "YOUR_TC_DESTINATIONS_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -689,6 +697,11 @@ aws ssm get-parameter \
 # Verify TC CORS URLs
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/TC_CORS_URLS" \
+  --region eu-west-2
+
+# Verify TC Destinations
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/TC_DESTINATIONS" \
   --region eu-west-2
 ```
 

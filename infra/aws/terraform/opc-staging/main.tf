@@ -111,9 +111,8 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/TC_API_KEY (SecureString)
   # - /tc-plus/opc-staging/TC_API_URL (String)
   # - /tc-plus/opc-staging/TC_CORS_URLS (String) - todo: amplify urls
+  # - /tc-plus/opc-staging/TC_DESTINATIONS (String)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  #  todo tc_destinations
 
   tc_db_copy_config = "data.sharing/tcCopies.xml" # todo -- can this be retired?
 
