@@ -35,22 +35,23 @@
         <button class="ql-bold" title="Bold text"></button>
         <button class="ql-italic" title="Italic text"></button>
         <button class="ql-underline" title="Underline text"></button>
+
         <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
-          <fa-icon *ngIf="!saving" icon="file-upload" size="xs"></fa-icon>
-          <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+          <i *ngIf="!saving" class="fas fa-file-upload"></i>
+          <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
         </button>
 
-        <button [ngClass]="!this.linkBtnSelected ? 'custom-link-btn' : 'custom-link-btn-selected'"
+        <button [ngClass]="!this.linkBtnSelected ? 'custom-quill-btn' : 'custom-quill-btn-selected'"
                 title="{{ 'CHAT.ADD-LINK' | translate }}"
                 (click)="onLinkBtnClickOrKeyShortcut()">
-          <fa-icon icon="link" size="xs"></fa-icon>
+          <i class="fas fa-link"></i>
         </button>
 
         <button
           id="emojiBtn"
-          [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
+          [ngClass]="!this.emojiPickerVisible ? 'custom-quill-btn' : 'custom-quill-btn-selected'"
           (click)="toggleEmojiPicker()">
-          <fa-icon icon="face-smile" size="xs"></fa-icon>
+          <i class="far fa-face-smile"></i>
         </button>
 
         <app-link-tooltip *ngIf="this.linkTooltipVisible"

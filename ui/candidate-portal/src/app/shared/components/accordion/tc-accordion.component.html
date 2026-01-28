@@ -1,0 +1,4 @@
+<div class="tc-accordion" [class.allow-overflow]="allowOverflow">
+  <tc-button *ngIf="showOpenCloseAll" class="toggle-all-panels" size="xs" type="outline" color="secondary" (onClick)="toggleAll()">Open/Close All</tc-button>
+  <ng-content></ng-content>
+</div>
