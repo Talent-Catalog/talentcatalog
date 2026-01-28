@@ -279,6 +279,54 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update Salesforce Base Classic URL (TODO: either create for OPC or decouple TC+ from SF)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SF_BASE_CLASSIC_URL" \
+  --value "YOUR_SF_BASE_CLASSIC_URL_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Salesforce Base Lightning URL (TODO: either create for OPC or decouple TC+ from SF)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SF_BASE_LIGHTNING_URL" \
+  --value "YOUR_SF_BASE_LIGHTNING_URL_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Salesforce Base Login URL (TODO: either create for OPC or decouple TC+ from SF)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SF_BASE_LOGIN_URL" \
+  --value "YOUR_SF_BASE_LOGIN_URL_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Salesforce Consumer Key (TODO: either create for OPC or decouple TC+ from SF)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SF_CONSUMER_KEY" \
+  --value "YOUR_SF_CONSUMER_KEY_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Salesforce Private Key (TODO: either create for OPC or decouple TC+ from SF)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SF_PRIVATE_KEY" \
+  --value "YOUR_SF_PRIVATE_KEY_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Salesforce User (TODO: either create for OPC or decouple TC+ from SF)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SF_USER" \
+  --value "YOUR_SF_USER_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -449,6 +497,39 @@ aws ssm get-parameter \
 # Verify Server URL
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/SERVER_URL" \
+  --region eu-west-2
+
+# Verify Salesforce Base Classic URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SF_BASE_CLASSIC_URL" \
+  --region eu-west-2
+
+# Verify Salesforce Base Lightning URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SF_BASE_LIGHTNING_URL" \
+  --region eu-west-2
+
+# Verify Salesforce Base Login URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SF_BASE_LOGIN_URL" \
+  --region eu-west-2
+
+# Verify Salesforce Consumer Key (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SF_CONSUMER_KEY" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Salesforce Private Key (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SF_PRIVATE_KEY" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Salesforce User (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SF_USER" \
+  --with-decryption \
   --region eu-west-2
 ```
 

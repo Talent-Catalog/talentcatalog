@@ -280,32 +280,41 @@ variable "server_url" {
 
 variable "sf_base_classic_url" {
   type        = string
-  description = "Salesforce Classic base URL"
+  description = "Salesforce Classic base URL (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "sf_base_lightning_url" {
   type        = string
-  description = "Salesforce Lightning base URL"
+  description = "Salesforce Lightning base URL (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "sf_base_login_url" {
   type        = string
-  description = "Salesforce login base URL - for obtaining an access token"
+  description = "Salesforce login base URL - for obtaining an access token (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "sf_consumer_key" {
   type        = string
-  description = "Salesforce connected app client ID, also for access token"
+  description = "Salesforce connected app client ID, also for access token (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "sf_private_key" {
   type        = string
-  description = "Salesforce private key"
+  description = "Salesforce private key (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "sf_user" {
   type        = string
-  description = "Salesforce logging-in user for access token"
+  description = "Salesforce logging-in user for access token (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "slack_token" {

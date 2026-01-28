@@ -93,15 +93,13 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/REDIS_PORT (String) - todo: the cache should be created by terraform
   # - /tc-plus/opc-staging/SERVER_PORT (String)
   # - /tc-plus/opc-staging/SERVER_URL (String)
+  # - /tc-plus/opc-staging/SF_BASE_CLASSIC_URL (String) - todo: either create for OPC or decouple TC+ from SF
+  # - /tc-plus/opc-staging/SF_BASE_LIGHTNING_URL (String) - todo: either create for OPC or decouple TC+ from SF
+  # - /tc-plus/opc-staging/SF_BASE_LOGIN_URL (String) - todo: either create for OPC or decouple TC+ from SF
+  # - /tc-plus/opc-staging/SF_CONSUMER_KEY (SecureString) - todo: either create for OPC or decouple TC+ from SF
+  # - /tc-plus/opc-staging/SF_PRIVATE_KEY (SecureString) - todo: either create for OPC or decouple TC+ from SF
+  # - /tc-plus/opc-staging/SF_USER (SecureString) - todo: either create for OPC or decouple TC+ from SF
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  # todo either create for OPC -- or decouple TC+ from SF ?
-  sf_base_classic_url = "<REPLACE_ME>"
-  sf_base_lightning_url = "<REPLACE_ME>"
-  sf_base_login_url = "<REPLACE_ME>"
-  sf_consumer_key = "<REPLACE_ME>"
-  sf_private_key = "<REPLACE_ME>"
-  sf_user = "<REPLACE_ME>"
 
   slack_token = "<REPLACE_ME>" # todo need one for OPC but in any case shouldn't be hardcoded
   spring_client_url = "-" # todo confirm if this is used or needed, there is no value configured for it in the stating service task definition
