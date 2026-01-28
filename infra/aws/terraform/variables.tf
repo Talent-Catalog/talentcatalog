@@ -233,6 +233,27 @@ variable "m2_home" {
   default     = null
 }
 
+variable "preset_api_token" {
+  type        = string
+  description = "Preset API token (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
+}
+
+variable "preset_secret" {
+  type        = string
+  description = "Preset secret (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
+}
+
+variable "preset_workspace_id" {
+  type        = string
+  description = "Preset workspace ID (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
+}
+
 variable "server_port" {
   type        = string
   description = "Server port"

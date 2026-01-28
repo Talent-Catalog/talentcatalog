@@ -223,6 +223,30 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update Preset API Token
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/PRESET_API_TOKEN" \
+  --value "YOUR_PRESET_API_TOKEN_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Preset Secret
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/PRESET_SECRET" \
+  --value "YOUR_PRESET_SECRET_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Preset Workspace ID
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/PRESET_WORKSPACE_ID" \
+  --value "YOUR_PRESET_WORKSPACE_ID_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -355,6 +379,24 @@ aws ssm get-parameter \
 # Verify M2 Home
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/M2_HOME" \
+  --region eu-west-2
+
+# Verify Preset API Token (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/PRESET_API_TOKEN" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Preset Secret (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/PRESET_SECRET" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Preset Workspace ID (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/PRESET_WORKSPACE_ID" \
+  --with-decryption \
   --region eu-west-2
 ```
 

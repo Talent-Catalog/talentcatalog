@@ -86,9 +86,11 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/JWT_SECRET (SecureString)
   # - /tc-plus/opc-staging/M2 (String)
   # - /tc-plus/opc-staging/M2_HOME (String)
+  # - /tc-plus/opc-staging/PRESET_API_TOKEN (SecureString)
+  # - /tc-plus/opc-staging/PRESET_SECRET (SecureString)
+  # - /tc-plus/opc-staging/PRESET_WORKSPACE_ID (SecureString)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
 
-  # todo preset_api_token, preset_secret (do not hardcode), preset_workspace_id
   # todo redis_host, redis_port
 
   server_port = "8080"

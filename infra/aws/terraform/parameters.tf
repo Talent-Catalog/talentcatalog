@@ -230,6 +230,36 @@ resource "aws_ssm_parameter" "m2_home" {
   }
 }
 
+resource "aws_ssm_parameter" "preset_api_token" {
+  name  = "/${var.app}/${var.env}/PRESET_API_TOKEN"
+  type  = "SecureString"
+  value = var.preset_api_token != null ? var.preset_api_token : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "preset_secret" {
+  name  = "/${var.app}/${var.env}/PRESET_SECRET"
+  type  = "SecureString"
+  value = var.preset_secret != null ? var.preset_secret : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "preset_workspace_id" {
+  name  = "/${var.app}/${var.env}/PRESET_WORKSPACE_ID"
+  type  = "SecureString"
+  value = var.preset_workspace_id != null ? var.preset_workspace_id : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "server_port" {
   name  = "/${var.app}/${var.env}/SERVER_PORT"
   type  = "String"
