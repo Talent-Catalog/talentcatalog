@@ -75,15 +75,13 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/EMAIL_TESTOVERRIDEEMAIL (String) - todo: change to shared address
   # - /tc-plus/opc-staging/EMAIL_USER (String) - todo: confirm if used/needed
   # - /tc-plus/opc-staging/ENVIRONMENT (String)
+  # - /tc-plus/opc-staging/GOOGLE_DRIVE_CANDIDATEDATADRIVEID (SecureString) - todo: replicate in OPC workspace
+  # - /tc-plus/opc-staging/GOOGLE_DRIVE_CANDIDATEROOTFOLDERID (SecureString) - todo: replicate in OPC workspace
+  # - /tc-plus/opc-staging/GOOGLE_DRIVE_LISTFOLDERSDRIVEID (SecureString) - todo: replicate in OPC workspace
+  # - /tc-plus/opc-staging/GOOGLE_DRIVE_LISTFOLDERSROOTID (SecureString) - todo: replicate in OPC workspace
+  # - /tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEY (SecureString) - todo: replicate in OPC workspace
+  # - /tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEYID (SecureString) - todo: replicate in OPC workspace
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  # todo replicate in OPC workspace
-  drive_id = "<REPLACE_ME>"
-  drive_rootfolder =  "<REPLACE_ME>"
-  drive_list_folders_id = "<REPLACE_ME>"
-  drive_list_folders_root_id = "<REPLACE_ME>"
-  drive_private_key = "<REPLACE_ME>"
-  drive_private_key_id = "<REPLACE_ME>"
 
   gradle_home = "/usr/local/gradle"
   java_home = "/usr/lib/jvm/java"

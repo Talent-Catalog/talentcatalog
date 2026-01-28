@@ -162,32 +162,44 @@ variable "environment" {
 
 variable "drive_id" {
   type        = string
-  description = "Google Drive candidate drive ID"
+  description = "Google Drive candidate drive ID (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "drive_rootfolder" {
   type        = string
-  description = "Google Drive root folder ID"
+  description = "Google Drive root folder ID (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "drive_list_folders_id" {
   type        = string
-  description = "Google Drive list folders drive ID"
+  description = "Google Drive list folders drive ID (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "drive_list_folders_root_id" {
   type        = string
-  description = "Google Drive list folders root ID"
+  description = "Google Drive list folders root ID (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "drive_private_key" {
   type        = string
-  description = "Google Drive private key"
+  description = "Google Drive private key (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "drive_private_key_id" {
   type        = string
-  description = "Google Drive private key ID"
+  description = "Google Drive private key ID (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "gradle_home" {

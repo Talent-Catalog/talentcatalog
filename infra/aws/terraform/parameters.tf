@@ -123,37 +123,61 @@ resource "aws_ssm_parameter" "environment" {
 resource "aws_ssm_parameter" "drive_id" {
   name  = "/${var.app}/${var.env}/GOOGLE_DRIVE_CANDIDATEDATADRIVEID"
   type  = "SecureString"
-  value = var.drive_id
+  value = var.drive_id != null ? var.drive_id : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "drive_rootfolder" {
   name  = "/${var.app}/${var.env}/GOOGLE_DRIVE_CANDIDATEROOTFOLDERID"
   type  = "SecureString"
-  value = var.drive_rootfolder
+  value = var.drive_rootfolder != null ? var.drive_rootfolder : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "drive_list_folders_id" {
   name  = "/${var.app}/${var.env}/GOOGLE_DRIVE_LISTFOLDERSDRIVEID"
   type  = "SecureString"
-  value = var.drive_list_folders_id
+  value = var.drive_list_folders_id != null ? var.drive_list_folders_id : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "drive_list_folders_root_id" {
   name  = "/${var.app}/${var.env}/GOOGLE_DRIVE_LISTFOLDERSROOTID"
   type  = "SecureString"
-  value = var.drive_list_folders_root_id
+  value = var.drive_list_folders_root_id != null ? var.drive_list_folders_root_id : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "drive_private_key" {
   name  = "/${var.app}/${var.env}/GOOGLE_DRIVE_PRIVATEKEY"
   type  = "SecureString"
-  value = var.drive_private_key
+  value = var.drive_private_key != null ? var.drive_private_key : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "drive_private_key_id" {
   name  = "/${var.app}/${var.env}/GOOGLE_DRIVE_PRIVATEKEYID"
   type  = "SecureString"
-  value = var.drive_private_key_id
+  value = var.drive_private_key_id != null ? var.drive_private_key_id : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "gradle_home" {

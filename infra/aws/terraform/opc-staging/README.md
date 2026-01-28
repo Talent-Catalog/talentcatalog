@@ -135,6 +135,54 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update Google Drive Candidate Data Drive ID (TODO: replicate in OPC workspace)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_CANDIDATEDATADRIVEID" \
+  --value "YOUR_DRIVE_ID_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Google Drive Candidate Root Folder ID (TODO: replicate in OPC workspace)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_CANDIDATEROOTFOLDERID" \
+  --value "YOUR_ROOT_FOLDER_ID_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Google Drive List Folders Drive ID (TODO: replicate in OPC workspace)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_LISTFOLDERSDRIVEID" \
+  --value "YOUR_LIST_FOLDERS_DRIVE_ID_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Google Drive List Folders Root ID (TODO: replicate in OPC workspace)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_LISTFOLDERSROOTID" \
+  --value "YOUR_LIST_FOLDERS_ROOT_ID_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Google Drive Private Key (TODO: replicate in OPC workspace)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEY" \
+  --value "YOUR_PRIVATE_KEY_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Google Drive Private Key ID (TODO: replicate in OPC workspace)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEYID" \
+  --value "YOUR_PRIVATE_KEY_ID_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -205,6 +253,42 @@ aws ssm get-parameter \
 # Verify Environment
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/ENVIRONMENT" \
+  --region eu-west-2
+
+# Verify Google Drive Candidate Data Drive ID (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_CANDIDATEDATADRIVEID" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Google Drive Candidate Root Folder ID (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_CANDIDATEROOTFOLDERID" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Google Drive List Folders Drive ID (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_LISTFOLDERSDRIVEID" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Google Drive List Folders Root ID (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_LISTFOLDERSROOTID" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Google Drive Private Key (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEY" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Google Drive Private Key ID (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/GOOGLE_DRIVE_PRIVATEKEYID" \
+  --with-decryption \
   --region eu-west-2
 ```
 
