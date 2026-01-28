@@ -263,6 +263,22 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update Server Port
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SERVER_PORT" \
+  --value "8080" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update Server URL
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SERVER_URL" \
+  --value "https://test.plus.tctalent.org/" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -423,6 +439,16 @@ aws ssm get-parameter \
 # Verify Redis Port
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/REDIS_PORT" \
+  --region eu-west-2
+
+# Verify Server Port
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SERVER_PORT" \
+  --region eu-west-2
+
+# Verify Server URL
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SERVER_URL" \
   --region eu-west-2
 ```
 

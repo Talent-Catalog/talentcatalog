@@ -283,13 +283,21 @@ resource "aws_ssm_parameter" "redis_port" {
 resource "aws_ssm_parameter" "server_port" {
   name  = "/${var.app}/${var.env}/SERVER_PORT"
   type  = "String"
-  value = var.server_port
+  value = var.server_port != null ? var.server_port : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "server_url" {
   name  = "/${var.app}/${var.env}/SERVER_URL"
   type  = "String"
-  value = var.server_url
+  value = var.server_url != null ? var.server_url : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "sf_base_classic_url" {

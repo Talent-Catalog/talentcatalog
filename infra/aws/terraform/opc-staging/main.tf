@@ -91,10 +91,9 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/PRESET_WORKSPACE_ID (SecureString)
   # - /tc-plus/opc-staging/REDIS_HOST (String) - todo: the cache should be created by terraform
   # - /tc-plus/opc-staging/REDIS_PORT (String) - todo: the cache should be created by terraform
+  # - /tc-plus/opc-staging/SERVER_PORT (String)
+  # - /tc-plus/opc-staging/SERVER_URL (String)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  server_port = "8080"
-  server_url = "https://test.plus.tctalent.org/"
 
   # todo either create for OPC -- or decouple TC+ from SF ?
   sf_base_classic_url = "<REPLACE_ME>"

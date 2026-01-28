@@ -268,12 +268,14 @@ variable "redis_port" {
 
 variable "server_port" {
   type        = string
-  description = "Server port"
+  description = "Server port (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "server_url" {
   type        = string
-  description = "Server URL"
+  description = "Server URL (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "sf_base_classic_url" {
