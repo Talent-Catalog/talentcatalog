@@ -483,7 +483,11 @@ resource "aws_ssm_parameter" "tc_cors_urls" {
 resource "aws_ssm_parameter" "tc_db_copy_config" {
   name  = "/${var.app}/${var.env}/TC_PARTNER_DBCOPY_CONFIG"
   type  = "String"
-  value = var.tc_db_copy_config
+  value = var.tc_db_copy_config != null ? var.tc_db_copy_config : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "tc_destinations" {

@@ -394,7 +394,8 @@ variable "tc_cors_urls" {
 
 variable "tc_db_copy_config" {
   type        = string
-  description = "TC partner DB copy config"
+  description = "TC partner DB copy config (optional - uses placeholder if not provided)"
+  default     = null
 }
 
 variable "tc_destinations" {

@@ -431,6 +431,14 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update TC Partner DB Copy Config (TODO: can this be retired?)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/TC_PARTNER_DBCOPY_CONFIG" \
+  --value "data.sharing/tcCopies.xml" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -702,6 +710,11 @@ aws ssm get-parameter \
 # Verify TC Destinations
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/TC_DESTINATIONS" \
+  --region eu-west-2
+
+# Verify TC Partner DB Copy Config
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/TC_PARTNER_DBCOPY_CONFIG" \
   --region eu-west-2
 ```
 
