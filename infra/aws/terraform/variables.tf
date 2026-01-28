@@ -103,6 +103,13 @@ variable "s3_bucket" {
   default     = null
 }
 
+variable "duolingo_api_secret" {
+  type        = string
+  description = "Duolingo API secret (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
+}
+
 variable "es_password" {
   type        = string
   description = "ElasticSearch password"

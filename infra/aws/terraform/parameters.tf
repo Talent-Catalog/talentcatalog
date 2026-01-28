@@ -30,6 +30,16 @@ resource "aws_ssm_parameter" "s3_bucket" {
   }
 }
 
+resource "aws_ssm_parameter" "duolingo_api_secret" {
+  name  = "/${var.app}/${var.env}/DUOLINGO_API_APISECRET"
+  type  = "SecureString"
+  value = var.duolingo_api_secret != null ? var.duolingo_api_secret : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "es_password" {
   name  = "/${var.app}/${var.env}/ELASTICSEARCH_PASSWORD"
   type  = "SecureString"

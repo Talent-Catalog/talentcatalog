@@ -66,9 +66,8 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/AWS_CREDENTIALS_ACCESSKEY (String)
   # - /tc-plus/opc-staging/AWS_CREDENTIALS_SECRETKEY (SecureString)
   # - /tc-plus/opc-staging/AWS_S3_BUCKETNAME (String)
+  # - /tc-plus/opc-staging/DUOLINGO_API_APISECRET (SecureString)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  # todo missing duolingo api secret -- shouldn't be hardcoded
 
   # todo retire elasticsearch
   es_password = "<REPLACE_ME>" # shouldn't be hardcoded -- remove elasticsearch todo

@@ -63,6 +63,14 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update Duolingo API Secret
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/DUOLINGO_API_APISECRET" \
+  --value "YOUR_DUOLINGO_API_SECRET_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -85,6 +93,12 @@ aws ssm get-parameter \
 # Verify S3 Bucket Name
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/AWS_S3_BUCKETNAME" \
+  --region eu-west-2
+
+# Verify Duolingo API Secret (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/DUOLINGO_API_APISECRET" \
+  --with-decryption \
   --region eu-west-2
 ```
 
