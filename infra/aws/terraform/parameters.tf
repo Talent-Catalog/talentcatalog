@@ -513,7 +513,11 @@ resource "aws_ssm_parameter" "tc_skills_extraction_api_url" {
 resource "aws_ssm_parameter" "translation_password" {
   name  = "/${var.app}/${var.env}/TRANSLATION_PASSWORD"
   type  = "SecureString"
-  value = var.translation_password
+  value = var.translation_password != null ? var.translation_password : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "web_admin" {

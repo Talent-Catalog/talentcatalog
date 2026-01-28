@@ -114,9 +114,8 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/TC_DESTINATIONS (String)
   # - /tc-plus/opc-staging/TC_PARTNER_DBCOPY_CONFIG (String) - todo: can this be retired?
   # - /tc-plus/opc-staging/TC_SKILLS_EXTRACTION_API_URL (String)
+  # - /tc-plus/opc-staging/TRANSLATION_PASSWORD (SecureString)
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
-
-  translation_password = "<REPLACE_ME>" # can't be hardcoded for repository -- find another way todo
 
   web_admin = "https://test.plus.tctalent.org/admin-portal"
   web_portal = "https://test.plus.tctalent.org/candidate-portal"

@@ -412,7 +412,9 @@ variable "tc_skills_extraction_api_url" {
 
 variable "translation_password" {
   type        = string
-  description = "Translation password"
+  description = "Translation password (optional - if not provided, must exist in SSM)"
+  default     = null
+  sensitive   = true
 }
 
 variable "web_admin" {

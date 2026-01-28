@@ -447,6 +447,14 @@ aws ssm put-parameter \
   --type "String" \
   --region eu-west-2 \
   --overwrite
+
+# Update Translation Password
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/TRANSLATION_PASSWORD" \
+  --value "YOUR_TRANSLATION_PASSWORD" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -729,6 +737,12 @@ aws ssm get-parameter \
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/TC_SKILLS_EXTRACTION_API_URL" \
   --region eu-west-2
+
+# Verify Translation Password
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/TRANSLATION_PASSWORD" \
+  --region eu-west-2 \
+  --with-decryption
 ```
 
 ## Architecture
