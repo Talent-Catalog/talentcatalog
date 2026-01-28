@@ -128,6 +128,14 @@ aws ssm put-parameter \
   --region eu-west-2 \
   --overwrite
 
+# Update Email Type
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_TYPE" \
+  --value "YOUR_EMAIL_TYPE_HERE" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
 # Update Environment
 aws ssm put-parameter \
   --name "/tc-plus/opc-staging/ENVIRONMENT" \
@@ -552,6 +560,11 @@ aws ssm get-parameter \
 # Verify Email User
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/EMAIL_USER" \
+  --region eu-west-2
+
+# Verify Email Type
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/EMAIL_TYPE" \
   --region eu-west-2
 
 # Verify Environment

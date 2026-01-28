@@ -110,6 +110,16 @@ resource "aws_ssm_parameter" "email_user" {
   }
 }
 
+resource "aws_ssm_parameter" "email_type" {
+  name  = "/${var.app}/${var.env}/EMAIL_TYPE"
+  type  = "String"
+  value = var.email_type != null ? var.email_type : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "environment" {
   name  = "/${var.app}/${var.env}/ENVIRONMENT"
   type  = "String"

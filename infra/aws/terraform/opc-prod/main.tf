@@ -77,6 +77,7 @@ module "tc-plus-prod" {
   # - /tc-plus/opc-prod/EMAIL_DEFAULTEMAIL (String) - todo: confirm if used/needed
   # - /tc-plus/opc-prod/EMAIL_PASSWORD (SecureString)
   # - /tc-plus/opc-prod/EMAIL_TESTOVERRIDEEMAIL (String) - todo: change to shared address
+  # - /tc-plus/opc-prod/EMAIL_TYPE (String)
   # - /tc-plus/opc-prod/EMAIL_USER (String) - todo: confirm if used/needed
   # - /tc-plus/opc-prod/ENVIRONMENT (String)
   # - /tc-plus/opc-prod/GOOGLE_DRIVE_CANDIDATEDATADRIVEID (SecureString) - todo: replicate in OPC workspace

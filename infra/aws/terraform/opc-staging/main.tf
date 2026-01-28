@@ -77,6 +77,7 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/EMAIL_DEFAULTEMAIL (String) - todo: confirm if used/needed
   # - /tc-plus/opc-staging/EMAIL_PASSWORD (SecureString)
   # - /tc-plus/opc-staging/EMAIL_TESTOVERRIDEEMAIL (String) - todo: change to shared address
+  # - /tc-plus/opc-staging/EMAIL_TYPE (String)
   # - /tc-plus/opc-staging/EMAIL_USER (String) - todo: confirm if used/needed
   # - /tc-plus/opc-staging/ENVIRONMENT (String)
   # - /tc-plus/opc-staging/GOOGLE_DRIVE_CANDIDATEDATADRIVEID (SecureString) - todo: replicate in OPC workspace

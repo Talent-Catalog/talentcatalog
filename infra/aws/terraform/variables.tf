@@ -214,6 +214,12 @@ variable "email_user" {
   default     = null
 }
 
+variable "email_type" {
+  type        = string
+  description = "Email type (optional - uses placeholder if not provided)"
+  default     = null
+}
+
 variable "environment" {
   type        = string
   description = "Denotes running environment (optional - uses placeholder if not provided)"
