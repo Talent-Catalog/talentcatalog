@@ -363,7 +363,11 @@ resource "aws_ssm_parameter" "sf_user" {
 resource "aws_ssm_parameter" "slack_token" {
   name  = "/${var.app}/${var.env}/SLACK_TOKEN"
   type  = "SecureString"
-  value = var.slack_token
+  value = var.slack_token != null ? var.slack_token : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_ssm_parameter" "spring_client_url" {

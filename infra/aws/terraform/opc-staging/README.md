@@ -327,6 +327,14 @@ aws ssm put-parameter \
   --type "SecureString" \
   --region eu-west-2 \
   --overwrite
+
+# Update Slack Token (TODO: need one for OPC?)
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/SLACK_TOKEN" \
+  --value "YOUR_SLACK_TOKEN_HERE" \
+  --type "SecureString" \
+  --region eu-west-2 \
+  --overwrite
 ```
 
 **Note:** Make sure you're authenticated with the correct AWS role that has permissions to update 
@@ -529,6 +537,12 @@ aws ssm get-parameter \
 # Verify Salesforce User (with decryption)
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/SF_USER" \
+  --with-decryption \
+  --region eu-west-2
+
+# Verify Slack Token (with decryption)
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/SLACK_TOKEN" \
   --with-decryption \
   --region eu-west-2
 ```

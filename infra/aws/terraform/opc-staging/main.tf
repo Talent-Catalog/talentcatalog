@@ -99,9 +99,9 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/SF_CONSUMER_KEY (SecureString) - todo: either create for OPC or decouple TC+ from SF
   # - /tc-plus/opc-staging/SF_PRIVATE_KEY (SecureString) - todo: either create for OPC or decouple TC+ from SF
   # - /tc-plus/opc-staging/SF_USER (SecureString) - todo: either create for OPC or decouple TC+ from SF
+  # - /tc-plus/opc-staging/SLACK_TOKEN (SecureString) - todo: need one for OPC
   # Note: lifecycle.ignore_changes prevents Terraform from overwriting manual updates
 
-  slack_token = "<REPLACE_ME>" # todo need one for OPC but in any case shouldn't be hardcoded
   spring_client_url = "-" # todo confirm if this is used or needed, there is no value configured for it in the stating service task definition
   spring_datasource_password = "<REPLACE_ME>" # shouldn't be hardcoded -- todo
   spring_datasource_url = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent" # todo after RDS DB is created

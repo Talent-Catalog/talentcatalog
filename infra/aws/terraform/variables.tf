@@ -319,7 +319,9 @@ variable "sf_user" {
 
 variable "slack_token" {
   type        = string
-  description = "Slack token"
+  description = "Slack token (optional - uses placeholder if not provided)"
+  default     = null
+  sensitive   = true
 }
 
 variable "spring_client_url" {
