@@ -210,6 +210,26 @@ resource "aws_ssm_parameter" "jwt_secret" {
   }
 }
 
+resource "aws_ssm_parameter" "logbuilder_include_cpu_utilization" {
+  name  = "/${var.app}/${var.env}/LOGBUILDER_INCLUDE_CPU_UTILIZATION"
+  type  = "String"
+  value = var.logbuilder_include_cpu_utilization != null ? var.logbuilder_include_cpu_utilization : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "logbuilder_include_memory_utilization" {
+  name  = "/${var.app}/${var.env}/LOGBUILDER_INCLUDE_MEMORY_UTILIZATION"
+  type  = "String"
+  value = var.logbuilder_include_memory_utilization != null ? var.logbuilder_include_memory_utilization : "PLACEHOLDER_UPDATE_MANUALLY"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "m2" {
   name  = "/${var.app}/${var.env}/M2"
   type  = "String"

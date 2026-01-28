@@ -208,6 +208,22 @@ aws ssm put-parameter \
   --region eu-west-2 \
   --overwrite
 
+# Update LogBuilder Include CPU Utilization
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/LOGBUILDER_INCLUDE_CPU_UTILIZATION" \
+  --value "true" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
+# Update LogBuilder Include Memory Utilization
+aws ssm put-parameter \
+  --name "/tc-plus/opc-staging/LOGBUILDER_INCLUDE_MEMORY_UTILIZATION" \
+  --value "true" \
+  --type "String" \
+  --region eu-west-2 \
+  --overwrite
+
 # Update M2
 aws ssm put-parameter \
   --name "/tc-plus/opc-staging/M2" \
@@ -593,6 +609,16 @@ aws ssm get-parameter \
 aws ssm get-parameter \
   --name "/tc-plus/opc-staging/JWT_SECRET" \
   --with-decryption \
+  --region eu-west-2
+
+# Verify LogBuilder Include CPU Utilization
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/LOGBUILDER_INCLUDE_CPU_UTILIZATION" \
+  --region eu-west-2
+
+# Verify LogBuilder Include Memory Utilization
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/LOGBUILDER_INCLUDE_MEMORY_UTILIZATION" \
   --region eu-west-2
 
 # Verify M2

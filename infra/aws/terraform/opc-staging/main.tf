@@ -82,6 +82,8 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/GRADLE_HOME (String)
   # - /tc-plus/opc-staging/JAVA_HOME (String)
   # - /tc-plus/opc-staging/JWT_SECRET (SecureString)
+  # - /tc-plus/opc-staging/LOGBUILDER_INCLUDE_CPU_UTILIZATION (String)
+  # - /tc-plus/opc-staging/LOGBUILDER_INCLUDE_MEMORY_UTILIZATION (String)
   # - /tc-plus/opc-staging/M2 (String)
   # - /tc-plus/opc-staging/M2_HOME (String)
   # - /tc-plus/opc-staging/PRESET_API_TOKEN (SecureString)

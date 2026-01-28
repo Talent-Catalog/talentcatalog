@@ -221,6 +221,18 @@ variable "jwt_secret" {
   sensitive   = true
 }
 
+variable "logbuilder_include_cpu_utilization" {
+  type        = string
+  description = "LogBuilder flag to include CPU utilization metrics (optional - uses placeholder if not provided)"
+  default     = null
+}
+
+variable "logbuilder_include_memory_utilization" {
+  type        = string
+  description = "LogBuilder flag to include memory utilization metrics (optional - uses placeholder if not provided)"
+  default     = null
+}
+
 variable "m2" {
   type        = string
   description = "M2 (optional - uses placeholder if not provided)"
