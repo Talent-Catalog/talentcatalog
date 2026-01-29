@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, inject, Input, OnInit} from '@angular/core';
+import {Directive, inject, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {forkJoin, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Candidate, CandidateExam, CandidateIntakeData} from '../../../model/candidate';
@@ -54,11 +54,16 @@ import {CrossTabSyncService} from "../../../services/cross-tab-sync.service";
  * @author John Cameron
  */
 @Directive()
-export abstract class IntakeComponentTabBase implements OnInit {
+export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
   /**
    * This is the candidate whose intake data we are entering
    */
   @Input() candidate: Candidate;
+
+  /**
+   * Indicates whether the tab is active (i.e., the user is currently viewing it).
+   */
+  @Input() tabIsActive: boolean;
 
   /**
    * This is the existing candidate intake data (if any) which is used to
@@ -152,9 +157,6 @@ export abstract class IntakeComponentTabBase implements OnInit {
   protected crossTab = inject(CrossTabSyncService);
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
-    // todo No need to refresh intake data on initial load
-    // this.refreshIntakeDataInternal(true);
-
     // Listen for candidate update signals and refresh the intake data whenever they occur.
     this.candidateService
     .candidateUpdated()
@@ -189,6 +191,15 @@ export abstract class IntakeComponentTabBase implements OnInit {
       }
     );
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.tabIsActive) {
+      if (this.tabIsActive) {
+        this.refreshIntakeDataInternal(true);
+      }
+    }
+  }
+
 
   /** Refresh intake data after user confirmation */
   onRefreshRequested(): void {

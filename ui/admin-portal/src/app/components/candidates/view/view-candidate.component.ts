@@ -89,14 +89,12 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   ngOnInit() {
-    this.refreshCandidateProfile(); //todo this loads canidatnumber from route and loads caniddate
+    this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
     this.candidateService.candidateUpdated().pipe(
       takeUntil(this.destroy$),
       concatMap(() => {
-        //todo This gets called twice when the candidate profile screen is refreshed.
-        //todo Once here and once below in refreshCandidateProfile() (called just above).
         return this.candidateService.getByNumber(this.candidate.candidateNumber)
       })
       ).subscribe(candidate => {
@@ -127,7 +125,6 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   refreshCandidateProfile() {
     this.loadingError = false;
-    //todo This subscribe is the original load
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
       this.loading = true;
@@ -142,8 +139,6 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
           this.setCandidate(candidate);
           this.updateUploadedCvAvailable();
           this.loadLists();
-
-          //todo this only needs to be created lazily as needed.
           this.generateToken();
           this.setChatAccess();
         }
@@ -298,8 +293,6 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   onTabChanged(activeTabId: string) {
     this.setActiveTabId(activeTabId);
-    // Notify other tabs to refresh when the user switches tabs between mini intake and full intake.
-    this.candidateService.updateCandidate();
   }
 
   publicCvUrl() {
