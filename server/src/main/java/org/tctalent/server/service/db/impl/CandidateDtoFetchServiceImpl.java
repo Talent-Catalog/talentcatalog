@@ -320,7 +320,8 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
             try {
                 out.put(e.getKey(), deserialize(e.getValue()));
             } catch (JsonProcessingException ex) {
-                throw new RuntimeException(ex);
+                String mess = "Could not deserialize cached JSON for candidate id=" + e.getKey();
+                throw new RuntimeException(mess, ex);
             }
         }
         return out;

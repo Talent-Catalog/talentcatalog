@@ -136,10 +136,12 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
 
   hasDependantHealthIssues() {
     let health: boolean = false;
-    for (let dep of this.candidateIntakeData?.candidateDependants) {
-      if (dep.healthConcern == "Yes") {
-        health = true;
-        break;
+    if (this.candidateIntakeData?.candidateDependants) {
+      for (let dep of this.candidateIntakeData?.candidateDependants) {
+        if (dep.healthConcern == "Yes") {
+          health = true;
+          break;
+        }
       }
     }
     return health;
