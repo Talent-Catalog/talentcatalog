@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -23,7 +24,6 @@ import com.fasterxml.jackson.core.JacksonException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -32,12 +32,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
-import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.repository.db.read.dao.CandidateReadDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
+import org.tctalent.server.service.db.SavedListService;
 
 /**
- * //TODO JC Better doc- should always be run.
+ * These tests should always be run to check that CandidateReadDto and its referenced classes are
+ * up to date with the database schema.
  *
  * @author John Cameron
  */
@@ -49,17 +50,15 @@ class CandidateReadDaoTest {
     private CandidateReadDao candidateReadDao;
 
     @Autowired
-    CandidateSavedListRepository candidateSavedListRepository;
+    SavedListService savedListService;
 
-    private Set<Long> ids;
+    private Set<Long> testCandidateIds;
 
     @BeforeEach
     void setUp() {
-        //TODO JC Move this to service method
-        final List<CandidateSavedList> csls =
-            candidateSavedListRepository.findBySavedList_Id(SystemAdminConfiguration.TEST_CANDIDATE_LIST_ID);
-       assertNotNull(csls);
-       ids = csls.stream().map(csl -> csl.getCandidate().getId()).collect(Collectors.toSet());
+        //Tests are run on whatever candidates are in standard TestCandidates list.
+        testCandidateIds = savedListService.fetchCandidateIds(SystemAdminConfiguration.TEST_CANDIDATE_LIST_ID);
+        assertFalse(testCandidateIds.isEmpty());
     }
 
     @Test
@@ -68,7 +67,7 @@ class CandidateReadDaoTest {
 
         final List<CandidateReadDto> dtos;
         try {
-            dtos = candidateReadDao.findByIds(ids);
+            dtos = candidateReadDao.findByIds(testCandidateIds);
             assertNotNull(dtos);
         } catch (BadSqlGrammarException ex) {
             String message = """
