@@ -25,9 +25,9 @@ public interface AnthropicService {
      * Sends a message to Claude API with the provided context.
      * 
      * @param userMessage The user's message/question
-     * @param systemContext The system context (QA knowledge base)
+     * @param qaContext The QA knowledge base context
      * @return The AI-generated response
      */
-    String sendMessage(String userMessage, String systemContext);
+    String sendMessage(String userMessage, String qaContext);
 }
 

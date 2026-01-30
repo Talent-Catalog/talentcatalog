@@ -19,7 +19,9 @@ package org.tctalent.server.api.chatbot;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -91,26 +93,12 @@ public class ChatbotApi {
     /**
      * Request DTO for sending messages to the chatbot.
      */
+    @Getter
+    @Setter
     public static class SendMessageRequest {
         @NotBlank(message = "Message cannot be blank")
         @Size(max = 2000, message = "Message cannot exceed 2000 characters")
         private String message;
         private String sessionId;
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public String getSessionId() {
-            return sessionId;
-        }
-
-        public void setSessionId(String sessionId) {
-            this.sessionId = sessionId;
-        }
     }
 }

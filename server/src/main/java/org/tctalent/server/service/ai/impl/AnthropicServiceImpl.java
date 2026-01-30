@@ -40,11 +40,11 @@ public class AnthropicServiceImpl implements AnthropicService {
     private final WebClient anthropicWebClient;
 
     @Override
-    public String sendMessage(String userMessage, String systemContext) {
+    public String sendMessage(String userMessage, String qaContext) {
 
         try {
             // Build the system prompt with instructions
-            String systemPrompt = buildSystemPrompt(systemContext);
+            String systemPrompt = buildSystemPrompt(qaContext);
             
             // Create the request
             AnthropicRequest request = AnthropicRequest.builder()
