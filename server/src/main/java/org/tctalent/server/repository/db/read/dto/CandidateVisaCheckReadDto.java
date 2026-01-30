@@ -19,36 +19,33 @@ package org.tctalent.server.repository.db.read.dto;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.FamilyRelations;
+import org.tctalent.server.model.db.RiskLevel;
+import org.tctalent.server.model.db.YesNo;
+import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 @Getter
 @Setter
 @SqlTable(name="candidate_visa_check", alias = "cvisac")
 @SqlDefaults(mapUnannotatedColumns = true)
 public class CandidateVisaCheckReadDto {
-    private String ageRequirement;
-    private String characterAssessment;
+    private YesNo characterAssessment;
     @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
-    private String destinationFamily;
-    private String englishThreshold;
-    private String healthAssessment;
+    private FamilyRelations destinationFamily;
+    private YesNo englishThreshold;
+    private YesNo healthAssessment;
     private Long id;
-    private String languagesRequired;
-    private String languagesThresholdMet;
-    private String overallRisk;
-    private String pathwayAssessment;
-    private String protection;
-    private String securityRisk;
-    private String validTravelDocs;
+    private RiskLevel overallRisk;
+    private YesNoUnsure pathwayAssessment;
+    private YesNo protection;
+    private YesNo securityRisk;
+    private DocumentStatus validTravelDocs;
     @JsonOneToMany(joinColumn = "candidate_visa_check_id")
     private List<CandidateVisaJobCheckReadDto> candidateVisaJobChecks;
 }
