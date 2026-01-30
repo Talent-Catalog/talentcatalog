@@ -16,7 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.List;
 import jakarta.persistence.Convert;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,6 +23,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +33,33 @@ import lombok.Setter;
 @Setter
 @MappedSuperclass
 public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
+
+    /**
+     * This is only present so that this table has a candidate_id.
+     * Having a candidate_id is not strictly necessary for this table because the candidate_id
+     * is always the same as the candidate_id in the parent CandidateVisaCheck.
+     * However, having the candidate_id in the table allows it to be used to trigger a candidate
+     * version update when this record is updated.
+     * <p>
+     * See the Postgres triggers in db/migration/V1_398__add_cached_json_support.sql
+     * </p>
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id")
+    private Candidate candidate;
+
+    /**
+     * Make sure that the redundant candidate field is always synchronized to match the
+     * candidate associated with the parent CandidateVisaCheck.
+     * (See doc for {@link CandidateVisaJobCheckBase#candidate} on why it is needed)
+     */
+    @PrePersist
+    @PreUpdate
+    private void syncCandidate() {
+        if (this.candidateVisaCheck != null) {
+            this.candidate = this.candidateVisaCheck.getCandidate();
+        }
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_visa_check_id")
@@ -113,14 +142,4 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     private YesNo languagesThresholdMet;
 
     private String languagesThresholdNotes;
-
-    /**
-     * Gets the candidate to whom the given instance of candidate job visa assessment refers, by
-     * querying the parent candidate visa check.
-     * @return candidate associated with given candidate job visa check
-     */
-    public Candidate getCandidate() {
-        Candidate candidate = this.getCandidateVisaCheck().getCandidate();
-        return candidate;
-    }
 }
