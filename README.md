@@ -98,22 +98,36 @@ Download and install the latest of the following tools.
   brew install gradle
   ```
 
-- Node [https://nodejs.org/en/](https://nodejs.org/en/)
-    - Note that developers should use **Node version 18**, specifically versions **18.10.0 and 
-    above**, which is currently the latest LTS (Long Term Support) version compatible with Angular 16.
+- Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
+    - This project requires **Node.js 18** 
+    - We currently pin Node 18.20.7 (via .nvmrc), which satisfies Angular 17’s Node 18.13+ 
+      requirement.
         - See [Angular Compatibility Table](https://angular.io/guide/versions)
         - See [Node.js Releases](https://nodejs.org/en/about/releases/)
-    - If using Node 17 or higher, it’s recommended to add `--host=127.0.0.1` to the `ng serve` 
-    command to avoid debugger and sourcemap issues in IntelliJ. The `start` scripts in `package.json`
-    have been bundled with this parameter for convenience.
+
+    - **Install Node using nvm (recommended)**
+      - If you don’t already have nvm installed:
+        ```
+        brew install nvm
+        ```
+        Note the messages from brew at the end of the install.
+        You will have to manually set up the path.
+
+        Restart your terminal (or reload your shell), then from the project root:
+        ```
+        nvm install
+        nvm use
+        node -v 
+        # should output v18.20.7
+        ```
+      
+    - **IntelliJ users**
+      - When using Node 17+, `ng serve` may require `--host=127.0.0.1` to avoid debugger and sourcemap 
+        issues in IntelliJ.
+      - The `start` scripts in `package.json` in each ui module already include this flag for 
+        convenience.
         - See [IntelliJ Angular Debugging Guide](https://www.jetbrains.com/help/idea/angular.html)
         - See [IntelliJ Angular Debugging Troubleshooting](https://www.jetbrains.com/help/idea/angular.html#ws_angular_debug_app_troubleshooting)
-
-  ```
-  brew install node@18
-  ```
-    - Note the messages from brew at the end of the install.
-      You will have to manually set up the path.
 
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)

@@ -32,7 +32,7 @@
     >
       <a href="https://www.youtube.com/watch?v=Zm29HOKVcYY" target="_blank"
          rel="noopener noreferrer"> {{ 'SERVICES.DUOLINGO.EXAM.ABOUT' | translate }} </a>
-      <fa-icon [icon]="isCollapsedIntro ? 'chevron-down' : 'chevron-up'"></fa-icon>
+      <i class="fas" [ngClass]="isCollapsedIntro ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
     </button>
 
 
@@ -49,7 +49,7 @@
       aria-controls="collapseExample"
     >
       {{ 'SERVICES.DUOLINGO.EXAM.TECHNICAL_STEPS' | translate }}
-      <fa-icon [icon]="isCollapsedTechnicalSteps ? 'chevron-down' : 'chevron-up'"></fa-icon>
+      <i class="fas" [ngClass]="isCollapsedTechnicalSteps ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
     </button>
     <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedTechnicalSteps">
       <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.TECHNICAL_STEPS_TEXT' | translate">
@@ -64,7 +64,7 @@
       aria-controls="collapseExample"
     >
       {{ 'SERVICES.DUOLINGO.EXAM.STEPS' | translate }}
-      <fa-icon [icon]="isCollapsedSteps ? 'chevron-down' : 'chevron-up'"></fa-icon>
+      <i class="fas" [ngClass]="isCollapsedSteps ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
     </button>
     <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedSteps">
       <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.STEPS_TEXT' | translate">

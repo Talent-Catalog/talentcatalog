@@ -31,30 +31,26 @@ import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
-import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;
 
 //** Manage candidate visa checks
 // * @author John Cameron
 @Service
-public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
+public class CandidateVisaJobCheckServiceImpl implements CandidateVisaJobCheckService {
     private final CandidateVisaJobRepository candidateVisaJobRepository;
     private final CandidateVisaRepository candidateVisaRepository;
     private final OccupationRepository occupationRepository;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
-    private final CandidateDependantService candidateDependantService;
 
-    public CandidateVisaJobCheckImpl(
+    public CandidateVisaJobCheckServiceImpl(
             CandidateVisaJobRepository candidateVisaJobRepository,
             CandidateVisaRepository candidateVisaRepository,
             OccupationRepository occupationRepository,
-            SalesforceJobOppRepository salesforceJobOppRepository,
-            CandidateDependantService candidateDependantService) {
+            SalesforceJobOppRepository salesforceJobOppRepository) {
         this.candidateVisaJobRepository = candidateVisaJobRepository;
         this.candidateVisaRepository = candidateVisaRepository;
         this.occupationRepository = occupationRepository;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
-        this.candidateDependantService = candidateDependantService;
     }
 
     @Override

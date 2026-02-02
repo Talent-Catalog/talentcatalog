@@ -41,7 +41,7 @@
 
   <div class="mt-4 mx-3 text-center flex-shrink-0">
     <button class="btn btn-sm btn-secondary" (click)="goBack()">
-      <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
+      <i class="me-1 fas fa-arrow-left"></i> {{ 'TASKS.TASK.RETURN' | translate }}
     </button>
   </div>
 </div>
@@ -135,7 +135,7 @@
               [disabled]="isSubmitDisabled()"
       >
         {{ 'TASKS.TASK.SUBMIT-COMMENT' | translate }}
-        <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+        <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
       </button>
 
     </div>

@@ -59,7 +59,7 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 
 @ExtendWith(MockitoExtension.class)
-class CandidateJobExperienceImplTest {
+class CandidateJobExperienceServiceImplTest {
 
     private CreateJobExperienceRequest createRequest;
     private CandidateJobExperience experience;
@@ -96,7 +96,7 @@ class CandidateJobExperienceImplTest {
     @Captor private ArgumentCaptor<CandidateJobExperience> jobExperienceCaptor;
 
     @InjectMocks
-    CandidateJobExperienceImpl jobExperienceService;
+    CandidateJobExperienceServiceImpl jobExperienceService;
 
     @BeforeEach
     void setUp() {

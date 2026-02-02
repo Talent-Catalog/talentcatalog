@@ -39,7 +39,7 @@ import org.tctalent.server.service.db.CandidateJobExperienceService;
 import org.tctalent.server.service.db.CandidateService;
 
 @Service
-public class CandidateJobExperienceImpl implements CandidateJobExperienceService {
+public class CandidateJobExperienceServiceImpl implements CandidateJobExperienceService {
 
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final CountryRepository countryRepository;
@@ -49,7 +49,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     private final AuthService authService;
 
     @Autowired
-    public CandidateJobExperienceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
+    public CandidateJobExperienceServiceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
                                       CandidateOccupationRepository candidateOccupationRepository,
                                       CountryRepository countryRepository,
                                       CandidateService candidateService,

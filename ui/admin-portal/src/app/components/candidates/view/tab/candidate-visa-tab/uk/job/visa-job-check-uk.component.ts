@@ -14,14 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
   CandidateVisa,
   CandidateVisaJobCheck
 } from "../../../../../../../model/candidate";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
@@ -29,13 +28,11 @@ import {CandidateOpportunity} from "../../../../../../../model/candidate-opportu
   templateUrl: './visa-job-check-uk.component.html',
   styleUrls: ['./visa-job-check-uk.component.scss']
 })
-export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
+export class VisaJobCheckUkComponent implements OnInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-
-  @ViewChild('visaJobUk') visaJobUk: NgbAccordion;
 
   candidateOpportunity: CandidateOpportunity;
 
@@ -53,11 +50,5 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
     }
     this.candidateOpportunity = this.candidate.candidateOpportunities
       .find(co => co.jobOpp.id == selectedJobOppId);
-  }
-
-  ngAfterViewInit() {
-    if(this.visaJobUk){
-      this.visaJobUk.expandAll();
-    }
   }
 }

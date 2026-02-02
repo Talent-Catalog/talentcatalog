@@ -143,21 +143,21 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "port": 4201,
-            "browserTarget": "admin-portal:build"
+            "buildTarget": "admin-portal:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "admin-portal:build:production"
+              "buildTarget": "admin-portal:build:production"
             },
             "staging": {
-              "browserTarget": "admin-portal:build:staging"
+              "buildTarget": "admin-portal:build:staging"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "admin-portal:build"
+            "buildTarget": "admin-portal:build"
           }
         },
         "test": {
