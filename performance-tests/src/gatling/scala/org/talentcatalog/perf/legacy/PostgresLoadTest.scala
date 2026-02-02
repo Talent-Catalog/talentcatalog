@@ -17,10 +17,10 @@
 package org.talentcatalog
 
 import io.gatling.core.Predef._
-import org.talentcatalog.queries.EsLoadQuery.{esLoadCountQueryName, esLoadPagedQueryName}
-import org.talentcatalog.queries.NewSearchScreenQuery.newSearchScreenQueryName
-import org.talentcatalog.scenarios.EsLoadScenario.esLoadScenario
-import org.talentcatalog.scenarios.NewSearchScreenScenario.newSearchScreenScenario
+import org.talentcatalog.perf.requests.EsLoadQuery.{esLoadCountQueryName, esLoadPagedQueryName}
+import org.talentcatalog.perf.requests.NewSearchScreenQuery.newSearchScreenQueryName
+import org.talentcatalog.perf.simulations.scenarios.EsLoadScenario.esLoadScenario
+import org.talentcatalog.perf.simulations.scenarios.NewSearchScreenScenario.newSearchScreenScenario
 import ru.tinkoff.load.jdbc.Predef._
 
 import scala.concurrent.duration._

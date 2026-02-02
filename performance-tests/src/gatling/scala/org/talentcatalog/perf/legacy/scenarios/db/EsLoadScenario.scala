@@ -14,23 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.talentcatalog.scenarios
+package org.talentcatalog.perf.simulations.scenarios
 
 import io.gatling.core.Predef._
 import io.gatling.core.structure.ScenarioBuilder
-import org.talentcatalog.queries.NewSearchScreenQuery.newSearchScreenQuery
+import org.talentcatalog.perf.requests.EsLoadQuery.{esLoadCountQuery, esLoadPagedQuery}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-object NewSearchScreenScenario {
+object EsLoadScenario {
 
-  val scenarioName: String = "NewSearchScreen"
+  val scenarioName: String = "EsLoadSystemApi"
 
-  val newSearchScreenScenario: ScenarioBuilder =
+  val esLoadScenario: ScenarioBuilder =
     scenario(scenarioName)
       .during(5 minutes) {
-        exec(newSearchScreenQuery())
+        exec(esLoadPagedQuery())
+          .exec(esLoadCountQuery())
       }
 
 }

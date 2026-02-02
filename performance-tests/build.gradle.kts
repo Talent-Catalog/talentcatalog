@@ -54,7 +54,7 @@ scala {
 
 dependencies {
     // Scala runtime for existing Scala simulations
-    implementation("org.scala-lang:scala-library:$scalaVersion")
+    gatlingImplementation("org.scala-lang:scala-library:$scalaVersion")
 
     // Gatling core + charts (Scala)
     gatlingImplementation("io.gatling:gatling-core:$gatlingVersion")
@@ -101,7 +101,8 @@ tasks {
         group = "verification"
 
         val simClass = (project.findProperty("simClass") as String?)
-            ?: "org.talentcatalog.PostgresLoadTest"
+            ?: "org.talentcatalog.perf.simulations.HttpSmokeSimulation"
+
 
         classpath = sourceSets["gatling"].runtimeClasspath
         mainClass.set("io.gatling.app.Gatling")

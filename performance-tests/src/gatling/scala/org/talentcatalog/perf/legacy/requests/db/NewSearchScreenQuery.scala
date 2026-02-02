@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.talentcatalog.queries
+package org.talentcatalog.perf.requests
 
 import io.gatling.core.Predef._
 import ru.tinkoff.load.jdbc.Predef._
