@@ -93,15 +93,15 @@ tasks {
     /**
      * Custom task: run Gatling simulation by class name
      * Usage:
-     *   ./gradlew :performance-tests:gatlingTest -PsimClass=org.talentcatalog.PostgresLoadTest
-     *   ./gradlew :performance-tests:gatlingTest -PsimClass=org.talentcatalog.JavaSimulationExample
+     *   ./gradlew :performance-tests:gatlingTest -PsimClass=org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelClosedSimulation
+     *
      */
     register<JavaExec>("gatlingTest") {
         description = "Run Gatling performance tests (Scala or Java)"
         group = "verification"
 
         val simClass = (project.findProperty("simClass") as String?)
-            ?: "org.talentcatalog.perf.simulations.HttpSmokeSimulation"
+            ?: "org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentialABSimulation"
 
 
         classpath = sourceSets["gatling"].runtimeClasspath
