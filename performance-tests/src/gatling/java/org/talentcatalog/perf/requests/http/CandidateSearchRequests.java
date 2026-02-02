@@ -44,7 +44,7 @@ public final class CandidateSearchRequests {
    *
    * <p>Response expectation: HTTP 200.</p>
    *
-   * @param body  request body (usually JSON); typically built with Gatling {@code StringBody(...)} 
+   * @param body  request body (usually JSON); typically built with Gatling {@code StringBody(...)}
    * @param label label appended to the request name for reporting/debugging (e.g., {@code "[small-payload]"})
    * @return an {@link HttpRequestActionBuilder} for the search request
    */
