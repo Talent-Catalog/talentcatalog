@@ -14,13 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.talentcatalog.perf.http;
+package org.talentcatalog.perf.config;
 
 import static io.gatling.javaapi.http.HttpDsl.http;
 import static org.talentcatalog.perf.chains.AuthChains.SESSION_ACCESS_TOKEN;
 
 import io.gatling.javaapi.http.HttpProtocolBuilder;
-import org.talentcatalog.perf.config.PerfSettings;
 
 /**
  * Factory for the shared Gatling {@link HttpProtocolBuilder}.
