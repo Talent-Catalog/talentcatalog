@@ -37,7 +37,7 @@ import java.util.Map;
 public class QAServiceImpl implements QAService {
 
     private String cachedQAContext;
-    private static final String QA_FILE_PATH = "static/pdf/chatbotQAFile.json";
+    private static final String QA_FILE_PATH = "chatbot/chatbotQAFile.json";
 
     /**
      * Loads and parses the QA file on service initialization.
