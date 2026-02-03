@@ -16,14 +16,13 @@
 
 <tc-modal [heading]="title"
           [showCancel]="showCancel"
-          [actionText]="'Ok'"
+          actionText="Ok"
           (onAction)="close()"
-          [showClose]="true">
-  <span *ngIf="message">
-    {{message}}
-  </span>
+          [showClose]="true"
+>
+  <p *ngIf="message" [innerHTML]="message"></p>
 
-  <span *ngIf="!message">
+  <p *ngIf="!message">
     Are you sure?
-  </span>
+  </p>
 </tc-modal>

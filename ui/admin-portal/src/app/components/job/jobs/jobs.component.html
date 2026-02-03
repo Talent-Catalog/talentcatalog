@@ -131,8 +131,7 @@
     </form>
   </div>
 
-  <tc-table [totalElements]="results?.totalElements"
-            [pageSize]="pageSize" [(pageNumber)]="pageNumber" (pageChange)="search()" >
+  <tc-table [results]="results" [loading]="loading" [(pageNumber)]="pageNumber" (pageChange)="search()" >
     <!--          Header-->
     <thead>
     <tr>
@@ -170,12 +169,12 @@
           [chats]="getChats(opp)"
         ></app-chat-read-status>
         {{opp.name| truncate: 36}}
-        <a [routerLink]="['/job',opp.id]">
+        <tc-icon type="link" color="gray" [routerLink]="['/job',opp.id]">
           <i class="fa-solid fa-briefcase" title="Job"></i>
-        </a>
-        <a *ngIf="opp.submissionList && canSeeJobDetails()" [routerLink]="['/list',opp.submissionList.id]">
+        </tc-icon>
+        <tc-icon type="link" color="gray" *ngIf="opp.submissionList && canSeeJobDetails()" [routerLink]="['/list',opp.submissionList.id]">
           <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
-        </a>
+        </tc-icon>
       </td>
       <td title="{{getCandidateOpportunityStageName(opp)}}">
         <tc-badge [color]="getBadgeColor(opp)">

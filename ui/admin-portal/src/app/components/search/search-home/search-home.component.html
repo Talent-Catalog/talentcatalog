@@ -14,50 +14,73 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav ngbNav #navSearch="ngbNav" class="nav-tabs mt-2" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+<tc-tabs class="mt-2"
+         [activeTabId]="activeTabId"
+         (tabChanged)="onTabChanged($event)"
+         [defaultTabId]="defaultTabId"
+>
 
-  <ng-container ngbNavItem="NewSearch">
-    <a ngbNavLink title="Search TC candidate database">New Search</a>
-    <ng-template ngbNavContent>
+  <tc-tab [id]="'NewSearch'"
+          [description]="'Search TC candidate database'"
+  >
+    <tc-tab-header>
+      New Search
+    </tc-tab-header>
+    <tc-tab-content>
       <app-candidates-search></app-candidates-search>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container ngbNavItem="MySearches">
-    <a ngbNavLink title="Searches that I created">My Searches</a>
-    <ng-template ngbNavContent>
+  <tc-tab [id]="'MySearches'"
+          [description]="'Searches that I created'"
+  >
+    <tc-tab-header>
+      My Searches
+    </tc-tab-header>
+    <tc-tab-content>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
         [searchBy]="SearchBy.mine" >
       </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container ngbNavItem="SearchesSharedWithMe">
-    <a ngbNavLink title="Starred Searches (eg those I am working with)"><i class="fas fa-star"></i>Searches</a>
-    <ng-template ngbNavContent>
+  <tc-tab [id]="'SearchesSharedWithMe'"
+          [description]="'Starred Searches (e.g. those I am working with)'"
+  >
+    <tc-tab-header>
+      <i class="fas fa-star"></i>
+      Searches
+    </tc-tab-header>
+    <tc-tab-content>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
         [searchBy]="SearchBy.sharedWithMe">
       </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <ng-container ngbNavItem="MyWatchedSearches">
-    <a ngbNavLink title="Searches that I want to be notified of new candidates"><i class="fas fa-eye"></i>Searches</a>
-    <ng-template ngbNavContent>
+  <tc-tab [id]="'MyWatchedSearches'"
+          [description]="'Searches for which I want to be notified of new candidates'"
+  >
+    <tc-tab-header>
+      <i class="fas fa-eye"></i>
+      Searches
+    </tc-tab-header>
+    <tc-tab-content>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
         [searchBy]="SearchBy.watched" >
       </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
   <!--  Standard searches for occupations-->
-  <ng-container ngbNavItem="Occupations">
-    <a ngbNavLink title="Searches by occupations">Searches by Occupations</a>
-
-    <ng-template ngbNavContent>
+  <tc-tab [id]="'Occupations'" [description]="'Searches by Occupations'">
+    <tc-tab-header>
+      Searches by Occupations
+    </tc-tab-header>
+    <tc-tab-content>
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedSearch"
           [searchBy]="SearchBy.type"
@@ -67,8 +90,7 @@
           (subtypeChange)="onSavedSearchSubtypeChange($event)"
         >
         </app-browse-candidate-sources>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-</nav>
-<div [ngbNavOutlet]="navSearch" class="mt-2"></div>
+</tc-tabs>

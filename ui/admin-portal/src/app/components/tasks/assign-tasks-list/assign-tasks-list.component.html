@@ -17,94 +17,111 @@
 <tc-modal [heading]="'Associate Task with List'"
           [disableAction]="assignForm.invalid || loading"
           (onAction)="onSave()"
+          actionText="Add Task"
           [showCancel]="true"
           [cancelText]="'Close'"
-          [showClose]="true">
+          [showClose]="true"
+          class="expanding-content-modal"
+>
 
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
-  <div *ngIf="!loading">
+  <form [formGroup]="assignForm">
 
-    <tc-alert type="danger" *ngIf="error">
-      <div><strong>{{error}}</strong></div>
-    </tc-alert>
+    <!-- TASKS -->
+    <div class="mb-3">
+      <tc-field>
+        <tc-label [for]="'task'">
+          Task to assign
+        </tc-label>
+        <ng-select id="task"
+                   class="tc-select"
+                   appendTo=".modal-content"
+                   [formControlName]="'task'"
+                   [items]="allTasks"
+                   [groupBy]="'taskType'"
+                   [searchFn]="searchTypeOrName"
+                   [clearable]="true"
+                   placeholder="Select or type to search..."
+                   bindLabel="displayName">
+        </ng-select>
+      </tc-field>
+    </div>
 
-    <form [formGroup]="assignForm">
-
-      <!-- TASKS -->
+    <!-- DAYS TO COMPLETE -->
+    <div *ngIf="selectedTask">
       <div class="mb-3">
-        <tc-field>
-          <tc-label [for]="'task'">
-            Task to assign
-          </tc-label>
-          <ng-select id="task"
-                     class="tc-select"
-                     appendTo=".modal-content"
-                     [formControlName]="'task'"
-                     [items]="allTasks"
-                     [groupBy]="'taskType'"
-                     [searchFn]="searchTypeOrName"
-                     [clearable]="false"
-                     placeholder="Select or type to search..."
-                     bindLabel="displayName">
-          </ng-select>
-        </tc-field>
-      </div>
-
-      <!-- DAYS TO COMPLETE -->
-      <div *ngIf="selectedTask" class="paragraph-sm">
-        <div class="mb-3">
-          <strong>Description: </strong>
-          <span [innerHtml]="selectedTask.description"></span>
+        <div class="mb-1">
+          <strong>Description:</strong>
         </div>
-        <div class="mb-3">
-          <strong>Estimated Due Date: </strong>
+        <span class="fw-light" [innerHtml]="selectedTask.description"></span>
+      </div>
+      <div class="mb-3">
+        <strong>Estimated Due Date:</strong>
+        <span class="fw-light">
           {{estimatedDueDate | date}} ({{selectedTask?.daysToComplete}} days to complete)
-        </div>
-      </div>
-
-    </form>
-  </div>
-
-  <div class="d-block pt-lg-4">
-    <div class="paragraph-lg mb-3">Current Task Associations</div>
-    <tc-field>
-      <tc-input [type]="'text'"
-                class="mb-3"
-                [placeholder]="'Search within...'"
-                [ariaLabel]="'Search'"
-                (keyup)="search($event.target)"
-                [id]="'keyword'">
-      </tc-input>
-    </tc-field>
-
-    <div *ngFor="let t of filteredTaskAssociations;">
-      <div class="container card grey-bg" [ngClass]="{'required-task-bg': !t.optional, 'optional-task-bg': t.optional}">
-        <div class="row align-items-center">
-          <div class="col">
-            <p class="small fw-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
-          </div>
-          <div class="col-auto">
-            <app-tasks-monitor-list
-              [task]="t"
-              [list]="savedList">
-            </app-tasks-monitor-list>
-          </div>
-          <div class="col-auto">
-            <div class="btn-group float-end">
-              <button type="button" class="btn" aria-label="Close" (click)="monitorTask(t)">
-                <i class="fas fa-search-plus"></i>
-              </button>
-              <button type="button" class="btn" aria-label="Close" (click)="removeTask(t)">
-                <i class="far fa-trash-alt"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+        </span>
       </div>
     </div>
-  </div>
+
+  </form>
+
+  <tc-table [results]="filteredTaskAssociations"
+            [loading]="loading"
+            name="Current Task Associations"
+            [clickableRows]="false"
+  >
+    <tc-loading [loading]="loading"></tc-loading>
+    <thead>
+    <tr>
+      <th>Task</th>
+      <th>Current Assignments</th>
+      <th>
+        <tc-field class="search-current">
+          <tc-input [type]="'text'"
+                    [placeholder]="'Search current tasks...'"
+                    [ariaLabel]="'Search'"
+                    (keyup)="search($event.target)"
+                    [id]="'keyword'">
+          </tc-input>
+        </tc-field>
+      </th>
+    </tr>
+    </thead>
+    <tbody *ngFor="let t of filteredTaskAssociations;">
+      <tr>
+        <td>
+          <p class="small fw-light mb-0"><span *ngIf="!t.optional">*</span>{{t.displayName}}</p>
+        </td>
+        <td>
+          <app-tasks-monitor-list
+            [task]="t"
+            [list]="savedList">
+          </app-tasks-monitor-list>
+        </td>
+        <td>
+          <div class="float-end">
+            <tc-icon size="md"
+                     type="button"
+                     class="me-4"
+                     aria-label="Monitor Task"
+                     [ngbTooltip]="'Zoom in to view current assignments for this task only'"
+                     (click)="monitorTask(t)">
+              <i class="fas fa-search-plus"></i>
+            </tc-icon>
+            <tc-icon size="md"
+                     type="button"
+                     aria-label="Remove Task"
+                     [ngbTooltip]="'Remove this task from the candidates in this list'"
+                     (click)="removeTask(t)">
+              <i class="far fa-trash-alt"></i>
+            </tc-icon>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </tc-table>
 
 </tc-modal>

@@ -45,6 +45,8 @@ public abstract class CandidateSearchUtils {
             "candidate_job_experience on candidate.id = candidate_job_experience.candidate_id");
         tableJoins.put("candidate_language",
             "candidate_language on candidate.id = candidate_language.candidate_id");
+        tableJoins.put("candidate_saved_list",
+            "candidate_saved_list on candidate.id = candidate_saved_list.candidate_id");
         tableJoins.put("candidate_occupation",
             "candidate_occupation on candidate.id = candidate_occupation.candidate_id");
         tableJoins.put("country",
@@ -63,6 +65,8 @@ public abstract class CandidateSearchUtils {
             "language_level as written_level on candidate_language.written_level_id = written_level_id");
         tableJoins.put("users",
             "users on candidate.user_id = users.id");
+        tableJoins.put("survey_type",
+            "survey_type on candidate.survey_type_id = survey_type.id");
     }
 
     public static final String CANDIDATE_TS_TEXT_FIELD = "candidate.ts_text";
@@ -175,6 +179,9 @@ public abstract class CandidateSearchUtils {
 
     /**
      * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
+     * <p>
+     *     See <a href="https://www.postgresql.org/docs/18/textsearch-intro.html">Postgres Text Search</a>
+     * </p>
      * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
      * @return Postgres tsQuery SQL
      */
@@ -185,6 +192,10 @@ public abstract class CandidateSearchUtils {
 
         //Trim leading or trailing spaces - they confuse the regex below
         esQuery = esQuery.trim();
+
+        //Prevent single quotes from messing up tsQuery syntax by doubling them. tsQuery syntax
+        //ignores '' and it is treated like a single quote text
+        esQuery = esQuery.replace("'", "''");
 
         // Step 1: Handle quoted phrases: "quick brown" => quick <-> brown
         StringBuilder result = new StringBuilder();
@@ -301,7 +312,16 @@ public abstract class CandidateSearchUtils {
             propertyName = "candidate." + propertyName;
         }
 
-        propertyName = propertyName.replace("user.", "users.");
+        // Special-case replacements
+        Map<String, String> specialCases = Map.of(
+            "user.", "users.",
+            "maxEducationLevel.", "educationLevel."
+        );
+
+        for (var entry : specialCases.entrySet()) {
+            propertyName = propertyName.replace(entry.getKey(), entry.getValue());
+        }
+
 
         return RegexHelpers.camelToSnakeCase(propertyName);
     }

@@ -127,4 +127,23 @@ public class StringSanitizer {
     return cleaned;
   }
 
+  /**
+   * Normalizes smart quotes, dashes, and other problematic Unicode punctuation
+   * into ASCII-safe equivalents for XHTML/PDF rendering.
+   */
+  public static String normalizeUnicodeText(@Nullable String input) {
+    if (input == null) {
+      return null;
+    }
+    return input
+        .replace("’", "'")
+        .replace("‘", "'")
+        .replace("“", "\"")
+        .replace("”", "\"")
+        .replace("–", "-")
+        .replace("—", "-")
+        .replace("…", "...");
+  }
+
+
 }

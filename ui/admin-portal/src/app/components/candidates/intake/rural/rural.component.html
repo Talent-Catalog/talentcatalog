@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
 
   <div class="mb-3">
@@ -29,7 +29,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="intRecruitRural" [formControlName]="'intRecruitRural'" (clear)="setNoResponse('intRecruitRural')"
+    <ng-select class="tc-select" id="intRecruitRural" [formControlName]="'intRecruitRural'" (clear)="setNoResponse('intRecruitRural')"
                [items]="intRecruitRuralOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key">
     </ng-select>

@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -66,10 +66,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.api.dto.SavedListBuilderSelector;
+import org.tctalent.server.data.CandidateTestData;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
@@ -105,6 +108,14 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
             1
         );
 
+    private static final List<CandidateReadDto> savedListCandidateDtos = CandidateTestData.getListOfCandidateDtos();
+    private static final Page<CandidateReadDto> savedListCandidateDtosPage =
+        new PageImpl<>(
+            savedListCandidateDtos,
+            PageRequest.of(0,10, Sort.unsorted()),
+            1
+        );
+
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -120,6 +131,8 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     CandidateSavedListService candidateSavedListService;
     @MockBean
     CandidateService candidateService;
+    @MockBean
+    CandidateDtoService candidateDtoService;
     @MockBean
     CandidateBuilderSelector candidateBuilderSelector;
     @MockBean
@@ -312,9 +325,9 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         given(savedListService.get(anyLong()))
             .willReturn(savedList);
-        given(candidateService.getSavedListCandidates(any(SavedList.class), any(
+        given(savedListService.getSavedListCandidateDtos(any(SavedList.class), any(
             SavedListGetRequest.class)))
-            .willReturn(savedListCandidatesPage);
+            .willReturn(savedListCandidateDtosPage);
 
         mockMvc.perform(
                 post(BASE_PATH + "/123" + SEARCH_PAGED_PATH)
@@ -337,7 +350,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
         ;
 
         verify(savedListService).get(anyLong());
-        verify(candidateService).getSavedListCandidates(any(SavedList.class),
+        verify(savedListService).getSavedListCandidateDtos(any(SavedList.class),
             any(SavedListGetRequest.class));
     }
 

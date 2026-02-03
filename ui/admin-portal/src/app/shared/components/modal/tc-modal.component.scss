@@ -14,6 +14,12 @@
       text-align: end;
     }
   }
+  #close-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    cursor: pointer;
+  }
 }
 
 .tc-modal-header {
@@ -25,6 +31,7 @@
 .tc-modal-body {
   @include paragraph-md();
   @include text-color-secondary();
+  padding: 8px;
 }
 
 .tc-modal-footer {

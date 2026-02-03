@@ -9,6 +9,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
  * the close button (×) is shown only if you either bind the `(closed)` output
  * or explicitly set `[dismissible]="true"`.
  *
+ * This component uses Font Awesome `<i>` icons internally (not inline SVG); all icons inherit color via `currentColor`.
+ *
  * **How it works**
  * - Applies your `.tc-alert` styles and variant token mixins.
  * - Icons are inline SVGs using `fill="currentColor"` so they inherit the variant color.

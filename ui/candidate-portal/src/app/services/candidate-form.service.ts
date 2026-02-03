@@ -2,18 +2,25 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {FamilyDocFormComponent} from "../components/form/family-doc-form/family-doc-form.component";
 import {
-  FamilyDocFormData,
+  DependantsTravelInfoFormComponent
+} from "../components/form/family-doc-form/dependants-travel-info-form.component";
+import {
+  DependantsInfoFormData,
   MyFirstFormData,
-  MySecondFormData,
-  TravelDocFormData
+  RefugeeStatusInfoFormData,
+  TravelInfoFormData
 } from "../model/form";
 import {MyFirstFormComponent} from "../components/form/my-first-form/my-first-form.component";
-import {MySecondFormComponent} from "../components/form/my-second-form/my-second-form.component";
 import {
-  TravelDocFormComponent
-} from "../components/form/italy-travel-document-form/travel-doc-form.component";
+  TravelInfoFormComponent
+} from "../components/form/italy-travel-document-form/travel-info-form.component";
+import {
+  DependantsRefugeeStatusInfoFormComponent
+} from "../components/form/family-rsd-evidence-form/dependants-refugee-status-info-form.component";
+import {
+  RefugeeStatusInfoFormComponent
+} from "../components/form/rsd-evidence-form/refugee-status-info-form.component";
 
 
 @Injectable({
@@ -25,13 +32,13 @@ export class CandidateFormService {
   // The mapping is from the name of the form to an Angular component.
   private componentMap: Record<string, any> = {
     'MyFirstForm': MyFirstFormComponent,
-    'MySecondForm': MySecondFormComponent,
-    'FamilyDocForm': FamilyDocFormComponent,
-    'TravelDocForm': TravelDocFormComponent
+    'TravelInfoForm': TravelInfoFormComponent,
+    'RefugeeStatusInfoForm': RefugeeStatusInfoFormComponent,
+    'DependantsTravelInfoForm': DependantsTravelInfoFormComponent,
+    'DependantsRefugeeStatusInfoForm': DependantsRefugeeStatusInfoFormComponent
   }
 
   apiUrl: string = environment.apiUrl + '/form';
-  halApiUrl: string = environment.halApiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -43,30 +50,30 @@ export class CandidateFormService {
     return this.http.get<MyFirstFormData>(`${this.apiUrl}/my-first-form`);
   }
 
-  createOrUpdateMySecondForm(request: MySecondFormData): Observable<MySecondFormData> {
-    return this.http.put<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`, request);
+  createOrUpdateTravelInfoForm(request: TravelInfoFormData): Observable<TravelInfoFormData> {
+    return this.http.post<TravelInfoFormData>(`${this.apiUrl}/travel-info-form`, request);
   }
 
-  getMySecondForm(): Observable<MySecondFormData> {
-    return this.http.get<MySecondFormData>(`${this.halApiUrl}/my-second-form/MySecondForm`);
-  }
-
-  createOrUpdateTravelDocumentForm(request: TravelDocFormData): Observable<TravelDocFormData> {
-    return this.http.post<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`, request);
-  }
-
-  getTravelDocumentForm(): Observable<TravelDocFormData> {
-    return this.http.get<TravelDocFormData>(`${this.apiUrl}/travel-doc-form`);
+  getTravelInfoForm(): Observable<TravelInfoFormData> {
+    return this.http.get<TravelInfoFormData>(`${this.apiUrl}/travel-info-form`);
   }
 
   getFormComponentByName(formName: string): any {
     return this.componentMap[formName];
   }
-  createOrUpdateFamilyDocsForm(request: FamilyDocFormData) {
-    return this.http.put<FamilyDocFormData>(`${this.halApiUrl}/family-doc-form/FamilyDocForm`, request);
+  createOrUpdateDependantsInfoForm(request: DependantsInfoFormData) {
+    return this.http.post<DependantsInfoFormData>(`${this.apiUrl}/dependants-info-form`, request);
   }
 
-  getFamilyDocsForm() {
-    return this.http.get<FamilyDocFormData>(`${this.halApiUrl}/family-doc-form/FamilyDocForm`);
+  getDependantsInfoForm() {
+    return this.http.get<DependantsInfoFormData>(`${this.apiUrl}/dependants-info-form`);
+  }
+
+  createOrUpdateRefugeeStatusInfoForm(request: RefugeeStatusInfoFormData): Observable<RefugeeStatusInfoFormData> {
+    return this.http.post<RefugeeStatusInfoFormData>(`${this.apiUrl}/refugee-status-info-form`, request);
+  }
+
+  getRefugeeStatusInfoForm(): Observable<RefugeeStatusInfoFormData> {
+    return this.http.get<RefugeeStatusInfoFormData>(`${this.apiUrl}/refugee-status-info-form`);
   }
 }

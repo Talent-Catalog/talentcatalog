@@ -14,14 +14,13 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<input type="number"
-       class="form-control mb-3"
+<tc-input type="number"
        [(ngModel)]="this.value"
        (ngModelChange)="update()"
        placeholder="1-10"
        style="width: 80px"
        min="1" max="10"
->
-<div class="alert alert-danger" *ngIf="error">
+></tc-input>
+<tc-alert type="warning" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>

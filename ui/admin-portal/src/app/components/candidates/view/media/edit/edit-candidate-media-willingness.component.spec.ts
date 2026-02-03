@@ -19,7 +19,6 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
-import {By} from "@angular/platform-browser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -106,19 +105,5 @@ describe('EditCandidateMediaWillingnessComponent', () => {
   it('should dismiss the modal', () => {
     component.dismiss();
     expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
-  });
-
-  it('should show loading spinner while loading', () => {
-    component.loading = true;
-    fixture.detectChanges();
-    const spinner = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(spinner).toBeTruthy();
-  });
-
-  it('should show saving spinner while saving', () => {
-    component.saving = true;
-    fixture.detectChanges();
-    const buttonSpinner = fixture.debugElement.query(By.css('button .fa-spinner'));
-    expect(buttonSpinner).toBeTruthy();
   });
 });

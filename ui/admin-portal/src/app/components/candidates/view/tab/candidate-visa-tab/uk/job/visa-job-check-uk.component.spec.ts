@@ -19,8 +19,10 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {VisaJobCheckUkComponent} from './visa-job-check-uk.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {TcAccordionComponent} from "../../../../../../../shared/components/accordion/tc-accordion.component";
+import {TcAccordionItemComponent} from "../../../../../../../shared/components/accordion/accordion-item/tc-accordion-item.component";
+import {By} from "@angular/platform-browser";
 import {
   RelocatingDependantsComponent
 } from "../../../../../visa/visa-job-assessments/relocating-dependants/relocating-dependants.component";
@@ -39,9 +41,12 @@ describe('VisaJobCheckUkComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,NgbAccordionModule,ReactiveFormsModule,
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,
         NgSelectModule],
-      declarations: [ VisaJobCheckUkComponent, RelocatingDependantsComponent, DependantsComponent ]
+      declarations: [ VisaJobCheckUkComponent, RelocatingDependantsComponent, DependantsComponent,
+        TcAccordionComponent,
+        TcAccordionItemComponent
+      ]
     })
     .compileComponents();
   });
@@ -68,12 +73,15 @@ describe('VisaJobCheckUkComponent', () => {
     expect(candidateOpportunity.jobOpp.id).toEqual(component.selectedJobCheck.jobOpp.id);
   });
 
-  it('should expand all panels after view init', () => {
+  it('should open all panels after view init', () => {
     fixture.detectChanges(); // ngOnInit() gets called here
-    component.visaJobUk = { expandAll: jasmine.createSpy('expandAll') } as any;
 
-    component.ngAfterViewInit();
+    // Get the accordion component instance
+    const accordionDebugElement = fixture.debugElement.query(By.directive(TcAccordionComponent));
+    expect(accordionDebugElement).toBeTruthy();
 
-    expect(component.visaJobUk.expandAll).toHaveBeenCalled();
+    // The accordion items should be open (this is handled by the accordion component's allOpen input)
+    const accordionComponent = accordionDebugElement.componentInstance as TcAccordionComponent;
+    expect(accordionComponent.allOpen).toBe(true);
   });
 });

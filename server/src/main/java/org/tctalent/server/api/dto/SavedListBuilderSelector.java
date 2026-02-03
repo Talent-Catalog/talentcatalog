@@ -57,6 +57,7 @@ public class SavedListBuilderSelector {
             .add("displayedFieldsLong")
             .add("displayedFieldsShort")
             .add("createdBy", userDto())
+            .add("global")
             ;
     }
 

@@ -1,4 +1,4 @@
-<div class="tc-card">
+<div class="tc-card" [ngClass]="{'no-header': !header}">
   <ng-content select="tc-card-header"></ng-content>
   <div class="tc-card-body">
     <ng-content></ng-content>

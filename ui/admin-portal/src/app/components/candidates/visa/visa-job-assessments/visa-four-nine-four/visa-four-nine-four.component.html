@@ -14,26 +14,27 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="mb-3">
-    <label class="form-label" for="visaJobEligible494">Eligible for 494?</label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="visaJobEligible494" [formControlName]="'visaJobEligible494'" (clear)="setNoResponse('visaJobEligible494')"
-               [items]="visa494Options" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaJobEligible494Notes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaJobEligible494Notes" [formControlName]="'visaJobEligible494Notes'"
-              placeholder=""></textarea>
-  </div>
+  <tc-fieldset>
+    <tc-field *ngIf="editable">
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaJobEligible494">
+          Eligible for 494?
+        </tc-label>
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </div>
+      <ng-select class="tc-select" id="visaJobEligible494" [formControlName]="'visaJobEligible494'"
+                 (clear)="setNoResponse('visaJobEligible494')"
+                 [items]="visa494Options" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <tc-field *ngIf="hasNotes">
+      <tc-label for="visaJobEligible494Notes">Notes</tc-label>
+      <tc-textarea id="visaJobEligible494Notes" [formControlName]="'visaJobEligible494Notes'"></tc-textarea>
+    </tc-field>
+  </tc-fieldset>
 </form>

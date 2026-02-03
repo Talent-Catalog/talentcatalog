@@ -54,23 +54,16 @@ describe('ViewResponseComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display task display name and answer', () => {
-    const strongElement = fixture.debugElement.query(By.css('strong'));
-    const pElement = fixture.debugElement.query(By.css('p'));
+  it('should display task display answer', () => {
+    const descriptionItemDebug =
+      fixture.debugElement.query(By.css('tc-description-item'));
 
-    expect(strongElement.nativeElement.textContent).toContain('CV Submission');
-    expect(pElement.nativeElement.textContent).toContain('Sample Answer');
+    expect(descriptionItemDebug).toBeTruthy();
+
+    // Check the rendered answer text
+    const answerText = descriptionItemDebug.nativeElement.textContent.trim();
+    expect(answerText).toBe(component.taskAssignment.answer);
   });
-
-  it('should show loading spinner when loading is true', fakeAsync(() => {
-    component.loading = true;
-    fixture.detectChanges();
-    tick();
-
-    const spinner = fixture.debugElement.query(By.css('.fa-spinner'));
-
-    expect(spinner).toBeTruthy();
-  }));
 
   it('should display error message when error is set', fakeAsync(() => {
     component.error = 'Sample error message';

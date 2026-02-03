@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
-    this.loginImage = `${environment.assetBaseUrl}/assets/images/tc-logo-2.png`;
+    this.loginImage = `${environment.assetBaseUrl}/assets/images/tcHorizontalLogo.png`;
 
     this.route.queryParams.subscribe(params => {
       this.returnUrl = params['returnUrl'] || '';

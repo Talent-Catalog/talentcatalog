@@ -1,72 +1,43 @@
-<div>
-  <div class="section">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
-    <div class="row mb-1">
-      <div class="col-4">
-        <form [formGroup]="searchForm">
-          <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
-                 id="keyword">
-          <div class="form-text">Found {{!results?.totalElements ? '0' : results?.totalElements}} result</div>
-        </form>
-      </div>
-      <div class="col-8">
-        <ngb-pagination class="float-end"
-                        [boundaryLinks]="true"
-                        [pageSize]="pageSize"
-                        [collectionSize]="results?.totalElements"
-                        [(page)]="pageNumber"
-                        [maxSize]="5"
-                        [ellipses]="true"
-                        [rotate]="true"
-                        (pageChange)="search()">
-        </ngb-pagination>
-      </div>
+<tc-alert *ngIf="error">
+  {{error}}
+</tc-alert>
+
+<form [formGroup]="searchForm">
+  <div class="row mb-3">
+    <div class="col-4">
+      <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                id="keyword"></tc-input>
     </div>
   </div>
+</form>
 
-  <div class="table-responsive">
-    <table class="table">
+<tc-table [results]="results"
+          [loading]="loading"
+          [paginationPosition]="'top'"
+          [(pageNumber)]="pageNumber"
+          (pageChange)="search()"
+          [clickableRows]="false"
+>
 
-      <thead class="table-primary">
-      <tr>
-        <th scope="col">Id</th>
-        <th>Partner</th>
-        <th>Public Id</th>
-        <th>Reason</th>
-        <th>Additional Notes</th>
-        <th>Created Date</th>
-      </tr>
-      </thead>
+  <thead>
+  <tr>
+    <th scope="col">Id</th>
+    <th>Partner</th>
+    <th>Public Id</th>
+    <th>Reason</th>
+    <th>Additional Notes</th>
+    <th>Created Date</th>
+  </tr>
+  </thead>
 
-      <tbody>
-      <tr *ngFor="let ota of results?.content">
-        <td>{{ota.id}}</td>
-        <td>{{ota.partner.name}}</td>
-        <td>{{ota.publicId}}</td>
-        <td>{{getDisplayEnumValue(ota.reason)}}</td>
-        <td>{{ota.additionalNotes}}</td>
-        <td>{{ota.createdDate}}</td>
-      </tr>
-
-      <!-- loading -->
-      <tr *ngIf="loading">
-        <td colspan="42">
-          <i class="fas fa-spinner fa-spin"></i> Loading...
-        </td>
-      </tr>
-
-      <!-- no results -->
-      <tr *ngIf="!loading && !results?.totalElements">
-        <td class="text-center" colspan="42">
-          <span class="text-muted">(no offers to assist found)</span>
-        </td>
-      </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
-</div>
+  <tbody>
+  <tr *ngFor="let ota of results?.content">
+    <td>{{ota.id}}</td>
+    <td>{{ota.partner.name}}</td>
+    <td>{{ota.publicId}}</td>
+    <td>{{getDisplayEnumValue(ota.reason)}}</td>
+    <td>{{ota.additionalNotes}}</td>
+    <td>{{ota.createdDate}}</td>
+  </tr>
+  </tbody>
+</tc-table>

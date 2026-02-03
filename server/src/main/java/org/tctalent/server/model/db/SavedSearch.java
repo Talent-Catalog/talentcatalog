@@ -64,6 +64,8 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String partnerIds;
 
+    private String candidateNumbers;
+
     private String listAllIds;
     @Enumerated(EnumType.STRING)
     private SearchType listAllSearchType;
@@ -259,6 +261,15 @@ public class SavedSearch extends AbstractCandidateSource {
     public void setPartnerIds(String partnerIds) {
         this.partnerIds = partnerIds;
     }
+
+    public String getCandidateNumbers() {
+        return candidateNumbers;
+    }
+
+    public void setCandidateNumbers(String candidateNumbers) {
+        this.candidateNumbers = candidateNumbers;
+    }
+
 
     public String getListAllIds() {
         return listAllIds;

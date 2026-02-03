@@ -460,9 +460,6 @@ import {
   QualificationRelevantComponent
 } from "./components/candidates/visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
 import {
-  VisaFinalAssessmentComponent
-} from "./components/candidates/visa/visa-job-assessments/visa-final-assessment/visa-final-assessment.component";
-import {
   JobOccupationComponent
 } from "./components/candidates/visa/visa-job-assessments/job-occupation/job-occupation.component";
 import {
@@ -838,6 +835,9 @@ import {
   ViewPrivacyPolicyInfoComponent
 } from './components/candidates/view/privacy-policy-info/view-privacy-policy-info.component';
 import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
+import {
+  CandidateCvTextTabComponent
+} from './components/candidates/view/tab/candidate-cv-text-tab/candidate-cv-text-tab.component';
 
 @NgModule({
   declarations: [
@@ -1010,7 +1010,6 @@ import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
     SecurityRiskComponent,
     TravelDocumentComponent,
     RiskAssessmentComponent,
-    VisaFinalAssessmentComponent,
     JobOccupationComponent,
     SalaryTsmitComponent,
     RegionalAreaComponent,
@@ -1176,7 +1175,8 @@ import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
     ChatMuteToggleButtonComponent,
     ViewPrivacyPolicyInfoComponent,
     PartnerDpaComponent,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    CandidateCvTextTabComponent
   ],
   imports: [
     BrowserModule,

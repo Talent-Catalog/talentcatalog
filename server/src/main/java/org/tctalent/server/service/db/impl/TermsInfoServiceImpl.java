@@ -45,17 +45,32 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     private Map<String, TermsInfo> termsInfoMap;
 
     /**
-     * Initialized at start up with all known TermsInfo's.
+     * Initialized at startup with all known TermsInfo's.
      */
     private TermsInfo[] termsInfos;
 
     public TermsInfoServiceImpl() {
         termsInfos = new TermsInfo[] {
+
+            //Explicit approval of these legacy policy terms is not required.
+            //Approval is implicit when a candidate registers.
+            new TermsInfo(
+                "LegacyRedirectToTbbWebsite",
+
+                // Null path to content (which generates empty content) is used to indicate that
+                // the policy is only defined on the TBB website:
+                // https://www.talentbeyondboundaries.org/privacy-and-data-protection-policy
+                null,
+                TermsType.CANDIDATE_PRIVACY_POLICY,
+                LocalDate.of(2025, Month.NOVEMBER, 25)
+            ),
+
+            //TODO Activate this when it is approved by updating the created date below
             new TermsInfo(
                 "CandidatePrivacyPolicyV1",
                 "/terms/GDPRPrivacyPolicy-20250604.html",
                 TermsType.CANDIDATE_PRIVACY_POLICY,
-                LocalDate.of(2025, Month.JUNE, 5)
+                LocalDate.of(2000, Month.JUNE, 5)
             ),
             new TermsInfo(
             "DataProcessingAgreementV1",
@@ -69,7 +84,7 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     /**
      * Normally only called once after the constructor (@PostConstruct annotation) with predefined
      * TermsInfo[].
-     * (Best to avoid running logic in the constructor especially logic that can throw
+     * (Best to avoid running logic in the constructor, especially logic that can throw
      * exceptions, hence use of @PostConstruct).
      */
     @PostConstruct
@@ -91,6 +106,11 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     String getContentFromResource(String resourcePath) {
         String content;
 
+        //Special legacy TermsInfo has a null resource path - just return empty content.
+        if (resourcePath == null) {
+            return "";
+        }
+
         //Note that this is a special try-with-resources statement which automatically closes the
         //resource (the input stream) once the block of code is completed.
         //See, for example, https://www.baeldung.com/java-try-with-resources
@@ -111,7 +131,7 @@ public class TermsInfoServiceImpl implements TermsInfoService {
     }
 
     private void addTermsInfo(@NonNull TermsInfo termsInfo) {
-        //Check that resource path exists
+        //Check that a resource path exists
         final String content = getContentFromResource(termsInfo.getPathToContent());
         if (content == null) {
             throw new RuntimeException("No content found for pathToContent of TermsInfo id: " + termsInfo.getId());

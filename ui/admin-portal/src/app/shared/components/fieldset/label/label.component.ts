@@ -13,6 +13,10 @@ import {Component, Input} from '@angular/core';
  * - Supports the native `for` attribute to link the label with an input by `id`
  * - Ensures consistent styling with the `form-label` class
  *
+ * @inputs
+ *  - `for?: string` — associates the label with an input by matching its `id`
+ *  - `size: 'sm' | 'md' = 'md'` — optional size modifier for label styling
+ *
  * @example
  * ```html
  * <!-- Basic usage -->

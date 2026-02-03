@@ -29,6 +29,8 @@ export class ViewCandidateContactComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  /** Passed to tc-description-list instances when narrower column spacing is required */
+  @Input() compact: boolean;
 
   loading: boolean;
   error;

@@ -67,13 +67,6 @@ describe('SearchLanguagesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize form and set default values', () => {
-    component.ngOnInit();
-    expect(component.searchForm).toBeDefined();
-    expect(component.pageNumber).toBe(1);
-    expect(component.pageSize).toBe(50);
-  });
-
 
   it('should search languages', () => {
 

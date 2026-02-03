@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="englishAssessment"><strong>English: </strong>Can you tell me about yourself and your profession? What is your biggest accomplishment?</label>
@@ -26,9 +26,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+    <tc-textarea rows="4"
               id="englishAssessment" [formControlName]="'englishAssessment'"
-              placeholder="" ></textarea>
+              placeholder="" ></tc-textarea>
   </div>
   <div class="mb-3">
     <label class="form-label" for="englishAssessmentScoreDet">
@@ -74,13 +74,12 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <textarea type="text"
-              class="md-textarea-auto form-control"
+    <tc-textarea
               rows="4"
               id="frenchAssessment"
               [formControlName]="'frenchAssessment'"
               placeholder="">
-    </textarea>
+    </tc-textarea>
   </div>
   <div class="mb-3">
     <label class="form-label" for="frenchAssessmentScoreNclc">

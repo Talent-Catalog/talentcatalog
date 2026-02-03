@@ -63,13 +63,13 @@ describe('ConfirmationComponent', () => {
     component.message = 'Test message';
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('span').textContent).toContain('Test message');
+    expect(compiled.querySelector('p').textContent).toContain('Test message');
   });
 
   it('should display "Are you sure?" if message is not provided', () => {
     component.message = null;
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('span').textContent).toContain('Are you sure?');
+    expect(compiled.querySelector('p').textContent).toContain('Are you sure?');
   });
 });

@@ -35,6 +35,11 @@ import {NgbDate, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
  * - `@ng-bootstrap/ng-bootstrap` (uses `NgbDate`, `NgbDateStruct`, `ngbDatepicker`)
  * - Font Awesome (for the calendar/clear icons in the template)
  *
+ *  **Inputs**
+ *  - `fromDate: NgbDateStruct` — optional initial start date
+ *  - `toDate: NgbDateStruct` — optional initial end date
+ *  - `readonly: boolean` — makes the input non-editable while still allowing datepicker selection.**
+ *
  * @example
  * ### Basic usage (listen to selection)
  * ```html

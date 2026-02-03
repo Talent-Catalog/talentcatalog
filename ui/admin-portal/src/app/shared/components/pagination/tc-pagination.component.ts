@@ -8,8 +8,21 @@ import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angula
  * **Features:**
  * - Displays and styles the pagination
  * - Output event on page change emitting new page number
+ * - Supports direct “jump to page” input with validation
  *
  * @selector tc-pagination
+ *
+ *   **Inputs**
+ *   - `totalElements: number` — total number of items across all pages
+ *   - `pageNumber: number` — current active page
+ *   - `pageSize: number` — number of items per page
+ *
+ *   **Outputs**
+ *   - `pageChange: EventEmitter<number>` — emits when a new page is selected
+ *
+ *   **Additional Behavior**
+ *   - Users can type a page number and press Enter/blur to jump directly
+ *   - Invalid characters are stripped from the input (`formatInput`)
  *
  * @example
  * ```html

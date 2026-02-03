@@ -8,6 +8,16 @@
   border-radius: 12px;
   padding: 32px 0 48px;
 
+  .table-responsive table.table {
+    tbody tr:nth-child(odd) {
+      @include background-color-white;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: color(gray, 50);
+    }
+  }
+
   .table-name {
     @include label-md;
     font-weight: 600;
@@ -28,12 +38,13 @@
 
       td {
         border-bottom: 1px solid;
+        line-height: 25px;
         @include border-color-light;
         padding: 10px;
         @include text-color-body;
-
-        a > i {
-          @include text-color-secondary;
+        tc-icon {
+          // Add some margin to the icons in a table column to space them out
+          margin-left: 3px;
         }
       }
 
@@ -43,20 +54,25 @@
 
       &.table-hover > tbody > tr:hover {
         @include background-color-soft;
-        cursor: pointer;
         background-color: color(primary, 50) !important;
       }
 
-      tr.current {
-        background-color: color(primary, 100) !important;
-      }
+      &.clickable-rows {
+        &.table-hover > tbody > tr:hover {
+          cursor: pointer;
+        }
 
-      tr.selected {
-        background-color: color(primary, 100) !important;
-      }
+        tr.current {
+          background-color: color(primary, 100) !important;
+        }
 
-      tr.clickable:hover {
-        cursor: pointer;
+        tr.selected {
+          background-color: color(primary, 100) !important;
+        }
+
+        tr.clickable:hover {
+          cursor: pointer;
+        }
       }
 
       tr a {
@@ -73,4 +89,43 @@
     background-color: color(yellow, 50) !important;
     --bs-alert-bg:  color(yellow, 50);
   }
+
+  /** Default styling for all icons */
+  .tc-icon {
+    color: color(secondary, 500) !important;
+  }
+
+  .tc-icon > i {
+    font-size: 1rem !important;
+  }
+
+  /** Exclude some icons */
+
+  /** All header icons */
+  th .tc-icon i {
+    @include text-color-secondary;
+  }
+
+  /** Specific icons */
+  .tc-icon {
+    /** Review statuses */
+    .fa-circle-question {
+      color: color(yellow, 500);
+    }
+
+    .fa-circle-check {
+      color: color(green, 500);
+    }
+
+    .fa-circle-xmark {
+      color: color(red, 500);
+    }
+
+    /** Potential duplicates */
+    .fa-person-circle-exclamation {
+      color: color(yellow, 500);
+    }
+  }
+
+
 }

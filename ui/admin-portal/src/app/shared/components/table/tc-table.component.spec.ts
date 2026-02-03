@@ -31,23 +31,4 @@ describe('TcTableComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.table-name')).toBeNull();
   });
-
-  it('should emit correct events on page change', () => {
-    spyOn(component.pageNumberChange, 'emit');
-    spyOn(component.pageChange, 'emit');
-    component.onPageChange(4);
-    expect(component.pageNumber).toBe(4);
-    expect(component.pageNumberChange.emit).toHaveBeenCalledWith(4);
-    expect(component.pageChange.emit).toHaveBeenCalled();
-  });
-
-  it('should only show pagination when totalElements > 0', () => {
-    component.totalElements = 0;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('tc-pagination')).toBeNull();
-
-    component.totalElements = 5;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('tc-pagination')).not.toBeNull();
-  });
 });

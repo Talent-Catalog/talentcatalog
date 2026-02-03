@@ -123,6 +123,9 @@ public class PartnerAdminApi implements
     @GetMapping("public-api-key/{api-key}")
     public ResponseEntity<PublicApiPartnerDto> findPartnerByPublicApiKey(@PathVariable("api-key") String apiKey) {
         PublicApiPartnerDto partner = partnerService.findPublicApiPartnerDtoByKey(apiKey);
+        if (partner == null) {
+          return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(partner);
     }
 

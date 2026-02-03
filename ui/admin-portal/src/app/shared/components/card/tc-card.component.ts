@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 /**
  * @component CardComponent
@@ -14,6 +14,7 @@ import {Component} from '@angular/core';
  * - Applies consistent padding and spacing to the card body
  * - Rounded corners and shadow for visual hierarchy
  * - Minimal, flexible design for use across multiple contexts
+ * - Setting `[header]="false"` removes the header spacing and applies the `.no-header` class to the card container.
  *
  * **Structure**
  * - `<tc-card>`: main wrapper
@@ -46,5 +47,5 @@ import {Component} from '@angular/core';
   styleUrls: ['./tc-card.component.scss']
 })
 export class TcCardComponent {
-
+  @Input() header: boolean = true;
 }

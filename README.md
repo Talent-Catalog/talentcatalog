@@ -72,8 +72,6 @@ Download and install the latest of the following tools.
             - Set the `Project bytecode version` to match the JDK chosen (e.g. **17**).
         - Go to IntelliJ / Settings / Build,Execution,Deployment / Build Tools / Gradle
             - Set the **GradleJVM** from the drop list to use the Project SDK.
-
-
 - Code Style
     - Download the intellij-java-google-style.xml file from the google/styleguide repository
       [here](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).
@@ -86,27 +84,50 @@ Download and install the latest of the following tools.
       **Apply** for the settings to take effect.
 
 
+- Python 3.12
+    - Later versions of Python are not supported by all the packages that we use.
+    - It is not recommended to install Python using brew.
+      See, for example, [here](https://pydevtools.com/handbook/explanation/should-i-use-homebrew-to-install-python/).
+      Instead, download from the [Python website](https://www.python.org/downloads/).
+    - Intellij Settings:
+        - See [Intellij doc](https://www.jetbrains.com/help/idea/configuring-python-sdk.html).
+          We configure local Python interpreters using [virtual environments](https://www.w3schools.com/python/python_virtualenv.asp).
+
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
   ```
   brew install gradle
   ```
 
-- Node [https://nodejs.org/en/](https://nodejs.org/en/)
-    - Note that developers should use **Node version 18**, specifically versions **18.10.0 and 
-    above**, which is currently the latest LTS (Long Term Support) version compatible with Angular 16.
+- Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
+    - This project requires **Node.js 18** 
+    - We currently pin Node 18.20.7 (via .nvmrc), which satisfies Angular 17’s Node 18.13+ 
+      requirement.
         - See [Angular Compatibility Table](https://angular.io/guide/versions)
         - See [Node.js Releases](https://nodejs.org/en/about/releases/)
-    - If using Node 17 or higher, it’s recommended to add `--host=127.0.0.1` to the `ng serve` 
-    command to avoid debugger and sourcemap issues in IntelliJ. The `start` scripts in `package.json`
-    have been bundled with this parameter for convenience.
+
+    - **Install Node using nvm (recommended)**
+      - If you don’t already have nvm installed:
+        ```
+        brew install nvm
+        ```
+        Note the messages from brew at the end of the install.
+        You will have to manually set up the path.
+
+        Restart your terminal (or reload your shell), then from the project root:
+        ```
+        nvm install
+        nvm use
+        node -v 
+        # should output v18.20.7
+        ```
+      
+    - **IntelliJ users**
+      - When using Node 17+, `ng serve` may require `--host=127.0.0.1` to avoid debugger and sourcemap 
+        issues in IntelliJ.
+      - The `start` scripts in `package.json` in each ui module already include this flag for 
+        convenience.
         - See [IntelliJ Angular Debugging Guide](https://www.jetbrains.com/help/idea/angular.html)
         - See [IntelliJ Angular Debugging Troubleshooting](https://www.jetbrains.com/help/idea/angular.html#ws_angular_debug_app_troubleshooting)
-
-  ```
-  brew install node@18
-  ```
-    - Note the messages from brew at the end of the install.
-      You will have to manually set up the path.
 
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
@@ -134,6 +155,15 @@ Download and install the latest of the following tools.
       ```shell
         docker-compose --version
       ```
+      
+      > IMPORTANT NOTE:
+      >
+      > This project assumes you are using Docker Compose V2. Container names differ from V1.
+      > 
+      > V1 used underscores (_) to separate parts of the container name, whereas V2 uses hyphens (-).
+      > 
+      > Commands in this README use V2 conventions. If you are using V1, you will need to adjust 
+        the commands, or upgrade to V2 (see [Docker's Official Guide](https://docs.docker.com/compose/releases/migrate/)).
 
 ### Clone the TC repository from Git ###
 
@@ -252,7 +282,7 @@ A standard dump file is kept specifically for getting new developers started, bu
 also quickly create a new one from their local containerised version with the following commands:
 
    ```shell    
-   docker exec -it docker-compose-postgres-1 pg_dump --file=/tmp/dump.sql --create --username=tctalent --host=localhost --port=5432
+   docker exec -it docker-compose-postgres-1 pg_dump --file=/tmp/tcdump.sql --create --username=tctalent --host=localhost --port=5432
    ```
    ```shell    
    docker cp docker-compose-postgres-1:/tmp/tcdump.sql </path/to/file>   
@@ -546,3 +576,4 @@ See the Deployment and Monitoring pages on the
 
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
 
+For copyright header format and conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).

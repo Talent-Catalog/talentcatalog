@@ -29,6 +29,7 @@ import {Component, Input} from '@angular/core';
  *
  * - `href?: string`
  *   Required when `type="link"`. Sets the target URL for the badge link.
+ *   When `type="link"`, you must provide `href`; otherwise the `<a>` renders with `href=""` and redirects to the current page.
  *
  * - `onClick?: (event: MouseEvent) => void`
  *   Optional click handler for `type="button"` or `type="span"`.

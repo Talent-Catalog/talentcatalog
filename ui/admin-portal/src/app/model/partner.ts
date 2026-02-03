@@ -96,7 +96,7 @@ export function sourceCountriesAsString(partner: Partner): string {
   let s = '';
   const countries: Country[] = partner.sourceCountries;
   if (countries != null) {
-    s = countries.map(c => c.name).join(",");
+    s = countries.map(c => c.name).join(", ");
   }
   return s;
 }

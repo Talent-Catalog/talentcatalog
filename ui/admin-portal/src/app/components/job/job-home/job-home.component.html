@@ -14,11 +14,14 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
 
-<tc-tabs [activeTabId]="activeTabId" (tabChanged)="onTabChanged($event)">
+<tc-tabs [activeTabId]="activeTabId"
+         [defaultTabId]="defaultTabId"
+         (tabChanged)="onTabChanged($event)"
+>
   <tc-tab *ngIf="seesAllLiveJobs()"
           [id]="'LiveJobs'"
           [description]="'Jobs associated with active opportunities which have been published on the TC'">

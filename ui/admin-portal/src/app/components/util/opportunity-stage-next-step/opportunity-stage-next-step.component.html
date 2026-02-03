@@ -17,7 +17,6 @@
   <tc-card *ngIf="opp">
     <tc-card-header>
       Progress
-      <i class="fas fa-spinner fa-spin ms-1" *ngIf=updating></i>
       <div class="float-end" *ngIf="editable">
         <tc-button [title]="'Update progress'"
                    (onClick)="editOppProgress()"
@@ -35,7 +34,9 @@
       <div><strong>{{error}}</strong></div>
     </tc-alert>
 
-  <tc-description-list direction="column">
+  <tc-loading [type]="'section'" [loading]="updating"></tc-loading>
+
+  <tc-description-list *ngIf="!updating" direction="column">
     <tc-description-item label="Stage" icon="fa-solid fa-map-location-dot">
       {{getOpportunityStageName(opp)}}
     </tc-description-item>

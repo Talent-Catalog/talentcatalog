@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 /**
- * Defines how a column if set up in a generated sheet
+ * Defines how a column is set up in a generated sheet
  * <p/>
  * Null values are ignored.
  *

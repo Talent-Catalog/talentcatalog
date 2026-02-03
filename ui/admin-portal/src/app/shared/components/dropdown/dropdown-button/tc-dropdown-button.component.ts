@@ -7,6 +7,8 @@ import {Component, Input} from '@angular/core';
  * and is meant to live inside the parent dropdown’s `ngbDropdownToggle` wrapper so clicks
  * toggle the menu.
  *
+ * Internally forces `stopNativeClickPropagation = false` so the native click event bubbles to `ngbDropdownToggle` and reliably opens/closes the dropdown.
+ *
  * **Features**
  * - Uses your design-system `<tc-button>` for consistent styling
  * - Supports button style variants via `type` and `color`

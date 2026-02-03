@@ -108,9 +108,10 @@ export interface IHasSetOfCandidates {
  * See Java PublishedDocValueSource for documentation
  */
 export class PublishedDocValueSource {
+  constant?: any;
   fieldName?: string;
   propertyName?: string;
-  constant?: any;
+  propertyType?: string;
 }
 
 export class PublishedDocFieldSource extends PublishedDocValueSource {

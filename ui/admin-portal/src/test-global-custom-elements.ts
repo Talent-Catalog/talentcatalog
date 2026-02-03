@@ -339,6 +339,44 @@ class TcDescriptionItemStub extends GenericStubBase {
   constructor() { super([]); }
 }
 
+@Component({
+  selector: 'tc-radio',
+  template: `
+    <label [attr.for]="id" class="tc-radio">
+      <input
+        type="radio"
+        [id]="id"
+        [name]="name"
+        [value]="value"
+        [checked]="value === innerValue"
+        (change)="onChangeValue(value)"
+      />
+      <span>{{ label }}</span>
+    </label>
+    <ng-content></ng-content>
+  `,
+  inputs: ['id', 'name', 'value', 'label'],
+  outputs: ['change'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: forwardRef(() => TcRadioStubComponent),
+    },
+  ],
+})
+class TcRadioStubComponent extends ValueAccessorStubBase {
+  innerValue: any;
+  constructor() { super(['change']); }
+  onChangeValue(val: any): void {
+    this.innerValue = val;
+  }
+
+  id: string;
+  name: string;
+  label: string
+}
+
 /* ===========================
    Static declarations (AOT-safe)
    =========================== */
@@ -356,6 +394,7 @@ const STUB_DECLARATIONS = [
   TcLinkStubComponent,
   TcDescriptionListStub,
   TcDescriptionItemStub,
+  TcRadioStubComponent,
 ];
 
 /* ===========================

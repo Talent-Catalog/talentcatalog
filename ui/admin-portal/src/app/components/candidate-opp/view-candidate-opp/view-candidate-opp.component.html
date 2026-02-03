@@ -14,49 +14,74 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
+<tc-loading [type]="'page'" [loading]="loading"></tc-loading>
+
 <div *ngIf="opp">
-
-  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
-    <ol class="breadcrumb align-items-center">
-      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li *ngIf="opp.name" class="breadcrumb-item active" aria-current="page">Case / {{opp.name}}</li>
-    </ol>
-
-  </nav>
-
   <div class="py-3">
-    <div class="d-flex justify-content-between align-items-center">
-      <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
-        <span class="small text-muted icon-padding">
-          <a *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
-            <tc-icon>
-            <i class="fas fa-expand" title="Open"></i>
-              </tc-icon>
-          </a>
-          <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
-              <tc-icon> <i class="fas fa-user " title="Candidate"></i>              </tc-icon>
-          </a>
-          <a *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
-                     <tc-icon>     <i class="fas fa-address-book " title="Case (same as Open)"></i>    </tc-icon>
-          </a>
-          <a [routerLink]="['/job',opp.jobOpp.id]">
-                  <tc-icon> <i class="fa-solid fa-briefcase " title="Job"></i>    </tc-icon>
-          </a>
-          <a *ngIf="opp.jobOpp.submissionList"
-             [routerLink]="['/list',opp.jobOpp.submissionList.id]">
-                <tc-icon>   <i class="fa-solid fa-rectangle-list"
-                               title="Submission list"></i>    </tc-icon>
-          </a>
-          <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
-             target="_blank">
-                <tc-icon>   <i class="fab fa-salesforce ms-2" title="Show opp in Salesforce"></i>    </tc-icon>
-          </a>
-        </span>
-      </h1>
-    </div>
-    <p class="text-accent-1 fst-italic" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-0' : !showBreadcrumb}">
-      Candidate Opportunity Case Number {{opp.id}}
+    <p class="text-color-secondary heading-xs" [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-1' : !showBreadcrumb}">
+      Candidate Opportunity Case #{{opp.id}}
     </p>
+    <div class="d-flex align-items-center gap-3">
+      <h2  class="mb-0" [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-4': showBreadcrumb}">{{opp.name}}
+      </h2>
+      <tc-icon type="button" color="warning" size="lg" *ngIf="!showBreadcrumb"
+               [routerLink]="['/opp',opp.id]"
+               title="Open Candidate Opportunity Case">
+        <i class="fas fa-expand"></i>
+      </tc-icon>
+        <tc-dropdown placement="bottom-start">
+          <tc-dropdown-button type="solid" color="gray">
+            <i class="fas fa-angle-down"></i>
+          </tc-dropdown-button>
+
+          <tc-dropdown-menu>
+            <tc-dropdown-item [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fas fa-user " title="Candidate"></i>
+              </tc-icon>
+              View Candidate
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fas fa-address-book " title="Case (same as Open)"></i>
+              </tc-icon>
+              Case (same as Open)
+            </tc-dropdown-item>
+
+            <tc-dropdown-item [routerLink]="['/job',opp.jobOpp.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fa-solid fa-briefcase " title="Job"></i>
+              </tc-icon>
+              Job
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="opp.jobOpp.submissionList"
+                              [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fa-solid fa-rectangle-list"
+                   title="Submission list"></i>
+              </tc-icon>
+              View Submission list
+            </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
+                              target="_blank">
+              <tc-icon [color]="'primary'"
+                       [size]="'md'">
+                <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
+              </tc-icon>
+              Show Opp in Salesforce
+            </tc-dropdown-item>
+
+
+          </tc-dropdown-menu>
+        </tc-dropdown>
+    </div>
   </div>
 
   <div class="pt-2"  style="margin-bottom: 2rem">
@@ -69,16 +94,16 @@
         <tc-tab-content>
           <tc-card>
             <tc-card-header>
-              Case details
+              Case Details
               <div class="float-end" *ngIf="editable">
-                <i class="fas fa-spinner fa-spin" *ngIf="updating"></i>
                 <tc-button color="primary" title="Update progress"  [size]="'sm'" (onClick)="editOppProgress()">
                  <tc-icon color="white"> <i class="fas fa-edit"></i></tc-icon>
                 </tc-button>
               </div>
             </tc-card-header>
 
-            <div class="card-body">
+            <tc-loading [type]="'section'" [loading]="updating"></tc-loading>
+            <div class="card-body" *ngIf="!updating">
               <div class="row">
                 <tc-description-list direction="column">
                   <!-- Destination Country -->
@@ -112,24 +137,30 @@
                   <label class="form-label" for="closingComments">
                     Closing comments:
                   </label>
-                  <div class="col-12" id="closingComments" [innerHtml]="opp.closingComments">
-                  </div>
+                  <div class="col-12 mb-3 text-color-secondary"
+                       id="closingComments"
+                       [innerHtml]="opp.closingComments"
+                  ></div>
                 </div>
                 <hr/>
                 <div>
                   <label class="form-label" for="closingCommentsForCandidate">
                     Closing comments for candidate:
                   </label>
-                  <div class="col-12" id="closingCommentsForCandidate" [innerHtml]="opp.closingCommentsForCandidate">
-                  </div>
+                  <div class="col-12 mb-3 text-color-secondary"
+                       id="closingCommentsForCandidate"
+                       [innerHtml]="opp.closingCommentsForCandidate"
+                  ></div>
                 </div>
                 <hr/>
                 <div>
                   <label class="form-label" for="employerFeedback">
                     Employer feedback:
                   </label>
-                  <div class="col-12" id="employerFeedback" [innerHtml]="opp.employerFeedback">
-                  </div>
+                  <div class="col-12 mb-3 text-color-secondary"
+                       id="employerFeedback"
+                       [innerHtml]="opp.employerFeedback"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -141,10 +172,9 @@
       <tc-tab id="Progress" description="Track the progress of the opportunity">
         <tc-tab-header>Progress</tc-tab-header>
         <tc-tab-content>
-          <app-opportunity-stage-next-step
-            [opp]="opp"
-            (oppProgressUpdated)="onOppProgressUpdated($event)">
-          </app-opportunity-stage-next-step>
+          <app-opportunity-stage-next-step [opp]="opp"
+                                           (oppProgressUpdated)="onOppProgressUpdated($event)"
+          ></app-opportunity-stage-next-step>
         </tc-tab-content>
       </tc-tab>
 
@@ -155,10 +185,13 @@
           <tc-card>
 
             <tc-card-header>
-              Upload Job Offer <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-              </tc-card-header>
+              Job Offer
+            </tc-card-header>
 
-            <div class="card-body">
+            <tc-loading [type]="'section'" [loading]="saving"></tc-loading>
+
+            <div *ngIf="!saving" class="card-body">
+
               <tc-alert type="danger" *ngIf="error">
                 <div><strong>{{error}}</strong></div>
               </tc-alert>
@@ -174,13 +207,17 @@
                       <p class="text-accent-3 mb-0">No File Uploaded</p>
                     </div>
                     <div *ngIf="opp.fileOfferLink" class="form-control-plaintext">
-                      <a class="link-info" target="_blank" [href]="opp.fileOfferLink">
-                        <i class="fa-solid fa-link"></i> {{opp.fileOfferName ? opp.fileOfferName : opp.fileOfferLink}}</a>
+                      <a class="is-link" target="_blank" [href]="opp.fileOfferLink">
+                        <i class="fa-solid fa-link"></i>{{opp.fileOfferName ? opp.fileOfferName : opp.fileOfferLink}}
+                      </a>
                     </div>
                   </div>
                 </div>
                 <div class="col-2 col-sm-auto" *ngIf="editable">
-                  <tc-button title="Upload the document from your computer" type="outline" (click)="uploadOffer()">
+                  <tc-button title="Upload the document from your computer"
+                             [type]="'outline'"
+                             (onClick)="uploadOffer()"
+                  >
                     Upload file <i class="fa-solid fa-upload ms-2"></i>
                   </tc-button>
                 </div>

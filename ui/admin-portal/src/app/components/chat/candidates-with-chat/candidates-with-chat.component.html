@@ -37,7 +37,7 @@
             'justify-content-between':'justify-content-center'"
     >
       <div *ngIf="selectedCandidate; else noSelectedChat">
-        <h5 class="text-center">{{chatHeader}}</h5>
+        <h5>{{chatHeader}}</h5>
 
         <tc-alert type="warning" *ngIf="error">
           {{error}}

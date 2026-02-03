@@ -29,7 +29,6 @@ import {CountryService} from "../../../../../services/country.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of} from "rxjs";
 import {
-  NgbAccordion,
   NgbAccordionModule,
   NgbDatepickerModule,
   NgbTooltipModule
@@ -103,6 +102,7 @@ import {
 } from "../../../../util/det-score-validation/det-score-validation.component";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 import {DirectiveModule} from "../../../../../directives/directive.module";
+import {MockUser} from "../../../../../MockData/MockUser";
 
 const mockCitizenship: CandidateCitizenship = {
   id: 1,
@@ -155,7 +155,7 @@ describe('CandidateIntakeTabComponent', () => {
   const mockCandidate = new MockCandidate();
 
   beforeEach(async () => {
-    const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData']);
+    const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData',  'candidateUpdated', 'updateCandidate']);
     const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTCDestinations']);
     const educationSpy = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     const occupationSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
@@ -163,8 +163,7 @@ describe('CandidateIntakeTabComponent', () => {
     const noteSpy = jasmine.createSpyObj('CandidateNoteService', ['getIntakeData']);
     const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const authorizationSpy = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate', 'canAccessSalesforce']);
-
-    authSpy.getLoggedInUser.and.returnValue(of({ id: 1, name: 'Test User' }));
+    candidateSpy.candidateUpdated.and.returnValue(of(null));
 
     const citizenshipSpy = jasmine.createSpyObj('CandidateCitizenshipService', ['create']);
     citizenshipSpy.create.and.returnValue(of(null));
@@ -199,8 +198,7 @@ describe('CandidateIntakeTabComponent', () => {
         { provide: CandidateCitizenshipService, useValue: citizenshipSpy },
         { provide: CandidateExamService, useValue: examSpy },
         { provide: CandidateDependantService, useValue: dependantSpy },
-        { provide: AuthorizationService, useValue: authorizationSpy },
-        NgbAccordion
+        { provide: AuthorizationService, useValue: authorizationSpy }
       ]
     }).compileComponents();
   });
@@ -226,6 +224,7 @@ describe('CandidateIntakeTabComponent', () => {
     component.candidate = mockCandidate;
     component.candidateIntakeData = mockCandidateIntakeData;
     candidateCitizenshipServiceSpy.create.and.returnValue(of(mockCitizenship));
+    authServiceSpy.getLoggedInUser.and.returnValue(new MockUser());
     fixture.detectChanges();
   });
 

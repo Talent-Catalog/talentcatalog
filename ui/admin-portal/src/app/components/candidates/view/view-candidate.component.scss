@@ -15,18 +15,27 @@
  */
 
 @import "src/scss/variables";
+@import "../../../../scss/color-mixins";
 
-.admin-panel {
+.candidate-notes-panel {
   display: flex;
   justify-content: space-between;
-  //align-items: flex-end;
-  background-color: fade-out($accent3, 0.7);
-  padding: 1em;
-  border-radius: 0.25rem;
+  background-color: white;
+  padding: 1.5em;
+  margin-bottom: 24px; // Lines up with the bottom padding of profile tabs
+  // Overrides matching the height of the tab in the same row:
+  align-self: flex-start;
+  height: auto !important;
 }
 
-.dropdown-text {
-  font-size: 15px;
+.candidate-header-container {
+  flex: 1 1 auto;
+  align-self: start;
+  .candidate-name-container {
+    display: flex;
+    align-items: center;
+
+  }
 }
 
 #status {
@@ -50,4 +59,29 @@
   top: 30px;
   position: relative;
   text-align: end;
+}
+
+.edit-status-btn.btn-secondary {
+  @include background-color-secondary;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  &:focus,
+  &:active,
+  &:focus-visible {
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.input-group.status-editor {
+  margin-bottom: 16px;
+  width: 40%;
+}
+
+tc-dropdown-button {
+  position: relative;
+  top: -0.2rem;
 }

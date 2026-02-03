@@ -29,6 +29,8 @@ import {HelpLinkService} from "../../services/help-link.service";
 })
 export class HelpComponent implements OnInit {
   @Input() request: SearchHelpLinkRequest;
+  @Input() placement: string = 'bottom';
+
   error: any;
   loading: boolean;
 

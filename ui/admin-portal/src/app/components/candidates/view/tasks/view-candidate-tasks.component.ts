@@ -34,6 +34,7 @@ import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
 import {AuthorizationService} from "../../../../services/authorization.service";
+
 @Component({
   selector: 'app-view-candidate-tasks',
   templateUrl: './view-candidate-tasks.component.html',
@@ -151,7 +152,6 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   }
 
   viewResponse(ta: TaskAssignment) {
-    // todo in future it might be the answer to a question, display this answer in a modal?
     if (ta.task.taskType === TaskType.Upload) {
       const request: ListByUploadTypeRequest = {
         candidateId: this.candidate.id,

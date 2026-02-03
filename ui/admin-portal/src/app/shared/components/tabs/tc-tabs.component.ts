@@ -29,8 +29,13 @@ export interface Tab {
  * - Contains the tabs
  * - Outputs event on tab change
  * - Sets with the active tab
+ * - Supports a `defaultTabId` to choose the initial tab when no active tab is provided**
  *
  * @selector tc-tabs
+ *
+ * **Inputs**
+ * - `activeTabId?: string` — The tab to activate initially or programmatically.
+ * - `defaultTabId?: string` — Fallback tab to activate when no activeTabId is provided.**
  *
  * @example
  * ```html
@@ -56,8 +61,11 @@ export interface Tab {
   styleUrls: ['./tc-tabs.component.scss']
 })
 export class TcTabsComponent implements AfterContentInit, OnChanges {
-  /** Optional input to set the active tab, defaults to first tab is not provided */
+  /** Optional input to set the active tab - if not provided, uses default tab or first tab */
   @Input() activeTabId?: string;
+
+  /** Optional input to set the default tab for fallback when no active tab is provided */
+  @Input() defaultTabId?: string;
 
   /** Optional event to hook into, parent can keep track of the active tab (e.g. caching purposes) */
   @Output() tabChanged = new EventEmitter<any>();
@@ -67,7 +75,7 @@ export class TcTabsComponent implements AfterContentInit, OnChanges {
   activeIndex = 0;
 
   ngAfterContentInit() {
-    this.initializeTabs();
+    this.initializeTabs(this.activeTabId);
 
     //  Listen for tab changes when *ngIf adds/removes tabs
     this.tabComponents.changes.subscribe(() => {
@@ -90,10 +98,27 @@ export class TcTabsComponent implements AfterContentInit, OnChanges {
       content: tab.content,
     }));
 
-    // Set the active tab: either activeTabId value or first tab if activeTabId undefined/not found
-    const foundIndex = this.tabs.findIndex(tab => tab.id === keepActiveId);
-    this.activeIndex = foundIndex >= 0 ? foundIndex : 0;
-    this.activeTabId = this.tabs[this.activeIndex]?.id;
+    // Determine which tab ID to activate
+    const tabIdToActivate = keepActiveId ?? this.defaultTabId;
+
+    if (tabIdToActivate != null) {
+      const tabIndex = this.tabs.findIndex(tab => tab.id === tabIdToActivate);
+
+      if (tabIndex !== -1) {
+        this.activeIndex = tabIndex;
+        this.activeTabId = tabIdToActivate;
+      } else {
+        // Fallback to first tab if specified ID not found
+        this.activeIndex = 0;
+        this.activeTabId = this.tabs[0]?.id;
+      }
+
+    } else {
+      // No specific tab requested, use first tab
+      this.activeIndex = 0;
+      this.activeTabId = this.tabs[0]?.id;
+    }
+
     this.emitActiveTab();
   }
 

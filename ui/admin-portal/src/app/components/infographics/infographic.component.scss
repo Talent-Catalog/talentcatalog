@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 section {
   margin: 20px;
@@ -24,7 +24,7 @@ section {
   top: 76px;
   z-index: 1;
   border-radius: 5px;
-  background-color: $accent3;
+  @include background-color-light;
   padding: 10px 30px;
   display: flex;
   .scroll-dropdown {

@@ -32,6 +32,7 @@ import {Candidate} from "../../../../../../../model/candidate";
 export class ViewFormTaskComponent implements OnChanges {
   @Input() taskAssignment: TaskAssignment;
   @Input() candidate: Candidate;
+  @Input() readOnly: boolean = false;
 
   //Output event supplying the submitted data
   @Output() taskCompleted = new EventEmitter<TaskAssignment>();
@@ -50,6 +51,9 @@ export class ViewFormTaskComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes.readOnly) {
+      this.setFormReadOnly(this.readOnly);
+    }
     if (changes.taskAssignment) {
       //Check that we have an Angular component mapped to the name of the form associated with
       //the selected task.
@@ -88,6 +92,7 @@ export class ViewFormTaskComponent implements OnChanges {
     this.vc.clear();
     const ref = this.vc.createComponent(cmp);
     ref.setInput('candidate', this.candidate);
+    this.setFormReadOnly(this.readOnly);
     //Subscribe to submitted events
     ref.instance.submitted.subscribe(() => this.onSubmitted());
 

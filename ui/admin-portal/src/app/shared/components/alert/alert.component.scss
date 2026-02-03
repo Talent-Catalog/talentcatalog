@@ -5,10 +5,10 @@
 .tc-alert {
   border-radius: 0.8rem;
   border: none;
+  margin: 1rem 0;
 
   .alert-content {
     display: flex;
-    align-items: flex-start;
     gap: 0.5rem;
   }
 
@@ -26,6 +26,9 @@
     @include paragraph-md;
     flex: 1;
     line-height: 1.4;
+    word-wrap: break-word;      // ensures long words or URLs break
+    overflow-wrap: anywhere;    // allows breaking anywhere if needed
+    min-width: 0;
   }
 }
 

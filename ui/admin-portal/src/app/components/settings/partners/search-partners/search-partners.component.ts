@@ -19,7 +19,6 @@ import {AuthorizationService} from "../../../../services/authorization.service";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SearchResults} from "../../../../model/search-results";
 import {Partner, sourceCountriesAsString} from "../../../../model/partner";
 import {PartnerService} from "../../../../services/partner.service";
 import {SearchPartnerRequest} from "../../../../model/base";
@@ -28,6 +27,7 @@ import {
 } from "../create-update-partner/create-update-partner.component";
 import {User} from "../../../../model/user";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {SearchResults} from "../../../../model/search-results";
 
 /*
    MODEL - Delegate all authentication logic to authService

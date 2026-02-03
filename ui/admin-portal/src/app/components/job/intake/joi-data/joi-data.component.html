@@ -19,15 +19,17 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" ngbTooltip="{{ componentTooltipKey | translate }}">
-      {{componentLabelKey | translate}}
-      <sup *ngIf="required" class="text-danger fw-light">* required</sup>
-    </label>
-    <div *ngIf="editable" class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
+    <div class="d-flex align-items-center w-100">
+      <label class="form-label" ngbTooltip="{{ componentTooltipKey | translate }}">
+        {{componentLabelKey | translate}}
+        <sup *ngIf="required" class="text-danger fw-light">* required</sup>
+      </label>
+      <div *ngIf="editable" class="ms-auto">
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </div>
     </div>
     <ngx-wig *ngIf="richText" [formControlName]="formFieldName"
     ></ngx-wig>

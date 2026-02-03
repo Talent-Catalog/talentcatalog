@@ -1,0 +1,67 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="container mt-4">
+  <div class="alert alert-danger" *ngIf="error">{{ error?.message || error }}</div>
+
+  <div class="text-center my-4" *ngIf="loadingMembers">
+    <div class="spinner-border" role="status"></div>
+  </div>
+
+  <div class="alert alert-info" *ngIf="!loadingMembers && members.length === 0">
+    <div *ngIf="noEligibleDependants">
+      {{ 'FAMILY-RSD.LABEL.NOTHING-TO-DO' | translate }}
+    </div>
+    <div *ngIf="!noEligibleDependants">
+      {{ 'FAMILY-RSD.LABEL.NO-MEMBER' | translate }}
+    </div>
+  </div>
+
+  <ng-container formArrayName="members" *ngIf="!loadingMembers && members.length > 0">
+    <div class="card mb-3" *ngFor="let group of members.controls; index as ix" [formGroupName]="ix">
+      <div class="card-header">
+        <strong>{{'FAMILY-DOC.LABEL.FAMILY-MEMBER' | translate}} #{{ ix + 1 }}:</strong> {{ composeDisplayName(relocatingDependants[ix]) }}
+      </div>
+
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-12">
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.REFUGEE-STATUS' | translate }} *</label>
+            <select class="form-select" formControlName="TTH_IT$REFUGEE_STATUS" [disabled]="readOnly">
+              <option value="" disabled>Select refugee status</option>
+              <option *ngFor="let status of (RsdRefugeeStatus | keyvalue)" [ngValue]="status.value">
+                {{ status.value.replaceAll('_', ' ') }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE' | translate }} *</label>
+            <select class="form-select" formControlName="TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE" [disabled]="readOnly">
+              <option value="" disabled>Select document type</option>
+              <option *ngFor="let type of (RefugeeStatusEvidenceDocumentType | keyvalue)"
+                      [ngValue]="type.value">
+                {{ type.value.replaceAll('_', ' ') }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.DOCNUMBER' | translate }}</label>
+            <input type="text" class="form-control" formControlName="TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER"
+                   [readonly]="readOnly" maxlength="30">
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">{{ 'RSD-EVIDENCE.LABEL.COMMENT' | translate }}</label>
+            <textarea id="comment" class="md-textarea-auto form-control" rows="5"
+                      [readonly]="readOnly" formControlName="TTH_IT$REFUGEE_STATUS_COMMENT" ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="text-end" *ngIf="!loadingMembers && members.length > 0">
+    <button type="submit" class="btn btn-primary" [disabled]="!canSubmit()">
+      {{ 'TASKS.TASK.SUBMIT' | translate }}
+    </button>
+  </div>
+</form>

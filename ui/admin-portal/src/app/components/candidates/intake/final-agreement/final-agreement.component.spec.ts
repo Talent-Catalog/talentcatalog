@@ -17,14 +17,22 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {FinalAgreementComponent} from './final-agreement.component';
+import {AuthenticationService} from "../../../../services/authentication.service";
+import {MockUser} from "../../../../MockData/MockUser";
 
 describe('FinalAgreementComponent', () => {
   let component: FinalAgreementComponent;
   let fixture: ComponentFixture<FinalAgreementComponent>;
 
+  const mockAuthenticationService =
+    jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FinalAgreementComponent ]
+      declarations: [ FinalAgreementComponent ],
+      providers: [
+        {provide: AuthenticationService, useValue: mockAuthenticationService}
+      ],
     })
     .compileComponents();
   }));
@@ -32,6 +40,8 @@ describe('FinalAgreementComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FinalAgreementComponent);
     component = fixture.componentInstance;
+    mockAuthenticationService.getLoggedInUser.and.returnValue(new MockUser());
+
     fixture.detectChanges();
   });
 

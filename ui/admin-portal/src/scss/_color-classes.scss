@@ -18,6 +18,7 @@
 .text-color-error    { @include text-color-error; }
 .text-color-info     { @include text-color-info; }
 .text-color-disabled     { @include text-color-disabled; }
+.text-color-brand-secondary   { @include text-color-brand-secondary; }
 
 // --- Descriptive Text Colors ---
 .text-color-red      { @include text-color-red; }
@@ -27,7 +28,6 @@
 .text-color-blue     { @include text-color-blue; }
 .text-color-purple   { @include text-color-purple; }
 .text-color-pink     { @include text-color-pink; }
-
 
 // =====================
 // Border Color Classes

@@ -40,6 +40,11 @@
   }
 }
 
+.form-input[type='checkbox'] {
+  position: relative;
+  top: 0.05rem;
+}
+
 // NgbTypeAhead dropdown, which Angular renders as a sibling of the input:
 ::ng-deep {
   @include dropdown-styles;

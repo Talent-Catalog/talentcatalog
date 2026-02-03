@@ -99,7 +99,6 @@ import org.tctalent.server.model.db.HasTcQueryParameters;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.PartnerImpl;
-import org.tctalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.RootRequest;
 import org.tctalent.server.model.db.SavedList;
@@ -116,7 +115,6 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.Task;
-import org.tctalent.server.model.db.task.TaskAssignment;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateExamRepository;
@@ -183,7 +181,6 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SystemNotificationService;
-import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
@@ -268,7 +265,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final PublicIDService publicIDService;
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
-    private final TaskService taskService;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
@@ -554,8 +550,8 @@ public class CandidateServiceImpl implements CandidateService {
         final List resultList = query.getResultList();
         Set<Long> result = new HashSet<>();
         for (Object obj : resultList) {
-            if (obj instanceof BigInteger) {
-                result.add(((BigInteger) obj).longValue());
+            if (obj instanceof Number) {
+                result.add(((Number) obj).longValue());
             }
         }
         return result;
@@ -609,42 +605,10 @@ public class CandidateServiceImpl implements CandidateService {
         final Candidate candidate = candidateRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
-        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
+//        taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
 
         return candidate;
-    }
-
-    @Override
-    public void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates) {
-        for (Candidate candidate : candidates) {
-            populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
-        }
-    }
-
-    /**
-     * Sets transient fields on the given task assignments.
-     * @param taskAssignments Task assignments
-     */
-    private void populateTransientTaskAssignmentFields(List<TaskAssignmentImpl> taskAssignments) {
-        for (TaskAssignmentImpl taskAssignment : taskAssignments) {
-            populateTransientTaskAssignmentFields(taskAssignment);
-        }
-    }
-
-    private void populateTransientTaskAssignmentFields(TaskAssignment taskAssignment) {
-
-        taskService.populateTransientFields(taskAssignment.getTask());
-
-        //If task is completed, see if there is any transient data to be populated - eg the
-        //answer on a question task
-        if (taskAssignment.getCompletedDate() != null) {
-            if (taskAssignment instanceof QuestionTaskAssignmentImpl) {
-                QuestionTaskAssignment qta = (QuestionTaskAssignmentImpl) taskAssignment;
-                String answer = fetchCandidateTaskAnswer(qta);
-                qta.setAnswer(answer);
-            }
-        }
-
     }
 
     /**
@@ -1043,7 +1007,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setShareableNotes(request.getShareableNotes());
-        return save(candidate, true);
+        return save(candidate, true, true);
     }
 
     @Override
@@ -1441,47 +1405,51 @@ public class CandidateServiceImpl implements CandidateService {
         user = userRepository.save(user);
         Candidate candidate = candidateRepository.findByUserId(user.getId());
 
-        String newStatus = checkStatusValidity(request.getCountryId(), request.getNationalityId(), candidate);
+        CandidateStatus newStatus =
+            checkForAutomaticStatusChanges(request.getCountryId(), request.getNationalityId(), candidate);
 
-        if (candidate != null) {
-            candidate.setGender(request.getGender());
-            candidate.setDob(request.getDob());
+        candidate.setGender(request.getGender());
+        candidate.setDob(request.getDob());
 
-            //Check if country has changed
-            if (!country.equals(candidate.getCountry())) {
-                reassignOrNotifyPartnerIfNeeded(candidate, country);
-                //Important that new country is not set on candidate until the above method has been
-                //called. This is because it needs to know the original country
-                candidate.setCountry(country);
-            }
-
-            candidate.setCity(request.getCity());
-            candidate.setState(request.getState());
-            candidate.setYearOfArrival(request.getYearOfArrival());
-            candidate.setNationality(nationality);
-            candidate.setExternalId(request.getExternalId());
-            candidate.setExternalIdSource(request.getExternalIdSource());
-            candidate.setUnhcrRegistered(request.getUnhcrRegistered());
-            candidate.setUnhcrNumber(request.getUnhcrNumber());
-            candidate.setUnhcrConsent(request.getUnhcrConsent());
-
-            candidate.setAuditFields(user);
-
-            updateCitizenships(candidate, nationalities);
+        //Check for partner notifications if country has changed
+        if (!country.equals(candidate.getCountry())) {
+            reassignOrNotifyPartnerIfNeeded(candidate, country);
+            //Important that new country is not set on candidate until the above method has been
+            //called. This is because it needs to know the original country
+            candidate.setCountry(country);
         }
+
+        candidate.setCity(request.getCity());
+        candidate.setState(request.getState());
+        candidate.setYearOfArrival(request.getYearOfArrival());
+        candidate.setNationality(nationality);
+        candidate.setExternalId(request.getExternalId());
+        candidate.setExternalIdSource(request.getExternalIdSource());
+        candidate.setUnhcrRegistered(request.getUnhcrRegistered());
+        candidate.setUnhcrNumber(request.getUnhcrNumber());
+        candidate.setUnhcrConsent(request.getUnhcrConsent());
+
+        candidate.setAuditFields(user);
+
+        updateCitizenships(candidate, nationalities);
 
         candidate = save(candidate, true);
 
-        // Change status if required, and create note.
-        if (newStatus.equals("ineligible")) {
+        // Change status if is required, and create note if changed.
+        if (newStatus == CandidateStatus.ineligible) {
             UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
-            info.setStatus(CandidateStatus.ineligible);
+            info.setStatus(newStatus);
             info.setComment("TC criteria not met: Country located is same as country of nationality.");
             candidate = updateCandidateStatus(candidate, info);
-        } else if (newStatus.equals("pending")) {
+        } else if (newStatus == CandidateStatus.pending) {
             UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
-            info.setStatus(CandidateStatus.pending);
+            info.setStatus(newStatus);
             info.setComment("TC criteria met: Country located different to country of nationality.");
+            candidate = updateCandidateStatus(candidate, info);
+        } else if (newStatus == CandidateStatus.relocatedIndependently) {
+            UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
+            info.setStatus(newStatus);
+            info.setComment("Candidate has reported that they are now located in a destination country");
             candidate = updateCandidateStatus(candidate, info);
         }
 
@@ -1899,7 +1867,8 @@ public class CandidateServiceImpl implements CandidateService {
         }
         Candidate candidate = candidateRepository.findByUserId(user.getId());
 
-        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
+//        taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
 
         return Optional.of(candidate);
     }
@@ -1930,7 +1899,9 @@ public class CandidateServiceImpl implements CandidateService {
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
         Candidate candidate = candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
                 .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
-        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
+//        taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
         return candidate;
     }
 
@@ -3206,29 +3177,46 @@ public class CandidateServiceImpl implements CandidateService {
         return true;
     }
 
-    private String checkStatusValidity(long countryReq, long nationalityReq, Candidate candidate) {
-        String newStatus = "";
-        // If candidate pending, but they are updating country & nationality as same. Change to ineligible.
-        // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN or Ukrainian in Ukraine
-        if (candidate.getStatus() == CandidateStatus.pending) {
-            if (countryReq == nationalityReq
-                && countryReq != afghanistanCountryId && countryReq != ukraineCountryId) {
-                newStatus = "ineligible";
+    /**
+     * Checks for automatic status changes based on country and nationality changes
+     * @param countryReqId Requested country id
+     * @param nationalityReqId Request nationality id
+     * @param candidate Candidate
+     * @return new status or null if no change
+     */
+    private CandidateStatus checkForAutomaticStatusChanges(
+        long countryReqId, long nationalityReqId, Candidate candidate) {
+        CandidateStatus newStatus = null;
+
+        //If the candidate is in an active status make them inactive if they are in a destination
+        //country. If they are already inactive, leave them alone.
+        if (!candidate.getStatus().isInactive()) {
+            if (countryService.isTCDestination(countryReqId)) {
+                newStatus = CandidateStatus.relocatedIndependently;
             }
-        // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
-        // has nationality & country as different. We can change ineligible status to pending. This determines
-        // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
-        } else if (candidate.getStatus() == CandidateStatus.ineligible) {
-            if (candidate.getCountry().getId().equals(candidate.getNationality().getId())) {
-                //If the candidate currently has country and nationality the same, that is
-                //probably why they were ineligible.
-                if (countryReq != nationalityReq) {
-                    //But if requested country and nationality are now different, set status back to pending
-                    newStatus = "pending";
-                } else if (countryReq == afghanistanCountryId || countryReq == ukraineCountryId) {
-                    //or if country and nationality are the same, but either Afghanistan or Ukraine
-                    //that can also be changed to pending.
-                    newStatus = "pending";
+        } else {
+            // If candidate pending, but they are updating country & nationality as same. Change to ineligible.
+            // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN or Ukrainian in Ukraine
+            if (candidate.getStatus() == CandidateStatus.pending) {
+                if (countryReqId == nationalityReqId
+                    && countryReqId != afghanistanCountryId && countryReqId != ukraineCountryId) {
+                    newStatus = CandidateStatus.ineligible;
+                }
+                // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
+                // has nationality & country as different. We can change ineligible status to pending. This determines
+                // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
+            } else if (candidate.getStatus() == CandidateStatus.ineligible) {
+                if (candidate.getCountry().getId().equals(candidate.getNationality().getId())) {
+                    //If the candidate currently has country and nationality the same, that is
+                    //probably why they were ineligible.
+                    if (countryReqId != nationalityReqId) {
+                        //But if requested country and nationality are now different, set status back to pending
+                        newStatus = CandidateStatus.pending;
+                    } else if (countryReqId == afghanistanCountryId || countryReqId == ukraineCountryId) {
+                        //or if country and nationality are the same, but either Afghanistan or Ukraine
+                        //that can also be changed to pending.
+                        newStatus = CandidateStatus.pending;
+                    }
                 }
             }
         }

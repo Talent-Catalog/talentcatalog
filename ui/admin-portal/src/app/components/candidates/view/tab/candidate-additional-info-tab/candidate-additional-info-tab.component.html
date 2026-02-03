@@ -13,37 +13,31 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
+
 <ng-container *ngIf="canViewPrivateInfo">
   <app-view-candidate-additional-info *ngIf="canViewPrivateInfo"
                                       [candidate]="candidate"
                                       [editable]="editable"
-  >
-  </app-view-candidate-additional-info>
-
-  <hr/>
+  ></app-view-candidate-additional-info>
 </ng-container>
 
 <app-view-candidate-survey
   [candidate]="candidate"
-  [editable]="editable">
-</app-view-candidate-survey>
-
-<hr/>
+  [editable]="editable"
+  [compact]="compact"
+></app-view-candidate-survey>
 
 <app-view-candidate-media-willingness
   [candidate]="candidate"
-  [editable]="editable">
-</app-view-candidate-media-willingness>
+  [editable]="editable"
+></app-view-candidate-media-willingness>
 
 <ng-container *ngIf="canViewPrivateInfo">
-  <hr/>
-
   <app-view-candidate-special-links
     [candidate]="candidate"
-    [editable]="editable">
-  </app-view-candidate-special-links>
-
-  <hr/>
+    [editable]="editable"
+    [compact]="compact"
+  ></app-view-candidate-special-links>
 
   <app-view-candidate-attachment
     [candidate]="candidate"

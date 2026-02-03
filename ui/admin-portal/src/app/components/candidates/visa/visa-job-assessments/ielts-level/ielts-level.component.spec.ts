@@ -15,7 +15,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {IeltsLevelComponent} from './ielts-level.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
@@ -54,7 +54,7 @@ describe('IeltsLevelComponent', () => {
     input.value = '';
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
-    const errorMessage = compiled.querySelector('small').textContent;
+    const errorMessage = compiled.querySelector('tc-description').textContent;
     expect(errorMessage).toContain('Must be minimum 4.5 IELTS, average across all bands.');
   });
 
@@ -64,7 +64,7 @@ describe('IeltsLevelComponent', () => {
     input.value = '4.0';
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
-    const errorMessage = compiled.querySelector('small').textContent;
+    const errorMessage = compiled.querySelector('tc-description').textContent;
     expect(errorMessage).toContain('Must be minimum 4.5 IELTS, average across all bands.');
   });
 });

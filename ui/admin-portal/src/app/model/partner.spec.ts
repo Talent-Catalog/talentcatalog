@@ -40,7 +40,7 @@ describe('sourceCountriesAsString function', () => {
     } as Partner;
 
     const result = sourceCountriesAsString(partner);
-    expect(result).toBe('Country A,Country B');
+    expect(result).toBe('Country A, Country B');
   });
 
   it('should return an empty string if sourceCountries is null', () => {

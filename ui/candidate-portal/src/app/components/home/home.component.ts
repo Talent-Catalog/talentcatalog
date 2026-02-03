@@ -96,7 +96,7 @@ export class HomeComponent implements OnInit {
     //If status is not draft (ie candidate is not registering) and the candidate's accepted terms
     //are out of date, send them to the terms (/privacy).
     if (this.candidate.status != CandidateStatus.draft) {
-      if (currentPolicy.id != candidate.acceptedPrivacyPolicyId) {
+      if (currentPolicy.content.length > 0 && currentPolicy.id != candidate.acceptedPrivacyPolicyId) {
         //They will be asked to accept the new terms on this page.
         this.router.navigateByUrl("/privacy");
       }

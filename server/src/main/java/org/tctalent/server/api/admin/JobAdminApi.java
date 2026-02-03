@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,6 +45,7 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
+import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -70,6 +72,14 @@ public class JobAdminApi implements
     public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         SalesforceJobOpp job = jobService.getJob(id);
         return jobDto().build(job);
+    }
+
+    @GetMapping("{id}/skills")
+    public @NotNull List<SkillName> getSkills(
+        @PathVariable("id") long id,
+        @RequestParam(value = "lang", defaultValue="en") String lang
+    ) throws NoSuchObjectException {
+        return jobService.getSkills(id, lang);
     }
 
     @PostMapping("{id}/create-search")

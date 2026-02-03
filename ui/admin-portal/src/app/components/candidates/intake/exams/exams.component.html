@@ -15,13 +15,13 @@
   -->
 
 <!-- EXISTING RECORDS -->
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
-<div *ngIf="candidateIntakeData.candidateExams.length == 0">
+</tc-alert>
+<div *ngIf="candidateIntakeData?.candidateExams?.length == 0">
   <p class="mb-0">No Exams Added</p>
 </div>
-<div *ngFor="let exam of candidateIntakeData.candidateExams; let i = index;" class="exam-card">
+<div *ngFor="let exam of candidateIntakeData?.candidateExams; let i = index;" class="exam-card">
   <app-candidate-exam-card
     [entity]="candidate"
     [candidateIntakeData]="candidateIntakeData"

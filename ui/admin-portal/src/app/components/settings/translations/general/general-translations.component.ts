@@ -499,6 +499,7 @@ const ALL_FIELDS = {
         }
       },
       "SUBMIT": {
+        "INTRODUCTION": null,
         "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
@@ -509,6 +510,7 @@ const ALL_FIELDS = {
           "LABEL": null,
           "WARN": null
         },
+        "NO_POLICY_ACCEPTANCE_TEXT": null,
         "POLICY_ACCEPTANCE_TEXT": null,
         "YOUR_PARTNER_IS": null,
       },
@@ -845,6 +847,7 @@ const ALL_FIELDS = {
       "VIEWHELP": null,
       "RETURN": null,
       "SUBMIT": null,
+      "SUBMIT-COMMENT": null,
     }
   },
   "CANDIDATE-OPPS": {
@@ -913,7 +916,7 @@ const ALL_FIELDS = {
         "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
       }
   },
-  "TRAVELDOC": {
+  "TRAVELINFO": {
     "MISMATCH": {
       "TITLE": null,
       "DESCRIPTION": null,
@@ -930,7 +933,8 @@ const ALL_FIELDS = {
       "DOCNUMBER": null,
       "DOCISSUEDBY": null,
       "ISSUEDATE": null,
-      "EXPIRYDATE": null
+      "EXPIRYDATE": null,
+      "COMMENT": null
     },
     "OPTION": {
       "SELECTCOUNTRY": null,
@@ -951,6 +955,21 @@ const ALL_FIELDS = {
         "REGISTRED-NUMBER":null,
         "DOC-VALIDATION":null,
         "ANOTHER-MEMBER":null
+      }
+  },
+  "RSD-EVIDENCE":{
+    "LABEL":{
+      "COMMENT": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "REFUGEE-STATUS": null,
+      "RSD-VALIDATION":null
+    }
+  },
+  "FAMILY-RSD":{
+      "LABEL":{
+        "NO-MEMBER": null,
+        "NOTHING-TO-DO": null
       }
   }
 }

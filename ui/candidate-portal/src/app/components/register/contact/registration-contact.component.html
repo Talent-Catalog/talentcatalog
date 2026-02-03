@@ -34,16 +34,15 @@
     <!-- PHONE # -->
     <div class="mb-3">
       <label class="form-label" for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }}</label>
-      <input type="text" class="form-control" id="phone" placeholder=""
-             [formControlName]="'phone'">
+      <app-intl-phone-input id="phone" [control]="form.controls.phone"></app-intl-phone-input>
+
       <app-form-control-error [control]="form.controls.phone"></app-form-control-error>
     </div>
 
     <!-- WHATSAPP -->
     <div class="mb-3">
       <label class="form-label" for="whatsapp">{{ 'REGISTRATION.CONTACT.LABEL.WHATSAPP' | translate }}</label>
-      <input type="text" class="form-control" id="whatsapp" placeholder=""
-             [formControlName]="'whatsapp'">
+      <app-intl-phone-input id="whatsapp" [control]="form.controls.whatsapp"></app-intl-phone-input>
     </div>
 
     <!-- EDIT ONLY: Relocated Address -->

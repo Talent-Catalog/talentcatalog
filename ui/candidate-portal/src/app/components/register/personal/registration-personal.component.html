@@ -219,8 +219,11 @@
 
   <div *ngIf="tcCriteriaFailed" class="alert alert-danger mt-4">
     <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING' | translate }} </h5>
-    <p><a class="alert-link fw-light" [href]="getEligibilityLink()" target="_blank">
-        <fa-icon icon="external-link-alt"></fa-icon> {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}</a></p>
+    <p>
+      <a class="alert-link fw-light" [href]="getEligibilityLink()" target="_blank">
+        <i class="me-1 fas fa-external-link-alt"></i>{{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}
+      </a>
+    </p>
   </div>
 
 </div>

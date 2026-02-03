@@ -32,6 +32,14 @@ export function isHtml(text): boolean {
   return /<\/?[a-z][\s\S]*>/i.test(text);
 }
 
+export function isNumeric(str: string): boolean {
+  if (typeof str !== 'string' || str.trim() === '') {
+    return false; // Not a string or an empty string after trimming
+  }
+  const num = Number(str);
+  return !Number.isNaN(num) && Number.isFinite(num);
+}
+
 /**
  * Determines whether a given string is null, undefined, or an empty string after trimming whitespace.
  *

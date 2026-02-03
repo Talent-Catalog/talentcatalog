@@ -38,12 +38,11 @@
     align-items: center;
     tc-icon {
       padding-left: 14px;
+      position: relative;
     }
   }
 }
-.tc-divider {
-  width: 100%;
-  height: 1px;
-  @include background-color-light;
-  margin: 10px 0;
+
+tc-dropdown-button {
+  position: relative;
 }

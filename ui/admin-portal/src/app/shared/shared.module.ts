@@ -75,6 +75,7 @@ import {TcCardHeaderComponent} from './components/card/card-header/tc-card-heade
 import {TcLoadingComponent} from './components/loading/tc-loading.component';
 import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {TcRadioComponent} from "./components/radio/tc-radio.component";
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     TcCardComponent,
     TcCardHeaderComponent,
     TcLoadingComponent,
-    TcDatePickerComponent
+    TcDatePickerComponent,
+    TcRadioComponent
   ],
   imports: [
     CommonModule,
@@ -156,7 +158,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     TcCardComponent,
     TcCardHeaderComponent,
     TcLoadingComponent,
-    TcDatePickerComponent
+    TcDatePickerComponent,
+    TcRadioComponent
   ]
 })
 export class SharedModule { }

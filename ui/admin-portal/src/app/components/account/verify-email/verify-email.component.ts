@@ -45,4 +45,18 @@ export class VerifyEmailComponent {
     this.error = err.message || 'An error occurred while sending the verification email.';
     this.state = 'error';
   }
+
+  getActionText(): string {
+    switch (this.state) {
+      case 'idle':
+        return 'Send Email';
+      case 'emailSent':
+      case 'error':
+        return 'Resend Email';
+      case 'loading':
+        return 'Loading...';
+      default:
+        return 'Send Email';
+    }
+  }
 }

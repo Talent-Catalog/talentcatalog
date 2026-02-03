@@ -130,7 +130,7 @@ export class SearchEducationLevelsComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteEducationLevelModal.componentInstance.message = 'Are you sure you want to delete '+educationLevel.name;
+    deleteEducationLevelModal.componentInstance.message = 'Are you sure you want to delete ' + educationLevel.name;
 
     deleteEducationLevelModal.result
       .then((result) => {

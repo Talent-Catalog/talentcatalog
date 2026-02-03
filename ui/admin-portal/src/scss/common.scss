@@ -18,6 +18,7 @@
 @import 'bootstrap/scss/bootstrap-reboot';
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap/scss/pagination';
+@import "src/scss/color-mixins";
 
 .section {
   padding: 10px 0;
@@ -79,26 +80,6 @@
     cursor: auto;
   }
 }
-// TODO REMOVE THIS TABLE CSS ONCE MOVED OVER TO NEW STYLE
-table {
-  background-color: $white;
-  border: $white;
-  border-radius: 5px;
-  td {
-    white-space: nowrap;
-    a {
-      > i {
-        color: $info;
-        &:hover {
-          color: $accent1;
-        }
-      }
-      &:hover {
-        color: $secondary;
-      }
-    }
-  }
-}
 
 .card-header {
   background-color: $accent3 !important;
@@ -146,12 +127,12 @@ table {
 
 //// The right hand side panels showing more detail of selected item
 .detail-panel {
-  border-radius: 5px;
+  border-radius: 1.5rem;
   padding: 2.5rem 2rem;
 }
 
 .side-panel-color {
-  background-color: fade-out($accent3, 0.7);
+  @include background-color-soft;
 }
 
 .text-female {

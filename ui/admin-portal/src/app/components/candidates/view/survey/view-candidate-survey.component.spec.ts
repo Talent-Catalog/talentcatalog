@@ -66,8 +66,8 @@ describe('ViewCandidateSurveyComponent', () => {
   });
 
   it('should display the edit button when editable is true', () => {
-    const buttonEl: DebugElement = fixture.debugElement.query(By.css('.btn-secondary'));
-    expect(buttonEl).toBeTruthy();
+    const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
+    expect(editButton).toBeTruthy();
   });
 
   it('should not display the edit button when editable is false', () => {

@@ -1,18 +1,30 @@
-<div class="modal-header">
-  <h5 class="modal-title">Edit Max Education Level</h5>
-  <button type="button" class="btn-close" aria-label="Close"
-          (click)="activeModal.dismiss()"></button>
-</div>
+<tc-modal heading="Edit Max Education Level"
+          [showCancel]="true"
+          [showClose]="true"
+          actionText="Save"
+          (onAction)="save()"
+          [disableAction]="form.invalid || loading"
+>
+  <tc-loading [loading]="loading"></tc-loading>
 
-<div class="modal-body">
-  <select class="form-select" [(ngModel)]="selectedLevel">
-    <option *ngFor="let level of educationLevels" [ngValue]="level">
-      {{ level.name }}
-    </option>
-  </select>
-</div>
+  <div *ngIf="!loading">
 
-<div class="modal-footer">
-  <button class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
-  <button class="btn btn-primary" (click)="save()">Save</button>
-</div>
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
+
+    <form [formGroup]="form">
+
+      <ng-select class="tc-select"
+                 [items]="educationLevels"
+                 id="educationLevelId"
+                 [formControlName]="'educationLevelId'"
+                 bindValue="id"
+                 bindLabel="name"
+      ></ng-select>
+
+    </form>
+
+  </div>
+
+</tc-modal>

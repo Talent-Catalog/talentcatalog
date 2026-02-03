@@ -32,20 +32,20 @@ label {
   cursor: not-allowed;
 }
 
-.starred {
-  color: color(secondary, 500);
-}
+//.starred {
+//  color: color(secondary, 500);
+//}
 
-.notstarred {
-  @include text-color-primary;
-}
+//.notstarred {
+//  @include text-color-primary;
+//}
 
 .watched {
   color: color(secondary, 500);
 }
 
 .notwatched {
-  @include text-color-primary;
+  color: color(secondary, 500);
 }
 
 
@@ -76,7 +76,9 @@ $candidate-card-width: 40vw;
 
 
 .split {
-  margin-right:  #{$candidate-card-width};
+  // Adds a small, consistent gap between the left panel and the candidate card,
+  // matching the horizontal gutter used by container-fluid
+  margin-right: calc(#{$candidate-card-width} + (var(--bs-gutter-x)));
 }
 
 .split-view {
@@ -144,4 +146,8 @@ a i {
 
 td a {
   margin: 0.05rem;
+}
+
+.heading-row tc-icon {
+  cursor: pointer;
 }

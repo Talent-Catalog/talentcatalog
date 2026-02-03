@@ -44,9 +44,17 @@
                          [allowFuture]="true"></tc-date-picker>
       </tc-field>
 
-      <tc-field *ngIf="this.isOnlyOpenCaseOfParentJob" class="mb-3">
-        <tc-input type="checkbox" id="copyToParentJob" [formControlName]="'copyToParentJob'"></tc-input>
-        <tc-label for="copyToParentJob">Copy 'next step' info to parent job opportunity?</tc-label>
+      <tc-field *ngIf="this.isOnlyOpenCaseOfParentJob"
+                class="mb-3"
+                [checkbox]="true"
+      >
+        <tc-input [type]="'checkbox'"
+                  id="copyToParentJob"
+                  [formControlName]="'copyToParentJob'"
+        ></tc-input>
+        <tc-label for="copyToParentJob">
+          Copy 'next step' info to parent job opportunity?
+        </tc-label>
       </tc-field>
     </tc-fieldset>
   </form>

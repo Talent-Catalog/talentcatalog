@@ -15,14 +15,14 @@
   -->
 
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="apicall">API call</label>
-    <input id="apicall" type="text" class="form-control" formControlName="apicall">
-  </div>
+  <tc-field>
+    <tc-label for="apicall">API call</tc-label>
+    <tc-input id="apicall" type="text" formControlName="apicall"></tc-input>
+  </tc-field>
 </form>
-<button type="button" class="btn btn-primary" (click)="send()">
+<tc-button (onClick)="send()">
   Send
-</button>
+</tc-button>
 
 <!-- Admin Command List -->
 <div class="mt-4">

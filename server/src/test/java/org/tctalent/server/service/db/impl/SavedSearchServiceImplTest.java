@@ -58,7 +58,7 @@ class SavedSearchServiceImplTest {
         request.setGender(Gender.male);
         final Page<Candidate> candidatesByCriteriaAPI = savedSearchService.searchCandidates(request);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         Set<Long> candidatesBySQL = candidateService.searchCandidatesUsingSql(sql);
 
         assertEquals(candidatesByCriteriaAPI.getTotalElements(), candidatesBySQL.size());

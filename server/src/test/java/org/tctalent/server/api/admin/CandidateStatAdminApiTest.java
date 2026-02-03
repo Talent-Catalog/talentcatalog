@@ -226,7 +226,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", hasSize(1)))
 
         // Registrations by Occupation
-        .andExpect(jsonPath("$[0].name", is("Registrations (by occupations)")))
+        .andExpect(jsonPath("$[0].name", is("Registrations (by Occupation)")))
         .andExpect(jsonPath("$[0].chartType", is("doughnut")))
         .andExpect(jsonPath("$[0].rows", notNullValue()))
         .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -265,7 +265,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", hasSize(1)))
 
         // Birth year
-        .andExpect(jsonPath("$[0].name", is("Birth years")))
+        .andExpect(jsonPath("$[0].name", is("Birth Year")))
         .andExpect(jsonPath("$[0].chartType", is("bar")))
         .andExpect(jsonPath("$[0].rows", notNullValue()))
         .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -304,7 +304,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Birth year
-            .andExpect(jsonPath("$[0].name", is("Birth years (male)")))
+            .andExpect(jsonPath("$[0].name", is("Birth Year (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("bar")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -343,7 +343,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Birth year
-            .andExpect(jsonPath("$[0].name", is("Birth years (female)")))
+            .andExpect(jsonPath("$[0].name", is("Birth Year (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("bar")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -382,7 +382,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", hasSize(1)))
 
         // Linkedin links
-        .andExpect(jsonPath("$[0].name", is("LinkedIn links")))
+        .andExpect(jsonPath("$[0].name", is("LinkedIn Links")))
         .andExpect(jsonPath("$[0].chartType", is("bar")))
         .andExpect(jsonPath("$[0].rows", notNullValue()))
         .andExpect(jsonPath("$[0].rows", hasSize(2)))
@@ -419,7 +419,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", hasSize(1)))
 
         // Linkedin links by registration date
-        .andExpect(jsonPath("$[0].name", is("LinkedIn links by candidate registration date")))
+        .andExpect(jsonPath("$[0].name", is("LinkedIn Links by Candidate Registration Date")))
         .andExpect(jsonPath("$[0].chartType", is("bar")))
         .andExpect(jsonPath("$[0].rows", notNullValue()))
         .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -575,7 +575,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Nationality
-            .andExpect(jsonPath("$[0].name", is("Nationalities (male)")))
+            .andExpect(jsonPath("$[0].name", is("Nationalities (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(2)))
@@ -612,7 +612,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Nationality
-            .andExpect(jsonPath("$[0].name", is("Nationalities (female)")))
+            .andExpect(jsonPath("$[0].name", is("Nationalities (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(2)))
@@ -760,7 +760,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Source Country
-            .andExpect(jsonPath("$[0].name", is("Source Countries (male)")))
+            .andExpect(jsonPath("$[0].name", is("Source Countries (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(2)))
@@ -797,7 +797,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Source Country
-            .andExpect(jsonPath("$[0].name", is("Source Countries (female)")))
+            .andExpect(jsonPath("$[0].name", is("Source Countries (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(2)))
@@ -877,7 +877,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Statuses
-            .andExpect(jsonPath("$[0].name", is("Statuses (male)")))
+            .andExpect(jsonPath("$[0].name", is("Statuses (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(5)))
@@ -920,7 +920,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Statuses
-            .andExpect(jsonPath("$[0].name", is("Statuses (female)")))
+            .andExpect(jsonPath("$[0].name", is("Statuses (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(5)))
@@ -1088,7 +1088,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Occupations
-            .andExpect(jsonPath("$[0].name", is("Occupations (male)")))
+            .andExpect(jsonPath("$[0].name", is("Occupations (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1127,7 +1127,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // Occupations
-            .andExpect(jsonPath("$[0].name", is("Occupations (female)")))
+            .andExpect(jsonPath("$[0].name", is("Occupations (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1205,7 +1205,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // most common occupation
-            .andExpect(jsonPath("$[0].name", is("Most Common Occupations (male)")))
+            .andExpect(jsonPath("$[0].name", is("Most Common Occupations (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1244,7 +1244,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // most common occupation
-            .andExpect(jsonPath("$[0].name", is("Most Common Occupations (female)")))
+            .andExpect(jsonPath("$[0].name", is("Most Common Occupations (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1322,7 +1322,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // max education level
-            .andExpect(jsonPath("$[0].name", is("Max Education Level (male)")))
+            .andExpect(jsonPath("$[0].name", is("Max Education Level (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1361,7 +1361,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // max education level
-            .andExpect(jsonPath("$[0].name", is("Max Education Level (female)")))
+            .andExpect(jsonPath("$[0].name", is("Max Education Level (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1439,7 +1439,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // languages
-            .andExpect(jsonPath("$[0].name", is("Languages (male)")))
+            .andExpect(jsonPath("$[0].name", is("Languages (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1478,7 +1478,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // languages
-            .andExpect(jsonPath("$[0].name", is("Languages (female)")))
+            .andExpect(jsonPath("$[0].name", is("Languages (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1554,7 +1554,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // referrers
-            .andExpect(jsonPath("$[0].name", is("Referrers (male)")))
+            .andExpect(jsonPath("$[0].name", is("Referrers (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("bar")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(2)))
@@ -1591,7 +1591,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // referrers
-            .andExpect(jsonPath("$[0].name", is("Referrers (female)")))
+            .andExpect(jsonPath("$[0].name", is("Referrers (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("bar")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(2)))
@@ -1745,7 +1745,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // survey
-            .andExpect(jsonPath("$[0].name", is("Survey (male)")))
+            .andExpect(jsonPath("$[0].name", is("Survey (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1784,7 +1784,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // survey
-            .andExpect(jsonPath("$[0].name", is("Survey (female)")))
+            .andExpect(jsonPath("$[0].name", is("Survey (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1863,7 +1863,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // spoken language
-            .andExpect(jsonPath("$[0].name", is("Spoken English Language Level (male)")))
+            .andExpect(jsonPath("$[0].name", is("Spoken English Language Level (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1903,7 +1903,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // spoken language
-            .andExpect(jsonPath("$[0].name", is("Spoken English Language Level (female)")))
+            .andExpect(jsonPath("$[0].name", is("Spoken English Language Level (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -1982,7 +1982,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // spoken language
-            .andExpect(jsonPath("$[0].name", is("Spoken French Language Level (male)")))
+            .andExpect(jsonPath("$[0].name", is("Spoken French Language Level (Male)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))
@@ -2022,7 +2022,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", hasSize(1)))
 
             // spoken language
-            .andExpect(jsonPath("$[0].name", is("Spoken French Language Level (female)")))
+            .andExpect(jsonPath("$[0].name", is("Spoken French Language Level (Female)")))
             .andExpect(jsonPath("$[0].chartType", is("doughnut")))
             .andExpect(jsonPath("$[0].rows", notNullValue()))
             .andExpect(jsonPath("$[0].rows", hasSize(3)))

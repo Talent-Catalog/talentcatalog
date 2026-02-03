@@ -30,8 +30,8 @@
       <div class="float-end" *ngIf="editable">
         <tc-button (onClick)="createCandidateLanguage()"
                    [color]="'primary'"
-                   [type]="'solid'"
                    [size]="'sm'"
+                   [type]="'solid'"
         >
           <i class="fas fa-plus"></i>
         </tc-button>
@@ -39,7 +39,7 @@
     </tc-card-header>
     <!-- BODY -->
     <!-- EMPTY STATE -->
-    <p *ngIf="!candidate.candidateLanguages?.length" class="m-1">
+    <p *ngIf="!candidate.candidateLanguages?.length">
       No language data has been entered by this candidate.
     </p>
     <!-- LANGUAGE CARDS -->
@@ -50,12 +50,10 @@
              appHighlightSearch>
         </div>
         <div class="col-2" *ngIf="editable">
-          <div class="btn-group float-end">
+          <div class="d-flex justify-content-end gap-2">
             <tc-button (onClick)="editCandidateLanguage(language)"
                        [color]="'secondary'"
                        [type]="'plain'"
-                       [size]="'sm'"
-                       class="me-2"
             >
               <i class="fas fa-edit"></i>
             </tc-button>
@@ -63,7 +61,6 @@
                        (onClick)="deleteCandidateLanguage(language)"
                        [color]="'gray'"
                        [type]="'plain'"
-                       [size]="'sm'"
             >
               <i class="fas fa-trash"></i>
             </tc-button>

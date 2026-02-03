@@ -13,150 +13,146 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-
-<nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
-
+<tc-tabs [activeTabId]="activeTabId" (tabChanged)="onTabChanged($event)">
   <!-- Users -->
-  <ng-container ngbNavItem="users">
-    <a ngbNavLink>Users</a>
-    <ng-template ngbNavContent>
+  <tc-tab id="users">
+    <tc-tab-header>Users</tc-tab-header>
+    <tc-tab-content>
       <app-search-users [loggedInUser]="loggedInUser">
       </app-search-users>
-    </ng-template>
-  </ng-container>
-
+    </tc-tab-content>
+  </tc-tab>
   <!--System admin only settings tabs-->
   <ng-container *ngIf="systemAdminOnly()">
     <!-- Partners -->
-    <ng-container ngbNavItem="Partners">
-      <a ngbNavLink>Partners</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="partners">
+      <tc-tab-header>Partners</tc-tab-header>
+      <tc-tab-content>
         <app-search-partners>
         </app-search-partners>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
     <!-- Languages -->
-    <ng-container ngbNavItem="languages">
-      <a ngbNavLink>Languages</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="languages">
+      <tc-tab-header>Languages</tc-tab-header>
+      <tc-tab-content>
         <app-search-languages [loggedInUser]="loggedInUser">
         </app-search-languages>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
     <!-- Occupations -->
-    <ng-container ngbNavItem="occupations">
-      <a ngbNavLink>Occupations</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="occupations">
+      <tc-tab-header>Occupations</tc-tab-header>
+      <tc-tab-content>
         <app-search-occupations [loggedInUser]="loggedInUser">
         </app-search-occupations>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
     <!-- Language Levels -->
-    <ng-container ngbNavItem="langlevels">
-      <a ngbNavLink>Language Levels</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="langlevels">
+      <tc-tab-header>Language Levels</tc-tab-header>
+      <tc-tab-content>
         <app-search-language-levels [loggedInUser]="loggedInUser">
         </app-search-language-levels>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
     <!-- Education -->
-    <ng-container ngbNavItem="edulevels">
-      <a ngbNavLink>Education Levels</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="edulevels">
+      <tc-tab-header>Education Levels</tc-tab-header>
+      <tc-tab-content>
         <app-search-education-levels [loggedInUser]="loggedInUser">
         </app-search-education-levels>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
     <!-- Education Majors -->
-    <ng-container ngbNavItem="majors">
-      <a ngbNavLink>Education Majors</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="majors">
+      <tc-tab-header>Education Majors</tc-tab-header>
+      <tc-tab-content>
         <app-search-education-majors [loggedInUser]="loggedInUser">
         </app-search-education-majors>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
     <!-- Translations -->
-    <ng-container ngbNavItem="translations-general">
-      <a ngbNavLink>Translations (general)</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="translations-general">
+      <tc-tab-header>Translations (general)</tc-tab-header>
+      <tc-tab-content>
         <app-general-translations [loggedInUser]="loggedInUser">
         </app-general-translations>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
-    <!-- Translations -->
-    <ng-container ngbNavItem="translations-dropdowns">
-      <a ngbNavLink>Translations (dropdowns)</a>
-      <ng-template ngbNavContent>
+    <!-- Translations dropdowns -->
+    <tc-tab id="translations-dropdowns">
+      <tc-tab-header>Translations (dropdowns)</tc-tab-header>
+      <tc-tab-content>
         <app-dropdown-translations [loggedInUser]="loggedInUser">
         </app-dropdown-translations>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
     <!-- Admin API -->
-    <ng-container ngbNavItem="Admin API">
-      <a ngbNavLink>Admin API</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="admin-api">
+      <tc-tab-header>Admin API</tc-tab-header>
+      <tc-tab-content>
         <app-admin-api>
         </app-admin-api>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
+    <!-- Duolingo Coupons -->
+    <tc-tab id="duolingo-coupons">
+      <tc-tab-header>Duolingo Coupons</tc-tab-header>
+      <tc-tab-content>
+        <app-import-duolingo-coupons [loggedInUser]="loggedInUser">
+        </app-import-duolingo-coupons>
+      </tc-tab-content>
+    </tc-tab>
+
+    <!-- Offer's To Assist -->
+    <tc-tab id="ota">
+      <tc-tab-header>Offers To Assist</tc-tab-header>
+      <tc-tab-content>
+        <app-offer-to-assist>
+        </app-offer-to-assist>
+      </tc-tab-content>
+    </tc-tab>
   </ng-container>
 
   <ng-container *ngIf="canSeeExternalLinksAndTasks()">
     <!-- External Links -->
-    <ng-container ngbNavItem="links">
-      <a ngbNavLink>External Links</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="links">
+      <tc-tab-header>External Links</tc-tab-header>
+      <tc-tab-content>
         <app-search-external-links [loggedInUser]="loggedInUser">
         </app-search-external-links>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
 
     <!-- Tasks -->
-    <ng-container ngbNavItem="Tasks">
-      <a ngbNavLink>Tasks</a>
-      <ng-template ngbNavContent>
+    <tc-tab id="tasks">
+      <tc-tab-header>Tasks</tc-tab-header>
+      <tc-tab-content>
         <app-search-tasks [loggedInUser]="loggedInUser">
         </app-search-tasks>
-      </ng-template>
-    </ng-container>
+      </tc-tab-content>
+    </tc-tab>
   </ng-container>
 
   <!-- Helps Links -->
-  <ng-container ngbNavItem="help-links">
-    <a ngbNavLink>Help Links</a>
-    <ng-template ngbNavContent>
+  <tc-tab id="help-links">
+    <tc-tab-header>Help Links</tc-tab-header>
+    <tc-tab-content>
       <app-search-help-links>
       </app-search-help-links>
-    </ng-template>
-  </ng-container>
+    </tc-tab-content>
+  </tc-tab>
 
-  <!-- Duolingo Coupons -->
-  <ng-container ngbNavItem="duolingo-coupons" *ngIf="systemAdminOnly()">
-    <a ngbNavLink>Duolingo Coupons</a>
-    <ng-template ngbNavContent>
-      <app-import-duolingo-coupons [loggedInUser]="loggedInUser">
-      </app-import-duolingo-coupons>
-    </ng-template>
-  </ng-container>
-
-  <!-- Offer's To Assist -->
-  <ng-container ngbNavItem="ota" *ngIf="systemAdminOnly()">
-    <a ngbNavLink>Offers To Assist</a>
-    <ng-template ngbNavContent>
-      <app-offer-to-assist>
-      </app-offer-to-assist>
-    </ng-template>
-  </ng-container>
-</nav>
-<div [ngbNavOutlet]="nav" class="mt-2"></div>
+</tc-tabs>
 
 

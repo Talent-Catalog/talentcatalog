@@ -29,7 +29,7 @@ describe('TcPaginationComponent', () => {
     component.totalElements = 25;
     fixture.detectChanges();
     const totalEl = fixture.nativeElement.querySelector('.results-total');
-    expect(totalEl.textContent).toContain('Found 25 in total');
+    expect(totalEl.textContent).toContain('25 total');
   });
 
   it('should update pageNumber and emit on valid page change', () => {

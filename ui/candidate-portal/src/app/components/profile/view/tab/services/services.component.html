@@ -26,10 +26,10 @@
     </app-duolingo>
 
     <ng-container *ngIf="!loading && !selectedService">
-         <app-casi-header>
+         <app-tab-header>
           <h2>{{ 'SERVICES.TITLE' | translate }}</h2>
           <p>{{ 'SERVICES.DESCRIPTION' | translate }}</p>
-          </app-casi-header>
+          </app-tab-header>
         <div class="service-card" (click)="selectService('duolingo')">
 
             <div>

@@ -34,6 +34,7 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
   pageSize: number;
   savedSearch: SavedSearch;
   private id: number;
+  jobId: number;
   formDirty: boolean;
 
   constructor(private route: ActivatedRoute,
@@ -46,6 +47,8 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
     // start listening to route params after everything is loaded
     this.route.queryParamMap.subscribe(
       params => {
+        this.jobId = +params.get('job');
+
         this.pageNumber = +params.get('pageNumber');
         if (!this.pageNumber) {
           this.pageNumber = 1;
@@ -93,7 +96,8 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
 
     unsavedChangesModal.componentInstance.title = "Unsaved search filter changes"
     unsavedChangesModal.componentInstance.message =
-      'You have unsaved changes to the search filters - to keep please cancel and click the "Update Search" button to save them. Or to proceed without saving - click OK.'
+      'You have unsaved changes to the search filters - to keep please cancel and click the "Update Search" button to save them. ' +
+      '<br><br>Or to proceed without saving - click OK.'
     return unsavedChangesModal.result.then(
       () => {
         return true;

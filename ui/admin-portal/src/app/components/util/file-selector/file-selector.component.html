@@ -35,7 +35,7 @@
   <p *ngIf="selectedFiles.length > 0">
     <strong>Selection:</strong>
   </p>
-  <div *ngFor="let file of selectedFiles">
+  <div *ngFor="let file of selectedFiles" class="mb-3">
     {{file.name}}
   </div>
 

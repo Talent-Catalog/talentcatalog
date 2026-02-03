@@ -30,7 +30,7 @@ button.reaction-btn:hover {
 button.reaction-btn-selected {
   border: none;
   background-color: inherit;
-  @include text-color-secondary;
+  @include text-color-primary;
 }
 
 button.modify-reaction-btn {
@@ -146,10 +146,11 @@ div#reactionTooltipEmoji {
   display: flex;
   align-items: center;
   background-color: #e6f7ff;
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   padding: 0.25rem 0.5rem;
   font-size: 1rem;
   @include text-color-secondary;
+  border: 0.05em solid #444;
 }
 
 .emoji {

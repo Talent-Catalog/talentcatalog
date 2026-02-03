@@ -17,6 +17,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
+import {SharedModule} from './shared/shared.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -109,37 +110,6 @@ import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
-import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {
-  faArrowLeft,
-  faArrowUpRightFromSquare,
-  faBriefcase,
-  faCalendar,
-  faCheck,
-  faChevronDown,
-  faChevronUp,
-  faEdit,
-  faEllipsisH,
-  faEnvelope,
-  faEnvelopeOpen,
-  faExternalLinkAlt,
-  faFaceSmile,
-  faFileUpload,
-  faFolderOpen,
-  faGlobe,
-  faHandshake,
-  faLink,
-  faListCheck,
-  faMessage,
-  faPaperPlane,
-  faPlus,
-  faQuestion,
-  faQuestionCircle,
-  faTimes,
-  faTriangleExclamation,
-  faUser,
-  faXmark
-} from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
 } from './components/register/candidate-occupation/delete/delete-occupation.component';
@@ -149,7 +119,6 @@ import {
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
 import {LanguageLoader} from "./services/language.loader";
-import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
 import {
   RegistrationUploadFileComponent
 } from './components/register/upload-file/registration-upload-file.component';
@@ -232,7 +201,7 @@ import {
 import {
   DuolingoComponent
 } from './components/profile/view/tab/services/duolingo/duolingo.component';
-import {CasiHeaderComponent} from './components/common/casi-header/casi-header.component';
+import {TabHeaderComponent} from './components/common/tab-header/tab-header.component';
 import {TermsComponent} from './components/privacy-policy/terms.component';
 import {
   RegistrationSubmitComponent
@@ -242,10 +211,24 @@ import {
   ViewFormTaskComponent
 } from './components/profile/view/tab/tasks/task/form/view-form-task.component';
 import {MyFirstFormComponent} from './components/form/my-first-form/my-first-form.component';
-import {MySecondFormComponent} from './components/form/my-second-form/my-second-form.component';
 import {
-  TravelDocFormComponent
-} from './components/form/italy-travel-document-form/travel-doc-form.component';
+  TravelInfoFormComponent
+} from './components/form/italy-travel-document-form/travel-info-form.component';
+import {
+  DependantsRefugeeStatusInfoFormComponent
+} from './components/form/family-rsd-evidence-form/dependants-refugee-status-info-form.component';
+import {
+  RefugeeStatusInfoFormComponent
+} from './components/form/rsd-evidence-form/refugee-status-info-form.component';
+import {
+  TaskSubmittedComponent
+} from './components/profile/view/tab/tasks/task/task-submitted/task-submitted.component';
+import {
+  TaskAbandonedComponent
+} from './components/profile/view/tab/tasks/task/task-abandoned/task-abandoned.component';
+import {
+  IntlPhoneInputComponent
+} from './components/util/intl-phone-input/intl-phone-input.component';
 import {ChatbotComponent} from './components/chatbot/chatbot.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
@@ -329,14 +312,18 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServicesComponent,
     DuolingoCouponComponent,
     DuolingoComponent,
-    CasiHeaderComponent,
+    TabHeaderComponent,
     TermsComponent,
     RegistrationSubmitComponent,
     ShowTermsComponent,
     ViewFormTaskComponent,
     MyFirstFormComponent,
-    MySecondFormComponent,
-    TravelDocFormComponent,
+    TravelInfoFormComponent,
+    TaskSubmittedComponent,
+    DependantsRefugeeStatusInfoFormComponent,
+    RefugeeStatusInfoFormComponent,
+    TaskAbandonedComponent,
+    IntlPhoneInputComponent,
     ChatbotComponent,
   ],
   imports: [
@@ -347,6 +334,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     FormsModule,
     NgbModule,
     NgbCollapseModule,
+    SharedModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
@@ -365,7 +353,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         useClass: PhraseAppCompiler
       }
     }),
-    FontAwesomeModule,
     NgSelectModule,
     NgxWigModule,
     QuillModule.forRoot(),
@@ -393,38 +380,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 })
 export class AppModule {
 
-  constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
+  constructor(private datepickerConfig: NgbDatepickerConfig) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
-    library.addIcons(
-      faArrowUpRightFromSquare,
-      faEdit,
-      faSpinner,
-      faChevronDown,
-      faChevronUp,
-      faEllipsisH,
-      faCalendar,
-      faExternalLinkAlt,
-      faGlobe,
-      faCheck,
-      faQuestion,
-      faTimes,
-      faArrowLeft,
-      faQuestionCircle,
-      faFolderOpen,
-      faFileUpload,
-      faFaceSmile,
-      faPlus,
-      faXmark,
-      faLink,
-      faUser,
-      faListCheck,
-      faBriefcase,
-      faMessage,
-      faPaperPlane,
-      faHandshake,
-      faEnvelope,
-      faEnvelopeOpen,
-      faTriangleExclamation
-    );
   }
 }

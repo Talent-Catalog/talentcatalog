@@ -1,7 +1,10 @@
 <button class="btn"
         [ngClass]="classList"
-        [disabled]="disabled"
+        [disabled]="isDisabled"
         [attr.aria-label]="ariaLabel"
-        (click)="clicked()">
+        [routerLink]="routerLink"
+        (click)="clicked($event)">
+
+  <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
   <ng-content></ng-content>
 </button>

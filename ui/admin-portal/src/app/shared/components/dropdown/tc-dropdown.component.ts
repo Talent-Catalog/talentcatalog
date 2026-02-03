@@ -25,6 +25,7 @@ import {Placement} from '@ng-bootstrap/ng-bootstrap';
  * - `placement: Placement = 'bottom-start'` — where the menu appears relative to the toggle
  * - `align: 'start' | 'end' = 'start'` — adds `.dropdown-menu-start` or `.dropdown-menu-end`
  * - `menuClass: NgClass` — extra classes merged onto the menu container
+ * - `hasItems: boolean = true` — controls whether the dropdown menu renders; set to `false` to hide an empty menu
  *
  * @example Basic
  * ```html
@@ -51,6 +52,7 @@ import {Placement} from '@ng-bootstrap/ng-bootstrap';
 export class TcDropdownComponent {
   @Input() placement: Placement = 'bottom-start';
   @Input() menuClass: any;
-  @Input() container: string | null = 'body';
   @Input() align: 'start' | 'end' = 'start';
+  /** Set to false to stop an empty dropdown menu from appearing when there are no items */
+  @Input() hasItems: boolean = true;
 }

@@ -17,6 +17,8 @@
 package org.tctalent.server.model.db;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,7 +53,11 @@ public class CandidatePropertyDefinition extends AbstractDomainObject<Long> {
     @Nullable
     String definition;
 
+    /**
+     * Properties can have an optional type.
+     */
+    @Enumerated(EnumType.STRING)
     @Nullable
-    String type;
+    CandidatePropertyType type;
 }
 

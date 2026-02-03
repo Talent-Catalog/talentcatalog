@@ -8,5 +8,8 @@
   // If direction = row, the description items are just stacked vertically
   &.grid-column {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    &.compact {
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
   }
 }

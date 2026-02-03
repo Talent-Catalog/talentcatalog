@@ -23,7 +23,7 @@ import {
 } from '../../../model/candidate';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
@@ -46,7 +46,6 @@ import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {concatMap, takeUntil} from "rxjs/operators";
 
-
 @Component({
   selector: 'app-view-candidate',
   templateUrl: './view-candidate.component.html',
@@ -66,6 +65,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   candidateChat: JobChat;
   candidateProspectTabVisible: boolean;
   loggedInUser: User;
+  uploadedCvAvailable: boolean = false;
 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
@@ -137,6 +137,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
           this.loading = false;
         } else {
           this.setCandidate(candidate);
+          this.updateUploadedCvAvailable();
           this.loadLists();
           this.generateToken();
           this.setChatAccess();
@@ -287,12 +288,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+    this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   publicCvUrl() {
@@ -529,4 +529,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   onMuteToggled() {
     this.refreshCandidateProfile();
   }
+
+  private updateUploadedCvAvailable() {
+    this.uploadedCvAvailable =
+      !!this.candidate?.candidateAttachments?.some(att => att.cv);
+  }
+
 }

@@ -14,38 +14,50 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<script src="../view-candidate-occupation.component.ts"></script>
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
 
-<div *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
 
-<div class="card" *ngIf="!loading">
+<tc-card *ngIf="!loading">
 
-  <div class="card-header">
+  <tc-card-header>
+
     {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
 
-    <div class="float-end" *ngIf="editable">
-      <button class="btn btn-sm btn-primary me-2" (click)="createCandidateJobExperience()">
+    <div class="d-flex gap-2 justify-content-end" *ngIf="editable">
+      <tc-button (onClick)="createCandidateJobExperience()"
+                 [type]="'solid'"
+                 [size]="'sm'"
+                 [color]="'primary'"
+      >
         <i class="fas fa-plus"></i>
-      </button>
-      <button class="btn btn-sm btn-secondary me-2" (click)="editOccupation()">
+      </tc-button>
+      <tc-button (onClick)="editOccupation()"
+                 [type]="'outline'"
+                 [size]="'sm'"
+                 [color]="'primary'"
+      >
         <i class="fas fa-edit"></i>
-      </button>
-      <button class="btn btn-sm btn-danger" *ngIf="adminUser" (click)="deleteCandidateOccupation()">
+      </tc-button>
+      <tc-button *ngIf="adminUser"
+                 (onClick)="deleteCandidateOccupation()"
+                 [type]="'outline'"
+                 [size]="'sm'"
+                 [color]="'primary'"
+      >
         <i class="fas fa-trash"></i>
-      </button>
+      </tc-button>
     </div>
 
     <div *ngIf="candidateOccupation.migrationOccupation" class="col-sm-12">
       Migrated Occupation: {{candidateOccupation.migrationOccupation}}
     </div>
-  </div>
 
-  <div class="card-body">
+  </tc-card-header>
 
     <!-- EMPTY STATE -->
     <p *ngIf="!experiences?.length">
@@ -54,6 +66,8 @@
 
     <!-- JOB EXPERIENCE CARDS -->
     <ng-container *ngFor="let experience of experiences; let i = index">
+
+      <hr *ngIf="i > 0">
 
       <div class="row">
 
@@ -76,17 +90,22 @@
         </div>
 
         <div class="col-2" *ngIf="editable">
-          <div class="btn-group float-end">
-            <button class="btn btn-default" (click)="editCandidateJobExperience(experience)">
+          <div class="d-flex gap-2 justify-content-end">
+            <tc-button (onClick)="editCandidateJobExperience(experience)"
+                       [type]="'plain'"
+                       [color]="'secondary'"
+            >
               <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateJobExperience(experience)">
+            </tc-button>
+            <tc-button *ngIf="adminUser"
+                       (onClick)="deleteCandidateJobExperience(experience)"
+                       [type]="'plain'"
+                       [color]="'gray'"
+            >
               <i class="fas fa-trash"></i>
-            </button>
+            </tc-button>
           </div>
         </div>
-
-
 
         <div class="col-12">
           <span class="font-italic"
@@ -105,13 +124,5 @@
 
       </div>
 
-      <hr *ngIf="i < experiences?.length - 1">
-
     </ng-container>
-
-
-  </div>
-
-</div>
-
-<hr/>
+</tc-card>

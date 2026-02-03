@@ -41,6 +41,7 @@ import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CandidateStatsService;
+import org.tctalent.server.service.db.SavedSearchService;
 
 @Tag("skip-test-in-gradle-build")
 @SpringBootTest
@@ -53,6 +54,8 @@ class CandidateStatsServiceImplTest {
     private CandidateRepository candidateRepository;
     @Autowired
     private CountryRepository countryRepository;
+    @Autowired
+    private SavedSearchService savedSearchService;
 
     private LocalDate dateFrom;
     private LocalDate dateTo;
@@ -93,7 +96,7 @@ class CandidateStatsServiceImplTest {
         //New way of running stats is to restrict data over which stats are run by adding a
         //constraint that the candidates should belong to the search query extracted from the
         //search request.
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
@@ -128,7 +131,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
@@ -158,7 +161,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
@@ -188,7 +191,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -238,7 +241,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -288,7 +291,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -338,7 +341,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
@@ -368,7 +371,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -398,7 +401,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(30);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -429,7 +432,7 @@ class CandidateStatsServiceImplTest {
         request.setMinAge(60);
         request.setGender(Gender.female);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
 
         String constraint = "candidate.id in (" + sql + ")";
         List<DataRow> rows;
@@ -459,7 +462,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeGenderStats(
@@ -489,7 +492,7 @@ class CandidateStatsServiceImplTest {
         request.setGender(Gender.female);
         request.setMinAge(3);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLanguageStats(
@@ -518,7 +521,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLinkedInExistsStats(
@@ -547,7 +550,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeLinkedInStats(
@@ -576,7 +579,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeRegistrationStats(
@@ -605,7 +608,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeRegistrationOccupationStats(
@@ -634,7 +637,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeUnhcrRegisteredStats(
@@ -663,7 +666,7 @@ class CandidateStatsServiceImplTest {
         SearchCandidateRequest request = new SearchCandidateRequest();
         request.setMinAge(3);
 
-        String sql = request.extractFetchSQL();
+        String sql = savedSearchService.extractFetchSQL(request);
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeUnhcrStatusStats(

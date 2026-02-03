@@ -160,7 +160,7 @@ public class CandidateStatAdminApi {
 
                     SearchCandidateRequest searchRequest =
                         savedSearchService.loadSavedSearch(searchId);
-                    String sql = searchRequest.extractFetchSQL();
+                    String sql = savedSearchService.extractFetchSQL(searchRequest);
                     String constraint = "candidate.id in (" + sql + ")";
 
                     statReports = createNewReports(request.getDateFrom(), request.getDateTo(),

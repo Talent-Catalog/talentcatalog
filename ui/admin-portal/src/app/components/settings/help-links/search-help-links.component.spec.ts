@@ -20,7 +20,7 @@ import {HelpLinkService} from "../../../services/help-link.service";
 import {CountryService} from "../../../services/country.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {SearchResults} from "../../../model/search-results";
@@ -30,6 +30,7 @@ import {HelpComponent} from "../../help/help.component";
 import {
   CreateUpdateHelpLinkComponent
 } from "./create-update-help-link/create-update-help-link.component";
+import {By} from "@angular/platform-browser";
 
 describe('SearchHelpLinksComponent', () => {
   let component: SearchHelpLinksComponent;
@@ -146,9 +147,9 @@ describe('SearchHelpLinksComponent', () => {
     component.error = error;
     fixture.detectChanges();
 
-    const errorMessage = fixture.nativeElement.querySelector('.alert-danger');
+    const errorMessage = fixture.debugElement.query(By.css('tc-alert'));
     expect(errorMessage).toBeTruthy();
-    expect(errorMessage.textContent).toContain(error);
+    expect(errorMessage.nativeElement.textContent).toContain(error);
   });
 
 });

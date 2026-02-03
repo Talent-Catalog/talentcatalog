@@ -14,44 +14,42 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal heading="External Intake Details"
+          [showClose]="true"
+          [showCancel]="true"
+          (onAction)="onSave()"
+          actionText="Save"
+          [disableAction]="form.invalid || loading || saving"
+>
 
-  <h4 class="modal-title">Details on intake interview</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="form">
-      <div class="mb-3">
-        <label class="form-label" for="oldIntakeCompletedDate">What date was this intake completed</label>
-        <app-date-picker id="oldIntakeCompletedDate" [control]="form.controls.oldIntakeCompletedDate"></app-date-picker>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="oldIntakeCompletedDate">
+          What date was this intake completed
+        </tc-label>
+        <tc-date-picker id="oldIntakeCompletedDate"
+                        [control]="form.controls.oldIntakeCompletedDate"
+        ></tc-date-picker>
+      </tc-field>
 
-      <div class="mb-3">
-        <label class="form-label" for="oldIntakeCompletedBy">Who completed this intake</label>
-        <input type="text" class="form-control" id="oldIntakeCompletedBy" placeholder="" [formControlName]="'oldIntakeCompletedBy'">
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="form.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="oldIntakeCompletedBy">
+          Who completed this intake
+        </tc-label>
+        <tc-input [type]="'text'"
+                  id="oldIntakeCompletedBy"
+                  [formControlName]="'oldIntakeCompletedBy'"
+        ></tc-input>
+      </tc-field>
     </form>
 
   </div>
-</div>
+</tc-modal>

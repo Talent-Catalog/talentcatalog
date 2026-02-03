@@ -38,6 +38,7 @@ export class CvIconComponent implements OnInit {
   // tc-icon properties
   @Input() size?: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
   @Input() color?: 'primary' | 'secondary' | 'white' | 'gray' | 'success' | 'info' | 'warning' | 'error' = 'primary';
+  @Input() showLabel: boolean = false;
 
   //Used to indicate loading status.
   @Output() loadingStatus = new EventEmitter<boolean>();

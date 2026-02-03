@@ -14,16 +14,23 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  * - Disabled state styling & pointer-lock
  * - Focus-visible outline for keyboard accessibility
  * - Optional `ariaLabel` for icon-only buttons
+ * - Optional Angular `routerLink` support for navigation
  *
  * **Inputs**
  * - `size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'`
  *   Controls height and padding. Defaults to `'default'`.
  * - `type: 'primary' | 'secondary' | 'outline' | 'plain'`
  *   Visual style variant. Defaults to `'primary'`.
+ *   - `color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'`
+ *   Controls the button’s color scheme. Defaults to `'primary'`.
  * - `disabled: boolean`
  *   Disables the button and applies muted styling. Defaults to `false`.
  * - `ariaLabel?: string`
  *   Accessible label for icon-only or ambiguous buttons.
+ *    * - `routerLink?: string | any[]`
+ *  *   Optional Angular Router `routerLink`. When provided, the internal `<button>`
+ *  *   also receives `[routerLink]`, allowing `<tc-button>` to be used as a
+ *  *   navigation trigger:
  *
  * **Outputs**
  * - `(onClick)`
@@ -62,12 +69,29 @@ export class ButtonComponent {
   @Input() type: 'solid' | 'outline' | 'plain' = 'solid';
   @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
   @Input() disabled = false;
+  @Input() loading = false;
   @Input() ariaLabel?: string;
+  @Input() routerLink?: string | any[];
+  /**
+   * Whether to prevent the native `click` event from bubbling up the DOM.
+   *
+   * By default, this is `true`, which means the component calls
+   * `event.stopPropagation()` when clicked. This prevents unintended side
+   * effects in contexts like accordion headers, nested buttons, or clickable
+   * containers.
+   *
+   * Set this to `false` if you need the native click to bubble — for example,
+   * when using `<tc-button>` as a trigger for directives that depend on the
+   * native event, such as `ngbDropdownToggle` or other third-party UI controls.
+   *
+   * @default true
+   */
+  @Input() stopNativeClickPropagation: boolean = true;
 
   @Output() onClick = new EventEmitter();
 
   @HostBinding('class.disabled') get isDisabled() {
-    return this.disabled;
+    return this.disabled || this.loading;
   }
 
   get classList(): string[] {
@@ -75,13 +99,17 @@ export class ButtonComponent {
       `btn-${this.size}`,
       `btn-${this.color}`,
       `btn-${this.type}`,
+      ...(this.loading ? ['btn-loading'] : [])
     ];
   }
 
-
-
-  clicked(): void {
-    this.onClick.emit();
+  clicked(e: MouseEvent): void {
+    if (this.stopNativeClickPropagation) {
+      e.stopPropagation();
+    }
+    if (!this.isDisabled) {
+      this.onClick.emit();
+    }
   }
 
 }

@@ -27,6 +27,8 @@ ext {
     isDev = System.properties['env'] == 'dev'
     mapstructVersion = "1.6.3"
     lombokMapstructBindingVersion = "0.2.0"
+    // Flyway upgrade (Postgres 17.5 compatible)
+    set('flyway.version', '11.20.1')
 }
 
 java {
@@ -115,7 +117,9 @@ dependencies {
     //Note that Spring Initializr pulls in org.flywaydb:flyway-core but that will not process
     //older Postgres DB versions. We need the the following dependency
     //See https://github.com/flyway/flyway/issues/3902
+    implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
+
 
     //See https://stackoverflow.com/questions/75768422/cannot-find-messagematcherdelegatingauthorizationmanager-class-while-trying-to-c
     //Does not get included in Spring Boot starter
@@ -182,6 +186,14 @@ dependencies {
 }
 
 jib {
+    container {
+        jvmFlags = [
+                "-XX:InitialRAMPercentage=60.0",
+                "-XX:MaxRAMPercentage=60.0",
+                "-XX:+HeapDumpOnOutOfMemoryError",
+                "-XX:HeapDumpPath=/tmp"
+        ]
+    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"

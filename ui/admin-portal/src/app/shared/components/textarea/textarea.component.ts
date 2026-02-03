@@ -26,6 +26,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
  * - `invalid: boolean` → Marks the textarea invalid (default: `false`)
  * - `value: string` → Current value of the textarea (default: `''`)
  * - `defaultValue: string` → Initial fallback value if none provided
+ * - `rows: string` → Number of visible text rows (default: `'3'`)
  *
  * **Outputs**
  * - `valueChange: EventEmitter<string>` → Emits the new value on input
@@ -92,6 +93,7 @@ export class TextareaComponent implements ControlValueAccessor, OnInit {
   @Input() invalid: boolean = false;
   @Input() value: string = '';
   @Input() defaultValue: string = '';
+  @Input() rows: string = '3';
 
   @Output() valueChange = new EventEmitter<string>();
 

@@ -14,6 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<button class="btn btn-primary btn-sm" (click)="assignDuolingoCouponTask()">
+<tc-button (onClick)="assignDuolingoCouponTask()"
+           [size]="'sm'"
+           [type]="'outline'"
+           [color]="'primary'"
+>
   Send DET Official Coupon
-</button>
+</tc-button>

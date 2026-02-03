@@ -14,53 +14,57 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal heading="Add Certification"
+          [showClose]="true"
+          [disableAction]="candidateForm.invalid || loading || saving"
+          actionText="Save"
+          (onAction)="onSave()"
+          [showCancel]="true"
+>
 
-  <h4 class="modal-title">Add Certification</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="candidateForm">
 
       <!-- COURSE NAME -->
-      <div class="mb-3">
-        <label class="form-label" for="name">Course Name</label>
-        <input type="text" class="form-control" id="name" [formControlName]="'name'">
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="name">
+          Course Name
+        </tc-label>
+        <tc-input [type]="'text'"
+                  id="name"
+                  [formControlName]="'name'"
+        ></tc-input>
+      </tc-field>
 
       <!-- INSTITUTION NAME -->
-      <div class="mb-3">
-        <label class="form-label" for="institution">City</label>
-        <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="institution">
+          City
+        </tc-label>
+        <tc-input [type]="'text'"
+                  id="institution"
+                  [formControlName]="'institution'"
+        ></tc-input>
+      </tc-field>
 
       <!-- DATE OF COMPLETION -->
-      <div class="mb-3">
-        <label class="form-label" for="dateCompleted">Date of Completion</label>
-        <app-date-picker id="dateCompleted" [control]="candidateForm.controls.dateCompleted"></app-date-picker>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="dateCompleted">
+          Date of Completion
+        </tc-label>
+        <tc-date-picker id="dateCompleted"
+                        [control]="candidateForm.controls.dateCompleted"
+        ></tc-date-picker>
+      </tc-field>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
     </form>
 
   </div>
-</div>
+</tc-modal>
