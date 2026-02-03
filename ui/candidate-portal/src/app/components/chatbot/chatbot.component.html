@@ -23,7 +23,7 @@
      tabindex="0"
      (keydown.enter)="toggleChatbot()"
      (keydown.space)="toggleChatbot()">
-  <fa-icon [icon]="isOpen ? 'times' : 'message'"></fa-icon>
+  <i [class]="isOpen ? 'fas fa-times' : 'fas fa-message'"></i>
 </div>
 
 <!-- Chatbot Panel -->
@@ -41,14 +41,14 @@
   <!-- Panel Header -->
   <div class="chatbot-header">
     <h3 id="chatbot-title" class="chatbot-title">
-      <fa-icon icon="message" class="chatbot-title-icon"></fa-icon>
+      <i class="fas fa-message chatbot-title-icon"></i>
       Talent Catalog Assistant
     </h3>
     <button class="chatbot-close-btn" 
             (click)="closeChatbot()"
             aria-label="Close chatbot"
             type="button">
-      <fa-icon icon="times"></fa-icon>
+      <i class="fas fa-times"></i>
     </button>
   </div>
 
@@ -87,7 +87,7 @@
               [disabled]="!messageText.trim() || isUnavailable"
               aria-label="Send message"
               type="button">
-        <fa-icon icon="paper-plane"></fa-icon>
+        <i class="fas fa-paper-plane"></i>
       </button>
     </div>
   </div>
