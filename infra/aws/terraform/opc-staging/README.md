@@ -2,6 +2,32 @@
 
 This directory contains the Terraform configuration for the OPC staging environment.
 
+## Infrastructure Components
+
+### Managed Resources
+
+When `cache_enable = true` (default for staging), Terraform creates and manages:
+- **Redis ElastiCache Cluster**: Multi-node Redis cluster (tc-test-cache)
+  - Node type: cache.t2.micro
+  - Number of nodes: 3
+  - Engine version: 7.1
+  - Encryption: at-rest and in-transit enabled (TLS required for connections)
+  - Automatic failover: enabled (multi-AZ)
+  - Port: 6379
+- **Redis Security Group**: Allows ECS tasks to connect to Redis on port 6379
+- **Redis Subnet Group**: Deploys Redis in private subnets for security
+- **Auto-populated SSM Parameters**: `REDIS_HOST` and `REDIS_PORT` are automatically set from the 
+  cluster endpoint
+
+**Important**: The Redis cluster has in-transit encryption enabled, which means the services 
+must connect using TLS/SSL. If a service doesn't support TLS for Redis, you'll need to set 
+`transit_encryption_enabled = false` in `cache.tf`.
+
+### Manual Configuration Required
+
+- RDS PostgreSQL Database (when `db_enable = true`)
+- Application configuration via SSM parameters (see Post-Deployment Configuration)
+
 ## Deployment
 
 Terraform can be run immediately without any prerequisites. It will create SSM parameters with 
@@ -272,7 +298,9 @@ aws ssm put-parameter \
   --region eu-west-2 \
   --overwrite
 
-# Update Redis Host (TODO: the cache should be created by terraform)
+# Redis Host and Port
+# NOTE: These parameters are automatically populated from ElastiCache when cache_enable=true
+# Only update manually if using an external Redis instance (cache_enable=false)
 aws ssm put-parameter \
   --name "/tc-plus/opc-staging/REDIS_HOST" \
   --value "YOUR_REDIS_HOST_HERE" \
@@ -280,7 +308,6 @@ aws ssm put-parameter \
   --region eu-west-2 \
   --overwrite
 
-# Update Redis Port (TODO: the cache should be created by terraform)
 aws ssm put-parameter \
   --name "/tc-plus/opc-staging/REDIS_PORT" \
   --value "6379" \
@@ -818,6 +845,30 @@ aws ssm get-parameter \
 - **Domain:** test.plus.tctalent.org
 - **ECS Tasks:** 2 instances
 - **Database:** PostgreSQL 17.5 on RDS (db.t3.medium)
+- **Redis Cache:** Redis 7.1 ElastiCache (cache.t2.micro, 3 nodes)
+
+## Verifying Redis Deployment
+
+After running `terraform apply`, you can verify the Redis cluster was created successfully:
+
+```bash
+# View Redis connection details from Terraform outputs
+terraform output redis_primary_endpoint
+terraform output redis_port
+terraform output redis_connection_string
+
+# Verify SSM parameters were auto-populated
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/REDIS_HOST" \
+  --region eu-west-2
+
+aws ssm get-parameter \
+  --name "/tc-plus/opc-staging/REDIS_PORT" \
+  --region eu-west-2
+
+# Check ElastiCache cluster status in AWS Console
+# Navigate to: ElastiCache > Redis clusters > tc-test-cache
+```
 
 ## State Management
 
