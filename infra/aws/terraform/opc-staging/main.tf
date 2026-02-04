@@ -63,6 +63,14 @@ module "tc-plus-staging" {
   ecs_tasks_count = 2
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
+  # Redis cache configuration
+  cache_enable = true
+  cache_cluster_id = "tc-test-cache"
+  cache_node_type = "cache.t2.micro"
+  cache_num_cache_nodes = 3
+  cache_engine_version = "7.1"
+  cache_port = 6379
+
   # Spring application configuration
 
   # AWS S3 configuration: Terraform creates SSM parameters with placeholder values.
@@ -96,8 +104,8 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/PRESET_API_TOKEN (SecureString)
   # - /tc-plus/opc-staging/PRESET_SECRET (SecureString)
   # - /tc-plus/opc-staging/PRESET_WORKSPACE_ID (SecureString)
-  # - /tc-plus/opc-staging/REDIS_HOST (String) - todo: the cache should be created by terraform
-  # - /tc-plus/opc-staging/REDIS_PORT (String) - todo: the cache should be created by terraform
+  # - /tc-plus/opc-staging/REDIS_HOST (String) - auto-populated from ElastiCache when cache_enable=true
+  # - /tc-plus/opc-staging/REDIS_PORT (String) - auto-populated from ElastiCache when cache_enable=true
   # - /tc-plus/opc-staging/SERVER_PORT (String)
   # - /tc-plus/opc-staging/SERVER_URL (String)
   # - /tc-plus/opc-staging/SF_BASE_CLASSIC_URL (String) - todo: either create for OPC or decouple TC+ from SF
