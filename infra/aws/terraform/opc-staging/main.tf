@@ -104,8 +104,8 @@ module "tc-plus-staging" {
   # - /tc-plus/opc-staging/PRESET_API_TOKEN (SecureString)
   # - /tc-plus/opc-staging/PRESET_SECRET (SecureString)
   # - /tc-plus/opc-staging/PRESET_WORKSPACE_ID (SecureString)
-  # - /tc-plus/opc-staging/REDIS_HOST (String) - auto-populated from ElastiCache when cache_enable=true
-  # - /tc-plus/opc-staging/REDIS_PORT (String) - auto-populated from ElastiCache when cache_enable=true
+  # - /tc-plus/opc-staging/REDIS_HOST (String) - managed by Terraform (auto-populated when cache_enable=true)
+  # - /tc-plus/opc-staging/REDIS_PORT (String) - managed by Terraform (auto-populated when cache_enable=true)
   # - /tc-plus/opc-staging/SERVER_PORT (String)
   # - /tc-plus/opc-staging/SERVER_URL (String)
   # - /tc-plus/opc-staging/SF_BASE_CLASSIC_URL (String) - todo: either create for OPC or decouple TC+ from SF

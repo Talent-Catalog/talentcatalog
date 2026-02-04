@@ -296,9 +296,9 @@ resource "aws_ssm_parameter" "redis_host" {
   # Auto-populate from ElastiCache if cache_enable=true, otherwise use provided value or placeholder
   value = var.cache_enable ? aws_elasticache_replication_group.redis[0].primary_endpoint_address : (var.redis_host != null ? var.redis_host : "PLACEHOLDER_UPDATE_MANUALLY")
 
-  lifecycle {
-    ignore_changes = var.cache_enable ? [] : [value]
-  }
+  # When cache_enable=false, manual SSM updates should be done via terraform variables (redis_host)
+  # rather than direct AWS CLI updates, as terraform will overwrite them on next apply.
+  # When cache_enable=true, terraform manages this automatically from ElastiCache endpoint.
 }
 
 resource "aws_ssm_parameter" "redis_port" {
@@ -307,9 +307,9 @@ resource "aws_ssm_parameter" "redis_port" {
   # Auto-populate from ElastiCache if cache_enable=true, otherwise use provided value or placeholder
   value = var.cache_enable ? tostring(var.cache_port) : (var.redis_port != null ? var.redis_port : "PLACEHOLDER_UPDATE_MANUALLY")
 
-  lifecycle {
-    ignore_changes = var.cache_enable ? [] : [value]
-  }
+  # When cache_enable=false, manual SSM updates should be done via terraform variables (redis_port)
+  # rather than direct AWS CLI updates, as terraform will overwrite them on next apply.
+  # When cache_enable=true, terraform manages this automatically from ElastiCache endpoint.
 }
 
 resource "aws_ssm_parameter" "server_port" {
