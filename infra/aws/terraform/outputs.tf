@@ -17,3 +17,18 @@ output "database_url" {
   description = "The endpoint URL of the database"
   value       = var.db_enable ? module.database[0].db_instance_endpoint : ""
 }
+
+output "redis_primary_endpoint" {
+  description = "The primary endpoint address of the Redis cluster"
+  value       = var.cache_enable ? aws_elasticache_replication_group.redis[0].primary_endpoint_address : ""
+}
+
+output "redis_port" {
+  description = "The port number of the Redis cluster"
+  value       = var.cache_enable ? var.cache_port : ""
+}
+
+output "redis_connection_string" {
+  description = "The full Redis connection string (host:port)"
+  value       = var.cache_enable ? "${aws_elasticache_replication_group.redis[0].primary_endpoint_address}:${var.cache_port}" : ""
+}
