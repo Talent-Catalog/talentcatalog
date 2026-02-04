@@ -293,20 +293,22 @@ resource "aws_ssm_parameter" "preset_workspace_id" {
 resource "aws_ssm_parameter" "redis_host" {
   name  = "/${var.app}/${var.env}/REDIS_HOST"
   type  = "String"
-  value = var.redis_host != null ? var.redis_host : "PLACEHOLDER_UPDATE_MANUALLY"
+  # Auto-populate from ElastiCache if cache_enable=true, otherwise use provided value or placeholder
+  value = var.cache_enable ? aws_elasticache_replication_group.redis[0].primary_endpoint_address : (var.redis_host != null ? var.redis_host : "PLACEHOLDER_UPDATE_MANUALLY")
 
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = var.cache_enable ? [] : [value]
   }
 }
 
 resource "aws_ssm_parameter" "redis_port" {
   name  = "/${var.app}/${var.env}/REDIS_PORT"
   type  = "String"
-  value = var.redis_port != null ? var.redis_port : "PLACEHOLDER_UPDATE_MANUALLY"
+  # Auto-populate from ElastiCache if cache_enable=true, otherwise use provided value or placeholder
+  value = var.cache_enable ? tostring(var.cache_port) : (var.redis_port != null ? var.redis_port : "PLACEHOLDER_UPDATE_MANUALLY")
 
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = var.cache_enable ? [] : [value]
   }
 }
 
