@@ -9,12 +9,12 @@ This directory contains the Terraform configuration for the OPC staging environm
 Terraform creates and manages the following infrastructure:
 
 **Elastic Container Registry (ECR):**
-- **ECR Repository**: Container image repository (name: "app")
+- **ECR Repository**: Container image repository (name: "tc-core")
   - Image scanning: enabled on push
   - Encryption: AES256 at-rest
   - Lifecycle policy: keeps last 10 tagged images, removes untagged images after 7 days
   - Region: eu-west-2
-  - Repository URL: `164804461258.dkr.ecr.eu-west-2.amazonaws.com/app`
+  - Repository URL: `164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core`
 
 **Redis Cache** (when `cache_enable = true`, default for staging):
 - **Redis ElastiCache Cluster**: Multi-node Redis cluster (tc-test-cache)
@@ -848,7 +848,7 @@ aws ssm get-parameter \
 - **Application:** TC-Plus
 - **Domain:** test.plus.tctalent.org
 - **ECS Tasks:** 2 instances
-- **ECR Repository:** app (with image scanning and lifecycle policies)
+- **ECR Repository:** tc-core (with image scanning and lifecycle policies)
 - **Database:** PostgreSQL 17.5 on RDS (db.t3.medium)
 - **Redis Cache:** Redis 7.1 ElastiCache (cache.t3.micro, 3 nodes)
 
@@ -874,6 +874,76 @@ aws ssm get-parameter \
 # Check ElastiCache cluster status in AWS Console
 # Navigate to: ElastiCache > Redis clusters > tc-test-cache
 ```
+
+## ECR Repository and CI/CD
+
+### Accessing the ECR Repository
+
+After deployment, you can view the ECR repository details:
+
+```bash
+# Get ECR repository URL
+terraform output ecr_repository_url
+
+# Get ECR repository ARN
+terraform output ecr_repository_arn
+
+# List images in the repository
+aws ecr list-images \
+  --repository-name tc-core \
+  --region eu-west-2
+```
+
+### Pushing Images to ECR (CI/CD)
+
+To push Docker images to the ECR repository from your CI/CD pipeline:
+
+```bash
+# 1. Authenticate Docker to ECR
+aws ecr get-login-password --region eu-west-2 | \
+  docker login --username AWS --password-stdin 164804461258.dkr.ecr.eu-west-2.amazonaws.com
+
+# 2. Build your Docker image
+docker build -t tc-core:tc-plus-staging .
+
+# 3. Tag the image for ECR
+docker tag tc-core:tc-plus-staging 164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging
+
+# 4. Push to ECR
+docker push 164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging
+```
+
+### CI/CD IAM Permissions
+
+Your CI/CD service (GitHub Actions, GitLab CI, Jenkins, etc.) needs the following IAM permissions to push images:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:CompleteLayerUpload",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+      ],
+      "Resource": "arn:aws:ecr:eu-west-2:164804461258:repository/tc-core"
+    }
+  ]
+}
+```
+
+**Note**: If your CI/CD runs in a different AWS account, uncomment and configure the cross-account policy in `ecr.tf`.
 
 ## State Management
 

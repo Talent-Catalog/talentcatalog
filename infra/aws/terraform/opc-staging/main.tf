@@ -50,7 +50,7 @@ module "tc-plus-staging" {
   app = "tc-plus"
   env = "opc-staging"
   site_domain = "test.plus.tctalent.org"
-  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/app:tc-plus-staging"
+  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging"
   container_port = 8080
   db_enable = true
   db_public_access = false

@@ -50,7 +50,7 @@ module "tc-plus-prod" {
   app = "tc-plus"
   env = "opc-prod"
   site_domain = "plus.tctalent.org"
-  container_image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/app:tc-plus-prod"
+  container_image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-prod"
   container_port = 8080
   db_enable = true
   db_public_access = false

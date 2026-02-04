@@ -30,8 +30,8 @@ variable "container_image" {
 
 variable "ecr_repository_name" {
   type        = string
-  description = "The name of the ECR repository (defaults to 'app' for backwards compatibility)"
-  default     = "app"
+  description = "The name of the ECR repository"
+  default     = "tc-core"
 }
 
 variable "container_port" {
