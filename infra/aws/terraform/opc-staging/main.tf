@@ -66,7 +66,7 @@ module "tc-plus-staging" {
   # Redis cache configuration
   cache_enable = true
   cache_cluster_id = "tc-test-cache"
-  cache_node_type = "cache.t2.micro"
+  cache_node_type = "cache.t3.micro"  # t2.micro not supported for replication groups
   cache_num_cache_nodes = 3
   cache_engine_version = "7.1"
   cache_port = 6379

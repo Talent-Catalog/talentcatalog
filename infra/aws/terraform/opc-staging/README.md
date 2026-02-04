@@ -8,7 +8,7 @@ This directory contains the Terraform configuration for the OPC staging environm
 
 When `cache_enable = true` (default for staging), Terraform creates and manages:
 - **Redis ElastiCache Cluster**: Multi-node Redis cluster (tc-test-cache)
-  - Node type: cache.t2.micro
+  - Node type: cache.t3.micro
   - Number of nodes: 3
   - Engine version: 7.1
   - Encryption: at-rest and in-transit enabled (TLS required for connections)
@@ -839,7 +839,7 @@ aws ssm get-parameter \
 - **Domain:** test.plus.tctalent.org
 - **ECS Tasks:** 2 instances
 - **Database:** PostgreSQL 17.5 on RDS (db.t3.medium)
-- **Redis Cache:** Redis 7.1 ElastiCache (cache.t2.micro, 3 nodes)
+- **Redis Cache:** Redis 7.1 ElastiCache (cache.t3.micro, 3 nodes)
 
 ## Verifying Redis Deployment
 

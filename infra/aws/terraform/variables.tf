@@ -125,8 +125,8 @@ variable "cache_cluster_id" {
 
 variable "cache_node_type" {
   type        = string
-  description = "The compute and memory capacity of the cache nodes (e.g., cache.t2.micro)"
-  default     = "cache.t2.micro"
+  description = "The compute and memory capacity of the cache nodes (e.g., cache.t3.micro)"
+  default     = "cache.t3.micro"
 }
 
 variable "cache_num_cache_nodes" {
