@@ -109,6 +109,44 @@ variable "db_capacity" {
   default     = 20
 }
 
+### Redis Cache (ElastiCache) variables:
+
+variable "cache_enable" {
+  type        = bool
+  default     = false
+  description = "Flag to enable Redis ElastiCache cluster creation"
+}
+
+variable "cache_cluster_id" {
+  type        = string
+  description = "The Redis cluster identifier"
+  default     = null
+}
+
+variable "cache_node_type" {
+  type        = string
+  description = "The compute and memory capacity of the cache nodes (e.g., cache.t2.micro)"
+  default     = "cache.t2.micro"
+}
+
+variable "cache_num_cache_nodes" {
+  type        = number
+  description = "The number of cache nodes (replicas)"
+  default     = 1
+}
+
+variable "cache_engine_version" {
+  type        = string
+  description = "The Redis engine version"
+  default     = "7.1"
+}
+
+variable "cache_port" {
+  type        = number
+  description = "The port number on which the cache accepts connections"
+  default     = 6379
+}
+
 ### Network configuration variables:
 
 variable "vpc_cidr" {
