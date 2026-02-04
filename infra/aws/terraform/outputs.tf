@@ -32,3 +32,18 @@ output "redis_connection_string" {
   description = "The full Redis connection string (host:port)"
   value       = var.cache_enable ? "${aws_elasticache_replication_group.redis[0].primary_endpoint_address}:${var.cache_port}" : ""
 }
+
+output "ecr_repository_url" {
+  description = "The URL of the ECR repository"
+  value       = aws_ecr_repository.app.repository_url
+}
+
+output "ecr_repository_arn" {
+  description = "The ARN of the ECR repository"
+  value       = aws_ecr_repository.app.arn
+}
+
+output "ecr_repository_name" {
+  description = "The name of the ECR repository"
+  value       = aws_ecr_repository.app.name
+}
