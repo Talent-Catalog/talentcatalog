@@ -6,7 +6,17 @@ This directory contains the Terraform configuration for the OPC staging environm
 
 ### Managed Resources
 
-When `cache_enable = true` (default for staging), Terraform creates and manages:
+Terraform creates and manages the following infrastructure:
+
+**Elastic Container Registry (ECR):**
+- **ECR Repository**: Container image repository (name: "app")
+  - Image scanning: enabled on push
+  - Encryption: AES256 at-rest
+  - Lifecycle policy: keeps last 10 tagged images, removes untagged images after 7 days
+  - Region: eu-west-2
+  - Repository URL: `164804461258.dkr.ecr.eu-west-2.amazonaws.com/app`
+
+**Redis Cache** (when `cache_enable = true`, default for staging):
 - **Redis ElastiCache Cluster**: Multi-node Redis cluster (tc-test-cache)
   - Node type: cache.t3.micro
   - Number of nodes: 3
@@ -838,6 +848,7 @@ aws ssm get-parameter \
 - **Application:** TC-Plus
 - **Domain:** test.plus.tctalent.org
 - **ECS Tasks:** 2 instances
+- **ECR Repository:** app (with image scanning and lifecycle policies)
 - **Database:** PostgreSQL 17.5 on RDS (db.t3.medium)
 - **Redis Cache:** Redis 7.1 ElastiCache (cache.t3.micro, 3 nodes)
 
