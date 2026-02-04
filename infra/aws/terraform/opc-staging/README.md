@@ -19,9 +19,14 @@ When `cache_enable = true` (default for staging), Terraform creates and manages:
 - **Auto-populated SSM Parameters**: `REDIS_HOST` and `REDIS_PORT` are automatically set from the 
   cluster endpoint
 
-**Important**: The Redis cluster has in-transit encryption enabled, which means the services 
-must connect using TLS/SSL. If a service doesn't support TLS for Redis, you'll need to set 
-`transit_encryption_enabled = false` in `cache.tf`.
+**Important Notes**:
+- The Redis cluster has in-transit encryption enabled, which means services must connect using 
+  TLS/SSL. If the service doesn't support TLS for Redis, set `transit_encryption_enabled = false` 
+  in `cache.tf`.
+- `REDIS_HOST` and `REDIS_PORT` SSM parameters are fully managed by Terraform. They are 
+  automatically updated when the ElastiCache endpoint changes.
+- If using an external Redis instance (`cache_enable=false`), provide connection details via 
+  Terraform variables rather than manual SSM updates.
 
 ### Manual Configuration Required
 
@@ -299,21 +304,10 @@ aws ssm put-parameter \
   --overwrite
 
 # Redis Host and Port
-# NOTE: These parameters are automatically populated from ElastiCache when cache_enable=true
-# Only update manually if using an external Redis instance (cache_enable=false)
-aws ssm put-parameter \
-  --name "/tc-plus/opc-staging/REDIS_HOST" \
-  --value "YOUR_REDIS_HOST_HERE" \
-  --type "String" \
-  --region eu-west-2 \
-  --overwrite
-
-aws ssm put-parameter \
-  --name "/tc-plus/opc-staging/REDIS_PORT" \
-  --value "6379" \
-  --type "String" \
-  --region eu-west-2 \
-  --overwrite
+# NOTE: When cache_enable=true (default), these are automatically populated from ElastiCache.
+# When cache_enable=false (using external Redis), provide values via terraform variables:
+#   terraform apply -var="redis_host=your-redis-host.com" -var="redis_port=6379"
+# Do NOT manually update these SSM parameters via AWS CLI as terraform will overwrite them.
 
 # Update Server Port
 aws ssm put-parameter \
