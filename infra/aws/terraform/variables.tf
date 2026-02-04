@@ -28,6 +28,12 @@ variable "container_image" {
   description = "The ECR URL for the Docker image"
 }
 
+variable "ecr_repository_name" {
+  type        = string
+  description = "The name of the ECR repository (defaults to 'app' for backwards compatibility)"
+  default     = "app"
+}
+
 variable "container_port" {
   type        = number
   description = "Container port"
