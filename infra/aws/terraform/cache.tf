@@ -66,11 +66,9 @@ resource "aws_elasticache_replication_group" "redis" {
   # Enable automatic minor version upgrades
   auto_minor_version_upgrade = true
   
-  # Enable encryption at rest and in transit
-  at_rest_encryption_enabled = true
-  transit_encryption_enabled = true
-  # Note: auth_token can be set here if you want password authentication (requires transit_encryption_enabled = true)
-  # auth_token = "your-strong-password-here"  # Uncomment and set if you want AUTH token protection
+  # Encryption disabled for simpler application connectivity
+  at_rest_encryption_enabled = false
+  transit_encryption_enabled = false
 
   tags = merge(var.common_tags, {
     Name = var.cache_cluster_id != null ? var.cache_cluster_id : "${var.app}-${var.env}-redis"

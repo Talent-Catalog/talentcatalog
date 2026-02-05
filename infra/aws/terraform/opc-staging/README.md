@@ -11,7 +11,7 @@ Terraform creates and manages the following infrastructure:
 **Elastic Container Registry (ECR):**
 - **ECR Repository**: Container image repository (name: "tc-core")
   - Image scanning: enabled on push
-  - Encryption: AES256 at-rest
+  - Encryption at-rest: AES256
   - Lifecycle policy: keeps last 10 tagged images, removes untagged images after 7 days
   - Region: eu-west-2
   - Repository URL: `164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core`
@@ -21,7 +21,7 @@ Terraform creates and manages the following infrastructure:
   - Node type: cache.t3.micro
   - Number of nodes: 3
   - Engine version: 7.1
-  - Encryption: at-rest and in-transit enabled (TLS required for connections)
+  - Encryption: disabled (standard TCP connections)
   - Automatic failover: enabled (multi-AZ)
   - Port: 6379
 - **Redis Security Group**: Allows ECS tasks to connect to Redis on port 6379
@@ -30,9 +30,8 @@ Terraform creates and manages the following infrastructure:
   cluster endpoint
 
 **Important Notes**:
-- The Redis cluster has in-transit encryption enabled, which means services must connect using 
-  TLS/SSL. If the service doesn't support TLS for Redis, set `transit_encryption_enabled = false` 
-  in `cache.tf`.
+- The Redis cluster has encryption disabled for simpler application connectivity (standard TCP 
+  connections).
 - `REDIS_HOST` and `REDIS_PORT` SSM parameters are fully managed by Terraform. They are 
   automatically updated when the ElastiCache endpoint changes.
 - If using an external Redis instance (`cache_enable=false`), provide connection details via 
