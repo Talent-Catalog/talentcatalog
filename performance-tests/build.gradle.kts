@@ -93,7 +93,7 @@ tasks {
     /**
      * Custom task: run Gatling simulation by class name
      * Usage:
-     *   ./gradlew :performance-tests:gatlingTest -PsimClass=org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelClosedSimulation
+     *   ./gradlew :performance-tests:gatlingTest -PsimClass=org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentialABSimulation
      *
      */
     register<JavaExec>("gatlingTest") {

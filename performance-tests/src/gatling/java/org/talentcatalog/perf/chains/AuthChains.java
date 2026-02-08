@@ -97,7 +97,6 @@ public final class AuthChains {
                 String body = session.contains(SESSION_LOGIN_BODY)
                     ? session.getString(SESSION_LOGIN_BODY)
                     : "<no loginBody>";
-                log.warn("LOGIN FAILED: {}", body);
                 return session.markAsFailed();
               }
               return session;
