@@ -52,6 +52,20 @@ export class BrandingService {
     }
   }
 
+  /**
+   * Gets branding info from the API regardless of registration status.
+   * This is useful for determining partner-specific features (like chatbot visibility)
+   * that need to work for both registered and unregistered users.
+   * The API endpoint is public and supports both cases.
+   */
+  getBrandingInfoFromApi(): Observable<BrandingInfo> {
+    let url = `${this.apiUrl}`;
+    if (this.partnerAbbreviation) {
+      url += `?p=${this.partnerAbbreviation}`;
+    }
+    return this.http.get<BrandingInfo>(url);
+  }
+
   setPartnerAbbreviation(partnerAbbreviation: string) {
     this.partnerAbbreviation = partnerAbbreviation;
   }
