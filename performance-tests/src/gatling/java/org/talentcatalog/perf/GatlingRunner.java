@@ -43,15 +43,15 @@ import scala.collection.mutable.Map;
  * <h2>Examples</h2>
  * <pre>{@code
  * // 1) IntelliJ Program arguments (recommended):
- * org.talentcatalog.perf.simulations.http.CandidateSearchParallelComparisonSimulation
+ * org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentialABSimulation
  *
  * // 2) IntelliJ VM options:
- * -DsimClass=org.talentcatalog.perf.simulations.http.CandidateSearchParallelComparisonSimulation
+ * -DsimClass=org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentialABSimulation
  * -Dgatling.resultsFolder=build/reports/gatling
  *
  * // 3) Command line:
  * java -cp <classpath> org.talentcatalog.perf.GatlingRunner \
- *   org.talentcatalog.perf.simulations.http.CandidateSearchParallelComparisonSimulation
+ *   org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentialABSimulation
  * }</pre>
  */
 public class GatlingRunner {
@@ -60,7 +60,7 @@ public class GatlingRunner {
    * Default simulation to run when neither a program argument nor {@code -DsimClass} is provided.
    */
   public static final String DEFAULT_SIMULATION_CLASS =
-      "org.talentcatalog.perf.simulations.http.CandidateSearchParallelComparisonSimulation";
+      "org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentialABSimulation";
 
   /**
    * System property key for selecting the simulation class.
