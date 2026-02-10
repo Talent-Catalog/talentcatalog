@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -36,6 +37,7 @@ import org.tctalent.server.repository.db.ChatbotMessageRepository;
 @DataJpaTest
 @TestPropertySource(
     properties = {"spring.flyway.enabled=false", "spring.jpa.hibernate.ddl-auto=create"})
+@Tag("skip-test-in-gradle-build")
 class ChatbotMessageRepositoryIntegrationTest {
 
   @Autowired private ChatbotMessageRepository chatbotMessageRepository;
