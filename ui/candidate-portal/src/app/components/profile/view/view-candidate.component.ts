@@ -25,9 +25,11 @@ import {ChatService} from "../../../services/chat.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {Location} from "@angular/common";
 import {ActivatedRoute} from "@angular/router";
-import {Status} from '../../../model/base';
-import {TaskAssignment, taskAssignmentSort} from "../../../model/task-assignment";
-import {CandidateOpportunity, CandidateOpportunityStage} from "../../../model/candidate-opportunity";
+import {TaskAssignment} from "../../../model/task-assignment";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage
+} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-view-candidate',
@@ -73,12 +75,18 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   /**
-   * Ineligible candidates can't see chat
+   * Ineligible candidates can't see chat, even if eligibility is under review
    */
   get canSeeChatTab(): boolean {
     let canSee = this.sourceChatHasPosts;
     if (canSee) {
-      if (this.candidate && CandidateStatus[this.candidate.status] === CandidateStatus.ineligible) {
+      if (
+        this.candidate &&
+        (
+          CandidateStatus[this.candidate.status] === CandidateStatus.ineligible ||
+          CandidateStatus[this.candidate.status] === CandidateStatus.ineligibleReview
+        )
+      ) {
         canSee = false;
       }
     }
