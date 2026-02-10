@@ -1,0 +1,156 @@
+[
+  {
+    "id": "eval_001",
+    "question": "What does Talent Beyond Boundaries do?",
+    "expectedFaqIds": ["faq_001"],
+    "category": "about_tbb",
+    "description": "Tests basic understanding of TBB's core mission"
+  },
+  {
+    "id": "eval_002",
+    "question": "What does TBB stand for?",
+    "expectedFaqIds": ["faq_001"],
+    "category": "about_tbb",
+    "description": "Tests basic organizational name knowledge"
+  },
+  {
+    "id": "eval_003",
+    "question": "What's the difference between TBB and humanitarian resettlement?",
+    "expectedFaqIds": ["faq_001"],
+    "category": "about_tbb",
+    "description": "Tests understanding of TBB's unique approach vs traditional resettlement"
+  },
+  {
+    "id": "eval_004",
+    "question": "How does TBB work?",
+    "expectedFaqIds": ["faq_018"],
+    "category": "about_tbb",
+    "description": "Tests understanding of TBB's operational model"
+  },
+  {
+    "id": "eval_005",
+    "question": "How do I register for the Talent Catalog?",
+    "expectedFaqIds": ["faq_002"],
+    "category": "registration",
+    "description": "Tests registration process knowledge"
+  },
+  {
+    "id": "eval_006",
+    "question": "What happens after I create my profile?",
+    "expectedFaqIds": ["faq_004"],
+    "category": "process",
+    "description": "Tests post-registration process"
+  },
+  {
+    "id": "eval_007",
+    "question": "Is there a fee to sign up?",
+    "expectedFaqIds": ["faq_009"],
+    "category": "cost",
+    "description": "Tests knowledge about free services"
+  },
+  {
+    "id": "eval_008",
+    "question": "Will I definitely get a job if I register?",
+    "expectedFaqIds": ["faq_003"],
+    "category": "guarantees",
+    "description": "Tests accurate information about non-guaranteed employment"
+  },
+  {
+    "id": "eval_009",
+    "question": "Can you help me improve my profile to get more job matches?",
+    "expectedFaqIds": ["faq_005"],
+    "category": "profile_optimization",
+    "description": "Tests knowledge about profile improvement advice"
+  },
+  {
+    "id": "eval_010",
+    "question": "Who selects the candidates?",
+    "expectedFaqIds": ["faq_006"],
+    "category": "selection_process",
+    "description": "Tests understanding of employer-driven model"
+  },
+  {
+    "id": "eval_011",
+    "question": "Does TBB select candidates based on their vulnerability?",
+    "expectedFaqIds": ["faq_011"],
+    "category": "selection_process",
+    "description": "Tests understanding of skill-based selection"
+  },
+  {
+    "id": "eval_012",
+    "question": "Do I need English language skills?",
+    "expectedFaqIds": ["faq_007"],
+    "category": "language_requirements",
+    "description": "Tests understanding of language requirements"
+  },
+  {
+    "id": "eval_013",
+    "question": "Is an IELTS score required to register?",
+    "expectedFaqIds": ["faq_008"],
+    "category": "language_requirements",
+    "description": "Tests IELTS registration requirements"
+  },
+  {
+    "id": "eval_014",
+    "question": "Can I bring my family with me?",
+    "expectedFaqIds": ["faq_012"],
+    "category": "family_migration",
+    "description": "Tests knowledge about family migration policies"
+  },
+  {
+    "id": "eval_015",
+    "question": "Do I need a passport to register?",
+    "expectedFaqIds": ["faq_010"],
+    "category": "documentation",
+    "description": "Tests understanding of document requirements"
+  },
+  {
+    "id": "eval_016",
+    "question": "How long does the process take?",
+    "expectedFaqIds": ["faq_019"],
+    "category": "timeline",
+    "description": "Tests realistic timeline expectations"
+  },
+  {
+    "id": "eval_017",
+    "question": "Why haven't I been contacted yet?",
+    "expectedFaqIds": ["faq_016"],
+    "category": "timeline",
+    "description": "Tests explanation of waiting periods"
+  },
+  {
+    "id": "eval_018",
+    "question": "Can TBB speed up the process?",
+    "expectedFaqIds": ["faq_017"],
+    "category": "timeline",
+    "description": "Tests realistic timeline expectations for expediting"
+  },
+  {
+    "id": "eval_019",
+    "question": "Why can't you give me a specific timeline?",
+    "expectedFaqIds": ["faq_019"],
+    "category": "timeline",
+    "description": "Tests understanding of variable timelines"
+  },
+  {
+    "id": "eval_020",
+    "question": "Is my personal data safe?",
+    "expectedFaqIds": ["faq_013"],
+    "category": "data_security",
+    "description": "Tests knowledge about data security"
+  },
+  {
+    "id": "eval_021",
+    "question": "I forgot my password, what do I do?",
+    "expectedFaqIds": ["faq_014"],
+    "category": "technical_support",
+    "description": "Tests technical support information"
+  },
+  {
+    "id": "eval_022",
+    "question": "I found a job myself, can TBB help?",
+    "expectedFaqIds": ["faq_015"],
+    "category": "independent_employment",
+    "description": "Tests knowledge about supporting independently secured employment"
+  }
+]
