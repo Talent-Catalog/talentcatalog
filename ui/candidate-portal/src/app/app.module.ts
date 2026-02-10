@@ -229,6 +229,7 @@ import {
 import {
   IntlPhoneInputComponent
 } from './components/util/intl-phone-input/intl-phone-input.component';
+import {ChatbotComponent} from './components/chatbot/chatbot.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -323,6 +324,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     RefugeeStatusInfoFormComponent,
     TaskAbandonedComponent,
     IntlPhoneInputComponent,
+    ChatbotComponent,
   ],
   imports: [
     BrowserModule,
