@@ -1,0 +1,8 @@
+@import '../../../../../scss/color-mixins';
+@import '../../../../../scss/typography-mixins';
+
+.form-description {
+  @include  text-color-secondary;
+  @include paragraph-sm;
+  margin: 0;
+}
