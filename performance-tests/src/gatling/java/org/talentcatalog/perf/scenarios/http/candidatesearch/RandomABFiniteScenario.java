@@ -27,7 +27,7 @@ import io.gatling.javaapi.core.Choice;
 import io.gatling.javaapi.core.FeederBuilder.Batchable;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import org.talentcatalog.perf.chains.AuthChains;
-import org.talentcatalog.perf.requests.http.CandidateSearchRequests;
+import org.talentcatalog.perf.requests.http.candidatesearch.CandidateSearchRequests;
 
 /**
  * Scenario that models finite "active user" behavior with:
