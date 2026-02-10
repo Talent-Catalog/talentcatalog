@@ -28,7 +28,6 @@ import {
   NgbTypeahead
 } from '@ng-bootstrap/ng-bootstrap';
 
-// Components (same set as admin portal SharedModule)
 import {ButtonComponent} from './components/button/button.component';
 
 import {TcTableComponent} from './components/table/tc-table.component';
@@ -71,11 +70,6 @@ import {
 import {
   TcDropdownDividerComponent
 } from './components/dropdown/dropdown-divider/tc-dropdown-divider.component';
-
-import {
-  TcDateRangePickerComponent
-} from './components/date-range-picker/tc-date-range-picker.component';
-import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
 
 import {TcIconComponent} from './components/icon-component/tc-icon.component';
 
@@ -125,9 +119,6 @@ import {TcRadioComponent} from './components/radio/tc-radio.component';
     TcDropdownItemComponent,
     TcDropdownMenuComponent,
     TcDropdownDividerComponent,
-
-    TcDateRangePickerComponent,
-    TcDatePickerComponent,
 
     TcIconComponent,
 
@@ -190,9 +181,6 @@ import {TcRadioComponent} from './components/radio/tc-radio.component';
     TcDropdownItemComponent,
     TcDropdownMenuComponent,
     TcDropdownDividerComponent,
-
-    TcDateRangePickerComponent,
-    TcDatePickerComponent,
 
     TcIconComponent,
 
