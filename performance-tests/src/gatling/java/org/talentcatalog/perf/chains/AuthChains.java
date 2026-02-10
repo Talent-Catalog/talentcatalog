@@ -21,7 +21,7 @@ import static io.gatling.javaapi.core.CoreDsl.exec;
 import io.gatling.javaapi.core.ChainBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talentcatalog.perf.requests.http.AuthRequests;
+import org.talentcatalog.perf.requests.http.auth.AuthRequests;
 
 /**
  * Reusable Gatling chain(s) for authentication.
