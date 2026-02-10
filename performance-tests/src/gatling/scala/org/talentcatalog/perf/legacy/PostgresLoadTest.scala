@@ -14,13 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.talentcatalog
+package org.talentcatalog.perf.legacy
 
 import io.gatling.core.Predef._
+import org.talentcatalog.JdbcBaseSimulation
+import org.talentcatalog.perf.legacy.scenarios.db.NewSearchScreenScenario.newSearchScreenScenario
 import org.talentcatalog.perf.requests.EsLoadQuery.{esLoadCountQueryName, esLoadPagedQueryName}
 import org.talentcatalog.perf.requests.NewSearchScreenQuery.newSearchScreenQueryName
 import org.talentcatalog.perf.simulations.scenarios.EsLoadScenario.esLoadScenario
-import org.talentcatalog.perf.simulations.scenarios.NewSearchScreenScenario.newSearchScreenScenario
 import ru.tinkoff.load.jdbc.Predef._
 
 import scala.concurrent.duration._
