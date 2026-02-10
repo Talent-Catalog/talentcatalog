@@ -24,7 +24,7 @@ import static io.gatling.javaapi.core.CoreDsl.scenario;
 import io.gatling.javaapi.core.FeederBuilder.Batchable;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import org.talentcatalog.perf.chains.AuthChains;
-import org.talentcatalog.perf.requests.http.CandidateSearchRequests;
+import org.talentcatalog.perf.requests.http.candidatesearch.CandidateSearchRequests;
 
 /**
  * Scenario that executes A then B sequentially per iteration for the same virtual user.
