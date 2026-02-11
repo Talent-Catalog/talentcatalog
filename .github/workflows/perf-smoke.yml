@@ -1,25 +1,48 @@
-name: Perf Smoke (Branch Test)
+# .github/workflows/perf-smoke.yml
+name: Perf Smoke
 
 on:
   push:
     branches:
-      - "3082-containerize-performance-tests-execution-gatling"
+      - "**"
   workflow_dispatch:
+    inputs:
+      perf_base_url:
+        description: "Target base URL (override). Leave empty to use repo secret PERF_BASE_URL_TEST."
+        required: false
+        type: string
+      list_id:
+        description: "Saved list ID (override). Leave empty to use repo secret PERF_SAVED_LIST_ID."
+        required: false
+        type: string
 
 jobs:
   smoke:
     uses: ./.github/workflows/tc-gatling-tests.yml
+    secrets: inherit
     with:
       tier: smoke
       list_file: performance-tests/simulations/perf-smoke.txt
       shard_index: 0
       shard_total: 1
 
-      # static (no secrets)
-      perf_base_url: "https://tctalent-test.org"
-      list_id: ""
+      # Prefer manual overrides, otherwise use repo secrets, otherwise fall back to test URL
+      perf_base_url: >-
+        ${{
+          github.event_name == 'workflow_dispatch' && inputs.perf_base_url != '' && inputs.perf_base_url
+          || secrets.PERF_BASE_URL_TEST != '' && secrets.PERF_BASE_URL_TEST
+          || 'https://tctalent-test.org'
+        }}
 
-      # bring-up
+      # Optional: only needed by saved-list sims; can stay empty if your smoke list doesn't use it
+      list_id: >-
+        ${{
+          github.event_name == 'workflow_dispatch' && inputs.list_id != '' && inputs.list_id
+          || secrets.PERF_SAVED_LIST_ID != '' && secrets.PERF_SAVED_LIST_ID
+          || ''
+        }}
+
+      # Smoke bring-up: disable budgets or set lenient thresholds
       run_budget_check: false
       max_failed_pct: 100
       max_p95_ms: 999999

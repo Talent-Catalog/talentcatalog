@@ -26,11 +26,6 @@ on:
         required: true
         type: string
 
-      list_id:
-        required: false
-        default: ""
-        type: string
-
       run_budget_check:
         required: false
         default: true
@@ -45,6 +40,10 @@ on:
         required: false
         default: 15000
         type: number
+
+    secrets:
+      STAGING_PERF_USERS_CSV:
+        required: false
 
 jobs:
   gatling:
@@ -65,6 +64,15 @@ jobs:
           key: gradle-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
             gradle-${{ runner.os }}-
+
+      - name: Write users.csv from secret (optional)
+        if: ${{ secrets.STAGING_PERF_USERS_CSV != '' }}
+        shell: bash
+        run: |
+          f="performance-tests/src/gatling/resources/users.csv"
+          mkdir -p "$(dirname "$f")"
+          printf "%s" "${{ secrets.STAGING_PERF_USERS_CSV }}" > "$f"
+          echo "users.csv written to $f"
 
       - name: Build perf Docker runner
         run: |
@@ -92,14 +100,13 @@ jobs:
             tc-perf:${{ github.sha }} \
             -lc "cd /work && \
               bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
-              -Dperf.baseUrl='${{ inputs.perf_base_url }}' \
-              ${{ inputs.list_id != '' && format('-DlistId=''{0}''', inputs.list_id) || '' }}"
+              -Dperf.baseUrl='${{ inputs.perf_base_url }}'"
 
       - name: Debug artifact dirs (temporary)
         if: always()
         run: |
           echo "=== perf-reports ==="
-          find perf-reports -maxdepth 4 -type d -print || true
+          find perf-reports -maxdepth 6 -type d -print || true
           echo "=== perf-summary ==="
           ls -la perf-summary || true
           echo "=== perf-raw ==="
@@ -121,6 +128,14 @@ jobs:
           path: perf-reports
           if-no-files-found: ignore
 
+      - name: Upload summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-summary-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
+          path: perf-summary
+          if-no-files-found: ignore
+
       - name: Upload raw logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -128,18 +143,3 @@ jobs:
           name: perf-raw-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
           path: perf-raw
           if-no-files-found: ignore
-
-
-      - name: Upload summaries
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: perf-summary-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
-          path: perf-summary
-
-      - name: Upload raw logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: perf-raw-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
-          path: perf-raw
