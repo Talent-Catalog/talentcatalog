@@ -101,14 +101,6 @@ jobs:
             tc-perf:${{ github.sha }} \
             -lc "cd /work && bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' -Dperf.baseUrl='${{ inputs.perf_base_url }}'"
 
-      - name: Debug Gatling report output
-        if: always()
-        run: |
-          echo "=== perf-reports dirs ==="
-          find perf-reports -maxdepth 3 -type d -print || true
-          echo "=== perf-reports files (sample) ==="
-          find perf-reports -maxdepth 4 -type f | head -n 60 || true
-
       - name: Budget check
         if: ${{ inputs.run_budget_check }}
         run: |
@@ -125,18 +117,3 @@ jobs:
           path: perf-reports
           if-no-files-found: warn
 
-      - name: Upload summaries
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: perf-summary-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
-          path: perf-summary
-          if-no-files-found: warn
-
-      - name: Upload raw logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: perf-raw-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
-          path: perf-raw
-          if-no-files-found: warn
