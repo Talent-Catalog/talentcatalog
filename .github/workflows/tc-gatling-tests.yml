@@ -83,9 +83,10 @@ jobs:
           docker run --rm \
             -e SHARD_INDEX="${SHARD_INDEX}" \
             -e SHARD_TOTAL="${SHARD_TOTAL}" \
+            -e GRADLE_USER_HOME=/tmp/.gradle \
             -v "$PWD:/work" \
-            -v "$PWD/.gradle-cache:/root/.gradle" \
-            -v "$PWD/perf-reports:/work/performance-tests/build/reports/gatling" \
+            -v "$PWD/.gradle-cache:/tmp/.gradle" \
+            -v "$PWD/perf-reports:/work/build/reports/gatling" \
             -v "$PWD/perf-summary:/work/performance-tests/build/perf-artifacts/summary" \
             -v "$PWD/perf-raw:/work/performance-tests/build/perf-artifacts/raw" \
             tc-perf:${{ github.sha }} \
@@ -118,6 +119,16 @@ jobs:
         with:
           name: gatling-reports-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
           path: perf-reports
+          if-no-files-found: ignore
+
+      - name: Upload raw logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-raw-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
+          path: perf-raw
+          if-no-files-found: ignore
+
 
       - name: Upload summaries
         if: always()
