@@ -66,13 +66,18 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: Write users.csv from secret (optional)
-        if: ${{ secrets.STAGING_PERF_USERS_CSV != '' }}
         shell: bash
+        env:
+          STAGING_PERF_USERS_CSV: ${{ secrets.STAGING_PERF_USERS_CSV }}
         run: |
+          if [[ -z "${STAGING_PERF_USERS_CSV:-}" ]]; then
+            echo "STAGING_PERF_USERS_CSV is empty/not provided; skipping users.csv"
+            exit 0
+          fi
           f="performance-tests/src/gatling/resources/users.csv"
           mkdir -p "$(dirname "$f")"
-          printf "%s" "${{ secrets.STAGING_PERF_USERS_CSV }}" > "$f"
-          echo "users.csv written to $f"
+          printf "%s" "$STAGING_PERF_USERS_CSV" > "$f"
+          echo "users.csv written to $f" 
 
       - name: Build perf Docker runner
         run: |
