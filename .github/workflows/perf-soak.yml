@@ -4,21 +4,23 @@ on:
   schedule:
     - cron: "0 2 * * 0"   # Sundays 2AM UTC
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type RUN to execute"
+        required: true
 
 jobs:
   soak:
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/tc-gatling-tests.yml
     secrets: inherit
     with:
       tier: soak
       list_file: performance-tests/simulations/perf-soak.txt
-
       shard_index: 0
       shard_total: 1
-
       perf_base_url: ${{ secrets.PERF_BASE_URL_SOAK }}
       list_id: ${{ secrets.PERF_SAVED_LIST_ID }}
-
       run_budget_check: true
       max_failed_pct: 2.0
       max_p95_ms: 20000

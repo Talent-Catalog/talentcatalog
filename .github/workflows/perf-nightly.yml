@@ -4,51 +4,48 @@ on:
   schedule:
     - cron: "0 1 * * *"   # Daily 1AM UTC
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type RUN to execute"
+        required: true
 
 jobs:
   nightly-shards:
+    if: github.ref == 'refs/heads/main'
     strategy:
       fail-fast: false
       matrix:
         shard_index: [0, 1, 2, 3, 4]
         shard_total: [5]
-
     uses: ./.github/workflows/tc-gatling-tests.yml
     secrets: inherit
     with:
       tier: nightly
       list_file: performance-tests/simulations/perf-nightly.txt
-
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
-
       perf_base_url: ${{ secrets.PERF_BASE_URL_NIGHTLY }}
       list_id: ${{ secrets.PERF_SAVED_LIST_ID }}
-
-      # Budget runs only once in aggregator
       run_budget_check: false
 
   nightly-budget:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: nightly-shards
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Download all summaries
         uses: actions/download-artifact@v4
         with:
           pattern: perf-summary-nightly-shard-*
           path: all-summaries
           merge-multiple: true
-
       - name: Run combined budget check
         run: |
           python3 performance-tests/ci/budget_check.py \
             --summary-json-dir all-summaries \
             --max-failed-pct 1.0 \
             --max-p95-ms 15000
-
       - name: Upload combined summaries
         if: always()
         uses: actions/upload-artifact@v4

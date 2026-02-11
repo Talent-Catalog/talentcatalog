@@ -89,7 +89,7 @@ jobs:
             -v "$PWD/perf-raw:/work/performance-tests/build/perf-artifacts/raw" \
             tc-perf:${{ github.sha }} \
             -lc "cd /work && \
-              ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' -- \
+              bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' -- \
               -Dperf.baseUrl='${{ inputs.perf_base_url }}' \
               ${{ inputs.list_id != '' && format('-DlistId=''{0}''', inputs.list_id) || '' }}"
 
