@@ -88,6 +88,10 @@ jobs:
           SHARD_INDEX: ${{ inputs.shard_index }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
         run: |
+          echo "Runner UID:GID = $(id -u):$(id -g)"
+          ls -ld "$PWD" "$PWD/performance-tests" || true
+          mkdir -p perf-reports perf-summary perf-raw
+
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -e SHARD_INDEX="${SHARD_INDEX}" \
@@ -99,7 +103,8 @@ jobs:
             -v "$PWD/perf-summary:/work/performance-tests/build/perf-artifacts/summary" \
             -v "$PWD/perf-raw:/work/performance-tests/build/perf-artifacts/raw" \
             tc-perf:${{ github.sha }} \
-            -lc "cd /work && \
+            -lc "set -e; cd /work; \
+              mkdir -p performance-tests/build; \
               bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
               -Dperf.baseUrl='${{ inputs.perf_base_url }}'"
 
