@@ -36,6 +36,7 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 public class CandidateOpportunityReadDto {
     @JsonOneToOne(joinColumn = "candidate_id")
     private ShortCandidateReadDto candidate;
+    private Boolean closed;
     private String closingComments;
     private String closingCommentsForCandidate;
     @JsonOneToOne(joinColumn = "created_by")
@@ -55,4 +56,5 @@ public class CandidateOpportunityReadDto {
     @JsonOneToOne(joinColumn = "updated_by")
     private UserReadDto updatedBy;
     private OffsetDateTime updatedDate;
+    private Boolean won;
 }

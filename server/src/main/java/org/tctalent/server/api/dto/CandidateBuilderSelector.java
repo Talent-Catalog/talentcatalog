@@ -380,6 +380,8 @@ public class CandidateBuilderSelector {
             .add("candidate", shortCandidateDto())
             .add("name")
             .add("stage")
+            .add("closed")
+            .add("won")
             .add("nextStep")
             .add("nextStepDueDate")
             ;
