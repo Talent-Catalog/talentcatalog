@@ -1,4 +1,3 @@
-# .github/workflows/tc-gatling-tests.yml
 name: TC Gatling Tests (Reusable)
 
 on:
@@ -26,12 +25,6 @@ on:
         required: true
         type: string
 
-      # optional: pass users.csv content (from caller secrets)
-      users_csv:
-        required: false
-        default: ""
-        type: string
-
       run_budget_check:
         required: false
         default: true
@@ -47,6 +40,10 @@ on:
         default: 15000
         type: number
 
+    secrets:
+      USERS_CSV:
+        required: false
+
 jobs:
   gatling:
     runs-on: ubuntu-latest
@@ -56,6 +53,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Keep cache dirs non-root owned (avoids post-step tar permission issue)
       - name: Ensure Gradle cache dir exists
         run: |
           mkdir -p .gradle-cache/caches .gradle-cache/wrapper
@@ -66,17 +64,17 @@ jobs:
           path: |
             .gradle-cache/caches
             .gradle-cache/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', '**/build.gradle*', '**/settings.gradle*', '**/gradle.properties') }}
+          key: gradle-${{ runner.os }}-v1
           restore-keys: |
             gradle-${{ runner.os }}-
 
       - name: Write users.csv (optional)
         shell: bash
         env:
-          USERS_CSV: ${{ inputs.users_csv }}
+          USERS_CSV: ${{ secrets.USERS_CSV }}
         run: |
           if [[ -z "${USERS_CSV:-}" ]]; then
-            echo "users_csv not provided; skipping users.csv"
+            echo "USERS_CSV not provided; skipping users.csv"
             exit 0
           fi
 
