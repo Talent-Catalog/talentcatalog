@@ -254,7 +254,7 @@ resource "aws_ecs_task_definition" "web-app" {
         options = {
           awslogs-group         = "/fargate/service/${var.app}-${var.env}-fargate-log"
           awslogs-stream-prefix = "ecs"
-          awslogs-region        = data.aws_region.current.name
+          awslogs-region        = data.aws_region.current.id
         }
       }
       portMappings = [
