@@ -1,0 +1,1 @@
+org.talentcatalog.perf.simulations.http.health.HealthSimulation | -Dperf.healthPath=/actuator/health -DwarmupSeconds=2 -DmeasureSeconds=8 -DtotalConcurrentUsers=1

@@ -1,0 +1,3 @@
+# Nightly full suite (sharded)
+org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedSequentialABSimulation
+# Add more as you grow (100+ is fine)

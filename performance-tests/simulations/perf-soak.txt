@@ -1,0 +1,2 @@
+# Weekly/soak – long-running / heavier runs
+org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedParallelClosedSimulation

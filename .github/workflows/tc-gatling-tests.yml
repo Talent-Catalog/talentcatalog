@@ -1,44 +1,126 @@
-name: TC Gatling Tests
+name: TC Gatling Tests (Reusable)
 
 on:
-  push:
-    branches:
-      - staging
+  workflow_call:
+    inputs:
+      tier:
+        required: true
+        type: string
 
-  workflow_dispatch: # this attribute enables manual runs of this workflow
+      list_file:
+        required: true
+        type: string
+
+      shard_index:
+        required: false
+        default: 0
+        type: number
+
+      shard_total:
+        required: false
+        default: 1
+        type: number
+
+      perf_base_url:
+        required: true
+        type: string
+
+      list_id:
+        required: false
+        default: ""
+        type: string
+
+      warmup_seconds:
+        default: 20
+        type: number
+
+      measure_seconds:
+        default: 60
+        type: number
+
+      run_budget_check:
+        default: true
+        type: boolean
+
+      max_failed_pct:
+        default: 1.0
+        type: number
+
+      max_p95_ms:
+        default: 15000
+        type: number
 
 jobs:
-  run-tests:
-    # This job is intentionally disabled because the Gatling Tests are currently failing.
-    # The 'if: false' condition effectively prevents this job from running under any circumstances.
-    # This will remain in place until the SDET has a chance to review and set appropriate performance
-    # test benchmarks and a spin-up/tear-down perf environment is in place.
-    if: false # this attribute disables the job
+  gatling:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Set Up JDK
-        uses: actions/setup-java@v2
+      # ✅ Gradle cache on runner
+      - name: Restore Gradle cache
+        uses: actions/cache@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          path: .gradle-cache
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Build perf Docker runner
+        run: |
+          docker build \
+            -f performance-tests/Dockerfile \
+            -t tc-perf:${{ github.sha }} .
 
-      - name: Run Gatling Tests
-        run: ./gradlew performance-test:build
+      - name: Prepare output dirs
+        run: mkdir -p perf-reports perf-summary perf-raw
+
+      - name: Run simulations
         env:
-          DB_URL: ${{ secrets.STAGING_DB_URL }}
-          DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+          SHARD_INDEX: ${{ inputs.shard_index }}
+          SHARD_TOTAL: ${{ inputs.shard_total }}
+        run: |
+          docker run --rm \
+            -e SHARD_INDEX="${SHARD_INDEX}" \
+            -e SHARD_TOTAL="${SHARD_TOTAL}" \
+            -v "$PWD/.gradle-cache:/root/.gradle" \
+            -v "$PWD/perf-reports:/work/performance-tests/build/reports/gatling" \
+            -v "$PWD/perf-summary:/work/performance-tests/build/perf-artifacts/summary" \
+            -v "$PWD/perf-raw:/work/performance-tests/build/perf-artifacts/raw" \
+            tc-perf:${{ github.sha }} \
+            -lc "cd /work && \
+              ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
+              -Dperf.baseUrl=${{ inputs.perf_base_url }} \
+              ${{
+                inputs.list_id != '' && format('-DlistId={0}', inputs.list_id) || ''
+              }}"
 
-      - name: Archive Gatling Reports
-        uses: actions/upload-artifact@v4
+      - name: Budget check
+        if: ${{ inputs.run_budget_check }}
+        run: |
+          python3 performance-tests/ci/budget_check.py \
+            --summary-json-dir perf-summary \
+            --max-failed-pct ${{ inputs.max_failed_pct }} \
+            --max-p95-ms ${{ inputs.max_p95_ms }}
+
+      # ✅ Upload artifacts always
+      - name: Upload reports
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: Gatling Reports
-          path: performance-tests/build/reports/gatling
-          if-no-files-found: error
+          name: gatling-reports-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
+          path: perf-reports
+
+      - name: Upload summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-summary-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
+          path: perf-summary
+
+      - name: Upload raw logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-raw-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
+          path: perf-raw
