@@ -356,3 +356,4 @@ terraform.rc
 server/bin/
 server/src/test/resources/dump.sql
 server/src/test/resources/dump.sql
+performance-tests/src/gatling/resources/users.csv

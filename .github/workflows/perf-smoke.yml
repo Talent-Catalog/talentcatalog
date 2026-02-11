@@ -1,4 +1,3 @@
-# .github/workflows/perf-smoke.yml
 name: Perf Smoke
 
 on:
@@ -10,16 +9,19 @@ on:
 jobs:
   smoke:
     uses: ./.github/workflows/tc-gatling-tests.yml
-    secrets:
-      USERS_CSV: ${{ secrets.STAGING_PERF_USERS_CSV }}
     with:
       tier: smoke
       list_file: performance-tests/simulations/perf-smoke.txt
       shard_index: 0
       shard_total: 1
 
+      # static target (no secrets)
       perf_base_url: "https://tctalent-test.org"
 
+      # pass users.csv content to the reusable workflow
+      users_csv: ${{ secrets.STAGING_PERF_USERS_CSV }}
+
+      # bring-up mode (lenient)
       run_budget_check: false
       max_failed_pct: 100
       max_p95_ms: 999999
