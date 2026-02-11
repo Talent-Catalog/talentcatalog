@@ -6,40 +6,32 @@ on:
       tier:
         required: true
         type: string
-
       list_file:
         required: true
         type: string
-
       shard_index:
         required: false
         default: 0
         type: number
-
       shard_total:
         required: false
         default: 1
         type: number
-
       perf_base_url:
         required: true
         type: string
-
       run_budget_check:
         required: false
         default: true
         type: boolean
-
       max_failed_pct:
         required: false
         default: 1.0
         type: number
-
       max_p95_ms:
         required: false
         default: 15000
         type: number
-
     secrets:
       USERS_CSV:
         required: false
@@ -53,7 +45,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Keep cache dirs non-root owned (avoids post-step tar permission issue)
       - name: Ensure Gradle cache dir exists
         run: |
           mkdir -p .gradle-cache/caches .gradle-cache/wrapper
@@ -98,12 +89,13 @@ jobs:
           SHARD_TOTAL: ${{ inputs.shard_total }}
         run: |
           docker run --rm \
+            --user "$(id -u):$(id -g)" \
             -e SHARD_INDEX="${SHARD_INDEX}" \
             -e SHARD_TOTAL="${SHARD_TOTAL}" \
             -e GRADLE_USER_HOME=/tmp/.gradle \
             -v "$PWD:/work" \
             -v "$PWD/.gradle-cache:/tmp/.gradle" \
-            -v "$PWD/perf-reports:/work/performance-tests/build/reports/gatling" \
+            -v "$PWD/perf-reports:/work/build/reports/gatling" \
             -v "$PWD/perf-summary:/work/performance-tests/build/perf-artifacts/summary" \
             -v "$PWD/perf-raw:/work/performance-tests/build/perf-artifacts/raw" \
             tc-perf:${{ github.sha }} \
@@ -114,11 +106,11 @@ jobs:
       - name: Debug Gatling report output
         if: always()
         run: |
-          echo "=== perf-reports tree ==="
-          find perf-reports -maxdepth 3 -type f | head -n 50 || true
           echo "=== perf-reports dirs ==="
-          find perf-reports -maxdepth 2 -type d -print || true
-          
+          find perf-reports -maxdepth 3 -type d -print || true
+          echo "=== perf-reports files (sample) ==="
+          find perf-reports -maxdepth 4 -type f | head -n 60 || true
+
       - name: Budget check
         if: ${{ inputs.run_budget_check }}
         run: |

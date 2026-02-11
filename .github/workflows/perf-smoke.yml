@@ -19,7 +19,6 @@ jobs:
       shard_index: 0
       shard_total: 1
 
-      # static target (no secrets)
       perf_base_url: "https://tctalent-test.org"
 
       # bring-up mode (lenient)
