@@ -15,8 +15,7 @@ jobs:
       list_file: performance-tests/simulations/perf-soak.txt
       shard_index: 0
       shard_total: 1
-      perf_base_url: ${{ secrets.PERF_BASE_URL_SOAK }}
-      list_id: ${{ secrets.PERF_SAVED_LIST_ID }}
+      perf_base_url: "https://tctalent-test.org"
       run_budget_check: true
       max_failed_pct: 2.0
       max_p95_ms: 20000

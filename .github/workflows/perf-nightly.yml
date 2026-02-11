@@ -20,8 +20,7 @@ jobs:
       list_file: performance-tests/simulations/perf-nightly.txt
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
-      perf_base_url: ${{ secrets.PERF_BASE_URL_NIGHTLY }}
-      list_id: ${{ secrets.PERF_SAVED_LIST_ID }}
+      perf_base_url: "https://tctalent-test.org"
       run_budget_check: false
 
   nightly-budget:

@@ -3,7 +3,9 @@ name: Perf Smoke
 on:
   push:
     branches:
-      - "**"
+      - '*'
+      - '!staging'
+      - '!master'
   workflow_dispatch:
 
 jobs:
@@ -21,7 +23,6 @@ jobs:
 
       perf_base_url: "https://tctalent-test.org"
 
-      # bring-up mode (lenient)
       run_budget_check: false
       max_failed_pct: 100
       max_p95_ms: 999999
