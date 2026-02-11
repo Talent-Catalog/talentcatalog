@@ -111,6 +111,14 @@ jobs:
               bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
               -Dperf.baseUrl='${{ inputs.perf_base_url }}'"
 
+      - name: Debug Gatling report output
+        if: always()
+        run: |
+          echo "=== perf-reports tree ==="
+          find perf-reports -maxdepth 3 -type f | head -n 50 || true
+          echo "=== perf-reports dirs ==="
+          find perf-reports -maxdepth 2 -type d -print || true
+          
       - name: Budget check
         if: ${{ inputs.run_budget_check }}
         run: |
