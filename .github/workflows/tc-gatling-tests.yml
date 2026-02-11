@@ -88,10 +88,6 @@ jobs:
           SHARD_INDEX: ${{ inputs.shard_index }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
         run: |
-          echo "Runner UID:GID = $(id -u):$(id -g)"
-          ls -ld "$PWD" "$PWD/performance-tests" || true
-          mkdir -p perf-reports perf-summary perf-raw
-
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -e SHARD_INDEX="${SHARD_INDEX}" \
@@ -100,13 +96,10 @@ jobs:
             -v "$PWD:/work" \
             -v "$PWD/.gradle-cache:/tmp/.gradle" \
             -v "$PWD/perf-reports:/work/build/reports/gatling" \
-            -v "$PWD/perf-summary:/work/performance-tests/build/perf-artifacts/summary" \
-            -v "$PWD/perf-raw:/work/performance-tests/build/perf-artifacts/raw" \
+            -v "$PWD/perf-summary:/work/perf-summary" \
+            -v "$PWD/perf-raw:/work/perf-raw" \
             tc-perf:${{ github.sha }} \
-            -lc "set -e; cd /work; \
-              mkdir -p performance-tests/build; \
-              bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
-              -Dperf.baseUrl='${{ inputs.perf_base_url }}'"
+            -lc "cd /work && bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' -Dperf.baseUrl='${{ inputs.perf_base_url }}'"
 
       - name: Debug Gatling report output
         if: always()

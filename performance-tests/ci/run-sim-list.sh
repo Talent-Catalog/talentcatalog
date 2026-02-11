@@ -8,7 +8,6 @@ if [[ -z "$LIST_FILE" ]]; then
   echo "Usage: run-sim-list.sh <list-file> [extra gradle args...]"
   exit 1
 fi
-
 if [[ ! -f "$LIST_FILE" ]]; then
   echo "List file not found: $LIST_FILE"
   exit 1
@@ -17,7 +16,6 @@ fi
 SHARD_INDEX="${SHARD_INDEX:-0}"
 SHARD_TOTAL="${SHARD_TOTAL:-1}"
 
-# Basic shard sanity
 if ! [[ "$SHARD_TOTAL" =~ ^[0-9]+$ ]] || (( SHARD_TOTAL < 1 )); then
   echo "Invalid SHARD_TOTAL: $SHARD_TOTAL (must be >= 1)"
   exit 1
@@ -32,15 +30,12 @@ echo "Shard total: $SHARD_TOTAL"
 echo "List file:   $LIST_FILE"
 echo "Extra args:  $*"
 
-# Read sims (ignore blanks/comments)
 mapfile -t ALL_SIMS < <(grep -vE '^\s*#|^\s*$' "$LIST_FILE" || true)
-
 if [[ ${#ALL_SIMS[@]} -eq 0 ]]; then
   echo "No simulations found in $LIST_FILE"
   exit 1
 fi
 
-# Select sims for this shard
 SIMS=()
 for i in "${!ALL_SIMS[@]}"; do
   if (( i % SHARD_TOTAL == SHARD_INDEX )); then
@@ -51,15 +46,19 @@ done
 echo "Simulations in this shard: ${#SIMS[@]}"
 printf ' - %s\n' "${SIMS[@]}"
 
-REPORT_ROOT="build/reports/gatling"
+# IMPORTANT:
+# - Do NOT write Gradle build output into the repo (mounted /work) because it may be read-only in containers.
+# - Use /tmp for all Gradle build output and copy artifacts to mounted dirs.
 
-RAW_ROOT="performance-tests/build/perf-artifacts/raw"
-SUMMARY_ROOT="performance-tests/build/perf-artifacts/summary"
-mkdir -p "$RAW_ROOT" "$SUMMARY_ROOT" "$REPORT_ROOT"
+HOST_REPORT_ROOT="/work/build/reports/gatling"                 # mounted to perf-reports
+HOST_RAW_ROOT="/work/perf-raw"                                # mounted to perf-raw
+HOST_SUMMARY_ROOT="/work/perf-summary"                        # mounted to perf-summary
+mkdir -p "$HOST_REPORT_ROOT" "$HOST_RAW_ROOT" "$HOST_SUMMARY_ROOT"
 
-# Split extra args into JVM -D props vs other Gradle args
-# We must pass -D... BEFORE the task name to avoid:
-#   "Unknown command-line option '-D'"
+TMP_BUILD_ROOT="/tmp/tc-build"
+TMP_REPORT_ROOT="$TMP_BUILD_ROOT/reports/gatling"
+mkdir -p "$TMP_BUILD_ROOT" "$TMP_REPORT_ROOT"
+
 JVM_PROPS=()
 GRADLE_ARGS=()
 for a in "$@"; do
@@ -70,7 +69,15 @@ for a in "$@"; do
   fi
 done
 
-# Run each sim
+copy_latest_report_dir() {
+  # Copy the newest Gatling run dir to host report root
+  local newest
+  newest="$(ls -1dt "$TMP_REPORT_ROOT"/* 2>/dev/null | head -n 1 || true)"
+  if [[ -n "$newest" && -d "$newest" ]]; then
+    cp -R "$newest" "$HOST_REPORT_ROOT/" || true
+  fi
+}
+
 for LINE in "${SIMS[@]}"; do
   echo
   echo "=============================="
@@ -94,35 +101,39 @@ for LINE in "${SIMS[@]}"; do
 
   unset EXIT_CODE
 
-  # rm -rf "$REPORT_ROOT"/* || true
+  # Clean tmp report output between sims to avoid mixing
+  rm -rf "$TMP_REPORT_ROOT"/* || true
 
   # Run Gatling
-  # - JVM_PROPS (-D...) must come before the task
-  # - SIM_PROPS from the list file are appended as-is (usually -D... too)
+  # -D props must come before task
+  # Force Gradle build output to /tmp (writable), not /work (mounted repo)
   # shellcheck disable=SC2086
   ./gradlew --no-daemon \
     "${JVM_PROPS[@]}" \
+    -g "${GRADLE_USER_HOME:-/tmp/.gradle}" \
+    -Dorg.gradle.project.performanceTestsBuildDir="$TMP_BUILD_ROOT" \
     :performance-tests:gatlingTest \
     -PsimClass="$SIM_CLASS" \
     $SIM_PROPS \
     "${GRADLE_ARGS[@]}" || EXIT_CODE=$?
 
-  # Copy newest simulation.log into perf-artifacts/raw
-  LATEST_LOG="$(find "$REPORT_ROOT" -name simulation.log -type f -print0 2>/dev/null \
-    | xargs -0 -r ls -1t 2>/dev/null | head -n 1 || true)"
+  # Copy newest report dir (contains index.html etc) to mounted perf-reports
+  copy_latest_report_dir
 
+  # Copy simulation.log if present (from tmp report root)
+  LATEST_LOG="$(find "$TMP_REPORT_ROOT" -name simulation.log -type f -print0 2>/dev/null | xargs -0 -r ls -1t 2>/dev/null | head -n 1 || true)"
   if [[ -n "$LATEST_LOG" && -f "$LATEST_LOG" ]]; then
-    cp "$LATEST_LOG" "$RAW_ROOT/${RUN_ID}_simulation.log"
+    cp "$LATEST_LOG" "$HOST_RAW_ROOT/${RUN_ID}_simulation.log"
   else
     echo "WARN: simulation.log not found for $SIM_CLASS"
   fi
 
   # Summary
-  if [[ -f "performance-tests/ci/summarize_gatling.py" ]]; then
-    python3 performance-tests/ci/summarize_gatling.py \
-      --report-root "$REPORT_ROOT" \
-      --out-md "$SUMMARY_ROOT/${RUN_ID}.md" \
-      --out-json "$SUMMARY_ROOT/${RUN_ID}.json" \
+  if [[ -f "/work/performance-tests/ci/summarize_gatling.py" ]]; then
+    python3 /work/performance-tests/ci/summarize_gatling.py \
+      --report-root "$TMP_REPORT_ROOT" \
+      --out-md "$HOST_SUMMARY_ROOT/${RUN_ID}.md" \
+      --out-json "$HOST_SUMMARY_ROOT/${RUN_ID}.json" \
       --sim-class "$SIM_CLASS" \
       --run-id "$RUN_ID" || true
   else
