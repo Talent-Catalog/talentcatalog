@@ -62,9 +62,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .gradle-cache
-          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', '**/build.gradle*', '**/settings.gradle*', '**/gradle.properties') }}
+          key: gradle-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            gradle-${{ runner.os }}- 
+            gradle-${{ runner.os }}-
 
       - name: Build perf Docker runner
         run: |
