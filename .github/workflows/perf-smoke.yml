@@ -12,7 +12,6 @@ jobs:
     with:
       tier: smoke
       list_file: performance-tests/simulations/perf-smoke.txt
-
       shard_index: 0
       shard_total: 1
 
