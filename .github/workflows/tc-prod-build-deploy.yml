@@ -110,4 +110,4 @@ jobs:
           aws-region: eu-west-2
 
       - name: Deploy to OPC with Jib
-        run: ./gradlew jib -Pprod-tc-system
+        run: ./gradlew jib -Popc-prod
