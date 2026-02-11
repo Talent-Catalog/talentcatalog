@@ -30,23 +30,18 @@ on:
         default: ""
         type: string
 
-      warmup_seconds:
-        default: 20
-        type: number
-
-      measure_seconds:
-        default: 60
-        type: number
-
       run_budget_check:
+        required: false
         default: true
         type: boolean
 
       max_failed_pct:
+        required: false
         default: 1.0
         type: number
 
       max_p95_ms:
+        required: false
         default: 15000
         type: number
 
@@ -56,15 +51,19 @@ jobs:
     timeout-minutes: 180
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # ✅ Gradle cache on runner
+      - name: Ensure Gradle cache dir exists
+        run: mkdir -p .gradle-cache
+
       - name: Restore Gradle cache
         uses: actions/cache@v4
         with:
           path: .gradle-cache
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', '**/build.gradle*', '**/settings.gradle*', '**/gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Build perf Docker runner
         run: |
@@ -83,17 +82,26 @@ jobs:
           docker run --rm \
             -e SHARD_INDEX="${SHARD_INDEX}" \
             -e SHARD_TOTAL="${SHARD_TOTAL}" \
+            -v "$PWD:/work" \
             -v "$PWD/.gradle-cache:/root/.gradle" \
             -v "$PWD/perf-reports:/work/performance-tests/build/reports/gatling" \
             -v "$PWD/perf-summary:/work/performance-tests/build/perf-artifacts/summary" \
             -v "$PWD/perf-raw:/work/performance-tests/build/perf-artifacts/raw" \
             tc-perf:${{ github.sha }} \
             -lc "cd /work && \
-              ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
-              -Dperf.baseUrl=${{ inputs.perf_base_url }} \
-              ${{
-                inputs.list_id != '' && format('-DlistId={0}', inputs.list_id) || ''
-              }}"
+              ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' -- \
+              -Dperf.baseUrl='${{ inputs.perf_base_url }}' \
+              ${{ inputs.list_id != '' && format('-DlistId=''{0}''', inputs.list_id) || '' }}"
+
+      - name: Debug artifact dirs (temporary)
+        if: always()
+        run: |
+          echo "=== perf-reports ==="
+          find perf-reports -maxdepth 3 -type d -print || true
+          echo "=== perf-summary ==="
+          ls -la perf-summary || true
+          echo "=== perf-raw ==="
+          ls -la perf-raw || true
 
       - name: Budget check
         if: ${{ inputs.run_budget_check }}
@@ -103,7 +111,6 @@ jobs:
             --max-failed-pct ${{ inputs.max_failed_pct }} \
             --max-p95-ms ${{ inputs.max_p95_ms }}
 
-      # ✅ Upload artifacts always
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
