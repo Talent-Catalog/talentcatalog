@@ -1,3 +1,4 @@
+# .github/workflows/tc-gatling-tests.yml
 name: TC Gatling Tests (Reusable)
 
 on:
@@ -89,7 +90,7 @@ jobs:
             -v "$PWD/perf-raw:/work/performance-tests/build/perf-artifacts/raw" \
             tc-perf:${{ github.sha }} \
             -lc "cd /work && \
-              bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' -- \
+              bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
               -Dperf.baseUrl='${{ inputs.perf_base_url }}' \
               ${{ inputs.list_id != '' && format('-DlistId=''{0}''', inputs.list_id) || '' }}"
 
@@ -97,7 +98,7 @@ jobs:
         if: always()
         run: |
           echo "=== perf-reports ==="
-          find perf-reports -maxdepth 3 -type d -print || true
+          find perf-reports -maxdepth 4 -type d -print || true
           echo "=== perf-summary ==="
           ls -la perf-summary || true
           echo "=== perf-raw ==="

@@ -15,9 +15,11 @@ jobs:
       shard_index: 0
       shard_total: 1
 
+      # static (no secrets)
       perf_base_url: "https://tctalent-test.org"
       list_id: ""
 
+      # bring-up
       run_budget_check: false
       max_failed_pct: 100
       max_p95_ms: 999999

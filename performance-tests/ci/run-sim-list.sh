@@ -33,6 +33,16 @@ fi
 SHARD_INDEX="${SHARD_INDEX:-0}"
 SHARD_TOTAL="${SHARD_TOTAL:-1}"
 
+# Basic shard sanity
+if ! [[ "$SHARD_TOTAL" =~ ^[0-9]+$ ]] || (( SHARD_TOTAL < 1 )); then
+  echo "Invalid SHARD_TOTAL: $SHARD_TOTAL (must be >= 1)"
+  exit 1
+fi
+if ! [[ "$SHARD_INDEX" =~ ^[0-9]+$ ]] || (( SHARD_INDEX < 0 || SHARD_INDEX >= SHARD_TOTAL )); then
+  echo "Invalid SHARD_INDEX: $SHARD_INDEX (must be 0 <= index < total)"
+  exit 1
+fi
+
 echo "Shard index: $SHARD_INDEX"
 echo "Shard total: $SHARD_TOTAL"
 echo "List file:   $LIST_FILE"
@@ -63,6 +73,19 @@ RAW_ROOT="performance-tests/build/perf-artifacts/raw"
 SUMMARY_ROOT="performance-tests/build/perf-artifacts/summary"
 mkdir -p "$RAW_ROOT" "$SUMMARY_ROOT" "$REPORT_ROOT"
 
+# Split extra args into JVM -D props vs other Gradle args
+# We must pass -D... BEFORE the task name to avoid:
+#   "Unknown command-line option '-D'"
+JVM_PROPS=()
+GRADLE_ARGS=()
+for a in "$@"; do
+  if [[ "$a" == -D* ]]; then
+    JVM_PROPS+=("$a")
+  else
+    GRADLE_ARGS+=("$a")
+  fi
+done
+
 # Run each sim
 for LINE in "${SIMS[@]}"; do
   echo
@@ -89,15 +112,22 @@ for LINE in "${SIMS[@]}"; do
   # Reset exit code per sim
   unset EXIT_CODE
 
-  # Run Gatling (props are appended after simClass)
+  # Avoid report mixing between sims
+  rm -rf "$REPORT_ROOT"/* || true
+
+  # Run Gatling
+  # - JVM_PROPS (-D...) must come before the task
+  # - SIM_PROPS from the list file are appended as-is (usually -D... too)
   # shellcheck disable=SC2086
-  ./gradlew :performance-tests:gatlingTest --no-daemon \
+  ./gradlew --no-daemon \
+    "${JVM_PROPS[@]}" \
+    :performance-tests:gatlingTest \
     -PsimClass="$SIM_CLASS" \
     $SIM_PROPS \
-    "$@" || EXIT_CODE=$?
+    "${GRADLE_ARGS[@]}" || EXIT_CODE=$?
 
-  # Find newest simulation.log (if created)
-  LATEST_LOG="$(find "$REPORT_ROOT" -name simulation.log -type f -print0 | xargs -0 ls -1t | head -n 1 || true)"
+  # Find newest simulation.log (if created) — safe even if none exist
+  LATEST_LOG="$(find "$REPORT_ROOT" -name simulation.log -type f -print0 2>/dev/null | xargs -0 -r ls -1t 2>/dev/null | head -n 1 || true)"
   if [[ -n "$LATEST_LOG" && -f "$LATEST_LOG" ]]; then
     cp "$LATEST_LOG" "$RAW_ROOT/${RUN_ID}_simulation.log"
   else

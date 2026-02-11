@@ -4,10 +4,6 @@ on:
   schedule:
     - cron: "0 2 * * 0"   # Sundays 2AM UTC
   workflow_dispatch:
-    inputs:
-      confirm:
-        description: "Type RUN to execute"
-        required: true
 
 jobs:
   soak:

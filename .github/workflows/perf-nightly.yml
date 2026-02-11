@@ -4,10 +4,6 @@ on:
   schedule:
     - cron: "0 1 * * *"   # Daily 1AM UTC
   workflow_dispatch:
-    inputs:
-      confirm:
-        description: "Type RUN to execute"
-        required: true
 
 jobs:
   nightly-shards:
@@ -40,12 +36,14 @@ jobs:
           pattern: perf-summary-nightly-shard-*
           path: all-summaries
           merge-multiple: true
+
       - name: Run combined budget check
         run: |
           python3 performance-tests/ci/budget_check.py \
             --summary-json-dir all-summaries \
             --max-failed-pct 1.0 \
             --max-p95-ms 15000
+
       - name: Upload combined summaries
         if: always()
         uses: actions/upload-artifact@v4
