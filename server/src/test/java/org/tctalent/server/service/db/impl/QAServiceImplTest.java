@@ -56,7 +56,7 @@ class QAServiceImplTest {
 
   @Test
   void loadQAContext_whenFileInvalid_returnsEmptyString() throws IOException {
-    ClassPathResource resource = new ClassPathResource("static/pdf/chatbotQAFile.json");
+    ClassPathResource resource = new ClassPathResource("chatbot/chatbotQAFile.json");
     Path filePath = resource.getFile().toPath();
     String originalContent = Files.readString(filePath);
 
