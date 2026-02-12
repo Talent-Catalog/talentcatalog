@@ -356,4 +356,7 @@ terraform.rc
 server/bin/
 server/src/test/resources/dump.sql
 server/src/test/resources/dump.sql
-performance-tests/src/gatling/resources/users.csv
+
+# Ignore SSM parameter scripts containing sensitive data
+/infra/aws/terraform/opc-staging/ssm-parameters.sh
+/infra/aws/terraform/opc-prod/ssm-parameters.sh

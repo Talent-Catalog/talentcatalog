@@ -1,4 +1,5 @@
-# This workflow builds a Java project with Gradle and deploys to Elastic beanstalk on a push to master
+# This workflow builds a Java project with Gradle, runs tests, then deploys to
+# TBB and OPC prod environments.
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 # And https://github.com/marketplace/actions/beanstalk-deploy
 
@@ -9,8 +10,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  build-and-deploy:
+    name: Build, Test and Deploy to Prod
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +29,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Configure AWS credentials
+      # --- Build and Test ---
+
+      - name: Configure AWS credentials for test resources
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -40,12 +43,33 @@ jobs:
           mkdir -p server/src/test/resources
           aws s3 cp s3://tctalent-prod-db-dumps/dump.sql server/src/test/resources/dump.sql
 
-      - name: Build with Gradle
-        run: ./gradlew server:build # We won't run the perf tests here
+      - name: Build and test with Gradle
+        run: ./gradlew server:build
         env:
           GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
           GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
           SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
 
-      - name: Deploy with Jib
-        run: ./gradlew jib -Pprod-tc-system
+      # --- Deploy to TBB Prod (us-east-1) ---
+
+      - name: Configure AWS credentials for TBB
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to TBB with Jib
+        run: ./gradlew jib -Pprod-tc-system -x test
+
+      # --- Deploy to OPC Prod (eu-west-2) ---
+
+      - name: Configure AWS credentials for OPC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_OPC_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_OPC_PROD }}
+          aws-region: eu-west-2
+
+      - name: Deploy to OPC with Jib
+        run: ./gradlew jib -Popc-prod -x test

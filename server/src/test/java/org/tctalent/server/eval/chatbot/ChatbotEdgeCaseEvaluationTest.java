@@ -56,6 +56,7 @@ import org.tctalent.server.service.db.ChatbotService;
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag("chatbot-eval")
+@Tag("skip-test-in-gradle-build")
 public class ChatbotEdgeCaseEvaluationTest {
 
   @Autowired private ChatbotService chatbotService;
