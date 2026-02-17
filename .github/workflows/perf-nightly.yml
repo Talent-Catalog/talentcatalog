@@ -34,7 +34,7 @@ jobs:
       shard_total: ${{ matrix.shard_total }}
       perf_base_url: "https://tctalent-test.org"
       run_budget_check: false
-
+      max_failed_pct: 20.0
   nightly-budget:
     if: |
       (github.event_name == 'push' && github.ref == 'refs/heads/3082-containerize-performance-tests-execution-gatling') ||
