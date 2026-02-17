@@ -186,367 +186,321 @@ variable "availability_zones" {
 }
 
 ### Spring application configuration variables:
+### All values are provided by the environment's main.tf (non-secrets)
+### or passed through from secrets.auto.tfvars (secrets).
+
+# --- Non-secret parameters (values provided directly in main.tf) ---
+
+variable "s3_bucket" {
+  type        = string
+  description = "S3 bucket name"
+}
+
+variable "environment" {
+  type        = string
+  description = "Denotes running environment (e.g., opc-staging, opc-prod)"
+}
+
+variable "email_default" {
+  type        = string
+  description = "Default email address"
+}
+
+variable "email_test_override" {
+  type        = string
+  description = "Test override email address"
+}
+
+variable "email_user" {
+  type        = string
+  description = "Email user"
+}
+
+variable "email_type" {
+  type        = string
+  description = "Email type (e.g., SMTP)"
+}
+
+variable "es_url" {
+  type        = string
+  description = "Elasticsearch URL (todo: retire elasticsearch)"
+}
+
+variable "es_username" {
+  type        = string
+  description = "Elasticsearch username (todo: retire elasticsearch)"
+}
+
+variable "gradle_home" {
+  type        = string
+  description = "Gradle home directory"
+}
+
+variable "java_home" {
+  type        = string
+  description = "Java home directory"
+}
+
+variable "logbuilder_include_cpu_utilization" {
+  type        = string
+  description = "LogBuilder flag to include CPU utilization metrics"
+}
+
+variable "logbuilder_include_memory_utilization" {
+  type        = string
+  description = "LogBuilder flag to include memory utilization metrics"
+}
+
+variable "m2" {
+  type        = string
+  description = "Maven binary path"
+}
+
+variable "m2_home" {
+  type        = string
+  description = "Maven home directory"
+}
+
+variable "server_port" {
+  type        = string
+  description = "Server port"
+}
+
+variable "server_url" {
+  type        = string
+  description = "Server URL"
+}
+
+variable "sf_base_classic_url" {
+  type        = string
+  description = "Salesforce Classic base URL"
+}
+
+variable "sf_base_lightning_url" {
+  type        = string
+  description = "Salesforce Lightning base URL"
+}
+
+variable "sf_base_login_url" {
+  type        = string
+  description = "Salesforce login base URL"
+}
+
+variable "spring_client_url" {
+  type        = string
+  description = "Spring Boot admin client URL"
+}
+
+variable "spring_datasource_username" {
+  type        = string
+  description = "Spring datasource username"
+}
+
+variable "spring_db_pool_max" {
+  type        = string
+  description = "Spring database max pool size"
+}
+
+variable "spring_db_pool_min" {
+  type        = string
+  description = "Spring database min pool size"
+}
+
+variable "spring_servlet_max_file_size" {
+  type        = string
+  description = "Spring servlet multipart max file size"
+}
+
+variable "spring_servlet_max_request_size" {
+  type        = string
+  description = "Spring servlet multipart max request size"
+}
+
+variable "tc_api_url" {
+  type        = string
+  description = "TC API URL"
+}
+
+variable "tc_cors_urls" {
+  type        = string
+  description = "TC CORS URLs (comma-separated)"
+}
+
+variable "tc_db_copy_config" {
+  type        = string
+  description = "TC partner DB copy config"
+}
+
+variable "tc_destinations" {
+  type        = string
+  description = "TC destinations configuration"
+}
+
+variable "tc_skills_extraction_api_url" {
+  type        = string
+  description = "TC skills extraction API URL"
+}
+
+variable "web_admin" {
+  type        = string
+  description = "Web admin portal URL"
+}
+
+variable "web_portal" {
+  type        = string
+  description = "Candidate portal URL"
+}
+
+# --- Auto-populated parameters (conditionally managed by Terraform) ---
+
+variable "redis_host" {
+  type        = string
+  description = "Redis host (auto-populated from ElastiCache when cache_enable=true)"
+  default     = ""
+}
+
+variable "redis_port" {
+  type        = string
+  description = "Redis port (auto-populated from ElastiCache when cache_enable=true)"
+  default     = ""
+}
+
+variable "spring_datasource_url" {
+  type        = string
+  description = "Spring datasource URL (auto-populated from RDS when db_enable=true)"
+  default     = ""
+}
+
+# --- Secret parameters (values loaded from secrets.auto.tfvars) ---
 
 variable "aws_access_key" {
   type        = string
-  description = "AWS access key to be used by the Java application (optional - uses placeholder if not provided)"
-  default     = null
+  description = "AWS access key for S3 access"
+  sensitive   = true
 }
 
 variable "aws_secret_key" {
   type        = string
-  description = "AWS secret key to be used by the Java application (optional - uses placeholder if not provided)"
-  default     = null
-  # NOTE: 'sensitive = true' hides sensitive info in Terraform logs and outputs e.g. in cloud environments
+  description = "AWS secret key for S3 access"
   sensitive   = true
-}
-
-variable "s3_bucket" {
-  type        = string
-  description = "S3 bucket name (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "duolingo_api_secret" {
   type        = string
-  description = "Duolingo API secret (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Duolingo API secret"
   sensitive   = true
 }
 
 variable "es_password" {
   type        = string
-  description = "ElasticSearch password (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Elasticsearch password (todo: retire elasticsearch)"
   sensitive   = true
-}
-
-variable "es_url" {
-  type        = string
-  description = "ElasticSearch URL (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "es_username" {
-  type        = string
-  description = "ElasticSearch username (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "email_default" {
-  type        = string
-  description = "Default email (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "email_password" {
   type        = string
-  description = "Email password (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Email password"
   sensitive   = true
-}
-
-variable "email_test_override" {
-  type        = string
-  description = "Test override email (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "email_user" {
-  type        = string
-  description = "Email user (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "email_type" {
-  type        = string
-  description = "Email type (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "environment" {
-  type        = string
-  description = "Denotes running environment (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "drive_id" {
   type        = string
-  description = "Google Drive candidate drive ID (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Google Drive candidate data drive ID"
   sensitive   = true
 }
 
 variable "drive_rootfolder" {
   type        = string
-  description = "Google Drive root folder ID (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Google Drive candidate root folder ID"
   sensitive   = true
 }
 
 variable "drive_list_folders_id" {
   type        = string
-  description = "Google Drive list folders drive ID (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Google Drive list folders drive ID"
   sensitive   = true
 }
 
 variable "drive_list_folders_root_id" {
   type        = string
-  description = "Google Drive list folders root ID (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Google Drive list folders root ID"
   sensitive   = true
 }
 
 variable "drive_private_key" {
   type        = string
-  description = "Google Drive private key (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Google Drive private key (PEM format with literal \\n)"
   sensitive   = true
 }
 
 variable "drive_private_key_id" {
   type        = string
-  description = "Google Drive private key ID (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Google Drive private key ID"
   sensitive   = true
-}
-
-variable "gradle_home" {
-  type        = string
-  description = "Gradle home directory (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "java_home" {
-  type        = string
-  description = "Java home directory (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "jwt_secret" {
   type        = string
-  description = "JWT secret (optional - uses placeholder if not provided)"
-  default     = null
+  description = "JWT secret"
   sensitive   = true
-}
-
-variable "logbuilder_include_cpu_utilization" {
-  type        = string
-  description = "LogBuilder flag to include CPU utilization metrics (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "logbuilder_include_memory_utilization" {
-  type        = string
-  description = "LogBuilder flag to include memory utilization metrics (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "m2" {
-  type        = string
-  description = "M2 (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "m2_home" {
-  type        = string
-  description = "M2 home directory (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "preset_api_token" {
   type        = string
-  description = "Preset API token (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Preset API token"
   sensitive   = true
 }
 
 variable "preset_secret" {
   type        = string
-  description = "Preset secret (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Preset secret"
   sensitive   = true
 }
 
 variable "preset_workspace_id" {
   type        = string
-  description = "Preset workspace ID (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Preset workspace ID"
   sensitive   = true
-}
-
-variable "redis_host" {
-  type        = string
-  description = "Redis host (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "redis_port" {
-  type        = string
-  description = "Redis port (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "server_port" {
-  type        = string
-  description = "Server port (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "server_url" {
-  type        = string
-  description = "Server URL (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "sf_base_classic_url" {
-  type        = string
-  description = "Salesforce Classic base URL (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "sf_base_lightning_url" {
-  type        = string
-  description = "Salesforce Lightning base URL (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "sf_base_login_url" {
-  type        = string
-  description = "Salesforce login base URL - for obtaining an access token (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "sf_consumer_key" {
   type        = string
-  description = "Salesforce connected app client ID, also for access token (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Salesforce connected app consumer key"
   sensitive   = true
 }
 
 variable "sf_private_key" {
   type        = string
-  description = "Salesforce private key (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Salesforce private key"
   sensitive   = true
 }
 
 variable "sf_user" {
   type        = string
-  description = "Salesforce logging-in user for access token (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Salesforce user for access token"
   sensitive   = true
 }
 
 variable "slack_token" {
   type        = string
-  description = "Slack token (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Slack token"
   sensitive   = true
-}
-
-variable "spring_client_url" {
-  type        = string
-  description = "Spring Boot admin client URL (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "spring_datasource_url" {
-  type        = string
-  description = "Spring datasource URL (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "spring_datasource_password" {
   type        = string
-  description = "Spring datasource password (optional - uses placeholder if not provided)"
-  default     = null
+  description = "Spring datasource (RDS) password"
   sensitive   = true
-}
-
-variable "spring_datasource_username" {
-  type        = string
-  description = "Spring datasource username (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "spring_db_pool_max" {
-  type        = string
-  description = "Spring database max pool size (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "spring_db_pool_min" {
-  type        = string
-  description = "Spring database min pool size (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "spring_servlet_max_file_size" {
-  type        = string
-  description = "Spring servlet multipart max file size (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "spring_servlet_max_request_size" {
-  type        = string
-  description = "Spring servlet multipart max request size (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "tc_api_key" {
   type        = string
-  description = "TC API key (optional - uses placeholder if not provided)"
-  default     = null
+  description = "TC API key"
   sensitive   = true
-}
-
-variable "tc_api_url" {
-  type        = string
-  description = "TC API URL (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "tc_cors_urls" {
-  type        = string
-  description = "TC CORS URLs (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "tc_db_copy_config" {
-  type        = string
-  description = "TC partner DB copy config (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "tc_destinations" {
-  type        = string
-  description = "TC destinations configuration (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "tc_skills_extraction_api_url" {
-  type        = string
-  description = "TC skills extraction API URL (optional - uses placeholder if not provided)"
-  default     = null
 }
 
 variable "translation_password" {
   type        = string
-  description = "Translation password (optional - if not provided, must exist in SSM)"
-  default     = null
+  description = "Translation password"
   sensitive   = true
-}
-
-variable "web_admin" {
-  type        = string
-  description = "Web admin URL (optional - uses placeholder if not provided)"
-  default     = null
-}
-
-variable "web_portal" {
-  type        = string
-  description = "Candidate portal URL (optional - uses placeholder if not provided)"
-  default     = null
 }
