@@ -20,7 +20,7 @@ on:
       perf_base_url:
         required: true
         type: string
-      run_budget_check:
+      run_performance_threshold_check:
         required: false
         default: true
         type: boolean
@@ -103,10 +103,10 @@ jobs:
               -Dperf.baseUrl='${{ inputs.perf_base_url }}' \
               -Dperf.maxFailedPct=${{ inputs.max_failed_pct }} \
               -Dperf.maxP95Ms=$([[ '${{ inputs.tier }}' == 'nightly' ]] && echo 0 || echo 2000)"
-      - name: Budget check
-        if: ${{ inputs.run_budget_check }}
+      - name: Performance Threshold Check
+        if: ${{ inputs.run_performance_threshold_check }}
         run: |
-          python3 performance-tests/ci/budget_check.py \
+          python3 performance-tests/ci/performance_threshold_check.py \
             --summary-json-dir perf-summary \
             --max-failed-pct ${{ inputs.max_failed_pct }} \
             --max-p95-ms ${{ inputs.max_p95_ms }}

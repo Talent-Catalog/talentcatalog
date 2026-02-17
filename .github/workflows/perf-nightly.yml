@@ -33,9 +33,9 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       perf_base_url: "https://tctalent-test.org"
-      run_budget_check: false
+      run_performance_threshold_check: false
       max_failed_pct: 20.0
-  nightly-budget:
+  nightly-threshold-check:
     if: |
       (github.event_name == 'push' && github.ref == 'refs/heads/3082-containerize-performance-tests-execution-gatling') ||
       (github.event_name == 'schedule' && github.ref == 'refs/heads/staging') ||
@@ -52,9 +52,9 @@ jobs:
           path: all-summaries
           merge-multiple: true
 
-      - name: Run combined budget check
+      - name: Performance Threshold Check
         run: |
-          python3 performance-tests/ci/budget_check.py \
+          python3 performance-tests/ci/performance_threshold_check.py \
             --summary-json-dir all-summaries \
             --warn-only \
             --ignore-failures \

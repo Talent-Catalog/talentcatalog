@@ -2,7 +2,7 @@
 FROM eclipse-temurin:17-jdk-jammy
 # This will add:
 # bash: to run shell scripts
-# python3: for budget_check.py and summarize_gatling.py
+# python3: for performance_threshold_check.py and summarize_gatling.py
 # ca-certificates: so HTTPS downloads work
 # git: sometimes Gradle deps/plugins come from git, or scripts may need it
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -34,7 +34,7 @@ COPY performance-tests /work/performance-tests
 RUN chmod +x /work/gradlew \
   && chmod +x /work/performance-tests/ci/run-sim-list.sh \
   && chmod +x /work/performance-tests/ci/summarize_gatling.py \
-  && chmod +x /work/performance-tests/ci/budget_check.py \
+  && chmod +x /work/performance-tests/ci/performance_threshold_check.py \
   && chown -R runner:runner /work
 
 # Warm deps cache (as non-root) so the cached Gradle home isn't root-owned

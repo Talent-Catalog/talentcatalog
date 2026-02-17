@@ -23,6 +23,6 @@ jobs:
 
       perf_base_url: "https://tctalent-test.org"
 
-      run_budget_check: false
+      run_performance_threshold_check: false
       max_failed_pct: 100
       max_p95_ms: 999999
