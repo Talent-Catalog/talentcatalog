@@ -29,15 +29,16 @@ import org.talentcatalog.perf.payloads.SavedListSearchPagedPayloads;
 /**
  * Base class for Saved List candidate search-paged Gatling simulations.
  *
- * <p>This base class centralizes shared setup so individual simulations can focus on
- * scenarios and injection profiles.</p>
+ * <p>This base class centralizes shared setup so individual simulations can focus on scenarios and
+ * injection profiles.</p>
  *
  * <h2>Shared responsibilities</h2>
  * <ul>
  *   <li>Resolve the saved-list id from {@code -DlistId=...}</li>
+ *   <li>Resolve the request payload mode from {@code -Dpayload=...}</li>
  *   <li>Load performance settings via {@link PerfConfig#settings()}</li>
  *   <li>Build a shared {@link HttpProtocolBuilder} via {@link HttpProtocolFactory}</li>
- *   <li>Resolve the request payload path (currently fixed to a preview payload)</li>
+ *   <li>Provide standard/global assertions (correctness + optional latency)</li>
  * </ul>
  *
  * <h2>Saved-list selection</h2>
@@ -49,13 +50,12 @@ import org.talentcatalog.perf.payloads.SavedListSearchPagedPayloads;
  * <p>This property is required; the constructor throws if the id is missing or {@code <= 0}.</p>
  *
  * <h2>Payload selection</h2>
- * <p>At present this base class uses a single payload:</p>
+ * <p>The {@link #PROP_PAYLOAD} system property selects which request payload file to use:</p>
  * <ul>
- *   <li>{@link SavedListSearchPagedPayloads#PREVIEW} (default and only option)</li>
+ *   <li>{@code -Dpayload=preview} → {@link SavedListSearchPagedPayloads#PREVIEW} (default)</li>
  * </ul>
  *
- * <p>This can be extended later to support payload modes (e.g., baseline/heavy) similar to
- * {@code CandidateSearchBaseSimulation}.</p>
+ * <p>If an unknown value is provided, this class falls back to {@code preview}.</p>
  */
 public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
 
@@ -65,6 +65,13 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
    * <p>Example: {@code -DlistId=1283}</p>
    */
   protected static final String PROP_LIST_ID = "listId";
+
+  /**
+   * System property key used to choose the saved-list search-paged payload mode.
+   *
+   * <p>Allowed values: {@code preview}. Default: {@code preview}.</p>
+   */
+  protected static final String PROP_PAYLOAD = "payload";
 
   /**
    * Required saved-list id used by saved-list search-paged endpoints.
@@ -80,18 +87,35 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
    * HTTP protocol configuration shared by all simulations (baseUrl, headers, etc.).
    */
   protected final HttpProtocolBuilder httpProtocol;
+
   /**
-   * Maximum allowed global p95 response time (ms).
+   * System property key for the maximum allowed global p95 response time in milliseconds.
    *
-   * <p>Controlled via {@code -Dperf.maxP95Ms}.
+   * <p>Set to {@code 0} to disable the p95 assertion.</p>
    *
-   * <ul>
-   *   <li>Default: {@code 2000} (strict)</li>
-   *   <li>Set to {@code 0} to disable latency assertions (useful for CI nightlies)</li>
-   * </ul>
+   * <p>Example: {@code -Dperf.maxP95Ms=15000} or {@code -Dperf.maxP95Ms=0}</p>
    */
-  protected static final int MAX_P95_MS =
-      (int) getDoubleProp("perf.maxP95Ms", 2000);
+  protected static final String PROP_MAX_P95_MS = "perf.maxP95Ms";
+
+  /**
+   * Default p95 threshold (ms) when {@link #PROP_MAX_P95_MS} is not provided.
+   */
+  protected static final int DEFAULT_MAX_P95_MS = 2000;
+
+  /**
+   * System property key for the maximum allowed global failed request percentage.
+   *
+   * <p>This is the correctness gate. If the percentage of failed requests (KO) exceeds this value,
+   * the simulation fails.</p>
+   *
+   * <p>Example: {@code -Dperf.maxFailedPct=1.0}</p>
+   */
+  protected static final String PROP_MAX_FAILED_PCT = "perf.maxFailedPct";
+
+  /**
+   * Default maximum failed request percentage when {@link #PROP_MAX_FAILED_PCT} is not provided.
+   */
+  protected static final double DEFAULT_MAX_FAILED_PCT = 1.0;
 
   /**
    * Initializes shared simulation configuration:
@@ -99,7 +123,7 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
    *   <li>Loads {@link org.talentcatalog.perf.config.PerfSettings} via {@link PerfConfig#settings()}</li>
    *   <li>Builds {@link #httpProtocol}</li>
    *   <li>Resolves {@link #listId} from {@code -DlistId}</li>
-   *   <li>Resolves {@link #payloadPath} (currently {@link SavedListSearchPagedPayloads#PREVIEW})</li>
+   *   <li>Resolves {@link #payloadPath} from {@code -Dpayload}</li>
    * </ul>
    *
    * @throws IllegalArgumentException if {@code -DlistId} is missing or {@code <= 0}
@@ -112,51 +136,93 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
     if (this.listId <= 0) {
       throw new IllegalArgumentException("listId must be > 0 (use -DlistId=1283)");
     }
-    this.payloadPath = SavedListSearchPagedPayloads.PREVIEW;
+
+    this.payloadPath = resolvePayloadPath();
   }
 
   /**
-   * Reads a numeric system property safely.
+   * Resolves the payload JSON file path from {@code -Dpayload}.
    *
-   * @param key property name
-   * @param def fallback value
-   * @return parsed value or fallback
+   * <p>Trims and lowercases the property value. Defaults to {@code preview} when missing or
+   * blank.</p>
+   *
+   * @return the classpath resource path for the selected payload
    */
-  protected static double getDoubleProp(String key, double def) {
+  private static String resolvePayloadPath() {
+    String mode = System.getProperty(PROP_PAYLOAD, "preview").trim().toLowerCase();
+    return switch (mode) {
+      case "preview" -> SavedListSearchPagedPayloads.PREVIEW;
+      default -> SavedListSearchPagedPayloads.PREVIEW; // fallback for unknown values
+    };
+  }
+
+  /**
+   * Reads an integer system property safely.
+   *
+   * @param key        property name
+   * @param defaultVal fallback value
+   * @return parsed integer or fallback
+   */
+  protected static int getIntProp(String key, int defaultVal) {
     String v = System.getProperty(key);
-    if (v == null || v.isBlank()) return def;
+    if (v == null || v.trim().isEmpty()) {
+      return defaultVal;
+    }
+    try {
+      return Integer.parseInt(v.trim());
+    } catch (Exception e) {
+      return defaultVal;
+    }
+  }
+
+  /**
+   * Reads a double system property safely.
+   *
+   * @param key        property name
+   * @param defaultVal fallback value
+   * @return parsed double or fallback
+   */
+  protected static double getDoubleProp(String key, double defaultVal) {
+    String v = System.getProperty(key);
+    if (v == null || v.trim().isEmpty()) {
+      return defaultVal;
+    }
     try {
       return Double.parseDouble(v.trim());
     } catch (Exception e) {
-      return def;
+      return defaultVal;
     }
   }
 
   /**
    * Builds the default global assertion set for saved-list simulations.
    *
-   * <p>Always enforces correctness (failed request percentage).
+   * <h2>Correctness</h2>
+   * <p>Always enforced via {@code global().failedRequests().percent().lt(maxFailedPct)} where
+   * {@code maxFailedPct} is controlled by {@code -Dperf.maxFailedPct} (default {@code 1.0}).</p>
    *
-   * <p>Latency (p95) enforcement is optional and can be disabled with:
+   * <h2>Latency</h2>
+   * <p>Optionally enforced via p95:
+   * {@code global().responseTime().percentile3().lt(maxP95Ms)} where {@code maxP95Ms} is controlled
+   * by {@code -Dperf.maxP95Ms} (default {@code 2000}). Set {@code -Dperf.maxP95Ms=0} to
+   * disable.</p>
    *
-   * <pre>
-   *   -Dperf.maxP95Ms=0
-   * </pre>
-   *
-   * @return assertion array for Gatling {@code setUp(...)}
+   * @return an array of Gatling assertions to apply in {@code setUp(...).assertions(...)}
    */
   protected static Assertion[] defaultAssertions() {
     var assertions = new ArrayList<Assertion>();
 
-    // Always enforce correctness
-    assertions.add(global().failedRequests().percent().lt(1.0));
+    double maxFailedPct = getDoubleProp(PROP_MAX_FAILED_PCT, DEFAULT_MAX_FAILED_PCT);
+    int maxP95Ms = getIntProp(PROP_MAX_P95_MS, DEFAULT_MAX_P95_MS);
+
+    // Correctness gate (always on)
+    assertions.add(global().failedRequests().percent().lt(maxFailedPct));
 
     // Optional latency gate
-    if (MAX_P95_MS > 0) {
-      assertions.add(global().responseTime().percentile3().lt(MAX_P95_MS));
+    if (maxP95Ms > 0) {
+      assertions.add(global().responseTime().percentile3().lt(maxP95Ms));
     }
 
     return assertions.toArray(new Assertion[0]);
   }
-
 }
