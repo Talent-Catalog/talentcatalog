@@ -1,10 +1,10 @@
-# TC-Plus OPC Staging Environment
+# TC-Plus OPC Production Environment
 
-Deploy the TC-Plus infrastructure to the OPC AWS staging account (`164804461258`, `eu-west-2`).
+Deploy the TC-Plus infrastructure to the OPC AWS production account (`289896345557`, `eu-west-2`).
 
 ## Prerequisites
 
-- AWS CLI configured with credentials that can assume `arn:aws:iam::164804461258:role/opc-staging-terraform-exec`
+- AWS CLI configured with credentials that can assume `arn:aws:iam::289896345557:role/opc-prod-terraform-exec`
 - Terraform >= 1.3
 - The S3 backend bucket (`opc-shared-terraform-state`) and DynamoDB lock table (`opc-terraform-locks`)
   must already exist in the OPC account
@@ -12,7 +12,7 @@ Deploy the TC-Plus infrastructure to the OPC AWS staging account (`164804461258`
 ## 1. Initialise Terraform
 
 ```bash
-cd infra/aws/terraform/opc-staging
+cd infra/aws/terraform/opc-prod
 terraform init
 ```
 
@@ -58,8 +58,8 @@ terraform plan -out tfplan
 terraform apply tfplan
 ```
 
-This creates all infrastructure (VPC, RDS, ECS, ALB, Route53, ACM, ElastiCache, ECR) and populates
-all SSM parameters with real values:
+This creates all infrastructure (VPC, RDS, ECS, ALB, Route53, ACM, ECR) and populates all SSM
+parameters with real values:
 
 - **Secrets** (`aws_secret_key`, `jwt_secret`, `spring_datasource_password`, etc.) are set from
   `secrets.auto.tfvars` values and stored as `SecureString` SSM parameters
