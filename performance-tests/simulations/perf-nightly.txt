@@ -13,8 +13,8 @@ org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelC
 # Candidate search parallel open model
 org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelOpenSimulation | -Dpayload=baseline -DparallelUsers=2 -DparallelRepeats=1
 
-# Candidate search random finite A/B
-org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchRandomABFiniteSimulation | -Dpayload=baseline -DtotalUsers=5 -DmaxRequests=20
+# Candidate search random finite A/B (FIXED: uses randUsers/randRepeats)
+org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchRandomABFiniteSimulation | -Dpayload=baseline -DrandUsers=5 -DrandRepeats=4
 
 # Saved-list A/B (needs users.csv + listId)
 org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedSequentialABSimulation | -DlistId=1283 -DseqUsers=1 -DseqRepeats=1
@@ -28,5 +28,5 @@ org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedParallelCl
 # Saved-list parallel open model
 org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedParallelOpenSimulation | -DlistId=1283 -DparallelUsers=2 -DparallelRepeats=1
 
-# Saved-list random finite A/B
-org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedRandomABFiniteSimulation | -DlistId=1283 -DtotalUsers=5 -DmaxRequests=20
+# Saved-list random finite A/B (FIXED: uses randUsers/randRepeats)
+org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedRandomABFiniteSimulation | -DlistId=1283 -DrandUsers=5 -DrandRepeats=4
