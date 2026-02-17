@@ -1,13 +1,14 @@
 name: Perf Nightly
 
 on:
-  schedule:
-    - cron: "0 1 * * *"   # Daily 1AM UTC
+  push:
+    branches:
+      - 3082-containerize-performance-tests-execution-gatling
   workflow_dispatch:
 
 jobs:
   nightly-shards:
-    if: github.ref == 'refs/heads/3082-containerize-performance-tests-execution-gatling'
+    if: github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -24,7 +25,7 @@ jobs:
       run_budget_check: false
 
   nightly-budget:
-    if: github.ref == 'refs/heads/3082-containerize-performance-tests-execution-gatling'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     needs: nightly-shards
     steps:
