@@ -33,6 +33,20 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
           aws-region: us-east-1
+          
+      - name: Ensure Docker is running
+        run: |
+          sudo systemctl start docker
+          sudo systemctl status docker --no-pager || true
+          docker version
+          docker info
+
+      - name: Debug Docker socket + env (if it fails again)
+        if: failure()
+        run: |
+          ls -l /var/run/docker.sock || true
+          id || true
+          env | sort | grep -E 'DOCKER|TESTCONTAINERS' || true
 
       - name: Download DB dump from S3
         run: |
