@@ -1,13 +1,22 @@
 name: Perf Nightly
 
 on:
+  # TEMP: run automatically when you push to your test branch
+  push:
+    branches:
+      - 3082-containerize-performance-tests-execution-gatling
+
+  # FUTURE: after merge into staging, it will run daily at 12:10 PM Afghanistan
   schedule:
-    - cron: "40 7 * * *"   # Daily 07:40 UTC = 12:10 Asia/Kabul
+    - cron: "45 7 * * *"   # 07:40 UTC = 12:15 Asia/Kabul
+
   workflow_dispatch:
 
 jobs:
   nightly-shards:
+    # Run on pushes to your test branch, OR scheduled runs on staging, OR manual dispatch anywhere
     if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/3082-containerize-performance-tests-execution-gatling') ||
       (github.event_name == 'schedule' && github.ref == 'refs/heads/staging') ||
       (github.event_name == 'workflow_dispatch')
     strategy:
@@ -27,12 +36,14 @@ jobs:
 
   nightly-budget:
     if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/3082-containerize-performance-tests-execution-gatling') ||
       (github.event_name == 'schedule' && github.ref == 'refs/heads/staging') ||
       (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     needs: nightly-shards
     steps:
       - uses: actions/checkout@v4
+
       - name: Download all summaries
         uses: actions/download-artifact@v4
         with:
