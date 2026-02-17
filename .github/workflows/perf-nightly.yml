@@ -25,7 +25,8 @@ jobs:
         shard_index: [0, 1, 2, 3, 4]
         shard_total: [5]
     uses: ./.github/workflows/tc-gatling-tests.yml
-    secrets: inherit
+    secrets:
+      USERS_CSV: ${{ secrets.STAGING_PERF_USERS_CSV }}
     with:
       tier: nightly
       list_file: performance-tests/simulations/perf-nightly.txt
