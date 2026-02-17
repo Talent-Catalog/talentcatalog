@@ -100,9 +100,9 @@ jobs:
             -v "$PWD/perf-raw:/work/perf-raw" \
             tc-perf:${{ github.sha }} \
             -lc "cd /work && bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
-            -Dperf.baseUrl='${{ inputs.perf_base_url }}' \
-            -Dperf.maxFailedPct=${{ inputs.max_failed_pct }} \
-            -Dperf.maxP95Ms=$([[ '${{ inputs.tier }}' == 'nightly' ]] && echo 0 || echo 2000)
+              -Dperf.baseUrl='${{ inputs.perf_base_url }}' \
+              -Dperf.maxFailedPct=${{ inputs.max_failed_pct }} \
+              -Dperf.maxP95Ms=$([[ '${{ inputs.tier }}' == 'nightly' ]] && echo 0 || echo 2000)"
       - name: Budget check
         if: ${{ inputs.run_budget_check }}
         run: |
