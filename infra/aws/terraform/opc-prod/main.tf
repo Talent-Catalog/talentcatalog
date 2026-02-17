@@ -206,12 +206,12 @@ module "tc-plus-prod" {
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
   # Redis cache configuration (todo: enable for production)
-  # cache_enable          = true
-  # cache_cluster_id      = "tc-prod-cache"
-  # cache_node_type       = "cache.t3.micro"
-  # cache_num_cache_nodes = 3
-  # cache_engine_version  = "7.1"
-  # cache_port            = 6379
+  cache_enable          = true
+  cache_cluster_id      = "tc-prod-cache"
+  cache_node_type       = "cache.t3.micro"
+  cache_num_cache_nodes = 3
+  cache_engine_version  = "7.1"
+  cache_port            = 6379
 
   # SSM-backed application parameters (stored in SSM, injected into ECS task)
   # Non-secrets: provided directly here
