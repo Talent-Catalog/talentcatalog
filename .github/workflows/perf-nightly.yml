@@ -57,9 +57,11 @@ jobs:
         run: |
           python3 performance-tests/ci/performance_threshold_check.py \
             --summary-json-dir all-summaries \
-            --warn-only \
-            --ignore-failures \
-            --ignore-latency
+            --max-failed-pct 20.0 \
+            --max-latency-ms 15000 \
+            --latency-percentile p50 \
+            --min-requests-for-strict 200 \
+            --strict-percentile p95
 
       - name: Upload combined summaries
         if: always()
