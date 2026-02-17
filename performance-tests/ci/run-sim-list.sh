@@ -56,7 +56,7 @@ HOST_SUMMARY_ROOT="/work/perf-summary"                        # mounted to perf-
 mkdir -p "$HOST_REPORT_ROOT" "$HOST_RAW_ROOT" "$HOST_SUMMARY_ROOT"
 
 TMP_BUILD_ROOT="/tmp/tc-build"
-TMP_REPORT_ROOT="$TMP_BUILD_ROOT/reports/gatling"
+TMP_REPORT_ROOT="/work/build/reports/gatling"
 mkdir -p "$TMP_BUILD_ROOT" "$TMP_REPORT_ROOT"
 
 JVM_PROPS=()
