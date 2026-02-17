@@ -16,7 +16,6 @@
 package org.talentcatalog.perf.simulations.http.candidatesearch;
 
 import static io.gatling.javaapi.core.CoreDsl.atOnceUsers;
-import static io.gatling.javaapi.core.CoreDsl.global;
 
 import org.talentcatalog.perf.scenarios.http.candidatesearch.RandomABFiniteScenario;
 
@@ -121,9 +120,6 @@ public class CandidateSearchRandomABFiniteSimulation extends CandidateSearchBase
 
     setUp(scn.injectOpen(atOnceUsers(RAND_USERS)))
         .protocols(httpProtocol)
-        .assertions(
-            global().failedRequests().percent().lt(1.0),
-            global().responseTime().percentile3().lt(2000)
-        );
+        .assertions(defaultAssertions());
   }
 }

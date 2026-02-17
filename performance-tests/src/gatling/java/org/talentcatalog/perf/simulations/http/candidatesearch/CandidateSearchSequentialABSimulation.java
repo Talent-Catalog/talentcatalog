@@ -16,7 +16,6 @@
 package org.talentcatalog.perf.simulations.http.candidatesearch;
 
 import static io.gatling.javaapi.core.CoreDsl.atOnceUsers;
-import static io.gatling.javaapi.core.CoreDsl.global;
 
 import org.talentcatalog.perf.scenarios.http.candidatesearch.SequentialABScenario;
 
@@ -81,6 +80,6 @@ public class CandidateSearchSequentialABSimulation extends CandidateSearchBaseSi
 
     setUp(scn.injectOpen(atOnceUsers(SEQ_USERS)))
         .protocols(httpProtocol)
-        .assertions(global().failedRequests().percent().lt(1.0));
+        .assertions(defaultAssertions());
   }
 }

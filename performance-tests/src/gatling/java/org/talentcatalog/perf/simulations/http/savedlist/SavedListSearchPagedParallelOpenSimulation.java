@@ -17,7 +17,6 @@
 package org.talentcatalog.perf.simulations.http.savedlist;
 
 import static io.gatling.javaapi.core.CoreDsl.constantUsersPerSec;
-import static io.gatling.javaapi.core.CoreDsl.global;
 import static io.gatling.javaapi.core.CoreDsl.rampUsersPerSec;
 
 import org.talentcatalog.perf.scenarios.http.savedlist.NewSearchPagedLoopScenario;
@@ -177,9 +176,6 @@ public class SavedListSearchPagedParallelOpenSimulation extends SavedListSearchP
         )
     )
         .protocols(httpProtocol)
-        .assertions(
-            global().failedRequests().percent().lt(1.0),
-            global().responseTime().percentile3().lt(2000)
-        );
+        .assertions(defaultAssertions());
   }
 }

@@ -16,8 +16,12 @@
 
 package org.talentcatalog.perf.simulations.http.savedlist;
 
+import static io.gatling.javaapi.core.CoreDsl.global;
+
+import io.gatling.javaapi.core.Assertion;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
+import java.util.ArrayList;
 import org.talentcatalog.perf.config.HttpProtocolFactory;
 import org.talentcatalog.perf.config.PerfConfig;
 import org.talentcatalog.perf.payloads.SavedListSearchPagedPayloads;
@@ -76,6 +80,18 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
    * HTTP protocol configuration shared by all simulations (baseUrl, headers, etc.).
    */
   protected final HttpProtocolBuilder httpProtocol;
+  /**
+   * Maximum allowed global p95 response time (ms).
+   *
+   * <p>Controlled via {@code -Dperf.maxP95Ms}.
+   *
+   * <ul>
+   *   <li>Default: {@code 2000} (strict)</li>
+   *   <li>Set to {@code 0} to disable latency assertions (useful for CI nightlies)</li>
+   * </ul>
+   */
+  protected static final int MAX_P95_MS =
+      (int) getDoubleProp("perf.maxP95Ms", 2000);
 
   /**
    * Initializes shared simulation configuration:
@@ -96,8 +112,51 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
     if (this.listId <= 0) {
       throw new IllegalArgumentException("listId must be > 0 (use -DlistId=1283)");
     }
-
-    // Start with one payload (preview). You can extend later to baseline/heavy modes.
     this.payloadPath = SavedListSearchPagedPayloads.PREVIEW;
   }
+
+  /**
+   * Reads a numeric system property safely.
+   *
+   * @param key property name
+   * @param def fallback value
+   * @return parsed value or fallback
+   */
+  protected static double getDoubleProp(String key, double def) {
+    String v = System.getProperty(key);
+    if (v == null || v.isBlank()) return def;
+    try {
+      return Double.parseDouble(v.trim());
+    } catch (Exception e) {
+      return def;
+    }
+  }
+
+  /**
+   * Builds the default global assertion set for saved-list simulations.
+   *
+   * <p>Always enforces correctness (failed request percentage).
+   *
+   * <p>Latency (p95) enforcement is optional and can be disabled with:
+   *
+   * <pre>
+   *   -Dperf.maxP95Ms=0
+   * </pre>
+   *
+   * @return assertion array for Gatling {@code setUp(...)}
+   */
+  protected static Assertion[] defaultAssertions() {
+    var assertions = new ArrayList<Assertion>();
+
+    // Always enforce correctness
+    assertions.add(global().failedRequests().percent().lt(1.0));
+
+    // Optional latency gate
+    if (MAX_P95_MS > 0) {
+      assertions.add(global().responseTime().percentile3().lt(MAX_P95_MS));
+    }
+
+    return assertions.toArray(new Assertion[0]);
+  }
+
 }

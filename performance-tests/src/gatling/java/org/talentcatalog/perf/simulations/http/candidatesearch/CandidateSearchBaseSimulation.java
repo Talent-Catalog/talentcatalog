@@ -15,8 +15,12 @@
  */
 package org.talentcatalog.perf.simulations.http.candidatesearch;
 
+import static io.gatling.javaapi.core.CoreDsl.global;
+
+import io.gatling.javaapi.core.Assertion;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
+import java.util.ArrayList;
 import org.talentcatalog.perf.config.HttpProtocolFactory;
 import org.talentcatalog.perf.config.PerfConfig;
 import org.talentcatalog.perf.payloads.CandidateSearchPayloads;
@@ -62,6 +66,20 @@ public abstract class CandidateSearchBaseSimulation extends Simulation {
   protected final HttpProtocolBuilder httpProtocol;
 
   /**
+   * Maximum allowed global p95 response time (ms).
+   *
+   * <p>Controlled via {@code -Dperf.maxP95Ms}.
+   *
+   * <ul>
+   *   <li>Default: {@code 2000} (strict)</li>
+   *   <li>Set to {@code 0} to disable latency assertions (useful for CI nightlies)</li>
+   * </ul>
+   */
+  protected static final int MAX_P95_MS =
+      (int) getDoubleProp("perf.maxP95Ms", 2000);
+
+
+  /**
    * Initializes shared simulation configuration:
    * <ul>
    *   <li>Loads {@link org.talentcatalog.perf.config.PerfSettings} via {@link PerfConfig#settings()}</li>
@@ -91,4 +109,50 @@ public abstract class CandidateSearchBaseSimulation extends Simulation {
       default -> CandidateSearchPayloads.HEAVY; // fallback for unknown values
     };
   }
+
+  /**
+   * Reads a numeric system property safely.
+   *
+   * @param key property name
+   * @param def fallback value
+   * @return parsed value or fallback
+   */
+  protected static double getDoubleProp(String key, double def) {
+    String v = System.getProperty(key);
+    if (v == null || v.isBlank()) return def;
+    try {
+      return Double.parseDouble(v.trim());
+    } catch (Exception e) {
+      return def;
+    }
+  }
+
+  /**
+   * Builds the default global assertion set for candidate-search simulations.
+   *
+   * <p>Always enforces correctness (failed request percentage).
+   *
+   * <p>Latency (p95) enforcement is optional and can be disabled by setting:
+   *
+   * <pre>
+   *   -Dperf.maxP95Ms=0
+   * </pre>
+   *
+   * @return an array of Gatling assertions to apply in {@code setUp(...)}
+   */
+  protected static Assertion[] defaultAssertions() {
+    var assertions = new ArrayList<Assertion>();
+
+    // Always require near-zero failures
+    assertions.add(global().failedRequests().percent().lt(1.0));
+
+    // Only enforce latency if enabled
+    if (MAX_P95_MS > 0) {
+      assertions.add(global().responseTime().percentile3().lt(MAX_P95_MS));
+    }
+
+    return assertions.toArray(new Assertion[0]);
+  }
+
+
 }
