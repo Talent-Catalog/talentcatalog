@@ -8,7 +8,7 @@ org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentia
 org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelClosedSimulation | -Dpayload=baseline -DtotalConcurrentUsers=2 -DwarmupSeconds=2 -DmeasureSeconds=8 -DsearchRepeats=1 -DsearchMinPauseSeconds=0 -DsearchMaxPauseSeconds=0
 
 # Candidate search parallel open model (FIXED: uses totalUsersPerSec/rampSeconds/searchRepeats)
-org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelOpenSimulation | -Dpayload=baseline -DtotalUsersPerSec=2 -DrampSeconds=0 -DwarmupSeconds=2 -DmeasureSeconds=8 -DsearchRepeats=1 -DsearchMinPauseSeconds=0 -DsearchMaxPauseSeconds=0
+org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelOpenSimulation | -Dpayload=baseline -DtotalUsersPerSec=2 -DrampSeconds=1 -DwarmupSeconds=2 -DmeasureSeconds=8 -DsearchRepeats=1 -DsearchMinPauseSeconds=0 -DsearchMaxPauseSeconds=2
 
 # Candidate search random finite A/B (uses randUsers/randRepeats)
 org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchRandomABFiniteSimulation | -Dpayload=baseline -DrandUsers=5 -DrandRepeats=4
