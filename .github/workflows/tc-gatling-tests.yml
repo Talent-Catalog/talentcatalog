@@ -59,7 +59,7 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      - name: Write users.csv (optional)
+      - name: Write users.csv
         shell: bash
         env:
           USERS_CSV: ${{ secrets.USERS_CSV }}
