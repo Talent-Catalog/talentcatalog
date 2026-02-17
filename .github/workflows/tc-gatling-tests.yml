@@ -116,4 +116,20 @@ jobs:
           name: gatling-reports-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
           path: perf-reports
           if-no-files-found: warn
+          
+      - name: Upload perf summaries (json/md)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-summary-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
+          path: perf-summary
+          if-no-files-found: warn
+
+      - name: Upload raw simulation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-raw-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
+          path: perf-raw
+          if-no-files-found: warn
 
