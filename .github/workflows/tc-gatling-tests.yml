@@ -102,7 +102,7 @@ jobs:
             -lc "cd /work && bash ./performance-tests/ci/run-sim-list.sh '${{ inputs.list_file }}' \
               -Dperf.baseUrl='${{ inputs.perf_base_url }}' \
               -Dperf.maxFailedPct=${{ inputs.max_failed_pct }} \
-              -Dperf.maxP95Ms=$([[ '${{ inputs.tier }}' == 'nightly' ]] && echo 0 || echo 2000)"
+              -Dperf.maxP95Ms=${{ inputs.max_p95_ms }}"
       - name: Performance Threshold Check
         if: ${{ inputs.run_performance_threshold_check }}
         run: |
