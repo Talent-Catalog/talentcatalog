@@ -1,3 +1,6 @@
+# Get the current AWS region from the provider configuration
+data "aws_region" "current" {}
+
 # Security Groups
 resource "aws_security_group" "fargate" {
   name   = "${var.app}-${var.env}-fargate-sg"
@@ -251,7 +254,7 @@ resource "aws_ecs_task_definition" "web-app" {
         options = {
           awslogs-group         = "/fargate/service/${var.app}-${var.env}-fargate-log"
           awslogs-stream-prefix = "ecs"
-          awslogs-region        = "us-east-1"
+          awslogs-region        = data.aws_region.current.id
         }
       }
       portMappings = [
