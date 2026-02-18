@@ -1,0 +1,14 @@
+<textarea
+  [attr.id]="id"
+  [attr.name]="name"
+  class="form-textarea"
+  [placeholder]="placeholder"
+  [attr.aria-label]="ariaLabel"
+  [attr.aria-invalid]="invalid"
+  [class.textarea--invalid]="invalid"
+  [disabled]="disabled"
+  [value]="value"
+  [rows]="rows"
+  (input)="handleInput($event)"
+  (blur)="onTouched()"
+></textarea>

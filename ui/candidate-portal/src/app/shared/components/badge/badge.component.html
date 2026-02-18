@@ -1,0 +1,23 @@
+<ng-template #content>
+  <ng-content></ng-content>
+</ng-template>
+<ng-container [ngSwitch]="type">
+  <a *ngSwitchCase="'link'"
+     [href]="href"
+     [ngClass]="colorClass">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </a>
+
+  <button *ngSwitchCase="'button'"
+          type="button"
+          [ngClass]="colorClass"
+          (click)="handleClick($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </button>
+
+  <span *ngSwitchDefault
+        [ngClass]="colorClass"
+        (click)="handleClick($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </span>
+</ng-container>
