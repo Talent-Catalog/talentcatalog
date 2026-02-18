@@ -18,6 +18,7 @@ package org.tctalent.server.integration.helper;
 
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -28,9 +29,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * It initializes a shared PostgreSQL container to be reused across all test classes,
  * ensuring consistent database state and improved performance.
  * To use, simply extend this class—no additional setup is required in your test classes.
+ *
+ * <p>Skipped in CI (Gradle build) because the GitHub Actions runner's Docker environment
+ * intermittently breaks Testcontainers' DockerClientProviderStrategy auto-detection.
+ * These tests should be run locally where Docker Desktop is available.</p>
  */
 @Testcontainers
 @ActiveProfiles("test")
+@Tag("skip-test-in-gradle-build") // SM - Temporarily skip in CI (Gradle build) because the GitHub Actions runner's Docker environment intermittently breaks Testcontainers
 public abstract class BaseDBIntegrationTest {
 
 
