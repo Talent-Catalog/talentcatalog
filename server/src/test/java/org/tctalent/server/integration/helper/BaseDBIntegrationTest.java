@@ -18,6 +18,7 @@ package org.tctalent.server.integration.helper;
 
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -31,6 +32,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  */
 @Testcontainers
 @ActiveProfiles("test")
+@Tag("skip-test-in-gradle-build") // SM - Temporarily skip in CI (Gradle build) because the GitHub Actions runner's Docker environment intermittently breaks Testcontainers
 public abstract class BaseDBIntegrationTest {
 
 
