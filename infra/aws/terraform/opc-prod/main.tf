@@ -194,6 +194,10 @@ module "tc-plus-prod" {
   ecs_tasks_count = 2
 
   # Database configuration
+  # RDS creates a local database (tcplus), but the service currently connects to the
+  # legacy TBB database via spring_datasource_url below. When ready to cut over to the
+  # local RDS instance, remove spring_datasource_url and the auto-populate logic will
+  # use the RDS endpoint instead.
   db_enable              = true
   db_public_access       = false
   db_multi_az            = true
@@ -235,6 +239,7 @@ module "tc-plus-prod" {
   sf_base_lightning_url                  = "https://talentbeyondboundaries.lightning.force.com"  # todo: either create for OPC or decouple TC+ from SF
   sf_base_login_url                      = "https://login.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
   spring_client_url                      = "-" # todo: confirm if used/needed
+  spring_datasource_url                  = "jdbc:postgresql://prod-tbb.cskpt7osayvj.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- remove when cutting over to local RDS
   spring_datasource_username             = "tctalent"
   spring_db_pool_max                     = "50"
   spring_db_pool_min                     = "20"
