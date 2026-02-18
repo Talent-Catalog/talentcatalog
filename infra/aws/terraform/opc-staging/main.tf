@@ -191,7 +191,7 @@ module "tc-plus-staging" {
   site_domain     = "test.plus.tctalent.org"
   container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging"
   container_port  = 8080
-  ecs_tasks_count = 2
+  ecs_tasks_count = 1
 
   # Database configuration
   # RDS creates a local database (tcplus), but the service currently connects to the
