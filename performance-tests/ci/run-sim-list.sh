@@ -3,17 +3,19 @@ set -euo pipefail
 
 # run-sim-list.sh
 #
-# Runs a list of Gatling simulations (one per line) with optional per-sim JVM props,
-# supports sharding (SHARD_INDEX/SHARD_TOTAL), and writes artifacts to mounted /work dirs.
+# Runs a list of Gatling simulations (one per line) with optional per-simulation JVM props.
+# Supports sharding via SHARD_INDEX/SHARD_TOTAL.
 #
-# List file format (one sim per non-empty, non-comment line):
-#   com.example.MySimulation | -Dfoo=bar -Dbaz=qux
+# Artifacts:
+# - HTML reports:   /work/build/reports/gatling   (mounted to perf-reports in GitHub Actions)
+# - Summaries:      /work/perf-summary           (mounted to perf-summary)
+# - Raw logs:       /work/perf-raw               (mounted to perf-raw)
 #
-# Notes:
-# - Gradle build cache/output MUST go to a writable location inside the container (/tmp),
-#   because /work may be mounted read-only or owned by a different user.
-# - Gatling HTML reports and derived summaries/logs are copied into mounted /work paths
-#   so GitHub Actions can upload them as artifacts.
+# IMPORTANT:
+# - /work is mounted from the GitHub workspace. It is writable in your current setup,
+#   but keeping build/temp output in /tmp is safer and avoids permission issues.
+# - Your Gradle task currently hard-codes "-rf build/reports/gatling". We fix that by
+#   passing a system property "-Dgatling.reportRoot=..." and updating Gradle to read it.
 
 LIST_FILE="${1:-}"
 shift || true
@@ -75,9 +77,8 @@ mkdir -p "$HOST_REPORT_ROOT" "$HOST_RAW_ROOT" "$HOST_SUMMARY_ROOT"
 # ------------------------------------------------------------------------------
 TMP_BUILD_ROOT="/tmp/tc-build"
 
-# IMPORTANT FIX:
-# Gatling reports must be written to a temp folder, NOT /work/build/reports/gatling.
-# We copy per-simulation reports into HOST_REPORT_ROOT for CI artifacts.
+# We want Gatling output to go into a temp directory, one sub-folder per simulation run.
+# The Gradle task will be modified to read -Dgatling.reportRoot and pass it to "-rf".
 TMP_REPORT_ROOT="/tmp/tc-gatling-reports"
 
 mkdir -p "$TMP_BUILD_ROOT" "$TMP_REPORT_ROOT"
@@ -112,6 +113,19 @@ find_latest_sim_log() {
     | head -n 1 || true
 }
 
+# Pick the report root that actually contains a Gatling stats.json.
+# This guards against future changes where Gatling writes to a different place.
+pick_report_root_with_stats() {
+  local d
+  for d in "$TMP_REPORT_ROOT" "$HOST_REPORT_ROOT"; do
+    if [[ -d "$d" ]] && find "$d" -maxdepth 3 -type f -path "*/js/stats.json" | head -n 1 | grep -q .; then
+      echo "$d"
+      return 0
+    fi
+  done
+  echo "$TMP_REPORT_ROOT"
+}
+
 # ------------------------------------------------------------------------------
 # Main loop
 # ------------------------------------------------------------------------------
@@ -130,7 +144,7 @@ for LINE in "${SIMS[@]}"; do
     continue
   fi
 
-  # Parse SIM_PROPS into an array to avoid fragile word-splitting pitfalls.
+  # Parse SIM_PROPS into an array.
   # Assumption: props are space-delimited -Dkey=value tokens (no spaces in values).
   SIM_PROPS=()
   if [[ -n "${SIM_PROPS_RAW:-}" ]]; then
@@ -152,23 +166,25 @@ for LINE in "${SIMS[@]}"; do
 
   # Run Gatling via Gradle.
   #
-  # Key points:
-  # - -D JVM props must come before the task.
-  # - -g points Gradle user home to a writable cache dir (usually mounted to /tmp/.gradle in CI).
-  # - performanceTestsBuildDir forces build outputs to /tmp (writable).
-  # - We set Gatling's results folder to TMP_REPORT_ROOT so reports don't land in /work.
+  # Critical: We pass -Dgatling.reportRoot="$TMP_REPORT_ROOT" so the Gradle task
+  # can route Gatling reports to /tmp (NOT /work).
   #
-  # The Gatling Gradle plugin respects "gatling.resultsFolder" (system property).
-  # If your build uses a different property, adjust accordingly.
+  # Note: Your Gradle task must be updated (see below) to use this property.
   ./gradlew --no-daemon \
     "${JVM_PROPS[@]}" \
     -g "${GRADLE_USER_HOME:-/tmp/.gradle}" \
     -Dorg.gradle.project.performanceTestsBuildDir="$TMP_BUILD_ROOT" \
-    -Dgatling.resultsFolder="$TMP_REPORT_ROOT" \
+    -Dgatling.reportRoot="$TMP_REPORT_ROOT" \
     :performance-tests:gatlingTest \
     -PsimClass="$SIM_CLASS" \
     "${SIM_PROPS[@]}" \
     "${GRADLE_ARGS[@]}" || EXIT_CODE=$?
+
+  # Helpful debug in CI: show where stats.json ended up.
+  echo "DEBUG: stats.json (tmp):"
+  find "$TMP_REPORT_ROOT" -maxdepth 3 -type f -path "*/js/stats.json" -print || true
+  echo "DEBUG: stats.json (host):"
+  find "$HOST_REPORT_ROOT" -maxdepth 3 -type f -path "*/js/stats.json" -print || true
 
   # Copy newest report dir (contains index.html etc) to mounted perf-reports.
   copy_latest_report_dir
@@ -181,10 +197,13 @@ for LINE in "${SIMS[@]}"; do
     echo "WARN: simulation.log not found for $SIM_CLASS"
   fi
 
-  # Summary generation (never fail the job because summary failed).
+  # Summary generation:
+  # We summarize from whichever root actually contains stats.json.
+  REPORT_ROOT_USED="$(pick_report_root_with_stats)"
+
   if [[ -f "/work/performance-tests/ci/summarize_gatling.py" ]]; then
     python3 /work/performance-tests/ci/summarize_gatling.py \
-      --report-root "$TMP_REPORT_ROOT" \
+      --report-root "$REPORT_ROOT_USED" \
       --out-md "$HOST_SUMMARY_ROOT/${RUN_ID}.md" \
       --out-json "$HOST_SUMMARY_ROOT/${RUN_ID}.json" \
       --sim-class "$SIM_CLASS" \

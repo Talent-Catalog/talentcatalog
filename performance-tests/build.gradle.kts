@@ -71,16 +71,21 @@ tasks.register<JavaExec>("gatlingTest") {
     classpath = sourceSets["gatling"].runtimeClasspath
     mainClass.set("io.gatling.app.Gatling")
 
-    // ✅ Forward -D properties (like -DlistId=1283) into the Gatling JVM
+    // Forward -D properties (like -DlistId=1283) into the Gatling JVM
     systemProperties(
         System.getProperties().entries.associate { (k, v) ->
             k.toString() to v
         }
     )
+    // Report folder root for Gatling HTML output.
+    // Default matches the old behavior.
+    // CI can override using:
+    //   -Dgatling.reportRoot=/tmp/tc-gatling-reports
+    val reportRoot = System.getProperty("gatling.reportRoot", "build/reports/gatling")
 
     args(
         "-s", simClass,
-        "-rf", "build/reports/gatling"
+        "-rf", reportRoot
     )
 }
 
