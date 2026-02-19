@@ -126,7 +126,7 @@ def main() -> int:
     )
     ap.add_argument(
         "--latency-percentile",
-        choices=["p95", "p90", "p75", "p50", "min"],
+        choices=["p95","p75", "p50", "min"],
         default="p50",
         help="Percentile used for latency gating when sample size is small. "
              "Default p50 is more stable for small nightlies.",
@@ -135,11 +135,11 @@ def main() -> int:
         "--min-requests-for-strict",
         type=int,
         default=200,
-        help="Only enforce strict percentile (p95/p90/p75) if total requests >= this. Default 200.",
+        help="Only enforce strict percentile (p95/p75) if total requests >= this. Default 200.",
     )
     ap.add_argument(
         "--strict-percentile",
-        choices=["p95", "p90", "p75"],
+        choices=["p95", "p75"],
         default="p95",
         help="Percentile to enforce when enough samples exist. Default p95.",
     )

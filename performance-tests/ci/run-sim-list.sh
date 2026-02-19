@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# run-sim-list.sh
+#
+# Runs a list of Gatling simulations (one per line) with optional per-sim JVM props,
+# supports sharding (SHARD_INDEX/SHARD_TOTAL), and writes artifacts to mounted /work dirs.
+#
+# List file format (one sim per non-empty, non-comment line):
+#   com.example.MySimulation | -Dfoo=bar -Dbaz=qux
+#
+# Notes:
+# - Gradle build cache/output MUST go to a writable location inside the container (/tmp),
+#   because /work may be mounted read-only or owned by a different user.
+# - Gatling HTML reports and derived summaries/logs are copied into mounted /work paths
+#   so GitHub Actions can upload them as artifacts.
+
 LIST_FILE="${1:-}"
 shift || true
 
@@ -30,12 +44,14 @@ echo "Shard total: $SHARD_TOTAL"
 echo "List file:   $LIST_FILE"
 echo "Extra args:  $*"
 
+# Read all sims, ignoring blank lines and comments.
 mapfile -t ALL_SIMS < <(grep -vE '^\s*#|^\s*$' "$LIST_FILE" || true)
 if [[ ${#ALL_SIMS[@]} -eq 0 ]]; then
   echo "No simulations found in $LIST_FILE"
   exit 1
 fi
 
+# Select shard slice.
 SIMS=()
 for i in "${!ALL_SIMS[@]}"; do
   if (( i % SHARD_TOTAL == SHARD_INDEX )); then
@@ -46,19 +62,29 @@ done
 echo "Simulations in this shard: ${#SIMS[@]}"
 printf ' - %s\n' "${SIMS[@]}"
 
-# IMPORTANT:
-# - Do NOT write Gradle build output into the repo (mounted /work) because it may be read-only in containers.
-# - Use /tmp for all Gradle build output and copy artifacts to mounted dirs.
-
-HOST_REPORT_ROOT="/work/build/reports/gatling"                 # mounted to perf-reports
-HOST_RAW_ROOT="/work/perf-raw"                                # mounted to perf-raw
-HOST_SUMMARY_ROOT="/work/perf-summary"                        # mounted to perf-summary
+# ------------------------------------------------------------------------------
+# Artifact roots (mounted by CI)
+# ------------------------------------------------------------------------------
+HOST_REPORT_ROOT="/work/build/reports/gatling"   # mounted to perf-reports
+HOST_RAW_ROOT="/work/perf-raw"                  # mounted to perf-raw
+HOST_SUMMARY_ROOT="/work/perf-summary"          # mounted to perf-summary
 mkdir -p "$HOST_REPORT_ROOT" "$HOST_RAW_ROOT" "$HOST_SUMMARY_ROOT"
 
+# ------------------------------------------------------------------------------
+# Writable temp roots inside the container
+# ------------------------------------------------------------------------------
 TMP_BUILD_ROOT="/tmp/tc-build"
-TMP_REPORT_ROOT="/work/build/reports/gatling"
+
+# IMPORTANT FIX:
+# Gatling reports must be written to a temp folder, NOT /work/build/reports/gatling.
+# We copy per-simulation reports into HOST_REPORT_ROOT for CI artifacts.
+TMP_REPORT_ROOT="/tmp/tc-gatling-reports"
+
 mkdir -p "$TMP_BUILD_ROOT" "$TMP_REPORT_ROOT"
 
+# Split extra CLI args into:
+# - JVM_PROPS: args starting with -D... (must come before Gradle task)
+# - GRADLE_ARGS: everything else (e.g., --info, -P..., etc.)
 JVM_PROPS=()
 GRADLE_ARGS=()
 for a in "$@"; do
@@ -69,8 +95,9 @@ for a in "$@"; do
   fi
 done
 
+# Copy the newest Gatling run directory from TMP_REPORT_ROOT to HOST_REPORT_ROOT.
+# Gatling creates dirs like: <simulation-name>-<timestamp>/
 copy_latest_report_dir() {
-  # Copy the newest Gatling run dir to host report root
   local newest
   newest="$(ls -1dt "$TMP_REPORT_ROOT"/* 2>/dev/null | head -n 1 || true)"
   if [[ -n "$newest" && -d "$newest" ]]; then
@@ -78,22 +105,41 @@ copy_latest_report_dir() {
   fi
 }
 
+# Find newest simulation.log in TMP_REPORT_ROOT (if any).
+find_latest_sim_log() {
+  find "$TMP_REPORT_ROOT" -name simulation.log -type f -print0 2>/dev/null \
+    | xargs -0 -r ls -1t 2>/dev/null \
+    | head -n 1 || true
+}
+
+# ------------------------------------------------------------------------------
+# Main loop
+# ------------------------------------------------------------------------------
 for LINE in "${SIMS[@]}"; do
   echo
   echo "=============================="
   echo "Running entry: $LINE"
   echo "=============================="
 
+  # Parse: "<SIM_CLASS> | <SIM_PROPS...>"
   SIM_CLASS="$(echo "$LINE" | awk -F'\\|' '{print $1}' | xargs)"
-  SIM_PROPS="$(echo "$LINE" | awk -F'\\|' '{print $2}' | xargs || true)"
+  SIM_PROPS_RAW="$(echo "$LINE" | awk -F'\\|' '{print $2}' | xargs || true)"
 
   if [[ -z "$SIM_CLASS" ]]; then
     echo "WARN: empty simulation class in line: $LINE"
     continue
   fi
 
+  # Parse SIM_PROPS into an array to avoid fragile word-splitting pitfalls.
+  # Assumption: props are space-delimited -Dkey=value tokens (no spaces in values).
+  SIM_PROPS=()
+  if [[ -n "${SIM_PROPS_RAW:-}" ]]; then
+    # shellcheck disable=SC2206
+    SIM_PROPS=( ${SIM_PROPS_RAW} )
+  fi
+
   echo "Simulation class: $SIM_CLASS"
-  echo "Simulation props: ${SIM_PROPS:-<none>}"
+  echo "Simulation props: ${SIM_PROPS_RAW:-<none>}"
 
   SAFE_SIM="${SIM_CLASS//./_}"
   TS="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -101,34 +147,41 @@ for LINE in "${SIMS[@]}"; do
 
   unset EXIT_CODE
 
-  # Clean tmp report output between sims to avoid mixing
+  # Clean temp report output between sims to avoid mixing runs.
   rm -rf "$TMP_REPORT_ROOT"/* || true
 
-  # Run Gatling
-  # -D props must come before task
-  # Force Gradle build output to /tmp (writable), not /work (mounted repo)
-  # shellcheck disable=SC2086
+  # Run Gatling via Gradle.
+  #
+  # Key points:
+  # - -D JVM props must come before the task.
+  # - -g points Gradle user home to a writable cache dir (usually mounted to /tmp/.gradle in CI).
+  # - performanceTestsBuildDir forces build outputs to /tmp (writable).
+  # - We set Gatling's results folder to TMP_REPORT_ROOT so reports don't land in /work.
+  #
+  # The Gatling Gradle plugin respects "gatling.resultsFolder" (system property).
+  # If your build uses a different property, adjust accordingly.
   ./gradlew --no-daemon \
     "${JVM_PROPS[@]}" \
     -g "${GRADLE_USER_HOME:-/tmp/.gradle}" \
     -Dorg.gradle.project.performanceTestsBuildDir="$TMP_BUILD_ROOT" \
+    -Dgatling.resultsFolder="$TMP_REPORT_ROOT" \
     :performance-tests:gatlingTest \
     -PsimClass="$SIM_CLASS" \
-    $SIM_PROPS \
+    "${SIM_PROPS[@]}" \
     "${GRADLE_ARGS[@]}" || EXIT_CODE=$?
 
-  # Copy newest report dir (contains index.html etc) to mounted perf-reports
+  # Copy newest report dir (contains index.html etc) to mounted perf-reports.
   copy_latest_report_dir
 
-  # Copy simulation.log if present (from tmp report root)
-  LATEST_LOG="$(find "$TMP_REPORT_ROOT" -name simulation.log -type f -print0 2>/dev/null | xargs -0 -r ls -1t 2>/dev/null | head -n 1 || true)"
+  # Copy simulation.log if present.
+  LATEST_LOG="$(find_latest_sim_log)"
   if [[ -n "$LATEST_LOG" && -f "$LATEST_LOG" ]]; then
     cp "$LATEST_LOG" "$HOST_RAW_ROOT/${RUN_ID}_simulation.log"
   else
     echo "WARN: simulation.log not found for $SIM_CLASS"
   fi
 
-  # Summary
+  # Summary generation (never fail the job because summary failed).
   if [[ -f "/work/performance-tests/ci/summarize_gatling.py" ]]; then
     python3 /work/performance-tests/ci/summarize_gatling.py \
       --report-root "$TMP_REPORT_ROOT" \
@@ -140,6 +193,7 @@ for LINE in "${SIMS[@]}"; do
     echo "WARN: summarize_gatling.py not found, skipping summary generation"
   fi
 
+  # If the simulation itself failed, fail fast with the same exit code.
   if [[ -n "${EXIT_CODE:-}" && "${EXIT_CODE:-0}" -ne 0 ]]; then
     echo "Simulation failed: $SIM_CLASS (exit ${EXIT_CODE})"
     exit "$EXIT_CODE"

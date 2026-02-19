@@ -29,4 +29,4 @@ jobs:
       perf_base_url: "https://tctalent-test.org"
       run_performance_threshold_check: true
       max_failed_pct: 10.0
-      max_p95_ms: 90000
+      max_latency_ms: 90000

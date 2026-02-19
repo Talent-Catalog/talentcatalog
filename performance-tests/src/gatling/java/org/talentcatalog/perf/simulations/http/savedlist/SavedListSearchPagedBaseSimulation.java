@@ -93,14 +93,14 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
    *
    * <p>Set to {@code 0} to disable the p95 assertion.</p>
    *
-   * <p>Example: {@code -Dperf.maxP95Ms=15000} or {@code -Dperf.maxP95Ms=0}</p>
+   * <p>Example: {@code -Dperf.maxLatencyMs=15000} or {@code -Dperf.maxLatencyMs=0}</p>
    */
-  protected static final String PROP_MAX_P95_MS = "perf.maxP95Ms";
+  protected static final String PROP_MAX_LATENCY_MS = "perf.maxLatencyMs";
 
   /**
-   * Default p95 threshold (ms) when {@link #PROP_MAX_P95_MS} is not provided.
+   * Default p95 threshold (ms) when {@link #PROP_MAX_LATENCY_MS} is not provided.
    */
-  protected static final int DEFAULT_MAX_P95_MS = 2000;
+  protected static final int DEFAULT_MAX_LATENCY_MS = 2000;
 
   /**
    * System property key for the maximum allowed global failed request percentage.
@@ -205,8 +205,8 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
    *
    * <h2>Latency</h2>
    * <p>Optionally enforced via p95:
-   * {@code global().responseTime().percentile3().lt(maxP95Ms)} where {@code maxP95Ms} is controlled
-   * by {@code -Dperf.maxP95Ms} (default {@code 2000}). Set {@code -Dperf.maxP95Ms=0} to
+   * {@code global().responseTime().percentile3().lt(maxLatencyMs)} where {@code maxLatencyMs} is controlled
+   * by {@code -Dperf.maxLatencyMs} (default {@code 2000}). Set {@code -Dperf.maxLatencyMs=0} to
    * disable.</p>
    *
    * @return an array of Gatling assertions to apply in {@code setUp(...).assertions(...)}
@@ -215,14 +215,14 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
     var assertions = new ArrayList<Assertion>();
 
     double maxFailedPct = getDoubleProp(PROP_MAX_FAILED_PCT, DEFAULT_MAX_FAILED_PCT);
-    int maxP95Ms = getIntProp(PROP_MAX_P95_MS, DEFAULT_MAX_P95_MS);
+    int maxLatencyMs = getIntProp(PROP_MAX_LATENCY_MS, DEFAULT_MAX_LATENCY_MS);
 
     // Correctness gate (always on)
     assertions.add(global().failedRequests().percent().lt(maxFailedPct));
 
     // Optional latency gate
-    if (maxP95Ms > 0) {
-      assertions.add(global().responseTime().percentile3().lt(maxP95Ms));
+    if (maxLatencyMs > 0) {
+      assertions.add(global().responseTime().percentile3().lt(maxLatencyMs));
     }
 
     return assertions.toArray(new Assertion[0]);

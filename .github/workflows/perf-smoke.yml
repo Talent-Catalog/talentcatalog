@@ -25,4 +25,4 @@ jobs:
 
       run_performance_threshold_check: false
       max_failed_pct: 5
-      max_p95_ms: 90000
+      max_latency_ms: 90000
