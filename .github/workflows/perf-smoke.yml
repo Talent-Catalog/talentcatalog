@@ -1,15 +1,15 @@
 name: Perf Smoke
 
 on:
+  pull_request:
   push:
     branches:
-      - '*'
-      - '!staging'
-      - '!master'
+      - staging
   workflow_dispatch:
 
 jobs:
   smoke:
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/staging'
     uses: ./.github/workflows/tc-gatling-tests.yml
 
     secrets:
