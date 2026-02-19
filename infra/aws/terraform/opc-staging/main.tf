@@ -249,7 +249,7 @@ module "tc-plus-staging" {
   tc_cors_urls                           = "https://test.plus.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
   tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
   tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
-  tc_skills_extraction_api_url           = "https://skills.plus.tctalent.org"
+  tc_skills_extraction_api_url           = "https://test.skills.plus.tctalent.org"
   web_admin                              = "https://test.plus.tctalent.org/admin-portal"
   web_portal                             = "https://test.plus.tctalent.org/candidate-portal"
 

@@ -245,7 +245,7 @@ module "tc-plus-prod" {
   spring_db_pool_min                     = "20"
   spring_servlet_max_file_size           = "10MB"
   spring_servlet_max_request_size        = "10MB"
-  tc_api_url                             = "https://api.tctalent.org"  # todo: set TC API URL
+  tc_api_url                             = "https://api.plus.tctalent.org"  # todo: set TC API URL
   tc_cors_urls                           = "https://tctalent.org"  # todo: set prod CORS URLs
   tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
   tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
