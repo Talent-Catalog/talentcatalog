@@ -52,7 +52,7 @@ import org.talentcatalog.perf.payloads.SavedListSearchPagedPayloads;
  * <h2>Payload selection</h2>
  * <p>The {@link #PROP_PAYLOAD} system property selects which request payload file to use:</p>
  * <ul>
- *   <li>{@code -Dpayload=preview} → {@link SavedListSearchPagedPayloads#PREVIEW} (default)</li>
+ *   <li>{@code -Dpayload=preview} → {@link SavedListSearchPagedPayloads#LIGHT} (default)</li>
  * </ul>
  *
  * <p>If an unknown value is provided, this class falls back to {@code preview}.</p>
@@ -149,12 +149,14 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
    * @return the classpath resource path for the selected payload
    */
   private static String resolvePayloadPath() {
-    String mode = System.getProperty(PROP_PAYLOAD, "preview").trim().toLowerCase();
+    String mode = System.getProperty(PROP_PAYLOAD, "light").trim().toLowerCase();
     return switch (mode) {
-      case "preview" -> SavedListSearchPagedPayloads.PREVIEW;
-      default -> SavedListSearchPagedPayloads.PREVIEW; // fallback for unknown values
+      case "light" -> SavedListSearchPagedPayloads.LIGHT;
+      case "heavy" -> SavedListSearchPagedPayloads.HEAVY;
+      default -> SavedListSearchPagedPayloads.LIGHT;
     };
   }
+
 
   /**
    * Reads an integer system property safely.
