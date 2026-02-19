@@ -109,8 +109,8 @@ jobs:
           python3 performance-tests/ci/performance_threshold_check.py \
             --summary-json-dir perf-summary \
             --max-failed-pct ${{ inputs.max_failed_pct }} \
-            --max-p95-ms ${{ inputs.max_p95_ms }}
-
+            --max-latency-ms ${{ inputs.max_p95_ms }}
+            --strict-percentile p95
       - name: Upload Gatling HTML reports
         if: always()
         uses: actions/upload-artifact@v4
