@@ -1,0 +1,15 @@
+@import '../../../../scss/color-mixins';
+@import '../../../../scss/dropdown-styles';
+
+.tc-dropdown {
+  [ngbDropdownToggle] {
+    display: inline-block;
+  }
+  .dropdown-toggle::after {
+    display: none;
+  }
+
+  ::ng-deep{
+    @include dropdown-styles;
+  }
+}

@@ -1,0 +1,46 @@
+@import "src/scss/color-mixins";
+
+// Apply desired font size (this may be able to be removed once we globally set the font size)
+.tc-pagination {
+  font-size: 14px;
+  padding: 0 10px;
+  margin-bottom: 1em;
+}
+
+.custom-ngb-pagination {
+  display: flex;
+  width: 100%;
+  ngb-pagination {
+    width: 100%;
+    .pagination {
+      margin-bottom: 0;
+      align-items: center;
+      > .page-item {
+        &.disabled .page-link {
+          @include text-color-caption;
+        }
+        .page-link {
+          background-color: transparent;
+          @include text-color-body;
+        }
+      }
+    }
+    .select-pages {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      width: 100%;
+    }
+  }
+}
+
+// Align the results total to the center
+.results-total {
+  text-align: end;
+  margin-right: 2em;
+  @include text-color-secondary;
+}
+
+.custom-pages-input {
+  width: 5rem;
+}
