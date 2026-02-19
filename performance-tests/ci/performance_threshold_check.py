@@ -7,7 +7,7 @@ Reads one or more per-run summary JSON files (produced by summarize_gatling.py) 
   2) Latency threshold: selected percentile response time
 
 This script is designed to work well for:
-- Nightly runs (often small sample sizes): default to lenient percentile (p50)
+- Nightly runs (often small sample sizes): enforce strict percentile (p95), default to lenient percentile (p50)
 - Soak / larger runs: enforce strict percentile (p95) once sample size is large enough
 
 Exit codes:
