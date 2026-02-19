@@ -23,8 +23,8 @@ import {User} from "../model/user";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {ChatService} from "../services/chat.service";
 import {environment} from "../../environments/environment";
-import {BrandingService} from "../services/branding.service";
-import {BrandingInfo} from "../services/branding.service";
+import {BrandingInfo, BrandingService} from "../services/branding.service";
+import Clarity from '@microsoft/clarity';
 
 @Component({
   selector: 'app-root',
@@ -51,6 +51,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.trackPageViews();
+    this.trackClarityViews();
 
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
@@ -100,7 +101,14 @@ export class AppComponent implements OnInit {
 
   private onChangedLogin(user: User) {
     //If logged out
-    if (user == null) {
+    if (user != null) {
+      // If user is logged in, identify them in Clarity
+      // Catching the user's information
+      Clarity.identify(
+        String(user.id),             // custom-id
+        user.username || 'NoName'   // friendly-name
+      );
+    } else {
       this.onLogout();
     }
   }
@@ -127,6 +135,19 @@ export class AppComponent implements OnInit {
         console.log('isTBBPartner set to false due to error');
       }
     );
+  }
+
+  private trackClarityViews() {
+    // Initialize Clarity with your Project ID
+    Clarity.init(environment.clarityProjectId);
+
+    // Track page views on router changes
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // Track page views manually
+        Clarity.event('PageView');
+      }
+    });
   }
 
   /**

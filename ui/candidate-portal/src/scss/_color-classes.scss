@@ -1,0 +1,91 @@
+@import './support-colors';
+@import './color-mixins';
+
+// =====================
+// Text Color Classes
+// =====================
+
+// --- Base Text Colors ---
+// Use these for normal text on light backgrounds
+.text-color-body     { @include text-color-body; }   // Primary text on light backgrounds; best for body content and high readability.
+.text-color-secondary    { @include text-color-secondary; }  // For secondary text like descriptions, hints, or helper text on light backgrounds. On dark backgrounds, use for small labels or subtle captions.
+.text-color-caption  { @include text-color-caption; } // For tertiary text like captions, timestamps, and placeholders. On dark backgrounds, can be used as muted text.
+.text-color-white    { @include text-color-white; }  // Use on dark or colored background
+
+// --- Semantic Text Colors ---
+.text-color-success  { @include text-color-success; }
+.text-color-warning  { @include text-color-warning; }
+.text-color-error    { @include text-color-error; }
+.text-color-info     { @include text-color-info; }
+.text-color-disabled     { @include text-color-disabled; }
+.text-color-brand-secondary   { @include text-color-brand-secondary; }
+
+// --- Descriptive Text Colors ---
+.text-color-red      { @include text-color-red; }
+.text-color-orange   { @include text-color-orange; }
+.text-color-yellow   { @include text-color-yellow; }
+.text-color-green    { @include text-color-green; }
+.text-color-blue     { @include text-color-blue; }
+.text-color-purple   { @include text-color-purple; }
+.text-color-pink     { @include text-color-pink; }
+
+// =====================
+// Border Color Classes
+// =====================
+
+// --- Base Border Colors ---
+.border-color-base     { @include border-color-base; }         // Gray 200 – Standard gray border
+.border-color-light    { @include border-color-light; }       // Gray 100 – Softer gray border for nested containers
+.border-color-soft     { @include border-color-soft; }        // Gray 50 –  Very light gray, for subtle outlines
+
+// Use on dark backgrounds
+.border-color-base-dark  { @include border-color-base-dark; }     // Gray 700 – Default border on dark bg
+.border-color-light-dark { @include border-color-light-dark; }   // Gray 800 – Slightly stronger border
+.border-color-soft-dark  { @include border-color-soft-dark; }    // Gray 900 – High contrast border
+
+// --- Semantic Border Colors ---
+.border-color-success  { @include border-color-success; }
+.border-color-warning  { @include border-color-warning; }
+.border-color-error    { @include border-color-error; }
+.border-color-info     { @include border-color-info; }
+
+// --- Descriptive Border Colors ---
+.border-color-red      { @include border-color-red; }
+.border-color-orange   { @include border-color-orange; }
+.border-color-yellow   { @include border-color-yellow; }
+.border-color-green    { @include border-color-green; }
+.border-color-blue     { @include border-color-blue; }
+.border-color-purple   { @include border-color-purple; }
+.border-color-pink     { @include border-color-pink; }
+
+// =====================
+// Background Color Classes
+// =====================
+
+// --- Base Background Colors ---
+.background-color-primary     { @include background-color-primary; }        // Primary blue color
+.background-color-secondary   { @include background-color-secondary; }        //  Secondary teal color
+.background-color-white       { @include background-color-white; }           // White – Used for main page sections
+.background-color-light       { @include background-color-light; }        // Gray 100 – Soft background (cards)
+.background-color-soft        { @include background-color-soft; }        // Gray 200 – Slightly gray bg
+
+// Use on dark UI
+.background-color-dark        { @include background-color-dark; }     // Gray 900 – Full dark background
+.background-color-light-dark  { @include background-color-light-dark; }    // Gray 600 – For less contrast on dark bg
+.background-color-soft-dark   { @include background-color-soft-dark; }   // Gray 800 – Slightly lighter than primary
+
+// --- Semantic Background Colors ---
+.background-color-success  { @include background-color-success; }
+.background-color-warning  { @include background-color-warning; }
+.background-color-error    { @include background-color-error; }
+.background-color-info     { @include background-color-info; }
+.background-color-disabled     { @include background-color-disabled; }
+
+// --- Descriptive Background Colors ---
+.background-color-red      { @include background-color-red; }
+.background-color-orange   { @include background-color-orange; }
+.background-color-yellow   { @include background-color-yellow; }
+.background-color-green    { @include background-color-green; }
+.background-color-blue     { @include background-color-blue; }
+.background-color-purple   { @include background-color-purple; }
+.background-color-pink     { @include background-color-pink; }
