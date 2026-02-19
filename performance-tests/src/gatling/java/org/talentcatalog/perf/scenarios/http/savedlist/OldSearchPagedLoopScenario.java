@@ -13,7 +13,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-package org.talentcatalog.perf.scenarios.http.candidatesearch;
+
+package org.talentcatalog.perf.scenarios.http.savedlist;
 
 import static io.gatling.javaapi.core.CoreDsl.RawFileBody;
 import static io.gatling.javaapi.core.CoreDsl.csv;
@@ -24,24 +25,25 @@ import static io.gatling.javaapi.core.CoreDsl.scenario;
 import io.gatling.javaapi.core.FeederBuilder.Batchable;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import org.talentcatalog.perf.chains.AuthChains;
-import org.talentcatalog.perf.requests.http.candidatesearch.CandidateSearchRequests;
+import org.talentcatalog.perf.requests.http.candidatesearch.SavedListCandidateSearchPagedRequests;
 
 /**
  * Builds a scenario that:
  * <ol>
  *   <li>Feeds user credentials from {@code users.csv}</li>
  *   <li>Logs in once (idempotent via {@link AuthChains#ensureLoggedIn()})</li>
- *   <li>Repeats {@code repeats} candidate-search requests against the <b>new</b> endpoint</li>
+ *   <li>Repeats {@code repeats} paged saved-list search requests against the <b>old-fetch</b> (legacy) behavior</li>
  *   <li>Pauses a random duration between {@code minPauseSeconds} and {@code maxPauseSeconds} between iterations</li>
  * </ol>
  *
- * <p>This scenario is useful for isolating endpoint performance by amortizing authentication overhead
- * (login happens once per virtual user, then searches loop).</p>
+ * <p>This scenario is useful for benchmarking legacy saved-list paging performance and comparing it with
+ * the new paging implementation, while amortizing authentication overhead (login happens once per virtual user,
+ * then searches loop).</p>
  *
  * <p>The request body is loaded from a classpath resource via {@code RawFileBody(payloadPath)}
  * (typically under {@code src/gatling/resources}).</p>
  */
-public final class NewEndpointLoopScenario {
+public final class OldSearchPagedLoopScenario {
 
   /**
    * Feeder providing login/session variables from {@code users.csv}.
@@ -51,12 +53,13 @@ public final class NewEndpointLoopScenario {
   private static final Batchable<String> USER_FEEDER = csv("users.csv").circular();
 
   /** Utility class: prevent instantiation. */
-  private NewEndpointLoopScenario() {}
+  private OldSearchPagedLoopScenario() {}
 
   /**
-   * Creates the "new endpoint" candidate search loop scenario.
+   * Creates the "old-fetch" (legacy) saved-list candidate search (paged) loop scenario.
    *
-   * @param payloadPath path to the JSON payload resource (e.g., {@code "payloads/candidate_search_light.json"})
+   * @param listId saved-list id to search within
+   * @param payloadPath path to the JSON payload resource (e.g., {@code "payloads/saved_list_search_light.json"})
    * @param label label appended to the request name for reporting (e.g., {@code "[baseline]"} or {@code "[heavy]"})
    * @param repeats number of searches to execute per virtual user (must be {@code > 0})
    * @param minPauseSeconds minimum pause between searches in seconds (must be {@code >= 0})
@@ -65,6 +68,7 @@ public final class NewEndpointLoopScenario {
    * @throws IllegalArgumentException if the repeat/pause constraints are invalid
    */
   public static ScenarioBuilder build(
+      long listId,
       String payloadPath,
       String label,
       int repeats,
@@ -79,15 +83,13 @@ public final class NewEndpointLoopScenario {
 
     var body = RawFileBody(payloadPath);
 
-    return scenario("Candidate Search - NEW (Loop)")
+    return scenario("Saved List Search Paged - OLD-FETCH (Loop)")
         .feed(USER_FEEDER)
         .exec(AuthChains.ensureLoggedIn())
-        .exec(session -> session.set("searchBodyPath", payloadPath))
         .repeat(repeats).on(
-            group("candidate-search-new").on(
-                    exec(CandidateSearchRequests.searchNew(body, label))
-                )
-                .pause(minPauseSeconds, maxPauseSeconds)
+            group("saved-list-search-paged-old-fetch").on(
+                exec(SavedListCandidateSearchPagedRequests.searchPagedOldFetch(listId, body, label))
+            ).pause(minPauseSeconds, maxPauseSeconds)
         );
   }
 }

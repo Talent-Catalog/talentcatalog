@@ -13,7 +13,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-package org.talentcatalog.perf.scenarios.http.candidatesearch;
+
+package org.talentcatalog.perf.scenarios.http.savedlist;
 
 import static io.gatling.javaapi.core.CoreDsl.RawFileBody;
 import static io.gatling.javaapi.core.CoreDsl.csv;
@@ -27,25 +28,25 @@ import io.gatling.javaapi.core.Choice;
 import io.gatling.javaapi.core.FeederBuilder.Batchable;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import org.talentcatalog.perf.chains.AuthChains;
-import org.talentcatalog.perf.requests.http.candidatesearch.CandidateSearchRequests;
+import org.talentcatalog.perf.requests.http.candidatesearch.SavedListCandidateSearchPagedRequests;
 
 /**
- * Scenario that models finite "active user" behavior with:
- * <ul>
- *   <li>Random think time between requests</li>
- *   <li>Random A/B choice between the new and old-fetch candidate search endpoints</li>
- * </ul>
- *
- * <p>Each virtual user runs exactly {@code repeats} iterations. For each iteration:
+ * Builds a finite (bounded by {@code repeats}) A/B scenario that:
  * <ol>
- *   <li>Pause randomly between {@code minPauseSeconds} and {@code maxPauseSeconds}</li>
- *   <li>Choose NEW vs OLD based on {@code pctNew} (0..100)</li>
- *   <li>Execute the chosen request inside a {@code group(...)} for report breakdown</li>
+ *   <li>Feeds user credentials from {@code users.csv}</li>
+ *   <li>Logs in once (idempotent via {@link AuthChains#ensureLoggedIn()})</li>
+ *   <li>Repeats {@code repeats} iterations, pausing between {@code minPauseSeconds} and {@code maxPauseSeconds}</li>
+ *   <li>On each iteration, routes to <b>NEW</b> vs <b>OLD-FETCH</b> paged saved-list search using a weighted random split</li>
  * </ol>
  *
- * <p>Authentication is performed once per user via {@link AuthChains#ensureLoggedIn()}.</p>
+ * <p>The split is controlled by {@code pctNew} (0..100). The remaining traffic is sent to the legacy
+ * old-fetch behavior. This makes the scenario useful for A/B testing and gradual rollout comparisons
+ * under identical virtual-user and pause characteristics.</p>
+ *
+ * <p>The request body is loaded from a classpath resource via {@code RawFileBody(payloadPath)}
+ * (typically under {@code src/gatling/resources}).</p>
  */
-public final class RandomABFiniteScenario {
+public final class RandomABFiniteSearchPagedScenario {
 
   /**
    * Feeder providing login/session variables from {@code users.csv}.
@@ -57,29 +58,29 @@ public final class RandomABFiniteScenario {
   /**
    * Utility class: prevent instantiation.
    */
-  private RandomABFiniteScenario() {
+  private RandomABFiniteSearchPagedScenario() {
   }
 
   /**
-   * Builds the random A/B finite scenario.
+   * Creates the finite random A/B saved-list candidate search (paged) scenario.
    *
+   * @param listId          saved-list id to search within
    * @param payloadPath     path to the JSON payload resource (e.g.,
-   *                        {@code "payloads/candidate_search_light.json"})
-   * @param repeats         number of iterations per user (must be {@code > 0})
-   * @param minPauseSeconds minimum think-time pause per iteration in seconds (must be
-   *                        {@code >= 0})
-   * @param maxPauseSeconds maximum think-time pause per iteration in seconds (must be
+   *                        {@code "payloads/saved_list_search_light.json"})
+   * @param repeats         number of iterations (requests) per virtual user (must be {@code > 0})
+   * @param minPauseSeconds minimum pause between iterations in seconds (must be {@code >= 0})
+   * @param maxPauseSeconds maximum pause between iterations in seconds (must be
    *                        {@code >= minPauseSeconds})
-   * @param pctNew          percentage of traffic routed to the NEW endpoint (0..100). Old endpoint
-   *                        receives {@code 100 - pctNew}.
+   * @param pctNew          percentage of traffic to route to the new paged search (0..100)
    * @param labelNew        label appended to the NEW request name for reporting (e.g.,
-   *                        {@code "[baseline]"})
+   *                        {@code "[new-50]"})
    * @param labelOld        label appended to the OLD request name for reporting (e.g.,
-   *                        {@code "[baseline]"})
+   *                        {@code "[old-50]"})
    * @return a configured {@link ScenarioBuilder}
-   * @throws IllegalArgumentException if any constraints are invalid
+   * @throws IllegalArgumentException if the repeat/pause/split constraints are invalid
    */
   public static ScenarioBuilder build(
+      long listId,
       String payloadPath,
       int repeats,
       int minPauseSeconds,
@@ -98,7 +99,7 @@ public final class RandomABFiniteScenario {
       throw new IllegalArgumentException("maxPauseSeconds must be >= minPauseSeconds");
     }
     if (pctNew < 0 || pctNew > 100) {
-      throw new IllegalArgumentException("pctNew must be between 0 and 100");
+      throw new IllegalArgumentException("pctNew must be 0..100");
     }
 
     var body = RawFileBody(payloadPath);
@@ -106,7 +107,7 @@ public final class RandomABFiniteScenario {
     double newWeight = (double) pctNew;
     double oldWeight = 100.0 - newWeight;
 
-    return scenario("Candidate Search - Random A/B (Finite)")
+    return scenario("Saved List Search Paged - Random A/B (Finite)")
         .feed(USER_FEEDER)
         .exec(AuthChains.ensureLoggedIn())
         .repeat(repeats).on(
@@ -115,14 +116,16 @@ public final class RandomABFiniteScenario {
                     randomSwitch().on(
                         new Choice.WithWeight(
                             newWeight,
-                            group("candidate-search-new").on(
-                                exec(CandidateSearchRequests.searchNew(body, labelNew))
+                            group("saved-list-search-paged-new").on(
+                                exec(SavedListCandidateSearchPagedRequests.searchPagedNew(listId,
+                                    body, labelNew))
                             )
                         ),
                         new Choice.WithWeight(
                             oldWeight,
-                            group("candidate-search-old-fetch").on(
-                                exec(CandidateSearchRequests.searchOldFetch(body, labelOld))
+                            group("saved-list-search-paged-old-fetch").on(
+                                exec(SavedListCandidateSearchPagedRequests.searchPagedOldFetch(
+                                    listId, body, labelOld))
                             )
                         )
                     )
