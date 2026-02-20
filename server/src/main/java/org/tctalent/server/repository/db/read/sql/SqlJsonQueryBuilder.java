@@ -38,6 +38,10 @@ import org.tctalent.server.repository.db.read.annotation.SqlTable;
 /**
  * Generates SQL for fetching candidate data from the database encoded as a single String of JSON.
  * <p>
+ *     The candidates to be fetched are identified by their ids. This is assumed to be passed into
+ *     the SQL as a named parameter in the form of {@code IN (:<param>)}.
+ * </p>
+ * <p>
  *     The result set consists of one row per candidate. Each row contains:
  *     <ul>
  *         <li>id (long) - candidate id</li>

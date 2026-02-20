@@ -16,7 +16,6 @@
 
 package org.tctalent.server.repository.db.read.dto;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,5 +42,5 @@ public class SalesforceJobOppReadDto {
     private Long id;
     private OffsetDateTime publishedDate;
     private String stage;
-    private LocalDate submissionDueDate;
+    private OffsetDateTime submissionDueDate;
 }
