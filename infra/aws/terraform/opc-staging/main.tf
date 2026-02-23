@@ -194,10 +194,8 @@ module "tc-plus-staging" {
   ecs_tasks_count = 1
 
   # Database configuration
-  # RDS creates a local database (tcplus), but the service currently connects to the
-  # legacy TBB database via spring_datasource_url below. When ready to cut over to the
-  # local RDS instance, remove spring_datasource_url and the auto-populate logic will
-  # use the RDS endpoint instead.
+  # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
+  # database via spring_datasource_url below. It does not currently connect  to the OPC RDS instance.
   db_enable              = true
   db_public_access       = false
   db_multi_az            = false
