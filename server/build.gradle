@@ -94,7 +94,7 @@ dependencies {
     implementation "org.springframework.data:spring-data-rest-webmvc"
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation platform("org.testcontainers:testcontainers-bom:2.0.3")
     testImplementation 'org.testcontainers:elasticsearch'
     testImplementation 'org.testcontainers:postgresql'
     compileOnly 'org.projectlombok:lombok'
