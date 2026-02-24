@@ -107,21 +107,21 @@
           </div>
           <div class="col-md-5">
             <tc-field [checkbox]="true">
+              <tc-label class="form-check-label" [title]="showUnpublishedTip"
+                        for="showUnpublished">{{showUnpublishedLabel}}</tc-label>
+              <tc-input [title]="showUnpublishedTip" type="checkbox"
+                        formControlName="showUnpublishedOpps" id="showUnpublished"></tc-input>
+            </tc-field>
+          </div>
+        </div>
+        <div *ngIf="searchBy===SearchOppsBy.mineAsJobCreator" class="row justify-content-center">
+          <div *ngIf="canViewChats()" class="col-md-5">
+            <tc-field [checkbox]="true">
               <tc-label [title]="withUnreadMessagesTip"
                         for="withUnreadMessages">{{withUnreadMessagesLabel}}</tc-label>
               <tc-input [title]="withUnreadMessagesTip" type="checkbox"
                         formControlName="withUnreadMessages" id="withUnreadMessages">
               </tc-input>
-            </tc-field>
-          </div>
-        </div>
-        <div *ngIf="searchBy===SearchOppsBy.mineAsJobCreator" class="row justify-content-center">
-          <div class="col-md-5">
-            <tc-field [checkbox]="true">
-              <tc-label class="form-check-label" [title]="showUnpublishedTip"
-                        for="showUnpublished">{{showUnpublishedLabel}}</tc-label>
-              <tc-input [title]="showUnpublishedTip" type="checkbox"
-                        formControlName="showUnpublishedOpps" id="showUnpublished"></tc-input>
             </tc-field>
           </div>
           <div class="col-md-5">
@@ -165,7 +165,7 @@
     <tr *ngFor="let opp of results?.content" (click)="selectCurrent(opp)"
         [ngClass]="{'current': currentOpp?.id == opp.id}">
       <td title="{{opp.country?.name}}">
-        <app-chat-read-status
+        <app-chat-read-status *ngIf="canViewChats()"
           [chats]="getChats(opp)"
         ></app-chat-read-status>
         {{opp.name| truncate: 36}}
