@@ -364,6 +364,10 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     return this.authorizationService.canAccessSalesforce();
   }
 
+  canViewChats() {
+    return this.authorizationService.canViewChats();
+  }
+
   onChatReadStatusCreated(chatReadStatus$: Observable<boolean>) {
     this.chatReadStatus$ = chatReadStatus$;
   }
