@@ -19,9 +19,6 @@
 @import '../../../../scss/typography-mixins';
 
 .tc-date-picker {
-  #date-container {
-    padding: 0 0.8rem;
-  }
   .custom-day.selected {
     @include background-color-primary;
     @include text-color-white;

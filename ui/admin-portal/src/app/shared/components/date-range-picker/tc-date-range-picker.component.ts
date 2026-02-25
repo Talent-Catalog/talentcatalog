@@ -16,6 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NgbDate, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {LanguageService} from "../../../services/language.service";
 
 /**
  * @component TcDateRangePickerComponent
@@ -84,11 +85,14 @@ export class TcDateRangePickerComponent implements OnInit {
   hoveredDate: NgbDate;
   displayDate: string;
 
-  constructor() {
-  }
+  constructor(private languageService: LanguageService) {}
 
   ngOnInit(): void {
     this.displayDate = null;
+
+    if (this.languageService && 'loadDatePickerLanguageData' in this.languageService) {
+      (this.languageService as any).loadDatePickerLanguageData().subscribe();
+    }
   }
 
   selectDate(date: any) {

@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {AbstractControl} from "@angular/forms";
+import {AbstractControl, UntypedFormControl} from "@angular/forms";
 import {NgbDate, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {LanguageService} from "../../../services/language.service";
 
 /**
  * @component TcDatePickerComponent
@@ -87,12 +88,20 @@ export class TcDatePickerComponent implements OnInit {
   error: string;
   date: NgbDate;
 
-  constructor() { }
+  constructor(private languageService: LanguageService) { }
 
   ngOnInit(): void {
+    if (!this.control) {
+      this.control = new UntypedFormControl(null);
+    }
+
     this.dateString = this.control.value;
     this.date = this.stringToNgbDate(this.dateString);
     this.today = new Date();
+
+    if (this.languageService && 'loadDatePickerLanguageData' in this.languageService) {
+      (this.languageService as any).loadDatePickerLanguageData().subscribe();
+    }
 
     // If allow future is not true, leave as default max date. Otherwise set to today.
     if (this.allowFuture) {
@@ -115,7 +124,7 @@ export class TcDatePickerComponent implements OnInit {
     // Only send the string to the component form if date is null or matches the correct format
     if (this.dateString == null || this.dateString.match(customDatePattern) ) {
       this.error = null;
-      this.control.patchValue(this.dateString);
+      this.control?.patchValue(this.dateString);
     } else {
       this.error = 'Incorrect date format, please type date in yyyy-mm-dd';
     }
@@ -124,7 +133,7 @@ export class TcDatePickerComponent implements OnInit {
 
   clear() {
     this.dateString = null;
-    this.control.patchValue(this.dateString);
+    this.control?.patchValue(this.dateString);
   }
 
   /**

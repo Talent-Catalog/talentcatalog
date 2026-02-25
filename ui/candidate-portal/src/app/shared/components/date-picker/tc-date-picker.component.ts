@@ -99,8 +99,9 @@ export class TcDatePickerComponent implements OnInit {
     this.date = this.stringToNgbDate(this.dateString);
     this.today = new Date();
 
-    // Ensure custom month/day names are loaded for candidate portal datepicker i18n.
-    this.languageService.loadDatePickerLanguageData().subscribe();
+    if (this.languageService && 'loadDatePickerLanguageData' in this.languageService) {
+      (this.languageService as any).loadDatePickerLanguageData().subscribe();
+    }
 
     // If allow future is not true, leave as default max date. Otherwise set to today.
     if (this.allowFuture) {

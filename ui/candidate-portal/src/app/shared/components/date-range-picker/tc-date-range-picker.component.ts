@@ -85,14 +85,14 @@ export class TcDateRangePickerComponent implements OnInit {
   hoveredDate: NgbDate;
   displayDate: string;
 
-  constructor(private languageService: LanguageService) {
-  }
+  constructor(private languageService: LanguageService) {}
 
   ngOnInit(): void {
     this.displayDate = null;
 
-    // Ensure custom month/day names are loaded for candidate portal datepicker i18n.
-    this.languageService.loadDatePickerLanguageData().subscribe();
+    if (this.languageService && 'loadDatePickerLanguageData' in this.languageService) {
+      (this.languageService as any).loadDatePickerLanguageData().subscribe();
+    }
   }
 
   selectDate(date: any) {
