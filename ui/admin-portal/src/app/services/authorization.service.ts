@@ -124,6 +124,11 @@ export class AuthorizationService {
     return result;
   }
 
+  canViewChats(): boolean {
+    //todo This can be computed from policy rules.
+    return false;
+  }
+
   /**
    * True if the logged-in user work for the source partner that is currently managing the
    * given candidate

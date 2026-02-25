@@ -77,6 +77,10 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
     }
   }
 
+  canViewChats() {
+    return this.authorizationService.canViewChats();
+  }
+
   private displayChat() {
     this.fetchJobChat();
     this.computeChatHeader();

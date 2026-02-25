@@ -441,6 +441,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     return this.authorizationService.canAccessSalesforce();
   }
 
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
   get getCandidateOpportunityStageName() {
     return getOpportunityStageName;
   }

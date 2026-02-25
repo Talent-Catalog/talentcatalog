@@ -78,6 +78,10 @@ export class JobHomeComponent extends HomeComponent {
     this.loadChatReadStatuses();
   }
 
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
   private loadChatReadStatuses() {
     let req = new SearchOpportunityRequest();
     req.ownedByMyPartner = true;

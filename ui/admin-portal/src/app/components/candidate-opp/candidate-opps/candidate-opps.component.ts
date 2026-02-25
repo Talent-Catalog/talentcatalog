@@ -83,7 +83,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   constructor(
     chatService: ChatService,
     fb: UntypedFormBuilder,
-    authService: AuthorizationService,
+    authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,
     salesforceService: SalesforceService,
@@ -91,7 +91,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
     partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+    super(chatService, fb, authorizationService, localStorageService, oppService, salesforceService,
       countryService, partnerService, locale,"Opps")
 
   }
