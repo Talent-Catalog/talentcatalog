@@ -21,6 +21,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -180,7 +181,8 @@ public class LinkedInCouponImporter implements FileInventoryImporter {
         if (dateString != null && !dateString.trim().isEmpty()) {
             for (DateTimeFormatter formatter : formatters) {
                 try {
-                    return LocalDateTime.parse(dateString, formatter);
+                    return LocalDate.parse(dateString, formatter)
+                        .atStartOfDay();
                 } catch (DateTimeParseException ex) {
                     LogBuilder.builder(log)
                         .action("parseDate")
