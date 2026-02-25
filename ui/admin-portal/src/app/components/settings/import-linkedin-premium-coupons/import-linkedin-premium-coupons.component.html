@@ -1,0 +1,51 @@
+<h4 class="mb-3">Import LinkedIn Premium Coupons</h4>
+<tc-pagination [totalElements]="csvData?.length || 0"
+               [pageSize]="30"
+               (pageChange)="onPageChange($event)"
+               [pageNumber]="currentPage">
+</tc-pagination>
+
+<!-- Display the number of available coupons here -->
+<div class="text-muted mb-2 align-middle">
+  Available Coupons: {{ availableCouponsCount }}
+</div>
+
+<div class="w-50">
+  <tc-alert [type]="'info'">
+      Coupons are provided as spreadsheets via email from our LinkedIn contact.
+      You may need to convert the file to CSV, since this is the required format for TC import.
+  </tc-alert>
+</div>
+
+<tc-alert *ngIf="error" type="warning">{{ error }}</tc-alert>
+
+<div class="my-3">
+  <label for="fileInput" class="form-label">Upload CSV File *</label>
+  <input
+    type="file"
+    id="fileInput"
+    class="form-control"
+    (change)="onFileChange($event)"
+    accept=".csv"
+  />
+</div>
+
+<div class="mb-3" *ngIf="csvData.length">
+  <h5>Preview</h5>
+  <tc-table [results]="csvData" [loading]="working">
+    <thead>
+    <tr>
+      <th *ngFor="let header of csvHeaders">{{ header }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of paginatedData">
+      <td *ngFor="let cell of row">{{ cell }}</td>
+    </tr>
+    </tbody>
+  </tc-table>
+</div>
+
+<tc-button class="float-end mb-3" [loading]="working" (onClick)="importCSV()" [disabled]="!csvData.length || working">
+  Import
+</tc-button>
