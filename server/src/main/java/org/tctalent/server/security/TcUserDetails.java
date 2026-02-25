@@ -19,7 +19,9 @@ package org.tctalent.server.security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import jakarta.validation.constraints.NotNull;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,37 +37,92 @@ import org.tctalent.server.model.db.User;
  * Note that this is what is returned by {@link Authentication#getPrincipal()}
  */
 public class TcUserDetails implements UserDetails {
+    private static final String ROLE_PREFIX = "ROLE_"; // Spring default
 
     private User user;
-    private List<GrantedAuthority> authorities;
+    private final List<GrantedAuthority> authorities;
+    private final Set<String> authorityStrings;
 
-    public TcUserDetails(@NotNull User user) {
+    public TcUserDetails(@NonNull User user) {
         this.user = user;
-        this.authorities = new ArrayList<>();
+
+        //For now, we hard code the authorities based on the user.
+        authorities = createAuthorities(user);
+
+        //Construct Set of Strings to efficiently support hasAuthority(String) and hasRole(String)
+        this.authorityStrings = authorities.stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public boolean hasAuthority(String authority) {
+        return authority != null && authorityStrings.contains(authority);
+    }
+
+    public boolean hasRole(String role) {
+        return role != null && authorityStrings.contains(ROLE_PREFIX + role);
+    }
+
+    public boolean hasAnyAuthority(String... authorities) {
+        if (authorities == null) return false;
+        for (String a : authorities) {
+            if (a != null && authorityStrings.contains(a)) return true;
+        }
+        return false;
+    }
+
+    public boolean hasAnyRole(String... roles) {
+        if (roles == null) return false;
+        for (String r : roles) {
+            if (r != null && authorityStrings.contains(ROLE_PREFIX + r)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * In future, we may store user permissions in a separate db table and retrieve them here.
+     * @param user User to create authorities for
+     * @return List of authorities
+     */
+    private List<GrantedAuthority> createAuthorities(@NonNull User user) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
 
         // If read only is checked assign the read only role
         if(user.getReadOnly()){
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
         } else if (user.getRole().equals(Role.systemadmin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_SYSTEMADMIN"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_SYSTEMADMIN"));
         } else if (user.getRole().equals(Role.admin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         } else if (user.getRole().equals(Role.partneradmin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_PARTNERADMIN"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_PARTNERADMIN"));
         } else if (user.getRole().equals(Role.semilimited)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
         } else if (user.getRole().equals(Role.limited)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_LIMITED"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_LIMITED"));
         } else {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }
+
+        //For now we hard code some particular test users as our chat test users
+        if(user.getUsername().equals("TestChattingCandidate")){
+            authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
+        }
+        if(user.getUsername().equals("TestChattingJobCreator")){
+            authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
+        }
+        if(user.getUsername().equals("TestChattingSourcePartner")){
+            authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
+        }
+
+        return authorities;
     }
 
-    public @NotNull User getUser() {
+    public @NonNull User getUser() {
         return user;
     }
 
-    public void setUser(@NotNull User user) {
+    public void setUser(@NonNull User user) {
         this.user = user;
     }
 
