@@ -1,4 +1,5 @@
 <ng-template #content>
+  <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
   <ng-content></ng-content>
 </ng-template>
 
@@ -6,12 +7,12 @@
   <a *ngSwitchCase="'link'"
      class="btn"
      [ngClass]="classList"
-     [attr.href]="disabled ? null : href"
+     [attr.href]="isDisabled ? null : href"
      [attr.target]="target"
      [attr.rel]="computedRel"
      [attr.aria-label]="ariaLabel"
-     [attr.aria-disabled]="disabled ? 'true' : null"
-     [class.disabled]="disabled"
+     [attr.aria-disabled]="isDisabled ? 'true' : null"
+     [class.disabled]="isDisabled"
      (click)="clicked($event)">
     <ng-container *ngTemplateOutlet="content"></ng-container>
   </a>
@@ -19,7 +20,7 @@
   <button *ngSwitchDefault
           class="btn"
           [ngClass]="classList"
-          [disabled]="disabled"
+          [disabled]="isDisabled"
           [attr.aria-label]="ariaLabel"
           [routerLink]="routerLink"
           (click)="clicked($event)">
