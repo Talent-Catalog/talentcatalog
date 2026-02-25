@@ -16,6 +16,8 @@
 
 package org.tctalent.server.casi.application.providers.linkedin;
 
+import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
@@ -26,12 +28,17 @@ import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.service.db.SavedListService;
 
 @Service
 public class LinkedInService extends AbstractCandidateAssistanceService {
     private final FileInventoryImporter linkedInImporter;
     private final ResourceAllocator linkedInAllocator;
+
+    // TODO update for prod:
+    private static final Set<Long> LINKEDIN_ELIGIBILITY_LIST_IDS = Set.of(641L, 642L);
 
     public LinkedInService(
         ServiceAssignmentRepository aRepo,
@@ -44,6 +51,20 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
         super(aRepo, rRepo, engine, lists);
         this.linkedInAllocator = allocator;
         this.linkedInImporter = importer;
+    }
+
+    /**
+     * Checks a candidate's eligibility for the LinkedIn Candidate Assistance Service by comparing
+     * IDs of their associated Lists against those used by admins to tag eligible candidates.
+     * @param candidateId ID of candidate
+     * @return true if the candidate is eligible
+     */
+    public Boolean checkEligibility(Long candidateId) {
+        SearchSavedListRequest request = new SearchSavedListRequest();
+        List<SavedList> candidateLists = savedListService.search(candidateId, request);
+
+        return candidateLists.stream()
+            .anyMatch(list -> LINKEDIN_ELIGIBILITY_LIST_IDS.contains(list.getId()));
     }
 
     @Override protected ServiceProvider provider() { return ServiceProvider.LINKEDIN; }
