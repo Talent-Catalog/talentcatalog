@@ -80,7 +80,7 @@ export class ViewCandidateComponent implements OnInit {
    * Ineligible candidates can't see chat, even if eligibility is under review
    */
   get canSeeChatTab(): boolean {
-    let canSee = this.authorizationService.canViewChats() && this.sourceChatHasPosts;
+    let canSee = this.canViewChats && this.sourceChatHasPosts;
     if (canSee) {
       if (
         this.candidate &&
