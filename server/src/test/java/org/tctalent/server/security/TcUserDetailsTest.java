@@ -16,6 +16,14 @@
 
 package org.tctalent.server.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Collection;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,11 +32,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.GrantedAuthority;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
-
-import java.util.Collection;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class TcUserDetailsTest {
 
@@ -62,6 +65,9 @@ class TcUserDetailsTest {
     Collection<? extends GrantedAuthority> authorities = tcUserDetails.getAuthorities();
     assertEquals(1, authorities.size(), "Should have exactly one authority");
     assertTrue(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_READONLY")), "Authority should be ROLE_READONLY");
+    assertTrue(tcUserDetails.hasRole("READONLY"), "Authority should be ROLE_READONLY");
+    assertTrue(tcUserDetails.hasAnyRole("X", "READONLY", "Y"), "Authority should be ROLE_READONLY");
+
   }
 
   @Test

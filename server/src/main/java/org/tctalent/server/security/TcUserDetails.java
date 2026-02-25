@@ -105,13 +105,13 @@ public class TcUserDetails implements UserDetails {
         }
 
         //For now we hard code some particular test users as our chat test users
-        if(user.getUsername().equals("TestChattingCandidate")){
+        if("TestChattingCandidate".equals(user.getUsername())){
             authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
         }
-        if(user.getUsername().equals("TestChattingJobCreator")){
+        if("TestChattingJobCreator".equals(user.getUsername())){
             authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
         }
-        if(user.getUsername().equals("TestChattingSourcePartner")){
+        if("TestChattingSourcePartner".equals(user.getUsername())){
             authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
         }
 
@@ -140,25 +140,4 @@ public class TcUserDetails implements UserDetails {
     public String getUsername() {
         return user.getUsername();
     }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
 }
