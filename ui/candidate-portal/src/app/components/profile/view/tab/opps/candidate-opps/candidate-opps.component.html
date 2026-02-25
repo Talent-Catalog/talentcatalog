@@ -50,7 +50,7 @@
           <tr *ngFor="let opp of filteredOpps" (click)="selectOpp(opp)">
             <td [title]="opp.jobOpp.name">
                 <div class="link underline">
-                  <app-chat-read-status
+                  <app-chat-read-status *ngIf="canViewChats"
                     [chats]="getOppChats(opp)"
                   ></app-chat-read-status>
                   {{opp.jobOpp.name | truncate: 40}}</div>
