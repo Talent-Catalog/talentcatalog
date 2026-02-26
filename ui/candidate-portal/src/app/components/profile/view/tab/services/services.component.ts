@@ -17,30 +17,40 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Candidate} from '../../../../../model/candidate';
 import {TaskAssignment} from "../../../../../model/task-assignment";
+import {Observable} from "rxjs";
+
+export enum Service {
+  LINKEDIN,
+  DUOLINGO
+}
 
 @Component({
     selector: 'app-services',
     templateUrl: './services.component.html',
     styleUrls: ['./services.component.scss']
 })
+
 export class ServicesComponent {
 
-    selectedService: String;
-    error;
-    loading;
-    @Input() candidate: Candidate;
-    @Input() activeDuolingoTask: TaskAssignment;
-    @Output() refresh = new EventEmitter();
+  selectedService: Service;
+  error;
+  loading;
+  @Input() candidate: Candidate;
+  @Input() activeDuolingoTask: TaskAssignment;
+  @Input() showLinkedin$: Observable<boolean>;
+  @Output() refresh = new EventEmitter();
 
-    constructor() {
-    }
+  constructor() { }
 
-    selectService(serviceName: String) {
-        this.selectedService = serviceName;
-    }
+  selectService(service: Service) {
+      this.selectedService = service;
+  }
 
-    unSelectService() {
-        this.selectedService = null;
-        this.refresh.emit();
-    }
+  // TODO: back button?
+  unSelectService() {
+      this.selectedService = null;
+      this.refresh.emit();
+  }
+
+  protected readonly Service = Service;
 }

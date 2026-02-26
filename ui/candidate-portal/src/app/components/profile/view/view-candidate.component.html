@@ -105,8 +105,9 @@
           <app-services
             [candidate]="candidate"
             [activeDuolingoTask]="activeDuolingoTask"
-            (refresh)="fetchCandidate()">
-          </app-services>
+            (refresh)="fetchCandidate()"
+            [showLinkedin$]="linkedinEligible$"
+          ></app-services>
         </ng-template>
       </ng-container>
     </nav>

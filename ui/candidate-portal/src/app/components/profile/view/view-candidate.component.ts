@@ -30,7 +30,7 @@ import {
   CandidateOpportunity,
   CandidateOpportunityStage
 } from "../../../model/candidate-opportunity";
-import {map} from "rxjs/operators";
+import {map, shareReplay} from "rxjs/operators";
 import {LinkedinService} from "../../../services/linkedin.service";
 
 @Component({
@@ -60,6 +60,7 @@ export class ViewCandidateComponent implements OnInit {
   candidate: Candidate;
   usAfghan: boolean;
   activeDuolingoTask: TaskAssignment;
+  linkedinEligible$: Observable<boolean>;
 
   constructor(
     private candidateService: CandidateService,
@@ -139,11 +140,17 @@ export class ViewCandidateComponent implements OnInit {
    * service. The tab is shown if the candidate is eligible for any service.
    */
   private initServicesTabVisibility() {
-    this.showServicesTab$  = forkJoin({
+    const results$ = forkJoin({
       linkedIn: this.linkedinService.checkEligibility(this.candidate.id)
-      // Additional async calls here
-    }).pipe(
+      // Additional async service eligibility calls here
+    }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
+
+    this.showServicesTab$ = results$.pipe(
       map(results => results.linkedIn || !!this.activeDuolingoTask)
+    );
+
+    this.linkedinEligible$ = results$.pipe(
+      map(results => results.linkedIn)
     );
   }
 

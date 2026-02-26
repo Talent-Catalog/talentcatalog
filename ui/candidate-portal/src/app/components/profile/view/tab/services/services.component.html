@@ -15,29 +15,62 @@
   -->
 
 <div class="container">
-    <app-error [error]="error"></app-error>
-    <app-loading [loading]="loading"></app-loading>
+  <app-error [error]="error"></app-error>
+  <app-loading [loading]="loading"></app-loading>
 
-    <app-duolingo *ngIf="selectedService"
-                  [candidate]="candidate"
-                  (refresh)="refresh.emit()"
-                  [activeDuolingoTask]="activeDuolingoTask"
+  <app-duolingo *ngIf="selectedService === Service.DUOLINGO"
+                [candidate]="candidate"
+                (refresh)="refresh.emit()"
+                [activeDuolingoTask]="activeDuolingoTask"
+  ></app-duolingo>
+
+  <!-- TODO: linkedin redemption component -->
+
+  <ng-container *ngIf="!loading && !selectedService">
+
+    <app-tab-header>
+      <h2>{{ 'SERVICES.TITLE' | translate }}</h2>
+      <p>{{ 'SERVICES.DESCRIPTION' | translate }}</p>
+    </app-tab-header>
+
+    <!-- LinkedIn -->
+    <div *ngIf="showLinkedin$ | async"
+         class="service-card linkedin"
+         (click)="selectService(Service.LINKEDIN)"
     >
-    </app-duolingo>
+      <div>
+        <!-- TODO linkedin translations -->
+        <span class="service-tag linkedin">
+          LinkedIn
+        </span>
+        <h3>
+          LinkedIn Premium Upgrade
+        </h3>
+        <p>
+          Activate your 12 months of free LinkedIn Premium membership
+        </p>
+      </div>
+      <img src="assets/images/services/linkedin.png" alt="LinkedIn Premium logo"/>
+    </div>
 
-    <ng-container *ngIf="!loading && !selectedService">
-         <app-tab-header>
-          <h2>{{ 'SERVICES.TITLE' | translate }}</h2>
-          <p>{{ 'SERVICES.DESCRIPTION' | translate }}</p>
-          </app-tab-header>
-        <div class="service-card" (click)="selectService('duolingo')">
+    <!-- Duolingo -->
+    <div *ngIf="activeDuolingoTask"
+         class="service-card duolingo"
+         (click)="selectService(Service.DUOLINGO)"
+    >
+      <div>
+        <span class="service-tag duolingo">
+          {{ 'SERVICES.DUOLINGO.TAG' | translate }}
+        </span>
+        <h3>
+          {{ 'SERVICES.DUOLINGO.TITLE' | translate }}
+        </h3>
+        <p>
+          {{ 'SERVICES.DUOLINGO.DESCRIPTION' | translate }}
+        </p>
+      </div>
+      <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
+    </div>
 
-            <div>
-              <span class="service-tag">{{ 'SERVICES.DUOLINGO.TAG' | translate }}</span>
-              <h3>{{ 'SERVICES.DUOLINGO.TITLE' | translate }}</h3>
-              <p>{{ 'SERVICES.DUOLINGO.DESCRIPTION' | translate }}</p>
-            </div>
-            <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
-        </div>
-    </ng-container>
+  </ng-container>
 </div>
