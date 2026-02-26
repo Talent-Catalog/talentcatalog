@@ -88,7 +88,7 @@ variable "db_major_engine_version" {
 variable "db_name" {
   type        = string
   description = "The name of the database to create (alphanumeric only)"
-  default     = "tbbtalent"
+  default     = "tctalent"
 }
 
 variable "db_backup_retention_days" {
