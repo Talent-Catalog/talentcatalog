@@ -31,6 +31,7 @@ import {
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../../../model/chat";
 import {ChatService} from "../../../../../../../services/chat.service";
 import {forkJoin, of} from "rxjs";
+import {AuthorizationService} from "../../../../../../../services/authorization.service";
 
 const STAGE_TRANSLATION_KEY_ROOT = 'CASE-STAGE.';
 
@@ -54,6 +55,7 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   showAllChat: boolean;
 
   constructor(
+    private authorizationService: AuthorizationService,
     private chatService: ChatService
   ) { }
 
@@ -61,9 +63,13 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.selectedOpp) {
+    if (this.selectedOpp && this.canViewChats) {
       this.fetchJobChats();
     }
+  }
+
+  get canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
   get JobChatType() {
