@@ -53,6 +53,7 @@ import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.security.TcUserDetailsService;
 
 @Tag("skip-test-in-gradle-build")
 @SpringBootTest
@@ -65,6 +66,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   @Autowired private SavedListRepository savedListRepository;
   @Autowired private CandidateSavedListRepository candidateSavedListRepository;
   @Autowired private UserRepository userRepository;
+  @Autowired private TcUserDetailsService tcUserDetailsService;
   @Autowired private JwtTokenProvider jwtTokenProvider;
 
   private Candidate candidate;
@@ -116,7 +118,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   }
 
   private void authenticateUser(User user) {
-    TcUserDetails userDetails = new TcUserDetails(user);
+    TcUserDetails userDetails = this.tcUserDetailsService.loadUserByUsername(user.getUsername());
     Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(authentication);
     jwtToken = jwtTokenProvider.generateToken(authentication);
