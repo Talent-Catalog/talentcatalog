@@ -160,8 +160,10 @@ export class ViewCandidateComponent implements OnInit {
 
   private setCandidate(candidate: Candidate) {
     this.candidate = candidate;
-    this.getCandidateProspectChat();
-    this.fetchAllOpportunityChats();
+    if (this.canViewChats) {
+      this.getCandidateProspectChat();
+      this.fetchAllOpportunityChats();
+    }
   }
 
   private getActiveDuolingoTask(): TaskAssignment | null {

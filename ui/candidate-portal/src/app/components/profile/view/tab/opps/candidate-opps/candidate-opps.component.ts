@@ -56,7 +56,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.candidate) {
+    if (changes.candidate && this.canViewChats) {
       this.fetchChats();
     }
   }
