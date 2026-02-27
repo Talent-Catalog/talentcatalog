@@ -85,8 +85,7 @@ export class AuthenticationService implements OnDestroy {
   }
 
   canViewChats(): boolean {
-    let canViewChats = this.localStorageService.get('can_view_chats');
-    return canViewChats == 'true';
+    return this.localStorageService.get('can_view_chats');
   }
 
   /**
