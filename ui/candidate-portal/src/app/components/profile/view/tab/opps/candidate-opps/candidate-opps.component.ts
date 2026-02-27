@@ -14,12 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {CandidateOpportunity} from "../../../../../../model/candidate-opportunity";
 import {forkJoin, Observable} from "rxjs";
 import {JobChat, JobChatType} from "../../../../../../model/chat";
 import {ChatService} from "../../../../../../services/chat.service";
+import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -39,6 +48,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   selectedOpp: CandidateOpportunity;
 
   constructor(
+    private authorizationService: AuthorizationService,
     private chatService: ChatService
   ) { }
 
@@ -46,9 +56,13 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.candidate) {
+    if (changes.candidate && this.canViewChats) {
       this.fetchChats();
     }
+  }
+
+  get canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
   selectOpp(opp: CandidateOpportunity) {
