@@ -18,7 +18,11 @@
   <app-error [error]="error"></app-error>
   <app-loading [loading]="loading"></app-loading>
 
-  <app-duolingo *ngIf="selectedService === Service.DUOLINGO"
+  <app-linkedin *ngIf="(showLinkedin$ | async) && selectedService === Service.LINKEDIN"
+                [candidate]="candidate"
+  ></app-linkedin>
+
+  <app-duolingo *ngIf="activeDuolingoTask && selectedService === Service.DUOLINGO"
                 [candidate]="candidate"
                 (refresh)="refresh.emit()"
                 [activeDuolingoTask]="activeDuolingoTask"

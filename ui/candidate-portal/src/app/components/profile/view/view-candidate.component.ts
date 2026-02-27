@@ -141,7 +141,7 @@ export class ViewCandidateComponent implements OnInit {
    */
   private initServicesTabVisibility() {
     const results$ = forkJoin({
-      linkedIn: this.linkedinService.checkEligibility(this.candidate.id)
+      linkedIn: this.linkedinService.isEligible(this.candidate.id)
       // Additional async service eligibility calls here
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
 

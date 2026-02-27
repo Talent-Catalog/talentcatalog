@@ -20,10 +20,12 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.casi.core.services.AbstractCandidateAssistanceService;
 import org.tctalent.server.casi.core.services.AssignmentEngine;
+import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
@@ -38,7 +40,7 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     private final ResourceAllocator linkedInAllocator;
 
     // TODO update for prod:
-    private static final Set<Long> LINKEDIN_ELIGIBILITY_LIST_IDS = Set.of(641L, 642L);
+    private static final Set<Long> LINKEDIN_ELIGIBLE_LIST_IDS = Set.of(641L, 642L);
 
     public LinkedInService(
         ServiceAssignmentRepository aRepo,
@@ -54,17 +56,29 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     }
 
     /**
-     * Checks a candidate's eligibility for the LinkedIn Candidate Assistance Service by comparing
-     * IDs of their associated Lists against those used by admins to tag eligible candidates.
-     * @param candidateId ID of candidate
+     * Checks if a candidate is eligible for the LinkedIn Premium membership upgrade offer by
+     * comparing IDs of their associated Lists against Lists used to tag eligible candidates.
+     * @param candidateId - ID of candidate
      * @return true if the candidate is eligible
      */
-    public Boolean checkEligibility(Long candidateId) {
+    public Boolean isEligible(Long candidateId) {
         SearchSavedListRequest request = new SearchSavedListRequest();
         List<SavedList> candidateLists = savedListService.search(candidateId, request);
 
         return candidateLists.stream()
-            .anyMatch(list -> LINKEDIN_ELIGIBILITY_LIST_IDS.contains(list.getId()));
+            .anyMatch(list -> LINKEDIN_ELIGIBLE_LIST_IDS.contains(list.getId()));
+    }
+
+    /**
+     * Checks if a candidate has already redeemed the LinkedIn Premium membership upgrade offer.
+     * @param candidateId - ID of candidate
+     * @return true if the candidate has already redeemed the offer
+     */
+    @Transactional(readOnly = true)
+    public boolean hasRedeemed(Long candidateId) {
+        return getAssignmentsForCandidate(candidateId)
+            .stream()
+            .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.REDEEMED);
     }
 
     @Override protected ServiceProvider provider() { return ServiceProvider.LINKEDIN; }

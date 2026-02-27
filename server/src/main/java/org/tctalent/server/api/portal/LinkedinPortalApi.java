@@ -35,13 +35,23 @@ public class LinkedinPortalApi {
   }
 
   /**
-   * Checks a candidate's eligibility for the LinkedIn Candidate Assistance Service.
-   * @param candidateId ID of candidate
+   * Checks if a candidate is eligible for the LinkedIn Premium membership upgrade offer.
+   * @param candidateId - ID of candidate
    * @return true if the candidate is eligible
    */
   @GetMapping("{candidateId}/eligibility")
-  public Boolean checkEligibility(@PathVariable Long candidateId) {
-    return linkedinService.checkEligibility(candidateId);
+  public Boolean isEligible(@PathVariable Long candidateId) {
+    return linkedinService.isEligible(candidateId);
+  }
+
+  /**
+   * Checks if a candidate has redeemed the LinkedIn Premium membership upgrade offer.
+   * @param candidateId - ID of candidate
+   * @return true if the candidate has redeemed the offer
+   */
+  @GetMapping("{candidateId}/redemption")
+  public Boolean hasRedeemed(@PathVariable Long candidateId) {
+    return linkedinService.hasRedeemed(candidateId);
   }
 
 }

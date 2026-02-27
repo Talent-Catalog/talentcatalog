@@ -13,12 +13,21 @@ export class LinkedinService {
   constructor(private http: HttpClient) { }
 
   /**
-   * Checks a candidate's eligibility for the LinkedIn Candidate Assistance Service.
-   * @param candidateId - The ID of the candidate to check
+   * Checks if a candidate is eligible for the LinkedIn Premium membership upgrade offer.
+   * @param candidateId - ID of candidate
    * @returns Observable<boolean> true if the candidate is eligible
    */
-  checkEligibility(candidateId: number): Observable<boolean> {
+  isEligible(candidateId: number): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiBaseUrl}/${candidateId}/eligibility`);
+  }
+
+  /**
+   * Checks if a candidate has redeemed the LinkedIn Premium membership upgrade offer.
+   * @param candidateId - ID of candidate
+   * @returns Observable<boolean> true if the candidate has redeemed the offer
+   */
+  hasRedeemed(candidateId: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiBaseUrl}/${candidateId}/redemption`);
   }
 
 }
