@@ -351,7 +351,7 @@ public class JobServiceImpl implements JobService {
         job = salesforceJobOppRepository.save(job);
 
         final Optional<TcUserDetails> userOpt = authService.getLoggedInUserDetails();
-        if (userOpt.isPresent() && chatPolicy.canCreateChats(userOpt.get())) {
+        if (chatPolicy.canCreateChats(userOpt)) {
             //Create the chats associated with this job
             createJobChats(job);
         }
@@ -995,7 +995,7 @@ public class JobServiceImpl implements JobService {
         child = updateJobOnSalesforce(child);
 
         final Optional<TcUserDetails> userOpt = authService.getLoggedInUserDetails();
-        if (userOpt.isPresent() && chatPolicy.canCreateChats(userOpt.get())) {
+        if (chatPolicy.canCreateChats(userOpt)) {
             createJobChats(child);
         }
 

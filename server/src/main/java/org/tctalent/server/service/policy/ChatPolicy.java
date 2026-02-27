@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.policy;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.security.TcUserDetails;
 
@@ -31,11 +32,19 @@ import org.tctalent.server.security.TcUserDetails;
 @Component
 public class ChatPolicy {
 
-    public boolean canSubscribeToChats(TcUserDetails user) {
-        return user.hasAnyAuthority("CHAT_SUBSCRIBE");
+    public boolean canSubscribeToChats(Optional<TcUserDetails> user) {
+        //Must have a user to create a chat
+        if (user.isEmpty()) {
+            return false;
+        }
+        return user.get().hasAnyAuthority("CHAT_SUBSCRIBE");
     }
 
-    public boolean canCreateChats(TcUserDetails user) {
-        return user.hasAnyAuthority("CHAT_CREATE");
+    public boolean canCreateChats(Optional<TcUserDetails> user) {
+        //Must have a user to create a chat
+        if (user.isEmpty()) {
+            return false;
+        }
+        return user.get().hasAnyAuthority("CHAT_CREATE");
     }
 }
