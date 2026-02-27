@@ -17,7 +17,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {LoginRequest} from "../model/base";
 import {catchError, map} from "rxjs/operators";
-import {JwtResponse} from "../model/jwt-response";
+import {JwtAuthenticationResponse} from "../model/jwt-authentication-response";
 import {Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
@@ -84,6 +84,11 @@ export class AuthenticationService implements OnDestroy {
     return this.localStorageService.get('access-token');
   }
 
+  canViewChats(): boolean {
+    let canViewChats = this.localStorageService.get('can_view_chats');
+    return canViewChats == 'true';
+  }
+
   /**
    * Check that user - possibly retrieved from cache - is not junk
    * @param user User object to check
@@ -107,7 +112,7 @@ export class AuthenticationService implements OnDestroy {
 
   login(credentials: LoginRequest) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      map((response: JwtResponse) => {
+      map((response: JwtAuthenticationResponse) => {
         this.storeCredentials(response);
       }),
       catchError(e => {
@@ -139,13 +144,15 @@ export class AuthenticationService implements OnDestroy {
     this.loggedInUser$.next(this.loggedInUser);
   }
 
-  private storeCredentials(response: JwtResponse) {
+  private storeCredentials(response: JwtAuthenticationResponse) {
     //Remove any old credentials from storage
     this.localStorageService.remove('access-token');
     this.localStorageService.remove('user');
+    this.localStorageService.remove('can_view_chats');
 
     //Update new credentials in storage
     this.localStorageService.set('access-token', response.accessToken);
+    this.localStorageService.set('can_view_chats', response.canViewChats);
 
     this.setLoggedInUser(response.user);
   }
