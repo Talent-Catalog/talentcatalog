@@ -41,7 +41,7 @@ describe('ViewCandidateOppFromUrlComponent', () => {
   beforeEach(waitForAsync(() => {
     // Create a spy object for CandidateOpportunityService
     const spyOpportunityService = jasmine.createSpyObj('CandidateOpportunityService', ['get']);
-    mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser','canViewChats']);
     spyOpportunityService.get.and.callThrough();
 
     TestBed.configureTestingModule({
