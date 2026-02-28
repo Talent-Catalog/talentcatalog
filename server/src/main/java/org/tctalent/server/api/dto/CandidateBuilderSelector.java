@@ -376,6 +376,8 @@ public class CandidateBuilderSelector {
         final DtoBuilder builder = new DtoBuilder()
             .add("id")
             .add("sfId")
+            .add("closed")
+            .add("won")
             .add("jobOpp", jobDto())
             .add("candidate", shortCandidateDto())
             .add("name")
