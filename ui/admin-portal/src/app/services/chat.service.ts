@@ -387,7 +387,7 @@ export class ChatService implements OnDestroy {
       reconnectDelay: 5000,
 
       // Read a fresh token before each connection attempt (including reconnects).
-      // If the token is missing or expired, trigger logout and stop reconnecting.
+      // If the token is missing or expired, deactivate stomp and stop reconnecting.
       beforeConnect: (rxStomp) => {
         const token = this.authenticationService.getToken();
         if (token && !this.isTokenExpired(token)) {
