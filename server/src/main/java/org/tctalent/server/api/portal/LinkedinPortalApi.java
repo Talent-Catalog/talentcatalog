@@ -16,23 +16,27 @@
 
 package org.tctalent.server.api.portal;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
+import org.tctalent.server.casi.domain.model.ServiceAssignment;
+import org.tctalent.server.model.db.User;
+import org.tctalent.server.service.db.UserService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/portal/linkedin")
 public class LinkedinPortalApi {
 
   private final LinkedInService linkedinService;
-
-  @Autowired
-  public LinkedinPortalApi(LinkedInService linkedinService) {
-    this.linkedinService = linkedinService;
-  }
+  private final UserService userService;
 
   /**
    * Checks if a candidate is eligible for the LinkedIn Premium membership upgrade offer.
@@ -52,6 +56,28 @@ public class LinkedinPortalApi {
   @GetMapping("{candidateId}/redemption")
   public Boolean hasRedeemed(@PathVariable Long candidateId) {
     return linkedinService.hasRedeemed(candidateId);
+  }
+
+  /**
+   * Assigns a single coupon for the LinkedIn Premium membership upgrade offer. Uses System Admin
+   * as assigning user, since it's pre-set by list tagging.
+   * @param candidateId - ID of assignee candidate
+   * @return {@link ServiceAssignment} object showing new assignment status
+   */
+  @PostMapping("{candidateId}/assign")
+  public ServiceAssignment assign(@PathVariable Long candidateId) {
+    User user = userService.getSystemAdminUser();
+
+    return linkedinService.assignToCandidate(candidateId, user);
+  }
+
+  /**
+   * Updates status of a single coupon for the LinkedIn Premium membership upgrade offer.
+   * @param request - {@link UpdateServiceResourceStatusRequest}
+   */
+  @PutMapping("update-coupon-status")
+  public void updateCouponStatus(@RequestBody UpdateServiceResourceStatusRequest request) {
+    linkedinService.updateResourceStatus(request.getResourceCode(), request.getStatus());
   }
 
 }
