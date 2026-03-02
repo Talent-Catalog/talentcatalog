@@ -1,10 +1,11 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Candidate} from "../../model/candidate";
 import {LinkedinService} from "../linkedin.service";
 import {CandidateService} from "../candidate.service";
 import {of} from "rxjs";
 import {switchMap} from "rxjs/operators";
 import {
+  AssignmentStatus,
   ResourceStatus,
   ServiceAssignment,
   UpdateServiceResourceStatusRequest
@@ -17,9 +18,9 @@ import {
 })
 export class LinkedinComponent {
   @Input() candidate: Candidate;
+  @Output() backButtonClicked = new EventEmitter<void>();
   assignment?: ServiceAssignment;
-  linkedInLink: string;
-  redeemed = false;
+  linkedInLinkInput: string;
   verified = false;
   loading: boolean;
   error: any;
@@ -30,9 +31,9 @@ export class LinkedinComponent {
   ) { }
 
   ngOnInit() {
-    this.linkedInLink = this.candidate.linkedInLink ?? '';
-    this.linkedinService.hasRedeemed(this.candidate.id)
-    .subscribe(hasRedeemed => this.redeemed = hasRedeemed);
+    this.linkedInLinkInput = this.candidate.linkedInLink ?? '';
+    this.linkedinService.findRedeemedOrAssignedCoupon(this.candidate.id)
+      .subscribe(assignment => this.assignment = assignment);
   }
 
   /**
@@ -40,17 +41,16 @@ export class LinkedinComponent {
    * If the URL has changed, updates the candidate's profile first.
    */
   verify() {
-    const update$ = this.linkedInLink !== this.candidate.linkedInLink
-      ? this.candidateService.updateCandidateOtherInfo({ linkedInLink: this.linkedInLink })
+    const update$ = this.linkedInLinkInput !== this.candidate.linkedInLink
+      ? this.candidateService.updateCandidateOtherInfo({ linkedInLink: this.linkedInLinkInput })
       : of(null);
 
     update$.pipe(
       switchMap(() => this.linkedinService.assign(this.candidate.id))
     ).subscribe({
-      next: () => {
-        this.candidate.linkedInLink = this.linkedInLink;
+      next: (assignment) => {
         this.verified = true;
-        // TODO set coupon info ready for redeem
+        this.assignment = assignment;
       },
       error: (error) => this.error = error
     });
@@ -65,13 +65,20 @@ export class LinkedinComponent {
 
       this.linkedinService.updateCouponStatus(request).subscribe({
         next: () => {
-          this.redeemed = true;
+          // Reassigning the whole object here triggers change detection.
+          this.assignment = { ...this.assignment, status: AssignmentStatus.REDEEMED };
         },
         error: (error) => this.error = error
       })
     }
   }
 
-  // TODO what if candidate already has assigned coupon but not yet redeemed?
+  get canRedeem(): boolean {
+    return this.assignment && this.assignment.status !== AssignmentStatus.REDEEMED;
+  }
+
+  onBackButtonClicked() {
+    this.backButtonClicked.emit();
+  }
 
 }

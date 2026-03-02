@@ -20,6 +20,7 @@
 
   <app-linkedin *ngIf="(showLinkedin$ | async) && selectedService === Service.LINKEDIN"
                 [candidate]="candidate"
+                (backButtonClicked) = onBackButtonClick()
   ></app-linkedin>
 
   <app-duolingo *ngIf="activeDuolingoTask && selectedService === Service.DUOLINGO"

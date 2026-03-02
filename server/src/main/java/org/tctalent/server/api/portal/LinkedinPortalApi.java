@@ -49,13 +49,13 @@ public class LinkedinPortalApi {
   }
 
   /**
-   * Checks if a candidate has redeemed the LinkedIn Premium membership upgrade offer.
+   * Returns the candidate's redeemed or assigned LinkedIn Premium membership coupon, if any.
    * @param candidateId - ID of candidate
-   * @return true if the candidate has redeemed the offer
+   * @return {@link ServiceAssignment} or null if none found
    */
-  @GetMapping("{candidateId}/redemption")
-  public Boolean hasRedeemed(@PathVariable Long candidateId) {
-    return linkedinService.hasRedeemed(candidateId);
+  @GetMapping("{candidateId}/assignment-check")
+  public ServiceAssignment findRedeemedOrAssignedCoupon (@PathVariable Long candidateId) {
+    return linkedinService.findRedeemedOrAssignedCoupon(candidateId);
   }
 
   /**

@@ -22,11 +22,11 @@ export class LinkedinService {
   }
 
   /**
-   * Checks if a candidate has redeemed the LinkedIn Premium membership upgrade offer.
+   * Checks if a candidate already has a redeemed or assigned LinkedIn Premium membership coupon.
    * @returns Observable<boolean> true if the candidate has redeemed the offer
    */
-  hasRedeemed(candidateId: number): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiBaseUrl}/${candidateId}/redemption`);
+  findRedeemedOrAssignedCoupon(candidateId: number): Observable<ServiceAssignment> {
+    return this.http.get<ServiceAssignment>(`${this.apiBaseUrl}/${candidateId}/assignment-check`);
   }
 
   /** Assigns a single coupon for the LinkedIn Premium membership upgrade offer. */

@@ -41,8 +41,7 @@ export class ServicesComponent {
       this.selectedService = service;
   }
 
-  // TODO: back button?
-  unSelectService() {
+  onBackButtonClick(): void {
       this.selectedService = null;
       this.refresh.emit();
   }

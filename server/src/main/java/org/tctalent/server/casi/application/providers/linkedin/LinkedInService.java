@@ -26,10 +26,12 @@ import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.casi.core.services.AbstractCandidateAssistanceService;
 import org.tctalent.server.casi.core.services.AssignmentEngine;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
+import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
+import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.service.db.SavedListService;
@@ -39,7 +41,7 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     private final FileInventoryImporter linkedInImporter;
     private final ResourceAllocator linkedInAllocator;
 
-    // TODO update for prod:
+    // TODO update for prod - create first 10 or so lists:
     private static final Set<Long> LINKEDIN_ELIGIBLE_LIST_IDS = Set.of(641L, 642L);
 
     public LinkedInService(
@@ -70,15 +72,26 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     }
 
     /**
-     * Checks if a candidate has already redeemed the LinkedIn Premium membership upgrade offer.
+     * Returns the candidate's redeemed or assigned LinkedIn Premium membership coupon, if any.
+     * Throws if more than one is found, as a candidate should never have multiple active coupons.
      * @param candidateId - ID of candidate
-     * @return true if the candidate has already redeemed the offer
+     * @return {@link ServiceAssignment} or null if none found
+     * @throws EntityExistsException if multiple active coupons are found for the candidate
      */
     @Transactional(readOnly = true)
-    public boolean hasRedeemed(Long candidateId) {
-        return getAssignmentsForCandidate(candidateId)
+    public ServiceAssignment findRedeemedOrAssignedCoupon(Long candidateId) {
+        List<ServiceAssignment> matches = getAssignmentsForCandidate(candidateId)
             .stream()
-            .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.REDEEMED);
+            .filter(a -> a.getStatus() == AssignmentStatus.ASSIGNED
+                || a.getStatus() == AssignmentStatus.REDEEMED)
+            .toList();
+
+        if (matches.size() > 1) {
+            throw new EntityExistsException("Candidate " + candidateId +
+                " has multiple assigned or redeemed coupons, expected at most 1");
+        }
+
+        return matches.stream().findFirst().orElse(null);
     }
 
     @Override protected ServiceProvider provider() { return ServiceProvider.LINKEDIN; }
