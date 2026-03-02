@@ -16,23 +16,18 @@
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Candidate} from '../../../../../model/candidate';
+import {ServiceProvider} from '../../../../../model/services';
 import {TaskAssignment} from "../../../../../model/task-assignment";
 import {Observable} from "rxjs";
-
-export enum Service {
-  LINKEDIN,
-  DUOLINGO
-}
 
 @Component({
     selector: 'app-services',
     templateUrl: './services.component.html',
     styleUrls: ['./services.component.scss']
 })
-
 export class ServicesComponent {
-
-  selectedService: Service;
+  protected readonly Service = ServiceProvider;
+  selectedService: ServiceProvider;
   error;
   loading;
   @Input() candidate: Candidate;
@@ -42,7 +37,7 @@ export class ServicesComponent {
 
   constructor() { }
 
-  selectService(service: Service) {
+  selectService(service: ServiceProvider) {
       this.selectedService = service;
   }
 
@@ -52,5 +47,4 @@ export class ServicesComponent {
       this.refresh.emit();
   }
 
-  protected readonly Service = Service;
 }
