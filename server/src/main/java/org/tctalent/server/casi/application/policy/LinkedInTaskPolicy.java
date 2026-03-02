@@ -17,9 +17,11 @@
 package org.tctalent.server.casi.application.policy;
 
 import java.util.List;
+import org.springframework.stereotype.Component;
 import org.tctalent.server.casi.domain.events.ServiceAssignedEvent;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
+@Component
 public class LinkedInTaskPolicy implements TaskPolicy {
 
     @Override
