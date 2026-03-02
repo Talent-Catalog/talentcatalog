@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {LinkedinService} from "../../../../../../services/linkedin.service";
 import {CandidateService} from "../../../../../../services/candidate.service";
@@ -15,7 +15,7 @@ import {
   templateUrl: './linkedin.component.html',
   styleUrl: './linkedin.component.scss'
 })
-export class LinkedinComponent {
+export class LinkedinComponent implements OnInit {
   @Input() candidate: Candidate;
   @Output() backButtonClicked = new EventEmitter<void>();
   assignment?: ServiceAssignment;

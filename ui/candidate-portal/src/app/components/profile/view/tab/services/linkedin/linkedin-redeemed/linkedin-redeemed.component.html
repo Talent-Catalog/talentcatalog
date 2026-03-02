@@ -1,13 +1,13 @@
-<div class="service-content my-3">
-  <p>Your LinkedIn Premium upgrade coupon was redeemed!</p>
+<div>
+  <h4>Success!</h4>
+  <p>Your LinkedIn Premium upgrade coupon was redeemed</p>
   <h5>Coupon didn't work?</h5>
   <p>
     Try visiting LinkedIn again to activate your offer by clicking
     <a [href]="assignment.resource.resourceCode" target="_blank">here</a>.
   </p>
   <h5>Still not working?</h5>
-  <p>Click this button to log your issue and a member of our team will get back to you:</p>
-  <tc-button color="warning">
+  <tc-button [color]="'error'" (onClick)="reportIssue()">
     Report an Issue
   </tc-button>
 </div>

@@ -8,4 +8,8 @@ import {ServiceAssignment} from "../../../../../../../model/services";
 })
 export class LinkedinRedeemedComponent {
   @Input() assignment: ServiceAssignment;
+
+  reportIssue() {
+    // TODO
+  }
 }

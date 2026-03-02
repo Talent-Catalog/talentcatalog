@@ -32,6 +32,7 @@ import {
 } from "../../../model/candidate-opportunity";
 import {map, shareReplay} from "rxjs/operators";
 import {LinkedinService} from "../../../services/linkedin.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-view-candidate',
@@ -63,12 +64,13 @@ export class ViewCandidateComponent implements OnInit {
   linkedinEligible$: Observable<boolean>;
 
   constructor(
+    private authorizationService: AuthorizationService,
     private candidateService: CandidateService,
     private chatService: ChatService,
+    private linkedinService: LinkedinService,
     private localStorageService: LocalStorageService,
     private location: Location,
     private route: ActivatedRoute,
-    private linkedinService: LinkedinService
   ) { }
 
   ngOnInit(): void {
@@ -85,7 +87,7 @@ export class ViewCandidateComponent implements OnInit {
    * Ineligible candidates can't see chat, even if eligibility is under review
    */
   get canSeeChatTab(): boolean {
-    let canSee = this.sourceChatHasPosts;
+    let canSee = this.canViewChats && this.sourceChatHasPosts;
     if (canSee) {
       if (
         this.candidate &&
@@ -105,6 +107,10 @@ export class ViewCandidateComponent implements OnInit {
    */
   get canSeeJobTab(): boolean {
     return this.filteredOpps?.length > 0;
+  }
+
+  get canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
   /**
@@ -181,8 +187,10 @@ export class ViewCandidateComponent implements OnInit {
 
   private setCandidate(candidate: Candidate) {
     this.candidate = candidate;
-    this.getCandidateProspectChat();
-    this.fetchAllOpportunityChats();
+    if (this.canViewChats) {
+      this.getCandidateProspectChat();
+      this.fetchAllOpportunityChats();
+    }
   }
 
   private getActiveDuolingoTask(): TaskAssignment | null {

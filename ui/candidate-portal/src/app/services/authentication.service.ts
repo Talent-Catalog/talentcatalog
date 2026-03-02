@@ -21,15 +21,16 @@ import {Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
-import {AuthenticateInContextTranslationRequest} from "./auth.service";
 import {LoginRequest} from "../model/base";
 import {LocalStorageService} from "./local-storage.service";
-import {CandidateStatus} from "../model/candidate";
+import {CandidateStatus, RegisterCandidateRequest} from "../model/candidate";
+
+export class AuthenticateInContextTranslationRequest {
+  password: string;
+}
 
 /**
- * Manages authentication - ie login/logout.
- * <p/>
- * See also Auth service which is more about authorization.
+ * Manages authentication - ie login/logout and registration
  */
 @Injectable({
   providedIn: 'root'
@@ -126,6 +127,13 @@ export class AuthenticationService implements OnDestroy {
     this.setCandidateStatus(null);
   }
 
+  register(request: RegisterCandidateRequest) {
+    return this.http.post<JwtResponse>(`${this.apiUrl}/register`, request).pipe(
+      map((response) => this.storeCredentials(response)),
+      catchError((e) => throwError(e))
+    );
+  }
+
   setCandidateStatus(candidateStatus: CandidateStatus) {
     this.candidateStatus = candidateStatus;
     this.localStorageService.set('candidateStatus', this.candidateStatus);
@@ -139,13 +147,17 @@ export class AuthenticationService implements OnDestroy {
 
   private storeCredentials(response: JwtResponse) {
     //Remove any old credentials from storage
-    this.localStorageService.remove('access-token');
-    this.localStorageService.remove('user');
+    this.clearCredentials();
 
     //Update new credentials in storage
     this.localStorageService.set('access-token', response.accessToken);
 
     this.setLoggedInUser(response.user);
+  }
+
+  private clearCredentials() {
+    this.localStorageService.remove('access-token');
+    this.localStorageService.remove('user');
   }
 
 }
