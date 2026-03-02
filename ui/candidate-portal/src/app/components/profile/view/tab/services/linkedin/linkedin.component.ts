@@ -1,15 +1,14 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Candidate} from "../../model/candidate";
-import {LinkedinService} from "../linkedin.service";
-import {CandidateService} from "../candidate.service";
+import {Candidate} from "../../../../../../model/candidate";
+import {LinkedinService} from "../../../../../../services/linkedin.service";
+import {CandidateService} from "../../../../../../services/candidate.service";
 import {of} from "rxjs";
 import {switchMap} from "rxjs/operators";
 import {
-  AssignmentStatus,
   ResourceStatus,
   ServiceAssignment,
   UpdateServiceResourceStatusRequest
-} from "../../model/services";
+} from "../../../../../../model/services";
 
 @Component({
   selector: 'app-linkedin',
@@ -66,7 +65,11 @@ export class LinkedinComponent {
       this.linkedinService.updateCouponStatus(request).subscribe({
         next: () => {
           // Reassigning the whole object here triggers change detection.
-          this.assignment = { ...this.assignment, status: AssignmentStatus.REDEEMED };
+          this.assignment = {
+            ...this.assignment,
+            resource: {...this.assignment.resource, status: ResourceStatus.REDEEMED}
+          };
+          window.open(this.assignment.resource.resourceCode, '_blank');
         },
         error: (error) => this.error = error
       })
@@ -74,11 +77,12 @@ export class LinkedinComponent {
   }
 
   get canRedeem(): boolean {
-    return this.assignment && this.assignment.status !== AssignmentStatus.REDEEMED;
+    return this.assignment && this.assignment.resource.status !== ResourceStatus.REDEEMED;
   }
 
   onBackButtonClicked() {
     this.backButtonClicked.emit();
   }
 
+  protected readonly ResourceStatus = ResourceStatus;
 }

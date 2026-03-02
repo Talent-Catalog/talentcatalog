@@ -1,0 +1,71 @@
+<div class="service-content">
+  <app-error [error]="error"></app-error>
+  <app-loading [loading]="loading"></app-loading>
+
+  <div class="service-title">
+    <div class="header">
+      <div>
+        <h2>LinkedIn Premium Upgrade</h2>
+        <p>Activate your 12 months of free LinkedIn Premium membership</p>
+      </div>
+      <img src="assets/images/services/linkedin.png" alt="LinkedIn"/>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <ng-container *ngIf="!assignment">
+      <!-- TODO translate keys * linked in url validation -->
+      <p>
+        Redeeming this offer requires a LinkedIn account.
+      </p>
+
+      <p *ngIf="candidate.linkedInLink; else signUp">
+        Before proceeding, please verify the LinkedIn profile URL you provided at registration:
+      </p>
+      <ng-template #signUp>
+        <p>
+          Before proceeding, please enter your LinkedIn profile URL.
+          Sign up <a [href]="'https://www.linkedin.com/signup'" target="_blank">here</a>, if you haven't already.
+        </p>
+      </ng-template>
+
+      <div class="row">
+        <tc-input [(ngModel)]="linkedInLinkInput"
+                  [placeholder]="'Enter your LinkedIn profile URL'"
+                  class="col-12 col-lg-6"
+        ></tc-input>
+      </div>
+
+      <div class="my-3">
+        <tc-button (onClick)="verify()"
+                   [disabled]=""
+                   [size]="'xl'"
+        >
+          <i class="fa-brands fa-linkedin text-white"></i>
+          {{ candidate.linkedInLink ? 'Verify URL' : 'Submit URL' }}
+        </tc-button>
+      </div>
+    </ng-container>
+
+    <div *ngIf="canRedeem">
+      <p>Your coupon has been assigned. Click to redeem:</p>
+      <tc-button (onClick)="redeem()"
+                 [size]="'xl'"
+      >
+        <i class="fa-brands fa-linkedin text-white"></i>
+        Activate Your Premium Upgrade
+      </tc-button>
+    </div>
+
+    <app-linkedin-redeemed [assignment]="assignment"
+                           *ngIf="assignment.resource.status === ResourceStatus.REDEEMED"
+    ></app-linkedin-redeemed>
+
+    <div class="mt-3">
+      <tc-button [type]="'outline'" (onClick)="onBackButtonClicked()">
+        <i class="me-1 fas fa-arrow-left"></i>
+        Back to Services
+      </tc-button>
+    </div>
+  </div>
+</div>
