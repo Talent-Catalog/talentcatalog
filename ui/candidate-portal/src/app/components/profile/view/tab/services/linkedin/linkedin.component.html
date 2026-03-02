@@ -13,7 +13,7 @@
 
 <div class="service-content">
   <ng-container *ngIf="!assignment">
-    <!-- TODO translate keys & linked in url validation -->
+    <!-- TODO ALL translate keys in component tree -->
     <p>
       Redeeming this offer requires a LinkedIn account.
     </p>
@@ -34,10 +34,15 @@
                 class="col-12 col-lg-6"
       ></tc-input>
     </div>
+    <div *ngIf="linkedInLinkInput && !isValidLinkedInUrl"
+         class="alert alert-danger mt-2"
+    >
+      {{ 'REGISTRATION.SUBMIT.LINKEDIN.WARN' | translate }}
+    </div>
 
     <div class="my-3">
       <tc-button (onClick)="verify()"
-                 [disabled]=""
+                 [disabled]="!isValidLinkedInUrl"
                  [size]="'xl'"
       >
         <i class="fa-brands fa-linkedin text-white"></i>

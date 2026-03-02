@@ -84,5 +84,10 @@ export class LinkedinComponent implements OnInit {
     this.backButtonClicked.emit();
   }
 
+  get isValidLinkedInUrl(): boolean {
+    const linkedInRegex = /^http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/;
+    return linkedInRegex.test(this.linkedInLinkInput);
+  }
+
   protected readonly ResourceStatus = ResourceStatus;
 }
