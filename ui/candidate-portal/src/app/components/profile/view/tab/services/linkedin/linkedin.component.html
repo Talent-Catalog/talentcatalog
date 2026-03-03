@@ -1,3 +1,4 @@
+<!-- TODO ALL translate keys and loading indicators in component tree -->
 <app-error [error]="error"></app-error>
 <app-loading [loading]="loading"></app-loading>
 
@@ -12,59 +13,69 @@
 </div>
 
 <div class="service-content">
-  <ng-container *ngIf="!assignment">
-    <!-- TODO ALL translate keys and loading indicators in component tree -->
-    <p>
-      Redeeming this offer requires a LinkedIn account.
-    </p>
-
-    <p *ngIf="candidate.linkedInLink; else signUp">
-      Before proceeding, please verify the LinkedIn profile URL you provided at registration:
-    </p>
-    <ng-template #signUp>
+  <ng-container *ngIf="!isOnAssignmentFailureList; else failureTemplate">
+    <!-- NO PREVIOUS ASSIGNMENT -->
+    <ng-container *ngIf="!assignment">
       <p>
-        Before proceeding, please enter your LinkedIn profile URL.
-        Sign up <a [href]="'https://www.linkedin.com/signup'" target="_blank">here</a>, if you haven't already.
+        Redeeming this offer requires a LinkedIn account.
       </p>
-    </ng-template>
 
-    <div class="row">
-      <tc-input [(ngModel)]="linkedInLinkInput"
-                [placeholder]="'Enter your LinkedIn profile URL'"
-                class="col-12 col-lg-6"
-      ></tc-input>
-    </div>
-    <div *ngIf="linkedInLinkInput && !isValidLinkedInUrl"
-         class="alert alert-danger mt-2"
-    >
-      {{ 'REGISTRATION.SUBMIT.LINKEDIN.WARN' | translate }}
-    </div>
+      <p *ngIf="candidate.linkedInLink; else signUp">
+        Before proceeding, please verify the LinkedIn profile URL you provided at registration:
+      </p>
+      <ng-template #signUp>
+        <p>
+          Before proceeding, please enter your LinkedIn profile URL.
+          Sign up <a [href]="'https://www.linkedin.com/signup'" target="_blank">here</a>, if you haven't already.
+        </p>
+      </ng-template>
 
-    <div class="my-3">
-      <tc-button (onClick)="verify()"
-                 [disabled]="!isValidLinkedInUrl"
+      <div class="row">
+        <tc-input [(ngModel)]="linkedInLinkInput"
+                  [placeholder]="'Enter your LinkedIn profile URL'"
+                  class="col-12 col-lg-6"
+        ></tc-input>
+      </div>
+      <div *ngIf="linkedInLinkInput && !isValidLinkedInUrl"
+           class="alert alert-danger mt-2"
+      >
+        {{ 'REGISTRATION.SUBMIT.LINKEDIN.WARN' | translate }}
+      </div>
+
+      <div class="my-3">
+        <tc-button (onClick)="verify()"
+                   [disabled]="!isValidLinkedInUrl"
+                   [size]="'xl'"
+        >
+          <i class="fa-brands fa-linkedin text-white"></i>
+          {{ candidate.linkedInLink ? 'Verify URL' : 'Submit URL' }}
+        </tc-button>
+      </div>
+    </ng-container>
+
+    <!-- ASSIGNMENT BUT NOT YET REDEEMED BY ACTIVATE BUTTON CLICK  -->
+    <div *ngIf="canRedeem">
+      <p>Your coupon has been assigned! Click to redeem:</p>
+      <tc-button (onClick)="redeem()"
                  [size]="'xl'"
       >
         <i class="fa-brands fa-linkedin text-white"></i>
-        {{ candidate.linkedInLink ? 'Verify URL' : 'Submit URL' }}
+        Activate Your Premium Upgrade
       </tc-button>
     </div>
+
+    <!-- ASSIGNMENT REDEEMED  -->
+    <app-linkedin-redeemed *ngIf="assignment?.resource.status === ResourceStatus.REDEEMED"
+                           [assignment]="assignment"
+                           [candidate]="candidate"
+    ></app-linkedin-redeemed>
   </ng-container>
 
-  <div *ngIf="canRedeem">
-    <p>Your coupon has been assigned! Click to redeem:</p>
-    <tc-button (onClick)="redeem()"
-               [size]="'xl'"
-    >
-      <i class="fa-brands fa-linkedin text-white"></i>
-      Activate Your Premium Upgrade
-    </tc-button>
-  </div>
-
-  <app-linkedin-redeemed [assignment]="assignment"
-                         [candidate]="candidate"
-                         *ngIf="assignment?.resource.status === ResourceStatus.REDEEMED"
-  ></app-linkedin-redeemed>
+  <!-- PREVIOUS ASSIGNMENT RESULTED IN LOGGED FAILURE  -->
+  <ng-template #failureTemplate>
+    <h5>Oops! Something went wrong.</h5>
+    <p>A member of our team will be in touch once we have resolved the issue.</p>
+  </ng-template>
 
   <div class="mt-5">
     <tc-button [type]="'outline'" (onClick)="onBackButtonClicked()">

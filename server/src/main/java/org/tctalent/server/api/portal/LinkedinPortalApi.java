@@ -17,6 +17,7 @@
 package org.tctalent.server.api.portal;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.UserService;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/portal/linkedin")
@@ -60,15 +63,29 @@ public class LinkedinPortalApi {
 
   /**
    * Assigns a single coupon for the LinkedIn Premium membership upgrade offer. Uses System Admin
-   * as assigning user, since it's pre-set by list tagging.
+   * as assigning user - it's pre-set by list-tagging with #LinkedInEligible1/2/etc.
+   * <p>
+   * Catches unexpected exceptions, logged and also recorded by adding the candidate to the
+   * #LinkedInAssignmentFailure List for admin action.
    * @param candidateId - ID of assignee candidate
    * @return {@link ServiceAssignment} object showing new assignment status
    */
   @PostMapping("{candidateId}/assign")
   public ServiceAssignment assign(@PathVariable Long candidateId) {
-    User user = userService.getSystemAdminUser();
+    try {
+      User user = userService.getSystemAdminUser();
+      return linkedinService.assignToCandidate(candidateId, user);
 
-    return linkedinService.assignToCandidate(candidateId, user);
+    } catch (Exception e) {
+      linkedinService.addCandidateToAssignmentFailureList(candidateId, e);
+
+      LogBuilder.builder(log)
+          .action("AssignLinkedInCoupon")
+          .message("Candidate " + candidateId + ": Unexpected assignment failure")
+          .logError(e);
+
+      return null;
+    }
   }
 
   /**
@@ -81,8 +98,9 @@ public class LinkedinPortalApi {
   }
 
   /**
-   * Adds the candidate associated with the given {@link ServiceAssignment} to the LinkedIn issue
-   * report list, along with a note containing the coupon code, assignment status, and assignment date.
+   * Adds the candidate associated with the given {@link ServiceAssignment} to the
+   * #LinkedInIssueReport List, along with a note containing the coupon code, assignment status, and
+   * assignment date.
    * @param assignment the {@link ServiceAssignment} containing candidate and coupon details
    */
   @PostMapping("issue-report")
@@ -91,13 +109,23 @@ public class LinkedinPortalApi {
   }
 
   /**
-   * Checks if the candidate is on the LinkedIn issue report list.
+   * Checks if the candidate is on the #LinkedInIssueReport List.
    * @param candidateId - ID of candidate
-   * @return true if the candidate is on the issue report list
+   * @return true if the candidate is on the List
    */
   @GetMapping("{candidateId}/issue-report")
   public Boolean isOnIssueReportList(@PathVariable Long candidateId) {
     return linkedinService.isOnIssueReportList(candidateId);
+  }
+
+  /**
+   * Checks if the candidate is on the #LinkedInAssignmentFailure List.
+   * @param candidateId - ID of candidate
+   * @return true if the candidate is on the List
+   */
+  @GetMapping("{candidateId}/assignment-failure")
+  public Boolean isOnAssignmentFailureList(@PathVariable Long candidateId) {
+    return linkedinService.isOnAssignmentFailureList(candidateId);
   }
 
 }

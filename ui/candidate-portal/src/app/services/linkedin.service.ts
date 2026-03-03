@@ -43,14 +43,19 @@ export class LinkedinService {
     );
   }
 
-  /** Adds the candidate to the LinkedIn issue report list with assignment details as a context note. */
+  /** Adds candidate to #LinkedInIssueReport List with assignment details as context note. */
   addCandidateToIssueReportList(assignment: ServiceAssignment): Observable<void> {
     return this.http.post<void>(`${this.apiBaseUrl}/issue-report`, assignment);
   }
 
-  /** Checks if the candidate is on the LinkedIn issue report list. */
+  /** Checks if candidate is on #LinkedInIssueReport List. */
   isOnIssueReportList(candidateId: number): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiBaseUrl}/${candidateId}/issue-report`);
+  }
+
+  /** Checks if candidate is on #LinkedInAssignmentFailure List. */
+  isOnAssignmentFailureList(candidateId: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiBaseUrl}/${candidateId}/assignment-failure`);
   }
 
 }

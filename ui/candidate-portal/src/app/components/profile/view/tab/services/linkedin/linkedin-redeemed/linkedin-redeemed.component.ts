@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ServiceAssignment} from "../../../../../../../model/services";
 import {Candidate} from "../../../../../../../model/candidate";
 import {LinkedinService} from "../../../../../../../services/linkedin.service";
@@ -8,7 +8,7 @@ import {LinkedinService} from "../../../../../../../services/linkedin.service";
   templateUrl: './linkedin-redeemed.component.html',
   styleUrl: './linkedin-redeemed.component.scss'
 })
-export class LinkedinRedeemedComponent {
+export class LinkedinRedeemedComponent implements OnInit {
   @Input() assignment: ServiceAssignment;
   @Input() candidate: Candidate;
   isOnIssueReportList = false;
@@ -30,8 +30,8 @@ export class LinkedinRedeemedComponent {
     });
   }
 
-  checkIsOnIssueReportList() {
-    this.linkedinService.isOnIssueReportList(this.candidate?.id).subscribe({
+  private checkIsOnIssueReportList() {
+    this.linkedinService.isOnIssueReportList(this.candidate.id).subscribe({
       next: (result) => this.isOnIssueReportList = result,
       error: (error) => this.error = error
     });

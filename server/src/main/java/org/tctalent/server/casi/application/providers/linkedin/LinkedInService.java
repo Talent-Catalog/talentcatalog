@@ -20,19 +20,19 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.casi.core.services.AbstractCandidateAssistanceService;
 import org.tctalent.server.casi.core.services.AssignmentEngine;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
+import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
-import org.tctalent.server.exception.EntityExistsException;
-import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.list.SearchSavedListRequest;
@@ -51,6 +51,8 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
         12611L, 12612L, 12613L, 12614L, 12615L, 12616L, 12617L, 12618L, 12619L, 12620L, 12621L,12622L);
     private static final Long LINKEDIN_ISSUE_REPORT_LIST_ID_ACTUAL = 12623L;
     private static final Long LINKEDIN_ISSUE_REPORT_LIST_ID = 644L;
+    private static final Long LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID_ACTUAL = 12625L;
+    private static final Long LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID = 645L;
 
     public LinkedInService(
         ServiceAssignmentRepository aRepo,
@@ -82,37 +84,40 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     }
 
     /**
-     * Returns the candidate's redeemed or assigned LinkedIn Premium membership coupon, if any.
-     * Throws if more than one is found, as a candidate should never have multiple active coupons.
+     * Returns the candidate's assigned LinkedIn Premium coupon.
+     * In edge cases where multiple exist, prefers the one that hasn't been redeemed.
      * @param candidateId - ID of candidate
      * @return {@link ServiceAssignment} or null if none found
-     * @throws EntityExistsException if multiple active coupons are found for the candidate
      */
     @Transactional(readOnly = true)
     public ServiceAssignment findRedeemedOrAssignedCoupon(Long candidateId) {
         List<ServiceAssignment> matches = getAssignmentsForCandidate(candidateId)
             .stream()
-            .filter(a -> a.getStatus() == AssignmentStatus.ASSIGNED
-                || a.getStatus() == AssignmentStatus.REDEEMED)
+            .filter(a -> a.getStatus() == AssignmentStatus.ASSIGNED)
             .toList();
 
-        if (matches.size() > 1) {
-            throw new EntityExistsException("Candidate " + candidateId +
-                " has multiple assigned or redeemed coupons, expected at most 1");
+        if (matches.isEmpty()) {
+            return null;
         }
 
-        return matches.stream().findFirst().orElse(null);
+        if (matches.size() == 1) {
+            return matches.get(0);
+        }
+
+        // If multiple, prefer assignment whose resource hasn't been REDEEMED
+        return matches.stream()
+            .filter(a -> a.getResource().getStatus() != ResourceStatus.REDEEMED)
+            .findFirst()
+            .orElse(matches.get(0)); // fallback to any
     }
 
     /**
-     * Adds the candidate associated with the given {@link ServiceAssignment} to the LinkedIn issue
-     * report List, along with a note containing the coupon code, assignment status, and assignment
-     * date.
-     * @param assignment the  {@link ServiceAssignment} containing candidate and coupon details
-     * @throws NoSuchObjectException if the LinkedIn issue report list does not exist
+     * Adds the candidate associated with the given {@link ServiceAssignment} to the
+     * #LinkedInIssueReport List, along with a note containing the coupon code, assignment status,
+     * and assignment date.
+     * @param assignment the {@link ServiceAssignment} containing candidate and coupon details
      */
-    public void addCandidateToIssueReportList(ServiceAssignment assignment)
-        throws NoSuchObjectException {
+    public void addCandidateToIssueReportList(ServiceAssignment assignment) {
         SavedList list = savedListService.get(LINKEDIN_ISSUE_REPORT_LIST_ID);
         Candidate candidate = candidateService.getCandidate(assignment.getCandidateId());
         savedListService.addCandidateToList(
@@ -128,9 +133,26 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     }
 
     /**
-     * Checks if a candidate is on the LinkedIn issue report list.
+     * Adds the given candidate to the #LinkedInAssignmentFailure List, recording as a context note
+     * the exception that caused the failure. Runs in a separate transaction to ensure the failure
+     * is saved even if the main assignment transaction rolls back.
+     *
+     * @param candidateId ID of candidate to add to the List
+     * @param exception - exception that caused the assignment to fail
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addCandidateToAssignmentFailureList(Long candidateId, Exception exception) {
+        SavedList list = savedListService.get(LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID);
+        Candidate candidate = candidateService.getCandidate(candidateId);
+
+        savedListService.addCandidateToList(list, candidate, exception.toString());
+        savedListService.saveIt(list);
+    }
+
+    /**
+     * Checks if a candidate is on the #LinkedInIssueReport List.
      * @param candidateId - ID of candidate
-     * @return true if the candidate is on the issue report list
+     * @return true if the candidate is on the List
      */
     public Boolean isOnIssueReportList(Long candidateId) {
         SearchSavedListRequest request = new SearchSavedListRequest();
@@ -138,6 +160,19 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
 
         return candidateLists.stream()
             .anyMatch(list -> list.getId().equals(LINKEDIN_ISSUE_REPORT_LIST_ID));
+    }
+
+    /**
+     * Checks if a candidate is on the #LinkedInAssignmentFailure List.
+     * @param candidateId - ID of candidate
+     * @return true if the candidate is on the List
+     */
+    public Boolean isOnAssignmentFailureList(Long candidateId) {
+        SearchSavedListRequest request = new SearchSavedListRequest();
+        List<SavedList> candidateLists = savedListService.search(candidateId, request);
+
+        return candidateLists.stream()
+            .anyMatch(list -> list.getId().equals(LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID));
     }
 
     @Override protected ServiceProvider provider() { return ServiceProvider.LINKEDIN; }

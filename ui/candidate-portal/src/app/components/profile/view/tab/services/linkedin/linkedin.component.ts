@@ -16,9 +16,10 @@ import {
   styleUrl: './linkedin.component.scss'
 })
 export class LinkedinComponent implements OnInit {
-  @Input() candidate: Candidate;
+  @Input() candidate!: Candidate;
   @Output() backButtonClicked = new EventEmitter<void>();
   assignment?: ServiceAssignment;
+  isOnAssignmentFailureList = false;
   linkedInLinkInput: string;
   verified = false;
   loading: boolean;
@@ -31,8 +32,8 @@ export class LinkedinComponent implements OnInit {
 
   ngOnInit() {
     this.linkedInLinkInput = this.candidate.linkedInLink ?? '';
-    this.linkedinService.findRedeemedOrAssignedCoupon(this.candidate.id)
-      .subscribe(assignment => this.assignment = assignment);
+    this.loadAssignment();
+    this.checkIsOnAssignmentFailureList();
   }
 
   /**
@@ -50,6 +51,7 @@ export class LinkedinComponent implements OnInit {
       next: (assignment) => {
         this.verified = true;
         this.assignment = assignment;
+        this.checkIsOnAssignmentFailureList();
       },
       error: (error) => this.error = error
     });
@@ -87,6 +89,21 @@ export class LinkedinComponent implements OnInit {
   get isValidLinkedInUrl(): boolean {
     const linkedInRegex = /^http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/;
     return linkedInRegex.test(this.linkedInLinkInput);
+  }
+
+  private loadAssignment(): void {
+    this.linkedinService.findRedeemedOrAssignedCoupon(this.candidate.id)
+    .subscribe({
+      next: (assignment) => this.assignment = assignment,
+      error: (error) => this.error = error
+    });
+  }
+
+  private checkIsOnAssignmentFailureList() {
+    this.linkedinService.isOnAssignmentFailureList(this.candidate.id).subscribe({
+      next: (result) => this.isOnAssignmentFailureList = result,
+      error: (error) => this.error = error
+    });
   }
 
   protected readonly ResourceStatus = ResourceStatus;
