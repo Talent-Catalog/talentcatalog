@@ -13,7 +13,7 @@
 
 <div class="service-content">
   <ng-container *ngIf="!assignment">
-    <!-- TODO ALL translate keys in component tree -->
+    <!-- TODO ALL translate keys and loading indicators in component tree -->
     <p>
       Redeeming this offer requires a LinkedIn account.
     </p>
@@ -62,6 +62,7 @@
   </div>
 
   <app-linkedin-redeemed [assignment]="assignment"
+                         [candidate]="candidate"
                          *ngIf="assignment?.resource.status === ResourceStatus.REDEEMED"
   ></app-linkedin-redeemed>
 

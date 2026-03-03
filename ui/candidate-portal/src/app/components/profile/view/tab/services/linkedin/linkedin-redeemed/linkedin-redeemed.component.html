@@ -1,4 +1,7 @@
-<div>
+<app-error [error]="error"></app-error>
+<app-loading [loading]="loading"></app-loading>
+
+<div *ngIf="!isOnIssueReportList; else issueReported">
   <h4>Success!</h4>
   <p>Your LinkedIn Premium upgrade coupon was redeemed</p>
   <h5>Coupon didn't work?</h5>
@@ -11,3 +14,8 @@
     Report an Issue
   </tc-button>
 </div>
+
+<ng-template #issueReported>
+  <p>Thanks for reporting an issue with your coupon!</p>
+  <p>A member of our team will be in touch.</p>
+</ng-template>

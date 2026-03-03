@@ -80,4 +80,24 @@ public class LinkedinPortalApi {
     linkedinService.updateResourceStatus(request.getResourceCode(), request.getStatus());
   }
 
+  /**
+   * Adds the candidate associated with the given {@link ServiceAssignment} to the LinkedIn issue
+   * report list, along with a note containing the coupon code, assignment status, and assignment date.
+   * @param assignment the {@link ServiceAssignment} containing candidate and coupon details
+   */
+  @PostMapping("issue-report")
+  public void addCandidateToIssueReportList(@RequestBody ServiceAssignment assignment){
+    linkedinService.addCandidateToIssueReportList(assignment);
+  }
+
+  /**
+   * Checks if the candidate is on the LinkedIn issue report list.
+   * @param candidateId - ID of candidate
+   * @return true if the candidate is on the issue report list
+   */
+  @GetMapping("{candidateId}/issue-report")
+  public Boolean isOnIssueReportList(@PathVariable Long candidateId) {
+    return linkedinService.isOnIssueReportList(candidateId);
+  }
+
 }

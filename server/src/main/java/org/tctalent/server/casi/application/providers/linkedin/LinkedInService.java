@@ -32,29 +32,39 @@ import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.list.SearchSavedListRequest;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 
 @Service
 public class LinkedInService extends AbstractCandidateAssistanceService {
     private final FileInventoryImporter linkedInImporter;
     private final ResourceAllocator linkedInAllocator;
+    private final CandidateService candidateService;
 
-    // TODO update for prod - create first 10 or so lists:
+    // TODO delete test Set, rename prod Set
     private static final Set<Long> LINKEDIN_ELIGIBLE_LIST_IDS = Set.of(641L, 642L);
+    private static final Set<Long> LINKEDIN_ELIGIBLE_LIST_IDS_ACTUAL = Set.of(12608L, 12609L, 12610L,
+        12611L, 12612L, 12613L, 12614L, 12615L, 12616L, 12617L, 12618L, 12619L, 12620L, 12621L,12622L);
+    private static final Long LINKEDIN_ISSUE_REPORT_LIST_ID_ACTUAL = 12623L;
+    private static final Long LINKEDIN_ISSUE_REPORT_LIST_ID = 644L;
 
     public LinkedInService(
         ServiceAssignmentRepository aRepo,
         ServiceResourceRepository rRepo,
         AssignmentEngine engine,
         SavedListService lists,
+        CandidateService candidateService,
         @Qualifier("linkedInCouponImporter") FileInventoryImporter importer,
         @Qualifier("linkedInPremiumMembershipAllocator") ResourceAllocator allocator
     ) {
         super(aRepo, rRepo, engine, lists);
         this.linkedInAllocator = allocator;
         this.linkedInImporter = importer;
+        this.candidateService = candidateService;
     }
 
     /**
@@ -92,6 +102,42 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
         }
 
         return matches.stream().findFirst().orElse(null);
+    }
+
+    /**
+     * Adds the candidate associated with the given {@link ServiceAssignment} to the LinkedIn issue
+     * report List, along with a note containing the coupon code, assignment status, and assignment
+     * date.
+     * @param assignment the  {@link ServiceAssignment} containing candidate and coupon details
+     * @throws NoSuchObjectException if the LinkedIn issue report list does not exist
+     */
+    public void addCandidateToIssueReportList(ServiceAssignment assignment)
+        throws NoSuchObjectException {
+        SavedList list = savedListService.get(LINKEDIN_ISSUE_REPORT_LIST_ID);
+        Candidate candidate = candidateService.getCandidate(assignment.getCandidateId());
+        savedListService.addCandidateToList(
+            list,
+            candidate,
+            "Coupon code: %s | Assignment status: %s | First assigned at: %s".formatted(
+                assignment.getResource().getResourceCode(),
+                assignment.getStatus(),
+                assignment.getAssignedAt()
+            )
+        );
+        savedListService.saveIt(list);
+    }
+
+    /**
+     * Checks if a candidate is on the LinkedIn issue report list.
+     * @param candidateId - ID of candidate
+     * @return true if the candidate is on the issue report list
+     */
+    public Boolean isOnIssueReportList(Long candidateId) {
+        SearchSavedListRequest request = new SearchSavedListRequest();
+        List<SavedList> candidateLists = savedListService.search(candidateId, request);
+
+        return candidateLists.stream()
+            .anyMatch(list -> list.getId().equals(LINKEDIN_ISSUE_REPORT_LIST_ID));
     }
 
     @Override protected ServiceProvider provider() { return ServiceProvider.LINKEDIN; }
