@@ -348,18 +348,6 @@ export class ChatService implements OnDestroy {
     this.authenticationService.logout();
   }
 
-  private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (!payload.exp) {
-        return false;
-      }
-      return payload.exp * 1000 < Date.now();
-    } catch {
-      return true;
-    }
-  }
-
   /**
    * Returns an RxStompConfig, populated with the current Authorization header token in
    * currentHeaders.
@@ -385,18 +373,6 @@ export class ChatService implements OnDestroy {
       // Set to 0 to disable
       // Typical value 500 (500 milli seconds)
       reconnectDelay: 5000,
-
-      // Read a fresh token before each connection attempt (including reconnects).
-      // If the token is missing or expired, deactivate stomp and stop reconnecting.
-      beforeConnect: (rxStomp) => {
-        const token = this.authenticationService.getToken();
-        if (token && !this.isTokenExpired(token)) {
-          rxStomp.stompClient.connectHeaders = { Authorization: `Bearer ${token}` };
-        } else {
-          console.log('Auth token missing or expired - stopping STOMP reconnection');
-          rxStomp.deactivate();
-        }
-      },
 
       // Will log diagnostics on console
       // It can be quite verbose, not recommended in production
