@@ -95,6 +95,13 @@ public class WebSocketConfig2 implements WebSocketMessageBrokerConfigurer {
                 return message;
             }
 
+            /**
+             * Throws MessageDeliveryException rather than a plain RuntimeException so that
+             * Spring's channel infrastructure re-throws it as-is instead of wrapping it in a
+             * generic "Failed to send message to channel" MessageDeliveryException. This
+             * preserves our error message in the STOMP ERROR frame sent to the client, allowing
+             * the frontend to detect expired token errors and stop reconnecting.
+             */
             private void handleInvalidToken(Message<?> message) {
                 throw new MessageDeliveryException(message,
                     JwtTokenProvider.EXPIRED_OR_INVALID_TOKEN_MSG);
