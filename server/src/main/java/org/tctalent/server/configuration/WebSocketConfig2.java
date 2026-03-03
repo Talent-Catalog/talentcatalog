@@ -35,7 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.tctalent.server.exception.ExpiredTokenException;
+import org.springframework.messaging.MessageDeliveryException;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.TcUserDetailsService;
 
@@ -85,18 +85,19 @@ public class WebSocketConfig2 implements WebSocketMessageBrokerConfigurer {
                                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                                 accessor.setUser(authentication);
                             } else {
-                                handleInvalidToken();
+                                handleInvalidToken(message);
                             }
                         } catch (JwtException | IllegalArgumentException e) {
-                            handleInvalidToken();
+                            handleInvalidToken(message);
                         }
                     }
                 }
                 return message;
             }
 
-            private void handleInvalidToken() {
-                throw new ExpiredTokenException(JwtTokenProvider.EXPIRED_OR_INVALID_TOKEN_MSG);
+            private void handleInvalidToken(Message<?> message) {
+                throw new MessageDeliveryException(message,
+                    JwtTokenProvider.EXPIRED_OR_INVALID_TOKEN_MSG);
             }
 
         });
