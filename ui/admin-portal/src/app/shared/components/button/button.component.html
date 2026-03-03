@@ -3,6 +3,7 @@
         [disabled]="isDisabled"
         [attr.aria-label]="ariaLabel"
         [routerLink]="routerLink"
+        [queryParamsHandling]="queryParamsHandling"
         (click)="clicked($event)">
 
   <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
