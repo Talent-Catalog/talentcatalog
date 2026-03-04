@@ -2,20 +2,22 @@
 <app-loading [loading]="loading"></app-loading>
 
 <div *ngIf="!isOnIssueReportList; else issueReported">
-  <h4>Success!</h4>
-  <p>Your LinkedIn Premium upgrade coupon was redeemed</p>
-  <h5>Coupon didn't work?</h5>
+  <h4>{{ "SERVICES.LINKEDIN.REDEEMED.TITLE" | translate }}</h4>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.DESCRIPTION" | translate }}</p>
+  <h5>{{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_TITLE" | translate }}</h5>
   <p>
-    Try visiting LinkedIn again to activate your offer by clicking
-    <a [href]="assignment.resource.resourceCode" target="_blank">here</a>.
+    {{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_DESCRIPTION" | translate }}
+    <a [href]="assignment.resource.resourceCode" target="_blank">
+      {{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_DESCRIPTION_HERE" | translate }}
+    </a>.
   </p>
-  <h5>Still not working?</h5>
+  <h5>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_TITLE" | translate }}</h5>
   <tc-button [color]="'error'" (onClick)="reportIssue()">
-    Report an Issue
+    {{ "SERVICES.LINKEDIN.REDEEMED.REPORT_BTN" | translate }}
   </tc-button>
 </div>
 
 <ng-template #issueReported>
-  <p>Thanks for reporting an issue with your coupon!</p>
-  <p>A member of our team will be in touch.</p>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_THANKS" | translate }}</p>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_DESCRIPTION" | translate }}</p>
 </ng-template>
