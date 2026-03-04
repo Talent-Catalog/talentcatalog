@@ -41,6 +41,9 @@ export class LinkedinComponent implements OnInit {
    * If the URL has changed, updates the candidate's profile first.
    */
   verify() {
+    this.loading = true;
+    this.error = null;
+
     const update$ = this.linkedInLinkInput !== this.candidate.linkedInLink
       ? this.candidateService.updateCandidateOtherInfo({ linkedInLink: this.linkedInLinkInput })
       : of(null);
@@ -52,13 +55,20 @@ export class LinkedinComponent implements OnInit {
         this.verified = true;
         this.assignment = assignment;
         this.checkIsOnAssignmentFailureList();
+        this.loading = false;
       },
-      error: (error) => this.error = error
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
     });
   }
 
   redeem() {
     if (this.assignment) {
+      this.loading = true;
+      this.error = null;
+
       const request: UpdateServiceResourceStatusRequest = {
         resourceCode: this.assignment.resource.resourceCode,
         status: ResourceStatus.REDEEMED
@@ -72,8 +82,12 @@ export class LinkedinComponent implements OnInit {
             resource: {...this.assignment.resource, status: ResourceStatus.REDEEMED}
           };
           window.open(this.assignment.resource.resourceCode, '_blank');
+          this.loading = false;
         },
-        error: (error) => this.error = error
+        error: (error) => {
+          this.error = error;
+          this.loading = false;
+        }
       })
     }
   }
@@ -92,17 +106,35 @@ export class LinkedinComponent implements OnInit {
   }
 
   private loadAssignment(): void {
+    this.loading = true;
+    this.error = null;
+
     this.linkedinService.findRedeemedOrAssignedCoupon(this.candidate.id)
     .subscribe({
-      next: (assignment) => this.assignment = assignment,
-      error: (error) => this.error = error
+      next: (assignment) => {
+        this.assignment = assignment;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
     });
   }
 
   private checkIsOnAssignmentFailureList() {
+    this.loading = true;
+    this.error = null;
+
     this.linkedinService.isOnAssignmentFailureList(this.candidate.id).subscribe({
-      next: (result) => this.isOnAssignmentFailureList = result,
-      error: (error) => this.error = error
+      next: (result) => {
+        this.isOnAssignmentFailureList = result;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
     });
   }
 

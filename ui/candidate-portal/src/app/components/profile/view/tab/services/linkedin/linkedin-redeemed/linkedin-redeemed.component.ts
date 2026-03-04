@@ -22,18 +22,34 @@ export class LinkedinRedeemedComponent implements OnInit {
   }
 
   reportIssue() {
+    this.loading = true;
+    this.error = null;
+
     this.linkedinService.addCandidateToIssueReportList(this.assignment).subscribe({
       next: () => {
         this.checkIsOnIssueReportList();
+        this.loading = false;
       },
-      error: (error) => this.error = error
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
     });
   }
 
   private checkIsOnIssueReportList() {
+    this.loading = true;
+    this.error = null;
+
     this.linkedinService.isOnIssueReportList(this.candidate.id).subscribe({
-      next: (result) => this.isOnIssueReportList = result,
-      error: (error) => this.error = error
+      next: (result) => {
+        this.isOnIssueReportList = result;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
     });
   }
 
