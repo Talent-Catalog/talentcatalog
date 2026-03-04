@@ -45,14 +45,10 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     private final ResourceAllocator linkedInAllocator;
     private final CandidateService candidateService;
 
-    // TODO delete test Set, rename prod Set
-    private static final Set<Long> LINKEDIN_ELIGIBLE_LIST_IDS = Set.of(641L, 642L);
-    private static final Set<Long> LINKEDIN_ELIGIBLE_LIST_IDS_ACTUAL = Set.of(12608L, 12609L, 12610L,
+    private static final Set<Long> LINKEDIN_ELIGIBLE_LIST_IDS = Set.of(12608L, 12609L, 12610L,
         12611L, 12612L, 12613L, 12614L, 12615L, 12616L, 12617L, 12618L, 12619L, 12620L, 12621L,12622L);
-    private static final Long LINKEDIN_ISSUE_REPORT_LIST_ID_ACTUAL = 12623L;
-    private static final Long LINKEDIN_ISSUE_REPORT_LIST_ID = 644L;
-    private static final Long LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID_ACTUAL = 12625L;
-    private static final Long LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID = 645L;
+    private static final Long LINKEDIN_ISSUE_REPORT_LIST_ID = 12623L;
+    private static final Long LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID = 12625L;
 
     public LinkedInService(
         ServiceAssignmentRepository aRepo,
@@ -84,8 +80,9 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     }
 
     /**
-     * Returns the candidate's assigned LinkedIn Premium coupon. In edge cases where multiple exist,
-     * prefers the one that hasn't been redeemed (should never happen - better UX if it does).
+     * Returns the candidate's assigned LinkedIn Premium coupon, if any. In edge cases where
+     * multiple exist, prefers the one that hasn't been redeemed (should never happen - better UX if
+     * it does).
      * @param candidateId - ID of candidate
      * @return {@link ServiceAssignment} or null if none found
      */
@@ -136,7 +133,6 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
      * Adds the given candidate to the #LinkedInAssignmentFailure List, recording as a context note
      * the exception that caused the failure. Runs in a separate transaction to ensure the failure
      * is saved even if the main assignment transaction rolls back.
-     *
      * @param candidateId ID of candidate to add to the List
      * @param exception - exception that caused the assignment to fail
      */

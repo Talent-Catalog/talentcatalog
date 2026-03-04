@@ -23,9 +23,8 @@ export class LinkedinPremiumCouponService {
 
     return this.http.post<any>(
       `${this.apiBaseUrl}/${this.provider}/${this.serviceCode}/import`, formData,
-      {
-        headers: new HttpHeaders({ 'enctype': 'multipart/form-data' }),
-    });
+      {headers: new HttpHeaders({ 'enctype': 'multipart/form-data' })}
+    );
   }
 
   /**

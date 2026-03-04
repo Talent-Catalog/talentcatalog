@@ -14,7 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-// TODO: review what's needed:
 /**
  * Enumeration of service providers.
  */
@@ -86,4 +85,3 @@ export interface ServiceResource {
   sentAt: string; // ISO 8601 datetime
   expiresAt: string; // ISO 8601 datetime
 }
-

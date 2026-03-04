@@ -21,6 +21,7 @@ export class LinkedinRedeemedComponent implements OnInit {
     this.checkIsOnIssueReportList();
   }
 
+  /** Puts candidate on #LinkedInIssueReport List for admin action */
   reportIssue() {
     this.loading = true;
     this.error = null;

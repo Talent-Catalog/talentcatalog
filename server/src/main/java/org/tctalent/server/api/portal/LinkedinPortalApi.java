@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -52,7 +52,8 @@ public class LinkedinPortalApi {
   }
 
   /**
-   * Returns the candidate's redeemed or assigned LinkedIn Premium membership coupon, if any.
+   * Returns the candidate's assigned LinkedIn Premium coupon, if any. In edge cases where multiple
+   * exist, prefers the one that hasn't been redeemed (should never happen - better UX if it does).
    * @param candidateId - ID of candidate
    * @return {@link ServiceAssignment} or null if none found
    */
@@ -63,12 +64,12 @@ public class LinkedinPortalApi {
 
   /**
    * Assigns a single coupon for the LinkedIn Premium membership upgrade offer. Uses System Admin
-   * as assigning user - it's pre-set by list-tagging with #LinkedInEligible1/2/etc.
+   * as assigning user - pre-set by list-tagging with #LinkedInEligible1/2/etc.
    * <p>
    * Catches unexpected exceptions, logged and also recorded by adding the candidate to the
    * #LinkedInAssignmentFailure List for admin action.
    * @param candidateId - ID of assignee candidate
-   * @return {@link ServiceAssignment} object showing new assignment status
+   * @return {@link ServiceAssignment} object showing new assignment status or null if failed
    */
   @PostMapping("{candidateId}/assign")
   public ServiceAssignment assign(@PathVariable Long candidateId) {

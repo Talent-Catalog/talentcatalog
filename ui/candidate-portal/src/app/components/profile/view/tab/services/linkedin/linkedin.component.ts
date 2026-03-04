@@ -64,6 +64,7 @@ export class LinkedinComponent implements OnInit {
     });
   }
 
+  /** Updates resource status to REDEEMED (assignment status is unchanged as ASSIGNED) */
   redeem() {
     if (this.assignment) {
       this.loading = true;
