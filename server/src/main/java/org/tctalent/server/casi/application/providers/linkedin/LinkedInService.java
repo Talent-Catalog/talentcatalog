@@ -84,8 +84,8 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     }
 
     /**
-     * Returns the candidate's assigned LinkedIn Premium coupon.
-     * In edge cases where multiple exist, prefers the one that hasn't been redeemed.
+     * Returns the candidate's assigned LinkedIn Premium coupon. In edge cases where multiple exist,
+     * prefers the one that hasn't been redeemed (should never happen - better UX if it does).
      * @param candidateId - ID of candidate
      * @return {@link ServiceAssignment} or null if none found
      */
