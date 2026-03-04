@@ -16,6 +16,7 @@ import {
   styleUrl: './linkedin.component.scss'
 })
 export class LinkedinComponent implements OnInit {
+  protected readonly ResourceStatus = ResourceStatus;
   @Input() candidate!: Candidate;
   @Output() backButtonClicked = new EventEmitter<void>();
   assignment?: ServiceAssignment;
@@ -64,7 +65,7 @@ export class LinkedinComponent implements OnInit {
     });
   }
 
-  /** Updates resource status to REDEEMED (assignment status is unchanged as ASSIGNED) */
+  /** Updates resource status to REDEEMED */
   redeem() {
     if (this.assignment) {
       this.loading = true;
@@ -110,7 +111,7 @@ export class LinkedinComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.linkedinService.findRedeemedOrAssignedCoupon(this.candidate.id)
+    this.linkedinService.findAssignmentWithReservedOrRedeemedResource(this.candidate.id)
     .subscribe({
       next: (assignment) => {
         this.assignment = assignment;
@@ -139,5 +140,4 @@ export class LinkedinComponent implements OnInit {
     });
   }
 
-  protected readonly ResourceStatus = ResourceStatus;
 }

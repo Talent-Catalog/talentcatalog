@@ -43,7 +43,8 @@ public class LinkedinPortalApi {
 
   /**
    * Checks if a candidate is eligible for the LinkedIn Premium membership upgrade offer.
-   * @param candidateId - ID of candidate
+   *
+   * @param candidateId
    * @return true if the candidate is eligible
    */
   @GetMapping("{candidateId}/eligibility")
@@ -52,14 +53,16 @@ public class LinkedinPortalApi {
   }
 
   /**
-   * Returns the candidate's assigned LinkedIn Premium coupon, if any. In edge cases where multiple
-   * exist, prefers the one that hasn't been redeemed (should never happen - better UX if it does).
-   * @param candidateId - ID of candidate
+   * Returns the candidate's assignment to an RESERVED resource, or a REDEEMED resource
+   * if no RESERVED one exists, or null if neither is found.
+   *
+   * @param candidateId
    * @return {@link ServiceAssignment} or null if none found
    */
-  @GetMapping("{candidateId}/assignment-check")
-  public ServiceAssignment findRedeemedOrAssignedCoupon (@PathVariable Long candidateId) {
-    return linkedinService.findRedeemedOrAssignedCoupon(candidateId);
+  @GetMapping("{candidateId}/find-assignment")
+  public ServiceAssignment findAssignmentWithReservedOrRedeemedResource(
+      @PathVariable Long candidateId) {
+    return linkedinService.findAssignmentWithReservedOrRedeemedResource(candidateId);
   }
 
   /**
@@ -68,7 +71,8 @@ public class LinkedinPortalApi {
    * <p>
    * Catches unexpected exceptions, logged and also recorded by adding the candidate to the
    * #LinkedInAssignmentFailure List for admin action.
-   * @param candidateId - ID of assignee candidate
+   *
+   * @param candidateId
    * @return {@link ServiceAssignment} object showing new assignment status or null if failed
    */
   @PostMapping("{candidateId}/assign")
@@ -91,6 +95,7 @@ public class LinkedinPortalApi {
 
   /**
    * Updates status of a single coupon for the LinkedIn Premium membership upgrade offer.
+   *
    * @param request - {@link UpdateServiceResourceStatusRequest}
    */
   @PutMapping("update-coupon-status")
@@ -102,6 +107,7 @@ public class LinkedinPortalApi {
    * Adds the candidate associated with the given {@link ServiceAssignment} to the
    * #LinkedInIssueReport List, along with a note containing the coupon code, assignment status, and
    * assignment date.
+   *
    * @param assignment the {@link ServiceAssignment} containing candidate and coupon details
    */
   @PostMapping("issue-report")
@@ -111,7 +117,8 @@ public class LinkedinPortalApi {
 
   /**
    * Checks if the candidate is on the #LinkedInIssueReport List.
-   * @param candidateId - ID of candidate
+   *
+   * @param candidateId
    * @return true if the candidate is on the List
    */
   @GetMapping("{candidateId}/issue-report")
@@ -121,7 +128,8 @@ public class LinkedinPortalApi {
 
   /**
    * Checks if the candidate is on the #LinkedInAssignmentFailure List.
-   * @param candidateId - ID of candidate
+   *
+   * @param candidateId
    * @return true if the candidate is on the List
    */
   @GetMapping("{candidateId}/assignment-failure")

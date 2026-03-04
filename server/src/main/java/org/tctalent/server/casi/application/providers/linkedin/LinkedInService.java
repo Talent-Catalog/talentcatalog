@@ -26,7 +26,6 @@ import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.casi.core.services.AbstractCandidateAssistanceService;
 import org.tctalent.server.casi.core.services.AssignmentEngine;
-import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
@@ -68,7 +67,8 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     /**
      * Checks if a candidate is eligible for the LinkedIn Premium membership upgrade offer by
      * comparing IDs of their associated Lists against Lists used to tag eligible candidates.
-     * @param candidateId - ID of candidate
+     *
+     * @param candidateId
      * @return true if the candidate is eligible
      */
     public Boolean isEligible(Long candidateId) {
@@ -80,38 +80,31 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     }
 
     /**
-     * Returns the candidate's assigned LinkedIn Premium coupon, if any. In edge cases where
-     * multiple exist, prefers the one that hasn't been redeemed (should never happen - better UX if
-     * it does).
-     * @param candidateId - ID of candidate
+     * Returns the candidate's assignment to an RESERVED resource, or a REDEEMED resource
+     * if no RESERVED one exists, or null if neither is found.
+     *
+     * @param candidateId
      * @return {@link ServiceAssignment} or null if none found
      */
     @Transactional(readOnly = true)
-    public ServiceAssignment findRedeemedOrAssignedCoupon(Long candidateId) {
-        List<ServiceAssignment> matches = getAssignmentsForCandidate(candidateId)
-            .stream()
-            .filter(a -> a.getStatus() == AssignmentStatus.ASSIGNED)
-            .toList();
+    public ServiceAssignment findAssignmentWithReservedOrRedeemedResource(Long candidateId) {
+        List<ServiceAssignment> assignments = getAssignmentsForCandidate(candidateId);
 
-        if (matches.isEmpty()) {
-            return null;
-        }
-
-        if (matches.size() == 1) {
-            return matches.get(0);
-        }
-
-        // If multiple, prefer assignment whose resource hasn't been REDEEMED
-        return matches.stream()
-            .filter(a -> a.getResource().getStatus() != ResourceStatus.REDEEMED)
+        return assignments.stream()
+            .filter(a -> a.getResource().getStatus() == ResourceStatus.RESERVED)
             .findFirst()
-            .orElse(matches.get(0)); // fallback to any
+            .orElseGet(() -> assignments.stream()
+                .filter(a -> a.getResource().getStatus() == ResourceStatus.REDEEMED)
+                .findFirst()
+                .orElse(null)
+            );
     }
 
     /**
      * Adds the candidate associated with the given {@link ServiceAssignment} to the
      * #LinkedInIssueReport List, along with a note containing the coupon code, assignment status,
      * and assignment date.
+     *
      * @param assignment the {@link ServiceAssignment} containing candidate and coupon details
      */
     public void addCandidateToIssueReportList(ServiceAssignment assignment) {
@@ -133,7 +126,8 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
      * Adds the given candidate to the #LinkedInAssignmentFailure List, recording as a context note
      * the exception that caused the failure. Runs in a separate transaction to ensure the failure
      * is saved even if the main assignment transaction rolls back.
-     * @param candidateId ID of candidate to add to the List
+     *
+     * @param candidateId
      * @param exception - exception that caused the assignment to fail
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -147,7 +141,8 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
 
     /**
      * Checks if a candidate is on the #LinkedInIssueReport List.
-     * @param candidateId - ID of candidate
+     *
+     * @param candidateId
      * @return true if the candidate is on the List
      */
     public Boolean isOnIssueReportList(Long candidateId) {
@@ -160,7 +155,8 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
 
     /**
      * Checks if a candidate is on the #LinkedInAssignmentFailure List.
-     * @param candidateId - ID of candidate
+     *
+     * @param candidateId
      * @return true if the candidate is on the List
      */
     public Boolean isOnAssignmentFailureList(Long candidateId) {
