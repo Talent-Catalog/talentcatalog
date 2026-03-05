@@ -43,16 +43,27 @@ public interface TaskPolicy {
    */
   ServiceProvider provider();
 
-  // Tasks to execute when a service is assigned
+  /**
+   * Tasks to execute when a service is assigned.
+   * <p>
+   * Note that this method is required (no default implementation) because the "assigned" event is
+   * the only one guaranteed to be emitted for every service assignment.
+   */
   List<String> tasksOnAssigned(ServiceAssignedEvent e);
 
-  // Tasks to execute when a service is redeemed
+  /**
+   * Tasks to execute when a service is redeemed.
+   */
   default List<String> tasksOnRedeemed(ServiceRedeemedEvent e) { return List.of(); }
 
-  // Tasks to close when a service is reassigned
+  /**
+   * Tasks to close when a service is reassigned.
+    */
   default List<String> tasksOnReassigned(ServiceReassignedEvent e) { return List.of(); }
 
-  // Tasks to close when a service expires
+  /**
+   * Tasks to close when a service expires.
+   */
   default List<String> tasksOnExpired(ServiceExpiredEvent e) { return List.of(); }
 
 }
