@@ -181,6 +181,55 @@ public class UdemyTaskPolicy implements TaskPolicy {
 }
 ```
 
+### Service-code branching inside a TaskPolicy
+
+Task policies are registered **per provider**, not per provider+serviceCode. If a single provider
+offers multiple service codes that need different task workflows, branch on the service code inside
+the policy methods. Every event carries the full `ServiceAssignment`, so `serviceCode` is always
+available:
+
+```java
+@Component
+public class DuolingoTaskPolicy implements TaskPolicy {
+  @Override public ServiceProvider provider() { return ServiceProvider.DUOLINGO; }
+
+  @Override
+  public List<String> tasksOnAssigned(ServiceAssignedEvent e) {
+    return switch (e.assignment().getServiceCode()) {
+      case TEST_PROCTORED     -> List.of("claimProctoredCoupon");
+      case TEST_NON_PROCTORED -> List.of("claimNonProctoredCoupon");
+    };
+  }
+
+  @Override
+  public List<String> tasksOnRedeemed(ServiceRedeemedEvent e) {
+    return switch (e.assignment().getServiceCode()) {
+      case TEST_PROCTORED     -> List.of("duolingoProctoredTest");
+      case TEST_NON_PROCTORED -> List.of("duolingoNonProctoredTest");
+    };
+  }
+
+  @Override
+  public List<String> tasksOnReassigned(ServiceReassignedEvent e) {
+    return switch (e.assignment().getServiceCode()) {
+      case TEST_PROCTORED     -> List.of("claimProctoredCoupon", "duolingoProctoredTest");
+      case TEST_NON_PROCTORED -> List.of("claimNonProctoredCoupon", "duolingoNonProctoredTest");
+    };
+  }
+
+  @Override
+  public List<String> tasksOnExpired(ServiceExpiredEvent e) {
+    return switch (e.assignment().getServiceCode()) {
+      case TEST_PROCTORED     -> List.of("claimProctoredCouponButton");
+      case TEST_NON_PROCTORED -> List.of("claimNonProctoredCouponButton");
+    };
+  }
+}
+```
+
+If all service codes for a provider share the same workflow (as Duolingo does today), no branching
+is needed — simply return the same task list from each method.
+
 8) Email listener (optional):
 
 If you want to send emails on events, update the onAssigned method on `EmailNotificationListener.java` 
