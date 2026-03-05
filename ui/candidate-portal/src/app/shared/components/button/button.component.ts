@@ -4,33 +4,39 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  * @component ButtonComponent
  * @selector tc-button
  * @description
- * A design-system button that wraps a native `<button>` element and applies
+ * A design-system button that renders as a native `<button>` or `<a>` and applies
  * consistent sizing, variants, and accessibility. Content is projected via
  * `<ng-content>` so you can place text, icons, or both.
  *
  * **Features**
  * - Size presets: `xs`, `sm`, `default`, `lg`, `xl`
- * - Visual variants: `primary`, `secondary`, `outline`, `plain`
+ * - Visual variants: `solid`, `outline`, `plain`
  * - Disabled state styling & pointer-lock
  * - Focus-visible outline for keyboard accessibility
  * - Optional `ariaLabel` for icon-only buttons
  * - Optional Angular `routerLink` support for navigation
+ * - Optional external link support via `href`, `target`, and `rel`
  *
  * **Inputs**
  * - `size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'`
  *   Controls height and padding. Defaults to `'default'`.
- * - `type: 'primary' | 'secondary' | 'outline' | 'plain'`
- *   Visual style variant. Defaults to `'primary'`.
+ * - `type: 'solid' | 'outline' | 'plain'`
+ *   Visual style variant. Defaults to `'solid'`.
  *   - `color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'`
  *   Controls the button’s color scheme. Defaults to `'primary'`.
  * - `disabled: boolean`
  *   Disables the button and applies muted styling. Defaults to `false`.
  * - `ariaLabel?: string`
  *   Accessible label for icon-only or ambiguous buttons.
- *    * - `routerLink?: string | any[]`
- *  *   Optional Angular Router `routerLink`. When provided, the internal `<button>`
- *  *   also receives `[routerLink]`, allowing `<tc-button>` to be used as a
- *  *   navigation trigger:
+ * - `routerLink?: string | any[]`
+ *   Optional Angular Router `routerLink` for internal app navigation.
+ * - `href?: string`
+ *   Optional external link URL. When provided, the component renders an `<a>`.
+ * - `target?: string`
+ *   Optional link target when `href` is provided (eg `_blank`).
+ * - `rel?: string`
+ *   Optional link rel attribute. If omitted and `target="_blank"`, defaults to
+ *   `noopener noreferrer`.
  *
  * **Outputs**
  * - `(onClick)`
@@ -42,10 +48,10 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  * @examples
  * ```html
  * <!-- Primary (default size) -->
- * <tc-button type="primary">Save changes</tc-button>
+ * <tc-button type="solid">Save changes</tc-button>
  *
  * <!-- Secondary, large -->
- * <tc-button type="secondary" size="lg">Continue</tc-button>
+ * <tc-button color="secondary" size="lg">Continue</tc-button>
  *
  * <!-- Outline, small -->
  * <tc-button type="outline" size="sm">Learn more</tc-button>
@@ -54,7 +60,12 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  * <tc-button type="plain">Cancel</tc-button>
  *
  * <!-- Disabled -->
- * <tc-button type="primary" [disabled]="true">Processing…</tc-button>
+ * <tc-button type="solid" [disabled]="true">Processing…</tc-button>
+ *
+ * <!-- External link -->
+ * <tc-button color="secondary" href="https://example.com" target="_blank">
+ *   Open docs
+ * </tc-button>
 
  * ```
  */
@@ -69,8 +80,12 @@ export class ButtonComponent {
   @Input() type: 'solid' | 'outline' | 'plain' = 'solid';
   @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
   @Input() disabled = false;
+  @Input() loading = false;
   @Input() ariaLabel?: string;
   @Input() routerLink?: string | any[];
+  @Input() href?: string;
+  @Input() target?: string;
+  @Input() rel?: string;
   /**
    * Whether to prevent the native `click` event from bubbling up the DOM.
    *
@@ -90,7 +105,7 @@ export class ButtonComponent {
   @Output() onClick = new EventEmitter();
 
   @HostBinding('class.disabled') get isDisabled() {
-    return this.disabled;
+    return this.disabled || this.loading;
   }
 
   get classList(): string[] {
@@ -98,10 +113,28 @@ export class ButtonComponent {
       `btn-${this.size}`,
       `btn-${this.color}`,
       `btn-${this.type}`,
+      ...(this.loading ? ['btn-loading'] : [])
     ];
   }
 
+  get isLink(): boolean {
+    return !!this.href;
+  }
+
+  get computedRel(): string | null {
+    if (this.rel) {
+      return this.rel;
+    }
+    return this.target === '_blank' ? 'noopener noreferrer' : null;
+  }
+
   clicked(e: MouseEvent): void {
+    if (this.isDisabled) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
     if (this.stopNativeClickPropagation) {
       e.stopPropagation();
     }

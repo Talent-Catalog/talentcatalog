@@ -106,7 +106,7 @@
     </div>
 
 
-    <div id="chats" class="table-responsive mt-3">
+    <div *ngIf="canViewChats" id="chats" class="table-responsive mt-3">
       <table class="table table-hover bg-white">
         <thead class="table-secondary">
           <tr>
