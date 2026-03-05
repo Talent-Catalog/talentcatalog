@@ -46,7 +46,7 @@ public class InventoryAllocator implements ResourceAllocator {
   @Transactional
   public ServiceResource allocateFor(Candidate c) {
     // get and reserve a service resource e.g. a coupon
-    ServiceResourceEntity e = resources.lockNextAvailable(provider, serviceCode);
+    ServiceResourceEntity e = resources.lockNextAvailable(provider.name(), serviceCode.name());
     if (e == null) {
       throw new NoSuchObjectException("There are no available " + serviceCode + " coupons to assign to the candidate. "
           + "Please import more coupons from the settings page.");
