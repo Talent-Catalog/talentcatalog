@@ -122,10 +122,9 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     var savedList = savedListService.get(listId);
     var candidates = savedList.getCandidates();
 
-    // Confirm available resources
-    List<ServiceResource> availableResources = getAvailableResources();
+    long availableCount = countAvailableForProviderAndService();
 
-    if (availableResources.isEmpty() || candidates.size() > availableResources.size()) {
+    if (availableCount == 0 || candidates.size() > availableCount) {
       throw new NoSuchObjectException(
           "There are not enough available " + serviceCode() + " resources to assign to all candidates "
               + "in the list. Please import more from the settings page.");
