@@ -27,7 +27,6 @@ import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
  *
  * @author sadatmalik
  */
-@Component
 public class ServiceResourceMapper {
   public static ServiceResource toModel(ServiceResourceEntity e) {
     if (e == null) {
