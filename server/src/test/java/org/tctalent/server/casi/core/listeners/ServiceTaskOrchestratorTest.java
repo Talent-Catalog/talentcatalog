@@ -28,7 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -96,7 +96,7 @@ class ServiceTaskOrchestratorTest {
         .candidateId(CANDIDATE_ID)
         .actorId(ACTOR_ID)
         .status(AssignmentStatus.ASSIGNED)
-        .assignedAt(LocalDateTime.now())
+        .assignedAt(OffsetDateTime.now())
         .build();
 
     task1 = new TaskImpl();
