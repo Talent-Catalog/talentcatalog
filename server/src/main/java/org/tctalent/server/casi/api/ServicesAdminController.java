@@ -16,6 +16,7 @@
 
 package org.tctalent.server.casi.api;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -132,7 +133,7 @@ public class ServicesAdminController {
   @PutMapping("/{provider}/{serviceCode}/resources/status")
   public void updateResourceStatus(@PathVariable String provider,
       @PathVariable String serviceCode,
-      @RequestBody UpdateServiceResourceStatusRequest request) {
+      @Valid @RequestBody UpdateServiceResourceStatusRequest request) {
     serviceFor(provider, serviceCode)
         .updateResourceStatus(request.getResourceCode(), request.getStatus());
   }
