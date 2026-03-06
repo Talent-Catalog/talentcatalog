@@ -130,6 +130,7 @@ public class ServicesAdminController {
   }
 
   // Endpoint to update the status of a specific resource
+  @PreAuthorize(ADMIN_ONLY)
   @PutMapping("/{provider}/{serviceCode}/resources/status")
   public void updateResourceStatus(@PathVariable String provider,
       @PathVariable String serviceCode,
