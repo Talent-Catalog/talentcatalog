@@ -220,6 +220,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   // Returns null if not assigned
   // Throws NoSuchObjectException if resource not found
   @Override
+  @Transactional(readOnly = true)
   public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException {
     var resource = resourceRepository
         .findByProviderAndResourceCode(provider(), resourceCode)
