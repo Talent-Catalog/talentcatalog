@@ -187,9 +187,9 @@ class ServiceResourceRepositoryIntegrationTest extends BaseJpaIntegrationTest {
       // Thread 1: lock the first row and hold it
       Future<?> f1 = executor.submit(() -> {
         try {
-          new TransactionTemplate(txManager) {{
-            setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-          }}.execute(status -> {
+          TransactionTemplate threadTx = new TransactionTemplate(txManager);
+          threadTx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+          threadTx.execute(status -> {
             ServiceResourceEntity locked = repo.lockNextAvailable(
                 ServiceProvider.DUOLINGO.name(), ServiceCode.TEST_PROCTORED.name());
             if (locked != null) {
@@ -216,9 +216,9 @@ class ServiceResourceRepositoryIntegrationTest extends BaseJpaIntegrationTest {
         try {
           t1HasLock.await(10, TimeUnit.SECONDS);
 
-          new TransactionTemplate(txManager) {{
-            setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-          }}.execute(status -> {
+          TransactionTemplate threadTx = new TransactionTemplate(txManager);
+          threadTx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+          threadTx.execute(status -> {
             ServiceResourceEntity locked = repo.lockNextAvailable(
                 ServiceProvider.DUOLINGO.name(), ServiceCode.TEST_PROCTORED.name());
             if (locked != null) {
