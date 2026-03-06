@@ -27,6 +27,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +58,7 @@ import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
@@ -836,6 +840,94 @@ class DuolingoServiceTest {
         .hasMessageContaining("Resource with code " + RESOURCE_CODE + " not found");
 
     verify(resourceRepository, never()).save(any());
+  }
+
+  // State Transition Tests
+
+  @ParameterizedTest(name = "EXPIRED → {0} is rejected")
+  @EnumSource(ResourceStatus.class)
+  @DisplayName("updateResourceStatus rejects any transition from EXPIRED (terminal state)")
+  void updateResourceStatus_rejectsAnyTransitionFromExpired(ResourceStatus target) {
+    resourceEntity.setStatus(ResourceStatus.EXPIRED);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+
+    assertThatThrownBy(() -> duolingoService.updateResourceStatus(RESOURCE_CODE, target))
+        .isInstanceOf(InvalidRequestException.class)
+        .hasMessageContaining("EXPIRED");
+
+    verify(resourceRepository, never()).save(any());
+  }
+
+  @ParameterizedTest(name = "REDEEMED → {0} is rejected")
+  @EnumSource(ResourceStatus.class)
+  @DisplayName("updateResourceStatus rejects any transition from REDEEMED (terminal state)")
+  void updateResourceStatus_rejectsAnyTransitionFromRedeemed(ResourceStatus target) {
+    resourceEntity.setStatus(ResourceStatus.REDEEMED);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+
+    assertThatThrownBy(() -> duolingoService.updateResourceStatus(RESOURCE_CODE, target))
+        .isInstanceOf(InvalidRequestException.class)
+        .hasMessageContaining("REDEEMED");
+
+    verify(resourceRepository, never()).save(any());
+  }
+
+  @Test
+  @DisplayName("updateResourceStatus allows AVAILABLE → DISABLED")
+  void updateResourceStatus_allowsAvailableToDisabled() {
+    resourceEntity.setStatus(ResourceStatus.AVAILABLE);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.DISABLED);
+
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.DISABLED);
+    verify(resourceRepository).save(resourceEntity);
+  }
+
+  @Test
+  @DisplayName("updateResourceStatus allows DISABLED → AVAILABLE (re-enable)")
+  void updateResourceStatus_allowsDisabledToAvailable() {
+    resourceEntity.setStatus(ResourceStatus.DISABLED);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.AVAILABLE);
+
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.AVAILABLE);
+    verify(resourceRepository).save(resourceEntity);
+  }
+
+  @Test
+  @DisplayName("updateResourceStatus allows SENT → DISABLED")
+  void updateResourceStatus_allowsSentToDisabled() {
+    resourceEntity.setStatus(ResourceStatus.SENT);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.DISABLED);
+
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.DISABLED);
+    verify(resourceRepository).save(resourceEntity);
+  }
+
+  @Test
+  @DisplayName("updateResourceStatus allows RESERVED → AVAILABLE")
+  void updateResourceStatus_allowsReservedToAvailable() {
+    resourceEntity.setStatus(ResourceStatus.RESERVED);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.AVAILABLE);
+
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.AVAILABLE);
+    verify(resourceRepository).save(resourceEntity);
   }
 
   // Count Operations Tests
