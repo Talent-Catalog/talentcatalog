@@ -27,8 +27,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -589,6 +594,108 @@ class DuolingoServiceTest {
 
     verify(assignmentEngine).assign(duolingoAllocator, CANDIDATE_ID, user);
     verify(assignmentEngine).assign(duolingoAllocator, 789L, user);
+  }
+
+  @Test
+  @DisplayName("assign to list: resource exhaustion mid-loop yields partial success and continues the loop")
+  void assignToList_resourceExhaustionMidLoopYieldsPartialSuccessAndContinuesLoop() {
+    // Arrange – count check passes (3 resources for 3 candidates), but two allocations fail
+    // mid-loop because another thread consumed the resources between the count and the assign.
+    Candidate candidate2 = new Candidate();
+    candidate2.setId(789L);
+    candidate2.setCandidateNumber("C789");
+    Candidate candidate3 = new Candidate();
+    candidate3.setId(999L);
+    candidate3.setCandidateNumber("C999");
+    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2, candidate3));
+
+    when(savedListService.get(LIST_ID)).thenReturn(savedList);
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(3L);
+
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(789L), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(999L), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+
+    // Candidate 1 succeeds; candidates 2 and 3 fail as the allocator finds no remaining resource
+    NoSuchObjectException exhausted =
+        new NoSuchObjectException("No available TEST_PROCTORED resources");
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(CANDIDATE_ID), eq(user)))
+        .thenReturn(assignment);
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(789L), eq(user)))
+        .thenThrow(exhausted);
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(999L), eq(user)))
+        .thenThrow(exhausted);
+
+    // Act – at least one success, so no final exception is thrown
+    List<ServiceAssignment> result = duolingoService.assignToList(LIST_ID, user);
+
+    // Assert – partial result returned, loop continued past failures and attempted all candidates
+    assertThat(result).hasSize(1).containsExactly(assignment);
+    verify(assignmentEngine).assign(duolingoAllocator, CANDIDATE_ID, user);
+    verify(assignmentEngine).assign(duolingoAllocator, 789L, user);
+    verify(assignmentEngine).assign(duolingoAllocator, 999L, user);
+  }
+
+  @Test
+  @DisplayName("assign to list logs an ERROR for each individual assignment failure")
+  void assignToList_logsErrorForEachFailedIndividualAssignment() {
+    // Capture log output emitted by AbstractCandidateAssistanceService via LogBuilder
+    Logger serviceLogger =
+        (Logger) LoggerFactory.getLogger(AbstractCandidateAssistanceService.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    serviceLogger.addAppender(listAppender);
+
+    try {
+      // Arrange – one candidate fails mid-loop, the other succeeds
+      Candidate candidate2 = new Candidate();
+      candidate2.setId(789L);
+      candidate2.setCandidateNumber("C789");
+      when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+
+      when(savedListService.get(LIST_ID)).thenReturn(savedList);
+      when(resourceRepository.countAvailableByProviderAndService(
+          ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+          .thenReturn(2L);
+      when(assignmentRepository.findByCandidateAndProviderAndService(
+          eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+          .thenReturn(Collections.emptyList());
+      when(assignmentRepository.findByCandidateAndProviderAndService(
+          eq(789L), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+          .thenReturn(Collections.emptyList());
+      when(assignmentEngine.assign(eq(duolingoAllocator), eq(CANDIDATE_ID), eq(user)))
+          .thenThrow(new NoSuchObjectException("No available TEST_PROCTORED resources"));
+      when(assignmentEngine.assign(eq(duolingoAllocator), eq(789L), eq(user)))
+          .thenReturn(assignment);
+
+      // Act
+      duolingoService.assignToList(LIST_ID, user);
+
+      // Assert – exactly one ERROR log for the failing candidate
+      List<ILoggingEvent> errors = listAppender.list.stream()
+          .filter(e -> e.getLevel() == Level.ERROR)
+          .toList();
+
+      assertThat(errors).hasSize(1);
+      String loggedMessage = errors.get(0).getFormattedMessage();
+      assertThat(loggedMessage)
+          .contains("action: assignToList")
+          .contains("Failed to assign")
+          .contains(CANDIDATE_ID.toString())
+          .contains(CANDIDATE_NUMBER)
+          .contains("No available TEST_PROCTORED resources");
+
+    } finally {
+      serviceLogger.detachAppender(listAppender);
+    }
   }
 
   // Reassign Tests
