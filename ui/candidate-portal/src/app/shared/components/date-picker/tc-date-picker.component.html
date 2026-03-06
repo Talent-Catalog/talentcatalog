@@ -21,31 +21,34 @@
         <i class="fas fa-calendar"></i>
       </tc-icon>
     </tc-button>
-    <input (click)="picker.toggle()" class="form-control" placeholder="yyyy-mm-dd" name="dp"
-           ngbDatepicker #picker="ngbDatepicker"
-           [autoClose]="'outside'"
-           [dayTemplate]="t"
-           [displayMonths]="2"
-           [outsideDays]="'hidden'"
-           [container]="'#date-container'"
-           [value]="displayDate"
-           [readOnly]="readonly"
-           (dateSelect)="selectDate($event)">
-
-    <tc-button class="clear-btn" type="plain" (onClick)="clearDates()">
+  <input (click)="picker.toggle()" class="form-control" placeholder="yyyy-mm-dd"
+         name="dp" ngbDatepicker
+         #picker="ngbDatepicker"
+         [dayTemplate]="t"
+         [(ngModel)]="dateString"
+         (ngModelChange)="update()"
+         (dateSelect)="control.markAsDirty()"
+         [autoClose]="true"
+         [outsideDays]="'hidden'"
+         [minDate]="minDate"
+         [maxDate]="maxDate"
+         [disabled]="control.disabled">
+    <tc-button class="clear-btn" type="plain" (onClick)="clear()">
       <tc-icon color="gray" size="sm">
         <i class="fas fa-times"></i>
       </tc-icon>
     </tc-button>
   </div>
 </div>
-<ng-template #t let-date let-focused="focused">
+<ng-template #t let-d="date">
   <span class="custom-day"
-        [class.focused]="focused"
-        [class.range]="isRange(date)"
-        [class.faded]="isHovered(date) || isInside(date)"
-        (mouseenter)="hoveredDate = date"
-        (mouseleave)="hoveredDate = null">
-    {{ date.day }}
+        [class.selected]="d.equals(date)">
+    {{ d.day }}
   </span>
 </ng-template>
+<small *ngIf="showHelpText" class="text-muted d-block mt-2">
+  If exact day or month unknown, use '01' to approximate, e.g., '2020-07-<b>01</b>'.
+</small>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>

@@ -19,13 +19,28 @@
 @import '../../../../scss/typography-mixins';
 
 .tc-date-picker {
-  .custom-day.selected {
+  .custom-day {
+    text-align: center;
+    padding: 0.185rem 0.25rem;
+    display: inline-block;
+    height: 2rem;
+    width: 2rem;
+  }
+
+  span.custom-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .custom-day.range,
+  .custom-day:hover {
     @include background-color-primary;
     @include text-color-white;
     border-radius: 0.25rem;
   }
 
-  .custom-day:hover {
+  .custom-day.faded {
     @include background-color-primary-light;
     border-radius: 0;
     @include text-color-primary;
