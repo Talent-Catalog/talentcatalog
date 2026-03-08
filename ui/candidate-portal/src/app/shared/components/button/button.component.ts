@@ -14,11 +14,11 @@ import {QueryParamsHandling} from '@angular/router';
  * - Visual types: `solid`, `outline`, `plain`
  * - Color options: `primary`, `secondary`, `success`, `warning`, `error`, `info`, `gray`
  * - Disabled state styling and pointer lock
+ * - Optional loading state styling
  * - Focus-visible outline for keyboard accessibility
  * - Optional `ariaLabel` for icon-only buttons
- * - Optional Angular `routerLink` and `queryParamsHandling` support for navigation
- * - Optional Angular `routerLink` support for navigation
  * - Optional external link support via `href`, `target`, and `rel`
+ * - Optional Angular `routerLink` and `queryParamsHandling` support for navigation
  *
  * **Inputs**
  * - `size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'`
@@ -29,11 +29,20 @@ import {QueryParamsHandling} from '@angular/router';
  *   Controls the button color within the selected `type`. Defaults to `'primary'`.
  * - `disabled: boolean`
  *   Disables the button and applies muted styling. Defaults to `false`.
+ * - `loading: boolean`
+ *   Applies loading styling and suppresses clicks while loading. Defaults to `false`.
  * - `ariaLabel?: string`
  *   Accessible label for icon-only or ambiguous buttons.
  * - `routerLink?: string | any[]`
- *   Optional Angular Router `routerLink` for navigation.
- * - `queryParamsHandling?: QueryParamsHandling`
+ *   Optional Angular Router `routerLink` for internal app navigation.
+ * - `href?: string`
+ *   Optional external link URL. When provided, the component renders an `<a>`.
+ * - `target?: string`
+ *   Optional link target when `href` is provided (eg `_blank`).
+ * - `rel?: string`
+ *   Optional link rel attribute. If omitted and `target="_blank"`, defaults to
+ *   `noopener noreferrer`.
+ *   - `queryParamsHandling?: QueryParamsHandling`
  *   Optional Angular Router query param handling mode used with `routerLink`.
  * - `stopNativeClickPropagation: boolean`
  *   Stops the native click event from bubbling by default. Defaults to `true`.
@@ -61,9 +70,12 @@ import {QueryParamsHandling} from '@angular/router';
  * <!-- Disabled -->
  * <tc-button [disabled]="true">Processing...</tc-button>
  *
+ * <!-- Loading -->
+ * <tc-button [loading]="true">Saving...</tc-button>
+ *
  * <!-- Router navigation with preserved query params -->
- * <tc-button [routerLink]="'/register'" [queryParamsHandling]="'merge'">
- *   Register
+ * <tc-button [routerLink]="'/candidates'" [queryParamsHandling]="'merge'">
+ *   Candidates
  * </tc-button>
  * ```
  */
@@ -85,6 +97,7 @@ export class ButtonComponent {
   @Input() target?: string;
   @Input() rel?: string;
   @Input() queryParamsHandling?: QueryParamsHandling;
+
   /**
    * Whether to prevent the native `click` event from bubbling up the DOM.
    *
