@@ -128,6 +128,11 @@ variable "sf_user" {
   default     = ""
 }
 
+variable "slack_channel_id" {
+  description = "Slack channel ID for job posts (test: C048GS1KHPG, live: C029WMY6H1U)"
+  type        = string
+}
+
 variable "slack_token" {
   description = "Slack token (todo: need one for OPC)"
   type        = string
@@ -194,6 +199,8 @@ module "tc-plus-prod" {
   ecs_tasks_count = 2
 
   # Database configuration
+  # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
+  # database via spring_datasource_url below. It does not currently connect  to the OPC RDS instance.
   db_enable              = true
   db_public_access       = false
   db_multi_az            = true
@@ -215,7 +222,7 @@ module "tc-plus-prod" {
 
   # SSM-backed application parameters (stored in SSM, injected into ECS task)
   # Non-secrets: provided directly here
-  s3_bucket                              = "opc-talentcatalog-prod" # todo: confirm bucket name
+  s3_bucket                              = "files.tbbtalent.org" # todo: confirm bucket name
   environment                            = "opc-prod"
   email_default                          = ""  # todo: confirm if used/needed
   email_test_override                    = "-"  # todo: set prod value
@@ -235,12 +242,13 @@ module "tc-plus-prod" {
   sf_base_lightning_url                  = "https://talentbeyondboundaries.lightning.force.com"  # todo: either create for OPC or decouple TC+ from SF
   sf_base_login_url                      = "https://login.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
   spring_client_url                      = "-" # todo: confirm if used/needed
+  spring_datasource_url                  = "jdbc:postgresql://prod-tbb.cskpt7osayvj.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- remove when cutting over to local RDS
   spring_datasource_username             = "tctalent"
   spring_db_pool_max                     = "50"
   spring_db_pool_min                     = "20"
   spring_servlet_max_file_size           = "10MB"
   spring_servlet_max_request_size        = "10MB"
-  tc_api_url                             = "https://api.tctalent.org"  # todo: set TC API URL
+  tc_api_url                             = "https://api.plus.tctalent.org"  # todo: set TC API URL
   tc_cors_urls                           = "https://tctalent.org"  # todo: set prod CORS URLs
   tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
   tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
@@ -267,6 +275,7 @@ module "tc-plus-prod" {
   sf_consumer_key            = var.sf_consumer_key
   sf_private_key             = var.sf_private_key
   sf_user                    = var.sf_user
+  slack_channel_id           = var.slack_channel_id
   slack_token                = var.slack_token
   spring_datasource_password = var.spring_datasource_password
   tc_api_key                 = var.tc_api_key

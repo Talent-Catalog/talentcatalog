@@ -5,9 +5,9 @@ import {QueryParamsHandling} from '@angular/router';
  * @component ButtonComponent
  * @selector tc-button
  * @description
- * A design-system button that wraps a native `<button>` element and applies
- * consistent sizing, visual styling, and accessibility behavior. Content is
- * projected via `<ng-content>` so you can place text, icons, or both.
+ * A design-system button that renders as a native `<button>` or `<a>` and applies
+ * consistent sizing, variants, and accessibility. Content is projected via
+ * `<ng-content>` so you can place text, icons, or both.
  *
  * **Features**
  * - Size presets: `xs`, `sm`, `default`, `lg`, `xl`
@@ -17,6 +17,7 @@ import {QueryParamsHandling} from '@angular/router';
  * - Optional loading state styling
  * - Focus-visible outline for keyboard accessibility
  * - Optional `ariaLabel` for icon-only buttons
+ * - Optional external link support via `href`, `target`, and `rel`
  * - Optional Angular `routerLink` and `queryParamsHandling` support for navigation
  *
  * **Inputs**
@@ -33,8 +34,15 @@ import {QueryParamsHandling} from '@angular/router';
  * - `ariaLabel?: string`
  *   Accessible label for icon-only or ambiguous buttons.
  * - `routerLink?: string | any[]`
- *   Optional Angular Router `routerLink` for navigation.
- * - `queryParamsHandling?: QueryParamsHandling`
+ *   Optional Angular Router `routerLink` for internal app navigation.
+ * - `href?: string`
+ *   Optional external link URL. When provided, the component renders an `<a>`.
+ * - `target?: string`
+ *   Optional link target when `href` is provided (eg `_blank`).
+ * - `rel?: string`
+ *   Optional link rel attribute. If omitted and `target="_blank"`, defaults to
+ *   `noopener noreferrer`.
+ *   - `queryParamsHandling?: QueryParamsHandling`
  *   Optional Angular Router query param handling mode used with `routerLink`.
  * - `stopNativeClickPropagation: boolean`
  *   Stops the native click event from bubbling by default. Defaults to `true`.
@@ -85,6 +93,9 @@ export class ButtonComponent {
   @Input() loading = false;
   @Input() ariaLabel?: string;
   @Input() routerLink?: string | any[];
+  @Input() href?: string;
+  @Input() target?: string;
+  @Input() rel?: string;
   @Input() queryParamsHandling?: QueryParamsHandling;
 
   /**
@@ -118,13 +129,28 @@ export class ButtonComponent {
     ];
   }
 
+  get isLink(): boolean {
+    return !!this.href;
+  }
+
+  get computedRel(): string | null {
+    if (this.rel) {
+      return this.rel;
+    }
+    return this.target === '_blank' ? 'noopener noreferrer' : null;
+  }
+
   clicked(e: MouseEvent): void {
+    if (this.isDisabled) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
     if (this.stopNativeClickPropagation) {
       e.stopPropagation();
     }
-    if (!this.isDisabled) {
-      this.onClick.emit();
-    }
+    this.onClick.emit();
   }
 
 }

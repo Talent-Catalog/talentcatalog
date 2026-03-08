@@ -88,7 +88,7 @@ variable "db_major_engine_version" {
 variable "db_name" {
   type        = string
   description = "The name of the database to create (alphanumeric only)"
-  default     = "tbbtalent"
+  default     = "tctalent"
 }
 
 variable "db_backup_retention_days" {
@@ -479,6 +479,11 @@ variable "sf_user" {
   type        = string
   description = "Salesforce user for access token"
   sensitive   = true
+}
+
+variable "slack_channel_id" {
+  type        = string
+  description = "Slack channel ID for job registration posts (e.g. C048GS1KHPG test, C029WMY6H1U live)"
 }
 
 variable "slack_token" {

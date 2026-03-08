@@ -275,6 +275,10 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     );
   }
 
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
   hasVisibleCandidateChats(): boolean {
     return this.candidateChats && this.candidateChats.length > 0;
   }

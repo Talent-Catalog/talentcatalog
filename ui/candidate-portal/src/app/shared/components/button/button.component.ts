@@ -5,9 +5,9 @@ import {QueryParamsHandling} from '@angular/router';
  * @component ButtonComponent
  * @selector tc-button
  * @description
- * A design-system button that wraps a native `<button>` element and applies
- * consistent sizing, visual styling, and accessibility behavior. Content is
- * projected via `<ng-content>` so you can place text, icons, or both.
+ * A design-system button that renders as a native `<button>` or `<a>` and applies
+ * consistent sizing, variants, and accessibility. Content is projected via
+ * `<ng-content>` so you can place text, icons, or both.
  *
  * **Features**
  * - Size presets: `xs`, `sm`, `default`, `lg`, `xl`
@@ -17,6 +17,8 @@ import {QueryParamsHandling} from '@angular/router';
  * - Focus-visible outline for keyboard accessibility
  * - Optional `ariaLabel` for icon-only buttons
  * - Optional Angular `routerLink` and `queryParamsHandling` support for navigation
+ * - Optional Angular `routerLink` support for navigation
+ * - Optional external link support via `href`, `target`, and `rel`
  *
  * **Inputs**
  * - `size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'`
@@ -76,8 +78,12 @@ export class ButtonComponent {
   @Input() type: 'solid' | 'outline' | 'plain' = 'solid';
   @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
   @Input() disabled = false;
+  @Input() loading = false;
   @Input() ariaLabel?: string;
   @Input() routerLink?: string | any[];
+  @Input() href?: string;
+  @Input() target?: string;
+  @Input() rel?: string;
   @Input() queryParamsHandling?: QueryParamsHandling;
   /**
    * Whether to prevent the native `click` event from bubbling up the DOM.
@@ -98,7 +104,7 @@ export class ButtonComponent {
   @Output() onClick = new EventEmitter();
 
   @HostBinding('class.disabled') get isDisabled() {
-    return this.disabled;
+    return this.disabled || this.loading;
   }
 
   get classList(): string[] {
@@ -106,10 +112,28 @@ export class ButtonComponent {
       `btn-${this.size}`,
       `btn-${this.color}`,
       `btn-${this.type}`,
+      ...(this.loading ? ['btn-loading'] : [])
     ];
   }
 
+  get isLink(): boolean {
+    return !!this.href;
+  }
+
+  get computedRel(): string | null {
+    if (this.rel) {
+      return this.rel;
+    }
+    return this.target === '_blank' ? 'noopener noreferrer' : null;
+  }
+
   clicked(e: MouseEvent): void {
+    if (this.isDisabled) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
     if (this.stopNativeClickPropagation) {
       e.stopPropagation();
     }

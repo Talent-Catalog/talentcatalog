@@ -20,7 +20,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {ViewCandidateComponent} from "./view-candidate.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {of, throwError} from "rxjs";
+import {of, Subject, throwError} from "rxjs";
 import {ActivatedRoute, convertToParamMap} from "@angular/router";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -67,7 +67,7 @@ describe('ViewCandidateComponent', () => {
     mockSavedListService = jasmine.createSpyObj('SavedListService', ['search']);
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
-    mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser'], { loggedInUser$: new Subject<any>() });
     const authorizationSpy = jasmine.createSpyObj('AuthorizationService', [
       'isEditableCandidate',
       'canViewPrivateCandidateInfo',

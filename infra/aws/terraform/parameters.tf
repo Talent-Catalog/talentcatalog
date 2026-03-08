@@ -236,6 +236,12 @@ resource "aws_ssm_parameter" "sf_user" {
   value = var.sf_user
 }
 
+resource "aws_ssm_parameter" "slack_channel_id" {
+  name  = "/${var.app}/${var.env}/SLACK_CHANNEL_ID"
+  type  = "String"
+  value = var.slack_channel_id
+}
+
 resource "aws_ssm_parameter" "slack_token" {
   name  = "/${var.app}/${var.env}/SLACK_TOKEN"
   type  = "SecureString"
@@ -257,7 +263,9 @@ resource "aws_ssm_parameter" "spring_datasource_password" {
 resource "aws_ssm_parameter" "spring_datasource_url" {
   name  = "/${var.app}/${var.env}/SPRING_DATASOURCE_URL"
   type  = "String"
-  value = var.db_enable ? "jdbc:postgresql://${module.database[0].db_instance_endpoint}/tbbtalent" : var.spring_datasource_url
+  # Explicit spring_datasource_url takes precedence (e.g. connecting to legacy external TC DB).
+  # Falls back to auto-populated RDS endpoint when db_enable=true and no explicit URL is provided.
+  value = var.spring_datasource_url != "" ? var.spring_datasource_url : (var.db_enable ? "jdbc:postgresql://${module.database[0].db_instance_endpoint}/${var.db_name}" : "")
 }
 
 resource "aws_ssm_parameter" "spring_datasource_username" {

@@ -174,4 +174,8 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     return this.authorizationService.canSeeJobDetails()
   }
 
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
 }

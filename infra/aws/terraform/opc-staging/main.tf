@@ -128,6 +128,11 @@ variable "sf_user" {
   default     = ""
 }
 
+variable "slack_channel_id" {
+  description = "Slack channel ID for job posts (test: C048GS1KHPG, live: C029WMY6H1U)"
+  type        = string
+}
+
 variable "slack_token" {
   description = "Slack token (todo: need one for OPC)"
   type        = string
@@ -191,9 +196,11 @@ module "tc-plus-staging" {
   site_domain     = "test.plus.tctalent.org"
   container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging"
   container_port  = 8080
-  ecs_tasks_count = 2
+  ecs_tasks_count = 1
 
   # Database configuration
+  # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
+  # database via spring_datasource_url below. It does not currently connect  to the OPC RDS instance.
   db_enable              = true
   db_public_access       = false
   db_multi_az            = false
@@ -215,7 +222,7 @@ module "tc-plus-staging" {
 
   # SSM-backed application parameters (stored in SSM, injected into ECS task)
   # Non-secrets: provided directly here
-  s3_bucket                              = "opc-talentcatalog-staging" # todo: confirm bucket name
+  s3_bucket                              = "files.tbbtalent.org" # todo: confirm bucket name
   environment                            = "opc-staging"
   email_default                          = "UPDATE_DEFAULT_EMAIL_HERE"  # todo: confirm if used/needed
   email_test_override                    = "john@cameronfoundation.org" # todo: change to shared address
@@ -235,6 +242,7 @@ module "tc-plus-staging" {
   sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"  # todo: either create for OPC or decouple TC+ from SF
   sf_base_login_url                      = "https://test.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
   spring_client_url                      = "-" # todo: confirm if used/needed
+  spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- in parallel to local RDS
   spring_datasource_username             = "tctalent"
   spring_db_pool_max                     = "50"
   spring_db_pool_min                     = "20"
@@ -244,7 +252,7 @@ module "tc-plus-staging" {
   tc_cors_urls                           = "https://test.plus.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
   tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
   tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
-  tc_skills_extraction_api_url           = "https://skills.plus.tctalent.org"
+  tc_skills_extraction_api_url           = "https://test.skills.plus.tctalent.org"
   web_admin                              = "https://test.plus.tctalent.org/admin-portal"
   web_portal                             = "https://test.plus.tctalent.org/candidate-portal"
 
@@ -267,6 +275,7 @@ module "tc-plus-staging" {
   sf_consumer_key            = var.sf_consumer_key
   sf_private_key             = var.sf_private_key
   sf_user                    = var.sf_user
+  slack_channel_id           = var.slack_channel_id
   slack_token                = var.slack_token
   spring_datasource_password = var.spring_datasource_password
   tc_api_key                 = var.tc_api_key

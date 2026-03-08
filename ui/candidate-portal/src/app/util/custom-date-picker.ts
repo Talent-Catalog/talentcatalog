@@ -30,7 +30,7 @@ export class CustomDatepickerI18n extends NgbDatepickerI18n {
     super();
   }
   getMonthShortName(month: number): string {
-    return this.languageService.getDatePickerMonthName(month);
+    return this.languageService.getDatePickerMonthName(month) || String(month);
   }
   getMonthFullName(month: number): string {
     return this.getMonthShortName(month);
