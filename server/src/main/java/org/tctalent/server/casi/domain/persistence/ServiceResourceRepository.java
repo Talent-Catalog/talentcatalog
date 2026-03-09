@@ -44,8 +44,8 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
     limit 1
     """, nativeQuery = true)
   ServiceResourceEntity lockNextAvailable(
-      @Param("provider") ServiceProvider provider,
-      @Param("serviceCode") ServiceCode serviceCode);
+      @Param("provider") String provider,
+      @Param("serviceCode") String serviceCode);
 
 
   @Query("""

@@ -20,7 +20,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPost, JobChat, JobChatType, JobChatUserInfo} from "../../../model/chat";
-import {forkJoin, Subscription} from "rxjs";
+import {forkJoin, Observable, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {Location} from "@angular/common";
@@ -30,6 +30,8 @@ import {
   CandidateOpportunity,
   CandidateOpportunityStage
 } from "../../../model/candidate-opportunity";
+import {map, shareReplay} from "rxjs/operators";
+import {LinkedinService} from "../../../services/linkedin.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
@@ -45,6 +47,7 @@ export class ViewCandidateComponent implements OnInit {
   chatsForAllJobs: JobChat[];
   sourceChat: JobChat;
   filteredOpps: CandidateOpportunity[];
+  showServicesTab$: Observable<boolean>;
 
   //Candidate only sees source chat if is not empty. That way they can't start posting themselves
   //until someone else has posted in the chat.
@@ -58,13 +61,17 @@ export class ViewCandidateComponent implements OnInit {
   candidate: Candidate;
   usAfghan: boolean;
   activeDuolingoTask: TaskAssignment;
+  linkedinEligible$: Observable<boolean>;
 
-  constructor(private authorizationService: AuthorizationService,
-              private candidateService: CandidateService,
-              private chatService: ChatService,
-              private localStorageService: LocalStorageService,
-              private location: Location,
-              private route: ActivatedRoute) { }
+  constructor(
+    private authorizationService: AuthorizationService,
+    private candidateService: CandidateService,
+    private chatService: ChatService,
+    private linkedinService: LinkedinService,
+    private localStorageService: LocalStorageService,
+    private location: Location,
+    private route: ActivatedRoute,
+  ) { }
 
   ngOnInit(): void {
     this.fetchCandidate();
@@ -125,12 +132,32 @@ export class ViewCandidateComponent implements OnInit {
         this.activeDuolingoTask = this.getActiveDuolingoTask();
         this.filterOppsToDisplay();
         this.usAfghan = candidate.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
+        this.initServicesTabVisibility()
         this.loading = false;
       },
       (error) => {
         this.error = error;
         this.loading = false;
       });
+  }
+
+  /**
+   * Initialises the visibility of the services tab by checking eligibility for each available
+   * service. The tab is shown if the candidate is eligible for any service.
+   */
+  private initServicesTabVisibility() {
+    const results$ = forkJoin({
+      linkedIn: this.linkedinService.isEligible(this.candidate.id)
+      // Additional async service eligibility calls here
+    }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
+
+    this.showServicesTab$ = results$.pipe(
+      map(results => results.linkedIn || !!this.activeDuolingoTask)
+    );
+
+    this.linkedinEligible$ = results$.pipe(
+      map(results => results.linkedIn)
+    );
   }
 
   private fetchCachedTab() {
