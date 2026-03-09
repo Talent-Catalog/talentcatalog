@@ -25,8 +25,11 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.UserService;
 
@@ -43,6 +46,8 @@ public class SystemAdminConfiguration {
     public final static String PENDING_TERMS_ACCEPTANCE_LIST_NAME = "PendingTermsAcceptance";
     public static long PENDING_TERMS_ACCEPTANCE_LIST_ID;
 
+    public final static String SYSTEM_PARTNER_ABBREVIATION = "OPC";
+    public final static String SYSTEM_PARTNER_NAME = "OPC";
     public final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
     public final static String[] GLOBAL_LIST_NAMES = new String[]{
 
@@ -53,6 +58,7 @@ public class SystemAdminConfiguration {
         PENDING_TERMS_ACCEPTANCE_LIST_NAME
     };
 
+    private final PartnerService partnerService;
     private final SavedListService savedListService;
     private final UserService userService;
 
@@ -60,8 +66,9 @@ public class SystemAdminConfiguration {
     private String sysAdminEmail;
 
     @Autowired
-    public SystemAdminConfiguration(SavedListService savedListService,
+    public SystemAdminConfiguration(PartnerService partnerService, SavedListService savedListService,
         UserService userService) {
+        this.partnerService = partnerService;
         this.savedListService = savedListService;
         this.userService = userService;
     }
@@ -72,6 +79,20 @@ public class SystemAdminConfiguration {
     @EventListener(ApplicationReadyEvent.class)
     public void autoCreates() {
 
+        Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
+        if (systemPartner == null) {
+            UpdatePartnerRequest req = new UpdatePartnerRequest();
+            req.setName(SYSTEM_PARTNER_NAME);
+            req.setAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
+            req.setStatus(Status.active);
+
+            req.setJobCreator(false);
+            req.setSourcePartner(false);
+
+            //Self create system partner
+            systemPartner = partnerService.create(req);
+        }
+
         User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
         if (systemAdmin == null) {
             UpdateUserRequest req = new UpdateUserRequest();
@@ -81,8 +102,12 @@ public class SystemAdminConfiguration {
             req.setLastName("Admin");
             req.setEmail(sysAdminEmail);
             req.setRole(Role.systemadmin);
+            req.setJobCreator(false);
             req.setReadOnly(false);
-            req.setUsingMfa(true);
+            req.setUsingMfa(false);
+            req.setPartnerId(systemPartner.getId());
+            req.setPassword("Swordfish"); //todo THis should come from environment variable
+            //TODO JC Shut down system with message if SystemAdmin can't auto create.
 
             //Self create system admin
             systemAdmin = userService.createUser(req, null);
