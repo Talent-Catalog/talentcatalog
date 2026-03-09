@@ -17,6 +17,7 @@
 import {NgbModal, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {CandidateService} from "../../../services/candidate.service";
+import {CandidateSavedListService} from "../../../services/candidate-saved-list.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {ViewCandidateComponent} from "./view-candidate.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
@@ -54,6 +55,7 @@ describe('ViewCandidateComponent', () => {
   let fixture: ComponentFixture<ViewCandidateComponent>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;
   let mockSavedListService: jasmine.SpyObj<SavedListService>;
+  let mockCandidateSavedListService: jasmine.SpyObj<CandidateSavedListService>;
   let mockActivatedRoute: any;
   let mockModalService: jasmine.SpyObj<NgbModal>;
   let mockLocalStorageService: jasmine.SpyObj<LocalStorageService>;
@@ -65,6 +67,9 @@ describe('ViewCandidateComponent', () => {
   beforeEach(waitForAsync(() => {
     const mockCandidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get','getByNumber', 'generateToken','updateCandidate', 'candidateUpdated']);
     mockSavedListService = jasmine.createSpyObj('SavedListService', ['search']);
+    mockCandidateSavedListService = jasmine.createSpyObj('CandidateSavedListService', ['search', 'replace']);
+    mockCandidateSavedListService.search.and.returnValue(of([]));
+    mockCandidateSavedListService.replace.and.returnValue(of(null));
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
     mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser'], { loggedInUser$: new Subject<any>() });
@@ -86,6 +91,7 @@ describe('ViewCandidateComponent', () => {
       providers: [
         { provide: CandidateService, useValue: mockCandidateServiceSpy },
         { provide: SavedListService, useValue: mockSavedListService },
+        { provide: CandidateSavedListService, useValue: mockCandidateSavedListService },
         { provide: ActivatedRoute, useValue: {
             paramMap: of(convertToParamMap({ candidateNumber: '123' }))
           }
