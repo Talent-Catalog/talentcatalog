@@ -138,12 +138,10 @@ describe('ViewCandidateComponent', () => {
   it('should set candidate lists correctly on setCandidateLists', () => {
     const mockLists: SavedList[] = [MockSavedList];
 
-    spyOn(component['candidateSavedListService'], 'replace').and.returnValue(of(null));
-
     component['setCandidateLists'](mockLists);
 
     expect(component.savingList).toBeFalse();
-    expect(component['candidateSavedListService'].replace).toHaveBeenCalled();
+    expect(mockCandidateSavedListService.replace).toHaveBeenCalled();
   });
 
   it('should handle loading error when candidate does not exist', () => {
