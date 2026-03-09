@@ -278,10 +278,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         // CandidateBuilderSelector needs a fast way to know which candidates can bypass
         // role/partner property filtering. Returning ids avoids loading full CandidateOpportunity
         // and Candidate entities (which previously triggered N+1 lazy-load queries).
-        if (partner == null || !partner.isJobCreator()) {
-            return Set.of();
+      Set<Long> candidateIds;
+        if (partner != null && partner.isJobCreator()) {
+            candidateIds = candidateOpportunityRepository.findFullyVisibleCandidateIds(partner.getId());
+        } else {
+            candidateIds = Set.of();
         }
-        return candidateOpportunityRepository.findFullyVisibleCandidateIds(partner.getId());
+        return candidateIds;
     }
 
     @NonNull
@@ -289,10 +292,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     public Set<Long> findFullyVisibleUserIds(@Nullable Partner partner) {
         // Same optimization as findFullyVisibleCandidateIds, but for User DTO filtering.
         // We resolve user ids directly in one query so filters do constant-time membership checks.
-        if (partner == null || !partner.isJobCreator()) {
-            return Set.of();
+        Set<Long> userIds;
+        if (partner != null && partner.isJobCreator()) {
+            userIds = candidateOpportunityRepository.findFullyVisibleUserIds(partner.getId());
+        } else {
+            userIds = Set.of();
         }
-        return candidateOpportunityRepository.findFullyVisibleUserIds(partner.getId());
+        return userIds;
     }
 
     @NonNull

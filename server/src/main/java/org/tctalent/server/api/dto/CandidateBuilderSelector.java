@@ -135,14 +135,10 @@ public class CandidateBuilderSelector {
         //We also get the user ids of the candidates that the partner can fully see, as we use this
         //in the property filter to determine visibility of certain user properties such as email
         //and phone number.
-        Set<Long> fullyVisibleCandidateIds = partner != null && partner.isJobCreator()
-            ? candidateOpportunityService.findFullyVisibleCandidateIds(partner)
-            : Set.of();
-        Set<Long> fullyVisibleUserIds = partner != null && partner.isJobCreator()
-            ? candidateOpportunityService.findFullyVisibleUserIds(partner)
-            : Set.of();
+      Set<Long> fullyVisibleCandidateIds = candidateOpportunityService.findFullyVisibleCandidateIds(partner);
+      Set<Long> fullyVisibleUserIds = candidateOpportunityService.findFullyVisibleUserIds(partner);
 
-        //Default to Role.limited if user is null.
+      //Default to Role.limited if user is null.
         Role role = user == null ? Role.limited : user.getRole();
         DtoPropertyFilter candidatePropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
             partner, role, fullyVisibleCandidateIds, fullyVisibleUserIds,
