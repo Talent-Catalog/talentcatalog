@@ -37,79 +37,80 @@ import org.tctalent.server.service.db.UserService;
  */
 @Component
 public class SystemAdminConfiguration {
-  public final static String TEST_CANDIDATE_LIST_NAME = "TestCandidates";
-  public static long TEST_CANDIDATE_LIST_ID;
-  public final static String PENDING_TERMS_ACCEPTANCE_LIST_NAME = "PendingTermsAcceptance";
-  public static long PENDING_TERMS_ACCEPTANCE_LIST_ID;
 
-  public final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
-  public final static String[] GLOBAL_LIST_NAMES = new String[] {
+    public final static String TEST_CANDIDATE_LIST_NAME = "TestCandidates";
+    public static long TEST_CANDIDATE_LIST_ID;
+    public final static String PENDING_TERMS_ACCEPTANCE_LIST_NAME = "PendingTermsAcceptance";
+    public static long PENDING_TERMS_ACCEPTANCE_LIST_ID;
 
-      //Tags candidates as test candidates
-      TEST_CANDIDATE_LIST_NAME,
+    public final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
+    public final static String[] GLOBAL_LIST_NAMES = new String[]{
 
-      //Tags candidates who have been asked to accept our latest terms but who have not yet done so
-      PENDING_TERMS_ACCEPTANCE_LIST_NAME
-  };
+        //Tags candidates as test candidates
+        TEST_CANDIDATE_LIST_NAME,
 
-  private final SavedListService savedListService;
-  private final UserService userService;
+        //Tags candidates who have been asked to accept our latest terms but who have not yet done so
+        PENDING_TERMS_ACCEPTANCE_LIST_NAME
+    };
 
-  @Value("${email.user}")
-  private String sysAdminEmail;
+    private final SavedListService savedListService;
+    private final UserService userService;
 
-  @Autowired
-  public SystemAdminConfiguration(SavedListService savedListService,
-      UserService userService) {
-    this.savedListService = savedListService;
-    this.userService = userService;
-  }
+    @Value("${email.user}")
+    private String sysAdminEmail;
 
-  /**
-   * Run at startup to check whether we have necessary objects, creating them if necessary
-   */
-  @EventListener(ApplicationReadyEvent.class)
-  public void autoCreates() {
-
-    User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
-    if (systemAdmin == null) {
-      UpdateUserRequest req = new UpdateUserRequest();
-      req.setUsername(SYSTEM_ADMIN_NAME);
-      req.setStatus(Status.active);
-      req.setFirstName("System");
-      req.setLastName("Admin");
-      req.setEmail(sysAdminEmail);
-      req.setRole(Role.systemadmin);
-      req.setReadOnly(false);
-      req.setUsingMfa(true);
-
-      //Self create system admin
-      systemAdmin = userService.createUser(req, null);
+    @Autowired
+    public SystemAdminConfiguration(SavedListService savedListService,
+        UserService userService) {
+        this.savedListService = savedListService;
+        this.userService = userService;
     }
 
-    //Create global lists
-    for (String listName : GLOBAL_LIST_NAMES) {
-      SavedList savedList = savedListService.get(systemAdmin, listName);
-      //Don't create if already exists.
-      if (savedList == null) {
-        //Create the global list
-        UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
-        req.setGlobal(true);
-        req.setFixed(true);
-        req.setName(listName);
-        savedList = savedListService.createSavedList(systemAdmin, req);
-      }
+    /**
+     * Run at startup to check whether we have necessary objects, creating them if necessary
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void autoCreates() {
 
-      //For some global lists we store their ids for convenience.
+        User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
+        if (systemAdmin == null) {
+            UpdateUserRequest req = new UpdateUserRequest();
+            req.setUsername(SYSTEM_ADMIN_NAME);
+            req.setStatus(Status.active);
+            req.setFirstName("System");
+            req.setLastName("Admin");
+            req.setEmail(sysAdminEmail);
+            req.setRole(Role.systemadmin);
+            req.setReadOnly(false);
+            req.setUsingMfa(true);
 
-      if (listName.equals(TEST_CANDIDATE_LIST_NAME)) {
-        TEST_CANDIDATE_LIST_ID = savedList.getId();
-      }
+            //Self create system admin
+            systemAdmin = userService.createUser(req, null);
+        }
 
-      if (listName.equals(PENDING_TERMS_ACCEPTANCE_LIST_NAME)) {
-        PENDING_TERMS_ACCEPTANCE_LIST_ID = savedList.getId();
-      }
+        //Create global lists
+        for (String listName : GLOBAL_LIST_NAMES) {
+            SavedList savedList = savedListService.get(systemAdmin, listName);
+            //Don't create if already exists.
+            if (savedList == null) {
+                //Create the global list
+                UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
+                req.setGlobal(true);
+                req.setFixed(true);
+                req.setName(listName);
+                savedList = savedListService.createSavedList(systemAdmin, req);
+            }
+
+            //For some global lists we store their ids for convenience.
+
+            if (listName.equals(TEST_CANDIDATE_LIST_NAME)) {
+                TEST_CANDIDATE_LIST_ID = savedList.getId();
+            }
+
+            if (listName.equals(PENDING_TERMS_ACCEPTANCE_LIST_NAME)) {
+                PENDING_TERMS_ACCEPTANCE_LIST_ID = savedList.getId();
+            }
+        }
     }
-  }
 
 }
