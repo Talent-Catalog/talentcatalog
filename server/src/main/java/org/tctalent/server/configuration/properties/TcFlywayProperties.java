@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table users
-    add column email_verified boolean default false,
-    add column email_verification_token varchar(255),
-    add column email_verification_token_issued_time timestamp;
+package org.tctalent.server.configuration.properties;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * Special TC specific flyway properties
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+@ConfigurationProperties(prefix = "tc.flyway")
+public class TcFlywayProperties {
+
+    /**
+     * Set this to true if you need to repair the Flyway history at start up.
+     */
+    private boolean repair;
+}

@@ -1,1 +1,0 @@
-insert into country (name, status, iso_code) values ('Turks and Caicos Islands', 'active', 'TC');

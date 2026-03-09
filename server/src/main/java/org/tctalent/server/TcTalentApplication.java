@@ -20,21 +20,21 @@ import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.flywaydb.core.Flyway;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.tctalent.server.configuration.properties.TcFlywayProperties;
 
 /**
- * Spring start up.
+ * Spring startup.
  * <p/>
- * See also SystemAdminConfiguration which is run at startup.
+ * See also SystemAdminConfiguration, which is run at startup.
  * <p/>
  * See also classes implementing InitializingBean. They are automatically run at startup.
  * <p/>
- * See also FlywayMigrationInitializer
+ * Defines the strategy for doing Flyway processing. (See FlywayMigrationInitializer)
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan
@@ -48,32 +48,25 @@ public class TcTalentApplication {
     }
 
     /**
-     * This is only created if flyway.repair = true in the application.yml config.
-     * <p/>
-     * It runs a Flyway repair before doing the Flyway processing - ie calling "migrate".
-     * <p/>
-     * {@link org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer} will
-     * run the migrate method of a FlywayMigrationStrategy if one exists, otherwise it will
-     * just run Flyway.migrate.
-     * @return A FlywayMigrationStrategy bean
+     * Creates a Flyway strategy which optionally runs a Flyway repair before doing the normal
+     * Flyway processing - ie calling "migrate".
+     * @return The FlywayMigrationStrategy bean
      */
-   @Bean
-   @ConditionalOnProperty(name="flyway.repair", havingValue="true")
-   public FlywayMigrationStrategy fixFlyway() {
-       return new FlywayMigrationStrategy() {
-           @Override
-           public void migrate(Flyway flyway) {
-               try {
-                   System.out.println("************* Starting flyway repair ***********************");
-                   flyway.repair();
-                   System.out.println("************* Finished flyway repair ***********************");
-                   flyway.migrate();
-               } catch (Exception e) {
-                   System.out.println("ERROR: unable to repair flyway");
-                   e.printStackTrace();
-               }
-           }
-       };
-   }
+    @Bean
+    public FlywayMigrationStrategy flywayMigrationStrategy(TcFlywayProperties props) {
+        return new FlywayMigrationStrategy() {
+            @Override
+            public void migrate(Flyway flyway) {
+                if (props.isRepair()) {
+                    System.out.println(
+                        "************* Starting flyway repair ***********************");
+                    flyway.repair();
+                    System.out.println(
+                        "************* Finished flyway repair ***********************");
+                }
+                flyway.migrate();
+            }
+        };
+    }
 
 }
