@@ -33,6 +33,7 @@ import org.tctalent.server.service.db.UserService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -113,6 +114,8 @@ class CandidateBuilderSelectorTest {
 
   @Test
   void previewOnly_buildsExpectedUserShape_andDoesNotUseOccupationService() {
+    when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
+    when(candidateOpportunityService.findFullyVisibleUserIds(any())).thenReturn(Set.of());
     var b = selector.selectBuilder(DtoType.PREVIEW);
 
     // Provide source including fields that are ONLY added when !PREVIEW
@@ -173,7 +176,8 @@ class CandidateBuilderSelectorTest {
     assertFalse(out.containsKey("fullIntakeCompletedBy"));
 
     verify(userService, atLeastOnce()).getLoggedInUser();
-    verify(candidateOpportunityService, atLeastOnce()).findJobCreatorPartnerOpps(any());
+    verify(candidateOpportunityService, times(1)).findFullyVisibleCandidateIds(any());
+    verify(candidateOpportunityService, times(1)).findFullyVisibleUserIds(any());
     verify(countryService, atLeastOnce()).selectBuilder();
     verifyNoInteractions(occupationService); // not used on PREVIEW path here
   }
@@ -181,7 +185,8 @@ class CandidateBuilderSelectorTest {
   @Test
   void full_buildsExpectedUserShape_andDoesNotUseOccupationService() {
     when(userService.getLoggedInUser()).thenReturn(null);
-    when(candidateOpportunityService.findJobCreatorPartnerOpps(any())).thenReturn(List.of());
+    when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
+    when(candidateOpportunityService.findFullyVisibleUserIds(any())).thenReturn(Set.of());
     when(countryService.selectBuilder()).thenReturn(new DtoBuilder().add("code").add("name"));
 
     var b = selector.selectBuilder(DtoType.FULL); // triggers user/opps + wires country builder
@@ -216,15 +221,18 @@ class CandidateBuilderSelectorTest {
     assertEquals("Senior Java", job.get("name"));
     assertMapEquals(country("CA", "Canada"), job.get("country"));
 
-    // Interactions: user path (null user) + partner opps + country builder used (>=3 times)
+    // Interactions: user path (null user) + candidate/user ids + country builder used (>=3 times)
     verify(userService, times(1)).getLoggedInUser();
-    verify(candidateOpportunityService, times(1)).findJobCreatorPartnerOpps(any());
+    verify(candidateOpportunityService, times(1)).findFullyVisibleCandidateIds(any());
+    verify(candidateOpportunityService, times(1)).findFullyVisibleUserIds(any());
     verify(countryService, atLeast(3)).selectBuilder();
     verifyNoInteractions(occupationService);
   }
 
   @Test
   void extended_buildsExpectedUserShape_andUsesAllServices() {
+    when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
+    when(candidateOpportunityService.findFullyVisibleUserIds(any())).thenReturn(Set.of());
     var b = selector.selectBuilder(DtoType.EXTENDED);
 
     Map<String, Object> src = Map.of(
@@ -271,7 +279,8 @@ class CandidateBuilderSelectorTest {
     assertEquals("AWS CCP", certs.get(0).get("name"));
 
     verify(userService, times(1)).getLoggedInUser();
-    verify(candidateOpportunityService, times(1)).findJobCreatorPartnerOpps(any());
+    verify(candidateOpportunityService, times(1)).findFullyVisibleCandidateIds(any());
+    verify(candidateOpportunityService, times(1)).findFullyVisibleUserIds(any());
     verify(countryService, atLeastOnce()).selectBuilder();
     verify(occupationService, atLeastOnce()).selectBuilder();
   }
@@ -284,7 +293,8 @@ class CandidateBuilderSelectorTest {
     when(admin.getPartner()).thenReturn(null);
 
     when(userService.getLoggedInUser()).thenReturn(admin);
-    when(candidateOpportunityService.findJobCreatorPartnerOpps(any())).thenReturn(List.of());
+    when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
+    when(candidateOpportunityService.findFullyVisibleUserIds(any())).thenReturn(Set.of());
     when(countryService.selectBuilder()).thenReturn(new DtoBuilder().add("code").add("name"));
     when(occupationService.selectBuilder()).thenReturn(new DtoBuilder().add("id").add("name"));
 
@@ -359,7 +369,8 @@ class CandidateBuilderSelectorTest {
 
     // Assert that all nested selectors are used.
     verify(userService, times(1)).getLoggedInUser();
-    verify(candidateOpportunityService, times(1)).findJobCreatorPartnerOpps(any());
+    verify(candidateOpportunityService, times(1)).findFullyVisibleCandidateIds(any());
+    verify(candidateOpportunityService, times(1)).findFullyVisibleUserIds(any());
     verify(countryService, atLeastOnce()).selectBuilder();
     verify(occupationService, atLeastOnce()).selectBuilder();
   }
