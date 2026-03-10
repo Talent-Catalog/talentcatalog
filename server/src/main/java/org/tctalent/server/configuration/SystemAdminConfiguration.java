@@ -16,11 +16,15 @@
 
 package org.tctalent.server.configuration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
@@ -31,6 +35,7 @@ import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
+import org.tctalent.server.service.db.ShutdownService;
 import org.tctalent.server.service.db.UserService;
 
 /**
@@ -39,6 +44,7 @@ import org.tctalent.server.service.db.UserService;
  * @author John Cameron
  */
 @Component
+@Slf4j
 public class SystemAdminConfiguration {
 
     public final static String TEST_CANDIDATE_LIST_NAME = "TestCandidates";
@@ -60,16 +66,24 @@ public class SystemAdminConfiguration {
 
     private final PartnerService partnerService;
     private final SavedListService savedListService;
+    private final ShutdownService shutdownService;
     private final UserService userService;
+
+    @Value("${tc.init.boot-admin-password}")
+    private String systemAdminPassword;
 
     @Value("${email.user}")
     private String sysAdminEmail;
 
     @Autowired
-    public SystemAdminConfiguration(PartnerService partnerService, SavedListService savedListService,
+    public SystemAdminConfiguration(
+        PartnerService partnerService,
+        SavedListService savedListService,
+        ShutdownService shutdownService,
         UserService userService) {
         this.partnerService = partnerService;
         this.savedListService = savedListService;
+        this.shutdownService = shutdownService;
         this.userService = userService;
     }
 
@@ -79,6 +93,18 @@ public class SystemAdminConfiguration {
     @EventListener(ApplicationReadyEvent.class)
     public void autoCreates() {
 
+        try {
+            doAutoCreates();
+        } catch (Exception ex) {
+            LogBuilder.builder(log)
+                .action("SystemAdminConfiguration: Fatal startup error")
+                .logError(ex);
+
+            shutdownService.shutdown();
+        }
+    }
+
+    private void doAutoCreates() {
         Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
         if (systemPartner == null) {
             UpdatePartnerRequest req = new UpdatePartnerRequest();
@@ -95,6 +121,12 @@ public class SystemAdminConfiguration {
 
         User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
         if (systemAdmin == null) {
+            if (!StringUtils.hasText(systemAdminPassword)) {
+                throw new InvalidRequestException(
+                    "No password provided for creating " + SYSTEM_ADMIN_NAME +  " user. "
+                        + "See boot-admin-password in the application.yml.");
+            }
+
             UpdateUserRequest req = new UpdateUserRequest();
             req.setUsername(SYSTEM_ADMIN_NAME);
             req.setStatus(Status.active);
@@ -106,8 +138,7 @@ public class SystemAdminConfiguration {
             req.setReadOnly(false);
             req.setUsingMfa(false);
             req.setPartnerId(systemPartner.getId());
-            req.setPassword("Swordfish"); //todo THis should come from environment variable
-            //TODO JC Shut down system with message if SystemAdmin can't auto create.
+            req.setPassword(systemAdminPassword);
 
             //Self create system admin
             systemAdmin = userService.createUser(req, null);
