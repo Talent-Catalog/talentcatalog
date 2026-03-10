@@ -1,4 +1,5 @@
 import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
+import {QueryParamsHandling} from '@angular/router';
 
 /**
  * @component ButtonComponent
@@ -10,22 +11,26 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  *
  * **Features**
  * - Size presets: `xs`, `sm`, `default`, `lg`, `xl`
- * - Visual variants: `solid`, `outline`, `plain`
- * - Disabled state styling & pointer-lock
+ * - Visual types: `solid`, `outline`, `plain`
+ * - Color options: `primary`, `secondary`, `success`, `warning`, `error`, `info`, `gray`
+ * - Disabled state styling and pointer lock
+ * - Optional loading state styling
  * - Focus-visible outline for keyboard accessibility
  * - Optional `ariaLabel` for icon-only buttons
- * - Optional Angular `routerLink` support for navigation
  * - Optional external link support via `href`, `target`, and `rel`
+ * - Optional Angular `routerLink` and `queryParamsHandling` support for navigation
  *
  * **Inputs**
  * - `size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'`
  *   Controls height and padding. Defaults to `'default'`.
  * - `type: 'solid' | 'outline' | 'plain'`
- *   Visual style variant. Defaults to `'solid'`.
- *   - `color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'`
- *   Controls the button’s color scheme. Defaults to `'primary'`.
+ *   Controls the visual treatment of the button. Defaults to `'solid'`.
+ * - `color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'`
+ *   Controls the button color within the selected `type`. Defaults to `'primary'`.
  * - `disabled: boolean`
  *   Disables the button and applies muted styling. Defaults to `false`.
+ * - `loading: boolean`
+ *   Applies loading styling and suppresses clicks while loading. Defaults to `false`.
  * - `ariaLabel?: string`
  *   Accessible label for icon-only or ambiguous buttons.
  * - `routerLink?: string | any[]`
@@ -37,36 +42,41 @@ import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core
  * - `rel?: string`
  *   Optional link rel attribute. If omitted and `target="_blank"`, defaults to
  *   `noopener noreferrer`.
+ *   - `queryParamsHandling?: QueryParamsHandling`
+ *   Optional Angular Router query param handling mode used with `routerLink`.
+ * - `stopNativeClickPropagation: boolean`
+ *   Stops the native click event from bubbling by default. Defaults to `true`.
  *
  * **Outputs**
  * - `(onClick)`
- * Instead of re-emitting the native (click) event, this component provides its own (onClick) output.
- * Using (click) directly on <tc-button> works at runtime (because the event bubbles), but IDE
- * type-checking flags it as invalid since Angular can’t see a declared @Output('click').
- * To avoid false errors in IntelliJ/Angular Language Service, we use (onClick) as the explicit output.
+ *   Emits when the internal native button is clicked.
+ *   This component exposes `(onClick)` instead of a declared `click` output to
+ *   avoid Angular and IDE type-checking errors on `<tc-button>`.
  *
  * @examples
  * ```html
- * <!-- Primary (default size) -->
- * <tc-button type="solid">Save changes</tc-button>
+ * <!-- Primary solid (default size) -->
+ * <tc-button>Save changes</tc-button>
  *
- * <!-- Secondary, large -->
+ * <!-- Secondary solid, large -->
  * <tc-button color="secondary" size="lg">Continue</tc-button>
  *
- * <!-- Outline, small -->
- * <tc-button type="outline" size="sm">Learn more</tc-button>
+ * <!-- Secondary outline, small -->
+ * <tc-button type="outline" color="secondary" size="sm">Learn more</tc-button>
  *
  * <!-- Plain (text-only look) -->
  * <tc-button type="plain">Cancel</tc-button>
  *
  * <!-- Disabled -->
- * <tc-button type="solid" [disabled]="true">Processing…</tc-button>
+ * <tc-button [disabled]="true">Processing...</tc-button>
  *
- * <!-- External link -->
- * <tc-button color="secondary" href="https://example.com" target="_blank">
- *   Open docs
+ * <!-- Loading -->
+ * <tc-button [loading]="true">Saving...</tc-button>
+ *
+ * <!-- Router navigation with preserved query params -->
+ * <tc-button [routerLink]="'/candidates'" [queryParamsHandling]="'merge'">
+ *   Candidates
  * </tc-button>
-
  * ```
  */
 
@@ -86,6 +96,8 @@ export class ButtonComponent {
   @Input() href?: string;
   @Input() target?: string;
   @Input() rel?: string;
+  @Input() queryParamsHandling?: QueryParamsHandling;
+
   /**
    * Whether to prevent the native `click` event from bubbling up the DOM.
    *
