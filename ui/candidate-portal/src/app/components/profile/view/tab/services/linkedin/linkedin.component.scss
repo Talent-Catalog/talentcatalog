@@ -1,0 +1,33 @@
+@import "bootstrap/scss/bootstrap.scss";
+
+.service-title {
+  padding: 2rem;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  background-color: #0077b5;
+  color: white;
+}
+
+.service-content {
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+img {
+  max-width: 205px;
+  margin-left: 1rem;
+
+  @include media-breakpoint-down(sm) {
+    width: 90px;
+    max-height: fit-content;
+  }
+}
+
+a, h5 {
+  font-weight: bold;
+}

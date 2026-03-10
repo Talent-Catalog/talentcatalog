@@ -25,7 +25,7 @@ import static io.gatling.javaapi.core.CoreDsl.scenario;
 import io.gatling.javaapi.core.FeederBuilder.Batchable;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import org.talentcatalog.perf.chains.AuthChains;
-import org.talentcatalog.perf.requests.http.candidatesearch.SavedListCandidateSearchPagedRequests;
+import org.talentcatalog.perf.requests.http.savedlist.SavedListCandidateSearchPagedRequests;
 
 /**
  * Builds a sequential A/B scenario that:

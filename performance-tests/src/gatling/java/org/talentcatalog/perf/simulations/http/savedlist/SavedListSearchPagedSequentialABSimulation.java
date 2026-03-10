@@ -17,7 +17,6 @@
 package org.talentcatalog.perf.simulations.http.savedlist;
 
 import static io.gatling.javaapi.core.CoreDsl.atOnceUsers;
-import static io.gatling.javaapi.core.CoreDsl.global;
 
 import org.talentcatalog.perf.scenarios.http.savedlist.SequentialABSearchPagedScenario;
 
@@ -83,6 +82,6 @@ public class SavedListSearchPagedSequentialABSimulation extends SavedListSearchP
 
     setUp(scn.injectOpen(atOnceUsers(SEQ_USERS)))
         .protocols(httpProtocol)
-        .assertions(global().failedRequests().percent().lt(1.0));
+        .assertions(defaultAssertions());
   }
 }

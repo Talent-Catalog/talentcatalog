@@ -1,0 +1,23 @@
+<app-error [error]="error"></app-error>
+<app-loading [loading]="loading"></app-loading>
+
+<div *ngIf="!isOnIssueReportList; else issueReported">
+  <h4>{{ "SERVICES.LINKEDIN.REDEEMED.TITLE" | translate }}</h4>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.DESCRIPTION" | translate }}</p>
+  <h5>{{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_TITLE" | translate }}</h5>
+  <p>
+    {{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_DESCRIPTION" | translate }}
+    <a [href]="assignment.resource.resourceCode" target="_blank">
+      {{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_DESCRIPTION_HERE" | translate }}
+    </a>.
+  </p>
+  <h5>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_TITLE" | translate }}</h5>
+  <tc-button [color]="'error'" (onClick)="reportIssue()">
+    {{ "SERVICES.LINKEDIN.REDEEMED.REPORT_BTN" | translate }}
+  </tc-button>
+</div>
+
+<ng-template #issueReported>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_THANKS" | translate }}</p>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_DESCRIPTION" | translate }}</p>
+</ng-template>

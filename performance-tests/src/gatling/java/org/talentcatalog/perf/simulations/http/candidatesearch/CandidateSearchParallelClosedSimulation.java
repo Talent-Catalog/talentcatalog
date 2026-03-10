@@ -16,7 +16,6 @@
 package org.talentcatalog.perf.simulations.http.candidatesearch;
 
 import static io.gatling.javaapi.core.CoreDsl.constantConcurrentUsers;
-import static io.gatling.javaapi.core.CoreDsl.global;
 
 import java.time.Duration;
 import org.talentcatalog.perf.scenarios.http.candidatesearch.NewEndpointLoopScenario;
@@ -144,9 +143,6 @@ public class CandidateSearchParallelClosedSimulation extends CandidateSearchBase
     )
         .protocols(httpProtocol)
         .maxDuration(Duration.ofSeconds(totalSeconds + 30L))
-        .assertions(
-            global().failedRequests().percent().lt(1.0),
-            global().responseTime().percentile3().lt(2000)
-        );
+        .assertions(defaultAssertions());
   }
 }
