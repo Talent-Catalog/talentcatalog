@@ -1,3 +1,9 @@
+-- Ticket: #3135
+-- Purpose:
+-- Cleanup duplicate selection lists before release.
+-- This script is for manual execution at the DB layer.
+-- Do not place in Flyway migration folder.
+
 delete from saved_list
 where id in (
     select id
