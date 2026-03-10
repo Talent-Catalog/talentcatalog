@@ -28,7 +28,7 @@ import io.gatling.javaapi.core.Choice;
 import io.gatling.javaapi.core.FeederBuilder.Batchable;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import org.talentcatalog.perf.chains.AuthChains;
-import org.talentcatalog.perf.requests.http.candidatesearch.SavedListCandidateSearchPagedRequests;
+import org.talentcatalog.perf.requests.http.savedlist.SavedListCandidateSearchPagedRequests;
 
 /**
  * Builds a finite (bounded by {@code repeats}) A/B scenario that:

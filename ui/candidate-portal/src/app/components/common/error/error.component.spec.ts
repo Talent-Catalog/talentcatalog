@@ -14,9 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import { Component, Input, Pipe, PipeTransform } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import {ErrorComponent} from './error.component';
+
+@Pipe({name: 'translate'})
+class TranslatePipeStub implements PipeTransform {
+  transform(value: string): string {
+    return value;
+  }
+}
+
+@Component({selector: 'tc-alert', template: '<ng-content></ng-content>'})
+class TcAlertStubComponent {
+  @Input() type: string;
+}
 
 describe('ErrorComponent', () => {
   let component: ErrorComponent;
@@ -24,7 +38,7 @@ describe('ErrorComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ErrorComponent ]
+      declarations: [ ErrorComponent, TranslatePipeStub, TcAlertStubComponent ]
     })
     .compileComponents();
   }));
@@ -37,5 +51,28 @@ describe('ErrorComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should not render the alert when there is no error', () => {
+    component.error = null;
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.query(By.directive(TcAlertStubComponent))).toBeNull();
+  });
+
+  it('should render a danger tc-alert for a plain error message', () => {
+    component.error = {message: 'Something failed'};
+    fixture.detectChanges();
+
+    const alert = fixture.debugElement.query(By.directive(TcAlertStubComponent)).componentInstance as TcAlertStubComponent;
+    expect(alert.type).toBe('danger');
+    expect(fixture.nativeElement.textContent).toContain('Something failed');
+  });
+
+  it('should render the translated error code when one is provided', () => {
+    component.error = {code: 'UNAUTHORIZED'};
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('ERROR.UNAUTHORIZED');
   });
 });
