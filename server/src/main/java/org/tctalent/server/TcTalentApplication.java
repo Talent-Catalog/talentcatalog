@@ -18,6 +18,7 @@ package org.tctalent.server;
 
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
@@ -25,7 +26,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.tctalent.server.configuration.properties.TcFlywayProperties;
 
 /**
  * Spring startup.
@@ -47,17 +47,21 @@ public class TcTalentApplication {
         SpringApplication.run(TcTalentApplication.class, args);
     }
 
+
+    @Value("${tc.flyway.repair}")
+    private boolean flywayRepair;
+
     /**
      * Creates a Flyway strategy which optionally runs a Flyway repair before doing the normal
      * Flyway processing - ie calling "migrate".
      * @return The FlywayMigrationStrategy bean
      */
     @Bean
-    public FlywayMigrationStrategy flywayMigrationStrategy(TcFlywayProperties props) {
+    public FlywayMigrationStrategy flywayMigrationStrategy() {
         return new FlywayMigrationStrategy() {
             @Override
             public void migrate(Flyway flyway) {
-                if (props.isRepair()) {
+                if (flywayRepair) {
                     System.out.println(
                         "************* Starting flyway repair ***********************");
                     flyway.repair();
