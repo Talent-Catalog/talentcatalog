@@ -1,8 +1,11 @@
+-- Manual DB script
 -- Ticket: #3135
 -- Purpose:
--- Cleanup duplicate selection lists before release.
--- This script is for manual execution at the DB layer.
--- Do not place in Flyway migration folder.
+--   1. Clean duplicate selection lists from saved_list
+--   2. Add unique index on (saved_search_id, created_by)
+-- Execution:
+--   Run manually at DB layer before release
+-- Not part of Flyway runtime migrations
 
 delete from saved_list
 where id in (
