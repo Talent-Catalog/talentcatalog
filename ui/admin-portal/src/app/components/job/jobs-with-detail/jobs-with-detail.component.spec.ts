@@ -16,7 +16,7 @@
 
 import { ComponentFixture, TestBed, waitForAsync, fakeAsync, tick } from '@angular/core/testing';
 import { JobsWithDetailComponent } from './jobs-with-detail.component';
-import {  of, throwError } from 'rxjs';
+import {  of, Subject, throwError } from 'rxjs';
 import { Job } from '../../../model/job';
 import { JobService } from '../../../services/job.service';
 import { AuthenticationService } from '../../../services/authentication.service';
@@ -41,7 +41,7 @@ describe('JobsWithDetailComponent', () => {
   beforeEach(waitForAsync(() => {
     jobWithUser.starringUsers[0].id=1; //Set the first Starring User index to 1
     const jobServiceSpy = jasmine.createSpyObj('JobService', ['checkUnreadChats','updateStarred','searchPaged']);
-    const authServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser'], { currentUser: { id: 1 } });
+    const authServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser'], { currentUser: { id: 1 }, loggedInUser$: new Subject<any>() });
     TestBed.configureTestingModule({
       declarations: [SortedByComponent,ChatReadStatusComponent,JobsWithDetailComponent,JobsComponent],
       imports: [

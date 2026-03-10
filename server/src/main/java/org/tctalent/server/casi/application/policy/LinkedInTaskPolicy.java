@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,14 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.casi.domain.model;
+package org.tctalent.server.casi.application.policy;
 
-/**
- * Enumeration of service providers.
- *
- * @author sadatmalik
- */
-public enum ServiceProvider {
-  DUOLINGO,
-  LINKEDIN
+import java.util.List;
+import org.springframework.stereotype.Component;
+import org.tctalent.server.casi.domain.events.ServiceAssignedEvent;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
+
+@Component
+public class LinkedInTaskPolicy implements TaskPolicy {
+
+    @Override
+    public ServiceProvider provider() {
+        return ServiceProvider.LINKEDIN;
+    }
+
+    @Override
+    public List<String> tasksOnAssigned(ServiceAssignedEvent e) {
+        return List.of();
+    }
+
 }

@@ -18,13 +18,13 @@ package org.tctalent.server.casi.core.allocators;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.casi.domain.mappers.ServiceResourceMapper;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
-import org.tctalent.server.casi.domain.mappers.ServiceResourceMapper;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 
@@ -46,7 +46,7 @@ public class InventoryAllocator implements ResourceAllocator {
   @Transactional
   public ServiceResource allocateFor(Candidate c) {
     // get and reserve a service resource e.g. a coupon
-    ServiceResourceEntity e = resources.lockNextAvailable(provider, serviceCode);
+    ServiceResourceEntity e = resources.lockNextAvailable(provider.name(), serviceCode.name());
     if (e == null) {
       throw new NoSuchObjectException("There are no available " + serviceCode + " coupons to assign to the candidate. "
           + "Please import more coupons from the settings page.");

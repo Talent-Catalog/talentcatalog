@@ -236,6 +236,12 @@ resource "aws_ssm_parameter" "sf_user" {
   value = var.sf_user
 }
 
+resource "aws_ssm_parameter" "slack_channel_id" {
+  name  = "/${var.app}/${var.env}/SLACK_CHANNEL_ID"
+  type  = "String"
+  value = var.slack_channel_id
+}
+
 resource "aws_ssm_parameter" "slack_token" {
   name  = "/${var.app}/${var.env}/SLACK_TOKEN"
   type  = "SecureString"
