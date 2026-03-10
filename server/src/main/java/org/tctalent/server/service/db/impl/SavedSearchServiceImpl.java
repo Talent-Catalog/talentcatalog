@@ -57,7 +57,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -927,21 +926,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         return savedSearch;
     }
-
     @Override
-    @Transactional
     public @NotNull SavedList getSelectionList(long id, Long userId)
         throws NoSuchObjectException {
         //Check that saved search and user are valid.
         SavedSearch savedSearch = savedSearchRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        //Lock just this (savedSearchId, userId) combination for the duration of the transaction.
+        savedListRepository.lockSelectionListKey(id, userId);
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
 
         SavedList savedList = savedListRepository.findSelectionList(id, userId)
             .orElse(null);
-
         if (savedList == null) {
             savedList = new SavedList();
             savedList.setSavedSearch(savedSearch);
@@ -957,23 +955,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedList.setName(constructSelectionListName(user, savedSearch));
             savedList.setSfJobOpp(savedSearch.getSfJobOpp());
 
-            /*
-             * Avoid duplicates:
-             * We rely on the database unique index:
-             *   saved_list (saved_search_id, created_by) WHERE saved_search_id is not null
-             *
-             * If two requests race, Postgres will reject the second insert.
-             * In that case we re-fetch and return the row created by the first request.
-             */
-            try {
-                savedList = savedListRepository.save(savedList);
-            } catch (DataIntegrityViolationException ex) {
-                //Another request created the selection list at the same time.
-                savedList = savedListRepository.findSelectionList(id, userId)
-                    .orElseThrow(() -> new InvalidRequestException(
-                        "Selection list creation raced, but list was not found after unique constraint violation."
-                    ));
-            }
+            savedList = savedListRepository.save(savedList);
         } else {
             //Keep SavedSearch sfJobLink in sync with its selection list.
             if (savedSearch.getSfJobOpp() == null) {
