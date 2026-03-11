@@ -16,12 +16,18 @@
 
 package org.tctalent.server.security;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.UserRepository;
 
@@ -53,7 +59,60 @@ public class TcUserDetailsService implements UserDetailsService {
             .message("Found user with ID " + user.getId() + " for username '" + username + "'")
             .logDebug();
 
-        return new TcUserDetails(user);
+        return createTcUserDetails(user);
     }
+
+    /**
+     * Creates a TcUserDetails object from a User object.
+     * <p>
+     *     This is the TC's Security Principal. It contains the user's role and authorities.
+     * </p>
+     * @param user Associated user.
+     */
+    private TcUserDetails createTcUserDetails(@NonNull User user) {
+        TcUserDetails tcUserDetails = new TcUserDetails(user);
+        tcUserDetails.setAuthorities(createAuthorities(user));
+        return tcUserDetails;
+    }
+
+    /**
+     * In the future, we may store user permissions in a separate db table and retrieve them here.
+     * @param user User to create authorities for
+     * @return List of authorities
+     */
+    private List<GrantedAuthority> createAuthorities(@NonNull User user) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        // If read-only is checked, assign the read-only role
+        if(user.getReadOnly()){
+            authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
+        } else if (user.getRole().equals(Role.systemadmin)) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_SYSTEMADMIN"));
+        } else if (user.getRole().equals(Role.admin)) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else if (user.getRole().equals(Role.partneradmin)) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_PARTNERADMIN"));
+        } else if (user.getRole().equals(Role.semilimited)) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
+        } else if (user.getRole().equals(Role.limited)) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_LIMITED"));
+        } else {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+
+        //For now we hard code some particular test users as our chat test users
+        if("TestChattingCandidate".equals(user.getUsername())){
+            authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
+        }
+        if("TestChattingJobCreator".equals(user.getUsername())){
+            authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
+        }
+        if("TestChattingSourcePartner".equals(user.getUsername())){
+            authorities.add(new SimpleGrantedAuthority("CHAT_SUBSCRIBE"));
+        }
+
+        return authorities;
+    }
+
 
 }

@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -54,6 +55,7 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.security.TcUserDetailsService;
 import org.tctalent.server.service.db.SavedSearchService;
 
 @SpringBootTest
@@ -66,6 +68,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   @Autowired private SavedListRepository savedListRepository;
   @Autowired private CandidateSavedListRepository candidateSavedListRepository;
   @Autowired private UserRepository userRepository;
+  @Autowired private TcUserDetailsService tcUserDetailsService;
   @Autowired private JwtTokenProvider jwtTokenProvider;
 
   @MockBean
@@ -121,7 +124,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   }
 
   private void authenticateUser(User user) {
-    TcUserDetails userDetails = new TcUserDetails(user);
+    TcUserDetails userDetails = this.tcUserDetailsService.loadUserByUsername(user.getUsername());
     Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(authentication);
     jwtToken = jwtTokenProvider.generateToken(authentication);
