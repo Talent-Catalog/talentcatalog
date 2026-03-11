@@ -128,6 +128,11 @@ variable "sf_user" {
   default     = ""
 }
 
+variable "slack_channel_id" {
+  description = "Slack channel ID for job posts (test: C048GS1KHPG, live: C029WMY6H1U)"
+  type        = string
+}
+
 variable "slack_token" {
   description = "Slack token (todo: need one for OPC)"
   type        = string
@@ -270,6 +275,7 @@ module "tc-plus-prod" {
   sf_consumer_key            = var.sf_consumer_key
   sf_private_key             = var.sf_private_key
   sf_user                    = var.sf_user
+  slack_channel_id           = var.slack_channel_id
   slack_token                = var.slack_token
   spring_datasource_password = var.spring_datasource_password
   tc_api_key                 = var.tc_api_key

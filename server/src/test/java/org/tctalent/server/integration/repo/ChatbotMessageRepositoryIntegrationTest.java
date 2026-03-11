@@ -21,31 +21,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.tctalent.server.data.ChatbotTestData.createBotMessage;
 import static org.tctalent.server.data.ChatbotTestData.createUserMessage;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.TestPropertySource;
+import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
+import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.model.db.chatbot.ChatbotMessage;
 import org.tctalent.server.repository.db.ChatbotMessageRepository;
 
-@DataJpaTest
-@TestPropertySource(
-    properties = {"spring.flyway.enabled=false", "spring.jpa.hibernate.ddl-auto=create"})
-@Tag("skip-test-in-gradle-build")
-class ChatbotMessageRepositoryIntegrationTest {
+class ChatbotMessageRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired private ChatbotMessageRepository chatbotMessageRepository;
 
   private UUID sessionId;
 
+  @BeforeAll
+  public static void setup() throws IOException, InterruptedException {
+    PostgresTestContainer.startContainer();
+  }
+
   @BeforeEach
   void setUp() {
+    assertTrue(isContainerInitialised(), "Database container should be initialized");
     sessionId = UUID.randomUUID();
   }
 

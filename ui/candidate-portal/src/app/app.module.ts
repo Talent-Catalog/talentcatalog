@@ -230,6 +230,12 @@ import {
   IntlPhoneInputComponent
 } from './components/util/intl-phone-input/intl-phone-input.component';
 import {ChatbotComponent} from './components/chatbot/chatbot.component';
+import {
+  LinkedinComponent
+} from "./components/profile/view/tab/services/linkedin/linkedin.component";
+import {
+  LinkedinRedeemedComponent
+} from "./components/profile/view/tab/services/linkedin/linkedin-redeemed/linkedin-redeemed.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -325,6 +331,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     TaskAbandonedComponent,
     IntlPhoneInputComponent,
     ChatbotComponent,
+    LinkedinComponent,
+    LinkedinRedeemedComponent
   ],
   imports: [
     BrowserModule,

@@ -43,8 +43,9 @@ import org.tctalent.server.model.db.AbstractDomainObject;
 @Setter
 public class ServiceResourceEntity extends AbstractDomainObject<Long> {
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable=false)
-  private ServiceProvider provider; // e.g. "DUOLINGO" // TODO -- SM -- make enum? Provider.DUOLINGO
+  private ServiceProvider provider; // e.g. "DUOLINGO"
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)

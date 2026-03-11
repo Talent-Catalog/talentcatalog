@@ -17,7 +17,6 @@
 package org.talentcatalog.perf.simulations.http.savedlist;
 
 import static io.gatling.javaapi.core.CoreDsl.atOnceUsers;
-import static io.gatling.javaapi.core.CoreDsl.global;
 
 import org.talentcatalog.perf.scenarios.http.savedlist.RandomABFiniteSearchPagedScenario;
 
@@ -123,9 +122,6 @@ public class SavedListSearchPagedRandomABFiniteSimulation extends
 
     setUp(scn.injectOpen(atOnceUsers(RAND_USERS)))
         .protocols(httpProtocol)
-        .assertions(
-            global().failedRequests().percent().lt(1.0),
-            global().responseTime().percentile3().lt(2000)
-        );
+        .assertions(defaultAssertions());
   }
 }
