@@ -513,6 +513,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     return this.authorizationService.canViewCandidateName();
   }
 
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
   public computeNotificationButtonLabel() {
     return "Notification " + (this.candidate?.allNotifications ? "Opt Out": "Opt In");
   }

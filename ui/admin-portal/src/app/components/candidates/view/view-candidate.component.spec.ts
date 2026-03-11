@@ -80,6 +80,7 @@ describe('ViewCandidateComponent', () => {
       'canAccessGoogleDrive',
       'canSeeGlobalLists',
       'canViewCandidateCV',
+      'canViewChats',
       'canSeeJobDetails',
       'isAnAdmin',
       'isReadOnly'

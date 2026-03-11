@@ -349,7 +349,7 @@
           </tc-tab>
 
           <!-- Chat between source partner and candidate, or the option to create one -->
-          <tc-tab [id]="'CandidateProspect'" *ngIf="candidateProspectTabVisible">
+          <tc-tab [id]="'CandidateProspect'" *ngIf="candidateProspectTabVisible && canViewChats()">
             <!-- Tab header -->
             <tc-tab-header>
               Chat With Candidate
