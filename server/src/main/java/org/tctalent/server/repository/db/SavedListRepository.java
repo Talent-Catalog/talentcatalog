@@ -98,9 +98,4 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
      * @return Optional containing the SavedList if found
      */
     Optional<SavedList> findByPublicId(String publicId);
-
-    @Query(value = "select pg_advisory_xact_lock(:savedSearchId, :userId)", nativeQuery = true)
-    void lockSelectionListKey(@Param("savedSearchId") long savedSearchId,
-        @Param("userId") long userId);
-
 }
