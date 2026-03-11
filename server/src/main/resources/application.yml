@@ -10,10 +10,11 @@ tc:
     boot-admin-password: ${TC_BOOT_ADMIN_PASSWORD:}
 
   destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
-  instance-type: ${TC_INSTANCE_TYPE:TBB}
 
   flyway:
     repair: false  #  Set this to true if you need to repair the Flyway history.
+
+  instance-type: ${TC_INSTANCE_TYPE:TBB}
 
   partner-dbcopy-config: ${TC_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
 
@@ -91,7 +92,6 @@ spring:
     elasticsearch:
       repositories:
         enabled: false
-
 
   flyway:
     enabled: true
