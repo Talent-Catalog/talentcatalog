@@ -72,6 +72,14 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
+  /**
+   * When true, this tab is the currently visible tab. Used to defer  API calls
+   * (search, partner/country data) until the tab is first activated. Once initialised, data
+   * is cached and not re-fetched on subsequent activations.
+   * Defaults to true for backward compatibility with usages that don't pass this input.
+   */
+  @Input() tabIsActive: boolean = true;
+
   @Output() oppSelection = new EventEmitter();
 
   opps: T[];
@@ -141,6 +149,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private withUnreadMessagesSuffix: string = 'WithUnreadMessages';
 
   private destroy$ = new Subject<void>();
+  private searchInitialized = false;
 
   protected constructor(
     protected chatService: ChatService,
@@ -169,6 +178,12 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
     this.stages = this.loadStages();
 
+    if (this.tabIsActive) {
+      this.fetchReferenceData();
+    }
+  }
+
+  private fetchReferenceData() {
     this.partnerService.listSourcePartners().subscribe(
       (sourcePartners) => {
         this.sourcePartners = sourcePartners;
@@ -180,8 +195,15 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.searchBy) {
-      this.initSearchBy()
+    if (changes.searchBy && this.tabIsActive) {
+      this.initSearchBy();
+      this.searchInitialized = true;
+    }
+
+    if (changes.tabIsActive && this.tabIsActive && !this.searchInitialized && this.searchBy) {
+      this.fetchReferenceData();
+      this.initSearchBy();
+      this.searchInitialized = true;
     }
   }
 
