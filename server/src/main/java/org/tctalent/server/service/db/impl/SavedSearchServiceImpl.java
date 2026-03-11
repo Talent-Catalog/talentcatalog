@@ -932,9 +932,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Check that saved search and user are valid.
         SavedSearch savedSearch = savedSearchRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
-        //Lock just this (savedSearchId, userId) combination for the duration of the transaction.
-        savedListRepository.lockSelectionListKey(id, userId);
-
+        
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
 
