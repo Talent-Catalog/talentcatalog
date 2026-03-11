@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -33,15 +33,29 @@ export class LocalStorageService {
    */
   get<T>(key: string): T | null {
     const item = localStorage.getItem(this.addPrefix(key));
-    return item ? JSON.parse(item) as T : null;
+    if (item) {
+      try {
+        return JSON.parse(item) as T;
+      } catch (error) {
+        console.error(`Error parsing JSON for key "${key}":`, error);
+        return null;
+      }
+    }
+    return null;
   }
 
   /**
-   * Stores an item in local storage.
+   * Stores an item in local storage, unless the item is `null` or `undefined`.
+   * If the item is `null` or `undefined`, it will be removed from local storage.
+   *
    * @param key - The key to store the item under.
    * @param value - The value to store, which will be serialized as JSON.
    */
   set<T>(key: string, value: T): void {
+    if (value === null || value === undefined) {
+      this.remove(key);
+      return;
+    }
     try {
       localStorage.setItem(this.addPrefix(key), JSON.stringify(value));
     } catch (error) {
@@ -54,7 +68,11 @@ export class LocalStorageService {
    * @param key - The key of the item to remove.
    */
   remove(key: string): void {
-    localStorage.removeItem(this.addPrefix(key));
+    try {
+      localStorage.removeItem(this.addPrefix(key));
+    } catch (error) {
+      console.error(`Error removing item with key "${key}" from localStorage:`, error);
+    }
   }
 
   /**

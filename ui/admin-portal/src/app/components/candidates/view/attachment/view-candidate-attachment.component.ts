@@ -79,7 +79,9 @@ export class ViewCandidateAttachmentComponent implements OnInit {
       .then(() => {
         this.candidateService.updateCandidate();
       })
-      .catch(() => { /* Isn't possible */ });
+      .catch(() => {
+        this.candidateService.updateCandidate();
+      });
   }
 
   deleteCandidateAttachment(attachment: CandidateAttachment) {

@@ -1,0 +1,28 @@
+name: Perf Smoke
+
+on:
+  pull_request:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/staging'
+    uses: ./.github/workflows/tc-gatling-tests.yml
+
+    secrets:
+      USERS_CSV: ${{ secrets.STAGING_PERF_USERS_CSV }}
+
+    with:
+      tier: smoke
+      list_file: performance-tests/simulations/perf-smoke.txt
+      shard_index: 0
+      shard_total: 1
+
+      perf_base_url: "https://tctalent-test.org"
+
+      run_performance_threshold_check: false
+      max_failed_pct: 5
+      max_latency_ms: 90000
