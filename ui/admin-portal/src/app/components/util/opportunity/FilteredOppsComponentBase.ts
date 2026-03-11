@@ -195,14 +195,17 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.searchBy && this.tabIsActive) {
+    if (changes.searchBy && this.searchBy) {
       this.initSearchBy();
-      this.searchInitialized = true;
+      if (this.tabIsActive) {
+        this.search();
+        this.searchInitialized = true;
+      }
     }
 
     if (changes.tabIsActive && this.tabIsActive && !this.searchInitialized && this.searchBy) {
       this.fetchReferenceData();
-      this.initSearchBy();
+      this.search();
       this.searchInitialized = true;
     }
   }
@@ -239,8 +242,6 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.subscribeToFilterChanges();
 
     this.subscribeToStagesChanges();
-
-    this.search();
   }
 
   private get keyword(): string {
