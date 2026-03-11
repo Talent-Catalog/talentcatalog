@@ -838,6 +838,9 @@ import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
 import {
   CandidateCvTextTabComponent
 } from './components/candidates/view/tab/candidate-cv-text-tab/candidate-cv-text-tab.component';
+import {
+  ImportLinkedinPremiumCouponsComponent
+} from "./components/settings/import-linkedin-premium-coupons/import-linkedin-premium-coupons.component";
 
 @NgModule({
   declarations: [
@@ -1176,7 +1179,8 @@ import {
     ViewPrivacyPolicyInfoComponent,
     PartnerDpaComponent,
     SafeHtmlPipe,
-    CandidateCvTextTabComponent
+    CandidateCvTextTabComponent,
+    ImportLinkedinPremiumCouponsComponent
   ],
   imports: [
     BrowserModule,

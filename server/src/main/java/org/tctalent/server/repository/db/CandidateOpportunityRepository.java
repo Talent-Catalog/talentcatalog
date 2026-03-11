@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -70,6 +71,22 @@ public interface CandidateOpportunityRepository extends JpaRepository<CandidateO
 
     @Query(" select op from CandidateOpportunity op where op.jobOpp.createdBy.partner.id = :partnerId")
     List<CandidateOpportunity> findPartnerOpps(@Param("partnerId") Long partnerId);
+
+    @Query("""
+        select op.candidate.id
+        from CandidateOpportunity op
+        where op.jobOpp.createdBy.partner.id = :partnerId
+        and op.lastActiveStage >= org.tctalent.server.model.db.CandidateOpportunityStage.cvReview
+        """)
+    Set<Long> findFullyVisibleCandidateIds(@Param("partnerId") Long partnerId);
+
+    @Query("""
+        select op.candidate.user.id
+        from CandidateOpportunity op
+        where op.jobOpp.createdBy.partner.id = :partnerId
+        and op.lastActiveStage >= org.tctalent.server.model.db.CandidateOpportunityStage.cvReview
+        """)
+    Set<Long> findFullyVisibleUserIds(@Param("partnerId") Long partnerId);
 
     @Query(
         "SELECT co.sfId " +

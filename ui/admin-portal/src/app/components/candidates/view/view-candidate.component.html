@@ -178,12 +178,15 @@
       <ng-select
         class="tc-select"
         [readonly]="!isEditable()"
-        [items]="lists"
+        [items]="lists$ | async"
         [multiple]="true"
         [placeholder]="'Select or Type'"
         [closeOnSelect]="false"
         [clearable]="false"
-        [loading]="savingList"
+        [loading]="listsLoading || savingList"
+        [typeahead]="listsInput$"
+        [minTermLength]="1"
+        typeToSearchText="Type 1 or more characters to search lists"
         bindLabel="name"
         [clearSearchOnAdd]="true"
         [(ngModel)]="selectedLists"
@@ -346,7 +349,7 @@
           </tc-tab>
 
           <!-- Chat between source partner and candidate, or the option to create one -->
-          <tc-tab [id]="'CandidateProspect'" *ngIf="candidateProspectTabVisible">
+          <tc-tab [id]="'CandidateProspect'" *ngIf="candidateProspectTabVisible && canViewChats()">
             <!-- Tab header -->
             <tc-tab-header>
               Chat With Candidate
