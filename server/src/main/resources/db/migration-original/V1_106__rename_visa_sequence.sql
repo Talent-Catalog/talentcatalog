@@ -1,0 +1,2 @@
+
+alter sequence candidate_role_id_seq rename to candidate_visa_job_check_id_seq;
