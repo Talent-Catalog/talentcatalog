@@ -86,7 +86,9 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.opp) {
-      this.fetchChats();
+      if (this.canViewChats()) {
+        this.fetchChats();
+      }
     }
   }
 

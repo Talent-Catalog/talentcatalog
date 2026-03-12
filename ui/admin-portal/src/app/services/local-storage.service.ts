@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -45,11 +45,17 @@ export class LocalStorageService {
   }
 
   /**
-   * Stores an item in local storage.
+   * Stores an item in local storage, unless the item is `null` or `undefined`.
+   * If the item is `null` or `undefined`, it will be removed from local storage.
+   *
    * @param key - The key to store the item under.
    * @param value - The value to store, which will be serialized as JSON.
    */
   set<T>(key: string, value: T): void {
+    if (value === null || value === undefined) {
+      this.remove(key);
+      return;
+    }
     try {
       localStorage.setItem(this.addPrefix(key), JSON.stringify(value));
     } catch (error) {

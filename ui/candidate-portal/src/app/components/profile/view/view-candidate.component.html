@@ -96,7 +96,7 @@
       </ng-container>
 
       <!-- SERVICES -->
-      <ng-container ngbNavItem="Services" *ngIf="activeDuolingoTask">
+      <ng-container ngbNavItem="Services" *ngIf="showServicesTab$ | async">
         <a ngbNavLink>
           <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
           <i class="fas fa-handshake"></i>
@@ -105,8 +105,9 @@
           <app-services
             [candidate]="candidate"
             [activeDuolingoTask]="activeDuolingoTask"
-            (refresh)="fetchCandidate()">
-          </app-services>
+            (refresh)="fetchCandidate()"
+            [showLinkedin$]="linkedinEligible$"
+          ></app-services>
         </ng-template>
       </ng-container>
     </nav>

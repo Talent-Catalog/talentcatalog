@@ -17,9 +17,9 @@
 package org.talentcatalog.perf.simulations.http.savedlist;
 
 import static io.gatling.javaapi.core.CoreDsl.constantUsersPerSec;
-import static io.gatling.javaapi.core.CoreDsl.global;
 import static io.gatling.javaapi.core.CoreDsl.rampUsersPerSec;
 
+import java.time.Duration;
 import org.talentcatalog.perf.scenarios.http.savedlist.NewSearchPagedLoopScenario;
 import org.talentcatalog.perf.scenarios.http.savedlist.OldSearchPagedLoopScenario;
 
@@ -114,6 +114,8 @@ public class SavedListSearchPagedParallelOpenSimulation extends SavedListSearchP
   private static final int SEARCH_MAX_PAUSE_SECONDS =
       Integer.getInteger("searchMaxPauseSeconds", 2);
 
+  /** Total planned test duration (ramp + warmup + measure) in seconds, excluding shutdown buffer. */
+  int plannedSeconds = RAMP_SECONDS + WARMUP_SECONDS + MEASURE_SECONDS;
   /**
    * Constructs and configures the simulation.
    *
@@ -177,9 +179,7 @@ public class SavedListSearchPagedParallelOpenSimulation extends SavedListSearchP
         )
     )
         .protocols(httpProtocol)
-        .assertions(
-            global().failedRequests().percent().lt(1.0),
-            global().responseTime().percentile3().lt(2000)
-        );
+        .maxDuration(Duration.ofSeconds(plannedSeconds + 60L))
+        .assertions(defaultAssertions());
   }
 }

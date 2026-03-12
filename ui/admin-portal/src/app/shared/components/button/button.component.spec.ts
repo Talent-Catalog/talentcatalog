@@ -100,4 +100,56 @@ describe('ButtonComponent', () => {
       expect(component.onClick.emit).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('link mode', () => {
+    it('should render an anchor when href is provided', () => {
+      component.href = 'https://example.com';
+      component.target = '_blank';
+      fixture.detectChanges();
+
+      const linkElement: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      expect(linkElement).toBeTruthy();
+      expect(linkElement.getAttribute('href')).toBe('https://example.com');
+      expect(linkElement.getAttribute('target')).toBe('_blank');
+      expect(linkElement.getAttribute('rel')).toBe('noopener noreferrer');
+      expect(buttonElement).toBeFalsy();
+    });
+
+    it('should use explicit rel when provided', () => {
+      component.href = 'https://example.com';
+      component.target = '_blank';
+      component.rel = 'nofollow';
+      fixture.detectChanges();
+
+      const linkElement: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(linkElement.getAttribute('rel')).toBe('nofollow');
+    });
+
+    it('should not emit onClick for disabled link mode', () => {
+      component.href = 'https://example.com';
+      component.disabled = true;
+      fixture.detectChanges();
+      spyOn(component.onClick, 'emit');
+
+      const linkDebug = fixture.debugElement.query(By.css('a'));
+      const event = jasmine.createSpyObj<MouseEvent>('event', ['preventDefault', 'stopPropagation']);
+      component.clicked(event);
+
+      expect(component.onClick.emit).not.toHaveBeenCalled();
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(linkDebug.attributes['aria-disabled']).toBe('true');
+    });
+
+    it('should disable link navigation when loading is true', () => {
+      component.href = 'https://example.com';
+      component.loading = true;
+      fixture.detectChanges();
+
+      const linkElement: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(linkElement.getAttribute('href')).toBeNull();
+    });
+  });
 });

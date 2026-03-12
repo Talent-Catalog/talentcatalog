@@ -84,6 +84,10 @@ import {TcCardHeaderComponent} from './components/card/card-header/tc-card-heade
 import {TcLoadingComponent} from './components/loading/tc-loading.component';
 
 import {TcRadioComponent} from './components/radio/tc-radio.component';
+import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
+import {
+  TcDateRangePickerComponent
+} from './components/date-range-picker/tc-date-range-picker.component';
 
 @NgModule({
   declarations: [
@@ -130,7 +134,9 @@ import {TcRadioComponent} from './components/radio/tc-radio.component';
 
     TcLoadingComponent,
 
-    TcRadioComponent
+    TcRadioComponent,
+    TcDatePickerComponent,
+    TcDateRangePickerComponent
   ],
   imports: [
     CommonModule,
@@ -192,7 +198,9 @@ import {TcRadioComponent} from './components/radio/tc-radio.component';
 
     TcLoadingComponent,
 
-    TcRadioComponent
+    TcRadioComponent,
+    TcDatePickerComponent,
+    TcDateRangePickerComponent
   ]
 })
 export class SharedModule {}

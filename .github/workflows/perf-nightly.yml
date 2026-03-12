@@ -1,0 +1,56 @@
+name: Perf Nightly
+on:
+  schedule:
+    - cron: "0 1 * * *"   # 01:00 UTC daily
+  workflow_dispatch:
+
+jobs:
+  nightly-shards:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        shard_index: [0, 1, 2, 3, 4]
+        shard_total: [5]
+    uses: ./.github/workflows/tc-gatling-tests.yml
+    secrets:
+      USERS_CSV: ${{ secrets.STAGING_PERF_USERS_CSV }}
+    with:
+      tier: nightly
+      list_file: performance-tests/simulations/perf-nightly.txt
+      shard_index: ${{ matrix.shard_index }}
+      shard_total: ${{ matrix.shard_total }}
+      perf_base_url: "https://tctalent-test.org"
+      run_performance_threshold_check: false
+      max_failed_pct: 20.0
+      max_latency_ms: 0
+  nightly-threshold-check:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    needs: nightly-shards
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all summaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: perf-summary-nightly-shard-*
+          path: all-summaries
+          merge-multiple: true
+
+      - name: Performance Threshold Check
+        run: |
+          python3 performance-tests/ci/performance_threshold_check.py \
+            --summary-json-dir all-summaries \
+            --max-failed-pct 20.0 \
+            --max-latency-ms 15000 \
+            --latency-percentile p50 \
+            --min-requests-for-strict 200 \
+            --strict-percentile p95
+
+      - name: Upload combined summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-summary-nightly-all
+          path: all-summaries

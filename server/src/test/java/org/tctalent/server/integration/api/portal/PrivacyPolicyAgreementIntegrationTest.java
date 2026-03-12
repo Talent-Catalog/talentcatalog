@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,10 +52,12 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CandidateSavedListRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.security.TcUserDetailsService;
+import org.tctalent.server.service.db.SavedSearchService;
 
-@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -65,8 +68,13 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   @Autowired private SavedListRepository savedListRepository;
   @Autowired private CandidateSavedListRepository candidateSavedListRepository;
   @Autowired private UserRepository userRepository;
+  @Autowired private TcUserDetailsService tcUserDetailsService;
   @Autowired private JwtTokenProvider jwtTokenProvider;
 
+  @MockBean
+  private SavedSearchService savedSearchService;
+  @MockBean
+  private CandidateRedisCache candidateRedisCache;
   private Candidate candidate;
   private SavedList pendingTermsList;
   private String jwtToken;
@@ -116,7 +124,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   }
 
   private void authenticateUser(User user) {
-    TcUserDetails userDetails = new TcUserDetails(user);
+    TcUserDetails userDetails = this.tcUserDetailsService.loadUserByUsername(user.getUsername());
     Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(authentication);
     jwtToken = jwtTokenProvider.generateToken(authentication);

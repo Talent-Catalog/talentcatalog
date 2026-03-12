@@ -241,6 +241,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserService userService;
     private final UserMapper userMapper;
     private final CandidateMapper candidateMapper;
+    private final CandidateNumberGenerator candidateNumberGenerator;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
     private final FileSystemService fileSystemService;
@@ -755,8 +756,7 @@ public class CandidateServiceImpl implements CandidateService {
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
 
-        //Use id to generate candidate number
-        String candidateNumber = String.format("%04d", candidate.getId());
+        final String candidateNumber = candidateNumberGenerator.generateCandidateNumber(candidate);
         candidate.setCandidateNumber(candidateNumber);
 
         //Set partner ref to candidate number if that is what partner uses to identify candidates

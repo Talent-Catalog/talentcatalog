@@ -18,13 +18,13 @@ package org.tctalent.server.casi.core.allocators;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.casi.domain.mappers.ServiceResourceMapper;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
-import org.tctalent.server.casi.domain.mappers.ServiceResourceMapper;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 

@@ -481,6 +481,11 @@ variable "sf_user" {
   sensitive   = true
 }
 
+variable "slack_channel_id" {
+  type        = string
+  description = "Slack channel ID for job registration posts (e.g. C048GS1KHPG test, C029WMY6H1U live)"
+}
+
 variable "slack_token" {
   type        = string
   description = "Slack token"
