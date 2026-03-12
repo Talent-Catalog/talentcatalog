@@ -27,13 +27,27 @@ import lombok.ToString;
 /**
  * "Terms" are legal terms. For example privacy policies. These terms are typically displayed to
  * users requesting their acceptance.
- * <p/>
+ * <p>
  * Terms are classified by {@link #type}.
- * <p/>
+ * <p>
  * There can be multiple versions of the same type of terms. Each version will have a different
  * {@link #createdDate} and {@link #id}.
- * <p/>
+ * <p>
  * Users can be linked to the specific version of a type of terms that they have consented to.
+ * <p>
+ *     For example, the current candidate privacy policy
+ *     (type = {@link TermsType#CANDIDATE_PRIVACY_POLICY}) might have id = "CandidatePolicyV2".
+ *     And the content of the policy is found at path "/terms/GDPRPrivacyPolicy-20260312.html".
+ * <p>
+ *     The previous policy was id="CandidatePolicyV1" pointing to a different path.
+ * <p>
+ *     Those two policy instances will be stored in two TermInfos.
+ * <p>
+ *     Each candidate has an acceptedPrivacyPolicyId which might be "CandidatePolicyV1" or
+ *     "CandidatePolicyV2". Using that id, the corresponding TermsInfo can be fetched.
+ *     It will have the path to the policy text and also the type of the policy and when the
+ *     policy was created. By looking at other TermInfo's of the same type, you can figure
+ *     out which is the latest policy.
  *
  * @author John Cameron
  */
