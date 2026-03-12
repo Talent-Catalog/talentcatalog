@@ -31,6 +31,7 @@
     <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.live"
+        [tabIsActive]="activeTabId === 'LiveJobs'"
       >
       </app-jobs-with-detail>
     </tc-tab-content>
@@ -47,6 +48,7 @@
     <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.starredByMe"
+        [tabIsActive]="activeTabId === 'StarredJobs'"
         [chatsRead$]="starredJobChatsRead$"
       >
       </app-jobs-with-detail>
@@ -65,6 +67,7 @@
     <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
+        [tabIsActive]="activeTabId === 'MyJobs'"
         [chatsRead$]="partnerJobChatsRead$"
       >
       </app-jobs-with-detail>
@@ -83,6 +86,7 @@
     <tc-tab-content>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
+        [tabIsActive]="activeTabId === 'MyCasesAsJobCreator'"
         [chatsRead$]="jobCreatorChatsRead$"
       >
       </app-candidate-opps-with-detail>
@@ -101,6 +105,7 @@
     <tc-tab-content>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsSourcePartner"
+        [tabIsActive]="activeTabId === 'MyCasesAsSourcePartner'"
         [chatsRead$]="sourcePartnerChatsRead$"
       >
       </app-candidate-opps-with-detail>
