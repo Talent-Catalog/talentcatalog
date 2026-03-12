@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table users
-    add column email_verified boolean default false,
-    add column email_verification_token varchar(255),
-    add column email_verification_token_issued_time timestamp;
+package org.tctalent.server.service.db;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Service;
+
+/**
+ * Shuts down the Spring server cleanly.
+ */
+@Service
+public class ShutdownService {
+
+    private final ConfigurableApplicationContext context;
+
+    public ShutdownService(ConfigurableApplicationContext context) {
+        this.context = context;
+    }
+
+    public void shutdown() {
+        int exit = SpringApplication.exit(context, () -> 0);
+        System.exit(exit);
+    }
+}

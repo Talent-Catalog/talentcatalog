@@ -1,1 +1,0 @@
-alter table candidate drop column monitoring_evaluation_consent;
