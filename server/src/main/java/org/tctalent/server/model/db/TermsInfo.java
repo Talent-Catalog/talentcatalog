@@ -30,10 +30,15 @@ import lombok.ToString;
  * <p>
  * Terms are classified by {@link #type}.
  * <p>
- * There can be multiple versions of the same type of terms. Each version will have a different
- * {@link #createdDate} and {@link #id}.
+ * Each Terms instance has a unique String id which can be anything but normally is a readable
+ * string constructed from the Terms {@link #type} and a version number eg "V2".
+ * So for example, "CandidatePolicyV2" might be the id for Version 2 of terms of type
+ * {@link TermsType#CANDIDATE_PRIVACY_POLICY}.
  * <p>
- * Users can be linked to the specific version of a type of terms that they have consented to.
+ * There can be multiple versions of the same type of terms. Each version will have a different
+ * {@link #createdDate} and {@link #id} and {@link #pathToContent}.
+ * <p>
+ * So Users can be linked to the specific version of a type of terms that they have consented to.
  * <p>
  *     For example, the current candidate privacy policy
  *     (type = {@link TermsType#CANDIDATE_PRIVACY_POLICY}) might have id = "CandidatePolicyV2".
