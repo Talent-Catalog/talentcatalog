@@ -33,6 +33,7 @@ export class CandidateOppsWithDetailComponent extends MainSidePanelBase implemen
    */
   @Input() searchBy: SearchOppsBy;
   @Input() candidateOpps: CandidateOpportunity[];
+  @Input() tabIsActive: boolean;
 
   /**
    * This is passed in from a higher level component which tracks whether the overall read status
