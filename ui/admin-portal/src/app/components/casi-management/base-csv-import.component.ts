@@ -113,7 +113,7 @@ export abstract class BaseCsvImportComponent implements OnInit {
     this.paginatedData = this.csvData.slice(startIndex, endIndex);
   }
 
-  protected normalizeHeaderForComparison(header: string): string {
+  normalizeHeaderForComparison(header: string): string {
     return header.trim();
   }
 

@@ -39,10 +39,6 @@ export class ImportReferenceVouchersComponent extends BaseCsvImportComponent {
     super();
   }
 
-  protected normalizeHeaderForComparison(header: string): string {
-    return header.trim().toLowerCase();
-  }
-
   protected doImport(): void {
     if (!this.selectedFile) {
       this.error = 'Please select a file to import.';
