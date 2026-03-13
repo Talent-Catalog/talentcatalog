@@ -30,7 +30,8 @@
       </tc-tab-content>
     </tc-tab>
 
-    <tc-tab id="reference-vouchers">
+    <!-- Reference Vouchers are only relevant in local environments, so we hide this tab in staging and production -->
+    <tc-tab id="reference-vouchers" *ngIf="isLocalEnv()">
       <tc-tab-header>Reference Vouchers</tc-tab-header>
       <tc-tab-content>
         <app-import-reference-vouchers [loggedInUser]="loggedInUser"></app-import-reference-vouchers>

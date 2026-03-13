@@ -19,6 +19,7 @@ import {User} from "../../model/user";
 import {AuthorizationService} from "../../services/authorization.service";
 import {AuthenticationService} from "../../services/authentication.service";
 import {LocalStorageService} from "../../services/local-storage.service";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-casi-management',
@@ -58,5 +59,9 @@ export class CasiManagementComponent implements OnInit {
 
   systemAdminOnly(): boolean {
     return this.authService.isSystemAdminOnly();
+  }
+
+  isLocalEnv(): boolean {
+    return environment.environmentName === 'local';
   }
 }
