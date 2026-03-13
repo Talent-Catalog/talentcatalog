@@ -44,3 +44,30 @@
 .custom-pages-input {
   width: 5rem;
 }
+
+@media (max-width: 767.98px) {
+  .tc-pagination {
+    padding: 0 6px;
+  }
+
+  .custom-ngb-pagination ngb-pagination {
+    .pagination {
+      align-items: flex-start;
+
+      > .page-item:first-child,
+      > .page-item:last-child {
+        display: none;
+      }
+    }
+
+    .select-pages {
+      grid-template-columns: auto;
+      justify-items: center;
+    }
+  }
+
+  .custom-pages-input {
+    width: 3.5rem;
+    min-width: 3.5rem;
+  }
+}

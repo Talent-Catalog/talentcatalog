@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,20 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {RouterTestingModule} from '@angular/router/testing';
+package org.tctalent.server.model.db;
 
-import {RegistrationService} from './registration.service';
-
-describe('RegistrationService', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [HttpClientTestingModule, RouterTestingModule],
-    providers: [RegistrationService]
-  }));
-
-  it('should be created', () => {
-    const service: RegistrationService = TestBed.inject(RegistrationService);
-    expect(service).toBeTruthy();
-  });
-});
+/**
+ * Defines the type of the Talent Catalog instance that is running.
+ *
+ * @author John Cameron
+ */
+public enum InstanceType {
+    GRN,
+    TBB
+}
