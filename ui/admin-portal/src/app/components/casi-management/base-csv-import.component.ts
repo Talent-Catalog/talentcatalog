@@ -14,8 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {OnInit} from '@angular/core';
+import {Directive, OnInit} from '@angular/core';
 
+@Directive()
 export abstract class BaseCsvImportComponent implements OnInit {
   error: string | null = null;
   working = false;
