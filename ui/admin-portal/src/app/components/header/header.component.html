@@ -123,6 +123,9 @@
             <div class="dropdown-divider"></div>
             <div *ngIf="isAnAdmin()">
               <a ngbDropdownItem [routerLink]="'/settings'">Settings</a>
+              <a ngbDropdownItem *ngIf="isSystemAdminOnly()" [routerLink]="'/candidate-services'">
+                Candidate Assistance Services
+              </a>
               <div class="dropdown-divider"></div>
             </div>
             <button ngbDropdownItem (click)="logout()">Logout</button>
