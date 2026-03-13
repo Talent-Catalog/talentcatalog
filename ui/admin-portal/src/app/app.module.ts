@@ -841,6 +841,9 @@ import {
 import {
   ImportLinkedinPremiumCouponsComponent
 } from "./components/settings/import-linkedin-premium-coupons/import-linkedin-premium-coupons.component";
+import {
+  ImportReferenceVouchersComponent
+} from "./components/settings/import-reference-vouchers/import-reference-vouchers.component";
 
 @NgModule({
   declarations: [
@@ -1180,7 +1183,8 @@ import {
     PartnerDpaComponent,
     SafeHtmlPipe,
     CandidateCvTextTabComponent,
-    ImportLinkedinPremiumCouponsComponent
+    ImportLinkedinPremiumCouponsComponent,
+    ImportReferenceVouchersComponent
   ],
   imports: [
     BrowserModule,
