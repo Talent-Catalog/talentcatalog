@@ -1,4 +1,4 @@
-# CASI (Candidate Assistance Services Infrastructure) — Developer Guide
+# CASI (Candidate Assistance Services Interface) — Developer Guide
 
 This document provides an overview of the CASI module. It outlines the architecture, folder layout 
 and fastest path for developers to add a new CandidateAssistanceService provider.
