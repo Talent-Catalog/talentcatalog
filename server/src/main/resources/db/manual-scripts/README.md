@@ -22,7 +22,5 @@ Use these scripts as release references when a DB change must be applied manuall
 
   - Cleans duplicate selection lists from `saved_list`
 
-  - Adds the unique index on `(saved_search_id, created_by)` where `saved_search_id is not null`
-
   - Reference for ticket `#3135`
 
