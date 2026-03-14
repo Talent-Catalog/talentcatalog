@@ -98,6 +98,11 @@ body > .dropdown > .dropdown-menu {
 
 // Mobile
 @media screen and (max-width: 768px) {
+
+  .navbar .logo {
+    height: 40px;
+  }
+
   .mobile-menu-item {
     text-align: center;
   }
