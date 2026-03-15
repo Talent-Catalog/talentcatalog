@@ -7,6 +7,10 @@ This file provides instructions for AI coding agents working on this repository.
 Talent Catalog is a Spring Boot backend application providing APIs for managing
 candidate skills, opportunities, and partner organizations.
 
+It is an open source project. 
+We seek to attract other talented it professionals who want to help refugees.
+The code should be easy to understand and maintain.
+
 Key technologies:
 
 - Java
@@ -18,7 +22,26 @@ Key technologies:
 
 The backend is a Spring Boot application in the same repository under the `server` directory.
 
-The frontend is an Angular application in the same repository under the `ui` directory. 
+There are two main frontend Angular applications under the `ui` directory:
+- The admin application (admin portal) used partners who manage the platform and help refugees
+- The candidate application (candidate portal) used by refugees who register on the platform
+
+## Key Java Packages
+  
+Under `server` directory:
+org.tctalent.server.api.admin - admin portal controllers
+org.tctalent.server.api.portal - candidate portal controllers
+org.tctalent.server.model
+org.tctalent.server.repository
+org.tctalent.server.request
+org.tctalent.server.response
+org.tctalent.server.service
+
+## Key Angular Packages   
+
+Under `ui` directory:
+admin-portal - admin portal application
+candidate-portal - candidate portal application
 
 ## Build
 
