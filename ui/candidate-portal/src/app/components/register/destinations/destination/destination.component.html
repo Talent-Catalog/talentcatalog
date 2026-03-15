@@ -20,24 +20,21 @@
 <form [formGroup]="form">
 
   <div class="mb-3">
-    <label class="form-label" [for]="'interest'+country.id">
+    <tc-label [for]="'interest'+country.id">
       {{ 'REGISTRATION.DESTINATIONS.LABEL.INTEREST' | translate: {countryName: country.name} }}<sup>*</sup>
-    </label>
+    </tc-label>
     <ng-select [id]="'interest'+country.id" [formControlName]="'interest'"
                [items]="destInterestOptions" [clearOnBackspace]="false"
+               class="tc-select"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div  *ngIf="interest != null">
     <div class="mb-3">
-      <label class="form-label" [for]="'notes'+country.id">{{ 'REGISTRATION.DESTINATIONS.LABEL.NOTES' | translate }}</label>
-      <textarea type="text"
-                class="md-textarea-auto form-control"
-                rows="3"
-                [id]="'notes'+country.id"
-                [formControlName]="'notes'"
-                placeholder="" ></textarea>
+      <tc-label [for]="'notes'+country.id">{{ 'REGISTRATION.DESTINATIONS.LABEL.NOTES' | translate }}</tc-label>
+      <tc-textarea [id]="'notes'+country.id"
+                   [formControlName]="'notes'"
+                   rows="3"></tc-textarea>
     </div>
   </div>
 </form>
-
