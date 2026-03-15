@@ -14,11 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {DeleteExamComponent} from './delete-exam.component';
+
+@Component({
+  selector: 'tc-button',
+  template: '<ng-content></ng-content>'
+})
+class TcButtonStubComponent {
+  @Input() color?: string;
+  @Input() disabled?: boolean;
+  @Output() onClick = new EventEmitter<void>();
+}
 
 describe('DeleteExamComponent', () => {
   let component: DeleteExamComponent;
@@ -29,7 +40,7 @@ describe('DeleteExamComponent', () => {
     activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
 
     await TestBed.configureTestingModule({
-      declarations: [DeleteExamComponent],
+      declarations: [DeleteExamComponent, TcButtonStubComponent],
       imports: [TranslateModule.forRoot()],
       providers: [{provide: NgbActiveModal, useValue: activeModalSpy}]
     }).compileComponents();

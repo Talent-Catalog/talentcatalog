@@ -22,7 +22,7 @@ import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {of, throwError} from 'rxjs';
 
 import {CandidateExamFormComponent} from './candidate-exam-form.component';
-import {Candidate, CandidateExam, Exam} from '../../../model/candidate';
+import {Candidate, CandidateExam} from '../../../model/candidate';
 import {CandidateExamService} from '../../../services/candidate-exam.service';
 import {CandidateService} from '../../../services/candidate.service';
 import {RegistrationService} from '../../../services/registration.service';
@@ -101,7 +101,7 @@ function makeCandidate(): Candidate {
 function makeExam(overrides: Partial<CandidateExam> = {}): CandidateExam {
   return {
     id: 1,
-    exam: Exam.IELTSGen,
+    exam: 'IELTSGen' as any,
     otherExam: null,
     score: '7.5',
     year: 2024,
@@ -200,10 +200,10 @@ describe('CandidateExamFormComponent', () => {
       // This test needs a different input setup than the shared beforeEach fixture,
       // so reset the TestBed before creating a fresh component instance.
       TestBed.resetTestingModule();
-      await configureAndCreate({exam: makeExam({exam: Exam.Other, otherExam: 'PTE'})});
+      await configureAndCreate({exam: makeExam({exam: 'Other' as any, otherExam: 'PTE'})});
 
       expect(component.form.value.id).toBe(1);
-      expect(component.form.value.exam).toBe(Exam.Other);
+      expect(component.form.value.exam).toBe('Other');
       expect(component.form.value.otherExam).toBe('PTE');
       expect(component.form.value.score).toBe('7.5');
     });
@@ -265,7 +265,7 @@ describe('CandidateExamFormComponent', () => {
     });
 
     it('should clear the validator when Other exam is not selected', () => {
-      component.toggleOtherExamValidator(Exam.IELTSGen);
+      component.toggleOtherExamValidator('IELTSGen');
       component.form.get('otherExam').setValue(null);
 
       expect(component.form.get('otherExam').hasError('required')).toBeFalse();
@@ -277,7 +277,7 @@ describe('CandidateExamFormComponent', () => {
 
     it('should create an exam when the form has no id', () => {
       const savedSpy = spyOn(component.saved, 'emit');
-      component.form.patchValue({exam: Exam.IELTSGen, score: '8', year: 2024});
+      component.form.patchValue({exam: 'IELTSGen', score: '8', year: 2024});
       component.form.markAsDirty();
 
       component.save();
@@ -318,7 +318,7 @@ describe('CandidateExamFormComponent', () => {
       TestBed.resetTestingModule();
       const serverError = {status: 500};
       await configureAndCreate({createError: serverError});
-      component.form.patchValue({exam: Exam.IELTSGen, score: '8', year: 2024});
+      component.form.patchValue({exam: 'IELTSGen', score: '8', year: 2024});
       component.form.markAsDirty();
 
       component.save();
