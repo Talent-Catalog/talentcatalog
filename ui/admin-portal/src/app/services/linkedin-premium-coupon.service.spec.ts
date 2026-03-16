@@ -39,4 +39,18 @@ describe('LinkedinPremiumCouponService', () => {
     expect(req.request.headers.get('enctype')).toBe('multipart/form-data');
     req.flush(mockResponse);
   });
+
+  it('should get the count of available coupons', () => {
+    const mockCount = { count: 42 };
+
+    service.countAvailableCoupons().subscribe(response => {
+      expect(response).toEqual(mockCount);
+    });
+
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/services/LINKEDIN/PREMIUM_MEMBERSHIP/available/count`
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(mockCount);
+  });
 });
