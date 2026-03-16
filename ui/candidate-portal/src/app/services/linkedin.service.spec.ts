@@ -2,7 +2,7 @@ import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {LinkedinService} from './linkedin.service';
 import {environment} from '../../environments/environment';
-import {ResourceStatus, ServiceAssignment, ServiceProvider, AssignmentStatus} from '../model/services';
+import {IssueReportRequest, ResourceStatus, ServiceAssignment, ServiceProvider, AssignmentStatus} from '../model/services';
 
 describe('LinkedinService', () => {
   let service: LinkedinService;
@@ -92,12 +92,17 @@ describe('LinkedinService', () => {
     req.flush(null);
   });
 
-  it('should call addCandidateToIssueReportList endpoint with POST', () => {
-    service.addCandidateToIssueReportList(mockAssignment).subscribe();
+  it('should call addCandidateToIssueReportList endpoint with POST and IssueReportRequest body', () => {
+    const request: IssueReportRequest = {
+      assignment: mockAssignment,
+      issueComment: 'The coupon link did not work.',
+    };
+
+    service.addCandidateToIssueReportList(request).subscribe();
 
     const req = httpMock.expectOne(`${BASE_URL}/issue-report`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(mockAssignment);
+    expect(req.request.body).toEqual(request);
     req.flush(null);
   });
 

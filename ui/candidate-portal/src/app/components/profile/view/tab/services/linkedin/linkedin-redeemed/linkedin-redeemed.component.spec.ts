@@ -2,8 +2,10 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {LinkedinRedeemedComponent} from './linkedin-redeemed.component';
 import {LinkedinService} from '../../../../../../../services/linkedin.service';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {of, throwError} from 'rxjs';
 import {
+  IssueReportRequest,
   ResourceStatus,
   ServiceAssignment,
   ServiceProvider,
@@ -49,6 +51,7 @@ describe('LinkedinRedeemedComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [LinkedinRedeemedComponent],
+      imports: [FormsModule],
       providers: [{provide: LinkedinService, useValue: mockLinkedinService}],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -80,15 +83,28 @@ describe('LinkedinRedeemedComponent', () => {
     });
   });
 
+  describe('issueComment', () => {
+    it('should initialise issueComment to empty string', () => {
+      expect(component.issueComment).toBe('');
+    });
+
+    it('should have MAX_COMMENT_LENGTH of 500', () => {
+      expect(component.MAX_COMMENT_LENGTH).toBe(500);
+    });
+  });
+
   describe('reportIssue', () => {
-    it('should call addCandidateToIssueReportList and re-check list status on success', () => {
+    it('should call addCandidateToIssueReportList with IssueReportRequest and re-check list status on success', () => {
+      const comment = 'The coupon link did not work.';
+      const expectedRequest: IssueReportRequest = {assignment: mockAssignment, issueComment: comment};
       mockLinkedinService.addCandidateToIssueReportList.and.returnValue(of(undefined));
       mockLinkedinService.isOnIssueReportList.and.returnValue(of(true));
+      component.issueComment = comment;
 
       component.reportIssue();
 
       expect(mockLinkedinService.addCandidateToIssueReportList)
-        .toHaveBeenCalledWith(mockAssignment);
+        .toHaveBeenCalledWith(expectedRequest);
       expect(mockLinkedinService.isOnIssueReportList).toHaveBeenCalled();
       expect(component.isOnIssueReportList).toBeTrue();
       expect(component.loading).toBeFalse();
@@ -97,6 +113,7 @@ describe('LinkedinRedeemedComponent', () => {
     it('should set error and loading false when reportIssue fails', () => {
       const error = new Error('Report failed');
       mockLinkedinService.addCandidateToIssueReportList.and.returnValue(throwError(error));
+      component.issueComment = 'Some comment';
 
       component.reportIssue();
 
@@ -111,6 +128,7 @@ describe('LinkedinRedeemedComponent', () => {
         return of(undefined);
       });
       mockLinkedinService.isOnIssueReportList.and.returnValue(of(false));
+      component.issueComment = 'Some comment';
 
       component.reportIssue();
 

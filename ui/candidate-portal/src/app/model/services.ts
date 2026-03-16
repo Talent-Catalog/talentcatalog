@@ -59,6 +59,11 @@ export interface UpdateServiceResourceStatusRequest {
   status: ResourceStatus
 }
 
+export interface IssueReportRequest {
+  assignment: ServiceAssignment;
+  issueComment: string;
+}
+
 /**
  * Represents the assignment of a service to a candidate.
  */

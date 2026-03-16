@@ -235,10 +235,11 @@ class LinkedInServiceTest {
   @Test
   @DisplayName("addCandidateToIssueReportList calls expected service methods")
   void addCandidateToIssueReportListCallsExpectedServiceMethods() {
+    String comment = "The coupon link was broken.";
     when(savedListService.get(ISSUE_REPORT_LIST_ID)).thenReturn(issueReportList);
     when(candidateService.getCandidate(CANDIDATE_ID)).thenReturn(candidate);
 
-    linkedInService.addCandidateToIssueReportList(reservedAssignment);
+    linkedInService.addCandidateToIssueReportList(reservedAssignment, comment);
 
     verify(savedListService).get(ISSUE_REPORT_LIST_ID);
     verify(candidateService).getCandidate(CANDIDATE_ID);
@@ -247,18 +248,19 @@ class LinkedInServiceTest {
   }
 
   @Test
-  @DisplayName("addCandidateToIssueReportList note contains resource code and status")
+  @DisplayName("addCandidateToIssueReportList note contains resource code, status, and comment")
   void addCandidateToIssueReportListNoteContainsDetails() {
+    String comment = "The coupon link was broken.";
     when(savedListService.get(ISSUE_REPORT_LIST_ID)).thenReturn(issueReportList);
     when(candidateService.getCandidate(CANDIDATE_ID)).thenReturn(candidate);
 
-    linkedInService.addCandidateToIssueReportList(reservedAssignment);
+    linkedInService.addCandidateToIssueReportList(reservedAssignment, comment);
 
     verify(savedListService).addCandidateToList(
         eq(issueReportList),
         eq(candidate),
         org.mockito.ArgumentMatchers.<String>argThat(note ->
-            note.contains(RESOURCE_CODE) && note.contains("ASSIGNED")
+            note.contains(RESOURCE_CODE) && note.contains("ASSIGNED") && note.contains(comment)
         )
     );
   }

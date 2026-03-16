@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.tctalent.server.casi.api.request.IssueReportRequest;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
@@ -189,13 +190,18 @@ class LinkedinPortalApiTest {
   // addCandidateToIssueReportList Tests
 
   @Test
-  @DisplayName("addCandidateToIssueReportList delegates to service")
+  @DisplayName("addCandidateToIssueReportList delegates assignment and comment to service")
   void addCandidateToIssueReportListDelegatesToService() {
-    doNothing().when(linkedInService).addCandidateToIssueReportList(assignment);
+    IssueReportRequest request = new IssueReportRequest();
+    request.setAssignment(assignment);
+    request.setIssueComment("The coupon link did not work.");
 
-    linkedinPortalApi.addCandidateToIssueReportList(assignment);
+    doNothing().when(linkedInService)
+        .addCandidateToIssueReportList(assignment, "The coupon link did not work.");
 
-    verify(linkedInService).addCandidateToIssueReportList(assignment);
+    linkedinPortalApi.addCandidateToIssueReportList(request);
+
+    verify(linkedInService).addCandidateToIssueReportList(assignment, "The coupon link did not work.");
   }
 
   // isOnIssueReportList Tests

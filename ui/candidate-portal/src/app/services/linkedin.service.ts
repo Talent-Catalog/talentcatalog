@@ -2,7 +2,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
-import {ServiceAssignment, UpdateServiceResourceStatusRequest} from "../model/services";
+import {
+  IssueReportRequest,
+  ServiceAssignment,
+  UpdateServiceResourceStatusRequest
+} from "../model/services";
 
 @Injectable({
   providedIn: 'root'
@@ -46,9 +50,12 @@ export class LinkedinService {
     );
   }
 
-  /** Adds candidate to #LinkedInIssueReport List with assignment details as context note. */
-  addCandidateToIssueReportList(assignment: ServiceAssignment): Observable<void> {
-    return this.http.post<void>(`${this.apiBaseUrl}/issue-report`, assignment);
+  /**
+   * Adds candidate to #LinkedInIssueReport List with assignment details and issue comment as
+   * context note.
+   */
+  addCandidateToIssueReportList(request: IssueReportRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiBaseUrl}/issue-report`, request);
   }
 
   /** Checks if candidate is on #LinkedInIssueReport List. */
