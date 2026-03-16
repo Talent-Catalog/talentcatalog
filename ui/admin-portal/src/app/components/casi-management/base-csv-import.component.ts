@@ -26,8 +26,8 @@ export abstract class BaseCsvImportComponent implements OnInit {
   selectedFile: File | null = null;
   csvImported = false;
   currentPage = 1;
-  pageSize = 30;
-
+  pageSize = 30;  // Number of items per page
+  // List of required columns
   abstract requiredColumns: string[];
 
   ngOnInit(): void {
@@ -58,12 +58,14 @@ export abstract class BaseCsvImportComponent implements OnInit {
         return;
       }
 
+      // Extract raw headers and data
       const rawHeaders = lines[0].split(',').map((header) => header.trim());
       const rawData = lines.slice(1).map((line) => line.split(','));
       const normalizedHeaders = rawHeaders.map((header) =>
         this.normalizeHeaderForComparison(header)
       );
 
+      // Validate headers
       const missingColumns = this.requiredColumns.filter((column) => {
         const normalizedRequired = this.normalizeHeaderForComparison(column);
         return !normalizedHeaders.includes(normalizedRequired);

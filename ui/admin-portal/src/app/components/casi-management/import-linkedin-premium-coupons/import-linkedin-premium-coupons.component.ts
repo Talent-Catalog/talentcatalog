@@ -25,7 +25,8 @@ import {BaseCsvImportComponent} from "../base-csv-import.component";
   styleUrls: ['./import-linkedin-premium-coupons.component.scss'],
 })
 export class ImportLinkedinPremiumCouponsComponent extends BaseCsvImportComponent {
-  availableCouponsCount = 0;
+  availableCouponsCount: number = 0;
+  // List of required columns
   requiredColumns = ['Serial #', 'Premium Code', 'Activate by'];
   @Input() loggedInUser!: User;
 
@@ -40,6 +41,7 @@ export class ImportLinkedinPremiumCouponsComponent extends BaseCsvImportComponen
       return;
     }
 
+    // Call the service to import the CSV file
     this.couponService.importCoupons(this.selectedFile).subscribe({
       next: () => {
         this.working = false;
