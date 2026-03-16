@@ -351,6 +351,12 @@ variable "web_portal" {
   description = "Candidate portal URL"
 }
 
+variable "tc_instance_type" {
+  type        = string
+  description = "TC instance type (e.g. TBB)"
+  default     = "TBB"
+}
+
 # --- Auto-populated parameters (conditionally managed by Terraform) ---
 
 variable "redis_host" {
@@ -508,4 +514,11 @@ variable "translation_password" {
   type        = string
   description = "Translation password"
   sensitive   = true
+}
+
+variable "tc_boot_admin_password" {
+  type        = string
+  description = "Boot admin password for TC-Plus"
+  sensitive   = true
+  default     = ""
 }
