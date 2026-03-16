@@ -298,6 +298,12 @@ resource "aws_ssm_parameter" "spring_servlet_max_request_size" {
   value = var.spring_servlet_max_request_size
 }
 
+resource "aws_ssm_parameter" "tc_boot_admin_password" {
+  name  = "/${var.app}/${var.env}/TC_BOOT_ADMIN_PASSWORD"
+  type  = "SecureString"
+  value = var.tc_boot_admin_password
+}
+
 resource "aws_ssm_parameter" "tc_api_key" {
   name  = "/${var.app}/${var.env}/TC_API_KEY"
   type  = "SecureString"
@@ -350,4 +356,10 @@ resource "aws_ssm_parameter" "web_portal" {
   name  = "/${var.app}/${var.env}/WEB_PORTAL"
   type  = "String"
   value = var.web_portal
+}
+
+resource "aws_ssm_parameter" "tc_instance_type" {
+  name  = "/${var.app}/${var.env}/TC_INSTANCE_TYPE"
+  type  = "String"
+  value = var.tc_instance_type
 }
