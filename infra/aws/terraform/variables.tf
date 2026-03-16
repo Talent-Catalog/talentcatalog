@@ -518,7 +518,7 @@ variable "translation_password" {
 
 variable "tc_boot_admin_password" {
   type        = string
-  description = "Boot admin password for TC-Plus"
+  description = "System admin password for TC"
   sensitive   = true
   default     = ""
 }
