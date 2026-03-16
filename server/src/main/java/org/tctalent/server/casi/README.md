@@ -26,7 +26,8 @@ casi/
 │  │  ├─ TaskPolicyRegistry          // auto-discovers TaskPolicy beans
 │  │  ├─ EligibilityPolicy           // interface: is a candidate eligible?
 │  │  ├─ EligibilityPolicyRegistry   // auto-discovers EligibilityPolicy beans
-│  │  └─ AlwaysEligiblePolicy        // default: always eligible
+│  │  ├─ AlwaysEligiblePolicy        // default: always eligible
+│  │  └─ ReferenceEligibilityPolicy // reference impl for REFERENCE provider (status-based)
 │  └─ providers/                     // concrete provider services
 │     ├─ duolingo/
 │     ├─ linkedin/
@@ -535,6 +536,9 @@ When adding a new provider, add the enum values here to match the backend.
 The `REFERENCE::VOUCHER` provider is a minimal end-to-end test harness for the CASI framework. It 
 demonstrates the full lifecycle (import, assign, reassign, ledger/events, task/email hooks) with 
 zero external dependencies.
+
+The REFERENCE provider uses an `EligibilityPolicy` bean (`ReferenceEligibilityPolicy` in 
+`application/policy/`) as the reference implementation for service eligibility verification.
 
 - **Backend**: `application/providers/reference/` (ReferenceService + ReferenceVoucherImporter)
 - **Admin UI**: `casi-management/import-reference-vouchers/` (CSV import tab, local-dev-only)
