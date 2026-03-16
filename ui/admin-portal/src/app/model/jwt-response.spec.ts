@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {JwtResponse} from "./jwt-response";
+import {JwtAuthenticationResponse} from "./jwt-authentication-response";
 import {User} from "./user";
 import {MockUser} from "../MockData/MockUser";
 
@@ -23,17 +23,17 @@ describe('JwtResponse', () => {
     // Mock data
     const mockUser: User = new MockUser();
 
-    const jwtResponse: JwtResponse = {
+    const jwtResponse: JwtAuthenticationResponse = {
       accessToken: 'mockAccessToken',
-      name: 'John Doe',
-      gender: 'Male',
-      user: mockUser
+      tokenType: 'Bearer',
+      user: mockUser,
+      canViewChats: true,
     };
 
     // Assertions
     expect(jwtResponse.accessToken).toEqual('mockAccessToken');
-    expect(jwtResponse.name).toEqual('John Doe');
-    expect(jwtResponse.gender).toEqual('Male');
+    expect(jwtResponse.tokenType).toEqual('Bearer');
+    expect(jwtResponse.canViewChats).toEqual(true);
 
     // Validate User object structure
     expect(jwtResponse.user.id).toEqual(1);

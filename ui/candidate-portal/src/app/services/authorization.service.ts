@@ -10,8 +10,7 @@ export class AuthorizationService {
   }
 
   canViewChats(): boolean {
-    //todo This can be computed from policy rules.
-    return false;
+    return this.authenticationService.canViewChats();
   }
 
 }
