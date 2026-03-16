@@ -189,7 +189,7 @@ const routes: Routes = [
         path: 'candidate-services',
         canActivate: [RoleGuardService, DpaGuard],
         data: {
-          expectedRoles: [Role.systemadmin]
+          expectedRoles: [Role.systemadmin, Role.admin, Role.partneradmin]
         },
         children: [
           {
