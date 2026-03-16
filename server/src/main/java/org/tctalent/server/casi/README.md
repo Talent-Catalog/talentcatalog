@@ -207,6 +207,8 @@ public class UdemyTaskPolicy implements TaskPolicy {
 }
 ```
 
+### Service-code branching inside a TaskPolicy
+
 Task policies are registered **per provider**, not per provider+serviceCode. If a single provider 
 offers multiple service codes with different task workflows, branch on the service code inside the 
 policy methods. Every event carries the full `ServiceAssignment`, so `serviceCode` is always 

@@ -51,7 +51,7 @@ public class ServiceAssignmentEntity extends AbstractDomainObject<Long> {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
-  private ServiceProvider provider; // e.g. "DUOLINGO"
+  private ServiceProvider provider;  // e.g. "DUOLINGO"
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
