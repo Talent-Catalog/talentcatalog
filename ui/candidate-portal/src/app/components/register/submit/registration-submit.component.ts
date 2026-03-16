@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Candidate, CandidateStatus, SubmitRegistrationRequest} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {TermsInfoDto, TermsType} from "../../../model/terms-info-dto";
+import {TermsInfoDto} from "../../../model/terms-info-dto";
 import {TermsInfoService} from "../../../services/terms-info.service";
 
 /**
@@ -32,7 +32,7 @@ export class RegistrationSubmitComponent implements OnInit {
   ngOnInit(): void {
 
     //Fetch the current candidate privacy policy
-    this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY).subscribe(
+    this.termsInfoService.getCurrentCandidatePolicy().subscribe(
       {
         next: termsInfo => this.currentPrivacyPolicy = termsInfo,
         error: err => this.error = err

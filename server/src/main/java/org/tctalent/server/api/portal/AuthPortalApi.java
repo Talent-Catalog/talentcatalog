@@ -92,6 +92,7 @@ public class AuthPortalApi {
             .add("accessToken")
             .add("tokenType")
             .add("canViewChats")
+            .add("tcInstanceType")
             .add("user", candidateBriefDto())
             ;
     }

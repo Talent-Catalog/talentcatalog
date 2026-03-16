@@ -71,6 +71,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TcInstanceType;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -126,6 +127,9 @@ public class UserServiceImpl implements UserService {
     private QrGenerator totpQrGenerator;
     @Autowired
     private CodeVerifier totpVerifier;
+
+    @Value("${tc.instance-type}")
+    private TcInstanceType tcInstanceType;
 
     @Override
     public @Nullable User findByUsernameAndRole(String username, Role role) {
@@ -468,7 +472,9 @@ public class UserServiceImpl implements UserService {
             String jwt = tokenProvider.generateToken(auth);
 
             JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
-            response.setCanViewChats(chatPolicy.canSubscribeToChats(authService.getLoggedInUserDetails()));
+            response.setCanViewChats(
+                chatPolicy.canSubscribeToChats(authService.getLoggedInUserDetails()));
+            response.setTcInstanceType(tcInstanceType);
             return response;
 
         } catch (BadCredentialsException e) {

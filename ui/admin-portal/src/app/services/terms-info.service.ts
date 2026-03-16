@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {TermsInfoDto, TermsType} from "../model/terms-info-dto";
+import {AuthenticationService} from "./authentication.service";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,15 @@ import {TermsInfoDto, TermsType} from "../model/terms-info-dto";
 export class TermsInfoService {
   private apiUrl: string = environment.termsInfoApiUrl + '/terms-info';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private authenticationService: AuthenticationService
+  ) { }
+
+  getCurrentCandidatePolicy(): Observable<TermsInfoDto> {
+    let termsType = this.authenticationService.getCandidatePolicyType();
+    return this.getCurrentByType(termsType);
+  }
 
   getCurrentByType(type: TermsType): Observable<TermsInfoDto> {
     let typeName = TermsType[type];

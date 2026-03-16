@@ -24,6 +24,8 @@ import {User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {LocalStorageService} from "./local-storage.service";
 import {CandidateStatus, RegisterCandidateRequest} from "../model/candidate";
+import {TcInstanceType} from "../model/tc-instance-type";
+import {TermsType} from "../model/terms-info-dto";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;
@@ -94,6 +96,16 @@ export class AuthenticationService implements OnDestroy {
     return this.localStorageService.get('can_view_chats');
   }
 
+  getCandidatePolicyType(): TermsType {
+    let tcInstanceType = this.getTcInstanceType();
+    return tcInstanceType == TcInstanceType.GRN ?
+      TermsType.GRN_CANDIDATE_PRIVACY_POLICY : TermsType.TBB_CANDIDATE_PRIVACY_POLICY;
+  }
+
+  getTcInstanceType(): TcInstanceType {
+    return this.localStorageService.get('tc_instance_type');
+  }
+
   isAuthenticated(): boolean {
     return this.getLoggedInUser() != null;
   }
@@ -154,10 +166,12 @@ export class AuthenticationService implements OnDestroy {
     this.localStorageService.remove('access-token');
     this.localStorageService.remove('user');
     this.localStorageService.remove('can_view_chats');
+    this.localStorageService.remove('tc_instance_type');
 
     //Update new credentials in storage
     this.localStorageService.set('access-token', response.accessToken);
     this.localStorageService.set('can_view_chats', response.canViewChats);
+    this.localStorageService.set('tc_instance_type', response.tcInstanceType);
 
     this.setLoggedInUser(response.user);
   }
