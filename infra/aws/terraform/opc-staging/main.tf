@@ -161,6 +161,13 @@ variable "translation_password" {
   default     = ""
 }
 
+variable "tc_boot_admin_password" {
+  description = "System admin password for TC"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
 # Configure the AWS provider
 # NOTE: Provider configuration MUST remain here (cannot be moved to parent module).
 # Providers cannot have configuration parameters injected via module variables.
@@ -255,6 +262,7 @@ module "tc-plus-staging" {
   tc_skills_extraction_api_url           = "https://test.skills.plus.tctalent.org"
   web_admin                              = "https://test.plus.tctalent.org/admin-portal"
   web_portal                             = "https://test.plus.tctalent.org/candidate-portal"
+  tc_instance_type                       = "TBB"
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key
@@ -280,6 +288,7 @@ module "tc-plus-staging" {
   spring_datasource_password = var.spring_datasource_password
   tc_api_key                 = var.tc_api_key
   translation_password       = var.translation_password
+  tc_boot_admin_password     = var.tc_boot_admin_password
 }
 
 # Configure the opc-staging terraform workspace
