@@ -247,9 +247,9 @@ module "tc-plus-staging" {
   m2_home                                = "/usr/local/apache-maven"
   server_port                            = "8080"
   server_url                             = "https://tctalent-test.org/"
-  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
-  sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"  # todo: either create for OPC or decouple TC+ from SF
-  sf_base_login_url                      = "https://test.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
+  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"
+  sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
+  sf_base_login_url                      = "https://test.salesforce.com/"
   spring_client_url                      = "-" # todo: confirm if used/needed
   spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- in parallel to local RDS
   spring_datasource_username             = "tctalent"
@@ -257,7 +257,7 @@ module "tc-plus-staging" {
   spring_db_pool_min                     = "20"
   spring_servlet_max_file_size           = "10MB"
   spring_servlet_max_request_size        = "10MB"
-  tc_api_url                             = "https://test.api.tctalent.org"  # todo: set TC API URL
+  tc_api_url                             = "https://test.api.tctalent.org"
   tc_cors_urls                           = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
   tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
   tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
