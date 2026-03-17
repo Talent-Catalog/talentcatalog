@@ -26,16 +26,15 @@
 <div class="attachments">
   <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 
-    <div class="text-end" *ngIf="!preview && attachment.createdBy.id == user?.id">
-      <button class="btn btn-secondary btn-card"
-              (click)="editCandidateAttachment(attachment)"
-      >
+    <div class="d-flex gap-2 justify-content-end" *ngIf="!preview && attachment.createdBy.id == user?.id">
+      <tc-button color="info"
+                 (onClick)="editCandidateAttachment(attachment)">
         <i class="d-flex fas fa-edit fa-xs"></i>
-      </button>
+      </tc-button>
 
-      <button class="btn btn-danger btn-card"
-              [disabled]="deleting"
-              (click)="deleteAttachment(attachment)">&times;</button>
+      <tc-button color="error"
+                 [disabled]="deleting"
+                 (onClick)="deleteAttachment(attachment)">&times;</tc-button>
 
 
     </div>
@@ -70,20 +69,18 @@
         </div>
 
         <div *ngIf="editTarget?.id == attachment.id" class="mb-3">
-          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</h6>
+          <tc-label for="attachmentName">{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</tc-label>
           <div class="d-flex">
-            <input type="text"
-                   class="form-control"
-                   placeholder="" id="attachmentName"
-                   [(ngModel)]="attachment.name"
-            >
+            <tc-input type="text"
+                      placeholder="" id="attachmentName"
+                      [(ngModel)]="attachment.name">
+            </tc-input>
             <div>
-              <button class="ms-2 btn btn-primary"
-                      (click)="updateAttachmentName(attachment, i)"
-              >
+              <tc-button class="ms-2"
+                         (onClick)="updateAttachmentName(attachment, i)">
                 <span *ngIf="!saving">{{ 'FORM.LABEL.SAVE' | translate }}</span>
                 <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
-              </button>
+              </tc-button>
 
             </div>
           </div>
@@ -121,7 +118,6 @@
 </div>
 
 <app-error [error]="error"></app-error>
-
 
 
 
