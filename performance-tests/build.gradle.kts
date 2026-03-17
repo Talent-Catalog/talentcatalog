@@ -47,6 +47,7 @@ dependencies {
     // DB + config dependencies used by simulations
     gatlingImplementation("org.postgresql:postgresql:$postgresVersion")
     gatlingImplementation("com.typesafe:config:$typesafeConfigVersion")
+    gatlingImplementation("com.zaxxer:HikariCP:5.1.0")
 }
 
 gatling {
