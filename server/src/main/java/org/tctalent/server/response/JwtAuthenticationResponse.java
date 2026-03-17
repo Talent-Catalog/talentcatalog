@@ -24,6 +24,7 @@ import org.tctalent.server.model.db.User;
 @Setter
 public class JwtAuthenticationResponse {
 
+    private boolean canViewChats;
     private User user;
     private String accessToken;
     private String tokenType = "Bearer";
