@@ -17,6 +17,7 @@
 import {JwtAuthenticationResponse} from "./jwt-authentication-response";
 import {User} from "./user";
 import {MockUser} from "../MockData/MockUser";
+import {TcInstanceType} from "./tc-instance-type";
 
 describe('JwtResponse', () => {
   it('should create a valid JwtResponse object', () => {
@@ -25,6 +26,7 @@ describe('JwtResponse', () => {
 
     const jwtResponse: JwtAuthenticationResponse = {
       accessToken: 'mockAccessToken',
+      tcInstanceType: TcInstanceType.TBB,
       tokenType: 'Bearer',
       user: mockUser,
       canViewChats: true,
