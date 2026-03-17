@@ -204,6 +204,8 @@ module "tc-plus-prod" {
   container_image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-prod"
   container_port  = 8080
   ecs_tasks_count = 2
+  fargate_cpu     = 1024
+  fargate_memory  = 2048
 
   # Database configuration
   # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
