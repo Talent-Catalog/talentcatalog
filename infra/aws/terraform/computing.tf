@@ -240,8 +240,8 @@ resource "aws_ecs_task_definition" "web-app" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  cpu                      = 256
-  memory                   = 2048
+  cpu                      = var.fargate_cpu
+  memory                   = var.fargate_memory
   container_definitions = jsonencode([
     {
       name                   = "${var.app}-${var.env}"
