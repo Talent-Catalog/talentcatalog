@@ -200,7 +200,7 @@ module "tc-plus-staging" {
   # ECS configuration
   app             = "tc-plus"
   env             = "opc-staging"
-  site_domain     = "test.plus.tctalent.org"
+  site_domain     = "tctalent-test.org"
   container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging"
   container_port  = 8080
   ecs_tasks_count = 1
@@ -244,7 +244,7 @@ module "tc-plus-staging" {
   m2                                     = "/usr/local/apache-maven/bin"
   m2_home                                = "/usr/local/apache-maven"
   server_port                            = "8080"
-  server_url                             = "https://test.plus.tctalent.org/"
+  server_url                             = "https://tctalent-test.org/"
   sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
   sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"  # todo: either create for OPC or decouple TC+ from SF
   sf_base_login_url                      = "https://test.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
@@ -256,12 +256,12 @@ module "tc-plus-staging" {
   spring_servlet_max_file_size           = "10MB"
   spring_servlet_max_request_size        = "10MB"
   tc_api_url                             = "https://test.api.tctalent.org"  # todo: set TC API URL
-  tc_cors_urls                           = "https://test.plus.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
+  tc_cors_urls                           = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
   tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
   tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
-  tc_skills_extraction_api_url           = "https://test.skills.plus.tctalent.org"
-  web_admin                              = "https://test.plus.tctalent.org/admin-portal"
-  web_portal                             = "https://test.plus.tctalent.org/candidate-portal"
+  tc_skills_extraction_api_url           = "https://test.skills.tctalent.org"
+  web_admin                              = "https://tctalent-test.org/admin-portal"
+  web_portal                             = "https://tctalent-test.org/candidate-portal"
   tc_instance_type                       = "TBB"
 
   # Secrets: loaded from secrets.auto.tfvars
