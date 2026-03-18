@@ -17,24 +17,30 @@
 <div class="text-end" *ngIf="!preview">
   <tc-button color="error" class="me-2"
           [disabled]="disabled"
-          (onClick)="delete()">
-    &times;
-  </tc-button>
+          (onClick)="delete()">&times;</tc-button>
 
   <tc-button color="info"
           [disabled]="disabled"
-          (onClick)="edit()">
+          (onClick)="edit()"
+  >
     <i class="fas fa-edit fa-xs"></i>
   </tc-button>
 </div>
 
-<p>{{'EDUCATIONTYPE.'+candidateEducation.educationType  | uppercase | translate}}</p>
+<tc-description-list direction="column" compact size="lg">
+  <tc-description-item label="Education Type">
+    {{'EDUCATIONTYPE.'+candidateEducation.educationType  | uppercase | translate}}
+  </tc-description-item>
+</tc-description-list>
 
 <h5>{{candidateEducation.courseName}}</h5>
 
-<p>{{candidateEducation.institution}} | {{getCountryName(candidateEducation.country)}}</p>
+<tc-description-list direction="column" compact size="lg">
+  <tc-description-item label="Institution">
+    {{candidateEducation.institution}} | {{getCountryName(candidateEducation.country)}}
+  </tc-description-item>
 
-<p *ngIf="candidateEducation.educationMajor">
-  {{ 'CARD.EDUCATION.MAJOR' | translate: { major: getMajorName(candidateEducation.educationMajor) } }}
-</p>
-
+  <tc-description-item *ngIf="candidateEducation.educationMajor" label="Major">
+    {{ 'CARD.EDUCATION.MAJOR' | translate: { major: getMajorName(candidateEducation.educationMajor) } }}
+  </tc-description-item>
+</tc-description-list>
