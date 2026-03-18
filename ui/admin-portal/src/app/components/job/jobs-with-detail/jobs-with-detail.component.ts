@@ -69,7 +69,18 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   }
 
   onJobSelected(job: Job) {
-    this.selectedJob = job;
+    this.loading = true;
+    this.error = null;
+    this.jobService.get(job.id).subscribe({
+      next: (fullJob: Job) => {
+        this.selectedJob = fullJob;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    });
   }
 
   doToggleStarred() {
