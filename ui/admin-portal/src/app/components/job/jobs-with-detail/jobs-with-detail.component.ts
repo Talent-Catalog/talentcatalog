@@ -79,9 +79,23 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
       return;
     }
 
+    this.fetchFullJob(job.id);
+  }
+
+  onRefreshRequested() {
+    this.jobCache.clear();
+
+    if (!this.selectedJob) {
+      return;
+    }
+
+    this.fetchFullJob(this.selectedJob.id);
+  }
+
+  private fetchFullJob(jobId: number) {
     this.loading = true;
     this.error = null;
-    this.jobService.get(job.id).subscribe({
+    this.jobService.get(jobId).subscribe({
       next: (fullJob: Job) => {
         this.jobCache.set(fullJob.id, fullJob);
         this.selectedJob = fullJob;
