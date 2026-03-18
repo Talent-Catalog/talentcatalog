@@ -5,7 +5,7 @@ and fastest path for developers to add a new CandidateAssistanceService (e.g. Ud
 
 ## Layout (what lives where)
 
-The CASIS module is organized into several key packages:
+The CASI module is organized into several key packages:
 
 ```text
 casi
