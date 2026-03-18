@@ -185,23 +185,23 @@ provider "aws" {
 locals {
   common_tags = {
     Project     = "OPC"
-    Application = "TC-Plus"
+    Application = "TC-Server"
     Environment = "staging"
     ManagedBy   = "terraform"
   }
 }
 
-# TC-Plus infrastructure for OPC AWS staging account
-module "tc-plus-staging" {
+# TC-Server infrastructure for OPC AWS staging account
+module "tc-server-staging" {
   source = "../"
 
   common_tags = local.common_tags
 
   # ECS configuration
-  app             = "tc-plus"
+  app             = "tc-server"
   env             = "opc-staging"
   site_domain     = "tctalent-test.org"
-  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging"
+  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-staging"
   container_port  = 8080
   ecs_tasks_count = 1
   fargate_cpu     = 512
