@@ -23,11 +23,10 @@
 </div>
 <div class="modal-footer">
   <span *ngIf="deleting"><i class="fas fa-spinner fa-spin"></i> deleting...</span>
-  <button type="button" class="btn btn-danger"
-          [disabled]="deleting"
-          (click)="confirm()">{{ 'REGISTRATION.EXAM.DELETE.YES' | translate }}</button>
-  <button type="button" class="btn btn-secondary"
-          [disabled]="deleting"
-          (click)="cancel()">{{ 'REGISTRATION.EXAM.DELETE.NO' | translate }}</button>
+  <tc-button color="error"
+             [disabled]="deleting"
+             (onClick)="confirm()">{{ 'REGISTRATION.EXAM.DELETE.YES' | translate }}</tc-button>
+  <tc-button color="secondary"
+             [disabled]="deleting"
+             (onClick)="cancel()">{{ 'REGISTRATION.EXAM.DELETE.NO' | translate }}</tc-button>
 </div>
-

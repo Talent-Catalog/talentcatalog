@@ -16,7 +16,6 @@
 
 package org.tctalent.server.casi.domain.mappers;
 
-import org.springframework.stereotype.Component;
 import org.tctalent.server.casi.api.dto.ServiceAssignmentDto;
 import org.tctalent.server.casi.api.dto.ServiceResourceDto;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
@@ -30,7 +29,6 @@ import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
  *
  * @author sadatmalik
  */
-@Component
 public class ServiceAssignmentMapper {
   public static ServiceAssignment toModel(ServiceAssignmentEntity e) {
     if (e == null) {
