@@ -39,6 +39,8 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   error: any;
   loading: boolean;
 
+  private readonly jobCache = new Map<number, Job>();
+
   @Input() searchBy: SearchOppsBy;
   @Input() tabIsActive: boolean;
 
@@ -69,10 +71,19 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   }
 
   onJobSelected(job: Job) {
+    const cachedJob = this.jobCache.get(job.id);
+    if (cachedJob) {
+      this.selectedJob = cachedJob;
+      this.loading = false;
+      this.error = null;
+      return;
+    }
+
     this.loading = true;
     this.error = null;
     this.jobService.get(job.id).subscribe({
       next: (fullJob: Job) => {
+        this.jobCache.set(fullJob.id, fullJob);
         this.selectedJob = fullJob;
         this.loading = false;
       },
@@ -87,7 +98,11 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
     this.loading = true;
     this.error = null
     this.jobService.updateStarred(this.selectedJob.id, !this.isStarred()).subscribe(
-      (job: Job) => {this.selectedJob = job; this.loading = false},
+      (job: Job) => {
+        this.selectedJob = job;
+        this.jobCache.set(job.id, job);
+        this.loading = false
+      },
       (error) => {this.error = error; this.loading = false}
     )
   }
@@ -98,6 +113,8 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
 
   // Refresh the jobs component (list of jobs) so that the new updated details can be displayed.
   onJobUpdated(job: Job) {
+    this.selectedJob = job;
+    this.jobCache.set(job.id, job);
     this.jobsComponent.search();
   }
 }
