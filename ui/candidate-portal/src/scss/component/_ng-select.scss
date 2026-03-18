@@ -35,6 +35,10 @@
 .tc-select {
   width: 100%;
 
+  &.ng-select-single .ng-select-container {
+    height: 37px;
+  }
+
   &.ng-select-multiple {
     .ng-select-container .ng-value-container {
       padding-top: 3px;
@@ -46,6 +50,7 @@
   }
 
   .ng-select-container {
+    @include paragraph-md;
     @include border-color-base;
     border-width: 1px;
     border-style: solid;

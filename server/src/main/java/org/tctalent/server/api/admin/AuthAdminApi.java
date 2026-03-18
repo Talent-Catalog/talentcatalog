@@ -102,6 +102,7 @@ public class AuthAdminApi {
         return new DtoBuilder()
                 .add("accessToken")
                 .add("tokenType")
+                .add("canViewChats")
                 .add("user", userBriefDto())
                 ;
     }
