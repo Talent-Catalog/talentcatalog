@@ -18,26 +18,26 @@
 
   <div class="container" [class.justify-content-end]="hideBack">
 
-    <button class="btn btn-outline-primary"
+    <tc-button style="width:150px;"
             [hidden]="hideBack"
             [disabled]="regoService.registering && regoService.currentStepIndex == 0 || backDisabled"
-            (click)="back()">
+            (onClick)="back()">
       <span [ngSwitch]="type">
         <ng-container *ngSwitchCase="'update'">{{ 'REGISTRATION.FOOTER.CANCEL' | translate }}</ng-container>
         <ng-container *ngSwitchDefault>{{ 'REGISTRATION.FOOTER.BACK' | translate }}</ng-container>
       </span>
-    </button>
+    </tc-button>
 
-    <button class="btn btn-primary"
+    <tc-button style="width:150px;"
             [hidden]="hideNext"
             [disabled]="regoService.registering && regoService.currentStepIndex >= regoService.steps.length - 1 || nextDisabled"
-            (click)="next()">
+            (onClick)="next()">
       <span [ngSwitch]="type">
         <ng-container *ngSwitchCase="'update'">{{ 'REGISTRATION.FOOTER.UPDATE' | translate }}</ng-container>
         <ng-container *ngSwitchCase="'submit'">{{ 'REGISTRATION.FOOTER.SUBMIT' | translate }}</ng-container>
         <ng-container *ngSwitchDefault>{{ 'REGISTRATION.FOOTER.NEXT' | translate }}</ng-container>
       </span>
-    </button>
+    </tc-button>
 
   </div>
 

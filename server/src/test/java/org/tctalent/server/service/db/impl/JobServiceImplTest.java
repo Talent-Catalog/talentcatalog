@@ -117,6 +117,7 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.policy.ChatPolicy;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -153,6 +154,7 @@ class JobServiceImplTest {
     private static final String URL = "www.url.com";
     private static final Specification<SalesforceJobOpp> FAKE_SPEC = (root, query, cb) -> null;
 
+    @Mock private ChatPolicy chatPolicy;
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
     @Mock private SavedSearchService savedSearchService;
@@ -387,6 +389,7 @@ class JobServiceImplTest {
     @DisplayName("should call salesforceJobOppService to create job and update TC version with SF "
         + "details for default job creator user")
     void createJob_shouldCallSalesforceJobOppServiceToCreateJobAndThenUpdateTCVersion() {
+        given(chatPolicy.canCreateChats(any())).willReturn(true);
         given(userService.getLoggedInUser()).willReturn(adminUser);
         adminUser.setPartner(getDefaultPartner());
         createJobRequest.setSfJoblink(SF_JOB_LINK); // Default job creator must have SF equivalent
@@ -458,6 +461,7 @@ class JobServiceImplTest {
     }
 
     private void setUpAndCompleteCreateJobPath() {
+        given(chatPolicy.canCreateChats(any())).willReturn(true);
         given(userService.getLoggedInUser()).willReturn(adminUser);
         adminUser.getPartner().setEmployer(getEmployer());
         adminUser.getPartner().setJobCreator(true);

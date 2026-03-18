@@ -17,10 +17,12 @@
             {{ ('PROFILE.CONTACT.EMAIL'| translate) + ': ' + partnerEmail }}
           </div>
         </div>
-        <button class="btn btn-sm btn-secondary" [routerLink]="'/profile'">
+        <tc-button [routerLink]="'/profile'">
+          <tc-icon color="white">
           <i class="me-1 fas fa-arrow-left"></i>
+          </tc-icon>
           Back
-        </button>
+        </tc-button>
       </div>
     </app-tab-header>
 
@@ -72,10 +74,10 @@
       <div *ngIf="requestAcceptance">
         <div>
 
-          <button class="btn btn-success" (click)="acceptTerms()"
+          <tc-button color="success" (onClick)="acceptTerms()"
           >
             {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
-          </button>
+          </tc-button>
         </div>
       </div>
     </div>

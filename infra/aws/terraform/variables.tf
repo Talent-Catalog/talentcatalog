@@ -351,6 +351,12 @@ variable "web_portal" {
   description = "Candidate portal URL"
 }
 
+variable "tc_instance_type" {
+  type        = string
+  description = "TC instance type (e.g. TBB)"
+  default     = "TBB"
+}
+
 # --- Auto-populated parameters (conditionally managed by Terraform) ---
 
 variable "redis_host" {
@@ -481,6 +487,11 @@ variable "sf_user" {
   sensitive   = true
 }
 
+variable "slack_channel_id" {
+  type        = string
+  description = "Slack channel ID for job registration posts (e.g. C048GS1KHPG test, C029WMY6H1U live)"
+}
+
 variable "slack_token" {
   type        = string
   description = "Slack token"
@@ -503,4 +514,11 @@ variable "translation_password" {
   type        = string
   description = "Translation password"
   sensitive   = true
+}
+
+variable "tc_boot_admin_password" {
+  type        = string
+  description = "System admin password for TC"
+  sensitive   = true
+  default     = ""
 }

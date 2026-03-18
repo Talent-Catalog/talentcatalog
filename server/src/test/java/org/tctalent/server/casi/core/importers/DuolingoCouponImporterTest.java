@@ -29,7 +29,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,7 +88,7 @@ class DuolingoCouponImporterTest {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
       assertEquals(2, couponList.size());
       assertEquals("ACC123", couponList.get(0).getResourceCode());
-      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), couponList.get(0).getExpiresAt());
+      assertEquals(OffsetDateTime.of(2024, 12, 31, 23, 59, 59, 0, ZoneOffset.UTC), couponList.get(0).getExpiresAt());
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(0).getStatus());
       assertEquals("ACC456", couponList.get(1).getResourceCode());
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(1).getStatus());
@@ -219,7 +220,7 @@ class DuolingoCouponImporterTest {
     // Assert
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
-      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), couponList.get(0).getExpiresAt());
+      assertEquals(OffsetDateTime.of(2024, 12, 31, 23, 59, 59, 0, ZoneOffset.UTC), couponList.get(0).getExpiresAt());
       return true;
     }));
   }
@@ -245,7 +246,7 @@ class DuolingoCouponImporterTest {
     // Assert
     verify(serviceResourceRepository, times(1)).saveAll(argThat(coupons -> {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
-      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59), couponList.get(0).getExpiresAt());
+      assertEquals(OffsetDateTime.of(2024, 12, 31, 23, 59, 0, 0, ZoneOffset.UTC), couponList.get(0).getExpiresAt());
       return true;
     }));
   }
@@ -301,9 +302,9 @@ class DuolingoCouponImporterTest {
       List<ServiceResourceEntity> couponList = StreamSupport.stream(coupons.spliterator(), false).toList();
       assertEquals(2, couponList.size());
       // First coupon uses format with seconds
-      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), couponList.get(0).getExpiresAt());
+      assertEquals(OffsetDateTime.of(2024, 12, 31, 23, 59, 59, 0, ZoneOffset.UTC), couponList.get(0).getExpiresAt());
       // Second coupon without seconds
-      assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59), couponList.get(1).getExpiresAt());
+      assertEquals(OffsetDateTime.of(2024, 12, 31, 23, 59, 0, 0, ZoneOffset.UTC), couponList.get(1).getExpiresAt());
       return true;
     }));
   }
@@ -1041,7 +1042,7 @@ class DuolingoCouponImporterTest {
         assertEquals(expectedCode, coupon.getResourceCode());
         assertEquals(ServiceCode.TEST_PROCTORED, coupon.getServiceCode());
         assertEquals(ResourceStatus.AVAILABLE, coupon.getStatus());
-        assertEquals(LocalDateTime.of(2024, 12, 31, 23, 59, 59), coupon.getExpiresAt());
+        assertEquals(OffsetDateTime.of(2024, 12, 31, 23, 59, 59, 0, ZoneOffset.UTC), coupon.getExpiresAt());
       }
       return true;
     }));

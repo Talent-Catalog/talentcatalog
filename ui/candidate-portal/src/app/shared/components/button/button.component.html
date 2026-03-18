@@ -23,6 +23,7 @@
           [disabled]="isDisabled"
           [attr.aria-label]="ariaLabel"
           [routerLink]="routerLink"
+          [queryParamsHandling]="queryParamsHandling"
           (click)="clicked($event)">
     <ng-container *ngTemplateOutlet="content"></ng-container>
   </button>

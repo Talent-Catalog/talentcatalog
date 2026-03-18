@@ -16,7 +16,7 @@
 
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
-import {of, throwError} from 'rxjs';
+import {of, Subject, throwError} from 'rxjs';
 import {ViewCandidateOppFromUrlComponent} from './view-candidate-opp-from-url.component';
 import {CandidateOpportunityService} from '../../../services/candidate-opportunity.service';
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
@@ -41,7 +41,7 @@ describe('ViewCandidateOppFromUrlComponent', () => {
   beforeEach(waitForAsync(() => {
     // Create a spy object for CandidateOpportunityService
     const spyOpportunityService = jasmine.createSpyObj('CandidateOpportunityService', ['get']);
-    mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser','canViewChats'], { loggedInUser$: new Subject<any>() });
     spyOpportunityService.get.and.callThrough();
 
     TestBed.configureTestingModule({

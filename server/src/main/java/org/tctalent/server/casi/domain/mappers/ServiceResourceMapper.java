@@ -16,7 +16,6 @@
 
 package org.tctalent.server.casi.domain.mappers;
 
-import org.springframework.stereotype.Component;
 import org.tctalent.server.casi.api.dto.ServiceResourceDto;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
@@ -27,7 +26,6 @@ import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
  *
  * @author sadatmalik
  */
-@Component
 public class ServiceResourceMapper {
   public static ServiceResource toModel(ServiceResourceEntity e) {
     if (e == null) {

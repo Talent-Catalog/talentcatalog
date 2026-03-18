@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -105,7 +105,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
         .serviceCode(ServiceCode.TEST_PROCTORED)
         .resourceCode(RESOURCE_CODE)
         .status(ResourceStatus.AVAILABLE)
-        .expiresAt(LocalDateTime.now().plusDays(30))
+        .expiresAt(OffsetDateTime.now().plusDays(30))
         .build();
 
     testAssignment = ServiceAssignment.builder()
@@ -116,7 +116,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
         .candidateId(CANDIDATE_ID)
         .actorId(testUser.getId())
         .status(AssignmentStatus.ASSIGNED)
-        .assignedAt(LocalDateTime.now())
+        .assignedAt(OffsetDateTime.now())
         .build();
 
     given(authService.getLoggedInUser()).willReturn(Optional.of(testUser));
@@ -369,7 +369,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
         .candidateId(789L) // Different candidate
         .actorId(testUser.getId())
         .status(AssignmentStatus.ASSIGNED)
-        .assignedAt(LocalDateTime.now())
+        .assignedAt(OffsetDateTime.now())
         .build();
 
     // simulate partial success: only 2 assignments returned (some candidates already had assignments)

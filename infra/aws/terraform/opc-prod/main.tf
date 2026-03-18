@@ -128,6 +128,11 @@ variable "sf_user" {
   default     = ""
 }
 
+variable "slack_channel_id" {
+  description = "Slack channel ID for job posts (test: C048GS1KHPG, live: C029WMY6H1U)"
+  type        = string
+}
+
 variable "slack_token" {
   description = "Slack token (todo: need one for OPC)"
   type        = string
@@ -151,6 +156,13 @@ variable "tc_api_key" {
 
 variable "translation_password" {
   description = "Translation password"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "tc_boot_admin_password" {
+  description = "Boot admin password for TC-Plus"
   type        = string
   sensitive   = true
   default     = ""
@@ -250,6 +262,7 @@ module "tc-plus-prod" {
   tc_skills_extraction_api_url           = "https://skills.plus.tctalent.org" # todo: confirm prod URL
   web_admin                              = "https://plus.tctalent.org/admin-portal"
   web_portal                             = "https://plus.tctalent.org/candidate-portal"
+  tc_instance_type                       = "TBB"
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key
@@ -270,10 +283,12 @@ module "tc-plus-prod" {
   sf_consumer_key            = var.sf_consumer_key
   sf_private_key             = var.sf_private_key
   sf_user                    = var.sf_user
+  slack_channel_id           = var.slack_channel_id
   slack_token                = var.slack_token
   spring_datasource_password = var.spring_datasource_password
   tc_api_key                 = var.tc_api_key
   translation_password       = var.translation_password
+  tc_boot_admin_password     = var.tc_boot_admin_password
 }
 
 # Configure the opc-prod terraform workspace

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,24 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.casi.domain.persistence;
+package org.tctalent.server.model.db;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-@Tag("skip-test-in-gradle-build")
-@DataJpaTest
-class ServiceAssignmentRepositoryTest {
-
-  @Autowired
-  ServiceAssignmentRepository repo;
-
-  @Test
-  void loads() {
-    assertNotNull(repo);
-  }
+/**
+ * Defines the type of the Talent Catalog instance that is running.
+ *
+ * @author John Cameron
+ */
+public enum InstanceType {
+    GRN,
+    TBB
 }

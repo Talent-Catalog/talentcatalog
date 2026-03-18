@@ -40,6 +40,7 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   loading: boolean;
 
   @Input() searchBy: SearchOppsBy;
+  @Input() tabIsActive: boolean;
 
   /**
    * This is passed in from a higher level component which tracks whether the overall read status

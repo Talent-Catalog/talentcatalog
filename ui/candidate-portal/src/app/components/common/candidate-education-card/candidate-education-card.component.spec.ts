@@ -14,28 +14,150 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
 import {CandidateEducationCardComponent} from './candidate-education-card.component';
+import {CandidateEducation} from '../../../model/candidate-education';
+import {Country} from '../../../model/country';
+import {EducationMajor} from '../../../model/education-major';
+
+function makeCountry(id: number, name: string): Country {
+  return {
+    id,
+    name,
+    status: 'active',
+    translatedName: name
+  };
+}
+
+function makeMajor(id: number, name: string): EducationMajor {
+  return {id, name};
+}
+
+function makeEducation(overrides: Partial<CandidateEducation> = {}): CandidateEducation {
+  return {
+    id: 1,
+    educationType: 'Bachelor',
+    courseName: 'Computer Science',
+    institution: 'Example University',
+    lengthOfCourseYears: 4,
+    yearCompleted: '2024',
+    country: makeCountry(1, 'Jordan'),
+    educationMajor: makeMajor(10, 'Engineering'),
+    ...overrides
+  };
+}
 
 describe('CandidateEducationCardComponent', () => {
   let component: CandidateEducationCardComponent;
   let fixture: ComponentFixture<CandidateEducationCardComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CandidateEducationCardComponent ]
-    })
-    .compileComponents();
-  }));
+  async function configureAndCreate(options?: {
+    preview?: boolean;
+    disabled?: boolean;
+    candidateEducation?: CandidateEducation;
+    countries?: Country[];
+    majors?: EducationMajor[];
+  }) {
+    await TestBed.configureTestingModule({
+      declarations: [CandidateEducationCardComponent],
+      imports: [TranslateModule.forRoot()],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(CandidateEducationCardComponent);
     component = fixture.componentInstance;
+
+    component.preview = options?.preview ?? false;
+    component.disabled = options?.disabled ?? false;
+    component.candidateEducation = options?.candidateEducation ?? makeEducation();
+    component.countries = options?.countries ?? [
+      makeCountry(1, 'Jordan'),
+      makeCountry(2, 'Lebanon')
+    ];
+    component.majors = options?.majors ?? [
+      makeMajor(10, 'Engineering'),
+      makeMajor(20, 'Mathematics')
+    ];
+
+    const translateService = TestBed.inject(TranslateService);
+    translateService.use('en');
+
     fixture.detectChanges();
+  }
+
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('should create', async () => {
+    await configureAndCreate();
+    expect(component).toBeTruthy();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('template', () => {
+    it('should render the education details', async () => {
+      await configureAndCreate();
+      const text = (fixture.nativeElement as HTMLElement).textContent || '';
+
+      expect(text).toContain('Computer Science');
+      expect(text).toContain('Example University');
+      expect(text).toContain('Jordan');
+      expect(text).toContain('CARD.EDUCATION.MAJOR');
+    });
+
+    it('should render tc-button actions when not in preview mode', async () => {
+      await configureAndCreate();
+      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
+
+      expect(buttons.length).toBe(2);
+    });
+
+    it('should not render tc-button actions in preview mode', async () => {
+      await configureAndCreate({preview: true});
+      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
+
+      expect(buttons.length).toBe(0);
+    });
+  });
+
+  describe('events', () => {
+    beforeEach(async () => configureAndCreate());
+
+    it('should emit onEdit with the current education', () => {
+      const onEditSpy = spyOn(component.onEdit, 'emit');
+
+      component.edit();
+
+      expect(onEditSpy).toHaveBeenCalledWith(component.candidateEducation);
+    });
+
+    it('should emit onDelete when delete is called', () => {
+      const onDeleteSpy = spyOn(component.onDelete, 'emit');
+
+      component.delete();
+
+      expect(onDeleteSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('helpers', () => {
+    beforeEach(async () => configureAndCreate());
+
+    it('should return the matching country name by id', () => {
+      expect(component.getCountryName(makeCountry(1, 'Ignored'))).toBe('Jordan');
+    });
+
+    it('should return undefined when the country is not found', () => {
+      expect(component.getCountryName(makeCountry(999, 'Missing'))).toBeUndefined();
+    });
+
+    it('should return the matching major name by id', () => {
+      expect(component.getMajorName(makeMajor(10, 'Ignored'))).toBe('Engineering');
+    });
+
+    it('should return undefined when the major is not found', () => {
+      expect(component.getMajorName(makeMajor(999, 'Missing'))).toBeUndefined();
+    });
   });
 });

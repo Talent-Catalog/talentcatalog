@@ -41,7 +41,7 @@
       </tc-icon>
     </td>
     <td>
-      <app-chat-read-status *ngIf="isShowReadStatus(partner)"
+      <app-chat-read-status *ngIf="canViewChats() && isShowReadStatus(partner)"
                             [chats]="[partner._jobChat]"
       >
       </app-chat-read-status>
