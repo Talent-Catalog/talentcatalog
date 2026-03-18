@@ -20,6 +20,8 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
+import org.tctalent.server.casi.domain.model.ServiceCode;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -35,10 +37,36 @@ import org.tctalent.server.model.db.User;
 public interface CandidateAssistanceService {
 
   /**
+   * The service provider for this implementation, e.g., {@link ServiceProvider#LINKEDIN}.
+   * @return the service provider
+   */
+  ServiceProvider provider();
+
+  /**
+   * The service code for this implementation, e.g., {@link ServiceCode#PREMIUM_MEMBERSHIP}.
+   * @return the service code
+   */
+  ServiceCode serviceCode();
+
+  /**
    * Unique key for this provider and service, e.g., "DUOLINGO::PROCTORED_TEST"
    * @return the unique provider-service key
    */
   String providerKey(); // e.g., "DUOLINGO::PROCTORED_TEST"
+
+  /**
+   * Declares the service lists this implementation requires. Each spec defines a saved list name,
+   * its {@link org.tctalent.server.casi.domain.model.ListRole}, and the set of
+   * {@link org.tctalent.server.casi.domain.model.ListAction}s permitted for that list.
+   * <p>
+   * Called at startup by {@link ServiceListSetupService}, which creates missing lists idempotently.
+   * Defaults to an empty list; override to declare lists.
+   *
+   * @return list of service list specs
+   */
+  default List<ServiceListSpec> serviceListSpecs() {
+    return List.of();
+  }
 
   // CREATE
 

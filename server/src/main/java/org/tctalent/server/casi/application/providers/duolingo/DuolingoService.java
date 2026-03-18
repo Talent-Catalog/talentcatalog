@@ -50,12 +50,12 @@ public class DuolingoService extends AbstractCandidateAssistanceService {
   }
 
   @Override
-  protected ServiceProvider provider() {
+  public ServiceProvider provider() {
     return ServiceProvider.DUOLINGO;
   }
 
   @Override
-  protected ServiceCode serviceCode() {
+  public ServiceCode serviceCode() {
     return ServiceCode.TEST_PROCTORED;
   }
 

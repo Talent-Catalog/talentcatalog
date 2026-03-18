@@ -18,6 +18,7 @@ package org.tctalent.server.casi.application.providers.linkedin;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,12 +27,18 @@ import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.casi.core.services.AbstractCandidateAssistanceService;
 import org.tctalent.server.casi.core.services.AssignmentEngine;
+import org.tctalent.server.casi.core.services.ServiceListSpec;
+import org.tctalent.server.casi.domain.model.ListAction;
+import org.tctalent.server.casi.domain.model.ListRole;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
+import org.tctalent.server.casi.domain.persistence.ServiceListEntity;
+import org.tctalent.server.casi.domain.persistence.ServiceListRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.list.SearchSavedListRequest;
@@ -43,11 +50,7 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     private final FileInventoryImporter linkedInImporter;
     private final ResourceAllocator linkedInAllocator;
     private final CandidateService candidateService;
-
-    private static final Set<Long> LINKEDIN_ELIGIBLE_LIST_IDS = Set.of(12608L, 12609L, 12610L,
-        12611L, 12612L, 12613L, 12614L, 12615L, 12616L, 12617L, 12618L, 12619L, 12620L, 12621L,12622L);
-    private static final Long LINKEDIN_ISSUE_REPORT_LIST_ID = 12623L;
-    private static final Long LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID = 12625L;
+    private final ServiceListRepository serviceListRepository;
 
     public LinkedInService(
         ServiceAssignmentRepository aRepo,
@@ -55,6 +58,7 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
         AssignmentEngine engine,
         SavedListService lists,
         CandidateService candidateService,
+        ServiceListRepository serviceListRepository,
         @Qualifier("linkedInCouponImporter") FileInventoryImporter importer,
         @Qualifier("linkedInPremiumMembershipAllocator") ResourceAllocator allocator
     ) {
@@ -62,6 +66,23 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
         this.linkedInAllocator = allocator;
         this.linkedInImporter = importer;
         this.candidateService = candidateService;
+        this.serviceListRepository = serviceListRepository;
+    }
+
+    @Override
+    public List<ServiceListSpec> serviceListSpecs() {
+        return List.of(
+            new ServiceListSpec(
+                "LinkedIn Premium - User Issue Reports",
+                ListRole.USER_ISSUE_REPORT,
+                Set.of(ListAction.DISABLE_ASSIGNED_RESOURCE, ListAction.ASSIGN_NEW_RESOURCE)
+            ),
+            new ServiceListSpec(
+                "LinkedIn Premium - Assignment Failures",
+                ListRole.ASSIGNMENT_FAILURE,
+                Set.of(ListAction.ASSIGN_NEW_RESOURCE)
+            )
+        );
     }
 
     /**
@@ -72,15 +93,19 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
      * @return true if the candidate is eligible
      */
     public Boolean isEligible(Long candidateId) {
-        SearchSavedListRequest request = new SearchSavedListRequest();
-        List<SavedList> candidateLists = savedListService.search(candidateId, request);
+        Set<Long> eligibilityListIds = serviceListRepository
+            .findByProviderAndServiceCodeAndRole(
+                ServiceProvider.LINKEDIN, ServiceCode.PREMIUM_MEMBERSHIP, ListRole.SERVICE_ELIGIBILITY)
+            .stream()
+            .map(e -> e.getSavedList().getId())
+            .collect(Collectors.toSet());
 
-        return candidateLists.stream()
-            .anyMatch(list -> LINKEDIN_ELIGIBLE_LIST_IDS.contains(list.getId()));
+        List<SavedList> candidateLists = savedListService.search(candidateId, new SearchSavedListRequest());
+        return candidateLists.stream().anyMatch(list -> eligibilityListIds.contains(list.getId()));
     }
 
     /**
-     * Returns the candidate's assignment to an RESERVED resource, or a REDEEMED resource
+     * Returns the candidate's assignment to a RESERVED resource, or a REDEEMED resource
      * if no RESERVED one exists, or null if neither is found.
      *
      * @param candidateId
@@ -108,7 +133,7 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
      * @param assignment the {@link ServiceAssignment} containing candidate and coupon details
      */
     public void addCandidateToIssueReportList(ServiceAssignment assignment) {
-        SavedList list = savedListService.get(LINKEDIN_ISSUE_REPORT_LIST_ID);
+        SavedList list = getServiceList(ListRole.USER_ISSUE_REPORT);
         Candidate candidate = candidateService.getCandidate(assignment.getCandidateId());
         savedListService.addCandidateToList(
             list,
@@ -132,7 +157,7 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addCandidateToAssignmentFailureList(Long candidateId, Exception exception) {
-        SavedList list = savedListService.get(LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID);
+        SavedList list = getServiceList(ListRole.ASSIGNMENT_FAILURE);
         Candidate candidate = candidateService.getCandidate(candidateId);
 
         savedListService.addCandidateToList(list, candidate, exception.toString());
@@ -146,29 +171,34 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
      * @return true if the candidate is on the List
      */
     public Boolean isOnIssueReportList(Long candidateId) {
-        SearchSavedListRequest request = new SearchSavedListRequest();
-        List<SavedList> candidateLists = savedListService.search(candidateId, request);
-
-        return candidateLists.stream()
-            .anyMatch(list -> list.getId().equals(LINKEDIN_ISSUE_REPORT_LIST_ID));
+        long listId = getServiceList(ListRole.USER_ISSUE_REPORT).getId();
+        List<SavedList> candidateLists = savedListService.search(candidateId, new SearchSavedListRequest());
+        return candidateLists.stream().anyMatch(list -> list.getId().equals(listId));
     }
 
     /**
-     * Checks if a candidate is on the #LinkedInAssignmentFailure List.
+     * Checks if a candidate is on the LinkedIn Assignment Failure list.
      *
      * @param candidateId
-     * @return true if the candidate is on the List
+     * @return true if the candidate is on the list
      */
     public Boolean isOnAssignmentFailureList(Long candidateId) {
-        SearchSavedListRequest request = new SearchSavedListRequest();
-        List<SavedList> candidateLists = savedListService.search(candidateId, request);
-
-        return candidateLists.stream()
-            .anyMatch(list -> list.getId().equals(LINKEDIN_ASSIGNMENT_FAILURE_LIST_ID));
+        long listId = getServiceList(ListRole.ASSIGNMENT_FAILURE).getId();
+        List<SavedList> candidateLists = savedListService.search(candidateId, new SearchSavedListRequest());
+        return candidateLists.stream().anyMatch(list -> list.getId().equals(listId));
     }
 
-    @Override protected ServiceProvider provider() { return ServiceProvider.LINKEDIN; }
-    @Override protected ServiceCode serviceCode() { return ServiceCode.PREMIUM_MEMBERSHIP; }
+    @Override public ServiceProvider provider() { return ServiceProvider.LINKEDIN; }
+    @Override public ServiceCode serviceCode() { return ServiceCode.PREMIUM_MEMBERSHIP; }
     @Override protected ResourceAllocator allocator() { return linkedInAllocator; }
     @Override protected FileInventoryImporter importer() { return linkedInImporter; }
+
+    private SavedList getServiceList(ListRole role) {
+        return serviceListRepository
+            .findFirstByProviderAndServiceCodeAndRole(
+                ServiceProvider.LINKEDIN, ServiceCode.PREMIUM_MEMBERSHIP, role)
+            .map(ServiceListEntity::getSavedList)
+            .orElseThrow(() -> new NoSuchObjectException(
+                "No service list registered for LinkedIn role: " + role));
+    }
 }
