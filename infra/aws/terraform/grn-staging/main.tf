@@ -259,7 +259,7 @@ module "grn_staging" {
   tc_skills_extraction_api_url           = "https://test.skills.globalrefugee.net"
   web_admin                              = "https://test.globalrefugee.net/admin-portal"
   web_portal                             = "https://test.globalrefugee.net/candidate-portal"
-  tc_instance_type                       = "TBB"
+  tc_instance_type                       = "GRN"
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key
