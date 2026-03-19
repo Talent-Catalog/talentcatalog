@@ -203,6 +203,8 @@ jib {
             image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-staging"
         } else if (project.hasProperty("opc-prod")) {
             image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-prod"
+        } else if (project.hasProperty("grn-staging")) {
+            image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-staging"
         }
         credHelper = 'ecr-login'
     }
