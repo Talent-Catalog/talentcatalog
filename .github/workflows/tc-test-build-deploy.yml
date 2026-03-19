@@ -74,3 +74,7 @@ jobs:
 
       - name: Deploy to OPC with Jib
         run: ./gradlew jib -Popc-staging -x test
+
+      # --- Deploy to GRN Staging (same OPC staging account, eu-west-2) ---
+      - name: Deploy to GRN Staging with Jib
+        run: ./gradlew jib -Pgrn-staging -x test
