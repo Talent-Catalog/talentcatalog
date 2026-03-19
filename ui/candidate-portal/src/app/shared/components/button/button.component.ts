@@ -88,7 +88,7 @@ import {QueryParamsHandling} from '@angular/router';
 export class ButtonComponent {
   @Input() size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'  = 'default';
   @Input() type: 'solid' | 'outline' | 'plain' = 'solid';
-  @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
+  @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray' | 'white'= 'primary';
   @Input() disabled = false;
   @Input() loading = false;
   @Input() ariaLabel?: string;
