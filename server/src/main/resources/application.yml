@@ -230,6 +230,9 @@ google:
   # Pixel width of wide columns in generated published sheets
     publishedSheetWideColumn: 300
 
+storage:
+  s3:
+    bucket: ${STORAGE_S3_BUCKET:dev.storage.tctalent.org}
 
 aws:
   s3:
