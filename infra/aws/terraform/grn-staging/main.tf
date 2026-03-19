@@ -244,6 +244,8 @@ module "grn_staging" {
   sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
   sf_base_login_url                      = "https://test.salesforce.com/"
   spring_client_url                      = "-"
+  # Empty so SPRING_DATASOURCE_URL is auto-populated from the RDS created by this stack.
+  # The provided spring_datasource_username/password are used to create the RDS master user and are written to SSM for the app.
   spring_datasource_url                  = "" # use RDS created by this stack
   spring_datasource_username            = "tctalent"
   spring_db_pool_max                     = "50"
