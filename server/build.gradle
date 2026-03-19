@@ -158,7 +158,9 @@ dependencies {
 
     implementation("org.apache.commons:commons-lang3")
     // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/s3
-    implementation("software.amazon.awssdk:s3:2.42.14")
+    implementation("software.amazon.awssdk:s3:2.42.15")
+    // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/cloudfront
+    implementation("software.amazon.awssdk:cloudfront:2.42.15")
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
