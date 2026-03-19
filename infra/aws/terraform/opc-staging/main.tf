@@ -192,7 +192,7 @@ locals {
 }
 
 # TC-Server infrastructure for OPC AWS staging account
-module "tc-server-staging" {
+module "tc-plus-staging" {
   source = "../"
 
   common_tags = local.common_tags
