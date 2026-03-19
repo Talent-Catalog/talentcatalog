@@ -233,9 +233,9 @@ module "tc-plus-prod" {
   # Non-secrets: provided directly here
   s3_bucket                              = "files.tbbtalent.org" # todo: confirm bucket name
   environment                            = "opc-prod"
-  email_default                          = ""  # todo: confirm if used/needed
+  email_default                          = "-"  # todo: confirm if used/needed
   email_test_override                    = "-"  # todo: set prod value
-  email_user                             = ""  # todo: confirm if used/needed
+  email_user                             = "-"  # todo: confirm if used/needed
   email_type                             = "SMTP"
   es_url                                 = "https://tc-prod.es.us-east-1.aws.found.io:9243"  # todo: retire elasticsearch
   es_username                            = "elastic"  # todo: retire elasticsearch

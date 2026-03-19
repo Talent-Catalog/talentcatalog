@@ -265,4 +265,6 @@ resource "aws_ecs_task_definition" "web-app" {
       ]
     }
   ])
+
+  depends_on = [aws_ssm_parameter.spring_datasource_url]
 }
