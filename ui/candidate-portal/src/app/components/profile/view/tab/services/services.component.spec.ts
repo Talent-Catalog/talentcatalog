@@ -15,8 +15,11 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {of} from "rxjs";
 
 import { ServicesComponent } from './services.component';
+import {ServiceProvider} from "../../../../../model/services";
 
 describe('ServicesComponent', () => {
   let component: ServicesComponent;
@@ -24,14 +27,22 @@ describe('ServicesComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ServicesComponent]
+      declarations: [ServicesComponent],
+      schemas: [NO_ERRORS_SCHEMA]
     });
     fixture = TestBed.createComponent(ServicesComponent);
     component = fixture.componentInstance;
+    component.showLinkedin$ = of(true);
+    component.showReference$ = of(true);
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should select reference service', () => {
+    component.selectService(ServiceProvider.REFERENCE);
+    expect(component.selectedService).toBe(ServiceProvider.REFERENCE);
   });
 });

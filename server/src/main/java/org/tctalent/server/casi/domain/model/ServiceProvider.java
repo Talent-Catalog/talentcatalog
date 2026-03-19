@@ -23,5 +23,6 @@ package org.tctalent.server.casi.domain.model;
  */
 public enum ServiceProvider {
   DUOLINGO,
-  LINKEDIN
+  LINKEDIN,
+  REFERENCE
 }

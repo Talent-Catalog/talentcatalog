@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,16 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.casi.domain.model;
+package org.tctalent.server.casi.application.policy;
+
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 /**
- * Enumeration of service codes representing different types of services.
+ * Eligibility strategy for a CASI provider.
+ * Implementations decide whether a candidate can access a provider's service.
  *
  * @author sadatmalik
  */
-public enum ServiceCode {
-  TEST_PROCTORED,
-  TEST_NON_PROCTORED,
-  PREMIUM_MEMBERSHIP,
-  VOUCHER
+public interface EligibilityPolicy {
+
+  ServiceProvider provider();
+
+  boolean isEligible(Long candidateId);
 }

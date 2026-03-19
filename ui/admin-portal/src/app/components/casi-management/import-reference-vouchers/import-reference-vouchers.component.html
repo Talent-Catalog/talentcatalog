@@ -1,0 +1,59 @@
+<!--
+  ~ Copyright (c) 2026 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<h4 class="mb-3">Import Reference Vouchers</h4>
+
+<div class="text-muted mb-2 align-middle">
+  Available Reference Vouchers: {{ availableVouchersCount }}
+</div>
+
+<div class="w-50">
+  <tc-alert [type]="'info'">
+    Upload a CSV with the headers: <code>voucher_code</code>, <code>expires_at</code>.
+  </tc-alert>
+</div>
+
+<tc-alert *ngIf="error" type="warning">{{ error }}</tc-alert>
+
+<div class="my-3">
+  <label for="referenceFileInput" class="form-label">Upload CSV File</label>
+  <input
+    type="file"
+    id="referenceFileInput"
+    class="form-control w-75"
+    (change)="onFileChange($event)"
+    accept=".csv"
+  />
+</div>
+
+<div class="my-3">
+  <tc-button [loading]="working"
+             (onClick)="importCSV()"
+             [disabled]="!csvData.length || working"
+  >
+    Import
+  </tc-button>
+</div>
+
+<app-csv-preview
+  [csvHeaders]="csvHeaders"
+  [csvData]="csvData"
+  [paginatedData]="paginatedData"
+  [working]="working"
+  [currentPage]="currentPage"
+  [pageSize]="pageSize"
+  (pageChange)="onPageChange($event)"
+></app-csv-preview>
