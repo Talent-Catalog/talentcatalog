@@ -192,7 +192,7 @@ locals {
 }
 
 # TC-Server infrastructure for OPC AWS production account
-module "tc-server-prod" {
+module "tc-plus-prod" {
   source = "../"
 
   common_tags = local.common_tags
