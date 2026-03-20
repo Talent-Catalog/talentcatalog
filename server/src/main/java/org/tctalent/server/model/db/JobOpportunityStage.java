@@ -40,6 +40,7 @@ public enum JobOpportunityStage {
         visaPreparation ("Visa preparation"),
         postHireEngagement ("Post hire engagement"),
         hiringCompleted ("Hiring completed", true, true),
+        inadequatePathwayProvision ("Inadequate pathway provision", true, false),
         ineligibleEmployer ("Ineligible employer", true, false),
         ineligibleOccupation ("Ineligible occupation", true, false),
         ineligibleRegion ("Ineligible region", true, false),

@@ -91,6 +91,7 @@ export enum JobOpportunityStage {
   visaPreparation = "12. Visa preparation",
   postHireEngagement = "13. Post hire engagement",
   hiringCompleted = "14. Closed won. Hiring completed",
+  inadequatePathwayProvision = "Closed. Inadequate pathway provision",
   ineligibleEmployer = "Closed. Ineligible employer",
   ineligibleOccupation = "Closed. Ineligible occupation",
   ineligibleRegion = "Closed. Ineligible region",
