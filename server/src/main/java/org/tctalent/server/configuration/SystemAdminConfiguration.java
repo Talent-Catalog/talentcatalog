@@ -16,8 +16,8 @@
 
 package org.tctalent.server.configuration;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -37,6 +37,7 @@ import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.ShutdownService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.impl.TcInstanceService;
 
 /**
  * Component which listens for a Spring start up event and auto creates objects if needed.
@@ -45,6 +46,7 @@ import org.tctalent.server.service.db.UserService;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class SystemAdminConfiguration {
 
     public final static String TEST_CANDIDATE_LIST_NAME = "TestCandidates";
@@ -67,6 +69,7 @@ public class SystemAdminConfiguration {
     private final PartnerService partnerService;
     private final SavedListService savedListService;
     private final ShutdownService shutdownService;
+    private final TcInstanceService tcInstanceService;
     private final UserService userService;
 
     @Value("${tc.init.boot-admin-password}")
@@ -74,18 +77,6 @@ public class SystemAdminConfiguration {
 
     @Value("${email.user}")
     private String sysAdminEmail;
-
-    @Autowired
-    public SystemAdminConfiguration(
-        PartnerService partnerService,
-        SavedListService savedListService,
-        ShutdownService shutdownService,
-        UserService userService) {
-        this.partnerService = partnerService;
-        this.savedListService = savedListService;
-        this.shutdownService = shutdownService;
-        this.userService = userService;
-    }
 
     /**
      * Run at startup to check whether we have necessary objects, creating them if necessary
@@ -157,20 +148,19 @@ public class SystemAdminConfiguration {
         if (defaultSourcePartner == null) {
             UpdatePartnerRequest req = new UpdatePartnerRequest();
 
-            //TODO JC Come from TcInstanceService
-            String defaultSourcePartnerName = "Talent Beyond Boundaries";
-            String defaultSourcePartnerAbbreviation = "TBB";
+            String defaultSourcePartnerName = tcInstanceService.getDefaultSourcePartnerName();
+            String defaultSourcePartnerAbbreviation
+                = tcInstanceService.getDefaultSourcePartnerAbbreviation();
             req.setName(defaultSourcePartnerName);
             req.setAbbreviation(defaultSourcePartnerAbbreviation);
             req.setStatus(Status.active);
 
             req.setJobCreator(false);
             req.setSourcePartner(true);
+            req.setDefaultSourcePartner(true);
 
             //Create the default source partner
-            defaultSourcePartner = partnerService.create(req);
-            //TODO JC Add to UpdatePartnerRequest
-            defaultSourcePartner.setSourcePartner(true);
+            partnerService.create(req);
         }
 
         //Create global lists

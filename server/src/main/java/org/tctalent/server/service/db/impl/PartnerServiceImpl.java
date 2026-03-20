@@ -96,6 +96,10 @@ public class PartnerServiceImpl implements PartnerService {
         //Source countries
         populateSourceCountries(request.getSourceCountryIds(), partner);
 
+        if (request.getDefaultSourcePartner() != null) {
+            partner.setDefaultSourcePartner(request.getDefaultSourcePartner());
+        }
+
         return partnerRepository.save(partner);
     }
 
