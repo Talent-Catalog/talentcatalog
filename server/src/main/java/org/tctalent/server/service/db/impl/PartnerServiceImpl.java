@@ -400,7 +400,7 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         // Get current DPA
-        TermsInfo currentDpa = termsInfoService.getCurrentByType(TermsType.DATA_PROCESSING_AGREEMENT);
+        TermsInfo currentDpa = termsInfoService.getCurrentByType(TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT);
         // Partner already accepted the current DPA
         if (partner.getAcceptedDataProcessingAgreementId() != null &&
             partner.getAcceptedDataProcessingAgreementId().equals(currentDpa.getId())) {

@@ -35,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
@@ -71,6 +70,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TcInstanceType;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -111,21 +111,20 @@ public class UserServiceImpl implements UserService {
     private final EmailHelper emailHelper;
     private final PartnerService partnerService;
 
+    //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
+    //tools
+    private final SecretGenerator totpSecretGenerator;
+    private final QrDataFactory totpQrDataFactory;
+    private final QrGenerator totpQrGenerator;
+    private final CodeVerifier totpVerifier;
+
     @Value("${web.portal}")
     private String portalUrl;
     @Value("${web.admin}")
     private String adminUrl;
 
-    //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
-    //tools
-    @Autowired
-    private SecretGenerator totpSecretGenerator;
-    @Autowired
-    private QrDataFactory totpQrDataFactory;
-    @Autowired
-    private QrGenerator totpQrGenerator;
-    @Autowired
-    private CodeVerifier totpVerifier;
+    @Value("${tc.instance-type}")
+    private TcInstanceType tcInstanceType;
 
     @Override
     public @Nullable User findByUsernameAndRole(String username, Role role) {
@@ -468,7 +467,9 @@ public class UserServiceImpl implements UserService {
             String jwt = tokenProvider.generateToken(auth);
 
             JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
-            response.setCanViewChats(chatPolicy.canSubscribeToChats(authService.getLoggedInUserDetails()));
+            response.setCanViewChats(
+                chatPolicy.canSubscribeToChats(authService.getLoggedInUserDetails()));
+            response.setTcInstanceType(tcInstanceType);
             return response;
 
         } catch (BadCredentialsException e) {

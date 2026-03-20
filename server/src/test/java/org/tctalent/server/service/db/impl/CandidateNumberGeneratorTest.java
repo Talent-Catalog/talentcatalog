@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.InstanceType;
+import org.tctalent.server.model.db.TcInstanceType;
 
 class CandidateNumberGeneratorTest {
 
@@ -35,14 +35,14 @@ class CandidateNumberGeneratorTest {
 
     @Test
     void grnNumbersShouldBeGreaterThan5Million() {
-        candidateNumberGenerator = new CandidateNumberGenerator(InstanceType.GRN);
+        candidateNumberGenerator = new CandidateNumberGenerator(TcInstanceType.GRN);
         String generatedNumber = candidateNumberGenerator.generateCandidateNumber(testCandidate);
         Assertions.assertEquals("5000001", generatedNumber);
     }
 
     @Test
     void tbbNumbersShouldBeSameAsId() {
-        candidateNumberGenerator = new CandidateNumberGenerator(InstanceType.TBB);
+        candidateNumberGenerator = new CandidateNumberGenerator(TcInstanceType.TBB);
         String generatedNumber = candidateNumberGenerator.generateCandidateNumber(testCandidate);
         Assertions.assertEquals("0001", generatedNumber);
     }

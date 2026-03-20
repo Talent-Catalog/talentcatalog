@@ -21,7 +21,7 @@ package org.tctalent.server.model.db;
  *
  * @author John Cameron
  */
-public enum InstanceType {
+public enum TcInstanceType {
     GRN,
     TBB
 }

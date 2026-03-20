@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.InstanceType;
+import org.tctalent.server.model.db.TcInstanceType;
 
 /**
  * Generates candidate numbers
@@ -29,16 +29,16 @@ import org.tctalent.server.model.db.InstanceType;
  */
 @Component
 public class CandidateNumberGenerator {
-    private final InstanceType tcInstanceType;
+    private final TcInstanceType tcInstanceType;
 
-    public CandidateNumberGenerator(@Value("${tc.instance-type}") InstanceType tcInstanceType) {
+    public CandidateNumberGenerator(@Value("${tc.instance-type}") TcInstanceType tcInstanceType) {
         this.tcInstanceType = tcInstanceType;
     }
 
     public String generateCandidateNumber(@NonNull Candidate candidate) {
         //Use id to generate candidate number
         long number = candidate.getId();
-        if (InstanceType.GRN.equals(tcInstanceType)) {
+        if (TcInstanceType.GRN.equals(tcInstanceType)) {
             //GRN uses 5000000 as the first number to distinguish its candidate numbers from
             //TBB instance candidate numbers
             number = number + 5000000L;
