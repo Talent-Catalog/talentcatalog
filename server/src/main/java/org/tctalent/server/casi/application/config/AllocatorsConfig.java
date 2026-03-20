@@ -49,5 +49,10 @@ public class AllocatorsConfig {
     return new InventoryAllocator(repo, ServiceProvider.LINKEDIN, ServiceCode.PREMIUM_MEMBERSHIP);
   }
 
+  @Bean("referenceVoucherAllocator")
+  public ResourceAllocator referenceVoucherAllocator(ServiceResourceRepository repo) {
+    return new InventoryAllocator(repo, ServiceProvider.REFERENCE, ServiceCode.VOUCHER);
+  }
+
   // Add more providers by instantiating InventoryAllocator or other implementation of ResourceAllocator
 }

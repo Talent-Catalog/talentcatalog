@@ -24,30 +24,27 @@ export class OfferToAssistComponent implements OnInit {
   }
 
   ngOnInit() {
-    /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
     });
     this.pageNumber = 1;
     this.pageSize = 50;
 
-    /* GET RESULTS */
     this.search();
 
-    /* SET UP SEARCH ON CHANGE*/
     this.searchForm.valueChanges
       .pipe(
         debounceTime(400),
         distinctUntilChanged()
       )
-      .subscribe(res => {
+      .subscribe(() => {
         this.search();
       });
   }
 
   search() {
     this.loading = true;
-    const request: KeywordPagedSearchRequest =  {
+    const request: KeywordPagedSearchRequest = {
       keyword: this.searchForm.value.keyword,
       pageNumber: this.pageNumber - 1,
       pageSize: this.pageSize
@@ -60,10 +57,10 @@ export class OfferToAssistComponent implements OnInit {
         this.error = error;
         this.loading = false;
       }
-    )
+    );
   }
 
   getDisplayEnumValue(value: CandidateAssistanceType) {
-    return CandidateAssistanceType[value]
+    return CandidateAssistanceType[value];
   }
 }
