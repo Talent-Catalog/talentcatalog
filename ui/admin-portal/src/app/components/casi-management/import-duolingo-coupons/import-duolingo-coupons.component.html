@@ -1,15 +1,24 @@
-<h4>Import Duolingo Coupons</h4>
-<tc-pagination [totalElements]="csvData?.length || 0"
-               [pageSize]="30"
-               (pageChange)="onPageChange($event)"
-               [pageNumber]="currentPage">
-</tc-pagination>
+<!--
+  ~ Copyright (c) 2025 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
+<h4>Import Duolingo Coupons</h4>
 <!-- Display the number of available coupons here -->
 <div class="text-muted mb-2 align-middle">
   Available Proctored Coupons: {{ availableProctoredCouponsCount }}
 </div>
-
 
 <!-- Instructional Text with URL -->
 <tc-alert type="info">
@@ -37,18 +46,15 @@
 
 <div class="mb-3" *ngIf="csvData.length">
   <h5>Preview</h5>
-  <tc-table [results]="csvData" [loading]="working">
-    <thead>
-    <tr>
-      <th *ngFor="let header of csvHeaders">{{ header }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let row of paginatedData">
-      <td *ngFor="let cell of row">{{ cell }}</td>
-    </tr>
-    </tbody>
-  </tc-table>
+  <app-csv-preview
+    [csvHeaders]="csvHeaders"
+    [csvData]="csvData"
+    [paginatedData]="paginatedData"
+    [working]="working"
+    [currentPage]="currentPage"
+    [pageSize]="pageSize"
+    (pageChange)="onPageChange($event)"
+  ></app-csv-preview>
 </div>
 
 <tc-button class="float-end" [loading]="working" (onClick)="importCSV()" [disabled]="!csvData.length || working">

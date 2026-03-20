@@ -124,8 +124,12 @@ public class JobAdminApi implements
     @PostMapping("search-paged")
     public @NotNull Map<String, Object> searchPaged(@Valid SearchJobRequest request) {
         Page<SalesforceJobOpp> jobs = jobService.searchJobs(request);
-        final DtoBuilder builder =
-            Boolean.TRUE.equals(request.getJobNameAndIdOnly()) ? jobNameAndIdDto() : jobDto();
+        final DtoBuilder builder;
+        if (Boolean.TRUE.equals(request.getJobNameAndIdOnly())) {
+            builder = jobNameAndIdDto();
+        } else {
+            builder = jobListDto();
+        }
         final Map<String, Object> objectMap = builder.buildPage(jobs);
         return objectMap;
     }
@@ -230,6 +234,28 @@ public class JobAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("name")
+            ;
+    }
+
+    private DtoBuilder jobListDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("country", countryService.selectBuilder())
+            .add("stage")
+            .add("closed")
+            .add("won")
+            .add("createdDate")
+            .add("submissionDueDate")
+            .add("contactUser", shortUserDto())
+            .add("submissionList", minimalSavedListDto())
+            .add("starringUsers", shortUserDto())
+            ;
+    }
+
+    private DtoBuilder minimalSavedListDto() {
+        return new DtoBuilder()
+            .add("id")
             ;
     }
 

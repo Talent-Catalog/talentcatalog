@@ -16,9 +16,11 @@
 
 package org.tctalent.server.casi.api;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,20 +56,25 @@ import org.tctalent.server.security.AuthService;
  * Provides endpoints for importing resources, assigning services to candidates, updating resource
  * status, and querying service assignments and resources.
  * <p>
- * Note: All endpoints are secured and require admin privileges.
+ * Note: Endpoints are secured by the URL-based rules in SecurityConfiguration. Sensitive inventory
+ * management endpoints are additionally restricted to ADMIN and SYSTEMADMIN via method-level
+ * {@code @PreAuthorize}.
  */
-//@PreAuthorize("hasAuthority('ROLE_ADMIN')") todo -- SM
 @RestController
 @RequestMapping("/api/admin/services")
 @RequiredArgsConstructor
 @Slf4j
 public class ServicesAdminController {
 
+  private static final String ADMIN_ONLY =
+      "hasAnyAuthority('ROLE_ADMIN', 'ROLE_SYSTEMADMIN')";
+
   private final AuthService authService;
   private final CandidateServiceRegistry services;
   private final CandidateServicesQueryService queryService; // consolidated view
 
   // Endpoint to import service resources from a file -- e.g. coupons from CSV data
+  @PreAuthorize(ADMIN_ONLY)
   @PostMapping(
       path = "/{provider}/{serviceCode}/import",
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -122,16 +129,17 @@ public class ServicesAdminController {
         .toList();
   }
 
-  // Endpoint to update the status of a specific coupon
+  // Endpoint to update the status of a specific resource
+  @PreAuthorize(ADMIN_ONLY)
   @PutMapping("/{provider}/{serviceCode}/resources/status")
   public void updateResourceStatus(@PathVariable String provider,
       @PathVariable String serviceCode,
-      @RequestBody UpdateServiceResourceStatusRequest request) {
+      @Valid @RequestBody UpdateServiceResourceStatusRequest request) {
     serviceFor(provider, serviceCode)
         .updateResourceStatus(request.getResourceCode(), request.getStatus());
   }
 
-  // Endpoint to list all available coupons for a specific service
+  // Endpoint to list all available resources for a specific service
   @GetMapping("/{provider}/{serviceCode}/available")
   public List<ServiceResourceDto> listAvailable(@PathVariable String provider,
       @PathVariable String serviceCode) {
@@ -154,6 +162,7 @@ public class ServicesAdminController {
   }
 
   // Assign to a single candidate
+  @PreAuthorize(ADMIN_ONLY)
   @PostMapping("/{provider}/{serviceCode}/assign/candidate/{candidateId}")
   public ServiceAssignmentDto assignToCandidate(@PathVariable String provider,
       @PathVariable String serviceCode,
@@ -169,6 +178,8 @@ public class ServicesAdminController {
     return ServiceAssignmentMapper.toDto(a);
   }
 
+  // Assign to a list
+  @PreAuthorize(ADMIN_ONLY)
   @PostMapping("/{provider}/{serviceCode}/assign/list/{listId}")
   public List<ServiceAssignmentDto> assignToList(@PathVariable String provider,
       @PathVariable String serviceCode,

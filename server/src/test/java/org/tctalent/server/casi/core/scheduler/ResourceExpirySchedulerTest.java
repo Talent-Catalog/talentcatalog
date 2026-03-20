@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -71,11 +71,11 @@ class ResourceExpirySchedulerTest {
   private ServiceResourceEntity expirableResource1;
   private ServiceResourceEntity expirableResource2;
   private ServiceAssignmentEntity assignmentEntity;
-  private LocalDateTime now;
+  private OffsetDateTime now;
 
   @BeforeEach
   void setUp() {
-    now = LocalDateTime.now();
+    now = OffsetDateTime.now();
 
     expirableResource1 = new ServiceResourceEntity();
     expirableResource1.setId(RESOURCE_ID_1);
@@ -114,7 +114,7 @@ class ResourceExpirySchedulerTest {
   @DisplayName("mark resources as expired succeeds")
   void markResourcesAsExpiredSucceeds() {
     // Arrange
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(List.of(expirableResource1, expirableResource2));
     when(assignmentRepository.findTopByProviderAndServiceAndResource(
         ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, RESOURCE_ID_1))
@@ -161,7 +161,7 @@ class ResourceExpirySchedulerTest {
     expiredResource.setExpiresAt(now.minusDays(5));
 
     // The query excludes EXPIRED status, so this should not be returned
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(Collections.emptyList());
 
     // Act
@@ -185,7 +185,7 @@ class ResourceExpirySchedulerTest {
     redeemedResource.setExpiresAt(now.minusDays(3));
 
     // The query excludes REDEEMED status, so this should not be returned
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(Collections.emptyList());
 
     // Act
@@ -209,7 +209,7 @@ class ResourceExpirySchedulerTest {
     disabledResource.setExpiresAt(now.minusDays(2));
 
     // The query excludes DISABLED status, so this should not be returned
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(Collections.emptyList());
 
     // Act
@@ -224,7 +224,7 @@ class ResourceExpirySchedulerTest {
   @DisplayName("event publication on expiration")
   void eventPublicationOnExpiration() {
     // Arrange
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(List.of(expirableResource1));
     when(assignmentRepository.findTopByProviderAndServiceAndResource(
         ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, RESOURCE_ID_1))
@@ -249,7 +249,7 @@ class ResourceExpirySchedulerTest {
   @DisplayName("no event published when assignment not found")
   void noEventPublishedWhenAssignmentNotFound() {
     // Arrange
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(List.of(expirableResource1));
     when(assignmentRepository.findTopByProviderAndServiceAndResource(
         ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, RESOURCE_ID_1))
@@ -269,7 +269,7 @@ class ResourceExpirySchedulerTest {
   @DisplayName("no expirable resources")
   void noExpirableResources() {
     // Arrange
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(Collections.emptyList());
 
     // Act
@@ -294,7 +294,7 @@ class ResourceExpirySchedulerTest {
     resourceWithNullExpiresAt.setExpiresAt(null); // Null expiration date
 
     // The query filters out null expiresAt, so this should not be returned
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(Collections.emptyList());
 
     // Act
@@ -323,7 +323,7 @@ class ResourceExpirySchedulerTest {
     assignmentEntity2.setStatus(AssignmentStatus.ASSIGNED);
     assignmentEntity2.setAssignedAt(now.minusDays(1));
 
-    when(resourceRepository.findExpirable(any(LocalDateTime.class), anyList()))
+    when(resourceRepository.findExpirable(any(OffsetDateTime.class), anyList()))
         .thenReturn(List.of(expirableResource1, expirableResource2));
     when(assignmentRepository.findTopByProviderAndServiceAndResource(
         ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, RESOURCE_ID_1))

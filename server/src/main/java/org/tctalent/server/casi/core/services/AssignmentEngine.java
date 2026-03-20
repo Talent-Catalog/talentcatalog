@@ -16,7 +16,7 @@
 
 package org.tctalent.server.casi.core.services;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +83,7 @@ public class AssignmentEngine {
     e.setCandidate(c);
     e.setActor(actor);
     e.setStatus(AssignmentStatus.ASSIGNED);
-    e.setAssignedAt(LocalDateTime.now());
+    e.setAssignedAt(OffsetDateTime.now());
     ledger.save(e);
 
     // Event + model

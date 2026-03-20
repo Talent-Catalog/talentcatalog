@@ -15,16 +15,17 @@
   -->
 
 <div class="text-end" *ngIf="!preview">
-  <button class="btn btn-danger btn-card"
+  <tc-button color="error" class="me-2"
           [disabled]="disabled"
-          (click)="delete()">&times;</button>
+          (onClick)="delete()">
+    &times;
+  </tc-button>
 
-  <button class="btn btn-primary btn-card"
+  <tc-button color="info"
           [disabled]="disabled"
-          (click)="edit()"
-  >
+          (onClick)="edit()">
     <i class="fas fa-edit fa-xs"></i>
-  </button>
+  </tc-button>
 </div>
 
 <p>{{'EDUCATIONTYPE.'+candidateEducation.educationType  | uppercase | translate}}</p>

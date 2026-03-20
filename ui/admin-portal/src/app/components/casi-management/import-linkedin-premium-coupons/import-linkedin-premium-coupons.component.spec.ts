@@ -1,26 +1,48 @@
+/*
+ * Copyright (c) 2026 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ImportDuolingoCouponsComponent} from './import-duolingo-coupons.component';
-import {DuolingoCouponService} from '../../../services/duolingo-coupon.service';
+import {ImportLinkedinPremiumCouponsComponent} from './import-linkedin-premium-coupons.component';
 import {of, throwError} from 'rxjs';
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {LinkedinPremiumCouponService} from "../../../services/linkedin-premium-coupon.service";
 
-describe('ImportDuolingoCouponsComponent', () => {
-  let component: ImportDuolingoCouponsComponent;
-  let fixture: ComponentFixture<ImportDuolingoCouponsComponent>;
-  let mockDuolingoCouponService: jasmine.SpyObj<DuolingoCouponService>;
+describe('ImportLinkedInPremiumCouponsComponent', () => {
+  let component: ImportLinkedinPremiumCouponsComponent;
+  let fixture: ComponentFixture<ImportLinkedinPremiumCouponsComponent>;
+  let mockCouponService: jasmine.SpyObj<LinkedinPremiumCouponService>;
 
   beforeEach(async () => {
-    mockDuolingoCouponService = jasmine.createSpyObj('DuolingoCouponService', ['importCoupons','countAvailableCoupons']);
+    mockCouponService = jasmine.createSpyObj('LinkedInPremiumCouponService', [
+      'importCoupons',
+      'countAvailableCoupons'
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [NgbPaginationModule],
-      declarations: [ImportDuolingoCouponsComponent],
-      providers: [{provide: DuolingoCouponService, useValue: mockDuolingoCouponService}]
+      declarations: [ImportLinkedinPremiumCouponsComponent],
+      providers: [{provide: LinkedinPremiumCouponService, useValue: mockCouponService}],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ImportDuolingoCouponsComponent);
+    fixture = TestBed.createComponent(ImportLinkedinPremiumCouponsComponent);
     component = fixture.componentInstance;
-    mockDuolingoCouponService.countAvailableProctoredCoupons = jasmine.createSpy('countAvailableProctoredCoupons').and.returnValue(of(100)); // Mock the return value if needed
+    mockCouponService.countAvailableCoupons =
+      jasmine.createSpy('countAvailableCoupons').and.returnValue(of(100)); // Mock return value if needed
 
     fixture.detectChanges();
   });
@@ -33,7 +55,7 @@ describe('ImportDuolingoCouponsComponent', () => {
     it('should parse the file and update data when a valid file is selected', () => {
       const csvFile = new Blob(
         [
-          'Coupon Code,Expiration Date,Date Sent,Coupon Status\nCODE123,2024-12-31,2024-11-01,Active',
+          'Serial #,Premium Code,Activate by\n8292,https://www.linkedin.com/premium/redeem/promo?upsellOrderOrigin=lbp_vs&coupon=x3ebuXYbQ&customKey=vs_generic&redeemTypeV2=PREPAID_COUPON,11-11-2026',
         ],
         {type: 'text/csv'}
       );
@@ -58,7 +80,7 @@ describe('ImportDuolingoCouponsComponent', () => {
   describe('importCSV', () => {
     it('should set an error message on service failure', () => {
       component.selectedFile = new File([], 'coupons.csv');
-      mockDuolingoCouponService.importCoupons.and.returnValue(throwError(() => new Error('Error')));
+      mockCouponService.importCoupons.and.returnValue(throwError(() => new Error('Error')));
 
       component.importCSV();
 

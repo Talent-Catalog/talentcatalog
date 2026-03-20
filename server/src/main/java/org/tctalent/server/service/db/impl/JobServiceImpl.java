@@ -525,11 +525,9 @@ public class JobServiceImpl implements JobService {
     @Override
     public Page<SalesforceJobOpp> searchJobs(SearchJobRequest request) {
         User loggedInUser = userService.getLoggedInUser();
-        Page<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
+        return salesforceJobOppRepository.findAll(
             JobSpecification.buildSearchQuery(request, loggedInUser),
             request.getPageRequest());
-        checkEmployerEntities(jobs);
-        return jobs;
     }
 
     @NonNull

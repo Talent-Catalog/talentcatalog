@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -210,12 +212,13 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
 
   /**
    * Attempts to parse a date using multiple formatters.
+   * CSV dates have no timezone info, so they are assumed to be UTC.
    */
-  private LocalDateTime parseDate(String dateString, DateTimeFormatter... formatters) {
+  private OffsetDateTime parseDate(String dateString, DateTimeFormatter... formatters) {
     if (dateString != null && !dateString.trim().isEmpty()) {
       for (DateTimeFormatter formatter : formatters) {
         try {
-          return LocalDateTime.parse(dateString, formatter);
+          return LocalDateTime.parse(dateString, formatter).atOffset(ZoneOffset.UTC);
         } catch (DateTimeParseException ex) {
           LogBuilder.builder(log)
               .action("parseDate")
