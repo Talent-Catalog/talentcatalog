@@ -22,7 +22,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,7 +78,7 @@ class EmailNotificationListenerTest {
         .candidateId(CANDIDATE_ID)
         .actorId(1L)
         .status(AssignmentStatus.ASSIGNED)
-        .assignedAt(LocalDateTime.now())
+        .assignedAt(OffsetDateTime.now())
         .build();
 
     candidateUser = new User();
@@ -126,7 +126,7 @@ class EmailNotificationListenerTest {
         .candidateId(CANDIDATE_ID)
         .actorId(1L)
         .status(AssignmentStatus.ASSIGNED)
-        .assignedAt(LocalDateTime.now())
+        .assignedAt(OffsetDateTime.now())
         .build();
 
     when(candidateRepository.findById(CANDIDATE_ID))
@@ -157,7 +157,7 @@ class EmailNotificationListenerTest {
         .candidateId(null) // Missing candidate ID
         .actorId(1L)
         .status(AssignmentStatus.ASSIGNED)
-        .assignedAt(LocalDateTime.now())
+        .assignedAt(OffsetDateTime.now())
         .build();
 
     ServiceAssignedEvent event = new ServiceAssignedEvent(assignmentWithoutCandidate);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,11 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {User} from "./user";
+package org.tctalent.server.casi.application.policy;
 
-export interface JwtResponse {
-  accessToken: string;
-  name: string;
-  gender: string;
-  user: User;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
+
+/**
+ * Eligibility strategy for a CASI provider.
+ * Implementations decide whether a candidate can access a provider's service.
+ *
+ * @author sadatmalik
+ */
+public interface EligibilityPolicy {
+
+  ServiceProvider provider();
+
+  boolean isEligible(Long candidateId);
 }

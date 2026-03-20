@@ -33,6 +33,7 @@ import {
 import {map, shareReplay} from "rxjs/operators";
 import {LinkedinService} from "../../../services/linkedin.service";
 import {AuthorizationService} from "../../../services/authorization.service";
+import {CasiPortalService} from "../../../services/casi-portal.service";
 
 @Component({
   selector: 'app-view-candidate',
@@ -62,12 +63,14 @@ export class ViewCandidateComponent implements OnInit {
   usAfghan: boolean;
   activeDuolingoTask: TaskAssignment;
   linkedinEligible$: Observable<boolean>;
+  referenceEligible$: Observable<boolean>;
 
   constructor(
     private authorizationService: AuthorizationService,
     private candidateService: CandidateService,
     private chatService: ChatService,
     private linkedinService: LinkedinService,
+    private casiPortalService: CasiPortalService,
     private localStorageService: LocalStorageService,
     private location: Location,
     private route: ActivatedRoute,
@@ -147,16 +150,21 @@ export class ViewCandidateComponent implements OnInit {
    */
   private initServicesTabVisibility() {
     const results$ = forkJoin({
-      linkedIn: this.linkedinService.isEligible(this.candidate.id)
+      linkedIn: this.linkedinService.isEligible(this.candidate.id),
+      reference: this.casiPortalService.checkEligibility('REFERENCE', 'VOUCHER')
       // Additional async service eligibility calls here
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
 
     this.showServicesTab$ = results$.pipe(
-      map(results => results.linkedIn || !!this.activeDuolingoTask)
+      map(results => results.linkedIn || results.reference || !!this.activeDuolingoTask)
     );
 
     this.linkedinEligible$ = results$.pipe(
       map(results => results.linkedIn)
+    );
+
+    this.referenceEligible$ = results$.pipe(
+      map(results => results.reference)
     );
   }
 

@@ -1,13 +1,12 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-
-import {OfferToAssistComponent} from './offer-to-assist.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {OfferToAssistService} from "../../../services/offer-to-assist.service";
-import {SearchResults} from "../../../model/search-results";
-import {CandidateAssistanceType, OfferToAssist} from "../../../model/offer-to-assist";
-import {MockPartner} from "../../../MockData/MockPartner";
-import {of, throwError} from "rxjs";
 import {NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {of, throwError} from "rxjs";
+import {MockPartner} from "../../../MockData/MockPartner";
+import {CandidateAssistanceType, OfferToAssist} from "../../../model/offer-to-assist";
+import {SearchResults} from "../../../model/search-results";
+import {OfferToAssistService} from "../../../services/offer-to-assist.service";
+import {OfferToAssistComponent} from './offer-to-assist.component';
 
 describe('OfferToAssistComponent', () => {
   let component: OfferToAssistComponent;
@@ -21,12 +20,15 @@ describe('OfferToAssistComponent', () => {
     totalPages: 0,
     totalElements: 1,
     content: [
-      {id: 1,
-      createdDate: new Date("2024-05-01"),
-      additionalNotes: 'notes',
-      partner: new MockPartner(),
-      publicId: '1234abcd',
-      reason: CandidateAssistanceType.JOB_OPPORTUNITY}]
+      {
+        id: 1,
+        createdDate: new Date("2024-05-01"),
+        additionalNotes: 'notes',
+        partner: new MockPartner(),
+        publicId: '1234abcd',
+        reason: CandidateAssistanceType.JOB_OPPORTUNITY
+      }
+    ]
   };
 
   beforeEach(() => {
@@ -35,7 +37,7 @@ describe('OfferToAssistComponent', () => {
       declarations: [OfferToAssistComponent],
       imports: [FormsModule, ReactiveFormsModule, NgbTooltipModule, NgbPaginationModule],
       providers: [
-        { provide: OfferToAssistService, useValue: offerToAssistSpy },
+        {provide: OfferToAssistService, useValue: offerToAssistSpy},
       ]
     });
     fixture = TestBed.createComponent(OfferToAssistComponent);
@@ -57,7 +59,6 @@ describe('OfferToAssistComponent', () => {
   });
 
   it('should search offers to assist', () => {
-
     component.search();
     expect(offerToAssistServiceSpy.search).toHaveBeenCalled();
     expect(component.results).toEqual(mockResults);
@@ -65,7 +66,7 @@ describe('OfferToAssistComponent', () => {
   });
 
   it('should handle error on search failure', () => {
-    const mockError = { message: 'Search failed' };
+    const mockError = {message: 'Search failed'};
     offerToAssistServiceSpy.search.and.returnValue(throwError(mockError));
 
     component.search();
@@ -103,5 +104,4 @@ describe('OfferToAssistComponent', () => {
 
     expect(offerToAssistServiceSpy.search).toHaveBeenCalledWith(expectedRequest);
   });
-
 });

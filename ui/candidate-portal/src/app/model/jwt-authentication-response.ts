@@ -16,9 +16,9 @@
 
 import {User} from "./user";
 
-export interface JwtResponse {
+export interface JwtAuthenticationResponse {
   accessToken: string;
-  name: string;
-  gender: string;
+  tokenType: string;
   user: User;
+  canViewChats: boolean;
 }

@@ -24,5 +24,6 @@ package org.tctalent.server.casi.domain.model;
 public enum ServiceCode {
   TEST_PROCTORED,
   TEST_NON_PROCTORED,
-  PREMIUM_MEMBERSHIP
+  PREMIUM_MEMBERSHIP,
+  VOUCHER
 }

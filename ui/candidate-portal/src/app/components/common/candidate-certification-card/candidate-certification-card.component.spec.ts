@@ -14,28 +14,93 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CandidateCertificationCardComponent} from './candidate-certification-card.component';
+import {CandidateCertification} from '../../../model/candidate-certification';
+
+function makeCertification(overrides: Partial<CandidateCertification> = {}): CandidateCertification {
+  return {
+    id: 1,
+    name: 'AWS Certified',
+    institution: 'Amazon',
+    dateCompleted: '2024-01-15',
+    ...overrides
+  };
+}
 
 describe('CandidateCertificationCardComponent', () => {
   let component: CandidateCertificationCardComponent;
   let fixture: ComponentFixture<CandidateCertificationCardComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CandidateCertificationCardComponent ]
-    })
-    .compileComponents();
-  }));
+  async function configureAndCreate(options?: {
+    preview?: boolean;
+    disabled?: boolean;
+    certificate?: CandidateCertification;
+  }) {
+    await TestBed.configureTestingModule({
+      declarations: [CandidateCertificationCardComponent],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(CandidateCertificationCardComponent);
     component = fixture.componentInstance;
+    component.preview = options?.preview ?? false;
+    component.disabled = options?.disabled ?? false;
+    component.certificate = options?.certificate ?? makeCertification();
+
     fixture.detectChanges();
+  }
+
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('should create', async () => {
+    await configureAndCreate();
+    expect(component).toBeTruthy();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('template', () => {
+    it('should render tc-button actions when not in preview mode', async () => {
+      await configureAndCreate();
+      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
+
+      expect(buttons.length).toBe(2);
+    });
+
+    it('should not render tc-button actions in preview mode', async () => {
+      await configureAndCreate({preview: true});
+      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
+
+      expect(buttons.length).toBe(0);
+    });
+
+    it('should render certification details', async () => {
+      await configureAndCreate();
+      const text = (fixture.nativeElement as HTMLElement).textContent || '';
+
+      expect(text).toContain('AWS Certified');
+      expect(text).toContain('Amazon');
+      expect(text).toContain('2024');
+    });
+  });
+
+  describe('events', () => {
+    beforeEach(async () => configureAndCreate());
+
+    it('should emit onEdit with the current certification', () => {
+      const onEditSpy = spyOn(component.onEdit, 'emit');
+
+      component.editCertificate();
+
+      expect(onEditSpy).toHaveBeenCalledWith(component.certificate);
+    });
+
+    it('should emit onDelete with the current certification', () => {
+      const onDeleteSpy = spyOn(component.onDelete, 'emit');
+
+      component.deleteCertificate();
+
+      expect(onDeleteSpy).toHaveBeenCalledWith(component.certificate);
+    });
   });
 });

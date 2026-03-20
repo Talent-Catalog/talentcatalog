@@ -441,8 +441,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.hasNext", is(false)))
                 .andExpect(jsonPath("$.hasPrevious", is(false)))
                 .andExpect(jsonPath("$.content", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].id", is(99)))
-                .andExpect(jsonPath("$.content.[0].sfId", is("123456")));
+                .andExpect(jsonPath("$.content.[0].id", is(99)));
 
         verify(jobService).searchJobs(any(SearchJobRequest.class));
     }

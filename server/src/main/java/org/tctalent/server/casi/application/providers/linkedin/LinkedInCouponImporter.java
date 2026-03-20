@@ -22,7 +22,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -177,12 +178,13 @@ public class LinkedInCouponImporter implements FileInventoryImporter {
     /**
      * Attempts to parse a date using multiple formatters.
      */
-    private LocalDateTime parseDate(String dateString, DateTimeFormatter... formatters) {
+    private OffsetDateTime parseDate(String dateString, DateTimeFormatter... formatters) {
         if (dateString != null && !dateString.trim().isEmpty()) {
             for (DateTimeFormatter formatter : formatters) {
                 try {
                     return LocalDate.parse(dateString, formatter)
-                        .atStartOfDay();
+                        .atStartOfDay()
+                        .atOffset(ZoneOffset.UTC);
                 } catch (DateTimeParseException ex) {
                     LogBuilder.builder(log)
                         .action("parseDate")

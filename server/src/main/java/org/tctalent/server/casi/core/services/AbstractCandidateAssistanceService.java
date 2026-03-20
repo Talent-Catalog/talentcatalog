@@ -19,6 +19,7 @@ package org.tctalent.server.casi.core.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
@@ -55,6 +57,13 @@ import org.tctalent.server.service.db.SavedListService;
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractCandidateAssistanceService implements CandidateAssistanceService {
+
+  // Terminal statuses represent permanent, irreversible end-states.
+  // A resource that has been REDEEMED (used by the candidate) or EXPIRED (time elapsed)
+  // must never be re-activated or re-assigned; preventing transitions out of these states
+  // preserves an accurate audit trail and avoids double-use of a resource.
+  private static final Set<ResourceStatus> TERMINAL_STATUSES =
+      Set.of(ResourceStatus.REDEEMED, ResourceStatus.EXPIRED);
 
   protected final ServiceAssignmentRepository assignmentRepository;
   protected final ServiceResourceRepository resourceRepository;
@@ -122,10 +131,9 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
     var savedList = savedListService.get(listId);
     var candidates = savedList.getCandidates();
 
-    // Confirm available resources
-    List<ServiceResource> availableResources = getAvailableResources();
+    long availableCount = countAvailableForProviderAndService();
 
-    if (availableResources.isEmpty() || candidates.size() > availableResources.size()) {
+    if (availableCount == 0 || candidates.size() > availableCount) {
       throw new NoSuchObjectException(
           "There are not enough available " + serviceCode() + " resources to assign to all candidates "
               + "in the list. Please import more from the settings page.");
@@ -212,6 +220,7 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   // Returns null if not assigned
   // Throws NoSuchObjectException if resource not found
   @Override
+  @Transactional(readOnly = true)
   public Candidate getCandidateForResourceCode(String resourceCode) throws NoSuchObjectException {
     var resource = resourceRepository
         .findByProviderAndResourceCode(provider(), resourceCode)
@@ -228,12 +237,19 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   // Throws NoSuchObjectException if resource not found
   @Override
   @Transactional
-  public void updateResourceStatus(String resourceCode, ResourceStatus status) throws NoSuchObjectException {
+  public void updateResourceStatus(String resourceCode, ResourceStatus newStatus)
+      throws InvalidRequestException, NoSuchObjectException {
     ServiceResourceEntity resource = resourceRepository
         .findByProviderAndResourceCode(provider(), resourceCode)
         .orElseThrow(() -> new NoSuchObjectException("Resource with code " + resourceCode + " not found"));
-    
-    resource.setStatus(status);
+
+    if (TERMINAL_STATUSES.contains(resource.getStatus())) {
+      throw new InvalidRequestException(
+          "Cannot update status of a " + resource.getStatus()
+              + " resource: terminal state cannot be changed.");
+    }
+
+    resource.setStatus(newStatus);
     resourceRepository.save(resource);
   }
 
