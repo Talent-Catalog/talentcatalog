@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -205,13 +206,18 @@ public class PartnerServiceImpl implements PartnerService {
         return partner;
     }
 
+
+    @Override
+    public Optional<PartnerImpl> findDefaultSourcePartner() throws NoSuchObjectException {
+        return partnerRepository.findByDefaultSourcePartner(true);
+    }
+
     @NonNull
     @Override
     public Partner getDefaultSourcePartner() throws NoSuchObjectException {
-        final PartnerImpl partner = partnerRepository.findByDefaultSourcePartner(true)
-            .orElseThrow(() -> new NoSuchObjectException(Partner.class, "default"));
-
-        return partner;
+        return findDefaultSourcePartner().orElseThrow(
+            () -> new NoSuchObjectException(Partner.class, "default")
+        );
     }
 
     @Nullable

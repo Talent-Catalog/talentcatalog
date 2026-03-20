@@ -104,7 +104,13 @@ public class SystemAdminConfiguration {
         }
     }
 
+    /**
+     * Auto creates various system objects necessary for the application to function.
+     * <p>
+     * If they do not already exist, they are created.
+     */
     private void doAutoCreates() {
+        //Auto create system partner. They will be partner associated with the system admin user.
         Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
         if (systemPartner == null) {
             UpdatePartnerRequest req = new UpdatePartnerRequest();
@@ -115,10 +121,11 @@ public class SystemAdminConfiguration {
             req.setJobCreator(false);
             req.setSourcePartner(false);
 
-            //Self create system partner
+            //Create system partner
             systemPartner = partnerService.create(req);
         }
 
+        //Auto create system admin user
         User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
         if (systemAdmin == null) {
             if (!StringUtils.hasText(systemAdminPassword)) {
@@ -142,6 +149,28 @@ public class SystemAdminConfiguration {
 
             //Self create system admin
             systemAdmin = userService.createUser(req, null);
+        }
+
+        //Auto create default source partner.
+        Partner defaultSourcePartner
+            = partnerService.findDefaultSourcePartner().orElse(null);
+        if (defaultSourcePartner == null) {
+            UpdatePartnerRequest req = new UpdatePartnerRequest();
+
+            //TODO JC Come from TcInstanceService
+            String defaultSourcePartnerName = "Talent Beyond Boundaries";
+            String defaultSourcePartnerAbbreviation = "TBB";
+            req.setName(defaultSourcePartnerName);
+            req.setAbbreviation(defaultSourcePartnerAbbreviation);
+            req.setStatus(Status.active);
+
+            req.setJobCreator(false);
+            req.setSourcePartner(true);
+
+            //Create the default source partner
+            defaultSourcePartner = partnerService.create(req);
+            //TODO JC Add to UpdatePartnerRequest
+            defaultSourcePartner.setSourcePartner(true);
         }
 
         //Create global lists
