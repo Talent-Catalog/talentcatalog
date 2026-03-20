@@ -70,7 +70,6 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.TcInstanceType;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -110,6 +109,7 @@ public class UserServiceImpl implements UserService {
     private final AuthService authService;
     private final EmailHelper emailHelper;
     private final PartnerService partnerService;
+    private final TcInstanceService tcInstanceService;
 
     //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
     //tools
@@ -122,9 +122,6 @@ public class UserServiceImpl implements UserService {
     private String portalUrl;
     @Value("${web.admin}")
     private String adminUrl;
-
-    @Value("${tc.instance-type}")
-    private TcInstanceType tcInstanceType;
 
     @Override
     public @Nullable User findByUsernameAndRole(String username, Role role) {
@@ -469,7 +466,7 @@ public class UserServiceImpl implements UserService {
             JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
             response.setCanViewChats(
                 chatPolicy.canSubscribeToChats(authService.getLoggedInUserDetails()));
-            response.setTcInstanceType(tcInstanceType);
+            response.setTcInstanceType(tcInstanceService.getInstanceType());
             return response;
 
         } catch (BadCredentialsException e) {
