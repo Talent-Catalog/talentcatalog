@@ -173,7 +173,8 @@ export class LoginComponent implements OnInit {
 
   private checkDpaStatus(partner: Partner, currentDpa: TermsInfoDto) {
     // Check if partner has accepted the latest DPA
-    if (partner.sourcePartner && !partner.acceptedDataProcessingAgreementId) {
+    if (partner.sourcePartner && (partner.acceptedDataProcessingAgreementId == null
+      || partner.acceptedDataProcessingAgreementId !== currentDpa.id)) {
       // Redirect to DPA acceptance page, ignoring returnUrl
       this.router.navigateByUrl('/dpa');
     } else {
