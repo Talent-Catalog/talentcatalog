@@ -16,33 +16,45 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.mockito.BDDMockito.given;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.InstanceType;
 
+@ExtendWith(MockitoExtension.class)
 class CandidateNumberGeneratorTest {
 
     private Candidate testCandidate;
     private CandidateNumberGenerator candidateNumberGenerator;
 
+    @Mock
+    private TcInstanceService tcInstanceService;
+
+
     @BeforeEach
     void setUp() {
         testCandidate = new Candidate();
         testCandidate.setId(1L);
+
     }
 
     @Test
     void grnNumbersShouldBeGreaterThan5Million() {
-        candidateNumberGenerator = new CandidateNumberGenerator(InstanceType.GRN);
+        given(tcInstanceService.isGRN()).willReturn(true);
+        candidateNumberGenerator = new CandidateNumberGenerator(tcInstanceService);
         String generatedNumber = candidateNumberGenerator.generateCandidateNumber(testCandidate);
         Assertions.assertEquals("5000001", generatedNumber);
     }
 
     @Test
     void tbbNumbersShouldBeSameAsId() {
-        candidateNumberGenerator = new CandidateNumberGenerator(InstanceType.TBB);
+        given(tcInstanceService.isGRN()).willReturn(false);
+        candidateNumberGenerator = new CandidateNumberGenerator(tcInstanceService);
         String generatedNumber = candidateNumberGenerator.generateCandidateNumber(testCandidate);
         Assertions.assertEquals("0001", generatedNumber);
     }

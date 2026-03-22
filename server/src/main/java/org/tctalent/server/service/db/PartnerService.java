@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -66,6 +67,16 @@ public interface PartnerService {
      */
     @NonNull
     Partner getPartner(long partnerId) throws NoSuchObjectException;
+
+    /**
+     * Find the default source partner (eg TBB).
+     * <p>
+     * Note that this is called by {@link #getDefaultSourcePartner()}.
+     * Normally you should call that.
+     * <p>
+     * @return Default source partner as Optional.
+     */
+    Optional<PartnerImpl> findDefaultSourcePartner();
 
     /**
      * Get the default source partner (eg TBB).
