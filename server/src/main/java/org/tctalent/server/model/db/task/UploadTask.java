@@ -16,10 +16,10 @@
 
 package org.tctalent.server.model.db.task;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-
-import java.util.List;
+import org.tctalent.server.files.UploadType;
 
 /**
  * Task where candidate is required to upload a file.

@@ -20,8 +20,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
-import org.tctalent.server.model.db.task.UploadType;
 
 @Getter
 @Setter

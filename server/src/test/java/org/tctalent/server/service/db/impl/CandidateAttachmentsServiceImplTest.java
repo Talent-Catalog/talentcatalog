@@ -57,12 +57,12 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -380,7 +380,7 @@ public class CandidateAttachmentsServiceImplTest {
             () -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
         assertEquals("You can only delete your own uploads.", ex.getMessage());
     }
-    
+
     @Test
     @DisplayName("should catch when attempt to delete file throws exception")
     void deleteCandidateAttachment_shouldCatch_whenAttemptToDeleteFileThrowsException()
