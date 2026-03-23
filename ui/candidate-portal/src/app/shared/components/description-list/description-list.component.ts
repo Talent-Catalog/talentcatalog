@@ -23,6 +23,7 @@ import {Component, Input} from '@angular/core';
  *  description item
  *  ```
  * - `compact: boolean (defaults to false)` — if true will reduce column spacing when used with column layout
+ * - `size: 'sm' | 'lg'` — Controls the text size used by nested description items. Defaults to `'sm'`.
  *
  * **Features**
  * - Wraps the native `<dl>` for semantic, accessible description lists
@@ -65,4 +66,6 @@ export class DescriptionListComponent {
   @Input() direction: 'row' | 'column' = 'row';
   /** Smaller spacing for column layout, useful when list is used in compact spaces */
   @Input() compact = false;
+  /** Text size applied to nested items */
+  @Input() size: 'sm' | 'lg' = 'sm';
 }
