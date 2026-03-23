@@ -121,8 +121,8 @@ export class AppComponent implements OnInit {
 
   private updateChatbotVisibility(): void {
     const isGrnInstance = this.authenticationService.getTcInstanceType() === TcInstanceType.GRN;
-    const isStagingEnvironment = environment.environmentName === 'staging';
-    this.showTcChatbot = isGrnInstance && isStagingEnvironment;
+    const isEnabledEnvironment = ['local', 'staging'].includes(environment.environmentName);
+    this.showTcChatbot = isGrnInstance && isEnabledEnvironment;
   }
 
   private trackClarityViews() {

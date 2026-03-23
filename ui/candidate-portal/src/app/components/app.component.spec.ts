@@ -145,13 +145,13 @@ describe('AppComponent', () => {
       expect(component.showTcChatbot).toBe(false);
     }));
 
-    it('should hide chatbot for GRN instances in local', fakeAsync(() => {
+    it('should show chatbot for GRN instances in local', fakeAsync(() => {
       environment.environmentName = 'local';
       authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
       fixture.detectChanges();
       tick();
 
-      expect(component.showTcChatbot).toBe(false);
+      expect(component.showTcChatbot).toBe(true);
     }));
 
     it('should recompute chatbot visibility when user login state changes', fakeAsync(() => {
