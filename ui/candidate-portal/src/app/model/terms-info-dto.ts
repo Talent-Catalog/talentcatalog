@@ -16,7 +16,8 @@
  */
 
 export enum TermsType {
-  CANDIDATE_PRIVACY_POLICY,
+  GRN_CANDIDATE_PRIVACY_POLICY,
+  TBB_CANDIDATE_PRIVACY_POLICY,
 }
 
 export interface TermsInfoDto {

@@ -61,21 +61,20 @@ public class TermsInfoServiceImpl implements TermsInfoService {
                 // the policy is only defined on the TBB website:
                 // https://www.talentbeyondboundaries.org/privacy-and-data-protection-policy
                 null,
-                TermsType.CANDIDATE_PRIVACY_POLICY,
+                TermsType.TBB_CANDIDATE_PRIVACY_POLICY,
                 LocalDate.of(2025, Month.NOVEMBER, 25)
             ),
 
-            //TODO Activate this when it is approved by updating the created date below
             new TermsInfo(
-                "CandidatePrivacyPolicyV1",
-                "/terms/GDPRPrivacyPolicy-20250604.html",
-                TermsType.CANDIDATE_PRIVACY_POLICY,
-                LocalDate.of(2000, Month.JUNE, 5)
+                "GrnCandidatePrivacyPolicyV1",
+                "/terms/GrnGDPRPrivacyPolicy-20250604.html",
+                TermsType.GRN_CANDIDATE_PRIVACY_POLICY,
+                LocalDate.of(2025, Month.JUNE, 4)
             ),
             new TermsInfo(
-            "DataProcessingAgreementV1",
-            "/terms/DataProcessingAgreement-20250831.html",
-            TermsType.DATA_PROCESSING_AGREEMENT,
+            "OpcDataProcessingAgreementV1",
+                "/terms/OpcDataProcessingAgreement-20250831.html",
+            TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
             LocalDate.of(2025, Month.AUGUST, 31)
         ),
         };

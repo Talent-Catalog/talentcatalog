@@ -16,29 +16,40 @@
 
 package org.tctalent.server.service.db.impl;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
-import org.tctalent.server.model.db.Candidate;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.tctalent.server.model.db.TcInstanceType;
 
 /**
- * Generates candidate numbers
+ * Provides details about the running instance of the Talent Catalog.
  *
  * @author John Cameron
  */
-@Component
+@Service
+@Getter
 @RequiredArgsConstructor
-public class CandidateNumberGenerator {
-    private final TcInstanceService tcInstanceService;
+@Slf4j
+public class TcInstanceService {
 
-    public String generateCandidateNumber(@NonNull Candidate candidate) {
-        //Use id to generate candidate number
-        long number = candidate.getId();
-        if (tcInstanceService.isGRN()) {
-            //GRN uses 5000000 as the first number to distinguish its candidate numbers from
-            //TBB instance candidate numbers
-            number = number + 5000000L;
-        }
-        return String.format("%04d", number);
+    @Value("${tc.instance-type}")
+    private TcInstanceType instanceType;
+
+    public String getDefaultSourcePartnerAbbreviation() {
+        return isTBB() ? "TBB" : "NONE";
+    }
+
+    public String getDefaultSourcePartnerName() {
+        return isTBB() ? "Talent Beyond Boundaries" : "NONE";
+    }
+
+    public boolean isTBB() {
+        return TcInstanceType.TBB.equals(instanceType);
+    }
+
+    public boolean isGRN() {
+        return TcInstanceType.GRN.equals(instanceType);
     }
 }

@@ -1,5 +1,11 @@
 package org.tctalent.server.api.admin;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
+
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -9,12 +15,6 @@ import org.tctalent.server.model.db.TermsInfoDto;
 import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.model.db.mapper.TermsInfoMapper;
 import org.tctalent.server.service.db.TermsInfoService;
-
-import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 class TermsInfoAdminApiTest {
 
@@ -34,7 +34,7 @@ class TermsInfoAdminApiTest {
   @Test
   void getCurrentByType_returnsMappedDto() {
     // Arrange
-    TermsType type = TermsType.CANDIDATE_PRIVACY_POLICY;
+    TermsType type = TermsType.TBB_CANDIDATE_PRIVACY_POLICY;
 
     TermsInfo termsInfo = new TermsInfo(
         "terms-123",
