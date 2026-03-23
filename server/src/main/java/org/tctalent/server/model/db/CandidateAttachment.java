@@ -25,16 +25,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.task.UploadType;
+import org.tctalent.server.files.UploadType;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "candidate_attachment")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_attachment_id_seq", allocationSize = 1)
-public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
+public class CandidateAttachment extends AbstractAuditableDomainObject<Long> implements ICandidateAttachment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -47,10 +48,10 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
 
     /**
      * The attachment's url.
-     * 
-     * Historical note: This field maps to the "location" database column for backward 
-     * compatibility. Prior to 2026, this column stored relative S3 paths for file-type 
-     * attachments. Migration V1_400 converted all paths to full URLs.     
+     *
+     * Historical note: This field maps to the "location" database column for backward
+     * compatibility. Prior to 2026, this column stored relative S3 paths for file-type
+     * attachments. Migration V1_400 converted all paths to full URLs.
      */
     @Column(name = "location") //Originally this field was called location
     private String url;
@@ -62,6 +63,11 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private String fileType;
 
     private boolean migrated;
+
+    //TODO JC This needs to map to database - make transient now so that it compiles
+    @Transient
+    private String storageKey;
+
     private String textExtract;
 
     //todo Eventually get rid of this cv attribute altogether - replacing it with just uploadType

@@ -16,41 +16,51 @@
 package org.tctalent.server.storage;
 
 import java.io.InputStream;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
+import lombok.ToString;
 
-/**
- * Request to store a file.
- *
- * @author John Cameron
- */
 @Getter
-@Setter
+@Builder
+@ToString(exclude = "inputStream")
 public class StoragePutRequest {
 
     /**
-     * Original client filename, used only for metadata/debugging.
-     * Not used as the S3 key.
+     * Content stream (required).
      */
-    private String originalFilename;
+    @NonNull
+    private final InputStream inputStream;
 
     /**
-     * MIME type, eg application/pdf.
+     * Original client filename (optional, metadata only).
      */
-    private String contentType;
+    private final String originalFilename;
 
     /**
-     * Content length if known.
+     * MIME type, e.g. application/pdf (optional but recommended).
      */
-    private Long contentLength;
+    private final String contentType;
 
     /**
-     * Input stream for the content.
+     * Content length in bytes (optional but recommended).
      */
-    private InputStream inputStream;
+    private final Long contentLength;
 
     /**
-     * Optional checksum supplied by caller.
+     * Logical category of object (e.g. candidate-attachment).
+     * Used only for key generation / metadata.
      */
-    private String sha256Hex;
+    private final String objectType;
+
+    /**
+     * Optional owner reference (e.g. candidateId, attachmentId).
+     */
+    private final Long ownerId;
+
+    /**
+     * Optional SHA-256 checksum (hex).
+     * If not provided, will be computed.
+     */
+    private final String sha256Hex;
 }

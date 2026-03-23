@@ -15,31 +15,28 @@
  */
 package org.tctalent.server.storage;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.files.UploadType;
 
-/**
- * Metadata about a stored object
- *
- * @author John Cameron
- */
 @Getter
 @Setter
+@Builder
 public class StoredObject {
 
     /**
      * Opaque internal S3 key.
-     * Example: /55/0e/550e8400e29b41d4a716446655440000
      */
     private String storageKey;
 
     /**
-     * Bucket actually used.
+     * Bucket name.
      */
     private String bucket;
 
     /**
-     * Original filename as metadata only.
+     * Original filename (metadata only).
      */
     private String originalFilename;
 
@@ -49,14 +46,17 @@ public class StoredObject {
     private String contentType;
 
     /**
-     * Stored object length in bytes.
+     * Size in bytes.
      */
     private Long contentLength;
 
     /**
-     * SHA-256 checksum if known/computed.
+     * SHA-256 checksum.
      */
     private String sha256Hex;
 
+    /**
+     * Type of document.
+     */
+    UploadType uploadType;
 }
-

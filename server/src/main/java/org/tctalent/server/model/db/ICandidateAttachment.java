@@ -13,13 +13,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-package org.tctalent.server.files;
+
+package org.tctalent.server.model.db;
+
+import org.tctalent.server.files.StoredFile;
 
 /**
  * TODO JC Doc
  *
  * @author John Cameron
  */
-public interface FileUrlService {
-    String createUrl(StoredFile file);
+public interface ICandidateAttachment extends StoredFile {
+    Candidate getCandidate();
 }

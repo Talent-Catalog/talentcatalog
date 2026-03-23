@@ -19,5 +19,6 @@ package org.tctalent.server.model.db;
 public enum AttachmentType {
     googlefile,
     file,
+    grnfile,
     link
 }
