@@ -14,15 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.talentcatalog.perf.payloads;
+package org.talentcatalog.perf.scenarios.db;
+
+import static io.gatling.javaapi.core.CoreDsl.repeat;
+
+import io.gatling.javaapi.core.ChainBuilder;
+import org.talentcatalog.perf.requests.db.CandidateSearchRequests;
 
 /**
- * Centralized classpath resource paths for Saved List search-paged payloads.
+ * Candidate Search DB scenario flow.
+ *
+ * <p>Scenarios compose multiple requests (steps). No injection here.
  */
-public final class SavedListSearchPagedPayloads {
+public final class CandidateSearchScenario {
 
-  /** Preview/light payload for saved-list-candidate search-paged (typical paging request). */
-  public static final String LIGHT = "payloads/saved_list_search_paged_light.json";
+  private CandidateSearchScenario() {}
 
-  private SavedListSearchPagedPayloads() {}
+  public static ChainBuilder flow() {
+    return repeat(20).on(CandidateSearchRequests.searchPaged());
+  }
 }

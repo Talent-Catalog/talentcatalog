@@ -14,15 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.talentcatalog.perf.payloads;
+package org.talentcatalog.perf.simulations.db.candidatesearch;
 
-/**
- * Centralized classpath resource paths for Saved List search-paged payloads.
- */
-public final class SavedListSearchPagedPayloads {
+import static io.gatling.javaapi.core.CoreDsl.rampUsers;
+import static io.gatling.javaapi.core.CoreDsl.scenario;
 
-  /** Preview/light payload for saved-list-candidate search-paged (typical paging request). */
-  public static final String LIGHT = "payloads/saved_list_search_paged_light.json";
+import io.gatling.javaapi.core.Simulation;
+import org.talentcatalog.perf.scenarios.db.CandidateSearchScenario;
 
-  private SavedListSearchPagedPayloads() {}
+public class CandidateSearchDbSimulation extends Simulation {
+
+  {
+    setUp(
+        scenario("DB Candidate Search")
+            .exec(CandidateSearchScenario.flow())
+            .injectOpen(rampUsers(10).during(5))
+    );
+  }
 }

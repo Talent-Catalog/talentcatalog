@@ -25,7 +25,7 @@ public class HealthSimulation extends Simulation {
   }
 
   public HealthSimulation() {
-    // Required: -Dperf.baseUrl=https://...
+    // Optional: -Dperf.baseUrl=https://... (defaults to http://localhost:8080 for local runs)
     String baseUrl = sys("perf.baseUrl", "http://localhost:8080");
 
     // Optional: -Dperf.healthPath=/api/health
