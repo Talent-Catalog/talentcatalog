@@ -28,6 +28,7 @@ import {
 import {saveBlob} from "../util/file";
 import {Candidate} from "../model/candidate";
 import {CvText} from "../model/cv-text";
+import {AuthenticationService} from "./authentication.service";
 
 export interface UpdateCandidateAttachmentRequest {
   id?: number;
@@ -51,7 +52,10 @@ export class CandidateAttachmentService {
 
   private apiUrl = environment.apiUrl + '/candidate-attachment';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private authenticationService: AuthenticationService,
+    private http: HttpClient
+  ) {}
 
   /**
    * Fetch the text of a candidate's CVs.
@@ -78,17 +82,24 @@ export class CandidateAttachmentService {
   }
 
   downloadAttachment(id: number, name: string) {
-    return this.http.get(`${this.apiUrl}/${id}/download`,
-      { responseType: 'blob' }).pipe(
+    let observable: Observable<void>;
+    if (this.authenticationService.isGrnInstance()) {
+      //For GRN instances, we just want to view the file without downloading it.
+      observable = this.http.get<void>(`${this.apiUrl}/${id}/view`);
+    } else {
+      observable = this.http.get(`${this.apiUrl}/${id}/download`,
+        { responseType: 'blob' }).pipe(
         map((resp: Blob) => {
-          saveBlob(resp, name);
-        }, catchError(e => {
+            saveBlob(resp, name);
+          }, catchError(e => {
               console.log('error', e);
               return throwError(e);
             }
           )
         )
-    )
+      )
+    }
+    return observable;
   }
 
   downloadAttachments(candidate: Candidate, ats: CandidateAttachment[]): Observable<string> {

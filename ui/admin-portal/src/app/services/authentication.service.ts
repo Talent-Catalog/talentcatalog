@@ -100,6 +100,10 @@ export class AuthenticationService implements OnDestroy {
     return this.localStorageService.get('tc_instance_type');
   }
 
+  isGrnInstance(): boolean {
+    return this.getTcInstanceType() == TcInstanceType.GRN;
+  }
+
   /**
    * Check that user - possibly retrieved from cache - is not junk
    * @param user User object to check

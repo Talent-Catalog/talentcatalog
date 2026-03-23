@@ -106,6 +106,10 @@ export class AuthenticationService implements OnDestroy {
     return this.localStorageService.get('tc_instance_type');
   }
 
+  isGrnInstance(): boolean {
+    return this.getTcInstanceType() == TcInstanceType.GRN;
+  }
+
   isAuthenticated(): boolean {
     return this.getLoggedInUser() != null;
   }
