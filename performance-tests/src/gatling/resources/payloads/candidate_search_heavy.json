@@ -1,0 +1,73 @@
+{
+  "savedSearchId": 2529,
+  "simpleQueryString": "",
+  "candidateNumbers": [],
+  "keyword": null,
+  "statuses": [
+    "active",
+    "pending"
+  ],
+  "gender": null,
+  "occupationIds": [
+    8648,
+    8758
+  ],
+  "minYrs": null,
+  "maxYrs": null,
+  "partnerIds": [
+    204,
+    10024,
+    7,
+    6,
+    205,
+    3,
+    5,
+    10025,
+    1
+  ],
+  "nationalityIds": [],
+  "nationalitySearchType": "or",
+  "countryIds": [
+    6407
+  ],
+  "countrySearchType": "or",
+  "englishMinWrittenLevel": 30,
+  "englishMinSpokenLevel": 30,
+  "otherLanguageId": null,
+  "otherMinWrittenLevel": null,
+  "otherMinSpokenLevel": null,
+  "lastModifiedFrom": "2023-01-01",
+  "lastModifiedTo": null,
+  "timezone": null,
+  "minAge": null,
+  "maxAge": null,
+  "minEducationLevel": null,
+  "maxEducationLevel": null,
+  "educationMajorIds": [],
+  "surveyTypeIds": [],
+  "miniIntakeCompleted": null,
+  "fullIntakeCompleted": null,
+  "searchJoinRequests": [],
+  "unhcrStatuses": [],
+  "regoReferrerParam": null,
+  "regoUtmCampaign": null,
+  "regoUtmSource": null,
+  "regoUtmMedium": null,
+  "exclusionListId": 5612,
+  "listAnyIds": null,
+  "listAnySearchType": "or",
+  "listAllIds": null,
+  "listAllSearchType": "and",
+  "includePendingTermsCandidates": null,
+  "potentialDuplicate": null,
+  "pageNumber": 0,
+  "pageSize": 20,
+  "sortFields": [
+    "id"
+  ],
+  "sortDirection": "DESC",
+  "reviewStatusFilter": [
+    "rejected"
+  ],
+  "dtoType": "EXTENDED"
+}

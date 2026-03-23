@@ -31,10 +31,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.security.auth.login.AccountLockedException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
@@ -51,8 +51,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.exception.EmailSendFailedException;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
 import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.exception.InvalidCredentialsException;
+import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
 import org.tctalent.server.exception.InvalidPasswordTokenException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
@@ -70,9 +72,9 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
@@ -81,6 +83,8 @@ import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.JwtTokenProvider;
@@ -88,17 +92,16 @@ import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.policy.ChatPolicy;
 import org.tctalent.server.util.qr.EncodedQrImage;
-import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
-import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
-import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
-import org.tctalent.server.exception.ExpiredEmailTokenException;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CandidateRepository candidateRepository;
+    private final ChatPolicy chatPolicy;
     private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
@@ -106,43 +109,19 @@ public class UserServiceImpl implements UserService {
     private final AuthService authService;
     private final EmailHelper emailHelper;
     private final PartnerService partnerService;
+    private final TcInstanceService tcInstanceService;
+
+    //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
+    //tools
+    private final SecretGenerator totpSecretGenerator;
+    private final QrDataFactory totpQrDataFactory;
+    private final QrGenerator totpQrGenerator;
+    private final CodeVerifier totpVerifier;
 
     @Value("${web.portal}")
     private String portalUrl;
     @Value("${web.admin}")
     private String adminUrl;
-
-    //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
-    //tools
-    @Autowired
-    private SecretGenerator totpSecretGenerator;
-    @Autowired
-    private QrDataFactory totpQrDataFactory;
-    @Autowired
-    private QrGenerator totpQrGenerator;
-    @Autowired
-    private CodeVerifier totpVerifier;
-
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository,
-        CandidateRepository candidateRepository,
-        CountryRepository countryRepository,
-        PasswordHelper passwordHelper,
-        AuthenticationManager authenticationManager,
-        JwtTokenProvider tokenProvider,
-        AuthService authService,
-        EmailHelper emailHelper, PartnerService partnerService) {
-        this.userRepository = userRepository;
-        this.candidateRepository = candidateRepository;
-        this.countryRepository = countryRepository;
-        this.passwordHelper = passwordHelper;
-        this.authenticationManager = authenticationManager;
-        this.tokenProvider = tokenProvider;
-        this.authService = authService;
-        this.emailHelper = emailHelper;
-        this.partnerService = partnerService;
-    }
 
     @Override
     public @Nullable User findByUsernameAndRole(String username, Role role) {
@@ -320,7 +299,7 @@ public class UserServiceImpl implements UserService {
             user.setEmailVerified(false);
             user.setEmailVerificationToken(null);
             user.setEmailVerificationTokenIssuedDate(null);
-        } 
+        }
     }
 
     @Override
@@ -483,7 +462,12 @@ public class UserServiceImpl implements UserService {
 
             SecurityContextHolder.getContext().setAuthentication(auth);
             String jwt = tokenProvider.generateToken(auth);
-            return new JwtAuthenticationResponse(jwt, user);
+
+            JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
+            response.setCanViewChats(
+                chatPolicy.canSubscribeToChats(authService.getLoggedInUserDetails()));
+            response.setTcInstanceType(tcInstanceService.getInstanceType());
+            return response;
 
         } catch (BadCredentialsException e) {
             //Log details to check for nature of brute force attacks.

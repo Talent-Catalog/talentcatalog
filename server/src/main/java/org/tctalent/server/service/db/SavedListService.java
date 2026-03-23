@@ -291,6 +291,15 @@ public interface SavedListService {
     SavedList get(@NonNull User user, String listName);
 
     /**
+     * Returns the candidate ids in the saved list with the given id.
+     * Or empty set if there is no saved list with that id.
+     * @param savedListId Saved list id
+     * @return Set of candidate ids
+     */
+    @NonNull
+    Set<Long> getCandidateIds(long savedListId);
+
+    /**
      * Fetches candidate dtos from the given list according the given request.
      * @param savedList Saved List whose candidates are to be fetched
      * @param request Defines which candidates to fetch (if not all)

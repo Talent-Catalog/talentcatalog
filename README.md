@@ -274,7 +274,18 @@ Then you can run `init` (only need to do this once), and then `plan` or `apply`,
 
 ### Set up your local database ###
 
-Ask TC developers for a `pg_dump` of the database. Note that the dump does not have to be recent. 
+If you just create a database called `tctalent` with no tables, 
+running the server for the first time will automatically create all the required tables. 
+(See the section below on `Run the Server`) 
+It will also automatically create some static data, including populating the country and language
+tables. Lastly it will create a system admin user called SystemAdmin that you can log in with
+and start creating other users and configuration. You can use the `boot-admin-password` property
+in `application.yml` to define a password for that user.
+
+Alternately, ask TC developers for a `pg_dump` of the database. The advantage of the the dump
+is that you will get a database populated with a lot of test data and users. 
+
+Note that the dump does not have to be recent. 
 The software will automatically apply any required updates to the database definition, driven by 
 Flyway files stored in GitHub. 
 

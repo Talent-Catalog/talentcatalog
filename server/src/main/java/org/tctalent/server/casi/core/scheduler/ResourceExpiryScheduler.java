@@ -16,7 +16,8 @@
 
 package org.tctalent.server.casi.core.scheduler;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +63,7 @@ public class ResourceExpiryScheduler {
   public void markResourcesAsExpired() {
     List<ServiceResourceEntity> expirable = resources
         .findExpirable(
-            LocalDateTime.now(), EXCLUDE
+            OffsetDateTime.now(ZoneOffset.UTC), EXCLUDE
         );
 
     if (expirable.isEmpty()) {

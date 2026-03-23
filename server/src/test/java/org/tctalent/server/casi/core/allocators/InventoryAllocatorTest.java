@@ -76,7 +76,7 @@ class InventoryAllocatorTest {
   void allocateSucceeds() {
     // Arrange
     when(resourceRepository.lockNextAvailable(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        ServiceProvider.DUOLINGO.name(), ServiceCode.TEST_PROCTORED.name()))
         .thenReturn(availableResource);
     when(resourceRepository.save(availableResource))
         .thenReturn(availableResource);
@@ -100,7 +100,7 @@ class InventoryAllocatorTest {
   void allocateFailsWhenNoResourcesAvailable() {
     // Arrange
     when(resourceRepository.lockNextAvailable(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        ServiceProvider.DUOLINGO.name(), ServiceCode.TEST_PROCTORED.name()))
         .thenReturn(null);
 
     // Act & Assert
@@ -137,7 +137,7 @@ class InventoryAllocatorTest {
   void allocateUsesPessimisticLocking() {
     // Arrange
     when(resourceRepository.lockNextAvailable(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        ServiceProvider.DUOLINGO.name(), ServiceCode.TEST_PROCTORED.name()))
         .thenReturn(availableResource);
     when(resourceRepository.save(availableResource))
         .thenReturn(availableResource);
@@ -148,7 +148,7 @@ class InventoryAllocatorTest {
     // Assert
     // Verify that lockNextAvailable was called, which uses FOR UPDATE SKIP LOCKED
     verify(resourceRepository).lockNextAvailable(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED);
+        ServiceProvider.DUOLINGO.name(), ServiceCode.TEST_PROCTORED.name());
   }
 }
 

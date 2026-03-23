@@ -83,7 +83,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   constructor(
     chatService: ChatService,
     fb: UntypedFormBuilder,
-    authService: AuthorizationService,
+    authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,
     salesforceService: SalesforceService,
@@ -91,7 +91,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
     partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+    super(chatService, fb, authorizationService, localStorageService, oppService, salesforceService,
       countryService, partnerService, locale,"Opps")
 
   }
@@ -133,8 +133,10 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
     //Call standard processing (which puts the results into this.opps)
     super.processSearchResults(results);
 
-    //Then fetch the chats associated with all opps.
-    this.fetchChats();
+    if (this.canViewChats()) {
+      //Then fetch the chats associated with all opps.
+      this.fetchChats();
+    }
   }
 
   private fetchChats() {

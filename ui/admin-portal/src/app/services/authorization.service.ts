@@ -124,6 +124,10 @@ export class AuthorizationService {
     return result;
   }
 
+  canViewChats(): boolean {
+    return this.authenticationService.canViewChats()
+  }
+
   /**
    * True if the logged-in user work for the source partner that is currently managing the
    * given candidate

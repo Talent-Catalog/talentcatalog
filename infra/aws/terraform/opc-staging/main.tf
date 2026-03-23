@@ -1,21 +1,178 @@
 # This file is the main entry to the opc-staging infrastructure
 # The idea of using a separate directory is to use different remote state backends and roles
 
-# Configure  the opc-staging terraform workspace
-terraform {
-  required_version = ">= 1.3.0"
+# Secrets loaded from secrets.auto.tfvars and passed through to the child module
+variable "aws_access_key" {
+  description = "AWS access key for S3 access"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
 
-  # Store the terraform state remotely in S3 bucket
-  backend "s3" {
-    bucket         = "opc-shared-terraform-state"
-    key            = "staging/talentcatalog/terraform.tfstate"
-    region         = "eu-west-2"
-    dynamodb_table = "opc-terraform-locks"
-    encrypt        = "true"
-  }
+variable "aws_secret_key" {
+  description = "AWS secret key for S3 access"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "duolingo_api_secret" {
+  description = "Duolingo API secret"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "es_password" {
+  description = "Elasticsearch password (todo: retire elasticsearch)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "email_password" {
+  description = "Email password"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "drive_id" {
+  description = "Google Drive candidate data drive ID"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "drive_rootfolder" {
+  description = "Google Drive candidate root folder ID"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "drive_list_folders_id" {
+  description = "Google Drive list folders drive ID"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "drive_list_folders_root_id" {
+  description = "Google Drive list folders root ID"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "drive_private_key" {
+  description = "Google Drive private key (PEM format with literal \\n)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "drive_private_key_id" {
+  description = "Google Drive private key ID"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "jwt_secret" {
+  description = "JWT secret"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "preset_api_token" {
+  description = "Preset API token"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "preset_secret" {
+  description = "Preset secret"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "preset_workspace_id" {
+  description = "Preset workspace ID"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "sf_consumer_key" {
+  description = "Salesforce connected app consumer key"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "sf_private_key" {
+  description = "Salesforce private key"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "sf_user" {
+  description = "Salesforce user for access token"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "slack_channel_id" {
+  description = "Slack channel ID for job posts (test: C048GS1KHPG, live: C029WMY6H1U)"
+  type        = string
+}
+
+variable "slack_token" {
+  description = "Slack token (todo: need one for OPC)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "spring_datasource_password" {
+  description = "Spring datasource (RDS) password"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "tc_api_key" {
+  description = "TC API key"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "translation_password" {
+  description = "Translation password"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "tc_boot_admin_password" {
+  description = "System admin password for TC"
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 # Configure the AWS provider
+# NOTE: Provider configuration MUST remain here (cannot be moved to parent module).
+# Providers cannot have configuration parameters injected via module variables.
+# Each environment targets a different AWS account via different assume_role ARNs.
+# OPC staging account: 164804461258
 provider "aws" {
   region = "eu-west-2"
 
@@ -28,109 +185,126 @@ provider "aws" {
 locals {
   common_tags = {
     Project     = "OPC"
-    Application = "TC-Plus"
+    Application = "TC-Server"
     Environment = "staging"
     ManagedBy   = "terraform"
   }
 }
 
-# Include the shared configuration
+# TC-Server infrastructure for OPC AWS staging account
 module "tc-plus-staging" {
   source = "../"
 
   common_tags = local.common_tags
 
   # ECS configuration
-  app = "tc-plus"
-  env = "opc-staging"
-  site_domain = "test.plus.tctalent.org"
-  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/app:tc-plus-staging"
-  container_port = 8080
-  db_enable = true
-  db_public_access = false
-  db_multi_az =  false
-  db_instance_class = "db.t3.medium"
-  db_engine_version = "17.5"
-  db_family = "postgres17"
+  app             = "tc-server"
+  env             = "opc-staging"
+  site_domain     = "tctalent-test.org"
+  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-staging"
+  container_port  = 8080
+  ecs_tasks_count = 1
+  fargate_cpu     = 512
+  fargate_memory  = 2048
+
+  # Database configuration
+  # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
+  # database via spring_datasource_url below. It does not currently connect  to the OPC RDS instance.
+  db_enable              = true
+  db_public_access       = false
+  db_multi_az            = false
+  db_instance_class      = "db.t3.medium"
+  db_engine_version      = "17.5"
+  db_family              = "postgres17"
   db_major_engine_version = "17"
-  db_name = "tcplus"
-  ecs_tasks_count = 2
+  db_name                = "tcplus"
+
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
-  # Spring application configuration
+  # Redis cache configuration
+  cache_enable          = true
+  cache_cluster_id      = "tc-test-cache"
+  cache_node_type       = "cache.t3.micro"
+  cache_num_cache_nodes = 3
+  cache_engine_version  = "7.1"
+  cache_port            = 6379
 
-  # todo -- SM: The below service configuration will be addressed in a follow-up PR / PRs
+  # SSM-backed application parameters (stored in SSM, injected into ECS task)
+  # Non-secrets: provided directly here
+  s3_bucket                              = "files.tbbtalent.org" # todo: confirm bucket name
+  environment                            = "opc-staging"
+  email_default                          = "UPDATE_DEFAULT_EMAIL_HERE"  # todo: confirm if used/needed
+  email_test_override                    = "john@cameronfoundation.org" # todo: change to shared address
+  email_user                             = "UPDATE_EMAIL_USER_HERE"  # todo: confirm if used/needed
+  email_type                             = "SMTP" # todo: confirm value
+  es_url                                 = "https://tc-staging.es.us-east-1.aws.found.io:9243"  # todo: retire elasticsearch
+  es_username                            = "elastic"  # todo: retire elasticsearch
+  gradle_home                            = "/usr/local/gradle"
+  java_home                              = "/usr/lib/jvm/java"
+  logbuilder_include_cpu_utilization     = "true"
+  logbuilder_include_memory_utilization  = "true"
+  m2                                     = "/usr/local/apache-maven/bin"
+  m2_home                                = "/usr/local/apache-maven"
+  server_port                            = "8080"
+  server_url                             = "https://tctalent-test.org/"
+  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"
+  sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
+  sf_base_login_url                      = "https://test.salesforce.com/"
+  spring_client_url                      = "-" # todo: confirm if used/needed
+  spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- in parallel to local RDS
+  spring_datasource_username             = "tctalent"
+  spring_db_pool_max                     = "50"
+  spring_db_pool_min                     = "20"
+  spring_servlet_max_file_size           = "10MB"
+  spring_servlet_max_request_size        = "10MB"
+  tc_api_url                             = "https://test.api.tctalent.org"
+  tc_cors_urls                           = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
+  tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
+  tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
+  tc_skills_extraction_api_url           = "https://test.skills.tctalent.org"
+  web_admin                              = "https://tctalent-test.org/admin-portal"
+  web_portal                             = "https://tctalent-test.org/candidate-portal"
+  tc_instance_type                       = "TBB"
 
-  # todo create s3 access and required buckets
-  aws_access_key = "<REPLACE_ME>" # for s3 -- shouldn't be hardcoded todo
-  aws_secret_key = "<REPLACE_ME>" # for s3 -- shouldn't be hardcoded todo
-  s3_bucket = "<REPLACE_ME>" # for s3 -- switch to OPC todo
+  # Secrets: loaded from secrets.auto.tfvars
+  aws_access_key             = var.aws_access_key
+  aws_secret_key             = var.aws_secret_key
+  duolingo_api_secret        = var.duolingo_api_secret
+  es_password                = var.es_password
+  email_password             = var.email_password
+  drive_id                   = var.drive_id
+  drive_rootfolder           = var.drive_rootfolder
+  drive_list_folders_id      = var.drive_list_folders_id
+  drive_list_folders_root_id = var.drive_list_folders_root_id
+  drive_private_key          = var.drive_private_key
+  drive_private_key_id       = var.drive_private_key_id
+  jwt_secret                 = var.jwt_secret
+  preset_api_token           = var.preset_api_token
+  preset_secret              = var.preset_secret
+  preset_workspace_id        = var.preset_workspace_id
+  sf_consumer_key            = var.sf_consumer_key
+  sf_private_key             = var.sf_private_key
+  sf_user                    = var.sf_user
+  slack_channel_id           = var.slack_channel_id
+  slack_token                = var.slack_token
+  spring_datasource_password = var.spring_datasource_password
+  tc_api_key                 = var.tc_api_key
+  translation_password       = var.translation_password
+  tc_boot_admin_password     = var.tc_boot_admin_password
+}
 
-  # todo missing duolingo api secret -- shouldn't be hardcoded
+# Configure the opc-staging terraform workspace
+# NOTE: The terraform block with backend configuration MUST remain in this file (cannot be moved to parent module).
+# This is because backend configuration can only exist in the root module where terraform init/apply is run
+terraform {
+  required_version = ">= 1.3.0"
 
-  # todo retire elasticsearch
-  es_password = "<REPLACE_ME>" # shouldn't be hardcoded -- remove elasticsearch todo
-  es_url = "<REPLACE_ME>" # -- remove elasticsearch todo
-  es_username = "<REPLACE_ME>" # -- remove elasticsearch todo
-
-  email_default = "<REPLACE_ME>" # todo confirm if this is used / needed - it is not configured in the AWS staging task definition
-  email_password = "<REPLACE_ME>" # shouldn't be hardcoded todo
-  email_test_override = "john@cameronfoundation.org" # todo change this to a shared address
-
-  email_user = "<REPLACE_ME>" # todo confirm if this is used / needed - it is not configured in the AWS staging task definition
-
-  environment = "opc-staging"
-
-  # todo replicate in OPC workspace
-  drive_id = "<REPLACE_ME>"
-  drive_rootfolder =  "<REPLACE_ME>"
-  drive_list_folders_id = "<REPLACE_ME>"
-  drive_list_folders_root_id = "<REPLACE_ME>"
-  drive_private_key = "<REPLACE_ME>"
-  drive_private_key_id = "<REPLACE_ME>"
-
-  gradle_home = "/usr/local/gradle"
-  java_home = "/usr/lib/jvm/java"
-  jwt_secret = "<REPLACE_ME>" # todo do not hardcode
-  m2 = "/usr/local/apache-maven/bin"
-  m2_home = "/usr/local/apache-maven"
-
-  # todo preset_api_token, preset_secret (do not hardcode), preset_workspace_id
-  # todo redis_host, redis_port
-
-  server_port = "8080"
-  server_url = "https://test.plus.tctalent.org/"
-
-  # todo either create for OPC -- or decouple TC+ from SF ?
-  sf_base_classic_url = "<REPLACE_ME>"
-  sf_base_lightning_url = "<REPLACE_ME>"
-  sf_base_login_url = "<REPLACE_ME>"
-  sf_consumer_key = "<REPLACE_ME>"
-  sf_private_key = "<REPLACE_ME>"
-  sf_user = "<REPLACE_ME>"
-
-  slack_token = "<REPLACE_ME>" # todo need one for OPC but in any case shouldn't be hardcoded
-  spring_client_url = "-" # todo confirm if this is used or needed, there is no value configured for it in the stating service task definition
-  spring_datasource_password = "<REPLACE_ME>" # shouldn't be hardcoded -- todo
-  spring_datasource_url = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent" # todo after RDS DB is created
-  spring_datasource_username = "tctalent"
-  spring_db_pool_max = "50"
-  spring_db_pool_min = "20"
-  spring_servlet_max_file_size = "10MB"
-  spring_servlet_max_request_size = "10MB"
-
-  # todo tc_api_key, tc_api_url
-
-  tc_cors_urls = "https://test.plus.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com" # todo amplify urls
-
-  #  todo tc_destinations
-
-  tc_db_copy_config = "data.sharing/tcCopies.xml" # todo -- can this be retired?
-
-  # todo -- tc_skills_extraction_api_url : https://skills.plus.tctalent.org
-  translation_password = "<REPLACE_ME>" # can't be hardcoded for repository -- find another way todo
-
-  web_admin = "https://test.plus.tctalent.org/admin-portal"
-  web_portal = "https://test.plus.tctalent.org/candidate-portal"
-
+  # Store the terraform state remotely in S3 bucket
+  backend "s3" {
+    bucket         = "opc-shared-terraform-state"
+    key            = "staging/talentcatalog/terraform.tfstate"
+    region         = "eu-west-2"
+    dynamodb_table = "opc-terraform-locks"
+    encrypt        = "true"
+  }
 }

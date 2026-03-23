@@ -1,8 +1,21 @@
 tc:
   cors:
-    urls: ${TC_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
+    urls: ${TC_CORS_URLS:http://localhost:4200,http://127.0.0.1:4200,http://localhost:4201,http://localhost:4202}
+
+  init:
+    #This is only used when booting up new instance of the server.
+    #A System Admin user is created which can be used to create other users and other configuration.
+    #The username for logging in is SystemAdmin and this property provides the password.
+    #See SystemAdminConfiguration.java.
+    boot-admin-password: ${TC_BOOT_ADMIN_PASSWORD:}
 
   destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
+
+  flyway:
+    repair: false  #  Set this to true if you need to repair the Flyway history.
+
+  instance-type: ${TC_INSTANCE_TYPE:TBB}
+
   partner-dbcopy-config: ${TC_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
 
 logging:
@@ -79,6 +92,13 @@ spring:
     elasticsearch:
       repositories:
         enabled: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 2
+    validate-on-migrate: true
 
   thymeleaf:
     prefix: classpath:/mail/
@@ -174,12 +194,6 @@ web:
   # and SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
   admin: https://tctalent.org/admin-portal
 
-flyway:
-  ignoreMissingMigrations: false
-
-#  Set this to true if you need to repair the Flyway history.
-  repair: false
-
 google:
   drive:
   #  These are the credentials set up in the Google Drive API for the TalentCatalog project
@@ -257,6 +271,16 @@ duolingo:
   api:
     apiSecret: ${DUOLINGO_SECRET:}
     baseUrl: https://englishtest.duolingo.com/api/partner/2
+
+# Anthropic Claude API Configuration:
+# Contains the API key and configuration for Anthropic's Claude AI service.
+anthropic:
+  api:
+    apiKey: ${ANTHROPIC_API_KEY:}
+    baseUrl: https://api.anthropic.com
+    model: claude-haiku-4-5-20251001
+    maxTokens: 20000
+    temperature: 1.0
 
 #Support for in context language translation
 translation:

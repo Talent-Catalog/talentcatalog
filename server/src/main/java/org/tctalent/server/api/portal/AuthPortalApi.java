@@ -89,10 +89,12 @@ public class AuthPortalApi {
 
     DtoBuilder jwtDto() {
         return new DtoBuilder()
-                .add("accessToken")
-                .add("tokenType")
-                .add("user", candidateBriefDto())
-                ;
+            .add("accessToken")
+            .add("tokenType")
+            .add("canViewChats")
+            .add("tcInstanceType")
+            .add("user", candidateBriefDto())
+            ;
     }
 
     private DtoBuilder candidateBriefDto() {

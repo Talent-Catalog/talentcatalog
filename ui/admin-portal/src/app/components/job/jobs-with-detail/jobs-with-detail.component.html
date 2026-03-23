@@ -20,8 +20,10 @@
 
       <app-jobs
         [searchBy]="searchBy"
+        [tabIsActive]="tabIsActive"
         [chatsRead$]="chatsRead$"
         (oppSelection)="onJobSelected($event)"
+        (refreshRequested)="onRefreshRequested()"
       >
       </app-jobs>
 
@@ -34,6 +36,9 @@
             <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
               class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
           </div>
+
+          <tc-loading [loading]="loading"></tc-loading>
+          <tc-alert type="danger" *ngIf="error">{{error}}</tc-alert>
 
           <div *ngIf="selectedJob">
             <app-view-job

@@ -73,11 +73,17 @@ export class ViewJobSourceContactsComponent implements OnInit {
     )
   }
 
+  canViewChats() {
+    return this.authorizationService.canViewChats();
+  }
+
   private setSourcePartners(partners: Partner[]) {
     this.sourcePartners = partners;
 
-    //Now populate all their chats
-    this.sourcePartners.forEach(partner => this.fetchSourcePartnerChat(partner));
+    if (this.canViewChats()) {
+      //Now populate all their chats
+      this.sourcePartners.forEach(partner => this.fetchSourcePartnerChat(partner));
+    }
   }
 
   editPartnerContact(partner: Partner) {

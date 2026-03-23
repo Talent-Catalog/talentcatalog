@@ -22,8 +22,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
@@ -43,8 +42,9 @@ import org.tctalent.server.model.db.AbstractDomainObject;
 @Setter
 public class ServiceResourceEntity extends AbstractDomainObject<Long> {
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable=false)
-  private ServiceProvider provider; // e.g. "DUOLINGO" // TODO -- SM -- make enum? Provider.DUOLINGO
+  private ServiceProvider provider; // e.g. "DUOLINGO"
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
@@ -56,11 +56,11 @@ public class ServiceResourceEntity extends AbstractDomainObject<Long> {
   @Column(nullable=false)
   private ResourceStatus status; // e.g. AVAILABLE/ASSIGNED/REDEEMED/EXPIRED
 
-  private LocalDateTime expiresAt;
+  private OffsetDateTime expiresAt;
 
-  private LocalDateTime sentAt;
+  private OffsetDateTime sentAt;
 
   @Column(nullable = false, updatable = false)
-  private Instant createdAt = Instant.now();
+  private OffsetDateTime createdAt = OffsetDateTime.now();
 }
 

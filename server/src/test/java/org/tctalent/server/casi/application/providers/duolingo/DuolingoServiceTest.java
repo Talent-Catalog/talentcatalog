@@ -27,6 +27,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +63,7 @@ import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
@@ -342,9 +351,9 @@ class DuolingoServiceTest {
         .build();
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
-    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
-        .thenReturn(List.of(resourceEntity, resourceEntity));
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(2L);
     when(assignmentRepository.findByCandidateAndProviderAndService(
         eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
         .thenReturn(Collections.emptyList());
@@ -375,9 +384,9 @@ class DuolingoServiceTest {
     when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
-    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
-        .thenReturn(List.of(resourceEntity)); // Only 1 resource for 2 candidates
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(1L); // Only 1 resource for 2 candidates
 
     // Act & Assert
     assertThatThrownBy(() -> duolingoService.assignToList(LIST_ID, user))
@@ -397,9 +406,9 @@ class DuolingoServiceTest {
     when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
-    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
-        .thenReturn(List.of(resourceEntity, resourceEntity));
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(2L);
     when(assignmentRepository.findByCandidateAndProviderAndService(
         eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
         .thenReturn(List.of(assignmentEntity)); // Candidate 1 already has assignment
@@ -439,9 +448,9 @@ class DuolingoServiceTest {
     // Arrange
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
     when(savedList.getCandidates()).thenReturn(Set.of());
-    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
-        .thenReturn(List.of(resourceEntity)); // Has resources but no candidates
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(1L); // Has resources but no candidates
 
     // Act
     List<ServiceAssignment> result = duolingoService.assignToList(LIST_ID, user);
@@ -460,9 +469,9 @@ class DuolingoServiceTest {
     when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
-    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
-        .thenReturn(List.of(resourceEntity, resourceEntity)); // Exactly 2 resources for 2 candidates
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(2L); // Exactly 2 resources for 2 candidates
     when(assignmentRepository.findByCandidateAndProviderAndService(
         eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
         .thenReturn(Collections.emptyList());
@@ -488,9 +497,9 @@ class DuolingoServiceTest {
   void assignToListFailsWhenAllAssignmentsFail() {
     // Arrange
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
-    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
-        .thenReturn(List.of(resourceEntity));
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(1L);
     when(assignmentRepository.findByCandidateAndProviderAndService(
         eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
         .thenReturn(Collections.emptyList());
@@ -525,9 +534,9 @@ class DuolingoServiceTest {
         .build();
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
-    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
-        .thenReturn(List.of(resourceEntity, resourceEntity));
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(2L);
     when(assignmentRepository.findByCandidateAndProviderAndService(
         eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
         .thenReturn(Collections.emptyList());
@@ -561,9 +570,9 @@ class DuolingoServiceTest {
     when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
-    when(resourceRepository.findByProviderAndServiceCodeAndStatus(
-        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED, ResourceStatus.AVAILABLE))
-        .thenReturn(List.of(resourceEntity, resourceEntity));
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(2L);
     when(assignmentRepository.findByCandidateAndProviderAndService(
         eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
         .thenReturn(Collections.emptyList());
@@ -585,6 +594,108 @@ class DuolingoServiceTest {
 
     verify(assignmentEngine).assign(duolingoAllocator, CANDIDATE_ID, user);
     verify(assignmentEngine).assign(duolingoAllocator, 789L, user);
+  }
+
+  @Test
+  @DisplayName("assign to list: resource exhaustion mid-loop yields partial success and continues the loop")
+  void assignToList_resourceExhaustionMidLoopYieldsPartialSuccessAndContinuesLoop() {
+    // Arrange – count check passes (3 resources for 3 candidates), but two allocations fail
+    // mid-loop because another thread consumed the resources between the count and the assign.
+    Candidate candidate2 = new Candidate();
+    candidate2.setId(789L);
+    candidate2.setCandidateNumber("C789");
+    Candidate candidate3 = new Candidate();
+    candidate3.setId(999L);
+    candidate3.setCandidateNumber("C999");
+    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2, candidate3));
+
+    when(savedListService.get(LIST_ID)).thenReturn(savedList);
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(3L);
+
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(789L), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        eq(999L), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+
+    // Candidate 1 succeeds; candidates 2 and 3 fail as the allocator finds no remaining resource
+    NoSuchObjectException exhausted =
+        new NoSuchObjectException("No available TEST_PROCTORED resources");
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(CANDIDATE_ID), eq(user)))
+        .thenReturn(assignment);
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(789L), eq(user)))
+        .thenThrow(exhausted);
+    when(assignmentEngine.assign(eq(duolingoAllocator), eq(999L), eq(user)))
+        .thenThrow(exhausted);
+
+    // Act – at least one success, so no final exception is thrown
+    List<ServiceAssignment> result = duolingoService.assignToList(LIST_ID, user);
+
+    // Assert – partial result returned, loop continued past failures and attempted all candidates
+    assertThat(result).hasSize(1).containsExactly(assignment);
+    verify(assignmentEngine).assign(duolingoAllocator, CANDIDATE_ID, user);
+    verify(assignmentEngine).assign(duolingoAllocator, 789L, user);
+    verify(assignmentEngine).assign(duolingoAllocator, 999L, user);
+  }
+
+  @Test
+  @DisplayName("assign to list logs an ERROR for each individual assignment failure")
+  void assignToList_logsErrorForEachFailedIndividualAssignment() {
+    // Capture log output emitted by AbstractCandidateAssistanceService via LogBuilder
+    Logger serviceLogger =
+        (Logger) LoggerFactory.getLogger(AbstractCandidateAssistanceService.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    serviceLogger.addAppender(listAppender);
+
+    try {
+      // Arrange – one candidate fails mid-loop, the other succeeds
+      Candidate candidate2 = new Candidate();
+      candidate2.setId(789L);
+      candidate2.setCandidateNumber("C789");
+      when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+
+      when(savedListService.get(LIST_ID)).thenReturn(savedList);
+      when(resourceRepository.countAvailableByProviderAndService(
+          ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+          .thenReturn(2L);
+      when(assignmentRepository.findByCandidateAndProviderAndService(
+          eq(CANDIDATE_ID), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+          .thenReturn(Collections.emptyList());
+      when(assignmentRepository.findByCandidateAndProviderAndService(
+          eq(789L), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+          .thenReturn(Collections.emptyList());
+      when(assignmentEngine.assign(eq(duolingoAllocator), eq(CANDIDATE_ID), eq(user)))
+          .thenThrow(new NoSuchObjectException("No available TEST_PROCTORED resources"));
+      when(assignmentEngine.assign(eq(duolingoAllocator), eq(789L), eq(user)))
+          .thenReturn(assignment);
+
+      // Act
+      duolingoService.assignToList(LIST_ID, user);
+
+      // Assert – exactly one ERROR log for the failing candidate
+      List<ILoggingEvent> errors = listAppender.list.stream()
+          .filter(e -> e.getLevel() == Level.ERROR)
+          .toList();
+
+      assertThat(errors).hasSize(1);
+      String loggedMessage = errors.get(0).getFormattedMessage();
+      assertThat(loggedMessage)
+          .contains("action: assignToList")
+          .contains("Failed to assign")
+          .contains(CANDIDATE_ID.toString())
+          .contains(CANDIDATE_NUMBER)
+          .contains("No available TEST_PROCTORED resources");
+
+    } finally {
+      serviceLogger.detachAppender(listAppender);
+    }
   }
 
   // Reassign Tests
@@ -836,6 +947,94 @@ class DuolingoServiceTest {
         .hasMessageContaining("Resource with code " + RESOURCE_CODE + " not found");
 
     verify(resourceRepository, never()).save(any());
+  }
+
+  // State Transition Tests
+
+  @ParameterizedTest(name = "EXPIRED → {0} is rejected")
+  @EnumSource(ResourceStatus.class)
+  @DisplayName("updateResourceStatus rejects any transition from EXPIRED (terminal state)")
+  void updateResourceStatus_rejectsAnyTransitionFromExpired(ResourceStatus target) {
+    resourceEntity.setStatus(ResourceStatus.EXPIRED);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+
+    assertThatThrownBy(() -> duolingoService.updateResourceStatus(RESOURCE_CODE, target))
+        .isInstanceOf(InvalidRequestException.class)
+        .hasMessageContaining("EXPIRED");
+
+    verify(resourceRepository, never()).save(any());
+  }
+
+  @ParameterizedTest(name = "REDEEMED → {0} is rejected")
+  @EnumSource(ResourceStatus.class)
+  @DisplayName("updateResourceStatus rejects any transition from REDEEMED (terminal state)")
+  void updateResourceStatus_rejectsAnyTransitionFromRedeemed(ResourceStatus target) {
+    resourceEntity.setStatus(ResourceStatus.REDEEMED);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+
+    assertThatThrownBy(() -> duolingoService.updateResourceStatus(RESOURCE_CODE, target))
+        .isInstanceOf(InvalidRequestException.class)
+        .hasMessageContaining("REDEEMED");
+
+    verify(resourceRepository, never()).save(any());
+  }
+
+  @Test
+  @DisplayName("updateResourceStatus allows AVAILABLE → DISABLED")
+  void updateResourceStatus_allowsAvailableToDisabled() {
+    resourceEntity.setStatus(ResourceStatus.AVAILABLE);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.DISABLED);
+
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.DISABLED);
+    verify(resourceRepository).save(resourceEntity);
+  }
+
+  @Test
+  @DisplayName("updateResourceStatus allows DISABLED → AVAILABLE (re-enable)")
+  void updateResourceStatus_allowsDisabledToAvailable() {
+    resourceEntity.setStatus(ResourceStatus.DISABLED);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.AVAILABLE);
+
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.AVAILABLE);
+    verify(resourceRepository).save(resourceEntity);
+  }
+
+  @Test
+  @DisplayName("updateResourceStatus allows SENT → DISABLED")
+  void updateResourceStatus_allowsSentToDisabled() {
+    resourceEntity.setStatus(ResourceStatus.SENT);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.DISABLED);
+
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.DISABLED);
+    verify(resourceRepository).save(resourceEntity);
+  }
+
+  @Test
+  @DisplayName("updateResourceStatus allows RESERVED → AVAILABLE")
+  void updateResourceStatus_allowsReservedToAvailable() {
+    resourceEntity.setStatus(ResourceStatus.RESERVED);
+    when(resourceRepository.findByProviderAndResourceCode(ServiceProvider.DUOLINGO, RESOURCE_CODE))
+        .thenReturn(Optional.of(resourceEntity));
+    when(resourceRepository.save(resourceEntity)).thenReturn(resourceEntity);
+
+    duolingoService.updateResourceStatus(RESOURCE_CODE, ResourceStatus.AVAILABLE);
+
+    assertThat(resourceEntity.getStatus()).isEqualTo(ResourceStatus.AVAILABLE);
+    verify(resourceRepository).save(resourceEntity);
   }
 
   // Count Operations Tests

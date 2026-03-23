@@ -1,0 +1,146 @@
+[
+  {
+    "id": "edge_001",
+    "question": "What's the weather like today?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests handling of completely unrelated question"
+  },
+  {
+    "id": "edge_002",
+    "question": "Can you tell me a joke?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests rejection of entertainment requests"
+  },
+  {
+    "id": "edge_003",
+    "question": "What is 2 + 2?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests rejection of math questions"
+  },
+  {
+    "id": "edge_004",
+    "question": "How do I make a cake?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests rejection of cooking questions"
+  },
+  {
+    "id": "edge_005",
+    "question": "Tell me about the history of France",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests rejection of general knowledge questions"
+  },
+  {
+    "id": "edge_006",
+    "question": "Can you help me with my immigration to Canada outside of TBB?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests handling of general immigration questions not related to TBB"
+  },
+  {
+    "id": "edge_007",
+    "question": "What are the best restaurants in Sydney?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests rejection of travel/tourism questions"
+  },
+  {
+    "id": "edge_008",
+    "question": "<script>alert('xss')</script>",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "invalid_input",
+    "description": "Tests handling of potential XSS attack"
+  },
+  {
+    "id": "edge_009",
+    "question": "",
+    "expectedResponse": "validation_error",
+    "type": "invalid_input",
+    "description": "Tests handling of empty message (should be caught by API validation)"
+  },
+  {
+    "id": "edge_010",
+    "question": "a",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "invalid_input",
+    "description": "Tests handling of very short message"
+  },
+  {
+    "id": "edge_011",
+    "question": "???",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "invalid_input",
+    "description": "Tests handling of unclear/ambiguous input"
+  },
+  {
+    "id": "edge_012",
+    "question": "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "invalid_input",
+    "description": "Tests handling of repetitive text"
+  },
+  {
+    "id": "edge_013",
+    "question": "Can TBB give me money for starting a business?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests rejection of financial aid requests not in scope"
+  },
+  {
+    "id": "edge_014",
+    "question": "Do you offer scholarships for university?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests handling of questions about services not in FAQ"
+  },
+  {
+    "id": "edge_015",
+    "question": "Can you help me get asylum in the UK?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests rejection of asylum/humanitarian resettlement requests"
+  },
+  {
+    "id": "edge_016",
+    "question": "What jobs are available right now?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests handling of specific job listing requests (not in knowledge base)"
+  },
+  {
+    "id": "edge_017",
+    "question": "TBB tbb TbB Tbb talent beyond boundaries TALENT BEYOND BOUNDARIES",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "invalid_input",
+    "description": "Tests handling of keyword spam"
+  },
+  {
+    "id": "edge_018",
+    "question": "Can you translate this document for me?",
+    "expectedFaqIds": [],
+    "expectedResponse": "not smart enough",
+    "type": "out_of_scope",
+    "description": "Tests rejection of translation services request"
+  }
+]
+

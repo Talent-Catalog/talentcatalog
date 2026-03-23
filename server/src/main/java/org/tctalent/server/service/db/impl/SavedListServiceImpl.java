@@ -559,6 +559,12 @@ public class SavedListServiceImpl implements SavedListService {
             savedListRepository.findByNameIgnoreCase(listName, user.getId()).orElse(null);
     }
 
+    @NonNull
+    @Override
+    public Set<Long> getCandidateIds(long savedListId) {
+        return savedListRepository.findUnionOfCandidates(List.of(savedListId));
+    }
+
     @Override
     public Page<CandidateReadDto> getSavedListCandidateDtos(
         @NonNull SavedList savedList, SavedListGetRequest request) {

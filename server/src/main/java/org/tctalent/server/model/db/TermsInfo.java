@@ -27,13 +27,32 @@ import lombok.ToString;
 /**
  * "Terms" are legal terms. For example privacy policies. These terms are typically displayed to
  * users requesting their acceptance.
- * <p/>
+ * <p>
  * Terms are classified by {@link #type}.
- * <p/>
+ * <p>
+ * Each Terms instance has a unique String id which can be anything but normally is a readable
+ * string constructed from the Terms {@link #type} and a version number eg "V2".
+ * So for example, "GrnCandidatePolicyV2" might be the id for Version 2 of terms of type
+ * {@link TermsType#GRN_CANDIDATE_PRIVACY_POLICY}.
+ * <p>
  * There can be multiple versions of the same type of terms. Each version will have a different
- * {@link #createdDate} and {@link #id}.
- * <p/>
- * Users can be linked to the specific version of a type of terms that they have consented to.
+ * {@link #createdDate} and {@link #id} and {@link #pathToContent}.
+ * <p>
+ * So Users can be linked to the specific version of a type of terms that they have consented to.
+ * <p>
+ *     For example, the current candidate privacy policy
+ *     (type = {@link TermsType#GRN_CANDIDATE_PRIVACY_POLICY}) might have id = "GrnCandidatePolicyV2".
+ *     And the content of the policy is found at path "/terms/GrnGDPRPrivacyPolicy-20260312.html".
+ * <p>
+ *     The previous policy was id="GrnCandidatePolicyV1" pointing to a different path.
+ * <p>
+ *     Those two policy instances will be stored in two TermInfos.
+ * <p>
+ *     Each candidate has an acceptedPrivacyPolicyId which might be "GrnCandidatePolicyV1" or
+ *     "GrnCandidatePolicyV2". Using that id, the corresponding TermsInfo can be fetched.
+ *     It will have the path to the policy text and also the type of the policy and when the
+ *     policy was created. By looking at other TermInfo's of the same type, you can figure
+ *     out which is the latest policy.
  *
  * @author John Cameron
  */
@@ -63,7 +82,7 @@ public class TermsInfo {
     /**
      * Resource path to file containing {@link #content}.
      * <p/>
-     * For example: "/terms/GDPRPrivacyPolicy-20250604.html"
+     * For example: "/terms/GrnGDPRPrivacyPolicy-20250604.html"
      */
     private String pathToContent;
 

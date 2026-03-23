@@ -16,7 +16,7 @@
 
 package org.tctalent.server.casi.domain.persistence;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -44,8 +44,8 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
     limit 1
     """, nativeQuery = true)
   ServiceResourceEntity lockNextAvailable(
-      @Param("provider") ServiceProvider provider,
-      @Param("serviceCode") ServiceCode serviceCode);
+      @Param("provider") String provider,
+      @Param("serviceCode") String serviceCode);
 
 
   @Query("""
@@ -103,7 +103,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
        and r.expiresAt is not null
        and r.status not in :excluded
   """)
-  List<ServiceResourceEntity> findExpirable(@Param("now") LocalDateTime now,
+  List<ServiceResourceEntity> findExpirable(@Param("now") OffsetDateTime now,
       @Param("excluded") Collection<ResourceStatus> excluded);
 
   // Provider scoped; skip EXPIRED/REDEEMED/DISABLED; ignore null expiresAt
@@ -116,7 +116,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
   """)
   List<ServiceResourceEntity> findExpirableForProvider(
       @Param("provider") ServiceProvider provider,
-      @Param("now") LocalDateTime now,
+      @Param("now") OffsetDateTime now,
       @Param("excluded") Collection<ResourceStatus> excluded);
 
 }

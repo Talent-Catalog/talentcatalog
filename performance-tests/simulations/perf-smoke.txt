@@ -1,0 +1,10 @@
+# performance-tests/simulations/perf-smoke.txt
+
+# Health smoke - quick proof the env is up
+org.talentcatalog.perf.simulations.http.health.HealthSimulation | -Dperf.healthPath=/actuator/health -DwarmupSeconds=2 -DmeasureSeconds=8 -DtotalConcurrentUsers=1
+
+# Candidate search A/B (needs users.csv)
+org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentialABSimulation | -Dpayload=baseline -DseqUsers=1 -DseqRepeats=1
+
+# Saved-list A/B (needs users.csv + listId)
+org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedSequentialABSimulation | -DlistId=1283 -DseqUsers=1 -DseqRepeats=1

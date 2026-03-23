@@ -31,6 +31,7 @@
     <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.live"
+        [tabIsActive]="activeTabId === 'LiveJobs'"
       >
       </app-jobs-with-detail>
     </tc-tab-content>
@@ -40,13 +41,14 @@
               [description]="'Starred jobs (eg those I am working with)'">
     <tc-tab-header>
       <i class="fas fa-star"></i>Jobs <i class="fa-solid fa-briefcase"></i>
-      <app-chat-read-status
+      <app-chat-read-status *ngIf="canViewChats()"
         [observable]="starredJobChatsRead$"
       ></app-chat-read-status>
     </tc-tab-header>
     <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.starredByMe"
+        [tabIsActive]="activeTabId === 'StarredJobs'"
         [chatsRead$]="starredJobChatsRead$"
       >
       </app-jobs-with-detail>
@@ -58,13 +60,14 @@
               [description]="'Jobs created by my partner organization'">
     <tc-tab-header>
       {{loggedInPartner.abbreviation}} Jobs <i class="fa-solid fa-briefcase"></i>
-      <app-chat-read-status
+      <app-chat-read-status *ngIf="canViewChats()"
         [observable]="partnerJobChatsRead$"
       ></app-chat-read-status>
     </tc-tab-header>
     <tc-tab-content>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
+        [tabIsActive]="activeTabId === 'MyJobs'"
         [chatsRead$]="partnerJobChatsRead$"
       >
       </app-jobs-with-detail>
@@ -76,13 +79,14 @@
           [description]="'Candidate cases associated with jobs created by my partner organization'">
     <tc-tab-header>
       {{myCasesTabName(SearchOppsBy.mineAsJobCreator)}} <i class="fa-solid fa-address-book"></i>
-      <app-chat-read-status
+      <app-chat-read-status *ngIf="canViewChats()"
         [observable]="jobCreatorChatsRead$"
       ></app-chat-read-status>
     </tc-tab-header>
     <tc-tab-content>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
+        [tabIsActive]="activeTabId === 'MyCasesAsJobCreator'"
         [chatsRead$]="jobCreatorChatsRead$"
       >
       </app-candidate-opps-with-detail>
@@ -94,13 +98,14 @@
           [description]="'Candidate cases managed by my partner organization'">
     <tc-tab-header >
       {{myCasesTabName(SearchOppsBy.mineAsSourcePartner)}} <i class="fa-solid fa-address-book"></i>
-      <app-chat-read-status
+      <app-chat-read-status *ngIf="canViewChats()"
         [observable]="sourcePartnerChatsRead$"
       ></app-chat-read-status>
     </tc-tab-header>
     <tc-tab-content>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsSourcePartner"
+        [tabIsActive]="activeTabId === 'MyCasesAsSourcePartner'"
         [chatsRead$]="sourcePartnerChatsRead$"
       >
       </app-candidate-opps-with-detail>
@@ -116,7 +121,7 @@
     </tc-tab-content>
   </tc-tab>
 
-  <tc-tab *ngIf="isSourcePartner()"
+  <tc-tab *ngIf="isSourcePartner() && canViewChats()"
         [id]="'MyCandidateChatsAsSourcePartner'"
         [description]="'Active chats with candidates managed by my partner organization'">
     <tc-tab-header>
