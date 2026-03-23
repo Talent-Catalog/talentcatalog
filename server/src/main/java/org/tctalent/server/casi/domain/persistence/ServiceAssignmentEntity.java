@@ -26,8 +26,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
@@ -52,7 +51,7 @@ public class ServiceAssignmentEntity extends AbstractDomainObject<Long> {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
-  private ServiceProvider provider; // e.g. "DUOLINGO"
+  private ServiceProvider provider;  // e.g. "DUOLINGO"
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
@@ -74,9 +73,9 @@ public class ServiceAssignmentEntity extends AbstractDomainObject<Long> {
   private AssignmentStatus status; // e.g. ASSIGNED, REDEEMED, EXPIRED, REASSIGNED
 
   @Column(name="assigned_at", nullable=false)
-  private LocalDateTime assignedAt;
+  private OffsetDateTime assignedAt;
 
   @Column(name="created_at", nullable=false, updatable=false)
-  private Instant createdAt = Instant.now();
+  private OffsetDateTime createdAt = OffsetDateTime.now();
 
 }

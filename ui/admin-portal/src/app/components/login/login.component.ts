@@ -154,7 +154,7 @@ export class LoginComponent implements OnInit {
     if (this.authorizationService.isSourcePartner()) {
       // Fetch current DPA and partner info
       forkJoin({
-        'currentDpa': this.termsInfoService.getCurrentByType(TermsType.DATA_PROCESSING_AGREEMENT),
+        'currentDpa': this.termsInfoService.getCurrentByType(TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT),
         'partner': this.partnerService.getPartner(user.partner.id, DtoType.MINIMAL)
       }).subscribe(
         results => {
@@ -173,7 +173,8 @@ export class LoginComponent implements OnInit {
 
   private checkDpaStatus(partner: Partner, currentDpa: TermsInfoDto) {
     // Check if partner has accepted the latest DPA
-    if (partner.sourcePartner && !partner.acceptedDataProcessingAgreementId) {
+    if (partner.sourcePartner && (partner.acceptedDataProcessingAgreementId == null
+      || partner.acceptedDataProcessingAgreementId !== currentDpa.id)) {
       // Redirect to DPA acceptance page, ignoring returnUrl
       this.router.navigateByUrl('/dpa');
     } else {

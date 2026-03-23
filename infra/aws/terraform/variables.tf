@@ -45,6 +45,18 @@ variable "ecs_tasks_count" {
   default     = 1
 }
 
+variable "fargate_cpu" {
+  type        = number
+  description = "Fargate task CPU units (1024 = 1 vCPU)"
+  default     = 256
+}
+
+variable "fargate_memory" {
+  type        = number
+  description = "Fargate task memory in MiB"
+  default     = 2048
+}
+
 ### Database configuration variables:
 
 variable "db_public_access" {
@@ -351,6 +363,12 @@ variable "web_portal" {
   description = "Candidate portal URL"
 }
 
+variable "tc_instance_type" {
+  type        = string
+  description = "TC instance type (e.g. TBB)"
+  default     = "TBB"
+}
+
 # --- Auto-populated parameters (conditionally managed by Terraform) ---
 
 variable "redis_host" {
@@ -508,4 +526,11 @@ variable "translation_password" {
   type        = string
   description = "Translation password"
   sensitive   = true
+}
+
+variable "tc_boot_admin_password" {
+  type        = string
+  description = "System admin password for TC"
+  sensitive   = true
+  default     = ""
 }

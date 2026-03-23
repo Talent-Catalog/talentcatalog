@@ -19,13 +19,14 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {AuthenticationService} from './authentication.service';
 import {User} from '../model/user';
 import {LoginRequest} from '../model/base';
-import {JwtResponse} from '../model/jwt-response';
+import {JwtAuthenticationResponse} from '../model/jwt-authentication-response';
 import {environment} from '../../environments/environment';
 import {of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {config_test} from "../../config-test";
 import {EncodedQrImage} from "../util/qr";
 import {LocalStorageService} from "./local-storage.service";
+import {TcInstanceType} from "../model/tc-instance-type";
 
 describe('AuthenticationService', () => {
   let service: AuthenticationService;
@@ -66,7 +67,13 @@ describe('AuthenticationService', () => {
 
   it('should log in and store credentials', () => {
     const credentials: LoginRequest = { username: config_test.credentials.username, password: config_test.credentials.password,totpToken:config_test.credentials.totpToken,reCaptchaV3Token:'' };
-    const jwtResponse: JwtResponse = { accessToken: 'test-token', name:'', gender:'', user: { id: 1, name: 'Test User', role: 'user', readOnly: false } as User };
+    const jwtResponse: JwtAuthenticationResponse = {
+      accessToken: 'test-token',
+      tcInstanceType: TcInstanceType.TBB,
+      tokenType: 'Bearer',
+      user: { id: 1, name: 'Test User', role: 'user', readOnly: false } as User,
+      canViewChats: true
+    };
 
     service.login(credentials).subscribe(response => {
       expect(service['loggedInUser']).toEqual(jwtResponse.user);

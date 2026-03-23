@@ -18,8 +18,8 @@
 
   <div class="col-12">
     <div class="mb-3">
-      <label class="form-label" for="examType">{{ 'REGISTRATION.EXAM.LABEL.EXAM' | translate }} <sup>*</sup></label>
-      <ng-select id="examType" [formControlName]="'exam'" [clearable]="false"
+      <tc-label for="examType">{{ 'REGISTRATION.EXAM.LABEL.EXAM' | translate }} <sup>*</sup></tc-label>
+      <ng-select class="tc-select" id="examType" [formControlName]="'exam'" [clearable]="false"
                  placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
         <ng-option *ngFor="let exam of examListEnum" [value]="exam.key">{{exam.value}}</ng-option>
       </ng-select>
@@ -28,21 +28,21 @@
 
   <!-- Conditionally render otherExam field based on the selected examType -->
   <div class="mb-3" *ngIf="isOtherExamSelected()">
-    <label class="form-label" for="otherExam">{{ 'REGISTRATION.EXAM.LABEL.OTHEREXAM' | translate }} <sup>*</sup></label>
-    <input type="text" class="form-control" id="otherExam" placeholder="" [formControlName]="'otherExam'">
+    <tc-label for="otherExam">{{ 'REGISTRATION.EXAM.LABEL.OTHEREXAM' | translate }} <sup>*</sup></tc-label>
+    <tc-input type="text" id="otherExam" placeholder="" [formControlName]="'otherExam'"></tc-input>
     <app-form-control-error [control]="form.controls.otherExam"></app-form-control-error>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="score">{{ 'REGISTRATION.EXAM.LABEL.SCORE' | translate }} <sup>*</sup></label>
-    <input type="text" class="form-control" id="score" placeholder="" [formControlName]="'score'">
+    <tc-label for="score">{{ 'REGISTRATION.EXAM.LABEL.SCORE' | translate }} <sup>*</sup></tc-label>
+    <tc-input type="text" id="score" placeholder="" [formControlName]="'score'"></tc-input>
     <app-form-control-error [control]="form.controls.score"></app-form-control-error>
   </div>
 
   <!-- YEAR -->
   <div class="mb-3">
-    <label class="form-label" for="year">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }} <sup>*</sup></label>
-    <ng-select id="year" [items]="years" [formControlName]="'year'" [clearable]="false"
+    <tc-label for="year">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }} <sup>*</sup></tc-label>
+    <ng-select class="tc-select" id="year" [items]="years" [formControlName]="'year'" [clearable]="false"
                placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
 
     </ng-select>
@@ -51,16 +51,15 @@
 
   <!-- NOTES -->
   <div class="mb-3">
-    <label class="form-label" for="notes">{{ 'REGISTRATION.EXAM.LABEL.NOTES' | translate }}</label>
-    <textarea class="form-control" id="notes" [formControlName]="'notes'"></textarea>
+    <tc-label for="notes">{{ 'REGISTRATION.EXAM.LABEL.NOTES' | translate }}</tc-label>
+    <tc-textarea id="notes" [formControlName]="'notes'"></tc-textarea>
     <app-form-control-error [control]="form.controls.notes"></app-form-control-error>
   </div>
   <div class="text-center mt-4 submit">
-    <button class="btn btn-primary"
-            [disabled]="form.invalid"
-            (click)="save()">
+    <tc-button [disabled]="form.invalid"
+            (onClick)="save()">
       {{ 'FORM.LABEL.SAVE' | translate }}
-    </button>
+    </tc-button>
   </div>
 
 </form>

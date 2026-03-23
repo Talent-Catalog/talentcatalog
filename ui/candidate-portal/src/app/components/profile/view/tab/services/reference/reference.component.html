@@ -1,0 +1,50 @@
+<app-error [error]="error"></app-error>
+<app-loading [loading]="loading"></app-loading>
+
+<div class="service-title">
+  <div class="header">
+    <div>
+      <h2>Reference Service</h2>
+      <p>Canonical CASI reference provider for voucher assignment.</p>
+    </div>
+    <img src="assets/images/services/opcLogo.svg" alt="Reference service (placeholder)"/>
+  </div>
+</div>
+
+<div class="service-content">
+  <ng-container *ngIf="eligible; else notEligible">
+    <ng-container *ngIf="!assignment">
+      <p>Assign your reference voucher to start the flow.</p>
+      <tc-button [size]="'xl'" (onClick)="assign()">Assign Voucher</tc-button>
+    </ng-container>
+
+    <ng-container *ngIf="assignment">
+      <p>
+        Voucher code:
+        <code>{{ assignment.resource.resourceCode }}</code>
+      </p>
+      <p>
+        Status:
+        <strong>{{ assignment.resource.status }}</strong>
+      </p>
+
+      <tc-button *ngIf="canRedeem"
+                 [size]="'xl'"
+                 (onClick)="redeem()"
+      >
+        Mark Redeemed
+      </tc-button>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #notEligible>
+    <p>You are not currently eligible for this service.</p>
+  </ng-template>
+
+  <div class="mt-5">
+    <tc-button [type]="'outline'" (onClick)="onBackButtonClicked()">
+      <i class="me-1 fas fa-arrow-left"></i>
+      Back
+    </tc-button>
+  </div>
+</div>

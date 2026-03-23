@@ -33,6 +33,7 @@ export class ServicesComponent {
   @Input() candidate: Candidate;
   @Input() activeDuolingoTask: TaskAssignment;
   @Input() showLinkedin$: Observable<boolean>;
+  @Input() showReference$: Observable<boolean>;
   @Output() refresh = new EventEmitter();
 
   constructor() { }

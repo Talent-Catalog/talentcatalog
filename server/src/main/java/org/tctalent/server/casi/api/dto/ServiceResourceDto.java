@@ -16,7 +16,7 @@
 
 package org.tctalent.server.casi.api.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
@@ -37,6 +37,6 @@ public class ServiceResourceDto {
   private ServiceCode serviceCode;
   private String resourceCode;
   private ResourceStatus status;
-  private LocalDateTime sentAt;
-  private LocalDateTime expiresAt;
+  private OffsetDateTime sentAt;
+  private OffsetDateTime expiresAt;
 }
