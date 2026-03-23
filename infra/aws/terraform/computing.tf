@@ -104,13 +104,13 @@ module "alb" {
       health_check = {
         enabled             = true
         interval            = 65
-        path                = "/"
+        path                = "/actuator/health"
         port                = "traffic-port"
         healthy_threshold   = 2
         unhealthy_threshold = 5
         timeout             = 60
         protocol            = "HTTP"
-        matcher             = "200,302"
+        matcher             = "200"
       }
       targets = {}
     }
