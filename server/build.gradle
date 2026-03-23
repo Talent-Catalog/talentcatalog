@@ -216,9 +216,9 @@ jib {
         }
 
         // GRN staging
-         else if (project.hasProperty("grn-staging")) {
+        else if (project.hasProperty("grn-staging")) {
             image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-staging"
-         }
+        }
 
         // GRN production
         else if (project.hasProperty("grn-prod")) {
