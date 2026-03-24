@@ -14,18 +14,16 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> {{ 'LOADING' | translate }}
-</div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-loading [loading]="loading"></tc-loading>
+<tc-alert type="danger" *ngIf="error">
+  <div>{{error}}</div>
+</tc-alert>
 
 <div class="container my-lg-5">
   <div *ngIf="!readOnly && !chatIsRead" class="d-flex justify-content-end mb-2">
-    <button type="button" class="btn btn-sm btn-secondary" (click)="onMarkChatAsRead()">
-      {{'CHAT.MARK-AS-READ' | translate}} <i class="fa-solid fa-envelope-circle-check ms-1"></i>
-    </button>
+    <tc-button color="secondary" type="outline" size="sm" (onClick)="onMarkChatAsRead()">
+      {{ 'CHAT.MARK-AS-READ' | translate }} <tc-icon color="secondary"><i class="fa-solid fa-envelope-circle-check ms-1"></i></tc-icon>
+    </tc-button>
   </div>
   <div id="posts">
   <div *ngFor="let group of groupedMessages" >
@@ -41,6 +39,7 @@
            [ngClass]="{'current': currentPost?.id == post.id}">
 
         <app-view-post
+          [readOnly]="readOnly"
           [post]="post">
         </app-view-post>
       </div>
@@ -49,11 +48,11 @@
   </div>
 
   <ng-template #noPosts>
-    <p class="py-lg-5 text-muted py-3 fw-light text-center fs-6">{{'CHAT.NO-POSTS' | translate}}</p>
+    <p *ngIf="!readOnly" class="py-lg-5 text-muted py-3 fw-light text-center fs-6">{{ 'CHAT.NO-POSTS' | translate }}</p>
   </ng-template>
   <div>
     <app-create-update-post
       *ngIf="!readOnly"
       [chat]="chat">
     </app-create-update-post>
-</div>
+  </div>
