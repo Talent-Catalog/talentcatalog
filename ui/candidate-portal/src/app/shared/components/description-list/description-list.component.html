@@ -1,4 +1,10 @@
-<dl [ngClass]="{'grid-row': direction === 'row','grid-column': direction === 'column', 'compact': compact}"
+<dl [ngClass]="{
+      'grid-row': direction === 'row',
+      'grid-column': direction === 'column',
+      'compact': compact,
+      'size-sm': size === 'sm',
+      'size-lg': size === 'lg'
+    }"
     class="tc-description-list">
   <ng-content></ng-content>
 </dl>

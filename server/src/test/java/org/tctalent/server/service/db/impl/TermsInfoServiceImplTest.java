@@ -35,28 +35,28 @@ class TermsInfoServiceImplTest {
         validTermsInfo = new TermsInfo(
             "TestPolicy",
             "terms/fred.html",
-            TermsType.CANDIDATE_PRIVACY_POLICY,
+            TermsType.TBB_CANDIDATE_PRIVACY_POLICY,
             LocalDate.of(2025, Month.JUNE, 1)
         );
 
         missingTermsInfo = new TermsInfo(
             "MissingPolicy",
             "terms/missing.html",
-            TermsType.CANDIDATE_PRIVACY_POLICY,
+            TermsType.TBB_CANDIDATE_PRIVACY_POLICY,
             LocalDate.of(2025, Month.JUNE, 1)
         );
 
         v1Info = new TermsInfo(
             "PolicyV1",
             "terms/fred.html",
-            TermsType.CANDIDATE_PRIVACY_POLICY,
+            TermsType.TBB_CANDIDATE_PRIVACY_POLICY,
             LocalDate.of(2025, Month.JUNE, 1)
         );
 
         v2Info = new TermsInfo(
             "PolicyV2", // More recent version of policy - see date below
             "terms/fred.html",
-            TermsType.CANDIDATE_PRIVACY_POLICY,
+            TermsType.TBB_CANDIDATE_PRIVACY_POLICY,
             LocalDate.of(2025, Month.JUNE, 2) //Later version
         );
     }
@@ -102,14 +102,14 @@ class TermsInfoServiceImplTest {
         TermsInfo first = new TermsInfo(
             "DuplicatePolicy",
             "terms/fred.html",
-            TermsType.CANDIDATE_PRIVACY_POLICY,
+            TermsType.TBB_CANDIDATE_PRIVACY_POLICY,
             LocalDate.of(2025, Month.JUNE, 1)
         );
 
         TermsInfo duplicate = new TermsInfo(
             "DuplicatePolicy", // same ID as first
             "terms/fred.html",
-            TermsType.CANDIDATE_PRIVACY_POLICY,
+            TermsType.TBB_CANDIDATE_PRIVACY_POLICY,
             LocalDate.of(2025, Month.JUNE, 2)
         );
 
@@ -169,7 +169,7 @@ class TermsInfoServiceImplTest {
 
         //Then
         RuntimeException ex = assertThrows(NoSuchObjectException.class,
-            () -> service.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY));
+            () -> service.getCurrentByType(TermsType.TBB_CANDIDATE_PRIVACY_POLICY));
         assertTrue(ex.getMessage().contains("Missing"));
     }
 
@@ -183,7 +183,7 @@ class TermsInfoServiceImplTest {
 
         // When
         service.initialize(terms);
-        final TermsInfo termsInfo = service.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY);
+        final TermsInfo termsInfo = service.getCurrentByType(TermsType.TBB_CANDIDATE_PRIVACY_POLICY);
 
         //Then
         assertNotNull(termsInfo);

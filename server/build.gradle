@@ -200,9 +200,9 @@ jib {
         } else if (project.hasProperty("prod-tc-system")) {
             image = "968457613372.dkr.ecr.us-east-1.amazonaws.com/talent-catalog"
         } else if (project.hasProperty("opc-staging")) {
-            image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging"
+            image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-staging"
         } else if (project.hasProperty("opc-prod")) {
-            image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-prod"
+            image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-prod"
         }
         credHelper = 'ecr-login'
     }

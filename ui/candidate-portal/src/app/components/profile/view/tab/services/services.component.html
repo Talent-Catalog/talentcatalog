@@ -29,6 +29,11 @@
                 [activeDuolingoTask]="activeDuolingoTask"
   ></app-duolingo>
 
+  <app-reference *ngIf="(showReference$ | async) && selectedService === Service.REFERENCE"
+                 [candidate]="candidate"
+                 (backButtonClicked)="onBackButtonClick()"
+  ></app-reference>
+
   <ng-container *ngIf="!loading && !selectedService">
 
     <app-tab-header>
@@ -72,6 +77,25 @@
         </p>
       </div>
       <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
+    </div>
+
+    <!-- Reference -->
+    <div *ngIf="showReference$ | async"
+         class="service-card"
+         (click)="selectService(Service.REFERENCE)"
+    >
+      <div>
+        <span class="service-tag">
+          Reference
+        </span>
+        <h3>
+          Reference Service
+        </h3>
+        <p>
+          Minimal CASI lifecycle test service.
+        </p>
+      </div>
+      <img src="assets/images/services/opcLogo.svg" alt="Reference Voucher (placeholder)"/>
     </div>
 
   </ng-container>

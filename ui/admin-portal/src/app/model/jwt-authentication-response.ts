@@ -15,9 +15,11 @@
  */
 
 import {User} from "./user";
+import {TcInstanceType} from "./tc-instance-type";
 
 export interface JwtAuthenticationResponse {
   accessToken: string;
+  tcInstanceType: TcInstanceType;
   tokenType: string;
   user: User;
   canViewChats: boolean;
