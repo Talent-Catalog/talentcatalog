@@ -63,7 +63,9 @@ class ChatReadStatusStubComponent {
 }
 
 @Component({selector: 'tc-table', template: '<ng-content></ng-content>'})
-class TcTableStubComponent {}
+class TcTableStubComponent {
+  @Input() striped = false;
+}
 
 describe('CandidateOppsComponent', () => {
   let component: CandidateOppsComponent;
@@ -121,8 +123,10 @@ describe('CandidateOppsComponent', () => {
 
   it('should render tc-loading and tc-table when showing the opp list', () => {
     const loading = fixture.debugElement.query(By.directive(TcLoadingStubComponent)).componentInstance as TcLoadingStubComponent;
+    const table = fixture.debugElement.query(By.directive(TcTableStubComponent)).componentInstance as TcTableStubComponent;
     expect(loading.loading).toBeFalsy();
-    expect(fixture.debugElement.query(By.directive(TcTableStubComponent))).toBeTruthy();
+    expect(table).toBeTruthy();
+    expect(table.striped).toBeTrue();
 
     const rows = fixture.nativeElement.querySelectorAll('tbody tr');
     expect(rows.length).toBe(1);

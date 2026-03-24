@@ -57,7 +57,9 @@ class TcLabelStubComponent {
 }
 
 @Component({selector: 'tc-table', template: '<ng-content></ng-content>'})
-class TcTableStubComponent {}
+class TcTableStubComponent {
+  @Input() striped = false;
+}
 
 @Component({selector: 'app-view-chat-posts', template: ''})
 class ViewChatPostsStubComponent {
@@ -137,7 +139,9 @@ describe('CandidateOppComponent', () => {
 
   it('should render tc-loading, tc-button, tc-label and tc-table for opp details', () => {
     expect(fixture.debugElement.query(By.directive(TcLoadingStubComponent))).toBeTruthy();
-    expect(fixture.debugElement.query(By.directive(TcTableStubComponent))).toBeTruthy();
+    const table = fixture.debugElement.query(By.directive(TcTableStubComponent)).componentInstance as TcTableStubComponent;
+    expect(table).toBeTruthy();
+    expect(table.striped).toBeTrue();
 
     const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
     const labels = fixture.debugElement.queryAll(By.directive(TcLabelStubComponent));
