@@ -14,7 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, inject, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {forkJoin, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Candidate, CandidateExam, CandidateIntakeData} from '../../../model/candidate';
@@ -64,6 +73,9 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
    * Indicates whether the tab is active (i.e., the user is currently viewing it).
    */
   @Input() tabIsActive: boolean;
+
+  @Output() loadingChange = new EventEmitter<boolean>();
+
 
   /**
    * This is the existing candidate intake data (if any) which is used to
@@ -225,6 +237,7 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
     //Load existing candidateIntakeData and other data needed by intake
     this.error = null;
     this.loading = true;
+    this.loadingChange.emit(true);
     forkJoin({
       'countries': this.countryService.listCountries(),
       'tcDestinations': this.countryService.listTCDestinations(),
@@ -237,6 +250,7 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
       'candidate': this.candidateService.get(this.candidate.id)
     }).subscribe(results => {
       this.loading = false;
+      this.loadingChange.emit(false);
       this.countries = results['countries'];
       this.tcDestinations = results['tcDestinations'];
       this.nationalities = results['nationalities'];
@@ -248,6 +262,7 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
       this.onDataLoaded(init);
     }, error => {
       this.loading = false;
+      this.loadingChange.emit(false);
       this.error = error;
     });
   }

@@ -44,7 +44,16 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
-import {catchError, concatMap, debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from "rxjs/operators";
+import {
+  catchError,
+  concatMap,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  takeUntil,
+  tap
+} from "rxjs/operators";
 
 @Component({
   selector: 'app-view-candidate',
@@ -57,6 +66,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   activeTabId: string;
   loading: boolean;
+  tabLoading: boolean = false;
   loadingButton: boolean;
   savingList: boolean;
   loadingError: boolean;
@@ -321,9 +331,26 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   private selectDefaultTab() {
     this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
-
+  
   onTabChanged(activeTabId: string) {
+    if (this.activeTabId === activeTabId) {
+      return;
+    }
+
+    this.tabLoading = true;
     this.setActiveTabId(activeTabId);
+
+    const asyncTabs = ['MiniIntake', 'FullIntake', 'Visa'];
+
+    if (!asyncTabs.includes(activeTabId)) {
+      setTimeout(() => {
+        this.tabLoading = false;
+      });
+    }
+  }
+
+  onTabLoadingChange(loading: boolean) {
+    this.tabLoading = loading;
   }
 
   publicCvUrl() {
