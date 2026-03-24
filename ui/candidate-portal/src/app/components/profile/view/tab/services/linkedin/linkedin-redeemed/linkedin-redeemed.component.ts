@@ -12,6 +12,7 @@ export class LinkedinRedeemedComponent implements OnInit {
   @Input() assignment: ServiceAssignment;
   @Input() candidate: Candidate;
   isOnIssueReportList = false;
+  showIssueForm = false;
   issueComment = '';
   readonly MAX_COMMENT_LENGTH = 500;
   error: any;
@@ -21,6 +22,10 @@ export class LinkedinRedeemedComponent implements OnInit {
 
   ngOnInit() {
     this.checkIsOnIssueReportList();
+  }
+
+  toggleIssueForm() {
+    this.showIssueForm = !this.showIssueForm;
   }
 
   /** Puts candidate on #LinkedInIssueReport List for admin action */
