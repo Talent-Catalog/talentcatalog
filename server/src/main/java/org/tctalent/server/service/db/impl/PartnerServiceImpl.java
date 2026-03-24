@@ -395,6 +395,10 @@ public class PartnerServiceImpl implements PartnerService {
     }
     @Transactional
     public boolean requiresDpaAcceptance() {
+        if (!dpaProperties.isEnabled()) {
+            return false;
+        }
+
         User user = authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         PartnerImpl partner = user.getPartner();
