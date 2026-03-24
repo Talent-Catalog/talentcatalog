@@ -25,4 +25,5 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class DpaProperties {
   private Long dpaVisibilityDelayDays;
+  private boolean enabled;
 }
