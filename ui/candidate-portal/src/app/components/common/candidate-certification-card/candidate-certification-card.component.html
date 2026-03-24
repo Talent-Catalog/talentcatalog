@@ -17,18 +17,25 @@
 <div class="text-end" *ngIf="!preview">
   <tc-button color="error" class="me-2"
           [disabled]="disabled"
-          (onClick)="deleteCertificate()">
-    &times;
-  </tc-button>
+          (onClick)="deleteCertificate()">&times;</tc-button>
   <tc-button color="info"
           [disabled]="disabled"
-          (onClick)="editCertificate()">
+          (onClick)="editCertificate()"
+  >
     <i class="fas fa-edit fa-xs"></i>
   </tc-button>
 </div>
 
-<p>{{certificate.dateCompleted | date}}</p>
+<tc-description-list direction="column" compact size="lg">
+  <tc-description-item label="Date">
+    {{certificate.dateCompleted | date}}
+  </tc-description-item>
+</tc-description-list>
 
 <h5>{{certificate.name}}</h5>
 
-<p>{{certificate.institution}}</p>
+<tc-description-list direction="column" compact size="lg">
+  <tc-description-item label="Institution">
+    {{certificate.institution}}
+  </tc-description-item>
+</tc-description-list>

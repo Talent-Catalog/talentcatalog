@@ -173,6 +173,23 @@
       background-color: color(gray, 400);
     }
   }
+
+  &.btn-white {
+    background-color: #fff;
+    color: black;
+    border: 1px solid color(primary, 300);
+
+    &:hover {
+      background-color: color(primary, 50);
+    }
+    &:focus-visible {
+      outline: 2px solid color(primary, 300);
+      outline-offset: 2px;
+    }
+    &:active {
+      background-color: color(primary, 100);
+    }
+  }
 }
 
 // Outline type styles
