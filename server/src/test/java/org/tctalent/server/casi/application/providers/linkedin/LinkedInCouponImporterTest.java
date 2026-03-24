@@ -28,7 +28,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,7 +92,7 @@ class LinkedInCouponImporterTest {
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(0).getStatus());
       assertEquals(SERVICE_CODE, couponList.get(0).getServiceCode());
       assertEquals(PROVIDER, couponList.get(0).getProvider());
-      assertEquals(LocalDateTime.of(2026, 12, 31, 0, 0), couponList.get(0).getExpiresAt());
+      assertEquals(OffsetDateTime.of(2026, 12, 31, 0, 0, 0, 0, ZoneOffset.UTC), couponList.get(0).getExpiresAt());
       assertEquals(COUPON_002, couponList.get(1).getResourceCode());
       assertEquals(ResourceStatus.AVAILABLE, couponList.get(1).getStatus());
       return true;
@@ -117,7 +118,7 @@ class LinkedInCouponImporterTest {
       List<ServiceResourceEntity> couponList =
           StreamSupport.stream(coupons.spliterator(), false).toList();
       assertEquals(1, couponList.size());
-      assertEquals(LocalDateTime.of(2026, 12, 31, 0, 0), couponList.get(0).getExpiresAt());
+      assertEquals(OffsetDateTime.of(2026, 12, 31, 0, 0, 0, 0, ZoneOffset.UTC), couponList.get(0).getExpiresAt());
       return true;
     }));
   }

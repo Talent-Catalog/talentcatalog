@@ -25,7 +25,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,7 +86,7 @@ class LinkedinPortalApiTest {
         .candidateId(CANDIDATE_ID)
         .actorId(systemAdmin.getId())
         .status(AssignmentStatus.ASSIGNED)
-        .assignedAt(LocalDateTime.now())
+        .assignedAt(OffsetDateTime.now())
         .build();
   }
 
