@@ -61,6 +61,20 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
       @Param("serviceCode") ServiceCode serviceCode,
       @Param("status") ResourceStatus status);
 
+  @Query("""
+    select r
+    from ServiceResourceEntity r
+    where r.provider = :provider
+      and r.serviceCode = :serviceCode
+      and r.status = org.tctalent.server.casi.domain.model.ResourceStatus.AVAILABLE
+      and r.countryIsoCode = :countryIsoCode
+    order by r.id asc
+    """)
+  List<ServiceResourceEntity> findAvailableByProviderServiceAndCountry(
+      @Param("provider") ServiceProvider provider,
+      @Param("serviceCode") ServiceCode serviceCode,
+      @Param("countryIsoCode") String countryIsoCode);
+
 
   @Query("""
     select r
@@ -85,6 +99,19 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
   long countAvailableByProviderAndService(
       @Param("provider") ServiceProvider provider,
       @Param("serviceCode") ServiceCode serviceCode);
+
+  @Query("""
+      select count(r)
+      from ServiceResourceEntity r
+      where r.provider = :provider
+        and r.serviceCode = :serviceCode
+        and r.status = org.tctalent.server.casi.domain.model.ResourceStatus.AVAILABLE
+        and r.countryIsoCode = :countryIsoCode
+      """)
+  long countAvailableByProviderServiceAndCountry(
+      @Param("provider") ServiceProvider provider,
+      @Param("serviceCode") ServiceCode serviceCode,
+      @Param("countryIsoCode") String countryIsoCode);
 
   // provider only (all service codes)
   @Query("""
