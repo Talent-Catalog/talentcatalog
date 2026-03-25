@@ -99,6 +99,15 @@ class ServicesPortalControllerTest extends ApiTestBase {
   @Test
   @DisplayName("assignment endpoint prefers reserved assignment over redeemed")
   void assignmentEndpointPrefersReservedOverRedeemed() throws Exception {
+    ServiceResource redeemedResource = ServiceResource.builder()
+        .id(1L)
+        .provider(ServiceProvider.LINKEDIN)
+        .serviceCode(ServiceCode.PREMIUM_MEMBERSHIP)
+        .resourceCode("REDEEMED")
+        .status(ResourceStatus.REDEEMED)
+        .expiresAt(OffsetDateTime.now().plusDays(30))
+        .build();
+
     ServiceResource reservedResource = ServiceResource.builder()
         .id(2L)
         .provider(ServiceProvider.LINKEDIN)
@@ -106,6 +115,17 @@ class ServicesPortalControllerTest extends ApiTestBase {
         .resourceCode("RESERVED")
         .status(ResourceStatus.RESERVED)
         .expiresAt(OffsetDateTime.now().plusDays(30))
+        .build();
+
+
+    ServiceAssignment redeemed = ServiceAssignment.builder()
+        .id(11L)
+        .provider(ServiceProvider.LINKEDIN)
+        .serviceCode(ServiceCode.PREMIUM_MEMBERSHIP)
+        .resource(redeemedResource)
+        .candidateId(CANDIDATE_ID)
+        .status(AssignmentStatus.REDEEMED)
+        .assignedAt(OffsetDateTime.now().minusDays(2))
         .build();
 
     ServiceAssignment reserved = ServiceAssignment.builder()
