@@ -237,6 +237,7 @@ import {
   LinkedinRedeemedComponent
 } from "./components/profile/view/tab/services/linkedin/linkedin-redeemed/linkedin-redeemed.component";
 import {ReferenceComponent} from './components/profile/view/tab/services/reference/reference.component';
+import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -334,7 +335,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ChatbotComponent,
     LinkedinComponent,
     LinkedinRedeemedComponent,
-    ReferenceComponent
+    ReferenceComponent,
+    UnhcrComponent
   ],
   imports: [
     BrowserModule,
