@@ -34,6 +34,11 @@
                  (backButtonClicked)="onBackButtonClick()"
   ></app-reference>
 
+  <app-unhcr *ngIf="(showUnhcr$ | async) && selectedService === Service.UNHCR"
+             [candidate]="candidate"
+             (backButtonClicked)="onBackButtonClick()"
+  ></app-unhcr>
+
   <ng-container *ngIf="!loading && !selectedService">
 
     <app-tab-header>
@@ -96,6 +101,25 @@
         </p>
       </div>
       <img src="assets/images/services/opcLogo.svg" alt="Reference Voucher (placeholder)"/>
+    </div>
+
+    <!-- UNHCR -->
+    <div *ngIf="showUnhcr$ | async"
+         class="service-card"
+         (click)="selectService(Service.UNHCR)"
+    >
+      <div>
+        <span class="service-tag">
+          UNHCR
+        </span>
+        <h3>
+          UNHCR Help Site
+        </h3>
+        <p>
+          Country-specific refugee support resources from UNHCR.
+        </p>
+      </div>
+      <i class="fas fa-globe-americas fa-2x" aria-hidden="true"></i>
     </div>
 
   </ng-container>
