@@ -117,7 +117,6 @@ class ServicesPortalControllerTest extends ApiTestBase {
         .expiresAt(OffsetDateTime.now().plusDays(30))
         .build();
 
-
     ServiceAssignment redeemed = ServiceAssignment.builder()
         .id(11L)
         .provider(ServiceProvider.LINKEDIN)
