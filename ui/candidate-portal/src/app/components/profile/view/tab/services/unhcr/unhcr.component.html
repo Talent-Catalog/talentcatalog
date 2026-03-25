@@ -1,0 +1,45 @@
+<!--
+  ~ Copyright (c) 2026 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<app-error [error]="error"></app-error>
+<app-loading [loading]="loading"></app-loading>
+
+<div class="service-title">
+  <div class="header">
+    <div>
+      <h2>{{ countryFlag }} UNHCR {{ countryName }}</h2>
+      <p>Official refugee help resources for {{ countryName }}.</p>
+    </div>
+    <i class="fas fa-globe-americas service-icon" aria-hidden="true"></i>
+  </div>
+</div>
+
+<div class="service-content" *ngIf="!loading">
+  <p>
+    Visit UNHCR Help for up-to-date guidance and support information specific to {{ countryName }}.
+  </p>
+
+  <p *ngIf="assignment?.resource?.resourceCode as helpUrl">
+    <a [href]="helpUrl" target="_blank" rel="noopener noreferrer">{{ helpUrl }}</a>
+  </p>
+
+  <div class="mt-5">
+    <tc-button [type]="'outline'" (onClick)="onBackButtonClicked()">
+      <i class="me-1 fas fa-arrow-left"></i>
+      Back
+    </tc-button>
+  </div>
+</div>
