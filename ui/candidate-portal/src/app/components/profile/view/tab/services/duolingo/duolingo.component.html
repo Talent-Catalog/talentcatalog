@@ -11,7 +11,7 @@
             <img src="assets/images/services/duolingoLogo.png"/>
         </div>
     </div>
-    <app-duolingo-coupon
+    <app-duolingo-coupon *ngIf="selectedCoupon"
                          [candidate]="candidate"
                          (refresh)="refresh.emit()"
                          [selectedCoupon]="selectedCoupon"
