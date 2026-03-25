@@ -96,6 +96,8 @@ export class UnhcrComponent implements OnInit {
     });
   }
 
+  // Maps ISO 3166-1 alpha-2 country codes to Unicode regional indicator pairs (flag emoji).
+  // Reference: https://en.wikipedia.org/wiki/Regional_indicator_symbol
   private flagEmoji(isoCode: string): string {
     if (!isoCode || isoCode.length !== 2) {
       return '';
