@@ -1,6 +1,6 @@
 <ng-container>
     <app-error [error]="error"></app-error>
-    <app-loading [loading]="loading"></app-loading>
+    <tc-loading [loading]="loading"></tc-loading>
 
     <div class="service-title">
         <div class="header">
@@ -11,7 +11,7 @@
             <img src="assets/images/services/duolingoLogo.png"/>
         </div>
     </div>
-    <app-duolingo-coupon *ngIf="selectedCoupon"
+    <app-duolingo-coupon
                          [candidate]="candidate"
                          (refresh)="refresh.emit()"
                          [selectedCoupon]="selectedCoupon"
