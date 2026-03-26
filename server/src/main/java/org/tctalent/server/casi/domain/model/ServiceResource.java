@@ -32,6 +32,8 @@ public class ServiceResource {
   ServiceProvider provider;
   ServiceCode serviceCode;
   String resourceCode;
+  String countryIsoCode;
+  ResourceType resourceType;
   ResourceStatus status;
   OffsetDateTime sentAt;
   OffsetDateTime expiresAt;
