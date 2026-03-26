@@ -20,8 +20,8 @@
 /* Chatbot Icon - Floating Action Button */
 .chatbot-icon {
   position: fixed;
-  bottom: 20px;
   right: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom));
   width: 60px;
   height: 60px;
   @include background-color('primary');
@@ -57,8 +57,8 @@
 /* Chatbot Panel */
 .chatbot-panel {
   position: fixed;
-  bottom: 90px;
   right: 20px;
+  bottom: calc(max(20px, env(safe-area-inset-bottom)) + 70px);
   width: 350px;
   height: 500px;
   background: white;
@@ -312,6 +312,13 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
+  .chatbot-icon {
+    right: 16px;
+    bottom: calc(env(safe-area-inset-bottom) + 88px);
+    width: 56px;
+    height: 56px;
+  }
+
   .chatbot-panel {
     position: fixed;
     top: 100px;
@@ -340,7 +347,7 @@
   .chatbot-panel.open .chatbot-header {
     display: none !important;
   }
-  
+
   .chatbot-icon.open {
     display: none !important;
     pointer-events: none;
