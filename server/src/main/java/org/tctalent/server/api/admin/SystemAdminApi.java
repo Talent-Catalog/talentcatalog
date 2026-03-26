@@ -160,7 +160,6 @@ public class SystemAdminApi {
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
     private final PartnerRepository partnerRepository;
-    private final S3ResourceHelper s3ResourceHelper;
     private final CacheService cacheService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -222,7 +221,7 @@ public class SystemAdminApi {
             SalesforceConfig salesforceConfig, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
             SavedListRepository savedListRepository,
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
-            SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
+            SavedSearchRepository savedSearchRepository,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         BackgroundProcessingService backgroundProcessingService,
         BatchJobService batchJobService,
@@ -254,7 +253,6 @@ public class SystemAdminApi {
         this.jobChatRepository = jobChatRepository;
         this.jobChatUserRepository = jobChatUserRepository;
         this.chatPostRepository = chatPostRepository;
-        this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
       this.backgroundProcessingService = backgroundProcessingService;
