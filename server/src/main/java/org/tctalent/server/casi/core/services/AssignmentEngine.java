@@ -30,6 +30,7 @@ import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceResource;
+import org.tctalent.server.casi.domain.model.ResourceType;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
@@ -136,8 +137,10 @@ public class AssignmentEngine {
           ledger.save(assignment);
 
           ServiceResourceEntity r = assignment.getResource();
-          r.setStatus(ResourceStatus.DISABLED);
-          resourceRepo.save(r);
+          if (r.getResourceType() != ResourceType.SHARED) {
+            r.setStatus(ResourceStatus.DISABLED);
+            resourceRepo.save(r);
+          }
 
           events.publishEvent(new ServiceReassignedEvent(ServiceAssignmentMapper.toModel(assignment)));
         });
