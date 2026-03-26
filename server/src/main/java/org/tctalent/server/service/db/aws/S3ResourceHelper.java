@@ -28,15 +28,18 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.FileDownloadException;
 import org.tctalent.server.logging.LogBuilder;
+import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.model.*;
 
 @Slf4j
@@ -52,15 +55,20 @@ public class S3ResourceHelper {
         @Value("${aws.credentials.secretKey}") String secretKey,
         @Value("${aws.s3.region}") String s3Region
     ) {
+        S3ClientBuilder builder = S3Client.builder()
+            .region(Region.of(s3Region));
 
-        this.s3Client = S3Client.builder()
-            .credentialsProvider(
+        if (StringUtils.hasText(accessKey) && StringUtils.hasText(secretKey)) {
+            builder.credentialsProvider(
                 StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKey, secretKey)
                 )
-            )
-            .region(Region.of(s3Region))
-            .build();
+            );
+        } else {
+            builder.credentialsProvider(AnonymousCredentialsProvider.create());
+        }
+
+        this.s3Client = builder.build();
     }
 
     public String getS3Bucket() {
