@@ -27,6 +27,7 @@ ext {
     isDev = System.properties['env'] == 'dev'
     mapstructVersion = "1.6.3"
     lombokMapstructBindingVersion = "0.2.0"
+    awsSdkVersion = "2.42.15"
     // Flyway upgrade (Postgres 17.5 compatible)
     set('flyway.version', '11.20.1')
 }
@@ -125,8 +126,9 @@ dependencies {
     //Does not get included in Spring Boot starter
     implementation 'org.springframework.security:spring-security-messaging'
 
+    // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/bom
+    implementation(platform("software.amazon.awssdk:bom:$awsSdkVersion"))
     // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/s3
-    implementation(platform("software.amazon.awssdk:bom:2.42.15"))
     implementation("software.amazon.awssdk:s3")
 
 
