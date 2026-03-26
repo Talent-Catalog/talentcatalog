@@ -6,6 +6,7 @@ insert into service_resource (
     provider,
     service_code,
     resource_code,
+    resource_type,
     status,
     country_iso_code,
     created_at
