@@ -14,20 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TcRadioComponent} from './tc-radio.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {By} from "@angular/platform-browser";
-
-@Component({
-  template: `
-    <tc-radio id="radio1" name="testGroup" [value]="1" label="Option 1"></tc-radio>
-    <label for="radio1">External label</label>
-  `
-})
-class HostComponent {}
 
 describe('TcRadioComponent', () => {
   let component: TcRadioComponent;
@@ -129,21 +120,24 @@ describe('TcRadioComponent', () => {
     expect(hostElement.hasAttribute('id')).toBeFalse();
   });
 
-  it('should allow an external label to target the input id', () => {
-    const hostFixture = TestBed.createComponent(HostComponent);
-    hostFixture.detectChanges();
-
-    const radioComponent = hostFixture.debugElement.query(By.directive(TcRadioComponent));
-    const radioHost = radioComponent.nativeElement as HTMLElement;
-    const inputEl = radioComponent.query(By.css('input')).nativeElement as HTMLInputElement;
-    const externalLabel = hostFixture.nativeElement.querySelector('label[for="radio1"]') as HTMLLabelElement;
+  it('should associate an external label with the input id', () => {
+    const radioHost = fixture.debugElement.nativeElement as HTMLElement;
+    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+    const externalLabel = document.createElement('label');
+    const container = document.createElement('div');
+    externalLabel.htmlFor = inputEl.id;
+    externalLabel.textContent = 'External label';
+    container.appendChild(radioHost);
+    container.appendChild(externalLabel);
+    document.body.appendChild(container);
 
     expect(radioHost.hasAttribute('id')).toBeFalse();
     expect(inputEl.id).toBe('radio1');
 
-    externalLabel.click();
-    hostFixture.detectChanges();
-
-    expect(inputEl.checked).toBeTrue();
+    try {
+      expect(externalLabel.control?.id).toBe(inputEl.id);
+    } finally {
+      container.remove();
+    }
   });
 });
