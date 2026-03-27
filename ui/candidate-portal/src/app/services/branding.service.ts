@@ -19,6 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {AuthenticationService} from "./authentication.service";
+import {TcInstanceType} from "../model/tc-instance-type";
 
 export interface BrandingInfo {
   logo: string;
@@ -30,12 +31,21 @@ export interface BrandingInfo {
   providedIn: 'root'
 })
 export class BrandingService {
+  private readonly grnBrandingInfo: BrandingInfo = {
+    logo: 'assets/images/grnLogoDark.svg',
+    partnerName: 'GRN',
+    websiteUrl: 'https://openpathwaycollective.org/'
+  };
   apiUrl: string = environment.apiUrl + '/branding';
   partnerAbbreviation: string;
 
   constructor(private http: HttpClient, private authenticationService: AuthenticationService) { }
 
   getBrandingInfo(): Observable<BrandingInfo> {
+    if (this.authenticationService.getTcInstanceType() === TcInstanceType.GRN) {
+      return of(this.grnBrandingInfo);
+    }
+
     if (this.authenticationService.isRegistered()) {
       let url = `${this.apiUrl}`;
       if (this.partnerAbbreviation) {
