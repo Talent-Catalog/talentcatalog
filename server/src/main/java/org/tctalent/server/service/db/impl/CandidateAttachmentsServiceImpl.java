@@ -35,6 +35,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.files.StoredFile;
 import org.tctalent.server.files.UploadType;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
@@ -55,7 +56,6 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.storage.StoragePutRequest;
 import org.tctalent.server.storage.StorageService;
-import org.tctalent.server.storage.StoredObject;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -384,13 +384,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         //TODO JC Need to do the textExtract if uploadType == UploadType.cv
 
-        StoredObject storedObject = storageService.store(req);
+        StoredFile storedFile = storageService.store(req);
 
         CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
         attachmentRequest.setType(AttachmentType.grnfile);
         attachmentRequest.setCandidateId(candidate.getId());
-        attachmentRequest.setName(storedObject.getOriginalFilename());
-        attachmentRequest.setUploadType(storedObject.getUploadType());
+        attachmentRequest.setName(storedFile.getOriginalFilename());
+        attachmentRequest.setUploadType(storedFile.getUploadType());
         //TODO JC Other fields - use mapper between StoredObject and CreatCandidateAttachmentREquest
 
         return attachmentRequest;

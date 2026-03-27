@@ -28,6 +28,7 @@ import java.security.MessageDigest;
 import java.util.HexFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.files.StoredFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
@@ -48,13 +49,13 @@ public class S3StorageService implements StorageService {
     private final StorageKeyService storageKeyService;
 
     @Override
-    public StoredObject store(StoragePutRequest request) {
+    public StoredFile store(StoragePutRequest request) {
         String key = storageKeyService.newStorageKey();
         return store(key, request);
     }
 
     @Override
-    public StoredObject store(String storageKey, StoragePutRequest request) {
+    public StoredFile store(String storageKey, StoragePutRequest request) {
 
         if (request.getInputStream() == null) {
             throw new IllegalArgumentException("inputStream is required");
@@ -100,7 +101,7 @@ public class S3StorageService implements StorageService {
             );
 
             // 4. Build result
-            return StoredObject.builder()
+            return StoredFileInfo.builder()
                 .storageKey(storageKey)
                 .bucket(properties.getBucket())
                 .originalFilename(request.getOriginalFilename())
@@ -157,7 +158,7 @@ public class S3StorageService implements StorageService {
     //TODO JC For now we could leave out copy and move
 
     @Override
-    public StoredObject copy(String sourceKey, String targetKey) {
+    public StoredFile copy(String sourceKey, String targetKey) {
         CopyObjectResponse response = s3Client.copyObject(CopyObjectRequest.builder()
             .sourceBucket(properties.getBucket())
             .sourceKey(sourceKey)
@@ -166,15 +167,15 @@ public class S3StorageService implements StorageService {
             .build());
 
         //TODO JC Use Mapper to map response
-        return StoredObject.builder()
+        return StoredFileInfo.builder()
             .storageKey(targetKey)
             .bucket(properties.getBucket())
             .build();
     }
 
     @Override
-    public StoredObject move(String sourceKey, String targetKey) {
-        StoredObject result = copy(sourceKey, targetKey);
+    public StoredFile move(String sourceKey, String targetKey) {
+        StoredFile result = copy(sourceKey, targetKey);
         delete(sourceKey);
         return result;
     }

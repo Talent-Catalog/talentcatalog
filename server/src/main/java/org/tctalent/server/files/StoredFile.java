@@ -22,5 +22,39 @@ package org.tctalent.server.files;
  * @author John Cameron
  */
 public interface StoredFile {
-     //TODO JC I think that StoredObject implements StoredFile
+
+    /**
+     * Opaque internal S3 key.
+     */
+    String getStorageKey();
+
+    /**
+     * Bucket name.
+     */
+    String getBucket();
+
+    /**
+     * Original filename (metadata only).
+     */
+    String getOriginalFilename();
+
+    /**
+     * MIME type.
+     */
+    String getContentType();
+
+    /**
+     * Size in bytes.
+     */
+    Long getContentLength();
+
+    /**
+     * SHA-256 checksum.
+     */
+    String getSha256Hex();
+
+    /**
+     * Type of document.
+     */
+    UploadType getUploadType();
 }

@@ -18,45 +18,18 @@ package org.tctalent.server.storage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.files.StoredFile;
 import org.tctalent.server.files.UploadType;
 
 @Getter
 @Setter
 @Builder
-public class StoredObject {
-
-    /**
-     * Opaque internal S3 key.
-     */
+public class StoredFileInfo implements StoredFile {
     private String storageKey;
-
-    /**
-     * Bucket name.
-     */
     private String bucket;
-
-    /**
-     * Original filename (metadata only).
-     */
     private String originalFilename;
-
-    /**
-     * MIME type.
-     */
     private String contentType;
-
-    /**
-     * Size in bytes.
-     */
     private Long contentLength;
-
-    /**
-     * SHA-256 checksum.
-     */
     private String sha256Hex;
-
-    /**
-     * Type of document.
-     */
     UploadType uploadType;
 }
