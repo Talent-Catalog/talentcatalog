@@ -14,11 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TcRadioComponent} from './tc-radio.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {By} from "@angular/platform-browser";
+
+@Component({
+  template: `
+    <tc-radio id="radio1" name="testGroup" [value]="1" label="Option 1"></tc-radio>
+    <label for="radio1">External label</label>
+  `
+})
+class HostComponent {}
 
 describe('TcRadioComponent', () => {
   let component: TcRadioComponent;
@@ -112,5 +121,29 @@ describe('TcRadioComponent', () => {
     component.writeValue(false);
     fixture.detectChanges();
     expect(inputEl.checked).toBeFalse();
+  });
+
+  it('should not apply the radio id to the host element', () => {
+    const hostElement = fixture.debugElement.nativeElement as HTMLElement;
+
+    expect(hostElement.hasAttribute('id')).toBeFalse();
+  });
+
+  it('should allow an external label to target the input id', () => {
+    const hostFixture = TestBed.createComponent(HostComponent);
+    hostFixture.detectChanges();
+
+    const radioComponent = hostFixture.debugElement.query(By.directive(TcRadioComponent));
+    const radioHost = radioComponent.nativeElement as HTMLElement;
+    const inputEl = radioComponent.query(By.css('input')).nativeElement as HTMLInputElement;
+    const externalLabel = hostFixture.nativeElement.querySelector('label[for="radio1"]') as HTMLLabelElement;
+
+    expect(radioHost.hasAttribute('id')).toBeFalse();
+    expect(inputEl.id).toBe('radio1');
+
+    externalLabel.click();
+    hostFixture.detectChanges();
+
+    expect(inputEl.checked).toBeTrue();
   });
 });
