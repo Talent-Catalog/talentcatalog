@@ -12,7 +12,7 @@ import {QueryParamsHandling} from '@angular/router';
  * **Features**
  * - Size presets: `xs`, `sm`, `default`, `lg`, `xl`
  * - Visual types: `solid`, `outline`, `plain`
- * - Color options: `primary`, `secondary`, `success`, `warning`, `error`, `info`, `gray`
+ * - Color options: `primary`, `secondary`, `success`, `warning`, `error`, `info`, `gray`, `white`
  * - Disabled state styling and pointer lock
  * - Optional loading state styling
  * - Focus-visible outline for keyboard accessibility
@@ -25,7 +25,7 @@ import {QueryParamsHandling} from '@angular/router';
  *   Controls height and padding. Defaults to `'default'`.
  * - `type: 'solid' | 'outline' | 'plain'`
  *   Controls the visual treatment of the button. Defaults to `'solid'`.
- * - `color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'`
+ * - `color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray' | 'white'`
  *   Controls the button color within the selected `type`. Defaults to `'primary'`.
  * - `disabled: boolean`
  *   Disables the button and applies muted styling. Defaults to `false`.
@@ -88,7 +88,7 @@ import {QueryParamsHandling} from '@angular/router';
 export class ButtonComponent {
   @Input() size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'  = 'default';
   @Input() type: 'solid' | 'outline' | 'plain' = 'solid';
-  @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray'= 'primary';
+  @Input() color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'gray' | 'white' = 'primary';
   @Input() disabled = false;
   @Input() loading = false;
   @Input() ariaLabel?: string;

@@ -14,11 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 <div class="mb-2 text-center">
-  <button class="btn btn-primary btn-sm" (click)="downloadCV()">
+  <tc-button size="sm" color="white" (onClick)="downloadCV()">
     <span *ngIf="!loading">{{ 'PROFILE.BUTTON.CV' | translate }}</span>
     <span *ngIf="loading">{{ 'LOADING' | translate }}</span>
-  </button>
+  </tc-button>
   <p class="small text-muted">{{ 'ERROR.ALLOW_POPUPS' | translate }}</p>
 </div>
-
-

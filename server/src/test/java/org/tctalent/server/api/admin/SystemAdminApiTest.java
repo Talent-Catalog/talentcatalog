@@ -1,6 +1,18 @@
 package org.tctalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.FileList;
 import java.sql.Connection;
@@ -9,8 +21,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,21 +47,10 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.api.TcApiService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SystemAdminApiTest {
@@ -307,27 +311,6 @@ class SystemAdminApiTest {
     verify(salesforceService).updateContact(candidate);
   }
 
-  @Test
-  void testUpdateAwsFileTypes_successAndFailureCases() {
-    S3ObjectSummary obj1 = new S3ObjectSummary();
-    obj1.setKey("file1");
-
-    S3ObjectSummary obj2 = new S3ObjectSummary();
-    obj2.setKey("file2");
-
-    List<S3ObjectSummary> summaries = List.of(obj1, obj2);
-
-    when(s3ResourceHelper.getObjectSummaries()).thenReturn(summaries);
-    when(s3ResourceHelper.filterMigratedObjects(summaries)).thenReturn(summaries);
-
-    doNothing().when(s3ResourceHelper).addObjectMetadata(obj1);
-    doThrow(new RuntimeException("fail")).when(s3ResourceHelper).addObjectMetadata(obj2);
-
-    String result = systemAdminApi.updateAwsFileTypes();
-
-    assertEquals("done", result);
-    verify(s3ResourceHelper, times(2)).addObjectMetadata(any());
-  }
   @Test
   void testMigrateGoogleDriveFolders_singlePage_successfulMigration() throws Exception {
     User mockUser = new User();

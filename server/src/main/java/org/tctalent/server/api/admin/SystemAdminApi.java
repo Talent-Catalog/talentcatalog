@@ -16,7 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -123,7 +122,6 @@ import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -162,7 +160,6 @@ public class SystemAdminApi {
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
     private final PartnerRepository partnerRepository;
-    private final S3ResourceHelper s3ResourceHelper;
     private final CacheService cacheService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -224,7 +221,7 @@ public class SystemAdminApi {
             SalesforceConfig salesforceConfig, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
             SavedListRepository savedListRepository,
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
-            SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
+            SavedSearchRepository savedSearchRepository,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         BackgroundProcessingService backgroundProcessingService,
         BatchJobService batchJobService,
@@ -256,7 +253,6 @@ public class SystemAdminApi {
         this.jobChatRepository = jobChatRepository;
         this.jobChatUserRepository = jobChatUserRepository;
         this.chatPostRepository = chatPostRepository;
-        this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
       this.backgroundProcessingService = backgroundProcessingService;
@@ -1191,52 +1187,6 @@ public class SystemAdminApi {
         return "done";
     }
 
-    @GetMapping("awsmetadata")
-    public String updateAwsFileTypes() {
-        List<S3ObjectSummary> objectSummaries = s3ResourceHelper.getObjectSummaries();
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Got the object summaries. There is a total of: " + objectSummaries.size())
-            .logInfo();
-
-        List<S3ObjectSummary> filteredSummaries = s3ResourceHelper.filterMigratedObjects(objectSummaries);
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Filtered out the migrated objects. There is a total of: " + filteredSummaries.size())
-            .logInfo();
-
-        int count = 0;
-        int success = 0;
-        for(S3ObjectSummary summary : filteredSummaries) {
-            try {
-                s3ResourceHelper.addObjectMetadata(summary);
-                success++;
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Error adding metadata to object with key: " + summary.getKey())
-                    .logWarn(e);
-            }
-            count++;
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Processed " + count)
-                    .logInfo();
-            }
-        }
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Finished processing. Success total of: " + success + " out of " + count)
-            .logInfo();
-
-        return "done";
-    }
 
     //Remove after running. One off method. Login as System Admin user.
 //    @GetMapping("update-isocodes")

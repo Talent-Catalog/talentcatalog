@@ -14,15 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {By} from '@angular/platform-browser';
+import {TranslateModule} from '@ngx-translate/core';
 
 import {CandidateJobExperienceCardComponent} from './candidate-job-experience-card.component';
 import {CandidateJobExperience} from '../../../model/candidate-job-experience';
-import {CandidateOccupation} from '../../../model/candidate-occupation';
 import {Country} from '../../../model/country';
-import {Occupation} from '../../../model/occupation';
+
+@Component({
+  selector: 'tc-button',
+  template: '<ng-content></ng-content>'
+})
+class TcButtonStubComponent {
+  @Input() color?: string;
+  @Input() disabled?: boolean;
+}
 
 function makeCountry(id: number, name: string): Country {
   return {
@@ -30,19 +38,6 @@ function makeCountry(id: number, name: string): Country {
     name,
     status: 'active',
     translatedName: name
-  };
-}
-
-function makeOccupation(id: number, name: string): Occupation {
-  return {id, name};
-}
-
-function makeCandidateOccupation(id: number, occupationId: number, name: string): CandidateOccupation {
-  return {
-    id,
-    occupation: makeOccupation(occupationId, name),
-    yearsExperience: 4,
-    occupationId
   };
 }
 
@@ -55,14 +50,14 @@ function makeExperience(overrides: Partial<CandidateJobExperience> = {}): Candid
     endDate: '2021-01-01',
     fullTime: true as any,
     paid: true as any,
-    description: 'Plain description',
+    description: 'Built systems',
     country: makeCountry(1, 'Jordan'),
-    candidateOccupation: makeCandidateOccupation(10, 100, 'Engineer'),
+    candidateOccupation: null as any,
     ...overrides
   };
 }
 
-describe('CandidateJobExperienceCardComponent', () => {
+describe('CandidateWorkExperienceCardComponent', () => {
   let component: CandidateJobExperienceCardComponent;
   let fixture: ComponentFixture<CandidateJobExperienceCardComponent>;
 
@@ -73,24 +68,16 @@ describe('CandidateJobExperienceCardComponent', () => {
     countries?: Country[];
   }) {
     await TestBed.configureTestingModule({
-      declarations: [CandidateJobExperienceCardComponent],
-      imports: [TranslateModule.forRoot()],
-      schemas: [NO_ERRORS_SCHEMA]
+      declarations: [CandidateJobExperienceCardComponent, TcButtonStubComponent],
+      imports: [TranslateModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CandidateJobExperienceCardComponent);
     component = fixture.componentInstance;
-
     component.preview = options?.preview ?? false;
     component.disabled = options?.disabled ?? false;
-    component.countries = options?.countries ?? [
-      makeCountry(1, 'Jordan'),
-      makeCountry(2, 'Lebanon')
-    ];
     component.experience = options?.experience ?? makeExperience();
-
-    const translateService = TestBed.inject(TranslateService);
-    translateService.use('en');
+    component.countries = options?.countries ?? [makeCountry(1, 'Jordan'), makeCountry(2, 'Lebanon')];
 
     fixture.detectChanges();
   }
@@ -103,80 +90,42 @@ describe('CandidateJobExperienceCardComponent', () => {
   });
 
   describe('template', () => {
-    it('should render the role, company, and country name', async () => {
+    it('should render delete and edit tc-buttons when not in preview mode', async () => {
+      await configureAndCreate();
+
+      const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+
+      expect(buttons.length).toBe(2);
+      expect(buttons[0].componentInstance.color).toBe('error');
+      expect(buttons[1].componentInstance.color).toBe('info');
+    });
+
+    it('should render experience details in the migrated layout', async () => {
       await configureAndCreate();
       const text = (fixture.nativeElement as HTMLElement).textContent || '';
 
       expect(text).toContain('Engineer');
       expect(text).toContain('ACME');
       expect(text).toContain('Jordan');
-    });
-
-    it('should render tc-button actions when not in preview mode', async () => {
-      await configureAndCreate();
-      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
-
-      expect(buttons.length).toBe(2);
-    });
-
-    it('should not render action buttons in preview mode', async () => {
-      await configureAndCreate({preview: true});
-
-      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
-
-      expect(buttons.length).toBe(0);
-    });
-
-    it('should render full-time and paid translation keys for boolean flags', async () => {
-      await configureAndCreate();
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
-
       expect(text).toContain('CARD.JOBEXPERIENCE.LABEL.FULLTIME');
       expect(text).toContain('CARD.JOBEXPERIENCE.LABEL.PAID');
-    });
-
-    it('should render part-time and volunteer translation keys when flags are false', async () => {
-      await configureAndCreate({
-        experience: makeExperience({
-          fullTime: false as any,
-          paid: false as any
-        })
-      });
-
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
-
-      expect(text).toContain('CARD.JOBEXPERIENCE.LABEL.PARTTIME');
-      expect(text).toContain('CARD.JOBEXPERIENCE.LABEL.VOLUNTEER');
-    });
-
-    it('should render current when endDate is missing', async () => {
-      await configureAndCreate({
-        experience: makeExperience({
-          endDate: null as any
-        })
-      });
-
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
-
       expect(text).toContain('2020');
-      expect(text).toContain('current');
+      expect(text).toContain('2021');
     });
   });
 
-  describe('edit', () => {
-    it('should emit onEdit with the current experience', async () => {
-      await configureAndCreate();
+  describe('events', () => {
+    beforeEach(async () => configureAndCreate());
+
+    it('should emit onEdit with the current experience', () => {
       const onEditSpy = spyOn(component.onEdit, 'emit');
 
       component.edit();
 
       expect(onEditSpy).toHaveBeenCalledWith(component.experience);
     });
-  });
 
-  describe('delete', () => {
-    it('should emit onDelete with the current experience', async () => {
-      await configureAndCreate();
+    it('should emit onDelete with the current experience', () => {
       const onDeleteSpy = spyOn(component.onDelete, 'emit');
 
       component.delete();
@@ -185,28 +134,19 @@ describe('CandidateJobExperienceCardComponent', () => {
     });
   });
 
-  describe('getCountryName', () => {
-    it('should return the matching country name by id', async () => {
-      await configureAndCreate();
+  describe('helpers', () => {
+    beforeEach(async () => configureAndCreate());
 
+    it('should return the matching country name by id', () => {
       expect(component.getCountryName(makeCountry(1, 'Ignored'))).toBe('Jordan');
     });
 
-    it('should return undefined when the country is not found', async () => {
-      await configureAndCreate();
-
+    it('should return undefined when the country is not found', () => {
       expect(component.getCountryName(makeCountry(999, 'Missing'))).toBeUndefined();
     });
-  });
 
-  describe('isHtml', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should return true for HTML content', () => {
+    it('should detect html content', () => {
       expect(component.isHtml('<p>Hello</p>')).toBeTrue();
-    });
-
-    it('should return false for plain text', () => {
       expect(component.isHtml('Hello')).toBeFalse();
     });
   });

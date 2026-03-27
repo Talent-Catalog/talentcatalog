@@ -34,8 +34,7 @@
 
 <p>{{experience?.companyName}}</p>
 
-<div class="row">
-
+<div class="row experience-meta">
   <div class="col-12 col-md-4 text-start">
     <span class="icon"></span>
     {{getCountryName(experience.country)}}
@@ -51,8 +50,6 @@
     <span class="icon"></span>
     {{experience?.startDate ? (experience?.startDate | date: 'yyyy') : '?'}} - {{experience?.endDate ? (experience?.endDate | date: 'yyyy') : 'current'}}
   </div>
-
 </div>
 
 <p class="text-muted" [ngClass]="isHtml(experience?.description)?'html':'text'" [innerHTML]="experience?.description"></p>
-
