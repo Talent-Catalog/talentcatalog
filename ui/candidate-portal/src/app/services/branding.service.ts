@@ -31,21 +31,12 @@ export interface BrandingInfo {
   providedIn: 'root'
 })
 export class BrandingService {
-  private readonly grnBrandingInfo: BrandingInfo = {
-    logo: 'assets/images/grnLogoDark.svg',
-    partnerName: 'GRN',
-    websiteUrl: 'https://openpathwaycollective.org/'
-  };
   apiUrl: string = environment.apiUrl + '/branding';
   partnerAbbreviation: string;
 
   constructor(private http: HttpClient, private authenticationService: AuthenticationService) { }
 
   getBrandingInfo(): Observable<BrandingInfo> {
-    if (this.authenticationService.getTcInstanceType() === TcInstanceType.GRN) {
-      return of(this.grnBrandingInfo);
-    }
-
     if (this.authenticationService.isRegistered()) {
       let url = `${this.apiUrl}`;
       if (this.partnerAbbreviation) {
@@ -53,6 +44,15 @@ export class BrandingService {
       }
       return this.http.get<BrandingInfo>(url);
     } else {
+      if (this.authenticationService.getTcInstanceType() === TcInstanceType.GRN) {
+        let brandingInfo: BrandingInfo = {
+          logo: 'assets/images/grnLogoDark.svg',
+          partnerName: 'GRN',
+          websiteUrl: 'https://openpathwaycollective.org/'
+        };
+        return of(brandingInfo);
+      }
+
       let brandingInfo: BrandingInfo = {
         logo: "assets/images/tc-logo-2.png",
         partnerName: "a Talent Catalog partner",
