@@ -28,17 +28,18 @@
     <ng-template #editable>
       <div *ngIf="selectedTask.task?.allowedAnswers?.length > 0; else textBox">
         <div class="mb-3">
-          <label class="fw-bold form-label" for="responseDropdown" [innerHtml]="selectedTask?.task?.description"></label>
+          <tc-label for="responseDropdown" [innerHtml]="selectedTask?.task?.description"></tc-label>
           <ng-select  id="responseDropdown" [formControlName]="'response'" [clearable]="false" [items]="selectedTask.task.allowedAnswers"
+                      class="tc-select"
                       bindLabel="displayName" bindValue="name" placeholder="Select...">
           </ng-select>
         </div>
       </div>
       <ng-template #textBox>
         <div class="mb-3">
-          <label class="fw-bold form-label" for="responseAnswer" [innerHtml]="selectedTask?.task?.description"></label>
-          <textarea id="responseAnswer" class="md-textarea-auto form-control" rows="5"
-                    [formControlName]="'response'"></textarea>
+          <tc-label for="responseAnswer" [innerHtml]="selectedTask?.task?.description"></tc-label>
+          <tc-textarea id="responseAnswer" rows="5"
+                       [formControlName]="'response'"></tc-textarea>
         </div>
       </ng-template>
     </ng-template>

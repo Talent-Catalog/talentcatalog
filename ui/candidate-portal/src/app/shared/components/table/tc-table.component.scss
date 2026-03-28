@@ -27,7 +27,6 @@
   .table-responsive {
     table.table {
       width: 100%;
-      @include paragraph-sm;
 
       th {
         border-bottom: 1px solid;
@@ -54,6 +53,10 @@
 
       &.table-hover > tbody > tr:hover {
         @include background-color-soft;
+        background-color: color(primary, 50) !important;
+      }
+
+      &.table-hover > tbody > tr:hover > * {
         background-color: color(primary, 50) !important;
       }
 
