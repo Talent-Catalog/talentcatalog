@@ -35,6 +35,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.files.FileUrlService;
 import org.tctalent.server.files.UploadType;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
@@ -71,6 +72,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final FileSystemService fileSystemService;
+    private final FileUrlService fileUrlService;
     private final StorageService storageService;
     private final TcInstanceService tcInstanceService;
 
@@ -161,6 +163,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         //Save the updated attachment
         attachment = candidateAttachmentRepository.save(attachment);
+        
+        if (AttachmentType.grnfile.equals(attachment.getType())) {
+            //Can only create public url once we have attachment id.
+            attachment.setUrl(fileUrlService.createApplicationUrl(attachment));
+        }
 
         //Now update candidate audit fields and potentially update candidate text to take
         //account of any cv text in the attachment we just updated above.

@@ -115,7 +115,7 @@ public class CandidateAttachmentAdminApi {
     }
 
     /**
-     * //TODO JC This is not the public url
+     * //TODO JC This is not the public url - we do have a url field in CandidateAttachment - maybe we just use that.
      * Redirects to the internal URL for viewing the attachment.
      * @param id Id of attachment to view
      */

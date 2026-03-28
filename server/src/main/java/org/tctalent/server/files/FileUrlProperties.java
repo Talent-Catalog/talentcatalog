@@ -31,6 +31,11 @@ public class FileUrlProperties {
     private String keyPairId;
     private String privateKeyPemPath;
 
+    /**
+     * Signed URLs expire after this many minutes.
+     * <p>
+     * Useful for restricting the validity of links to sensitive documents - eg passports     
+     */
     private long signedUrlMinutes = 15;
 
     // --- Override only where needed ---
