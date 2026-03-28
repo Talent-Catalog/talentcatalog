@@ -17,13 +17,18 @@
 package org.tctalent.server.security;
 
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 import org.tctalent.server.files.StoredFile;
 
 /**
- * TODO JC Doc
+ * 
  *
  * @author John Cameron
  */
-public interface StoredFileAccessService {
-    boolean canAccess(StoredFile file, Optional<TcUserDetails> userDetailsOpt);
+@Service
+public class StoredFileAccessService {
+    public boolean canAccess(StoredFile file, Optional<TcUserDetails> userDetailsOpt) {
+        //TODO JC Implement
+        return true;
+    }
 }
