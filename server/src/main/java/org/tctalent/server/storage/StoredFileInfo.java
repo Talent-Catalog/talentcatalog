@@ -28,7 +28,7 @@ public class StoredFileInfo implements StoredFile {
     private String storageKey;
     private String bucket;
     private String name;
-    private String contentType;
+    private String fileType;
     private Long contentLength;
     private String sha256Hex;
     UploadType uploadType;

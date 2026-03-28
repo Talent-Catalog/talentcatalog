@@ -39,9 +39,9 @@ public interface StoredFile {
     String getName();
 
     /**
-     * MIME type.
+     * MIME type. aka Content-Type. For example: "application/pdf"
      */
-    String getContentType();
+    String getFileType();
 
     /**
      * Size in bytes.

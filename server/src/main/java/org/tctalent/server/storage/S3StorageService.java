@@ -96,7 +96,7 @@ public class S3StorageService implements StorageService {
             return StoredFileInfo.builder()
                 .storageKey(storageKey)
                 .bucket(properties.getBucket())
-                .contentType(request.getContentType())
+                .fileType(request.getContentType())
                 .contentLength(contentLength)
                 .sha256Hex(sha256)
                 .build();

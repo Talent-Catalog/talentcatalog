@@ -394,7 +394,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         //Add in extra info
         storedFileInfo.setUploadType(uploadType);
         storedFileInfo.setName(uploadedFileName);
-        storedFileInfo.setContentType(file.getContentType());
+        storedFileInfo.setFileType(file.getContentType());
 
         CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
         attachmentRequest.setType(AttachmentType.grnfile);
