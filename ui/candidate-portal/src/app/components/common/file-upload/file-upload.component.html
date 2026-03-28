@@ -25,13 +25,13 @@
   <span class="or text-muted">{{ 'FORM.ATTACHMENT.LABEL.OR' | translate }}</span>
 
   <span>
-    <button class="btn btn-primary upload-btn gap-2" [disabled]="uploading" (click)="input.click()">
+    <tc-button class="upload-btn gap-2" [disabled]="uploading" (onClick)="input.click()">
       <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.FILE' | translate }}</ng-container>
       <ng-container *ngIf="uploading">
         {{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}
         <i class="fas fa-spinner fa-spin"></i>
       </ng-container>
-    </button>
+    </tc-button>
   </span>
 </div>
 
@@ -40,24 +40,23 @@
     <div class="file-input">
       <input #inputFile type="file" id="file" class="file" (change)="handleFileChanged($event, 'file')">
       <span>
-      <button class="btn btn-primary" [disabled]="uploading" (click)="inputFile.click()">
+      <tc-button [disabled]="uploading" (onClick)="inputFile.click()">
         <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.FILE' | translate }}</ng-container>
-      </button>
+      </tc-button>
     </span>
     </div>
     <div class="file-input">
       <input #inputPhoto type="file" id="camera" class="file" accept="image/*" capture="" (change)="handleFileChanged($event, 'camera')">
       <div>
-        <button class="btn btn-primary" [disabled]="uploading" (click)="inputPhoto.click()">
+        <tc-button [disabled]="uploading" (onClick)="inputPhoto.click()">
           <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
-        </button>
+        </tc-button>
       </div>
     </div>
   </div>
   <div *ngIf="uploading" class="d-flex justify-content-center">
-    <button class="btn btn-primary justify-content-center" [disabled]="uploading">
+    <tc-button class="justify-content-center" [disabled]="uploading">
       <ng-container>{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
-    </button>
+    </tc-button>
   </div>
 </div>
-
