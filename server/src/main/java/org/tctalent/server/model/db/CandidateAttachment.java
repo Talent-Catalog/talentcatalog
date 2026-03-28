@@ -41,9 +41,15 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
+    /**
+     * The type of attachment - we have stored attachments in a number of different ways
+     */
     @Enumerated(EnumType.STRING)
     private AttachmentType type;
 
+    /**
+     * Name of the attachment file 
+     */
     private String name;
 
     /**
@@ -64,16 +70,26 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
 
     private boolean migrated;
 
+    /**
+     * Only populated for {@link AttachmentType#grnfile} attachments. They are stored on S3
+     * using obfuscated storage keys. 
+     */
     //TODO JC This needs to map to database - make transient now so that it compiles
     @Transient
     private String storageKey;
 
+    /**
+     * Only populated for Cvs. This is the text extracted from the file.
+     */
     private String textExtract;
 
     //todo Eventually get rid of this cv attribute altogether - replacing it with just uploadType
     //For now they duplicate each other
     private boolean cv;
 
+    /**
+     * The type of the attachment: CV, Passport etc. 
+     */
     @Enumerated(EnumType.STRING)
     private UploadType uploadType;
 

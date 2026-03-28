@@ -34,9 +34,9 @@ public interface StoredFile {
     String getBucket();
 
     /**
-     * Original filename (metadata only).
+     * Name of file.
      */
-    String getOriginalFilename();
+    String getName();
 
     /**
      * MIME type.

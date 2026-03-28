@@ -27,7 +27,7 @@ import org.tctalent.server.files.UploadType;
 public class StoredFileInfo implements StoredFile {
     private String storageKey;
     private String bucket;
-    private String originalFilename;
+    private String name;
     private String contentType;
     private Long contentLength;
     private String sha256Hex;

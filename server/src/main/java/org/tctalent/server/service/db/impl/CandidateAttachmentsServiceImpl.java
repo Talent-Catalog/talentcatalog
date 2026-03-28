@@ -393,13 +393,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         
         //Add in extra info
         storedFileInfo.setUploadType(uploadType);
-        storedFileInfo.setOriginalFilename(uploadedFileName);
+        storedFileInfo.setName(uploadedFileName);
         storedFileInfo.setContentType(file.getContentType());
 
         CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
         attachmentRequest.setType(AttachmentType.grnfile);
         attachmentRequest.setCandidateId(candidate.getId());
-        attachmentRequest.setName(storedFileInfo.getOriginalFilename());
+        attachmentRequest.setName(storedFileInfo.getName());
         attachmentRequest.setUploadType(storedFileInfo.getUploadType());
         //TODO JC CreateCandidateAttachmentRequest and CandidateAttachment have to support StoredFile.
 
