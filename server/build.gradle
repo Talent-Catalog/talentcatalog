@@ -130,7 +130,8 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:$awsSdkVersion"))
     // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/s3
     implementation("software.amazon.awssdk:s3")
-
+    // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/cloudfront
+    implementation("software.amazon.awssdk:cloudfront")
 
     implementation platform('com.google.cloud:libraries-bom:22.0.0')
     implementation 'com.google.cloud:google-cloud-storage'

@@ -17,7 +17,7 @@
 package org.tctalent.server.files;
 
 /**
- * TODO JC Doc
+ * This defines the data associated with a stored file.
  *
  * @author John Cameron
  */

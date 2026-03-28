@@ -15,64 +15,124 @@
  */
 package org.tctalent.server.files;
 
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.CandidateAttachment;
-import org.tctalent.server.model.db.UrlAccessType;
+import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
+import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
+import software.amazon.awssdk.services.cloudfront.url.SignedUrl;
 
 @Service
 @RequiredArgsConstructor
 public class DefaultFileUrlService implements FileUrlService {
 
-    private final PublicFileUrlService publicFileUrlService;
-    private final CloudFrontSignedUrlService signedUrlService;
-    private final AttachmentAuthorizationService authorizationService;
     private final FileUrlProperties properties;
 
+    private final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
+
     @Override
-    public FileAccessUrl createAccessUrl(CandidateAttachment attachment) {
+    public String createApplicationUrl(CandidateAttachment attachment) {
+        Long attachmentId = requireAttachmentId(attachment);
+        String filename = sanitizeFilename(requireFilename(attachment));
 
-        if (!attachment.isActive()) {
-            throw new AttachmentNotFoundException(attachment.getId());
-        }
-
-        // PUBLIC case (no auth required beyond published flag)
-        if (attachment.getUrlAccessType() == UrlAccessType.PUBLIC
-            && attachment.isPubliclyReachable()) {
-
-            FileAccessUrl result = new FileAccessUrl();
-            result.setUrl(publicFileUrlService.toPublicUrl(attachment));
-            result.setSigned(false);
-            result.setExpiresAt(null);
-
-            return result;
-        }
-
-        // Everything else requires authorization
-        authorizationService.assertCurrentUserCanAccess(attachment);
-
-        // SIGNED case
-        if (attachment.getUrlAccessType() == UrlAccessType.SIGNED) {
-            return signedUrlService.createSignedUrl(
-                attachment,
-                Duration.ofMinutes(properties.getSignedUrlMinutes())
-            );
-        }
-
-        // APP_ONLY fallback (optional)
-        throw new UnsupportedOperationException(
-            "APP_ONLY access type not implemented for direct URL"
-        );
+        return joinUrl(properties.getPublicBaseUrl(),
+            "files/" + attachmentId + "/" + filename);
     }
 
     @Override
-    public String createPublicUrl(CandidateAttachment attachment) {
-        return publicFileUrlService.toPublicUrl(attachment);
+    public String createObjectUrl(CandidateAttachment attachment) {
+        String storageKey = requireStorageKey(attachment);
+        return joinUrl(properties.getCloudFrontBaseUrl(), storageKey);
     }
 
     @Override
-    public String createSignedUrl(CandidateAttachment attachment, Duration duration) {
-        return signedUrlService.createSignedUrl(attachment, duration).getUrl();
+    public String createSignedObjectUrl(CandidateAttachment attachment, Duration duration)
+        throws Exception {
+        String objectUrl = createObjectUrl(attachment);
+        Instant expiresAt = Instant.now().plus(duration);
+
+        CannedSignerRequest request = CannedSignerRequest.builder()
+            .resourceUrl(objectUrl)
+            .privateKey(Paths.get(properties.getPrivateKeyPemPath()))
+            .keyPairId(properties.getKeyPairId())
+            .expirationDate(expiresAt)
+            .build();
+
+        SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCannedPolicy(request);
+        return signedUrl.url();
+    }
+
+    @Override
+    public FileAccessUrl createAccessUrl(CandidateAttachment attachment) throws Exception {
+        requireStorageKey(attachment);
+
+        if (!attachment.getUploadType().isSignedAccess()) {
+            return FileAccessUrl.builder()
+                .url(createObjectUrl(attachment))
+                .signed(false)
+                .expiresAt(null)
+                .build();
+        }
+
+        Duration duration = Duration.ofMinutes(properties.getSignedUrlMinutes());
+        Instant expiresAt = Instant.now().plus(duration);
+
+        return FileAccessUrl.builder()
+            .url(createSignedObjectUrl(attachment, duration))
+            .signed(true)
+            .expiresAt(expiresAt)
+            .build();
+    }
+
+    private Long requireAttachmentId(CandidateAttachment attachment) {
+        if (attachment.getId() == null) {
+            throw new IllegalStateException("Attachment has no id");
+        }
+        return attachment.getId();
+    }
+
+    private String requireFilename(CandidateAttachment attachment) {
+        String filename = attachment.getName();
+        if (filename == null || filename.isBlank()) {
+            throw new IllegalStateException("Attachment " + attachment.getId() + " has no filename");
+        }
+        return filename;
+    }
+
+    private String requireStorageKey(CandidateAttachment attachment) {
+        String storageKey = attachment.getStorageKey();
+        if (storageKey == null || storageKey.isBlank()) {
+            throw new IllegalStateException("Attachment " + attachment.getId() + " has no storageKey");
+        }
+        return stripLeadingSlash(storageKey);
+    }
+
+    private String sanitizeFilename(String filename) {
+        return filename
+            .trim()
+            .replace("\\", "_")
+            .replace("/", "_");
+    }
+
+    private String joinUrl(String baseUrl, String path) {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            throw new IllegalStateException("Base URL is not configured");
+        }
+
+        String normalizedBase = stripTrailingSlash(baseUrl);
+        String normalizedPath = stripLeadingSlash(path);
+
+        return normalizedBase + "/" + normalizedPath;
+    }
+
+    private String stripLeadingSlash(String value) {
+        return value.startsWith("/") ? value.substring(1) : value;
+    }
+
+    private String stripTrailingSlash(String value) {
+        return value.endsWith("/") ? value.substring(0, value.length() - 1) : value;
     }
 }

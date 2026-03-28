@@ -40,14 +40,4 @@ public class DefaultStorageKeyService implements StorageKeyService {
     private String shard(String uuid) {
         return uuid.substring(0, 2) + "/" + uuid.substring(2, 4);
     }
-
-    private String normalizeObjectType(String objectType) {
-        if (objectType == null || objectType.isBlank()) {
-            return "object";
-        }
-        return objectType
-            .trim()
-            .toLowerCase()
-            .replaceAll("[^a-z0-9/_-]", "-");
-    }
 }

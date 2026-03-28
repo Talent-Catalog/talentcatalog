@@ -16,18 +16,29 @@
 package org.tctalent.server.files;
 
 import java.time.Instant;
-
+import lombok.Builder;
+import lombok.Getter;
 /**
  * Url for accessing a stored file.
- *
- * @param url the url for accessing the file
- * @param signed whether the url is signed
- * @param expiresAt when the url expires
  * @author John Cameron
  */
-public record FileAccessUrl(
-    String url,
-    boolean signed,
-    Instant expiresAt
-) {
+@Getter
+@Builder
+public class FileAccessUrl {
+
+    /**
+     * Final URL to redirect the browser to.
+     */
+    private final String url;
+
+    /**
+     * Whether the returned URL is signed and expiring.
+     */
+    private final boolean signed;
+
+    /**
+     * Expiry time for signed URLs. Null for public URLs.
+     */
+    private final Instant expiresAt;
 }
+

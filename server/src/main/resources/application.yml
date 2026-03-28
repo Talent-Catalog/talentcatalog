@@ -232,7 +232,7 @@ google:
 
 storage:
   s3:
-    bucket: ${STORAGE_S3_BUCKET:dev.storage.tctalent.org}
+    bucket: ${STORAGE_S3_BUCKET:candidate-files.test.globalrefugee.net}
 
 aws:
   s3:

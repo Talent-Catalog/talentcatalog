@@ -35,7 +35,6 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
-import org.tctalent.server.files.StoredFile;
 import org.tctalent.server.files.UploadType;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
@@ -56,6 +55,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.storage.StoragePutRequest;
 import org.tctalent.server.storage.StorageService;
+import org.tctalent.server.storage.StoredFileInfo;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -377,21 +377,24 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         StoragePutRequest req = StoragePutRequest.builder()
             .inputStream(file.getInputStream())
-            .originalFilename(uploadedFileName)
             .contentType(file.getContentType())
-            //TODO JC Need other fields
             .build();
 
         //TODO JC Need to do the textExtract if uploadType == UploadType.cv
 
-        StoredFile storedFile = storageService.store(req);
+        StoredFileInfo storedFileInfo = storageService.store(req);
+        
+        //Add in extra info
+        storedFileInfo.setUploadType(uploadType);
+        storedFileInfo.setOriginalFilename(uploadedFileName);
+        storedFileInfo.setContentType(file.getContentType());
 
         CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
         attachmentRequest.setType(AttachmentType.grnfile);
         attachmentRequest.setCandidateId(candidate.getId());
-        attachmentRequest.setName(storedFile.getOriginalFilename());
-        attachmentRequest.setUploadType(storedFile.getUploadType());
-        //TODO JC Other fields - use mapper between StoredObject and CreatCandidateAttachmentREquest
+        attachmentRequest.setName(storedFileInfo.getOriginalFilename());
+        attachmentRequest.setUploadType(storedFileInfo.getUploadType());
+        //TODO JC CreateCandidateAttachmentRequest and CandidateAttachment have to support StoredFile.
 
         return attachmentRequest;
     }

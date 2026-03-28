@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.files.FileAccessUrl;
 import org.tctalent.server.files.FileUrlService;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -113,8 +114,13 @@ public class CandidateAttachmentAdminApi {
         return candidateAttachmentDto().build(candidateAttachment);
     }
 
+    /**
+     * //TODO JC This is not the public url
+     * Redirects to the internal URL for viewing the attachment.
+     * @param id Id of attachment to view
+     */
     @GetMapping("{id}/view")
-    public ResponseEntity<Void> viewAttachment(@PathVariable Long id) throws IOException {
+    public ResponseEntity<Void> viewAttachment(@PathVariable Long id) throws Exception {
 
         CandidateAttachment attachment = candidateAttachmentService.getCandidateAttachment(id);
 
@@ -123,11 +129,11 @@ public class CandidateAttachmentAdminApi {
             throw new UnauthorisedActionException("view attachment");
         }
 
-        String url = fileUrlService.createUrl(attachment);
+        FileAccessUrl fileAccessUrl = fileUrlService.createAccessUrl(attachment);
 
         //Redirect to the generated url for it to be viewed.(Typically handled by Cloudfront and S3).
         return ResponseEntity.status(302)
-            .location(URI.create(url))
+            .location(URI.create(fileAccessUrl.getUrl()))
             .build();
     }
 

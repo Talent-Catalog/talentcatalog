@@ -15,11 +15,46 @@
  */
 package org.tctalent.server.files;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
+import java.time.Duration;
+import org.tctalent.server.model.db.CandidateAttachment;
+
 public interface FileUrlService {
-    String createUrl(StoredFile file);
+
+    /**
+     * Creates the user-facing application URL for an attachment.
+     * <p>
+     * Example:
+     * </p>
+     * <ul>
+     *   <li>https://globalrefugee.net/files/55/cv.pdf</li>
+     * </ul>
+     */
+    String createApplicationUrl(CandidateAttachment attachment);
+
+    /**
+     * Creates the direct CloudFront object URL for an attachment's opaque storage key.
+     * <p>
+     * Example:
+     * </p>
+     * <ul>
+     *   <li>https://globalrefugee.net/o/a7/3f/550e8400e29b41d4a716446655440000</li>
+     * </ul>
+     */
+    String createObjectUrl(CandidateAttachment attachment);
+
+    /**
+     * Creates a signed CloudFront URL for a protected attachment.
+     * @throws Exception if there is an error generating the signed URL
+     */
+    String createSignedObjectUrl(CandidateAttachment attachment, Duration duration)
+        throws Exception;
+
+    /**
+     * Resolves the final access URL for this attachment.
+     * <p>
+     * Public files return an unsigned object URL.
+     * Protected files return a signed object URL.
+     * </p>
+     */
+    FileAccessUrl createAccessUrl(CandidateAttachment attachment) throws Exception;
 }

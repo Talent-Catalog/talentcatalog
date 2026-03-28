@@ -33,34 +33,7 @@ public class StoragePutRequest {
     private final InputStream inputStream;
 
     /**
-     * Original client filename (optional, metadata only).
-     */
-    private final String originalFilename;
-
-    /**
      * MIME type, e.g. application/pdf (optional but recommended).
      */
     private final String contentType;
-
-    /**
-     * Content length in bytes (optional but recommended).
-     */
-    private final Long contentLength;
-
-    /**
-     * Logical category of object (e.g. candidate-attachment).
-     * Used only for key generation / metadata.
-     */
-    private final String objectType;
-
-    /**
-     * Optional owner reference (e.g. candidateId, attachmentId).
-     */
-    private final Long ownerId;
-
-    /**
-     * Optional SHA-256 checksum (hex).
-     * If not provided, will be computed.
-     */
-    private final String sha256Hex;
 }

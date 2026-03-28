@@ -49,17 +49,12 @@ public class S3StorageService implements StorageService {
     private final StorageKeyService storageKeyService;
 
     @Override
-    public StoredFile store(StoragePutRequest request) {
+    public StoredFileInfo store(StoragePutRequest request) {
         String key = storageKeyService.newStorageKey();
         return store(key, request);
     }
 
-    @Override
-    public StoredFile store(String storageKey, StoragePutRequest request) {
-
-        if (request.getInputStream() == null) {
-            throw new IllegalArgumentException("inputStream is required");
-        }
+    private StoredFileInfo store(String storageKey, StoragePutRequest request) {
 
         File tempFile = null;
 
@@ -79,10 +74,7 @@ public class S3StorageService implements StorageService {
 
             long contentLength = tempFile.length();
 
-            String sha256 = request.getSha256Hex();
-            if (sha256 == null || sha256.isBlank()) {
-                sha256 = HexFormat.of().formatHex(digest.digest());
-            }
+            String sha256 = HexFormat.of().formatHex(digest.digest());
 
             // 2. Build PutObject request
             PutObjectRequest.Builder put = PutObjectRequest.builder()
@@ -104,7 +96,6 @@ public class S3StorageService implements StorageService {
             return StoredFileInfo.builder()
                 .storageKey(storageKey)
                 .bucket(properties.getBucket())
-                .originalFilename(request.getOriginalFilename())
                 .contentType(request.getContentType())
                 .contentLength(contentLength)
                 .sha256Hex(sha256)
