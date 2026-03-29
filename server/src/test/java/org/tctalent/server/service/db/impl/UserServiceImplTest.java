@@ -159,6 +159,7 @@ class UserServiceImplTest {
     @Mock private JwtTokenProvider tokenProvider;
     @Mock private EmailHelper emailHelper;
     @Mock private CandidateRepository candidateRepository;
+    @Mock private TcInstanceService tcInstanceService;
 
     @Captor ArgumentCaptor<User> userCaptor;
 

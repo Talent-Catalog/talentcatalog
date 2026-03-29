@@ -111,6 +111,15 @@ public interface CandidateAssistanceService {
   List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId);
 
   /**
+   * Get the current active assignment for a candidate.
+   * The definition of "current" is provider-specific.
+   *
+   * @param candidateId the candidate ID
+   * @return the current assignment, or null if none exists
+   */
+  ServiceAssignment getCurrentAssignment(Long candidateId);
+
+  /**
    * Get all available (unassigned) resources for this provider and service.
    * @return the list of available service resources
    */

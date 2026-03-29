@@ -1,6 +1,6 @@
-# TC-Plus OPC Staging Environment
+# TC-Server OPC Staging Environment
 
-Deploy the TC-Plus infrastructure to the OPC AWS staging account (`164804461258`, `eu-west-2`).
+Deploy the TC-Server infrastructure to the OPC AWS staging account (`164804461258`, `eu-west-2`).
 
 ## Prerequisites
 

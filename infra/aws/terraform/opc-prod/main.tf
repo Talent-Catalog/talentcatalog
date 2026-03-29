@@ -162,7 +162,7 @@ variable "translation_password" {
 }
 
 variable "tc_boot_admin_password" {
-  description = "Boot admin password for TC-Plus"
+  description = "Boot admin password for TC server"
   type        = string
   sensitive   = true
   default     = ""
@@ -185,25 +185,27 @@ provider "aws" {
 locals {
   common_tags = {
     Project     = "OPC"
-    Application = "TC-Plus"
+    Application = "TC-Server"
     Environment = "prod"
     ManagedBy   = "terraform"
   }
 }
 
-# TC-Plus infrastructure for OPC AWS production account
+# TC-Server infrastructure for OPC AWS production account
 module "tc-plus-prod" {
   source = "../"
 
   common_tags = local.common_tags
 
   # ECS configuration
-  app             = "tc-plus"
+  app             = "tc-server"
   env             = "opc-prod"
   site_domain     = "plus.tctalent.org"
-  container_image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-prod"
+  container_image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-prod"
   container_port  = 8080
   ecs_tasks_count = 2
+  fargate_cpu     = 1024
+  fargate_memory  = 2048
 
   # Database configuration
   # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
@@ -231,9 +233,9 @@ module "tc-plus-prod" {
   # Non-secrets: provided directly here
   s3_bucket                              = "files.tbbtalent.org" # todo: confirm bucket name
   environment                            = "opc-prod"
-  email_default                          = ""  # todo: confirm if used/needed
+  email_default                          = "-"  # todo: confirm if used/needed
   email_test_override                    = "-"  # todo: set prod value
-  email_user                             = ""  # todo: confirm if used/needed
+  email_user                             = "-"  # todo: confirm if used/needed
   email_type                             = "SMTP"
   es_url                                 = "https://tc-prod.es.us-east-1.aws.found.io:9243"  # todo: retire elasticsearch
   es_username                            = "elastic"  # todo: retire elasticsearch

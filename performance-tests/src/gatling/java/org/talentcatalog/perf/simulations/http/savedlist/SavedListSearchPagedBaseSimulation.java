@@ -52,10 +52,11 @@ import org.talentcatalog.perf.payloads.SavedListSearchPagedPayloads;
  * <h2>Payload selection</h2>
  * <p>The {@link #PROP_PAYLOAD} system property selects which request payload file to use:</p>
  * <ul>
- *   <li>{@code -Dpayload=preview} → {@link SavedListSearchPagedPayloads#LIGHT} (default)</li>
+ *   <li>{@code -Dpayload=light} → {@link SavedListSearchPagedPayloads#LIGHT} (default)</li>
  * </ul>
  *
- * <p>If an unknown value is provided, this class falls back to {@code preview}.</p>
+ * <p>If the property is missing, blank, or an unknown value is provided, this class falls back to
+ * {@code light}.</p>
  */
 public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
 
@@ -69,7 +70,7 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
   /**
    * System property key used to choose the saved-list search-paged payload mode.
    *
-   * <p>Allowed values: {@code preview}. Default: {@code preview}.</p>
+   * <p>Allowed values: {@code light}. Default: {@code light}.</p>
    */
   protected static final String PROP_PAYLOAD = "payload";
 
@@ -143,8 +144,8 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
   /**
    * Resolves the payload JSON file path from {@code -Dpayload}.
    *
-   * <p>Trims and lowercases the property value. Defaults to {@code preview} when missing or
-   * blank.</p>
+   * <p>Trims and lowercases the property value. Defaults to {@code light} when missing, blank,
+   * or unrecognized.</p>
    *
    * @return the classpath resource path for the selected payload
    */
@@ -152,11 +153,9 @@ public abstract class SavedListSearchPagedBaseSimulation extends Simulation {
     String mode = System.getProperty(PROP_PAYLOAD, "light").trim().toLowerCase();
     return switch (mode) {
       case "light" -> SavedListSearchPagedPayloads.LIGHT;
-      case "heavy" -> SavedListSearchPagedPayloads.HEAVY;
       default -> SavedListSearchPagedPayloads.LIGHT;
     };
   }
-
 
   /**
    * Reads an integer system property safely.

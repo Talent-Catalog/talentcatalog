@@ -16,11 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.InstanceType;
 
 /**
  * Generates candidate numbers
@@ -28,17 +27,14 @@ import org.tctalent.server.model.db.InstanceType;
  * @author John Cameron
  */
 @Component
+@RequiredArgsConstructor
 public class CandidateNumberGenerator {
-    private final InstanceType tcInstanceType;
-
-    public CandidateNumberGenerator(@Value("${tc.instance-type}") InstanceType tcInstanceType) {
-        this.tcInstanceType = tcInstanceType;
-    }
+    private final TcInstanceService tcInstanceService;
 
     public String generateCandidateNumber(@NonNull Candidate candidate) {
         //Use id to generate candidate number
         long number = candidate.getId();
-        if (InstanceType.GRN.equals(tcInstanceType)) {
+        if (tcInstanceService.isGRN()) {
             //GRN uses 5000000 as the first number to distinguish its candidate numbers from
             //TBB instance candidate numbers
             number = number + 5000000L;

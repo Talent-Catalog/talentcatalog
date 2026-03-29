@@ -81,6 +81,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   @Input() tabIsActive: boolean = true;
 
   @Output() oppSelection = new EventEmitter();
+  @Output() refreshRequested = new EventEmitter<void>();
 
   opps: T[];
 
@@ -302,6 +303,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   refresh(event: any): void {
     this.search();
+    this.refreshRequested.emit();
     event.preventDefault(); // Stops form from submitting and search being called twice on click
   }
 

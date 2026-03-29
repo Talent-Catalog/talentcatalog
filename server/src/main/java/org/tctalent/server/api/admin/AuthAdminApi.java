@@ -103,6 +103,7 @@ public class AuthAdminApi {
                 .add("accessToken")
                 .add("tokenType")
                 .add("canViewChats")
+                .add("tcInstanceType")
                 .add("user", userBriefDto())
                 ;
     }

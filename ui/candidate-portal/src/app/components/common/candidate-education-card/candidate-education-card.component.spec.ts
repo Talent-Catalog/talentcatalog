@@ -14,14 +14,42 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {By} from '@angular/platform-browser';
+import {TranslateModule} from '@ngx-translate/core';
 
 import {CandidateEducationCardComponent} from './candidate-education-card.component';
 import {CandidateEducation} from '../../../model/candidate-education';
 import {Country} from '../../../model/country';
 import {EducationMajor} from '../../../model/education-major';
+
+@Component({
+  selector: 'tc-button',
+  template: '<ng-content></ng-content>'
+})
+class TcButtonStubComponent {
+  @Input() color?: string;
+  @Input() disabled?: boolean;
+}
+
+@Component({
+  selector: 'tc-description-list',
+  template: '<ng-content></ng-content>'
+})
+class TcDescriptionListStubComponent {
+  @Input() direction?: string;
+  @Input() compact?: boolean;
+  @Input() size?: string;
+}
+
+@Component({
+  selector: 'tc-description-item',
+  template: '<ng-content></ng-content>'
+})
+class TcDescriptionItemStubComponent {
+  @Input() label?: string;
+}
 
 function makeCountry(id: number, name: string): Country {
   return {
@@ -40,9 +68,9 @@ function makeEducation(overrides: Partial<CandidateEducation> = {}): CandidateEd
   return {
     id: 1,
     educationType: 'Bachelor',
-    courseName: 'Computer Science',
-    institution: 'Example University',
     lengthOfCourseYears: 4,
+    institution: 'Example University',
+    courseName: 'Computer Science',
     yearCompleted: '2024',
     country: makeCountry(1, 'Jordan'),
     educationMajor: makeMajor(10, 'Engineering'),
@@ -62,28 +90,22 @@ describe('CandidateEducationCardComponent', () => {
     majors?: EducationMajor[];
   }) {
     await TestBed.configureTestingModule({
-      declarations: [CandidateEducationCardComponent],
-      imports: [TranslateModule.forRoot()],
-      schemas: [NO_ERRORS_SCHEMA]
+      declarations: [
+        CandidateEducationCardComponent,
+        TcButtonStubComponent,
+        TcDescriptionListStubComponent,
+        TcDescriptionItemStubComponent
+      ],
+      imports: [TranslateModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CandidateEducationCardComponent);
     component = fixture.componentInstance;
-
     component.preview = options?.preview ?? false;
     component.disabled = options?.disabled ?? false;
     component.candidateEducation = options?.candidateEducation ?? makeEducation();
-    component.countries = options?.countries ?? [
-      makeCountry(1, 'Jordan'),
-      makeCountry(2, 'Lebanon')
-    ];
-    component.majors = options?.majors ?? [
-      makeMajor(10, 'Engineering'),
-      makeMajor(20, 'Mathematics')
-    ];
-
-    const translateService = TestBed.inject(TranslateService);
-    translateService.use('en');
+    component.countries = options?.countries ?? [makeCountry(1, 'Jordan')];
+    component.majors = options?.majors ?? [makeMajor(10, 'Engineering')];
 
     fixture.detectChanges();
   }
@@ -96,28 +118,29 @@ describe('CandidateEducationCardComponent', () => {
   });
 
   describe('template', () => {
-    it('should render the education details', async () => {
+    it('should render tc-button actions when not in preview mode', async () => {
       await configureAndCreate();
+
+      const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+      expect(buttons.length).toBe(2);
+      expect(buttons[0].componentInstance.color).toBe('error');
+      expect(buttons[1].componentInstance.color).toBe('info');
+    });
+
+    it('should render the migrated description list details', async () => {
+      await configureAndCreate({preview: true});
+
+      const items = fixture.debugElement.queryAll(By.directive(TcDescriptionItemStubComponent));
+      const labels = items.map(debugEl => debugEl.componentInstance.label);
       const text = (fixture.nativeElement as HTMLElement).textContent || '';
 
+      expect(labels).toContain('Education Type');
+      expect(labels).toContain('Institution');
+      expect(labels).toContain('Major');
       expect(text).toContain('Computer Science');
       expect(text).toContain('Example University');
       expect(text).toContain('Jordan');
       expect(text).toContain('CARD.EDUCATION.MAJOR');
-    });
-
-    it('should render tc-button actions when not in preview mode', async () => {
-      await configureAndCreate();
-      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
-
-      expect(buttons.length).toBe(2);
-    });
-
-    it('should not render tc-button actions in preview mode', async () => {
-      await configureAndCreate({preview: true});
-      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
-
-      expect(buttons.length).toBe(0);
     });
   });
 

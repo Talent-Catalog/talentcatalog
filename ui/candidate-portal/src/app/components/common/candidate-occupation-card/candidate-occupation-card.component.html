@@ -21,16 +21,19 @@
   </div>
 
   <div class="mb-3">
-    <tc-label for="occupationId">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }}</tc-label>
+    <tc-label *ngIf="!preview">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }}</tc-label>
 
-    <ng-select class="tc-select" *ngIf="!preview" id="occupationId" [(ngModel)]="candidateOccupation.occupationId" [clearable]="false"
+    <ng-select *ngIf="!preview" id="occupationId" [(ngModel)]="candidateOccupation.occupationId" [clearable]="false"
+               class="tc-select"
                placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
       <ng-option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</ng-option>
     </ng-select>
 
-    <p class="m-0" *ngIf="preview">
-      {{getOccupationName(candidateOccupation.occupation)}}
-    </p>
+    <tc-description-list *ngIf="preview" direction="column" compact size="lg">
+      <tc-description-item [label]="'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate">
+        {{getOccupationName(candidateOccupation.occupation)}}
+      </tc-description-item>
+    </tc-description-list>
   </div>
 
   <div class="mb-3 mb-0" *ngIf="candidateOccupation.occupationId == 0 && candidateOccupation.migrationOccupation">
@@ -45,14 +48,20 @@
 
   <!-- YEARS OF EXPERIENCE -->
   <div class="mb-3">
-    <tc-label for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}</tc-label>
+    <tc-label *ngIf="!preview">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}</tc-label>
 
     <p class="text-muted" *ngIf="!preview">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
-    <tc-input type="number" id="yearsExperience" [min]="0" [(ngModel)]="candidateOccupation.yearsExperience" *ngIf="!preview"></tc-input>
+    <tc-input id="yearsExperience"
+              type="number"
+              [min]="0"
+              [(ngModel)]="candidateOccupation.yearsExperience"
+              *ngIf="!preview"></tc-input>
 
-    <p class="m-0" *ngIf="preview">
-      {{candidateOccupation.yearsExperience}}
-    </p>
+    <tc-description-list *ngIf="preview" direction="column" compact size="lg">
+      <tc-description-item [label]="'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate">
+        {{candidateOccupation.yearsExperience}}
+      </tc-description-item>
+    </tc-description-list>
   </div>
 
 </ng-container>
