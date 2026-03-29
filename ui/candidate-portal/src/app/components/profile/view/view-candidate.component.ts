@@ -34,6 +34,7 @@ import {map, shareReplay} from "rxjs/operators";
 import {LinkedinService} from "../../../services/linkedin.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CasiPortalService} from "../../../services/casi-portal.service";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-view-candidate',
@@ -158,7 +159,7 @@ export class ViewCandidateComponent implements OnInit {
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
 
     this.showServicesTab$ = results$.pipe(
-      map(results => results.linkedIn || results.reference || results.unhcr || !!this.activeDuolingoTask)
+      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || results.unhcr || !!this.activeDuolingoTask)
     );
 
     this.linkedinEligible$ = results$.pipe(
@@ -166,12 +167,16 @@ export class ViewCandidateComponent implements OnInit {
     );
 
     this.referenceEligible$ = results$.pipe(
-      map(results => results.reference)
+      map(results => this.isLocalEnv() && results.reference)
     );
 
     this.unhcrEligible$ = results$.pipe(
       map(results => results.unhcr)
     );
+  }
+
+  private isLocalEnv(): boolean {
+    return environment.environmentName === 'local';
   }
 
   private fetchCachedTab() {
