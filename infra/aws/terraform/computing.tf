@@ -125,11 +125,20 @@ module "alb" {
     }
   ]
 
-  http_tcp_listeners = [
+  http_tcp_listeners = var.cloudfront_enable ? [
     {
-      port        = 80
-      protocol    = "HTTP"
-      action_type = "redirect"
+      action_type        = "forward"
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+      redirect           = null
+    }
+    ] : [
+    {
+      action_type        = "redirect"
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = null
       redirect = {
         port        = "443"
         protocol    = "HTTPS"
