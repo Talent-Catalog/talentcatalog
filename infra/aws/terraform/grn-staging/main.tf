@@ -1,5 +1,5 @@
-# This file is the main entry to the opc-staging infrastructure
-# The idea of using a separate directory is to use different remote state backends and roles
+# This file is the main entry for GRN staging infrastructure in the OPC AWS staging account.
+# It runs alongside opc-staging in the same account (164804461258) with separate state and resources.
 
 # Secrets loaded from secrets.auto.tfvars and passed through to the child module
 variable "aws_access_key" {
@@ -134,7 +134,7 @@ variable "slack_channel_id" {
 }
 
 variable "slack_token" {
-  description = "Slack token (todo: need one for OPC)"
+  description = "Slack token"
   type        = string
   sensitive   = true
   default     = ""
@@ -168,11 +168,7 @@ variable "tc_boot_admin_password" {
   default     = ""
 }
 
-# Configure the AWS provider
-# NOTE: Provider configuration MUST remain here (cannot be moved to parent module).
-# Providers cannot have configuration parameters injected via module variables.
-# Each environment targets a different AWS account via different assume_role ARNs.
-# OPC staging account: 164804461258
+# Same OPC staging account as opc-staging
 provider "aws" {
   region = "eu-west-2"
 
@@ -181,36 +177,34 @@ provider "aws" {
   }
 }
 
-# Define common tags for all resources
 locals {
   common_tags = {
-    Project     = "OPC"
+    Project     = "GRN"
     Application = "TC-Server"
     Environment = "staging"
     ManagedBy   = "terraform"
   }
 }
 
-# TC-Server infrastructure for OPC AWS staging account
-module "tc-plus-staging" {
+# GRN staging: parallel deployment in OPC staging account, domain test.globalrefugee.net
+module "grn_staging" {
   source = "../"
 
   common_tags = local.common_tags
 
-  # ECS configuration
-  app             = "tc-server"
-  env             = "opc-staging"
-  site_domain     = "tctalent-test.org"
-  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-staging"
+  # ECS configuration (separate ECR repo in same account to avoid name conflict with opc-staging)
+  app                    = "grn"
+  env                    = "staging"
+  site_domain            = "test.globalrefugee.net"
+  ecr_repository_name    = "grn-core"
+  container_image        = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-staging"
   container_port  = 8080
   ecs_tasks_count = 1
   fargate_cpu     = 512
   fargate_memory  = 2048
 
   # Database configuration
-  # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
-  # database via spring_datasource_url below. It does not currently connect  to the OPC RDS instance.
-  db_enable              = true
+  db_enable               = true
   db_public_access       = false
   db_multi_az            = false
   db_instance_class      = "db.t3.medium"
@@ -221,24 +215,23 @@ module "tc-plus-staging" {
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
-  # Redis cache configuration
+  # Redis cache (unique cluster id in same account)
   cache_enable          = true
-  cache_cluster_id      = "tc-test-cache"
+  cache_cluster_id      = "grn-staging-cache"
   cache_node_type       = "cache.t3.micro"
   cache_num_cache_nodes = 3
   cache_engine_version  = "7.1"
   cache_port            = 6379
 
-  # SSM-backed application parameters (stored in SSM, injected into ECS task)
-  # Non-secrets: provided directly here
-  s3_bucket                              = "files.tbbtalent.org" # todo: confirm bucket name
-  environment                            = "opc-staging"
-  email_default                          = "UPDATE_DEFAULT_EMAIL_HERE"  # todo: confirm if used/needed
-  email_test_override                    = "john@cameronfoundation.org" # todo: change to shared address
-  email_user                             = "UPDATE_EMAIL_USER_HERE"  # todo: confirm if used/needed
-  email_type                             = "SMTP" # todo: confirm value
-  es_url                                 = "https://tc-staging.es.us-east-1.aws.found.io:9243"  # todo: retire elasticsearch
-  es_username                            = "elastic"  # todo: retire elasticsearch
+  # SSM-backed application parameters
+  s3_bucket                              = "files.tbbtalent.org" # todo: confirm or set GRN bucket
+  environment                            = "grn-staging"
+  email_default                          = "-"
+  email_test_override                    = "-"
+  email_user                             = "-"
+  email_type                             = "SMTP"
+  es_url                                 = "https://tc-staging.es.us-east-1.aws.found.io:9243" # todo: retire or set GRN
+  es_username                            = "elastic"
   gradle_home                            = "/usr/local/gradle"
   java_home                              = "/usr/lib/jvm/java"
   logbuilder_include_cpu_utilization     = "true"
@@ -246,27 +239,27 @@ module "tc-plus-staging" {
   m2                                     = "/usr/local/apache-maven/bin"
   m2_home                                = "/usr/local/apache-maven"
   server_port                            = "8080"
-  server_url                             = "https://tctalent-test.org/"
-  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"
+  server_url                             = "https://test.globalrefugee.net/"
+  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/" # todo: set GRN if different
   sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
   sf_base_login_url                      = "https://test.salesforce.com/"
-  spring_client_url                      = "-" # todo: confirm if used/needed
-  # Legacy TBB DB. This stack also creates an OPC RDS (unused while URL is set).
-  # To point the service at the OPC RDS instead, set spring_datasource_url = "" and apply; then restart ECS to pick up the new SSM value.
-  spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent"
-  spring_datasource_username             = "tctalent"
+  spring_client_url                      = "-"
+  # Empty so SPRING_DATASOURCE_URL is auto-populated from the RDS created by this stack.
+  # The provided spring_datasource_username/password are used to create the RDS master user and are written to SSM for the app.
+  spring_datasource_url                  = "" # use RDS created by this stack
+  spring_datasource_username            = "tctalent"
   spring_db_pool_max                     = "50"
   spring_db_pool_min                     = "20"
   spring_servlet_max_file_size           = "10MB"
-  spring_servlet_max_request_size        = "10MB"
-  tc_api_url                             = "https://test.api.tctalent.org"
-  tc_cors_urls                           = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
-  tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
-  tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
-  tc_skills_extraction_api_url           = "https://test.skills.tctalent.org"
-  web_admin                              = "https://tctalent-test.org/admin-portal"
-  web_portal                             = "https://tctalent-test.org/candidate-portal"
-  tc_instance_type                       = "TBB"
+  spring_servlet_max_request_size       = "10MB"
+  tc_api_url                             = "https://test.api.globalrefugee.net"
+  tc_cors_urls                           = "https://test.globalrefugee.net,https://www.test.globalrefugee.net"
+  tc_db_copy_config                      = "data.sharing/tcCopies.xml"
+  tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"
+  tc_skills_extraction_api_url           = "https://test.skills.globalrefugee.net"
+  web_admin                              = "https://test.globalrefugee.net/admin-portal"
+  web_portal                             = "https://test.globalrefugee.net/candidate-portal"
+  tc_instance_type                       = "GRN"
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key
@@ -295,16 +288,12 @@ module "tc-plus-staging" {
   tc_boot_admin_password     = var.tc_boot_admin_password
 }
 
-# Configure the opc-staging terraform workspace
-# NOTE: The terraform block with backend configuration MUST remain in this file (cannot be moved to parent module).
-# This is because backend configuration can only exist in the root module where terraform init/apply is run
 terraform {
   required_version = ">= 1.3.0"
 
-  # Store the terraform state remotely in S3 bucket
   backend "s3" {
     bucket         = "opc-shared-terraform-state"
-    key            = "staging/talentcatalog/terraform.tfstate"
+    key            = "staging/grn/terraform.tfstate"
     region         = "eu-west-2"
     dynamodb_table = "opc-terraform-locks"
     encrypt        = "true"
