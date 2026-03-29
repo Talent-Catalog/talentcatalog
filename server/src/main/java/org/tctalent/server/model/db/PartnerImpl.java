@@ -28,6 +28,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.time.OffsetDateTime;
@@ -44,10 +45,10 @@ import org.tctalent.server.util.SalesforceHelper;
 @Setter
 @Entity(name = "Partner")
 @Table(name = "partner")
+@SequenceGenerator(name = "seq_gen", sequenceName = "partner_id_seq", allocationSize = 1)
 public class PartnerImpl extends AbstractDomainObject<Long>
     implements Partner {
 
-    private Long id;
     private String publicId;
 
     @Nullable

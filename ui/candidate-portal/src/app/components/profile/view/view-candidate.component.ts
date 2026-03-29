@@ -65,6 +65,7 @@ export class ViewCandidateComponent implements OnInit {
   activeDuolingoTask: TaskAssignment;
   linkedinEligible$: Observable<boolean>;
   referenceEligible$: Observable<boolean>;
+  unhcrEligible$: Observable<boolean>;
 
   constructor(
     private authorizationService: AuthorizationService,
@@ -152,12 +153,13 @@ export class ViewCandidateComponent implements OnInit {
   private initServicesTabVisibility() {
     const results$ = forkJoin({
       linkedIn: this.linkedinService.isEligible(this.candidate.id),
-      reference: this.casiPortalService.checkEligibility('REFERENCE', 'VOUCHER')
+      reference: this.casiPortalService.checkEligibility('REFERENCE', 'VOUCHER'),
+      unhcr: this.casiPortalService.checkEligibility('UNHCR', 'HELP_SITE_LINK')
       // Additional async service eligibility calls here
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
 
     this.showServicesTab$ = results$.pipe(
-      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || !!this.activeDuolingoTask)
+      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || results.unhcr || !!this.activeDuolingoTask)
     );
 
     this.linkedinEligible$ = results$.pipe(
@@ -166,6 +168,10 @@ export class ViewCandidateComponent implements OnInit {
 
     this.referenceEligible$ = results$.pipe(
       map(results => this.isLocalEnv() && results.reference)
+    );
+
+    this.unhcrEligible$ = results$.pipe(
+      map(results => results.unhcr)
     );
   }
 

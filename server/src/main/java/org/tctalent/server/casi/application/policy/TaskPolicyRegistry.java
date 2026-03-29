@@ -46,13 +46,9 @@ public class TaskPolicyRegistry {
     this.policies = Map.copyOf(map);
   }
 
-  // Returns the TaskPolicy for the given ServiceProvider, or throws if none found
+  // Returns the TaskPolicy for the given ServiceProvider, or a no-op fallback.
   public TaskPolicy forProvider(ServiceProvider provider) { // provider descriptors
-    var p = policies.get(provider);
-    if (p == null) {
-      throw new IllegalStateException("No policy for " + provider);
-    }
-    return p;
+    return policies.getOrDefault(provider, NoOpTaskPolicy.INSTANCE);
   }
 
 }

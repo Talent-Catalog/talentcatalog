@@ -251,7 +251,9 @@ module "tc-plus-staging" {
   sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
   sf_base_login_url                      = "https://test.salesforce.com/"
   spring_client_url                      = "-" # todo: confirm if used/needed
-  spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- in parallel to local RDS
+  # Legacy TBB DB. This stack also creates an OPC RDS (unused while URL is set).
+  # To point the service at the OPC RDS instead, set spring_datasource_url = "" and apply; then restart ECS to pick up the new SSM value.
+  spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent"
   spring_datasource_username             = "tctalent"
   spring_db_pool_max                     = "50"
   spring_db_pool_min                     = "20"
