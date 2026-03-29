@@ -28,6 +28,7 @@ import java.security.MessageDigest;
 import java.util.HexFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.configuration.properties.S3Properties;
 import org.tctalent.server.files.StoredFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -45,7 +46,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 public class S3StorageService implements StorageService {
 
     private final S3Client s3Client;
-    private final StorageProperties properties;
+    private final S3Properties s3Properties;
     private final StorageKeyService storageKeyService;
 
     @Override
@@ -53,7 +54,11 @@ public class S3StorageService implements StorageService {
         String key = storageKeyService.newStorageKey();
         return store(key, request);
     }
-
+    
+    private String getBucket() {
+        return s3Properties.getCandidateFilesBucket();
+    }    
+    
     private StoredFileInfo store(String storageKey, StoragePutRequest request) {
 
         File tempFile = null;
@@ -78,7 +83,7 @@ public class S3StorageService implements StorageService {
 
             // 2. Build PutObject request
             PutObjectRequest.Builder put = PutObjectRequest.builder()
-                .bucket(properties.getBucket())
+                .bucket(getBucket())
                 .key(storageKey)
                 .contentLength(contentLength);
 
@@ -91,12 +96,13 @@ public class S3StorageService implements StorageService {
                 put.build(),
                 RequestBody.fromFile(tempFile)
             );
+            //TODO JC Check response for errors
 
             // 4. Build result
             return StoredFileInfo.builder()
                 .active(true)
                 .storageKey(storageKey)
-                .bucket(properties.getBucket())
+                .bucket(getBucket())
                 .fileType(request.getContentType())
                 .contentLength(contentLength)
                 .sha256Hex(sha256)
@@ -118,7 +124,7 @@ public class S3StorageService implements StorageService {
     public InputStream openStream(String storageKey) {
         try {
             return s3Client.getObject(GetObjectRequest.builder()
-                .bucket(properties.getBucket())
+                .bucket(getBucket())
                 .key(storageKey)
                 .build());
         } catch (NoSuchKeyException e) {
@@ -129,7 +135,7 @@ public class S3StorageService implements StorageService {
     @Override
     public void delete(String storageKey) {
         s3Client.deleteObject(DeleteObjectRequest.builder()
-            .bucket(properties.getBucket())
+            .bucket(getBucket())
             .key(storageKey)
             .build());
     }
@@ -138,7 +144,7 @@ public class S3StorageService implements StorageService {
     public boolean exists(String storageKey) {
         try {
             s3Client.headObject(HeadObjectRequest.builder()
-                .bucket(properties.getBucket())
+                .bucket(getBucket())
                 .key(storageKey)
                 .build());
             return true;
@@ -152,16 +158,16 @@ public class S3StorageService implements StorageService {
     @Override
     public StoredFile copy(String sourceKey, String targetKey) {
         CopyObjectResponse response = s3Client.copyObject(CopyObjectRequest.builder()
-            .sourceBucket(properties.getBucket())
+            .sourceBucket(getBucket())
             .sourceKey(sourceKey)
-            .destinationBucket(properties.getBucket())
+            .destinationBucket(getBucket())
             .destinationKey(targetKey)
             .build());
 
         //TODO JC Use Mapper to map response
         return StoredFileInfo.builder()
             .storageKey(targetKey)
-            .bucket(properties.getBucket())
+            .bucket(getBucket())
             .build();
     }
 

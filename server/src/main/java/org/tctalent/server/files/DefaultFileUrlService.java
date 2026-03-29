@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.configuration.properties.CandidateFileUrlsProperties;
 import org.tctalent.server.model.db.CandidateAttachment;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
@@ -31,7 +32,7 @@ public class DefaultFileUrlService implements FileUrlService {
 
     private final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
     private final FileShareTokenService fileShareTokenService;
-    private final FileUrlProperties properties;
+    private final CandidateFileUrlsProperties properties;
 
     @Override
     public String createApplicationUrl(CandidateAttachment attachment) {
@@ -56,7 +57,7 @@ public class DefaultFileUrlService implements FileUrlService {
     @Override
     public String createObjectUrl(CandidateAttachment attachment) {
         String storageKey = requireStorageKey(attachment);
-        return joinUrl(properties.getCloudFrontBaseUrl(), storageKey);
+        return joinUrl(properties.getOriginBaseUrl(), storageKey);
     }
 
     @Override
@@ -67,8 +68,8 @@ public class DefaultFileUrlService implements FileUrlService {
 
         CannedSignerRequest request = CannedSignerRequest.builder()
             .resourceUrl(objectUrl)
-            .privateKey(Paths.get(properties.getPrivateKeyPemPath()))
-            .keyPairId(properties.getKeyPairId())
+            .privateKey(Paths.get(properties.getCloudfrontPrivateKeyPemPath()))
+            .keyPairId(properties.getCloudfrontKeyPairId())
             .expirationDate(expiresAt)
             .build();
 
@@ -88,7 +89,7 @@ public class DefaultFileUrlService implements FileUrlService {
                 .build();
         }
 
-        Duration duration = Duration.ofMinutes(properties.getSignedUrlMinutes());
+        Duration duration = Duration.ofMinutes(properties.getOriginExpiryMinutes());
         Instant expiresAt = Instant.now().plus(duration);
 
         return FinalFileAccessUrl.builder()

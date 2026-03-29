@@ -230,9 +230,25 @@ google:
   # Pixel width of wide columns in generated published sheets
     publishedSheetWideColumn: 300
 
-storage:
-  s3:
-    bucket: ${STORAGE_S3_BUCKET:candidate-files.test.globalrefugee.net}
+s3:
+  region: us-east-1
+  # For dev this should be set in tc-secrets
+  access-key: ${AWS_CREDENTIALS_ACCESSKEY:}
+  secret-key: ${AWS_CREDENTIALS_SECRETKEY:}
+  max-size: 52428800
+  upload-folder: temp
+  candidate-files-bucket: ${STORAGE_S3_BUCKET:candidate-files.test.globalrefugee.net}
+  other-files-bucket: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org} 
+
+candidate-file-urls:
+  share-secret-key: ${SHARE_URL_SECRETKEY:}
+  share-expiry-minutes: 60
+  cloudfront-key-pair-id: ${CLOUDFRONT_KEY_PAIR_ID:}
+  cloudfront-private-key-pem-path: ${CLOUDFRONT_PRIVATE_KEY_PEM_PATH:}
+  origin-expiry-minutes: 15
+  origin-base-url: 
+  public-base-url:
+  
 
 aws:
   s3:

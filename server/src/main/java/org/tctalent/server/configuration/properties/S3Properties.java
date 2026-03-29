@@ -13,20 +13,56 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-package org.tctalent.server.storage;
+
+package org.tctalent.server.configuration.properties;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * AWS S3 configuration
+ *
+ * @author John Cameron
+ */
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "storage.s3")
-public class StorageProperties {
+@ConfigurationProperties(prefix = "s3")
+public class S3Properties {
 
     /**
-     * Main S3 bucket for attachment/document storage.
+     * AWS access key
      */
-    private String bucket;
-}
+    private String accessKey;
 
+    /**
+     * AWS secret key
+     */
+    private String secretKey;
+
+    /**
+     * Max file size
+     */
+    private long maxSize;
+
+    /**
+     * Temporary upload folder. eg temp
+     */
+    private String uploadFolder;
+
+    /**
+     * AWS region - eg us-east-1
+     */
+    private String region;
+
+    /**
+     * S3 bucket for candidate files storage.
+     * Example: candidate-files.globalrefugee.net
+     */
+    private String candidateFilesBucket;
+
+    /**
+     * Bucket used for translations and old attachments
+     */
+    private String otherFilesBucket;
+}
