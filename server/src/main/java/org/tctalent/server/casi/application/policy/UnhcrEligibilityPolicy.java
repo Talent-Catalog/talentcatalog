@@ -16,31 +16,32 @@
 
 package org.tctalent.server.casi.application.policy;
 
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
+import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.service.db.CandidateService;
 
 /**
- * Reference implementation of {@link EligibilityPolicy} for the REFERENCE CASI provider.
- * Demonstrates the eligibility infrastructure: a candidate is eligible only when they exist
- * and have a non-inactive {@link org.tctalent.server.model.db.CandidateStatus} (e.g. active,
- * pending, incomplete, unreachable). Candidates who are deleted, employed, withdrawn, etc. are
- * not eligible.
+ * Eligibility policy for UNHCR help site links.
+ * A candidate is eligible only when resources exist for their current country.
  *
  * @author sadatmalik
  */
 @Component
 @RequiredArgsConstructor
-public class ReferenceEligibilityPolicy implements EligibilityPolicy {
+public class UnhcrEligibilityPolicy implements EligibilityPolicy {
 
   private final CandidateService candidateService;
+  private final ServiceResourceRepository resourceRepository;
 
   @Override
   public ServiceProvider provider() {
-    return ServiceProvider.REFERENCE;
+    return ServiceProvider.UNHCR;
   }
 
   @Override
@@ -50,7 +51,15 @@ public class ReferenceEligibilityPolicy implements EligibilityPolicy {
     }
     try {
       Candidate candidate = candidateService.getCandidate(candidateId);
-      return !candidate.getStatus().isInactive();
+      String isoCode = candidate.getCountry() == null ? null : candidate.getCountry().getIsoCode();
+      if (isoCode == null || isoCode.isBlank()) {
+        return false;
+      }
+      return resourceRepository.countAvailableByProviderServiceAndCountry(
+              ServiceProvider.UNHCR,
+              ServiceCode.HELP_SITE_LINK,
+              isoCode.trim().toUpperCase(Locale.ROOT))
+          > 0;
     } catch (NoSuchObjectException e) {
       return false;
     }

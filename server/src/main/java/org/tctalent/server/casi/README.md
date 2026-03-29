@@ -180,10 +180,17 @@ public class UdemyService extends AbstractCandidateAssistanceService {
 }
 ```
 
-#### 6) Create a task policy
+#### 6) Create a task policy (optional)
 
-Create `UdemyTaskPolicy.java` in `application/policy/` that implements `TaskPolicy` and define
-tasks to assign/close for each event.
+**This step is optional.** If your provider has no task lifecycle — for example, a directory or
+link service where no tasks are assigned to candidates on any event — you can skip it entirely.
+The `TaskPolicyRegistry` automatically returns a no-op fallback for unregistered providers.
+
+Only create a `TaskPolicy` `@Component` if your provider needs to trigger or close tasks in
+response to assignment lifecycle events (`assigned`, `redeemed`, `reassigned`, `expired`).
+
+If a task policy is required, create `UdemyTaskPolicy.java` in `application/policy/` that
+implements `TaskPolicy` and define tasks to assign/close for each event.
 
 ```java
 @Component

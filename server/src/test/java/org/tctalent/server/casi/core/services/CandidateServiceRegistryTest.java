@@ -84,6 +84,11 @@ class CandidateServiceRegistryTest {
       }
 
       @Override
+      public ServiceAssignment getCurrentAssignment(Long candidateId) {
+        return null;
+      }
+
+      @Override
       public List<ServiceResource>
           getAvailableResources() {
         return null;

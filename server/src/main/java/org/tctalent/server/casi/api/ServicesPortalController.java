@@ -17,7 +17,6 @@
 package org.tctalent.server.casi.api;
 
 import java.util.Locale;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +32,6 @@ import org.tctalent.server.casi.application.policy.EligibilityPolicyRegistry;
 import org.tctalent.server.casi.core.services.CandidateAssistanceService;
 import org.tctalent.server.casi.core.services.CandidateServiceRegistry;
 import org.tctalent.server.casi.domain.mappers.ServiceAssignmentMapper;
-import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.exception.InvalidSessionException;
@@ -69,15 +67,7 @@ public class ServicesPortalController {
   public ServiceAssignmentDto getCurrentAssignment(@PathVariable String provider,
       @PathVariable String serviceCode) {
     CandidateAssistanceService service = serviceFor(provider, serviceCode);
-    List<ServiceAssignment> assignments = service.getAssignmentsForCandidate(candidateIdFromSession());
-
-    ServiceAssignment assignment = assignments.stream()
-        .filter(a -> a.getResource() != null && a.getResource().getStatus() == ResourceStatus.RESERVED)
-        .findFirst()
-        .orElseGet(() -> assignments.stream()
-            .filter(a -> a.getResource() != null && a.getResource().getStatus() == ResourceStatus.REDEEMED)
-            .findFirst()
-            .orElse(null));
+    ServiceAssignment assignment = service.getCurrentAssignment(candidateIdFromSession());
 
     return ServiceAssignmentMapper.toDto(assignment);
   }
