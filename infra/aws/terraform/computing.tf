@@ -131,14 +131,14 @@ module "alb" {
       port               = 80
       protocol           = "HTTP"
       target_group_index = 0
-      redirect           = null
+      redirect           = {}
     }
     ] : [
     {
       action_type        = "redirect"
       port               = 80
       protocol           = "HTTP"
-      target_group_index = null
+      target_group_index = 0
       redirect = {
         port        = "443"
         protocol    = "HTTPS"
