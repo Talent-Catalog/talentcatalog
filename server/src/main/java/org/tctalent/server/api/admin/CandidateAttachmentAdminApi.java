@@ -19,10 +19,8 @@ package org.tctalent.server.api.admin;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +35,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.UnauthorisedActionException;
-import org.tctalent.server.files.FileAccessUrl;
-import org.tctalent.server.files.FileUrlService;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CvText;
@@ -48,9 +43,6 @@ import org.tctalent.server.request.attachment.ListByUploadTypeRequest;
 import org.tctalent.server.request.attachment.SearchByIdCandidateAttachmentRequest;
 import org.tctalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tctalent.server.request.attachment.UpdateCandidateAttachmentRequest;
-import org.tctalent.server.security.AuthService;
-import org.tctalent.server.security.StoredFileAccessService;
-import org.tctalent.server.security.TcUserDetails;
 import org.tctalent.server.service.db.CandidateAttachmentService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -60,10 +52,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RequiredArgsConstructor
 public class CandidateAttachmentAdminApi {
 
-    private final AuthService authService;
     private final CandidateAttachmentService candidateAttachmentService;
-    private final FileUrlService fileUrlService;
-    private final StoredFileAccessService storedFileAccessService;
 
     /**
      * Get the text of any candidate cvs.
@@ -112,29 +101,6 @@ public class CandidateAttachmentAdminApi {
     public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
         CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request);
         return candidateAttachmentDto().build(candidateAttachment);
-    }
-
-    /**
-     * //TODO JC This is not the public url - we do have a url field in CandidateAttachment - maybe we just use that.
-     * Redirects to the internal URL for viewing the attachment.
-     * @param id Id of attachment to view
-     */
-    @GetMapping("{id}/view")
-    public ResponseEntity<Void> viewAttachment(@PathVariable Long id) throws Exception {
-
-        CandidateAttachment attachment = candidateAttachmentService.getCandidateAttachment(id);
-
-        Optional<TcUserDetails> userDetailsOpt = authService.getLoggedInUserDetails();
-        if (!storedFileAccessService.canAccess(attachment, userDetailsOpt)) {
-            throw new UnauthorisedActionException("view attachment");
-        }
-
-        FileAccessUrl fileAccessUrl = fileUrlService.createAccessUrl(attachment);
-
-        //Redirect to the generated url for it to be viewed.(Typically handled by Cloudfront and S3).
-        return ResponseEntity.status(302)
-            .location(URI.create(fileAccessUrl.getUrl()))
-            .build();
     }
 
     /**

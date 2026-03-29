@@ -19,12 +19,12 @@ import java.time.Instant;
 import lombok.Builder;
 import lombok.Getter;
 /**
- * Url for accessing a stored file.
+ * Final url for accessing a stored file directly from its native storage (e.g. S3).  
  * @author John Cameron
  */
 @Getter
 @Builder
-public class FileAccessUrl {
+public class FinalFileAccessUrl {
 
     /**
      * Final URL to redirect the browser to.

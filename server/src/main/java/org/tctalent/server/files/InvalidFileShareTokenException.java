@@ -15,10 +15,9 @@
  */
 package org.tctalent.server.files;
 
-import org.tctalent.server.exception.ServiceException;
+public class InvalidFileShareTokenException extends RuntimeException {
 
-public class AttachmentNotFoundException extends ServiceException {
-    public AttachmentNotFoundException(Long attachmentId) {
-        super("attach", "Attachment not found: " + attachmentId);
+    public InvalidFileShareTokenException(String message) {
+        super(message);
     }
 }

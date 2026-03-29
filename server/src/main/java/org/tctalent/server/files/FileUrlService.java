@@ -26,10 +26,21 @@ public interface FileUrlService {
      * Example:
      * </p>
      * <ul>
-     *   <li>https://globalrefugee.net/files/55/cv.pdf</li>
+     *   <li>/files/55/cv.pdf</li>
      * </ul>
      */
     String createApplicationUrl(CandidateAttachment attachment);
+
+    /**
+     * Friendly share URL that expires.
+     * <p>
+     * Example:
+     * </p>
+     * <ul>
+     *   <li>/files/55/cv.pdf?e=1774152000&t=...</li>
+     * </ul>
+     */
+    String createExpiringApplicationUrl(CandidateAttachment attachment, Duration duration);
 
     /**
      * Creates the direct CloudFront object URL for an attachment's opaque storage key.
@@ -37,7 +48,7 @@ public interface FileUrlService {
      * Example:
      * </p>
      * <ul>
-     *   <li>https://globalrefugee.net/o/a7/3f/550e8400e29b41d4a716446655440000</li>
+     *   <li>/o/a7/3f/550e8400e29b41d4a716446655440000</li>
      * </ul>
      */
     String createObjectUrl(CandidateAttachment attachment);
@@ -56,5 +67,5 @@ public interface FileUrlService {
      * Protected files return a signed object URL.
      * </p>
      */
-    FileAccessUrl createAccessUrl(CandidateAttachment attachment) throws Exception;
+    FinalFileAccessUrl createAccessUrl(CandidateAttachment attachment) throws Exception;
 }

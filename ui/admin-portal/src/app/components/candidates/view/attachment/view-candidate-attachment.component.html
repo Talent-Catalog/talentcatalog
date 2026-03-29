@@ -68,7 +68,7 @@
          So instead, we download a copy of the file to the browser computer
          and show that-->
         <a *ngIf="attachment.type===AttachmentType.googlefile"
-           (click)="downloadCandidateAttachment(attachment)"
+           (click)="downloadGoogleCandidateAttachment(attachment)"
            target="_blank" class="link-info">
           {{attachment.name}}
         </a>

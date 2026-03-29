@@ -94,6 +94,7 @@ public class S3StorageService implements StorageService {
 
             // 4. Build result
             return StoredFileInfo.builder()
+                .active(true)
                 .storageKey(storageKey)
                 .bucket(properties.getBucket())
                 .fileType(request.getContentType())

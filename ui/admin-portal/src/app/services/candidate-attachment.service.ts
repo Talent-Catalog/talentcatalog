@@ -81,25 +81,28 @@ export class CandidateAttachmentService {
     return this.http.delete<CandidateAttachment>(`${this.apiUrl}/${id}`);
   }
 
-  downloadAttachment(id: number, name: string) {
-    let observable: Observable<void>;
-    if (this.authenticationService.isGrnInstance()) {
-      //For GRN instances, we just want to view the file without downloading it.
-      observable = this.http.get<void>(`${this.apiUrl}/${id}/view`);
-    } else {
-      observable = this.http.get(`${this.apiUrl}/${id}/download`,
-        { responseType: 'blob' }).pipe(
-        map((resp: Blob) => {
-            saveBlob(resp, name);
-          }, catchError(e => {
-              console.log('error', e);
-              return throwError(e);
-            }
-          )
+  /**
+   * Special processing for viewing Google attachments.
+   * <p>
+   * For other attachments we can just use their urls and display them in a window.
+    * We can't do that with Google attachments because of security restrictions with the Google
+   * Shared Drive. To get around that, we actually download a copy of the Google file and return
+   * that copy to the user's browser.
+   * @param id of attachment
+   * @param name of attachment file
+   */
+  downloadGoogleAttachment(id: number, name: string) {
+    return this.http.get(`${this.apiUrl}/${id}/download`,
+      { responseType: 'blob' }).pipe(
+      map((resp: Blob) => {
+          saveBlob(resp, name);
+        }, catchError(e => {
+            console.log('error', e);
+            return throwError(e);
+          }
         )
       )
-    }
-    return observable;
+    )
   }
 
   downloadAttachments(candidate: Candidate, ats: CandidateAttachment[]): Observable<string> {
@@ -108,7 +111,7 @@ export class CandidateAttachmentService {
     const downloads: Observable<any>[] = [];
     ats.forEach(cv => {
       if (cv.type === AttachmentType.googlefile) {
-        downloads.push(this.downloadAttachment(cv.id, cv.name))
+        downloads.push(this.downloadGoogleAttachment(cv.id, cv.name))
       } else {
         const newTab = window.open();
         if (newTab) {

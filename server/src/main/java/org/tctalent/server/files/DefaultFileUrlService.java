@@ -29,9 +29,9 @@ import software.amazon.awssdk.services.cloudfront.url.SignedUrl;
 @RequiredArgsConstructor
 public class DefaultFileUrlService implements FileUrlService {
 
-    private final FileUrlProperties properties;
-
     private final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
+    private final FileShareTokenService fileShareTokenService;
+    private final FileUrlProperties properties;
 
     @Override
     public String createApplicationUrl(CandidateAttachment attachment) {
@@ -40,6 +40,17 @@ public class DefaultFileUrlService implements FileUrlService {
 
         return joinUrl(properties.getPublicBaseUrl(),
             "files/" + attachmentId + "/" + filename);
+    }
+
+    @Override
+    public String createExpiringApplicationUrl(CandidateAttachment attachment, Duration duration) {
+        Long attachmentId = requireAttachmentId(attachment);
+        String filename = sanitizeFilename(requireFilename(attachment));
+        long expiresAt = Instant.now().plus(duration).getEpochSecond();
+        String token = fileShareTokenService.createToken(attachmentId, filename, expiresAt);
+
+        String baseUrl = createApplicationUrl(attachment);
+        return baseUrl + "?e=" + expiresAt + "&t=" + token;
     }
 
     @Override
@@ -66,11 +77,11 @@ public class DefaultFileUrlService implements FileUrlService {
     }
 
     @Override
-    public FileAccessUrl createAccessUrl(CandidateAttachment attachment) throws Exception {
+    public FinalFileAccessUrl createAccessUrl(CandidateAttachment attachment) throws Exception {
         requireStorageKey(attachment);
 
         if (!attachment.getUploadType().isSignedAccess()) {
-            return FileAccessUrl.builder()
+            return FinalFileAccessUrl.builder()
                 .url(createObjectUrl(attachment))
                 .signed(false)
                 .expiresAt(null)
@@ -80,7 +91,7 @@ public class DefaultFileUrlService implements FileUrlService {
         Duration duration = Duration.ofMinutes(properties.getSignedUrlMinutes());
         Instant expiresAt = Instant.now().plus(duration);
 
-        return FileAccessUrl.builder()
+        return FinalFileAccessUrl.builder()
             .url(createSignedObjectUrl(attachment, duration))
             .signed(true)
             .expiresAt(expiresAt)

@@ -24,6 +24,12 @@ package org.tctalent.server.files;
 public interface StoredFile {
 
     /**
+     * Whether the file is considered active.
+     * If inactive it will be ignored.
+     */
+    boolean isActive();
+    
+    /**
      * Opaque internal S3 key.
      */
     String getStorageKey();

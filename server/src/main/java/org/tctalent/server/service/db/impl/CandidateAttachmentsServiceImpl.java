@@ -392,6 +392,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         StoredFileInfo storedFileInfo = storageService.store(req);
         
         //Add in extra info
+        storedFileInfo.setActive(true);
         storedFileInfo.setUploadType(uploadType);
         storedFileInfo.setName(uploadedFileName);
         storedFileInfo.setFileType(file.getContentType());
