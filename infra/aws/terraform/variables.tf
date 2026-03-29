@@ -534,3 +534,15 @@ variable "tc_boot_admin_password" {
   sensitive   = true
   default     = ""
 }
+
+variable "cloudfront_enable" {
+  type        = bool
+  default     = false
+  description = "Enable CloudFront distribution in front of ALB + S3 candidate files bucket"
+}
+
+variable "candidate_files_bucket" {
+  type        = string
+  default     = ""
+  description = "S3 bucket name for candidate file attachments (required when cloudfront_enable=true)"
+}
