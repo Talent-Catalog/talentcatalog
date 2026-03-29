@@ -19,6 +19,7 @@ import {Candidate} from '../../../../../model/candidate';
 import {ServiceProvider} from '../../../../../model/services';
 import {TaskAssignment} from "../../../../../model/task-assignment";
 import {Observable} from "rxjs";
+import {environment} from "../../../../../../environments/environment";
 
 @Component({
     selector: 'app-services',
@@ -46,6 +47,10 @@ export class ServicesComponent {
   onBackButtonClick(): void {
       this.selectedService = null;
       this.refresh.emit();
+  }
+
+  isLocalEnv(): boolean {
+    return environment.environmentName === 'local';
   }
 
 }

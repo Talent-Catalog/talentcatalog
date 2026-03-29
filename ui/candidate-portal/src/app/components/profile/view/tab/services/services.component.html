@@ -29,7 +29,7 @@
                 [activeDuolingoTask]="activeDuolingoTask"
   ></app-duolingo>
 
-  <app-reference *ngIf="(showReference$ | async) && selectedService === Service.REFERENCE"
+  <app-reference *ngIf="isLocalEnv() && (showReference$ | async) && selectedService === Service.REFERENCE"
                  [candidate]="candidate"
                  (backButtonClicked)="onBackButtonClick()"
   ></app-reference>
@@ -84,8 +84,8 @@
       <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
     </div>
 
-    <!-- Reference -->
-    <div *ngIf="showReference$ | async"
+    <!-- Reference service is only available in local environments -->
+    <div *ngIf="isLocalEnv() && (showReference$ | async)"
          class="service-card"
          (click)="selectService(Service.REFERENCE)"
     >
