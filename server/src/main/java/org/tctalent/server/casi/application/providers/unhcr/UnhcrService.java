@@ -51,12 +51,12 @@ public class UnhcrService extends AbstractCandidateAssistanceService {
   }
 
   @Override
-  protected ServiceProvider provider() {
+  public ServiceProvider provider() {
     return ServiceProvider.UNHCR;
   }
 
   @Override
-  protected ServiceCode serviceCode() {
+  public ServiceCode serviceCode() {
     return ServiceCode.HELP_SITE_LINK;
   }
 

@@ -19,6 +19,8 @@ package org.tctalent.server.casi.application.providers.linkedin;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -52,6 +54,8 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     private final CandidateService candidateService;
     private final ServiceListRepository serviceListRepository;
 
+    private static final int ELIGIBILITY_LIST_COUNT = 15;
+
     public LinkedInService(
         ServiceAssignmentRepository aRepo,
         ServiceResourceRepository rRepo,
@@ -71,18 +75,26 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
 
     @Override
     public List<ServiceListSpec> serviceListSpecs() {
-        return List.of(
-            new ServiceListSpec(
-                "LinkedIn Premium - User Issue Reports",
-                ListRole.USER_ISSUE_REPORT,
-                Set.of(ListAction.DISABLE_ASSIGNED_RESOURCE, ListAction.ASSIGN_NEW_RESOURCE)
+        return Stream.concat(
+            Stream.of(
+                new ServiceListSpec(
+                    "#LinkedInIssueReports",
+                    ListRole.USER_ISSUE_REPORT,
+                    Set.of(ListAction.REASSIGN)
+                ),
+                new ServiceListSpec(
+                    "#LinkedInAssignmentFailures",
+                    ListRole.ASSIGNMENT_FAILURE,
+                    Set.of(ListAction.REASSIGN)
+                )
             ),
-            new ServiceListSpec(
-                "LinkedIn Premium - Assignment Failures",
-                ListRole.ASSIGNMENT_FAILURE,
-                Set.of(ListAction.ASSIGN_NEW_RESOURCE)
-            )
-        );
+            IntStream.rangeClosed(1, ELIGIBILITY_LIST_COUNT)
+                .mapToObj(i -> new ServiceListSpec(
+                    "#LinkedInEligible" + i,
+                    ListRole.SERVICE_ELIGIBILITY,
+                    Set.of()
+                ))
+        ).toList();
     }
 
     /**

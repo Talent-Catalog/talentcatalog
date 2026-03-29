@@ -27,13 +27,8 @@ package org.tctalent.server.casi.domain.model;
 public enum ListAction {
 
   /**
-   * Assign a new service resource to the candidate.
+   * Sets the existing {@link ServiceAssignment} {@link AssignmentStatus} to REASSIGNED and its
+   * associated {@link ServiceResource} {@link ResourceStatus} to DISABLED.
    */
-  ASSIGN_NEW_RESOURCE,
-
-  /**
-   * Mark the candidate's currently assigned resource as disabled, so it no longer
-   * affects their experience (e.g. a broken coupon link is hidden).
-   */
-  DISABLE_ASSIGNED_RESOURCE
+  REASSIGN
 }

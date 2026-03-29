@@ -96,9 +96,7 @@ public class ServiceListSetupService {
 
     validateSpecs(service, specs);
 
-    User systemAdmin = userService.findByUsernameAndRole(
-        SystemAdminConfiguration.SYSTEM_ADMIN_NAME,
-        org.tctalent.server.model.db.Role.systemadmin);
+    User systemAdmin = userService.getSystemAdminUser();
 
     for (ServiceListSpec spec : specs) {
       boolean exists = spec.role().isAllowsMultiple()
