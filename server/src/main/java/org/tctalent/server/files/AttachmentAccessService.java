@@ -67,7 +67,7 @@ public class AttachmentAccessService {
 
     private CandidateAttachment loadActiveAttachment(String publicAttachmentId) throws IOException {
         CandidateAttachment attachment = 
-            candidateAttachmentService.getCandidateAttachment(publicAttachmentId);
+            candidateAttachmentService.getCandidateAttachmentByPublicId(publicAttachmentId);
 
         if (!attachment.isActive()) {
             throw new NoSuchObjectException(CandidateAttachment.class, publicAttachmentId);

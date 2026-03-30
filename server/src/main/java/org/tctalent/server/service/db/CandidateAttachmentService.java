@@ -90,6 +90,17 @@ public interface CandidateAttachmentService {
     CandidateAttachment getCandidateAttachment(Long id)
             throws IOException, NoSuchObjectException;
 
+    /**
+     * Retrieves details on the given attachment.
+     * @param publicId Public ID of requested attachment
+     * @return CandidateAttachment containing link to the file in
+     * {@link CandidateAttachment#getUrl()}
+     * @throws NoSuchObjectException if no attachment with that id exists
+     * @throws IOException if there is a problem retrieving the attachment.
+     */
+    CandidateAttachment getCandidateAttachmentByPublicId(String publicId)
+            throws IOException, NoSuchObjectException;
+
     CandidateAttachment updateCandidateAttachment(Long id,
             UpdateCandidateAttachmentRequest request) throws IOException;
 

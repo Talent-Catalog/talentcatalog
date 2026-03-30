@@ -139,10 +139,14 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
 
+        attachment.setActive(true);
         attachment.setCandidate(candidate);
         attachment.setMigrated(false);
         attachment.setAuditFields(user);
         attachment.setUploadType(request.getUploadType());
+        attachment.setName(request.getName());
+        attachment.setCv(UploadType.cv.equals(request.getUploadType()));
+        attachment.setFileType(request.getFileType());
         
         //Add a publicId
         String publicId = publicIDService.generatePublicID();
@@ -156,9 +160,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         switch (attachmentType) {
             case googlefile:
                 attachment.setUrl(request.getUrl());
-                attachment.setName(request.getName());
-                attachment.setFileType(request.getFileType());
-                attachment.setCv(request.getCv());
                 attachment.setTextExtract(request.getTextExtract());
                 break; 
             case grnfile:
@@ -167,7 +168,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 break;
             case link:
                 attachment.setUrl(request.getUrl());
-                attachment.setName(request.getName());
                 break;
             case file:
                 throw new InvalidRequestException("Creation of S3 file is no longer supported. Please upload to Google Drive instead.");
@@ -323,6 +323,15 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
+    public CandidateAttachment getCandidateAttachmentByPublicId(String publicId) {
+    CandidateAttachment candidateAttachment =
+        candidateAttachmentRepository.findByPublicIdLoadCandidate(publicId)
+            .orElseThrow(() ->
+                new NoSuchObjectException(CandidateAttachment.class, publicId));
+        return candidateAttachment;
+    }
+
+    @Override
     public CandidateAttachment updateCandidateAttachment(Long id,
             UpdateCandidateAttachmentRequest request) throws IOException, UnauthorisedActionException {
         User user = authService.getLoggedInUser()
@@ -409,6 +418,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         attachmentRequest.setType(AttachmentType.grnfile);
         attachmentRequest.setCandidateId(candidate.getId());
         attachmentRequest.setName(storedFileInfo.getName());
+        attachmentRequest.setStorageKey(storedFileInfo.getStorageKey());
         attachmentRequest.setUploadType(storedFileInfo.getUploadType());
         //TODO JC CreateCandidateAttachmentRequest and CandidateAttachment have to support StoredFile.
 
