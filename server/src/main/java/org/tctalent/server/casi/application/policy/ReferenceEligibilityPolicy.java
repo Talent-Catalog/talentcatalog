@@ -16,6 +16,7 @@
 
 package org.tctalent.server.casi.application.policy;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -32,13 +33,10 @@ import org.tctalent.server.service.db.CandidateService;
  * @author sadatmalik
  */
 @Component
+@RequiredArgsConstructor
 public class ReferenceEligibilityPolicy implements EligibilityPolicy {
 
   private final CandidateService candidateService;
-
-  public ReferenceEligibilityPolicy(CandidateService candidateService) {
-    this.candidateService = candidateService;
-  }
 
   @Override
   public ServiceProvider provider() {

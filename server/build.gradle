@@ -195,15 +195,38 @@ jib {
         ]
     }
     to {
+        // TBB staging (legacy)
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
-        } else if (project.hasProperty("prod-tc-system")) {
-            image = "968457613372.dkr.ecr.us-east-1.amazonaws.com/talent-catalog"
-        } else if (project.hasProperty("opc-staging")) {
-            image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-staging"
-        } else if (project.hasProperty("opc-prod")) {
-            image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-prod"
         }
+
+        // TBB production (legacy)
+        else if (project.hasProperty("tbb-prod") || project.hasProperty("prod-tc-system")) {
+            image = "968457613372.dkr.ecr.us-east-1.amazonaws.com/talent-catalog"
+        }
+
+        // OPC staging (TC)
+        else if (project.hasProperty("opc-staging")) {
+            image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-staging"
+        }
+
+        // OPC production (TC)
+        else if (project.hasProperty("opc-prod")) {
+            image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-prod"
+        } else if (project.hasProperty("grn-staging")) {
+            image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-staging"
+        }
+
+        // GRN staging
+        else if (project.hasProperty("grn-staging")) {
+            image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-staging"
+        }
+
+        // GRN production
+        else if (project.hasProperty("grn-prod")) {
+            image = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-prod"
+        }
+
         credHelper = 'ecr-login'
     }
 }

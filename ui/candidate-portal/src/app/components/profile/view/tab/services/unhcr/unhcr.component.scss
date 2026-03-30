@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2026 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+@import "bootstrap/scss/bootstrap.scss";
+
+.service-title {
+  padding: 2rem;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  background-color: #0d6f53;
+  color: white;
+}
+
+.service-content {
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flag-icon {
+  font-size: 4rem;
+  line-height: 1;
+
+  @include media-breakpoint-down(sm) {
+    //font-size: 2.5rem;
+    font-size: 3.2rem;
+  }
+}
+
+a {
+  font-weight: bold;
+  word-break: break-word;
+}

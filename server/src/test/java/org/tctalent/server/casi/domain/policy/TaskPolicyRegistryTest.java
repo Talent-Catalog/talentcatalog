@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.tctalent.server.casi.application.policy.DuolingoTaskPolicy;
 import org.tctalent.server.casi.application.policy.TaskPolicyRegistry;
+import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.service.db.CandidateService;
 
@@ -46,6 +47,12 @@ class TaskPolicyRegistryTest {
     CandidateService candidateService() {
       return Mockito.mock(CandidateService.class);
     }
+
+    /** Satisfies UnhcrEligibilityPolicy dependency when policy package is component-scanned. */
+    @Bean
+    ServiceResourceRepository serviceResourceRepository() {
+      return Mockito.mock(ServiceResourceRepository.class);
+    }
   }
 
   @Autowired
@@ -54,5 +61,15 @@ class TaskPolicyRegistryTest {
   @Test
   void loadsDuolingo() {
     assertNotNull(registry.forProvider(ServiceProvider.DUOLINGO));
+  }
+
+  @Test
+  void returnsNoOpForUnregisteredProvider() {
+    var policy = registry.forProvider(ServiceProvider.UNHCR);
+    assertNotNull(policy);
+    assertTrue(policy.tasksOnAssigned(null).isEmpty());
+    assertTrue(policy.tasksOnRedeemed(null).isEmpty());
+    assertTrue(policy.tasksOnReassigned(null).isEmpty());
+    assertTrue(policy.tasksOnExpired(null).isEmpty());
   }
 }
