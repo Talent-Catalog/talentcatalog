@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.casi.api.request.IssueReportRequest;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
@@ -105,14 +106,14 @@ public class LinkedinPortalApi {
 
   /**
    * Adds the candidate associated with the given {@link ServiceAssignment} to the
-   * #LinkedInIssueReport List, along with a note containing the coupon code, assignment status, and
-   * assignment date.
+   * #LinkedInIssueReport List, along with a note containing the coupon code, assignment status,
+   * assignment date and the candidate's description of the issue.
    *
-   * @param assignment the {@link ServiceAssignment} containing candidate and coupon details
+   * @param request contains the {@link ServiceAssignment} and the candidate's issue comment
    */
   @PostMapping("issue-report")
-  public void addCandidateToIssueReportList(@RequestBody ServiceAssignment assignment){
-    linkedinService.addCandidateToIssueReportList(assignment);
+  public void addCandidateToIssueReportList(@RequestBody IssueReportRequest request) {
+    linkedinService.addCandidateToIssueReportList(request.getAssignment(), request.getIssueComment());
   }
 
   /**
