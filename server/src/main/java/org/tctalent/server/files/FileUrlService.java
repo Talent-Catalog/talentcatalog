@@ -26,7 +26,7 @@ public interface FileUrlService {
      * Example:
      * </p>
      * <ul>
-     *   <li>/files/55/cv.pdf</li>
+     *   <li>/files/[publicId]/cv.pdf</li>
      * </ul>
      */
     String createApplicationUrl(CandidateAttachment attachment);
@@ -37,7 +37,7 @@ public interface FileUrlService {
      * Example:
      * </p>
      * <ul>
-     *   <li>/files/55/cv.pdf?e=1774152000&t=...</li>
+     *   <li>/files/[publicId]/cv.pdf?e=1774152000&t=...</li>
      * </ul>
      */
     String createExpiringApplicationUrl(CandidateAttachment attachment, Duration duration);

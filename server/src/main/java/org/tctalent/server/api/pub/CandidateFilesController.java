@@ -35,29 +35,29 @@ public class CandidateFilesController {
 
     private final AttachmentAccessService attachmentAccessService;
 
-    @GetMapping("/{attachmentId}/{filename:.+}")
+    @GetMapping("/{publicAttachmentId}/{filename:.+}")
     public ResponseEntity<Void> getFile(
-        @PathVariable long attachmentId,
+        @PathVariable String publicAttachmentId,
         @PathVariable String filename,
         @RequestParam(required = false) Long e,
         @RequestParam(required = false) String t) throws Exception {
 
         FinalFileAccessUrl accessUrl = attachmentAccessService.resolveAccessUrl(
-            attachmentId, filename, e, t);
+            publicAttachmentId, filename, e, t);
 
         return ResponseEntity.status(HttpStatus.FOUND)
             .location(URI.create(accessUrl.getUrl()))
             .build();
     }
 
-    @GetMapping("/{attachmentId}")
+    @GetMapping("/{publicAttachmentId}")
     public ResponseEntity<Void> getFileWithoutFilename(
-        @PathVariable long attachmentId,
+        @PathVariable String publicAttachmentId,
         @RequestParam(required = false) Long e,
         @RequestParam(required = false) String t) throws Exception {
 
         FinalFileAccessUrl accessUrl = attachmentAccessService.resolveAccessUrl(
-            attachmentId, null, e, t);
+            publicAttachmentId, null, e, t);
 
         return ResponseEntity.status(HttpStatus.FOUND)
             .location(URI.create(accessUrl.getUrl()))

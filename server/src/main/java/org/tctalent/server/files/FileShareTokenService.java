@@ -31,24 +31,24 @@ public class FileShareTokenService {
     private static final String HMAC_ALGORITHM = "HmacSHA256";
     private final CandidateFileUrlsProperties properties;
 
-    public String createToken(long attachmentId, String filename, long expiresAtEpochSeconds) {
-        String payload = buildPayload(attachmentId, filename, expiresAtEpochSeconds);
+    public String createToken(String publicId, String filename, long expiresAtEpochSeconds) {
+        String payload = buildPayload(publicId, filename, expiresAtEpochSeconds);
         return hmacBase64Url(payload);
     }
 
-    public void validateToken(long attachmentId, String filename, long expiresAtEpochSeconds, String token) {
+    public void validateToken(String publicId, String filename, long expiresAtEpochSeconds, String token) {
         if (Instant.now().getEpochSecond() > expiresAtEpochSeconds) {
             throw new InvalidFileShareTokenException("File share link has expired");
         }
 
-        String expected = createToken(attachmentId, filename, expiresAtEpochSeconds);
+        String expected = createToken(publicId, filename, expiresAtEpochSeconds);
         if (!constantTimeEquals(expected, token)) {
             throw new InvalidFileShareTokenException("Invalid file share token");
         }
     }
 
-    private String buildPayload(long attachmentId, String filename, long expiresAtEpochSeconds) {
-        return attachmentId + "|" + filename + "|" + expiresAtEpochSeconds;
+    private String buildPayload(String publicId, String filename, long expiresAtEpochSeconds) {
+        return publicId + "|" + filename + "|" + expiresAtEpochSeconds;
     }
 
     private String hmacBase64Url(String payload) {

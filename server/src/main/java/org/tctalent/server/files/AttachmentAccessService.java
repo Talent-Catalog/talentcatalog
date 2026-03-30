@@ -34,12 +34,12 @@ public class AttachmentAccessService {
 
     @Transactional(readOnly = true)
     public FinalFileAccessUrl resolveAccessUrl(
-        long attachmentId,
+        String publicAttachmentId,
         String requestedFilename,
         Long expiresAtEpochSeconds,
         String token) throws Exception {
 
-        CandidateAttachment attachment = loadActiveAttachment(attachmentId);
+        CandidateAttachment attachment = loadActiveAttachment(publicAttachmentId);
 
         validateRequestedFilenameIfPresent(attachment, requestedFilename);
 
@@ -51,7 +51,7 @@ public class AttachmentAccessService {
         // 2. Share link: no login required, but valid token required
         if (expiresAtEpochSeconds != null && token != null) {
             fileShareTokenService.validateToken(
-                attachmentId,
+                publicAttachmentId,
                 attachment.getName(),
                 expiresAtEpochSeconds,
                 token);
@@ -65,12 +65,12 @@ public class AttachmentAccessService {
         return fileUrlService.createAccessUrl(attachment);
     }
 
-    private CandidateAttachment loadActiveAttachment(long attachmentId) throws IOException {
+    private CandidateAttachment loadActiveAttachment(String publicAttachmentId) throws IOException {
         CandidateAttachment attachment = 
-            candidateAttachmentService.getCandidateAttachment(attachmentId);
+            candidateAttachmentService.getCandidateAttachment(publicAttachmentId);
 
         if (!attachment.isActive()) {
-            throw new NoSuchObjectException(CandidateAttachment.class, attachmentId);
+            throw new NoSuchObjectException(CandidateAttachment.class, publicAttachmentId);
         }
 
         return attachment;

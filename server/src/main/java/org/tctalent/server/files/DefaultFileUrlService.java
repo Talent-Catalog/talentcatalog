@@ -36,19 +36,19 @@ public class DefaultFileUrlService implements FileUrlService {
 
     @Override
     public String createApplicationUrl(CandidateAttachment attachment) {
-        Long attachmentId = requireAttachmentId(attachment);
+        String publicId = requirePublicId(attachment);
         String filename = sanitizeFilename(requireFilename(attachment));
 
         return joinUrl(properties.getPublicBaseUrl(),
-            "files/" + attachmentId + "/" + filename);
+            "files/" + publicId + "/" + filename);
     }
 
     @Override
     public String createExpiringApplicationUrl(CandidateAttachment attachment, Duration duration) {
-        Long attachmentId = requireAttachmentId(attachment);
+        String publicId = requirePublicId(attachment);
         String filename = sanitizeFilename(requireFilename(attachment));
         long expiresAt = Instant.now().plus(duration).getEpochSecond();
-        String token = fileShareTokenService.createToken(attachmentId, filename, expiresAt);
+        String token = fileShareTokenService.createToken(publicId, filename, expiresAt);
 
         String baseUrl = createApplicationUrl(attachment);
         return baseUrl + "?e=" + expiresAt + "&t=" + token;
@@ -99,11 +99,11 @@ public class DefaultFileUrlService implements FileUrlService {
             .build();
     }
 
-    private Long requireAttachmentId(CandidateAttachment attachment) {
-        if (attachment.getId() == null) {
-            throw new IllegalStateException("Attachment has no id");
+    private String requirePublicId(CandidateAttachment attachment) {
+        if (attachment.getPublicId() == null) {
+            throw new IllegalStateException("Attachment has no public id");
         }
-        return attachment.getId();
+        return attachment.getPublicId();
     }
 
     private String requireFilename(CandidateAttachment attachment) {
