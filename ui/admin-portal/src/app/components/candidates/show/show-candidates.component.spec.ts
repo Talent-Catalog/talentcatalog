@@ -349,6 +349,9 @@ describe('ShowCandidatesComponent', () => {
       listRole: 'USER_ISSUE_REPORT',
       permittedActions: [ListAction.REASSIGN]
     };
+    mockCandidateSourceCandidateService.searchPaged.and.returnValue(
+      of({content: [], totalElements: 0, number: 0, size: 10})
+    );
     mockCasiAdminService.getServiceList.and.returnValue(of(mockServiceList));
 
     component.ngOnChanges({
@@ -366,6 +369,9 @@ describe('ShowCandidatesComponent', () => {
   }));
 
   it('should set serviceList to null when service list fetch fails', fakeAsync(() => {
+    mockCandidateSourceCandidateService.searchPaged.and.returnValue(
+      of({content: [], totalElements: 0, number: 0, size: 10})
+    );
     mockCasiAdminService.getServiceList.and.returnValue(throwError('Not found'));
 
     component.ngOnChanges({
