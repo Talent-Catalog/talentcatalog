@@ -34,10 +34,3 @@ create table if not exists service_list_permitted_actions (
     action          varchar(255) not null,
     primary key (service_list_id, action)
 );
-
--- Users designated as admins for a service list
-create table if not exists service_list_admins (
-    service_list_id bigint not null references service_list (id) on delete cascade,
-    user_id         bigint not null references users (id) on delete cascade,
-    primary key (service_list_id, user_id)
-);

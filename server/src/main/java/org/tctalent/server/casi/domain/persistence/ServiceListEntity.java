@@ -24,8 +24,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -40,7 +38,6 @@ import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.model.db.AbstractDomainObject;
 import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.User;
 
 /**
  * Links a {@link SavedList} to a candidate assistance service, declaring its role within that
@@ -80,14 +77,6 @@ public class ServiceListEntity extends AbstractDomainObject<Long> {
   @Column(name = "action")
   @Enumerated(EnumType.STRING)
   private Set<ListAction> permittedActions = new HashSet<>();
-
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "service_list_admins",
-      joinColumns = @JoinColumn(name = "service_list_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id")
-  )
-  private Set<User> listAdmins = new HashSet<>();
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt = Instant.now();
