@@ -14,7 +14,7 @@ tc:
   flyway:
     repair: false  #  Set this to true if you need to repair the Flyway history.
 
-  instance-type: ${TC_INSTANCE_TYPE:TBB}
+  instance-type: ${TC_INSTANCE_TYPE:GRN}
 
   partner-dbcopy-config: ${TC_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
 
@@ -237,7 +237,7 @@ s3:
   secret-key: ${AWS_CREDENTIALS_SECRETKEY:}
   max-size: 52428800
   upload-folder: temp
-  candidate-files-bucket: ${STORAGE_S3_BUCKET:candidate-files.test.globalrefugee.net}
+  candidate-files-bucket: ${STORAGE_S3_BUCKET:dev.files.tbbtalent.org}
   other-files-bucket: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org} 
 
 candidate-file-urls:

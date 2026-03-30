@@ -28,11 +28,6 @@ public interface StoredFile {
      * If inactive it will be ignored.
      */
     boolean isActive();
-    
-    /**
-     * Opaque internal S3 key.
-     */
-    String getStorageKey();
 
     /**
      * Bucket name.
@@ -40,9 +35,9 @@ public interface StoredFile {
     String getBucket();
 
     /**
-     * Name of file.
+     * Size in bytes.
      */
-    String getName();
+    Long getContentLength();
 
     /**
      * MIME type. aka Content-Type. For example: "application/pdf"
@@ -50,14 +45,19 @@ public interface StoredFile {
     String getFileType();
 
     /**
-     * Size in bytes.
+     * Name of file.
      */
-    Long getContentLength();
+    String getName();
 
     /**
      * SHA-256 checksum.
      */
     String getSha256Hex();
+
+    /**
+     * Opaque internal S3 key.
+     */
+    String getStorageKey();
 
     /**
      * Type of document.

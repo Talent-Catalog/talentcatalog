@@ -96,7 +96,6 @@ public class S3StorageService implements StorageService {
                 put.build(),
                 RequestBody.fromFile(tempFile)
             );
-            //TODO JC Check response for errors
 
             // 4. Build result
             return StoredFileInfo.builder()
@@ -109,7 +108,7 @@ public class S3StorageService implements StorageService {
                 .build();
 
         } catch (Exception e) {
-            throw new StorageException("Failed to upload to S3", e);
+            throw new StorageException("Failed to upload to S3: " + e, e);
         } finally {
             if (tempFile != null && tempFile.exists()) {
                 try {

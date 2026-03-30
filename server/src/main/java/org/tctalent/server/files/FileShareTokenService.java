@@ -21,17 +21,15 @@ import java.util.Base64;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.configuration.properties.CandidateFileUrlsProperties;
 
 @Service
 @RequiredArgsConstructor
 public class FileShareTokenService {
 
     private static final String HMAC_ALGORITHM = "HmacSHA256";
-
-    @Value("${app.files.share-secret}")
-    private String shareSecret;
+    private final CandidateFileUrlsProperties properties;
 
     public String createToken(long attachmentId, String filename, long expiresAtEpochSeconds) {
         String payload = buildPayload(attachmentId, filename, expiresAtEpochSeconds);
@@ -56,6 +54,7 @@ public class FileShareTokenService {
     private String hmacBase64Url(String payload) {
         try {
             Mac mac = Mac.getInstance(HMAC_ALGORITHM);
+            String shareSecret = properties.getShareSecretKey();
             mac.init(new SecretKeySpec(shareSecret.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITHM));
             byte[] digest = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
             return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);

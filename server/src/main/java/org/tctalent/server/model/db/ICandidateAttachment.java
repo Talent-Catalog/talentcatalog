@@ -19,10 +19,19 @@ package org.tctalent.server.model.db;
 import org.tctalent.server.files.StoredFile;
 
 /**
- * TODO JC Doc
+ * Adds additional Candidate Attachment fields over StoredFile.
  *
  * @author John Cameron
  */
 public interface ICandidateAttachment extends StoredFile {
+
+    /**
+     * Candidate associated with attachment.
+     */
     Candidate getCandidate();
+    
+    /**
+     * Public ID of the attachment.
+     */
+    String getPublicId();
 }

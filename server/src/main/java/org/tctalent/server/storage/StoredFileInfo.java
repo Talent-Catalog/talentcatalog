@@ -26,11 +26,11 @@ import org.tctalent.server.files.UploadType;
 @Builder
 public class StoredFileInfo implements StoredFile {
     private boolean active;
-    private String storageKey;
     private String bucket;
-    private String name;
-    private String fileType;
     private Long contentLength;
+    private String fileType;
+    private String name;
     private String sha256Hex;
-    UploadType uploadType;
+    private String storageKey;
+    private UploadType uploadType;
 }

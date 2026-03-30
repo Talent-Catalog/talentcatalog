@@ -68,7 +68,12 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
     private String fileType;
 
     private boolean migrated;
-
+    
+    /**
+     * See ICandidateAttachment Javadoc
+     */
+    private String publicId;
+    
     /**
      * See IStoredFile Javadoc
      * Only populated for {@link AttachmentType#grnfile} attachments. They are stored on S3
@@ -91,7 +96,6 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
     @Enumerated(EnumType.STRING)
     private UploadType uploadType;
 
-    //TODO JC Default true
     /**
      * See IStoredFile Javadoc
      */
@@ -110,6 +114,7 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
     /**
      * See IStoredFile Javadoc
      */
+    @Column(name = "sha256_hex")
     private String sha256Hex;
 
     public CandidateAttachment() {
