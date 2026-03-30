@@ -25,7 +25,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.files.UploadType;
@@ -71,11 +70,10 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
     private boolean migrated;
 
     /**
+     * See IStoredFile Javadoc
      * Only populated for {@link AttachmentType#grnfile} attachments. They are stored on S3
      * using obfuscated storage keys. 
      */
-    //TODO JC This needs to map to database - make transient now so that it compiles
-    @Transient
     private String storageKey;
 
     /**
@@ -92,6 +90,27 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
      */
     @Enumerated(EnumType.STRING)
     private UploadType uploadType;
+
+    //TODO JC Default true
+    /**
+     * See IStoredFile Javadoc
+     */
+    private boolean active;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String bucket;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    private Long contentLength;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String sha256Hex;
 
     public CandidateAttachment() {
     }
