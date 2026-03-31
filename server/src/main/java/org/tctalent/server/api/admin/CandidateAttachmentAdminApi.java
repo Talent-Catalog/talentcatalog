@@ -169,7 +169,6 @@ public class CandidateAttachmentAdminApi {
     /**
      * Deletes the attachment with the given id.
      * @param id Id of attachment to be deleted.
-     * @return ???
      */
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteCandidateAttachment(@PathVariable("id") Long id) {
