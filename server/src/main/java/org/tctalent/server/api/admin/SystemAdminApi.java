@@ -85,7 +85,6 @@ import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
-import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -140,7 +139,6 @@ public class SystemAdminApi {
 
     private final DataSharingService dataSharingService;
 
-    private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
@@ -210,7 +208,6 @@ public class SystemAdminApi {
     public SystemAdminApi(
         DataSharingService dataSharingService,
         AuthService authService,
-        CandidateAttachmentRepository candidateAttachmentRepository,
         PartnerRepository partnerRepository,
         CandidateBatchJobFactory candidateBatchJobFactory,
         CandidateNoteRepository candidateNoteRepository,
@@ -248,7 +245,6 @@ public class SystemAdminApi {
     ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
-        this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
