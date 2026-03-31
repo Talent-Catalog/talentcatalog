@@ -331,7 +331,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   private selectDefaultTab() {
     this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
-  
+
   onTabChanged(activeTabId: string) {
     if (this.activeTabId === activeTabId) {
       return;
@@ -349,8 +349,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     }
   }
 
-  onTabLoadingChange(loading: boolean) {
-    this.tabLoading = loading;
+  onTabLoadingChange(event: { loading: boolean; tabId: string }) {
+    if (event.tabId === this.activeTabId) {
+      this.tabLoading = event.loading;
+    }
   }
 
   publicCvUrl() {
