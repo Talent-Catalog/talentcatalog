@@ -14,14 +14,14 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div>{{error}}</div>
+</tc-alert>
 
 <form [formGroup]="postForm">
 
   <!-- POST -->
-  <div class="mb-3">
+  <div class="my-3">
     <quill-editor id="content"
                   placeholder="Write your message..."
                   [formControlName]="'content'"
@@ -36,22 +36,22 @@
         <button class="ql-italic" title="Italic text"></button>
         <button class="ql-underline" title="Underline text"></button>
 
-        <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
-          <i *ngIf="!saving" class="fas fa-file-upload"></i>
-          <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
-        </button>
-
         <button [ngClass]="!this.linkBtnSelected ? 'custom-quill-btn' : 'custom-quill-btn-selected'"
                 title="{{ 'CHAT.ADD-LINK' | translate }}"
                 (click)="onLinkBtnClickOrKeyShortcut()">
           <i class="fas fa-link"></i>
         </button>
 
+        <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
+          <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
+          <i *ngIf="!saving" class="fa-solid fa-file-upload small"></i>
+        </button>
+
         <button
           id="emojiBtn"
           [ngClass]="!this.emojiPickerVisible ? 'custom-quill-btn' : 'custom-quill-btn-selected'"
           (click)="toggleEmojiPicker()">
-          <i class="far fa-face-smile"></i>
+          <i class="fa-regular fa-face-smile"></i>
         </button>
 
         <app-link-tooltip *ngIf="this.linkTooltipVisible"
@@ -65,11 +65,11 @@
     </quill-editor>
   </div>
 
-  <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="onSend()"
-            [disabled]="postForm.invalid">
-      {{'CHAT.POST-SEND' | translate}} <i class="fa-solid fa-paper-plane"></i>
-    </button>
+  <div class="d-flex justify-content-end">
+    <tc-button type="solid" (onClick)="onSend()"
+               [disabled]="postForm.invalid">
+      {{ 'CHAT.POST-SEND' | translate }} <i class="fa-solid fa-paper-plane"></i>
+    </tc-button>
   </div>
 
   <div>

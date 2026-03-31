@@ -15,7 +15,7 @@
   -->
 
 <!-- Floating Chatbot Icon -->
-<div class="chatbot-icon" 
+<div class="chatbot-icon"
      [class.open]="isOpen"
      (click)="toggleChatbot()"
      [attr.aria-label]="isOpen ? 'Close chatbot' : 'Open chatbot'"
@@ -27,7 +27,7 @@
 </div>
 
 <!-- Chatbot Panel -->
-<div class="chatbot-panel" 
+<div class="chatbot-panel"
      [class.open]="isOpen"
      role="dialog"
      aria-labelledby="chatbot-title"
@@ -44,21 +44,21 @@
       <i class="fas fa-message chatbot-title-icon"></i>
       Talent Catalog Assistant
     </h3>
-    <button class="chatbot-close-btn" 
-            (click)="closeChatbot()"
+    <tc-button class="chatbot-close-btn"
+            (onClick)="closeChatbot()"
             aria-label="Close chatbot"
-            type="button">
-      <i class="fas fa-times"></i>
-    </button>
+            type="plain">
+      <tc-icon color="white"><i class="fas fa-times"></i></tc-icon>
+    </tc-button>
   </div>
 
   <!-- Messages Container -->
-  <div class="chatbot-messages" 
+  <div class="chatbot-messages"
        #messageContainer
        role="log"
        aria-live="polite"
        aria-label="Chat messages">
-    <div *ngFor="let message of messages" 
+    <div *ngFor="let message of messages"
          class="message"
          [class.user-message]="message.sender === 'USER'"
          [class.bot-message]="message.sender === 'BOT'">
@@ -94,7 +94,7 @@
 </div>
 
 <!-- Mobile Backdrop -->
-<div class="chatbot-backdrop" 
+<div class="chatbot-backdrop"
      *ngIf="isOpen"
      (click)="closeChatbot()"
      [class.show]="isOpen">

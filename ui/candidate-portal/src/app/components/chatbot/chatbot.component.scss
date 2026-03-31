@@ -262,8 +262,8 @@
   @include background-color('primary');
   border: none;
   color: white;
-  width: 40px;
-  height: 40px;
+  height: 44px;
+  width: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -271,6 +271,10 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 16px;
+
+  i {
+    margin-left: -4px;
+  }
 
   &:hover:not(:disabled) {
     transform: scale(1.05);
