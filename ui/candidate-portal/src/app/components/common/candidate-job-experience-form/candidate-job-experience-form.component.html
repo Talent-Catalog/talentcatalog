@@ -126,14 +126,14 @@
       <tc-label>{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }} <sup>*</sup></tc-label>
 
       <div class="mt-2">
-        <tc-radio type="radio" id="fullTime" [value]="true" [formControlName]="'fullTime'"></tc-radio>
+        <tc-radio type="radio" id="fullTime" name="contractType" [value]="true" [formControlName]="'fullTime'"></tc-radio>
         <tc-label for="fullTime">
           {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.FULLTIME' | translate }}
         </tc-label>
       </div>
 
       <div>
-        <tc-radio type="radio" id="partTime" [value]="false" [formControlName]="'fullTime'"></tc-radio>
+        <tc-radio type="radio" id="partTime" name="contractType" [value]="false" [formControlName]="'fullTime'"></tc-radio>
         <tc-label for="partTime">
           {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.PARTTIME' | translate }}
         </tc-label>
@@ -149,14 +149,14 @@
       <tc-label>{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }} <sup>*</sup></tc-label>
 
       <div class="mt-2">
-        <tc-radio type="radio" id="paid" [value]="true" [formControlName]="'paid'"></tc-radio>
+        <tc-radio type="radio" id="paid" name="employmentType" [value]="true" [formControlName]="'paid'"></tc-radio>
         <tc-label  for="paid">
           {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.PAID' | translate }}
         </tc-label>
       </div>
 
       <div>
-        <tc-radio type="radio" id="voluntary" [value]="false" [formControlName]="'paid'"></tc-radio>
+        <tc-radio type="radio" id="voluntary" name="employmentType" [value]="false" [formControlName]="'paid'"></tc-radio>
         <tc-label for="voluntary">
           {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.VOLUNTARY' | translate }}
         </tc-label>
