@@ -43,6 +43,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.mapper.StoredFileMapper;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -75,6 +76,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final FileSystemService fileSystemService;
     private final FileUrlService fileUrlService;
     private final PublicIDService publicIDService;
+    private final StoredFileMapper storedFileMapper;
     private final StorageService storageService;
     private final TcInstanceService tcInstanceService;
 
@@ -138,15 +140,14 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
+        storedFileMapper.updateCandidateAttachment(attachment, request);
 
+        //Add extras
         attachment.setActive(true);
         attachment.setCandidate(candidate);
         attachment.setMigrated(false);
         attachment.setAuditFields(user);
-        attachment.setUploadType(request.getUploadType());
-        attachment.setName(request.getName());
         attachment.setCv(UploadType.cv.equals(request.getUploadType()));
-        attachment.setFileType(request.getFileType());
         
         //Add a publicId
         String publicId = publicIDService.generatePublicID();
@@ -417,10 +418,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
         attachmentRequest.setType(AttachmentType.grnfile);
         attachmentRequest.setCandidateId(candidate.getId());
-        attachmentRequest.setName(storedFileInfo.getName());
-        attachmentRequest.setStorageKey(storedFileInfo.getStorageKey());
-        attachmentRequest.setUploadType(storedFileInfo.getUploadType());
-        //TODO JC CreateCandidateAttachmentRequest and CandidateAttachment have to support StoredFile.
+        storedFileMapper.updateCreateCandidateAttachmentRequest(attachmentRequest, storedFileInfo);
 
         return attachmentRequest;
     }

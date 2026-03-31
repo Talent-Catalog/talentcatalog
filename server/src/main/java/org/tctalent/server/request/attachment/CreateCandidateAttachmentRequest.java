@@ -20,12 +20,13 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.files.StoredFile;
 import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
 
 @Getter
 @Setter
-public class CreateCandidateAttachmentRequest {
+public class CreateCandidateAttachmentRequest implements StoredFile {
 
     private Long candidateId;
 
@@ -58,7 +59,29 @@ public class CreateCandidateAttachmentRequest {
      */
     private String textExtract;
 
+    /**
+     * See IStoredFile Javadoc
+     */
+    private boolean active;
 
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String bucket;
 
+    /**
+     * See IStoredFile Javadoc
+     */
+    private Long contentLength;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String sha256Hex;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String storageKey;
 }
 
