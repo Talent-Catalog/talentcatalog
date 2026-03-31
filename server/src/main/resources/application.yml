@@ -244,7 +244,7 @@ candidate-file-urls:
   cloudfront-key-pair-id: ${CLOUDFRONT_KEY_PAIR_ID:}
   cloudfront-private-key-pem-path: ${CLOUDFRONT_PRIVATE_KEY_PEM_PATH:}
   origin-expiry-minutes: 15
-  origin-base-url: https://globalrefugee.net 
+  origin-base-url: https://test.globalrefugee.net 
   public-base-url: http://localhost:8080
   
 
