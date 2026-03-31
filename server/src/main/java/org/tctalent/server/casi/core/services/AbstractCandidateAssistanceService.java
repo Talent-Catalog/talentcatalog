@@ -183,6 +183,20 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         .toList();
   }
 
+  // Get the current active assignment for a candidate, if any
+  @Override
+  @Transactional(readOnly = true)
+  public ServiceAssignment getCurrentAssignment(Long candidateId) {
+    List<ServiceAssignment> assignments = getAssignmentsForCandidate(candidateId);
+    return assignments.stream()
+        .filter(a -> a.getResource() != null && a.getResource().getStatus() == ResourceStatus.RESERVED)
+        .findFirst()
+        .orElseGet(() -> assignments.stream()
+            .filter(a -> a.getResource() != null && a.getResource().getStatus() == ResourceStatus.REDEEMED)
+            .findFirst()
+            .orElse(null));
+  }
+
   // Resources
   @Override
   @Transactional(readOnly = true)

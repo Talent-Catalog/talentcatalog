@@ -16,15 +16,17 @@
 
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { AppComponent } from './app.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { ChatService } from '../services/chat.service';
 import { LanguageService } from '../services/language.service';
 import { LanguageLoader } from '../services/language.loader';
-import { BrandingService, BrandingInfo } from '../services/branding.service';
+import { BrandingService } from '../services/branding.service';
 import { User } from '../model/user';
+import { TcInstanceType } from '../model/tc-instance-type';
+import { environment } from '../../environments/environment';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -40,6 +42,7 @@ describe('AppComponent', () => {
   let languageLoadingSubject: BehaviorSubject<boolean>;
   let languageChangedSubject: BehaviorSubject<void>;
   let queryParamMapSubject: BehaviorSubject<any>;
+  let originalEnvironmentName: string;
 
   beforeEach(waitForAsync(() => {
     // Initialize subjects
@@ -51,10 +54,10 @@ describe('AppComponent', () => {
     });
 
     // Create spies
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['isAuthenticated']);
+    const authSpy = jasmine.createSpyObj('AuthenticationService', ['isAuthenticated', 'getTcInstanceType']);
     authSpy.loggedInUser$ = loggedInUserSubject.asObservable();
 
-    const brandingSpy = jasmine.createSpyObj('BrandingService', ['setPartnerAbbreviation', 'getBrandingInfoFromApi']);
+    const brandingSpy = jasmine.createSpyObj('BrandingService', ['setPartnerAbbreviation']);
     const chatSpy = jasmine.createSpyObj('ChatService', ['cleanUp']);
     const languageSpy = jasmine.createSpyObj('LanguageService', ['getSelectedLanguage', 'isSelectedLanguageRtl']);
     const languageLoadSpy = jasmine.createSpyObj('LanguageLoader', ['load']);
@@ -96,69 +99,69 @@ describe('AppComponent', () => {
   }));
 
   beforeEach(() => {
+    originalEnvironmentName = environment.environmentName;
     // Set default return values
     languageServiceSpy.getSelectedLanguage.and.returnValue('en');
     languageServiceSpy.isSelectedLanguageRtl.and.returnValue(false);
-    brandingServiceSpy.getBrandingInfoFromApi.and.returnValue(of({
-      logo: 'logo.png',
-      partnerName: 'Test Partner',
-      websiteUrl: 'https://test.com'
-    }));
+    authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.TBB);
 
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    environment.environmentName = originalEnvironmentName;
   });
 
   it('should create the app', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Branding Tests', () => {
-    it('should set isTBBPartner to true when partner is Talent Beyond Boundaries', fakeAsync(() => {
-      const tbbBrandingInfo: BrandingInfo = {
-        logo: 'tbb-logo.png',
-        partnerName: 'Talent Beyond Boundaries',
-        websiteUrl: 'https://talentbeyondboundaries.org'
-      };
-
-      brandingServiceSpy.getBrandingInfoFromApi.and.returnValue(of(tbbBrandingInfo));
-
+  describe('Chatbot Visibility Gate', () => {
+    it('should show chatbot for GRN instances in staging', fakeAsync(() => {
+      environment.environmentName = 'staging';
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
       fixture.detectChanges();
       tick();
 
-      expect(component.isTBBPartner).toBe(true);
+      expect(component.showTcChatbot).toBe(true);
     }));
 
-    it('should set isTBBPartner to false for other partners', fakeAsync(() => {
-      const otherBrandingInfo: BrandingInfo = {
-        logo: 'other-logo.png',
-        partnerName: 'Other Partner',
-        websiteUrl: 'https://other.com'
-      };
-
-      brandingServiceSpy.getBrandingInfoFromApi.and.returnValue(of(otherBrandingInfo));
-
+    it('should hide chatbot for TBB instances in staging', fakeAsync(() => {
+      environment.environmentName = 'staging';
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.TBB);
       fixture.detectChanges();
       tick();
 
-      expect(component.isTBBPartner).toBe(false);
+      expect(component.showTcChatbot).toBe(false);
     }));
 
-    it('should set isTBBPartner to false on branding API error', fakeAsync(() => {
-      brandingServiceSpy.getBrandingInfoFromApi.and.returnValue(
-        throwError(() => new Error('API Error'))
-      );
-
+    it('should hide chatbot for GRN instances in prod', fakeAsync(() => {
+      environment.environmentName = 'prod';
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
       fixture.detectChanges();
       tick();
 
-      expect(component.isTBBPartner).toBe(false);
+      expect(component.showTcChatbot).toBe(false);
     }));
 
-    it('should check branding when user login state changes', fakeAsync(() => {
+    it('should show chatbot for GRN instances in local', fakeAsync(() => {
+      environment.environmentName = 'local';
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
       fixture.detectChanges();
-      const initialCallCount = brandingServiceSpy.getBrandingInfoFromApi.calls.count();
+      tick();
 
+      expect(component.showTcChatbot).toBe(true);
+    }));
+
+    it('should recompute chatbot visibility when user login state changes', fakeAsync(() => {
+      environment.environmentName = 'staging';
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.TBB);
+      fixture.detectChanges();
+      tick();
+      expect(component.showTcChatbot).toBe(false);
+
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
       const mockUser: User = {
         id: 1,
         username: 'testuser',
@@ -168,7 +171,7 @@ describe('AppComponent', () => {
       loggedInUserSubject.next(mockUser);
       tick();
 
-      expect(brandingServiceSpy.getBrandingInfoFromApi.calls.count()).toBeGreaterThan(initialCallCount);
+      expect(component.showTcChatbot).toBe(true);
     }));
   });
 
@@ -185,18 +188,16 @@ describe('AppComponent', () => {
       expect(brandingServiceSpy.setPartnerAbbreviation).toHaveBeenCalledWith('TBB');
     }));
 
-    it('should check branding when query params change', fakeAsync(() => {
-      fixture.detectChanges();
-      const initialCallCount = brandingServiceSpy.getBrandingInfoFromApi.calls.count();
-
+    it('should update partner abbreviation when query params change', fakeAsync(() => {
       const mockQueryParamMap = {
         get: (key: string) => key === 'p' ? 'PARTNER' : null
       };
 
+      fixture.detectChanges();
       queryParamMapSubject.next(mockQueryParamMap);
       tick();
 
-      expect(brandingServiceSpy.getBrandingInfoFromApi.calls.count()).toBeGreaterThan(initialCallCount);
+      expect(brandingServiceSpy.setPartnerAbbreviation).toHaveBeenCalledWith('PARTNER');
     }));
 
     it('should handle initial query params from snapshot', fakeAsync(() => {

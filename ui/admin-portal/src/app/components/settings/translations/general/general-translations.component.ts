@@ -805,6 +805,7 @@ const ALL_FIELDS = {
         'REPORT_BTN': null,
         'REPORT_THANKS': null,
         'REPORT_DESCRIPTION': null,
+        'REPORT_COMMENT_PLACEHOLDER': null,
       }
     }
   },

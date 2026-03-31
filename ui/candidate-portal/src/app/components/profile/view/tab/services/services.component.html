@@ -29,10 +29,15 @@
                 [activeDuolingoTask]="activeDuolingoTask"
   ></app-duolingo>
 
-  <app-reference *ngIf="(showReference$ | async) && selectedService === Service.REFERENCE"
+  <app-reference *ngIf="isLocalEnv() && (showReference$ | async) && selectedService === Service.REFERENCE"
                  [candidate]="candidate"
                  (backButtonClicked)="onBackButtonClick()"
   ></app-reference>
+
+  <app-unhcr *ngIf="(showUnhcr$ | async) && selectedService === Service.UNHCR"
+             [candidate]="candidate"
+             (backButtonClicked)="onBackButtonClick()"
+  ></app-unhcr>
 
   <ng-container *ngIf="!loading && !selectedService">
 
@@ -79,8 +84,8 @@
       <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
     </div>
 
-    <!-- Reference -->
-    <div *ngIf="showReference$ | async"
+    <!-- Reference service is only available in local environments -->
+    <div *ngIf="isLocalEnv() && (showReference$ | async)"
          class="service-card"
          (click)="selectService(Service.REFERENCE)"
     >
@@ -96,6 +101,25 @@
         </p>
       </div>
       <img src="assets/images/services/opcLogo.svg" alt="Reference Voucher (placeholder)"/>
+    </div>
+
+    <!-- UNHCR -->
+    <div *ngIf="showUnhcr$ | async"
+         class="service-card"
+         (click)="selectService(Service.UNHCR)"
+    >
+      <div>
+        <span class="service-tag">
+          UNHCR
+        </span>
+        <h3>
+          UNHCR Help
+        </h3>
+        <p>
+          Country-specific refugee support resources from UNHCR.
+        </p>
+      </div>
+      <img src="assets/images/services/unhcr.png" alt="UNHCR Logo"/>
     </div>
 
   </ng-container>

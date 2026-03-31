@@ -52,6 +52,9 @@ public class ServiceResourceEntity extends AbstractDomainObject<Long> {
 
   private String resourceCode; // coupon code
 
+  @Column(name = "country_iso_code")
+  private String countryIsoCode; // ISO 3166-1 alpha-2 code (e.g. "PK")
+
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)
   private ResourceStatus status; // e.g. AVAILABLE/ASSIGNED/REDEEMED/EXPIRED
