@@ -140,20 +140,22 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
     /**
      * Adds the candidate associated with the given {@link ServiceAssignment} to the
      * #LinkedInIssueReport List, along with a note containing the coupon code, assignment status,
-     * and assignment date.
+     * assignment date, and the candidate's description of the issue.
      *
-     * @param assignment the {@link ServiceAssignment} containing candidate and coupon details
+     * @param assignment   the {@link ServiceAssignment} containing candidate and coupon details
+     * @param issueComment free-text description of the issue provided by the candidate
      */
-    public void addCandidateToIssueReportList(ServiceAssignment assignment) {
+    public void addCandidateToIssueReportList(ServiceAssignment assignment, String issueComment) {
         SavedList list = getServiceList(ListRole.USER_ISSUE_REPORT);
         Candidate candidate = candidateService.getCandidate(assignment.getCandidateId());
         savedListService.addCandidateToList(
             list,
             candidate,
-            "Coupon code: %s | Assignment status: %s | First assigned at: %s".formatted(
+            "Coupon code: %s | First assigned at: %s | Comment: %s".formatted(
                 assignment.getResource().getResourceCode(),
                 assignment.getStatus(),
-                assignment.getAssignedAt()
+                assignment.getAssignedAt(),
+                issueComment
             )
         );
         savedListService.saveIt(list);
