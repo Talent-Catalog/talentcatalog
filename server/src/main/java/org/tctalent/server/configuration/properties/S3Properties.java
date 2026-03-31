@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * AWS S3 configuration
+ * AWS S3 configuration.
  *
  * @author John Cameron
  */
@@ -60,9 +60,4 @@ public class S3Properties {
      * Example: candidate-files.globalrefugee.net
      */
     private String candidateFilesBucket;
-
-    /**
-     * Bucket used for translations and old attachments
-     */
-    private String otherFilesBucket;
 }

@@ -34,7 +34,8 @@ public class DefaultStorageKeyService implements StorageKeyService {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String shard = shard(uuid);
 
-        return shard + "/" + uuid;
+        //Add url prefix to the key
+        return "o/" + shard + "/" + uuid;
     }
 
     private String shard(String uuid) {

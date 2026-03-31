@@ -231,14 +231,12 @@ google:
     publishedSheetWideColumn: 300
 
 s3:
-  region: us-east-1
-  # For dev this should be set in tc-secrets
-  access-key: ${AWS_CREDENTIALS_ACCESSKEY:}
-  secret-key: ${AWS_CREDENTIALS_SECRETKEY:}
+  region: eu-west-2
+  # For dev this should be set in tc-secrets.
+  access-key: ${AWS_CREDENTIALS_APP_ACCESSKEY:}
+  secret-key: ${AWS_CREDENTIALS_APP_SECRETKEY:}
   max-size: 52428800
-  upload-folder: temp
-  candidate-files-bucket: ${STORAGE_S3_BUCKET:dev.files.tbbtalent.org}
-  other-files-bucket: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org} 
+  candidate-files-bucket: ${S3_CANDIDATE_FILES_BUCKET:candidate-files.test.globalrefugee.net}
 
 candidate-file-urls:
   share-secret-key: ${SHARE_URL_SECRETKEY:}
@@ -246,7 +244,7 @@ candidate-file-urls:
   cloudfront-key-pair-id: ${CLOUDFRONT_KEY_PAIR_ID:}
   cloudfront-private-key-pem-path: ${CLOUDFRONT_PRIVATE_KEY_PEM_PATH:}
   origin-expiry-minutes: 15
-  origin-base-url: http://localhost:8080 
+  origin-base-url: https://globalrefugee.net 
   public-base-url: http://localhost:8080
   
 
