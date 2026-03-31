@@ -23,8 +23,9 @@ import {User} from "../model/user";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {ChatService} from "../services/chat.service";
 import {environment} from "../../environments/environment";
-import {BrandingInfo, BrandingService} from "../services/branding.service";
+import {BrandingService} from "../services/branding.service";
 import Clarity from '@microsoft/clarity';
+import {TcInstanceType} from "../model/tc-instance-type";
 
 @Component({
   selector: 'app-root',
@@ -37,7 +38,7 @@ export class AppComponent implements OnInit {
   @HostBinding('class.rtl-wrapper') rtl: boolean = false;
 
   loading: boolean;
-  isTBBPartner: boolean = false;
+  showTcChatbot: boolean = false;
 
   constructor(private translate: TranslateService,
               private authenticationService: AuthenticationService,
@@ -56,7 +57,7 @@ export class AppComponent implements OnInit {
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
         this.onChangedLogin(user);
-        this.checkBranding();
+        this.updateChatbotVisibility();
       }
     )
 
@@ -81,7 +82,6 @@ export class AppComponent implements OnInit {
     this.route.queryParamMap.subscribe(
       (params) => {
         this.brandingService.setPartnerAbbreviation(params.get('p'));
-        this.checkBranding();
       }
     );
 
@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
     if (initialParams['p']) {
       this.brandingService.setPartnerAbbreviation(initialParams['p']);
     }
-    this.checkBranding();
+    this.updateChatbotVisibility();
 
     // this language will be used as a fallback when a translation isn't
     // found in the current language. This forces loading of translations.
@@ -119,22 +119,10 @@ export class AppComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
-  private checkBranding(): void {
-    // Use getBrandingInfoFromApi to get actual partner name for both registered and unregistered users
-    this.brandingService.getBrandingInfoFromApi().subscribe(
-      (response: BrandingInfo) => {
-        console.log('Branding API response:', response);
-        console.log('Partner name:', response.partnerName);
-        this.isTBBPartner = response.partnerName === "Talent Beyond Boundaries";
-        console.log('isTBBPartner set to:', this.isTBBPartner);
-      },
-      (error) => {
-        console.error('Error fetching branding info:', error);
-        // On error, default to hiding chatbot
-        this.isTBBPartner = false;
-        console.log('isTBBPartner set to false due to error');
-      }
-    );
+  private updateChatbotVisibility(): void {
+    const isGrnInstance = this.authenticationService.getTcInstanceType() === TcInstanceType.GRN;
+    const isEnabledEnvironment = ['local', 'staging'].includes(environment.environmentName);
+    this.showTcChatbot = isGrnInstance && isEnabledEnvironment;
   }
 
   private trackClarityViews() {

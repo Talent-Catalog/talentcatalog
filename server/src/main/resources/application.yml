@@ -324,5 +324,5 @@ tc-skills-extraction-service:
   apiKey: ${TC_SKILLS_EXTRACTION_API_KEY:}
 
 dpa:
-  # Used in EmailHelper
   dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}
+  enabled: ${DPA_ENABLED:false}
