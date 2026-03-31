@@ -129,7 +129,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     this.deleting = true;
     this.candidateAttachmentService.deleteAttachment(attachment.id).subscribe(
       () => {
-        this.attachments = this.attachments.filter(att => att.name !== attachment.name);
+        this.attachments = this.attachments.filter(att => att.id !== attachment.id);
         this.deleting = false;
       },
       (error) => {
