@@ -1349,6 +1349,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   private removeFromList(candidates: Candidate[]) {
+    this.actionSuccessMessage = null;
 
     //Need to deselect any candidates being removed.
     this.selectedCandidates = this.selectedCandidates.filter(c => !candidates.includes(c));
