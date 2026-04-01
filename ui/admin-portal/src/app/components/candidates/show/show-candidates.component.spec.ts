@@ -43,6 +43,7 @@ import {SavedSearchType} from "../../../model/saved-search";
 import {of, throwError} from "rxjs";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {MockCandidate} from "../../../MockData/MockCandidate";
+import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {By} from "@angular/platform-browser";
 import {
   CandidateSourceCandidateService
@@ -366,6 +367,27 @@ describe('ShowCandidatesComponent', () => {
 
     expect(mockCasiAdminService.getServiceList).toHaveBeenCalledWith(component.candidateSource.id);
     expect(component.serviceList).toEqual(mockServiceList);
+  }));
+
+  it('should not call getServiceList and set serviceList to null when source is not a saved list', fakeAsync(() => {
+    mockCandidateSourceCandidateService.searchPaged.and.returnValue(
+      of({content: [], totalElements: 0, number: 0, size: 10})
+    );
+    mockCasiAdminService.getServiceList.calls.reset();
+    component.candidateSource = new MockSavedSearch();
+
+    component.ngOnChanges({
+      candidateSource: {
+        currentValue: component.candidateSource,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true
+      }
+    });
+    tick();
+
+    expect(mockCasiAdminService.getServiceList).not.toHaveBeenCalled();
+    expect(component.serviceList).toBeNull();
   }));
 
   it('should set serviceList to null when service list fetch fails', fakeAsync(() => {

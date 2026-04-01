@@ -139,7 +139,7 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
 
     /**
      * Adds the candidate associated with the given {@link ServiceAssignment} to the
-     * #LinkedInIssueReport List, along with a note containing the coupon code, assignment status,
+     * #LinkedInIssueReport List, along with a note containing the coupon code,
      * assignment date, and the candidate's description of the issue.
      *
      * @param assignment   the {@link ServiceAssignment} containing candidate and coupon details
@@ -153,7 +153,6 @@ public class LinkedInService extends AbstractCandidateAssistanceService {
             candidate,
             "Coupon code: %s | First assigned at: %s | Comment: %s".formatted(
                 assignment.getResource().getResourceCode(),
-                assignment.getStatus(),
                 assignment.getAssignedAt(),
                 issueComment
             )
