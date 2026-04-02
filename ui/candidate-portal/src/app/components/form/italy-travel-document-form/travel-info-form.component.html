@@ -9,185 +9,218 @@
   <div class="row g-3">
     <!-- Network/server error -->
     <div class="col-12" *ngIf="error">
-      <div class="alert alert-danger">{{ error }}</div>
+      <tc-alert type="danger">{{ error }}</tc-alert>
     </div>
 
     <!-- Profile mismatch warning -->
     <div class="col-12" *ngIf="hasProfileMismatch">
-      <div class="alert alert-warning d-flex justify-content-between align-items-center">
-        <div>
-          <strong>{{ 'TRAVELINFO.MISMATCH.TITLE' | translate }}</strong><br />
-          {{ 'TRAVELINFO.MISMATCH.DESCRIPTION' | translate }}
-          <span class="text-danger">{{ mismatchFields.join(', ') }}</span>.
-          <br />
-          {{ 'TRAVELINFO.MISMATCH.INSTRUCTION' | translate }}
+      <tc-alert type="warning" [showIcon]="false">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ 'TRAVELINFO.MISMATCH.TITLE' | translate }}</strong><br />
+            {{ 'TRAVELINFO.MISMATCH.DESCRIPTION' | translate }}
+            <span class="text-danger">{{ mismatchFields.join(', ') }}</span>.
+            <br />
+            {{ 'TRAVELINFO.MISMATCH.INSTRUCTION' | translate }}
+          </div>
+          <div class="ms-3">
+            <tc-button size="sm" (onClick)="goToProfile()">
+              {{ 'TRAVELINFO.BUTTON.UPDATEPROFILE' | translate }}
+            </tc-button>
+          </div>
         </div>
-        <div class="ms-3">
-          <button class="btn btn-sm btn-primary" (click)="goToProfile()">
-            {{ 'TRAVELINFO.BUTTON.UPDATEPROFILE' | translate }}
-          </button>
-        </div>
-      </div>
+      </tc-alert>
     </div>
 
     <!-- First Name -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'PROFILE.PERSONAL.FIRSTNAME' | translate }} *</label>
-      <input
-        type="text"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="firstName"
-        [ngClass]="{ 'is-invalid': controlHasProfileMismatch('firstName') }"
-      />
-      <div class="text-danger small" *ngIf="hasError('firstName', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
+      <tc-field>
+        <tc-label for="firstName">{{ 'PROFILE.PERSONAL.FIRSTNAME' | translate }} *</tc-label>
+        <tc-input
+          id="firstName"
+          type="text"
+          [readonly]="readOnly"
+          [formControlName]="'firstName'"
+          [invalid]="controlHasProfileMismatch('firstName') || hasError('firstName', 'required')"
+        ></tc-input>
+        <tc-error-message *ngIf="hasError('firstName', 'required')">
+          {{ 'FORM.ERROR.REQUIRED' | translate }}
+        </tc-error-message>
+      </tc-field>
     </div>
 
     <!-- Last Name -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'PROFILE.PERSONAL.LASTNAME' | translate }} *</label>
-      <input
-        type="text"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="lastName"
-        [ngClass]="{ 'is-invalid': controlHasProfileMismatch('lastName') }"
-      />
-      <div class="text-danger small" *ngIf="hasError('lastName', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
+      <tc-field>
+        <tc-label for="lastName">{{ 'PROFILE.PERSONAL.LASTNAME' | translate }} *</tc-label>
+        <tc-input
+          id="lastName"
+          type="text"
+          [readonly]="readOnly"
+          [formControlName]="'lastName'"
+          [invalid]="controlHasProfileMismatch('lastName') || hasError('lastName', 'required')"
+        ></tc-input>
+        <tc-error-message *ngIf="hasError('lastName', 'required')">
+          {{ 'FORM.ERROR.REQUIRED' | translate }}
+        </tc-error-message>
+      </tc-field>
     </div>
 
     <!-- Date of Birth -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'PROFILE.PERSONAL.DOB' | translate }} *</label>
-      <input
-        type="date"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="dateOfBirth"
-        [ngClass]="{ 'is-invalid': controlHasProfileMismatch('dateOfBirth') }"
-      />
-      <div class="text-danger small" *ngIf="hasError('dateOfBirth', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
+      <tc-field>
+        <tc-label for="dateOfBirth">{{ 'PROFILE.PERSONAL.DOB' | translate }} *</tc-label>
+        <tc-input
+          id="dateOfBirth"
+          type="date"
+          [readonly]="readOnly"
+          [formControlName]="'dateOfBirth'"
+          [invalid]="controlHasProfileMismatch('dateOfBirth') || hasError('dateOfBirth', 'required')"
+        ></tc-input>
+        <tc-error-message *ngIf="hasError('dateOfBirth', 'required')">
+          {{ 'FORM.ERROR.REQUIRED' | translate }}
+        </tc-error-message>
+      </tc-field>
     </div>
 
     <!-- Gender -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'PROFILE.PERSONAL.GENDER' | translate }}</label>
-      <select
-        class="form-select"
-        formControlName="gender"
-        [ngClass]="{ 'is-invalid': controlHasProfileMismatch('gender') }"
-      >
-        <option value="male">{{ 'GENDER.MALE' | translate }}</option>
-        <option value="female">{{ 'GENDER.FEMALE' | translate }}</option>
-        <option value="other">{{ 'GENDER.OTHER' | translate }}</option>
-      </select>
+      <tc-field>
+        <tc-label for="gender">{{ 'PROFILE.PERSONAL.GENDER' | translate }}</tc-label>
+        <select
+          id="gender"
+          class="form-select"
+          formControlName="gender"
+          [ngClass]="{ 'is-invalid': controlHasProfileMismatch('gender') }"
+        >
+          <option value="male">{{ 'GENDER.MALE' | translate }}</option>
+          <option value="female">{{ 'GENDER.FEMALE' | translate }}</option>
+          <option value="other">{{ 'GENDER.OTHER' | translate }}</option>
+        </select>
+      </tc-field>
     </div>
 
     <!-- Country of Birth -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELINFO.LABEL.BIRTHCOUNTRY' | translate }}</label>
-      <select
-        class="form-select"
-        formControlName="birthCountry"
-        [compareWith]="compareCountry"
-        [ngClass]="{ 'is-invalid': controlHasProfileMismatch('birthCountry') }"
-      >
-        <option [ngValue]="null">{{ 'TRAVELINFO.OPTION.SELECTCOUNTRY' | translate }}</option>
-        <option *ngFor="let c of countries" [ngValue]="c">
-          {{ c.name }}
-        </option>
-      </select>
+      <tc-field>
+        <tc-label for="birthCountry">{{ 'TRAVELINFO.LABEL.BIRTHCOUNTRY' | translate }}</tc-label>
+        <select
+          id="birthCountry"
+          class="form-select"
+          formControlName="birthCountry"
+          [compareWith]="compareCountry"
+          [ngClass]="{ 'is-invalid': controlHasProfileMismatch('birthCountry') }"
+        >
+          <option [ngValue]="null">{{ 'TRAVELINFO.OPTION.SELECTCOUNTRY' | translate }}</option>
+          <option *ngFor="let c of countries" [ngValue]="c">
+            {{ c.name }}
+          </option>
+        </select>
+      </tc-field>
     </div>
 
     <!-- Place of Birth -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELINFO.LABEL.PLACEOFBIRTH' | translate }}</label>
-      <input
-        type="text"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="placeOfBirth"
-      />
+      <tc-field>
+        <tc-label for="placeOfBirth">{{ 'TRAVELINFO.LABEL.PLACEOFBIRTH' | translate }}</tc-label>
+        <tc-input
+          id="placeOfBirth"
+          type="text"
+          [readonly]="readOnly"
+          [formControlName]="'placeOfBirth'"
+        ></tc-input>
+      </tc-field>
     </div>
 
     <!-- Travel Document Type -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCTYPE' | translate }} *</label>
-      <select class="form-select" formControlName="travelDocType">
-        <option [value]="TravelDocType.Passport">{{ 'TRAVELINFO.OPTION.PASSPORT' | translate }}</option>
-        <option [value]="TravelDocType.NationalId">{{ 'TRAVELINFO.OPTION.NATIONALID' | translate }}</option>
-        <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELINFO.OPTION.REFUGEE' | translate }}</option>
-      </select>
-      <div class="text-danger small" *ngIf="hasError('travelDocType', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
+      <tc-field>
+        <tc-label for="travelDocType">{{ 'TRAVELINFO.LABEL.DOCTYPE' | translate }} *</tc-label>
+        <select id="travelDocType" class="form-select" formControlName="travelDocType">
+          <option [value]="TravelDocType.Passport">{{ 'TRAVELINFO.OPTION.PASSPORT' | translate }}</option>
+          <option [value]="TravelDocType.NationalId">{{ 'TRAVELINFO.OPTION.NATIONALID' | translate }}</option>
+          <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELINFO.OPTION.REFUGEE' | translate }}</option>
+        </select>
+        <tc-error-message *ngIf="hasError('travelDocType', 'required')">
+          {{ 'FORM.ERROR.REQUIRED' | translate }}
+        </tc-error-message>
+      </tc-field>
     </div>
 
     <!-- Travel Document Number -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCNUMBER' | translate }} *</label>
-      <input
-        type="text"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="travelDocNumber"
-      />
-      <div class="text-danger small" *ngIf="hasError('travelDocNumber', 'required')">
-        {{ 'FORM.ERROR.REQUIRED' | translate }}
-      </div>
+      <tc-field>
+        <tc-label for="travelDocNumber">{{ 'TRAVELINFO.LABEL.DOCNUMBER' | translate }} *</tc-label>
+        <tc-input
+          id="travelDocNumber"
+          type="text"
+          [readonly]="readOnly"
+          [formControlName]="'travelDocNumber'"
+          [invalid]="hasError('travelDocNumber', 'required')"
+        ></tc-input>
+        <tc-error-message *ngIf="hasError('travelDocNumber', 'required')">
+          {{ 'FORM.ERROR.REQUIRED' | translate }}
+        </tc-error-message>
+      </tc-field>
     </div>
 
     <!-- Travel Document Issued By -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELINFO.LABEL.DOCISSUEDBY' | translate }}</label>
-      <input
-        type="text"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="travelDocIssuedBy"
-      />
+      <tc-field>
+        <tc-label for="travelDocIssuedBy">{{ 'TRAVELINFO.LABEL.DOCISSUEDBY' | translate }}</tc-label>
+        <tc-input
+          id="travelDocIssuedBy"
+          type="text"
+          [readonly]="readOnly"
+          [formControlName]="'travelDocIssuedBy'"
+        ></tc-input>
+      </tc-field>
     </div>
 
     <!-- Travel Document Issue Date -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELINFO.LABEL.ISSUEDATE' | translate }}</label>
-      <input
-        type="date"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="travelDocIssueDate"
-      />
+      <tc-field>
+        <tc-label for="travelDocIssueDate">{{ 'TRAVELINFO.LABEL.ISSUEDATE' | translate }}</tc-label>
+        <tc-input
+          id="travelDocIssueDate"
+          type="date"
+          [readonly]="readOnly"
+          [formControlName]="'travelDocIssueDate'"
+        ></tc-input>
+      </tc-field>
     </div>
 
     <!-- Travel Document Expiry Date -->
     <div class="col-md-6">
-      <label class="form-label">{{ 'TRAVELINFO.LABEL.EXPIRYDATE' | translate }}</label>
-      <input
-        type="date"
-        class="form-control"
-        [readonly]="readOnly"
-        formControlName="travelDocExpiryDate"
-      />
+      <tc-field>
+        <tc-label for="travelDocExpiryDate">{{ 'TRAVELINFO.LABEL.EXPIRYDATE' | translate }}</tc-label>
+        <tc-input
+          id="travelDocExpiryDate"
+          type="date"
+          [readonly]="readOnly"
+          [formControlName]="'travelDocExpiryDate'"
+        ></tc-input>
+      </tc-field>
     </div>
 
     <!-- Travel Info Comment -->
     <div class="col-md-12">
-      <label class="form-label">{{ 'TRAVELINFO.LABEL.COMMENT' | translate }}</label>
-      <textarea id="comment" class="md-textarea-auto form-control" rows="5"
-                [readonly]="readOnly" formControlName="travelInfoComment" ></textarea>
+      <tc-field>
+        <tc-label for="travelInfoComment">{{ 'TRAVELINFO.LABEL.COMMENT' | translate }}</tc-label>
+        <tc-textarea
+          id="travelInfoComment"
+          rows="5"
+          [disabled]="readOnly"
+          [formControlName]="'travelInfoComment'"
+        ></tc-textarea>
+      </tc-field>
     </div>
 
     <!-- Submit Button -->
     <div class="col-12 text-end">
-      <button type="submit" class="btn btn-primary" [disabled]="!canSubmit()">
+      <tc-button [disabled]="!canSubmit()">
         {{ 'TASKS.TASK.SUBMIT' | translate }}
-      </button>
+      </tc-button>
     </div>
   </div>
 </form>

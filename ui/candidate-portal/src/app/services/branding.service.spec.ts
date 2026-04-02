@@ -19,6 +19,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { BrandingService, BrandingInfo } from './branding.service';
 import { AuthenticationService } from './authentication.service';
 import { environment } from '../../environments/environment';
+import { TcInstanceType } from '../model/tc-instance-type';
 
 describe('BrandingService', () => {
   let service: BrandingService;
@@ -27,7 +28,7 @@ describe('BrandingService', () => {
   const apiUrl = environment.apiUrl + '/branding';
 
   beforeEach(() => {
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['isRegistered']);
+    const authSpy = jasmine.createSpyObj('AuthenticationService', ['isRegistered', 'getTcInstanceType']);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -40,6 +41,7 @@ describe('BrandingService', () => {
     service = TestBed.inject(BrandingService);
     httpMock = TestBed.inject(HttpTestingController);
     authServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
+    authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.TBB);
   });
 
   afterEach(() => {
@@ -127,6 +129,19 @@ describe('BrandingService', () => {
   });
 
   describe('getBrandingInfo', () => {
+    it('should return GRN branding info for unregistered GRN instances', () => {
+      authServiceSpy.isRegistered.and.returnValue(false);
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
+
+      service.getBrandingInfo().subscribe(brandingInfo => {
+        expect(brandingInfo.logo).toBe('assets/images/grnLogoDark.svg');
+        expect(brandingInfo.partnerName).toBe('GRN');
+        expect(brandingInfo.websiteUrl).toBe('https://openpathwaycollective.org/');
+      });
+
+      httpMock.expectNone(apiUrl);
+    });
+
     it('should return API branding info when user is registered', () => {
       authServiceSpy.isRegistered.and.returnValue(true);
 
@@ -134,6 +149,25 @@ describe('BrandingService', () => {
         logo: 'registered-logo.png',
         partnerName: 'Registered Partner',
         websiteUrl: 'https://registered.com'
+      };
+
+      service.getBrandingInfo().subscribe(brandingInfo => {
+        expect(brandingInfo).toEqual(mockBrandingInfo);
+      });
+
+      const req = httpMock.expectOne(apiUrl);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockBrandingInfo);
+    });
+
+    it('should return API branding info for registered GRN instances', () => {
+      authServiceSpy.isRegistered.and.returnValue(true);
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
+
+      const mockBrandingInfo: BrandingInfo = {
+        logo: 'registered-grn-partner-logo.png',
+        partnerName: 'Registered GRN Partner',
+        websiteUrl: 'https://partner.example.com'
       };
 
       service.getBrandingInfo().subscribe(brandingInfo => {

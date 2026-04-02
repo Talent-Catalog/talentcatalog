@@ -16,7 +16,7 @@
 
 <div class="container">
   <app-error [error]="error"></app-error>
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <app-linkedin *ngIf="(showLinkedin$ | async) && selectedService === Service.LINKEDIN"
                 [candidate]="candidate"
