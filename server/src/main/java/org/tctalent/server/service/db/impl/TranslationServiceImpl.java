@@ -45,6 +45,7 @@ public class TranslationServiceImpl implements TranslationService {
     private final TranslationRepository translationRepository;
     private final S3TranslationStorageService s3TranslationStorageService;
     private final AuthService authService;
+    private final Environment environment;
 
     private Map<String, Object> englishS3Translations;
 
@@ -56,10 +57,7 @@ public class TranslationServiceImpl implements TranslationService {
         this.s3TranslationStorageService = s3TranslationStorageService;
         this.authService = authService;
         this.translationRepository = translationRepository;
-        // Skip S3 call in test profile
-        if (!List.of(environment.getActiveProfiles()).contains("test")) {
-            englishS3Translations = getTranslationFile("en");
-        }
+        this.environment = environment;
     }
 
     public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> entities,
@@ -143,7 +141,11 @@ public class TranslationServiceImpl implements TranslationService {
 
     @Override
     public String translateToEnglish(String... keys) {
-        return englishS3Translations == null ? null : translate(englishS3Translations, keys);
+      // Skip S3 call in test profile
+      if (!List.of(environment.getActiveProfiles()).contains("test") && englishS3Translations == null) {
+        englishS3Translations = getTranslationFile("en");
+      }
+      return englishS3Translations == null ? null : translate(englishS3Translations, keys);
     }
 
     @Override
