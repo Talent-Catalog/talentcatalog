@@ -18,7 +18,7 @@
 
   <app-error [error]="error"></app-error>
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading && selectedOpp">
     <app-candidate-opp
@@ -39,8 +39,8 @@
       </div>
         </app-tab-header>
       <div class="table-responsive-sm">
-        <table class="table table-hover bg-white">
-          <thead class="table-light">
+        <tc-table class="table table-hover bg-white" [striped]="true">
+          <thead>
           <tr>
             <th>{{ 'CANDIDATE-OPPS.TABLE.NAME' | translate }}</th>
           </tr>
@@ -71,7 +71,7 @@
             </td>
           </tr>
           </tbody>
-        </table>
+        </tc-table>
       </div>
     </div>
   </ng-container>
