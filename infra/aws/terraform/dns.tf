@@ -8,8 +8,8 @@ resource "aws_route53_record" "ipv4" {
   type    = "A"
 
   alias {
-    name                   = module.alb.lb_dns_name
-    zone_id                = module.alb.lb_zone_id
+    name                   = var.cloudfront_enable ? aws_cloudfront_distribution.main[0].domain_name : module.alb.lb_dns_name
+    zone_id                = var.cloudfront_enable ? aws_cloudfront_distribution.main[0].hosted_zone_id : module.alb.lb_zone_id
     evaluate_target_health = false
   }
 }

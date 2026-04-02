@@ -47,3 +47,18 @@ output "ecr_repository_name" {
   description = "The name of the ECR repository"
   value       = aws_ecr_repository.app.name
 }
+
+output "cloudfront_distribution_id" {
+  description = "The ID of the CloudFront distribution"
+  value       = var.cloudfront_enable ? aws_cloudfront_distribution.main[0].id : ""
+}
+
+output "cloudfront_domain_name" {
+  description = "The CloudFront domain name"
+  value       = var.cloudfront_enable ? aws_cloudfront_distribution.main[0].domain_name : ""
+}
+
+output "candidate_files_bucket_name" {
+  description = "Candidate files S3 bucket name"
+  value       = var.cloudfront_enable ? aws_s3_bucket.candidate_files[0].bucket : ""
+}
