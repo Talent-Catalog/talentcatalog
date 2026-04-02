@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.CandidateAttachment;
 
 /**
- * TODO JC Doc
+ * Authorization service for candidate attachments based on currently logged-in user.
  *
  * @author John Cameron
  */
@@ -34,11 +34,8 @@ public class AttachmentAuthorizationService {
      * @throws AccessDeniedException if the current user does not have permission to access the attachment
      */
     public void assertCurrentUserCanAccess(CandidateAttachment attachment) {
-        // todo Replace with your real TC permission logic.
-        // Examples:
-        // - candidate can view own file
-        // - admin can view all
-        // - source partner can view only permitted candidate docs
-        // - visibility rules
+        // Currently, attachments are accessible if people have a public link to them and this
+        // is only called when processing public links to attachments.
+        // Accessibility for logged-in users is handled in CandidateAttachmentsServiceImpl.   
     }
 }
