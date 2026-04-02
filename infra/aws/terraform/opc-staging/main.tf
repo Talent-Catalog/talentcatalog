@@ -246,6 +246,8 @@ module "tc-plus-staging" {
   # SSM-backed application parameters (stored in SSM, injected into ECS task)
   # Non-secrets: provided directly here
   s3_bucket                             = "files.tbbtalent.org" # todo: confirm bucket name
+  translations_bucket                   = "files.tbbtalent.org"
+  translations_folder                   = "translations"
   environment                           = "opc-staging"
   email_default                         = "UPDATE_DEFAULT_EMAIL_HERE"                         # todo: confirm if used/needed
   email_test_override                   = "john@cameronfoundation.org"                        # todo: change to shared address
