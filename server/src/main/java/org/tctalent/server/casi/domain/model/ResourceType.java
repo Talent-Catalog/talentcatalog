@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,25 +16,10 @@
 
 package org.tctalent.server.casi.domain.model;
 
-import java.time.OffsetDateTime;
-import lombok.Builder;
-import lombok.Value;
-
 /**
- * Represents a service resource assigned to a candidate.
- *
- * @author sadatmalik
+ * Resource type discriminator for service resources.
  */
-@Value
-@Builder
-public class ServiceResource {
-  Long id;
-  ServiceProvider provider;
-  ServiceCode serviceCode;
-  String resourceCode;
-  String countryIsoCode;
-  ResourceType resourceType;
-  ResourceStatus status;
-  OffsetDateTime sentAt;
-  OffsetDateTime expiresAt;
+public enum ResourceType {
+  UNIQUE, // scarce, consumable resources (coupons)
+  SHARED  // reusable, shared resources (links)
 }
