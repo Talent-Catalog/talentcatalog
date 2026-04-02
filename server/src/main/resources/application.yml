@@ -237,6 +237,8 @@ s3:
   secret-key: ${AWS_CREDENTIALS_APP_SECRETKEY:}
   max-size: 52428800
   candidate-files-bucket: ${S3_CANDIDATE_FILES_BUCKET:candidate-files.test.globalrefugee.net}
+  translations-bucket: ${S3_TRANSLATIONS_BUCKET:dev.files.tbbtalent.org}
+  translations-folder: ${S3_TRANSLATIONS_FOLDER:translations}
 
 candidate-file-urls:
   share-secret-key: ${SHARE_URL_SECRETKEY:}

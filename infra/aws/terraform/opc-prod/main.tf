@@ -246,6 +246,8 @@ module "tc-plus-prod" {
   # SSM-backed application parameters (stored in SSM, injected into ECS task)
   # Non-secrets: provided directly here
   s3_bucket                             = "files.tbbtalent.org" # todo: confirm bucket name
+  translations_bucket                   = "translations.tctalent.org"
+  translations_folder                   = "translations"
   environment                           = "opc-prod"
   email_default                         = "-" # todo: confirm if used/needed
   email_test_override                   = "-" # todo: set prod value

@@ -374,6 +374,8 @@ public class SecurityConfiguration {
                 // POST: VIEW TRANSLATIONS
                 .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // GET: MIGRATE TRANSLATIONS BETWEEN DIFFERENT AWS IDENTITIES
+                .requestMatchers(HttpMethod.GET, "/api/admin/system/migrate-translations").hasRole("SYSTEMADMIN")
 
                 /*
                  * CANDIDATE INTAKE ENDPOINTS

@@ -23,8 +23,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.configuration.properties.S3Properties;
-import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -56,7 +56,8 @@ public class S3Config {
                 )
             );
         } else {
-            builder.credentialsProvider(AnonymousCredentialsProvider.create());
+            // Uses ECS task role credentials (or any standard AWS default provider source).
+            builder.credentialsProvider(DefaultCredentialsProvider.builder().build());
         }
         return builder.build();
     }

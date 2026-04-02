@@ -241,6 +241,8 @@ module "grn_staging" {
   cloudfront_enable                     = true
   candidate_files_bucket                = "candidate-files.test.globalrefugee.net"
   s3_bucket                             = "files.tbbtalent.org" # todo: confirm or set GRN bucket
+  translations_bucket                   = "translations.test.globalrefugee.net"
+  translations_folder                   = "translations"
   environment                           = "grn-staging"
   email_default                         = "-"
   email_test_override                   = "-"

@@ -55,4 +55,16 @@ public class S3Properties {
      * Example: candidate-files.globalrefugee.net
      */
     private String candidateFilesBucket;
+
+    /**
+     * S3 bucket for translation JSON files.
+     * Example: translations.globalrefugee.net
+     */
+    private String translationsBucket;
+
+    /**
+     * S3 folder/prefix within the translations bucket.
+     * Example: translations
+     */
+    private String translationsFolder;
 }
