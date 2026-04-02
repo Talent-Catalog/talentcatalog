@@ -11,10 +11,23 @@
       {{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_DESCRIPTION_HERE" | translate }}
     </a>.
   </p>
-  <h5>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_TITLE" | translate }}</h5>
-  <tc-button [color]="'error'" (onClick)="reportIssue()">
-    {{ "SERVICES.LINKEDIN.REDEEMED.REPORT_BTN" | translate }}
-  </tc-button>
+  <h5 (click)="toggleIssueForm()" style="cursor: pointer">
+    {{ "SERVICES.LINKEDIN.REDEEMED.REPORT_TITLE" | translate }}
+    <i class="fas" [ngClass]="showIssueForm ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+  </h5>
+  <div *ngIf="showIssueForm" class="mt-2">
+    <tc-textarea [(ngModel)]="issueComment"
+                 [maxlength]="MAX_COMMENT_LENGTH"
+                 rows="4"
+                 placeholder="{{ 'SERVICES.LINKEDIN.REDEEMED.REPORT_COMMENT_PLACEHOLDER' | translate }}"
+    ></tc-textarea>
+    <div class="d-flex align-items-center justify-content-between mt-1">
+      <tc-button [color]="'error'" [disabled]="!issueComment.trim()" (onClick)="reportIssue()">
+        {{ "SERVICES.LINKEDIN.REDEEMED.REPORT_BTN" | translate }}
+      </tc-button>
+      <small class="text-muted">{{ MAX_COMMENT_LENGTH - issueComment.length }} / {{ MAX_COMMENT_LENGTH }}</small>
+    </div>
+  </div>
 </div>
 
 <ng-template #issueReported>

@@ -1,70 +1,81 @@
 <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="alert alert-danger" role="alert" *ngIf="error">
+  <tc-alert type="danger" *ngIf="error">
     {{ error?.message || error }}
+  </tc-alert>
+
+  <div class="mb-3">
+    <tc-field>
+      <tc-label for="refugeeStatus">{{ 'RSD-EVIDENCE.LABEL.REFUGEE-STATUS' | translate }} *</tc-label>
+      <select
+        id="refugeeStatus"
+        class="form-select"
+        formControlName="refugeeStatus"
+        [disabled]="readOnly"
+      >
+        <option [ngValue]="null">Select refugee status</option>
+        <option *ngFor="let option of refugeeStatusOptions" [ngValue]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+      <tc-error-message *ngIf="hasError('refugeeStatus', 'required')">
+        {{ 'FORM.ERROR.REQUIRED' | translate }}
+      </tc-error-message>
+    </tc-field>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="refugeeStatus">{{ 'RSD-EVIDENCE.LABEL.REFUGEE-STATUS' | translate }} *</label>
-    <select
-      id="refugeeStatus"
-      class="form-select"
-      formControlName="refugeeStatus"
-      [disabled]="readOnly"
-    >
-      <option [ngValue]="null">Select refugee status</option>
-      <option *ngFor="let option of refugeeStatusOptions" [ngValue]="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-    <div class="text-danger small" *ngIf="hasError('refugeeStatus', 'required')">
-      {{ 'FORM.ERROR.REQUIRED' | translate }}
-    </div>
+    <tc-field>
+      <tc-label for="documentType">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE'| translate}} *</tc-label>
+      <select
+        id="documentType"
+        class="form-select"
+        formControlName="documentType"
+        [disabled]="readOnly"
+      >
+        <option [ngValue]="null">Select document type</option>
+        <option *ngFor="let option of documentTypeOptions" [ngValue]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+      <tc-error-message *ngIf="hasError('documentType', 'required')">
+        {{ 'FORM.ERROR.REQUIRED' | translate }}
+      </tc-error-message>
+    </tc-field>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="documentType">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE'| translate}} *</label>
-    <select
-      id="documentType"
-      class="form-select"
-      formControlName="documentType"
-      [disabled]="readOnly"
-    >
-      <option [ngValue]="null">Select document type</option>
-      <option *ngFor="let option of documentTypeOptions" [ngValue]="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-    <div class="text-danger small" *ngIf="hasError('documentType', 'required')">
-      {{ 'FORM.ERROR.REQUIRED' | translate }}
-    </div>
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label" for="documentNumber">{{ 'RSD-EVIDENCE.LABEL.DOCNUMBER' | translate }}</label>
-    <input
-      type="text"
-      id="documentNumber"
-      class="form-control"
-      formControlName="documentNumber"
-      [attr.maxLength]="30"
-      [readonly]="readOnly"
-      placeholder="Enter document number"
-    />
-    <div class="text-danger small" *ngIf="hasError('documentNumber', 'maxlength')">
-      {{ 'RSD-EVIDENCE.LABEL.RSD-VALIDATION' }}
-    </div>
+    <tc-field>
+      <tc-label for="documentNumber">{{ 'RSD-EVIDENCE.LABEL.DOCNUMBER' | translate }}</tc-label>
+      <tc-input
+        id="documentNumber"
+        type="text"
+        [formControlName]="'documentNumber'"
+        [readonly]="readOnly"
+        [invalid]="hasError('documentNumber', 'maxlength')"
+        placeholder="Enter document number"
+      ></tc-input>
+      <tc-error-message *ngIf="hasError('documentNumber', 'maxlength')">
+        {{ 'RSD-EVIDENCE.LABEL.RSD-VALIDATION' | translate }}
+      </tc-error-message>
+    </tc-field>
   </div>
 
   <div class="mb-12">
-    <label class="form-label" for="comment">{{ 'RSD-EVIDENCE.LABEL.COMMENT' | translate }}</label>
-    <textarea id="comment" class="md-textarea-auto form-control" rows="5"
-              [readonly]="readOnly" formControlName="refugeeStatusComment" ></textarea>
+    <tc-field>
+      <tc-label for="comment">{{ 'RSD-EVIDENCE.LABEL.COMMENT' | translate }}</tc-label>
+      <tc-textarea
+        id="comment"
+        rows="5"
+        [disabled]="readOnly"
+        [formControlName]="'refugeeStatusComment'"
+      ></tc-textarea>
+    </tc-field>
   </div>
 
   <!-- Submit Button -->
   <div class="col-12 text-end">
-    <button type="submit" class="btn btn-primary" [disabled]="!canSubmit()">
+    <tc-button [disabled]="!canSubmit()">
       {{ 'TASKS.TASK.SUBMIT' | translate }}
-    </button>
+    </tc-button>
   </div>
 </form>

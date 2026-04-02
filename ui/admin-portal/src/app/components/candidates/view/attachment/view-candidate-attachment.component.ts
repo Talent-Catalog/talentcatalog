@@ -107,10 +107,10 @@ export class ViewCandidateAttachmentComponent implements OnInit {
       .catch(() => { /* Isn't possible */ });
   }
 
-  downloadCandidateAttachment(attachment: CandidateAttachment) {
+  downloadGoogleCandidateAttachment(attachment: CandidateAttachment) {
     this.error = null;
     this.loading = true;
-    this.candidateAttachmentService.downloadAttachment(attachment.id, attachment.name).subscribe(
+    this.candidateAttachmentService.downloadGoogleAttachment(attachment.id, attachment.name).subscribe(
       () => {
         this.loading = false;
       },

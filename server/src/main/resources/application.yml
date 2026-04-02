@@ -14,7 +14,7 @@ tc:
   flyway:
     repair: false  #  Set this to true if you need to repair the Flyway history.
 
-  instance-type: ${TC_INSTANCE_TYPE:TBB}
+  instance-type: ${TC_INSTANCE_TYPE:GRN}
 
   partner-dbcopy-config: ${TC_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
 
@@ -230,6 +230,23 @@ google:
   # Pixel width of wide columns in generated published sheets
     publishedSheetWideColumn: 300
 
+s3:
+  region: eu-west-2
+  # For dev this should be set in tc-secrets.
+  access-key: ${AWS_CREDENTIALS_APP_ACCESSKEY:}
+  secret-key: ${AWS_CREDENTIALS_APP_SECRETKEY:}
+  max-size: 52428800
+  candidate-files-bucket: ${S3_CANDIDATE_FILES_BUCKET:candidate-files.test.globalrefugee.net}
+
+candidate-file-urls:
+  share-secret-key: ${SHARE_URL_SECRETKEY:}
+  share-expiry-minutes: 60
+  cloudfront-key-pair-id: ${CLOUDFRONT_KEY_PAIR_ID:}
+  cloudfront-private-key-pem-path: ${CLOUDFRONT_PRIVATE_KEY_PEM_PATH:}
+  origin-expiry-minutes: 15
+  origin-base-url: https://test.globalrefugee.net 
+  public-base-url: http://localhost:8080
+  
 
 aws:
   s3:
@@ -307,5 +324,5 @@ tc-skills-extraction-service:
   apiKey: ${TC_SKILLS_EXTRACTION_API_KEY:}
 
 dpa:
-  # Used in EmailHelper
   dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}
+  enabled: ${DPA_ENABLED:false}

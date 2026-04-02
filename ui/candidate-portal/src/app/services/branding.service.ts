@@ -19,6 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {AuthenticationService} from "./authentication.service";
+import {TcInstanceType} from "../model/tc-instance-type";
 
 export interface BrandingInfo {
   logo: string;
@@ -43,6 +44,15 @@ export class BrandingService {
       }
       return this.http.get<BrandingInfo>(url);
     } else {
+      if (this.authenticationService.getTcInstanceType() === TcInstanceType.GRN) {
+        let brandingInfo: BrandingInfo = {
+          logo: 'assets/images/grnLogoDark.svg',
+          partnerName: 'GRN',
+          websiteUrl: 'https://openpathwaycollective.org/'
+        };
+        return of(brandingInfo);
+      }
+
       let brandingInfo: BrandingInfo = {
         logo: "assets/images/tc-logo-2.png",
         partnerName: "a Talent Catalog partner",

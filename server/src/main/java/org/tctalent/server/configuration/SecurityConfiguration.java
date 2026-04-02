@@ -146,6 +146,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/admin/user/reset-password").permitAll()
                 .requestMatchers("/api/admin/user/verify-email/**").permitAll()
                 .requestMatchers("/").permitAll()
+                .requestMatchers("/files/**").permitAll()
                 .requestMatchers("/published/**").permitAll()
 
                 .requestMatchers("/websocket","/websocket/**").permitAll()

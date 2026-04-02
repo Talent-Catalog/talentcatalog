@@ -18,7 +18,7 @@
 
   <app-error [error]="error"></app-error>
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
 
@@ -108,6 +108,7 @@
             (refresh)="fetchCandidate()"
             [showLinkedin$]="linkedinEligible$"
             [showReference$]="referenceEligible$"
+            [showUnhcr$]="unhcrEligible$"
           ></app-services>
         </ng-template>
       </ng-container>

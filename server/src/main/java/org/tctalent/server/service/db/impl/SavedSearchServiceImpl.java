@@ -926,19 +926,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         return savedSearch;
     }
-
     @Override
     public @NotNull SavedList getSelectionList(long id, Long userId)
-            throws NoSuchObjectException {
+        throws NoSuchObjectException {
         //Check that saved search and user are valid.
         SavedSearch savedSearch = savedSearchRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
-
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
+            .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
 
         SavedList savedList = savedListRepository.findSelectionList(id, userId)
-                        .orElse(null);
+            .orElse(null);
         if (savedList == null) {
             savedList = new SavedList();
             savedList.setSavedSearch(savedSearch);

@@ -16,16 +16,15 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.CandidateAttachment;
-import org.tctalent.server.model.db.task.UploadType;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface CandidateAttachmentRepository extends JpaRepository<CandidateAttachment, Long> {
 
@@ -53,6 +52,11 @@ public interface CandidateAttachmentRepository extends JpaRepository<CandidateAt
             + " left join a.candidate c "
             + " where a.id = :id ")
     Optional<CandidateAttachment> findByIdLoadCandidate(@Param("id") Long id);
+
+    @Query(" select distinct a from CandidateAttachment a "
+            + " left join a.candidate c "
+            + " where a.publicId = :publicId ")
+    Optional<CandidateAttachment> findByPublicIdLoadCandidate(@Param("publicId") String publicId);
 
     List<CandidateAttachment> findByFileType(String fileType);
 

@@ -59,6 +59,13 @@ export class AdminApiComponent implements OnInit {
     { command: 'reassign-duolingo-coupon/{candidateNumber}', description: 'Reassign a new Duolingo coupon to a candidate' },
   ];
 
+  readonly linkedinCommands = [
+    {
+      command: '{candidateNumber}/reassign-linkedin-coupon',
+      description: 'Cancel previous assignment and make new one for given candidate'
+    }
+  ];
+
   constructor(
     private fb: UntypedFormBuilder,
     private adminService: AdminService

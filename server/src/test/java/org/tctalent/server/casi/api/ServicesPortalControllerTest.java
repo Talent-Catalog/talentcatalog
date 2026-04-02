@@ -137,14 +137,16 @@ class ServicesPortalControllerTest extends ApiTestBase {
         .assignedAt(OffsetDateTime.now().minusDays(1))
         .build();
 
-    given(candidateAssistanceService.getAssignmentsForCandidate(CANDIDATE_ID))
-        .willReturn(List.of(redeemed, reserved));
+    given(candidateAssistanceService.getCurrentAssignment(CANDIDATE_ID))
+        .willReturn(reserved);
 
     mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/assignment")
             .header("Authorization", "Bearer jwt-token"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(12)))
         .andExpect(jsonPath("$.resource.resourceCode", is("RESERVED")));
+
+    verify(candidateAssistanceService).getCurrentAssignment(CANDIDATE_ID);
   }
 
   @Test

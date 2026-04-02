@@ -1,70 +1,65 @@
-import {Component, EventEmitter, Input, Output, Pipe, PipeTransform} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {of, throwError} from 'rxjs';
-import {LinkedinService} from '../../../../../../../services/linkedin.service';
 import {LinkedinRedeemedComponent} from './linkedin-redeemed.component';
-
-@Pipe({name: 'translate'})
-class TranslatePipeStub implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
-}
-
-@Component({selector: 'app-error', template: ''})
-class ErrorStubComponent {
-  @Input() error: unknown;
-}
-
-@Component({selector: 'tc-loading', template: ''})
-class TcLoadingStubComponent {
-  @Input() loading = false;
-}
-
-@Component({
-  selector: 'tc-button',
-  template: '<button (click)="onClick.emit()"><ng-content></ng-content></button>',
-})
-class TcButtonStubComponent {
-  @Input() color?: string;
-  @Output() onClick = new EventEmitter<void>();
-}
+import {LinkedinService} from '../../../../../../../services/linkedin.service';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {of, throwError} from 'rxjs';
+import {
+  IssueReportRequest,
+  ResourceStatus,
+  ServiceAssignment,
+  ServiceProvider,
+  AssignmentStatus,
+} from '../../../../../../../model/services';
+import {Candidate} from '../../../../../../../model/candidate';
 
 describe('LinkedinRedeemedComponent', () => {
   let component: LinkedinRedeemedComponent;
   let fixture: ComponentFixture<LinkedinRedeemedComponent>;
-  let linkedinServiceSpy: jasmine.SpyObj<LinkedinService>;
+  let mockLinkedinService: jasmine.SpyObj<LinkedinService>;
+
+  const mockCandidate = {
+    id: 123,
+    linkedInLink: 'https://www.linkedin.com/in/testuser',
+  } as Candidate;
+
+  const mockAssignment: ServiceAssignment = {
+    id: 1,
+    provider: ServiceProvider.LINKEDIN,
+    serviceCode: 'PREMIUM_MEMBERSHIP' as any,
+    resource: {
+      id: 1,
+      provider: ServiceProvider.LINKEDIN,
+      serviceCode: 'PREMIUM_MEMBERSHIP' as any,
+      resourceCode: 'https://www.linkedin.com/premium/redeem/promo?coupon=ABC',
+      status: ResourceStatus.REDEEMED,
+      sentAt: null,
+      expiresAt: null,
+    },
+    candidateId: 123,
+    actorId: 1,
+    status: AssignmentStatus.ASSIGNED,
+    assignedAt: '2026-01-01T00:00:00',
+  };
 
   beforeEach(async () => {
-    linkedinServiceSpy = jasmine.createSpyObj('LinkedinService', [
+    mockLinkedinService = jasmine.createSpyObj('LinkedinService', [
       'isOnIssueReportList',
       'addCandidateToIssueReportList',
     ]);
-    linkedinServiceSpy.isOnIssueReportList.and.returnValue(of(false));
-    linkedinServiceSpy.addCandidateToIssueReportList.and.returnValue(of(void 0));
+    mockLinkedinService.isOnIssueReportList.and.returnValue(of(false));
 
     await TestBed.configureTestingModule({
-      declarations: [
-        LinkedinRedeemedComponent,
-        TranslatePipeStub,
-        ErrorStubComponent,
-        TcLoadingStubComponent,
-        TcButtonStubComponent,
-      ],
-      providers: [
-        {provide: LinkedinService, useValue: linkedinServiceSpy},
-      ],
+      declarations: [LinkedinRedeemedComponent],
+      imports: [FormsModule],
+      providers: [{provide: LinkedinService, useValue: mockLinkedinService}],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(LinkedinRedeemedComponent);
     component = fixture.componentInstance;
-    component.candidate = {id: 5} as any;
-    component.assignment = {
-      resource: {resourceCode: 'https://linkedin.example'},
-    } as any;
+    component.assignment = mockAssignment;
+    component.candidate = mockCandidate;
     fixture.detectChanges();
   });
 
@@ -72,27 +67,72 @@ describe('LinkedinRedeemedComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render tc-loading and the report-issue tc-button', () => {
-    expect(fixture.debugElement.query(By.directive(TcLoadingStubComponent))).toBeTruthy();
+  describe('ngOnInit', () => {
+    it('should check if candidate is on issue report list', () => {
+      expect(mockLinkedinService.isOnIssueReportList).toHaveBeenCalledWith(123);
+    });
 
-    const button = fixture.debugElement.query(By.directive(TcButtonStubComponent));
-    expect(button).toBeTruthy();
-    expect((button.componentInstance as TcButtonStubComponent).color).toBe('error');
+    it('should set isOnIssueReportList to false when candidate is not on list', () => {
+      expect(component.isOnIssueReportList).toBeFalse();
+    });
+
+    it('should set isOnIssueReportList to true when candidate is on list', () => {
+      mockLinkedinService.isOnIssueReportList.and.returnValue(of(true));
+      component.ngOnInit();
+      expect(component.isOnIssueReportList).toBeTrue();
+    });
   });
 
-  it('should report an issue and refresh the issue list state', () => {
-    component.reportIssue();
+  describe('issueComment', () => {
+    it('should initialise issueComment to empty string', () => {
+      expect(component.issueComment).toBe('');
+    });
 
-    expect(linkedinServiceSpy.addCandidateToIssueReportList).toHaveBeenCalledWith(component.assignment);
-    expect(linkedinServiceSpy.isOnIssueReportList).toHaveBeenCalledWith(5);
+    it('should have MAX_COMMENT_LENGTH of 500', () => {
+      expect(component.MAX_COMMENT_LENGTH).toBe(500);
+    });
   });
 
-  it('should set error when reporting an issue fails', () => {
-    linkedinServiceSpy.addCandidateToIssueReportList.and.returnValue(throwError('report-error'));
+  describe('reportIssue', () => {
+    it('should call addCandidateToIssueReportList with IssueReportRequest and re-check list status on success', () => {
+      const comment = 'The coupon link did not work.';
+      const expectedRequest: IssueReportRequest = {assignment: mockAssignment, issueComment: comment};
+      mockLinkedinService.addCandidateToIssueReportList.and.returnValue(of(undefined));
+      mockLinkedinService.isOnIssueReportList.and.returnValue(of(true));
+      component.issueComment = comment;
 
-    component.reportIssue();
+      component.reportIssue();
 
-    expect(component.error).toBe('report-error');
-    expect(component.loading).toBeFalse();
+      expect(mockLinkedinService.addCandidateToIssueReportList)
+        .toHaveBeenCalledWith(expectedRequest);
+      expect(mockLinkedinService.isOnIssueReportList).toHaveBeenCalled();
+      expect(component.isOnIssueReportList).toBeTrue();
+      expect(component.loading).toBeFalse();
+    });
+
+    it('should set error and loading false when reportIssue fails', () => {
+      const error = new Error('Report failed');
+      mockLinkedinService.addCandidateToIssueReportList.and.returnValue(throwError(error));
+      component.issueComment = 'Some comment';
+
+      component.reportIssue();
+
+      expect(component.error).toEqual(error);
+      expect(component.loading).toBeFalse();
+    });
+
+    it('should set loading to true while the report is in progress', () => {
+      let loadingDuringCall = false;
+      mockLinkedinService.addCandidateToIssueReportList.and.callFake(() => {
+        loadingDuringCall = component.loading;
+        return of(undefined);
+      });
+      mockLinkedinService.isOnIssueReportList.and.returnValue(of(false));
+      component.issueComment = 'Some comment';
+
+      component.reportIssue();
+
+      expect(loadingDuringCall).toBeTrue();
+    });
   });
 });
