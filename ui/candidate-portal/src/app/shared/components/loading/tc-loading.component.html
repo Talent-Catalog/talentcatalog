@@ -7,23 +7,19 @@
 
   <!-- Type Page -->
   <ng-container *ngIf="type === 'page'">
-    <div class="tc-loader-ring" aria-hidden="true">
-      <img class="tc-loader-logo" src="assets/images/tc-logo.png" alt="Logo"/>
-    </div>
+    <div class="tc-spinner" aria-hidden="true"></div>
     <p>Loading page<span class="tc-loader-dots"></span></p>
   </ng-container>
 
   <!-- Type Section -->
   <ng-container *ngIf="type === 'section'">
-    <div class="tc-loader-ring tc-loader-ring--small" aria-hidden="true">
-      <img class="tc-loader-logo" src="assets/images/tc-logo.png" alt="Logo"/>
-    </div>
-    <p> Loading<span class="tc-loader-dots"></span></p>
-
+    <div class="tc-spinner" aria-hidden="true"></div>
+    <p>Loading<span class="tc-loader-dots"></span></p>
   </ng-container>
 
   <span class="sr-only">Loading</span>
-
   <!-- Spacer when holdTheLine -->
-  <br *ngIf="!loading && holdTheLine"/>
+  <br *ngIf="!loading && holdTheLine" />
 </div>
+
+
