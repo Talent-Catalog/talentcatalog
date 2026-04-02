@@ -123,8 +123,9 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.storage.S3TranslationStorageService;
+import org.tctalent.server.storage.TranslationMigrationService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -162,6 +163,7 @@ public class SystemAdminApi {
     private final ChatPostRepository chatPostRepository;
     private final PartnerRepository partnerRepository;
     private final CacheService cacheService;
+    private final TranslationMigrationService translationMigrationService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -229,7 +231,7 @@ public class SystemAdminApi {
         JobChatUserRepository jobChatUserRepository,
         ChatPostRepository chatPostRepository,
         SavedSearchRepository savedSearchRepository,
-        S3ResourceHelper s3ResourceHelper,
+        TranslationMigrationService translationMigrationService,
         GoogleDriveConfig googleDriveConfig,
         CacheService cacheService,
         BackgroundProcessingService backgroundProcessingService,
@@ -266,6 +268,7 @@ public class SystemAdminApi {
         this.jobChatRepository = jobChatRepository;
         this.jobChatUserRepository = jobChatUserRepository;
         this.chatPostRepository = chatPostRepository;
+        this.translationMigrationService = translationMigrationService;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         this.backgroundProcessingService = backgroundProcessingService;
@@ -280,6 +283,36 @@ public class SystemAdminApi {
         this.tcApiService = tcApiService;
         this.linkedInService = linkedInService;
         this.userService = userService;
+    }
+
+    @GetMapping("migrate-translations")
+    public Map<String, Object> migrateTranslations(
+        @RequestParam("sourceBucket") String sourceBucket,
+        @RequestParam("destinationBucket") String destinationBucket,
+        @RequestParam(value = "sourcePrefix", required = false) String sourcePrefix,
+        @RequestParam(value = "destinationPrefix", required = false) String destinationPrefix) {
+
+        String normalizedSourcePrefix = normalizeS3Prefix(
+            StringUtils.isBlank(sourcePrefix) ? "translations" : sourcePrefix);
+        String normalizedDestinationPrefix = normalizeS3Prefix(
+            StringUtils.isBlank(destinationPrefix) ? "translations" : destinationPrefix);
+
+        int copiedCount = translationMigrationService.migrateBucketContents(
+            sourceBucket, normalizedSourcePrefix, destinationBucket, normalizedDestinationPrefix);
+
+        return Map.of(
+            "status", "success",
+            "mode", "relay-copy",
+            "copiedCount", copiedCount,
+            "sourceBucket", sourceBucket,
+            "sourcePrefix", normalizedSourcePrefix,
+            "destinationBucket", destinationBucket,
+            "destinationPrefix", normalizedDestinationPrefix
+        );
+    }
+
+    private String normalizeS3Prefix(String prefix) {
+        return prefix.endsWith("/") ? prefix : prefix + "/";
     }
 
     /**

@@ -318,6 +318,26 @@ public class S3ResourceHelper {
         return results;
     }
 
+    public List<S3Object> listObjectSummaries(String bucket, String prefix) {
+        List<S3Object> results = new ArrayList<>();
+
+        String token = null;
+        do {
+            ListObjectsV2Response response = s3Client.listObjectsV2(
+                ListObjectsV2Request.builder()
+                    .bucket(bucket)
+                    .prefix(prefix)
+                    .continuationToken(token)
+                    .build()
+            );
+
+            results.addAll(response.contents());
+            token = response.nextContinuationToken();
+        } while (token != null);
+
+        return results;
+    }
+
     public List<S3Object> filterMigratedObjects(List<S3Object> objects) {
         return objects.stream()
             .filter(o -> !o.key().contains("/migrated/"))
