@@ -251,6 +251,8 @@ candidate-file-urls:
 aws:
   s3:
     bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
+    translationsBucket: ${AWS_S3_TRANSLATIONS_BUCKET:dev.files.tbbtalent.org}
+    translationsFolder: ${AWS_S3_TRANSLATIONS_FOLDER:translations}
     region: us-east-1
     max-size: 52428800
     upload-folder: temp
