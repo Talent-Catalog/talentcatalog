@@ -106,6 +106,9 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
         if (this.isGRN) {
           patch.aspirations = candidate.aspirations;
         }
+
+        this.form.patchValue(patch);
+        
         this._loading.additionalInfo = false;
         this._loading.linkedInLink = false;
         this._loading.allNotifications = false;

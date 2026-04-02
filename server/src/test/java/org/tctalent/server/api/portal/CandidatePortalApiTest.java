@@ -45,7 +45,6 @@ import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
-import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 class CandidatePortalApiTest {
@@ -62,9 +61,6 @@ class CandidatePortalApiTest {
   @Mock
   private HttpServletResponse response;
 
-  @Mock
-  private TcInstanceService tcInstanceService;
-
   @InjectMocks
   private CandidatePortalApi candidatePortalApi;
 
@@ -76,7 +72,6 @@ class CandidatePortalApiTest {
     MockitoAnnotations.openMocks(this);
     loggedInCandidate = createSampleCandidate();
     when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(loggedInCandidate));
-    when(tcInstanceService.isGRN()).thenReturn(false);
     when(candidateService.getLoggedInCandidateLoadCandidateOccupations()).thenReturn(
         Optional.of(loggedInCandidate));
     when(candidateService.getLoggedInCandidateLoadCandidateExams()).thenReturn(
@@ -230,19 +225,6 @@ class CandidatePortalApiTest {
     assertNotNull(result);
     assertEquals("Additional info", result.get("additionalInfo"));
     verify(candidateService).updateOtherInfo(request);
-  }
-  
-  @Test
-  void testGetCandidateAdditionalInfo_GRN_IncludesAspirations() {
-    loggedInCandidate.setAspirations("Become a nurse");
-    when(tcInstanceService.isGRN()).thenReturn(true);
-
-    Map<String, Object> result = candidatePortalApi.getCandidateAdditionalInfo();
-
-    assertNotNull(result);
-    assertEquals("Additional info", result.get("additionalInfo"));
-    assertEquals("Become a nurse", result.get("aspirations"));
-    verify(candidateService).getLoggedInCandidate();
   }
 
   @SuppressWarnings("unchecked")

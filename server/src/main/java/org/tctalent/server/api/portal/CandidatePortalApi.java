@@ -44,7 +44,6 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
-import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RequiredArgsConstructor
@@ -56,8 +55,6 @@ public class CandidatePortalApi {
     private final CountryService countryService;
     private final OccupationService occupationService;
     private final SavedListService savedListService;
-    private final TcInstanceService tcInstanceService;
-
 
     @GetMapping("contact")
     public Map<String, Object> getCandidateEmail() {
@@ -361,17 +358,12 @@ public class CandidatePortalApi {
     }
 
     private DtoBuilder candidateAdditionalInfoDto() {
-        DtoBuilder builder = new DtoBuilder()
+        return new DtoBuilder()
                 .add("id")
                 .add("additionalInfo")
                 .add("linkedInLink")
                 .add("allNotifications")
-                ;
-
-        if (tcInstanceService.isGRN()) {
-            builder.add("aspirations");
-        }
-        return builder;
+                .add("aspirations");
     }
 
     private DtoBuilder candidateSurveyDto() {
@@ -516,6 +508,7 @@ public class CandidatePortalApi {
                 .add("candidateCertifications", certificationDto())
                 /* ADDITIONAL INFO / SUBMIT */
                 .add("additionalInfo")
+                .add("aspirations")
                 .add("candidateMessage")
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")

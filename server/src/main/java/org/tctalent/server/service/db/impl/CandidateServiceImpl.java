@@ -272,7 +272,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
-    private final TcInstanceService tcInstanceService;
 
     @Transactional
     @Override
@@ -1608,11 +1607,8 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        if (tcInstanceService.isGRN()) {
-            candidate.setAspirations(request.getAspirations());
-        } else {
-            candidate.setAspirations(null);
-        }
+        candidate.setAspirations(request.getAspirations());
+
         candidate.setAllNotifications(request.isAllNotifications());
         if (request.getLinkedInLink() != null && !request.getLinkedInLink().isEmpty()) {
             String linkedInRegex = "^http[s]?:/\\/(www\\.)?linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
