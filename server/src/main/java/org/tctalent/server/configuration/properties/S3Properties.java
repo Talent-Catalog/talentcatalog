@@ -46,11 +46,6 @@ public class S3Properties {
     private long maxSize;
 
     /**
-     * Temporary upload folder. eg temp
-     */
-    private String uploadFolder;
-
-    /**
      * AWS region - eg us-east-1
      */
     private String region;
