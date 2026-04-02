@@ -120,6 +120,8 @@ public class DefaultFileUrlService implements FileUrlService {
     public FinalFileAccessUrl createAccessUrl(CandidateAttachment attachment) throws Exception {
         requireStorageKey(attachment);
 
+        //TODO JC Remove this. ALL access urls should be signed so that they expire and also so
+        //that query parameters are passed through to S3.
         if (!attachment.getUploadType().isSignedAccess()) {
             return FinalFileAccessUrl.builder()
                 .url(createObjectUrl(attachment))
