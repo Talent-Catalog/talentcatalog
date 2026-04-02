@@ -33,6 +33,8 @@ import org.tctalent.server.model.db.TcInstanceType;
 @RequiredArgsConstructor
 @Slf4j
 public class TcInstanceService {
+    private static final String GRN_PDF_LOGO_FILE = "grnlogo.png";
+    private static final String TBB_PDF_LOGO_FILE = "tbblogo.png";
 
     @Value("${tc.instance-type}")
     private TcInstanceType instanceType;
@@ -51,5 +53,12 @@ public class TcInstanceService {
 
     public boolean isGRN() {
         return TcInstanceType.GRN.equals(instanceType);
+    }
+
+    public String getLogoFile() {
+        return switch (instanceType) {
+            case GRN -> GRN_PDF_LOGO_FILE;
+            case TBB -> TBB_PDF_LOGO_FILE;
+        };
     }
 }

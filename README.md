@@ -531,20 +531,23 @@ for additional documentation.
 
 ### Master branch ###
 
-The main branch is "master". We only merge and push into "master" when we are
-ready to deploy to production (rebuild and upload of build artifacts to the
-production environment is automatic, triggered by any push to "master".
-See Deployment section below).
+The main branch is "master". We only merge into "master" when code is ready for production. A push 
+to "master" automatically runs the build and test pipeline but does **not** automatically deploy to 
+any production environment. Production image deployments to GRN and TC (TBB + OPC) are triggered
+independently and manually — see the
+[Release Runbook wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Release#release-runbook)
+for full details.
 
-Master should only be accessed directly when staging
-is merged into it, triggering deployment to production. You should not
+Master should only be accessed directly when staging is merged into it. You should not
 do normal development in Master.
 
 ### Staging branch ###
 
 The "staging" branch is used for code which is potentially ready to go into
-production. Code is pushed into production by merging staging into master and
-then pushing master. See Deployment section below.
+production. Code is promoted to production by merging staging into master. Production deployments 
+are then triggered manually via GitHub Actions — see the
+[Release wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Release) for the
+release runbook.
 
 Staging is a shared resource so you should only push changes there when
 you have finished changes which you are confident will build without error
