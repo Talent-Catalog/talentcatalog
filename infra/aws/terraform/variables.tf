@@ -208,6 +208,16 @@ variable "s3_bucket" {
   description = "S3 bucket name"
 }
 
+variable "translations_bucket" {
+  type        = string
+  description = "S3 bucket name for translations"
+}
+
+variable "translations_folder" {
+  type        = string
+  description = "S3 folder/prefix for translations"
+}
+
 variable "environment" {
   type        = string
   description = "Denotes running environment (e.g., opc-staging, opc-prod)"
