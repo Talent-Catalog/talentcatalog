@@ -124,7 +124,6 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.cache.CacheService;
-import org.tctalent.server.storage.S3TranslationStorageService;
 import org.tctalent.server.storage.TranslationMigrationService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -285,6 +284,17 @@ public class SystemAdminApi {
         this.userService = userService;
     }
 
+    /**
+     * One-off relay migration endpoint for copying translation files between buckets that are
+     * accessed by different AWS identities/accounts. This performs a download (legacy source)
+     * followed by upload (configured destination), rather than S3 server-side copy.
+     *
+     * @param sourceBucket Source S3 bucket name (i.e. legacy TBB bucket)
+     * @param destinationBucket Destination S3 bucket name (i.e. GRN/OPC translations bucket)
+     * @param sourcePrefix Optional source prefix/folder. Defaults to {@code translations}.
+     * @param destinationPrefix Optional destination prefix/folder. Defaults to {@code translations}.
+     * @return Status map including copy mode and number of copied objects
+     */
     @GetMapping("migrate-translations")
     public Map<String, Object> migrateTranslations(
         @RequestParam("sourceBucket") String sourceBucket,
