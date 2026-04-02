@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,19 +13,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+package org.tctalent.server.files;
 
-package org.tctalent.server.request.attachment;
+public class InvalidFileShareTokenException extends RuntimeException {
 
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.files.UploadType;
-
-import jakarta.validation.constraints.NotNull;
-
-@Getter
-@Setter
-public class ListByUploadTypeRequest {
-    @NotNull
-    private Long candidateId;
-    private UploadType uploadType;
+    public InvalidFileShareTokenException(String message) {
+        super(message);
+    }
 }
