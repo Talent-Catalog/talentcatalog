@@ -105,32 +105,6 @@
       </tc-tab-content>
     </tc-tab>
 
-    <!-- Duolingo Coupons -->
-    <tc-tab id="duolingo-coupons">
-      <tc-tab-header>Duolingo Coupons</tc-tab-header>
-      <tc-tab-content>
-        <app-import-duolingo-coupons [loggedInUser]="loggedInUser">
-        </app-import-duolingo-coupons>
-      </tc-tab-content>
-    </tc-tab>
-
-    <!-- LinkedIn Premium Coupons -->
-    <tc-tab id="linkedin-coupons">
-      <tc-tab-header>LinkedIn Coupons</tc-tab-header>
-      <tc-tab-content>
-        <app-import-linkedin-premium-coupons [loggedInUser]="loggedInUser">
-        </app-import-linkedin-premium-coupons>
-      </tc-tab-content>
-    </tc-tab>
-
-    <!-- Offer's To Assist -->
-    <tc-tab id="ota">
-      <tc-tab-header>Offers To Assist</tc-tab-header>
-      <tc-tab-content>
-        <app-offer-to-assist>
-        </app-offer-to-assist>
-      </tc-tab-content>
-    </tc-tab>
   </ng-container>
 
   <ng-container *ngIf="canSeeExternalLinksAndTasks()">

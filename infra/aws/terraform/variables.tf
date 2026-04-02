@@ -45,6 +45,18 @@ variable "ecs_tasks_count" {
   default     = 1
 }
 
+variable "fargate_cpu" {
+  type        = number
+  description = "Fargate task CPU units (1024 = 1 vCPU)"
+  default     = 256
+}
+
+variable "fargate_memory" {
+  type        = number
+  description = "Fargate task memory in MiB"
+  default     = 2048
+}
+
 ### Database configuration variables:
 
 variable "db_public_access" {

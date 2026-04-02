@@ -52,7 +52,9 @@
           </div>
         </div>
         <div class="mb-3">
-          <label class="form-label" [for]="'dependantGender'+myRecordIndex">Gender</label>
+          <label class="form-label" [for]="'dependantGender'+myRecordIndex">
+            Gender <sup class="text-danger fw-light">* required</sup>
+          </label>
 
           <ng-select class="tc-select" [id]="'dependantGender'+myRecordIndex" [formControlName]="'dependantGender'"
                      [items]="dependantGenders" [clearable]="false"
@@ -67,7 +69,9 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label me-2" [for]="'dependantDob'+myRecordIndex">DOB</label>
+          <label class="form-label me-2" [for]="'dependantDob'+myRecordIndex">
+            DOB <sup class="text-danger fw-light">* required</sup>
+          </label>
           <tc-date-picker *ngIf="editable; else notEditable" [id]="'dependantDob'+myRecordIndex" [control]="form.controls.dependantDob"></tc-date-picker>
           <ng-template #notEditable><span>{{myRecord.dob}}</span></ng-template>
           <p class="small">Age: {{dependantAge}}</p>

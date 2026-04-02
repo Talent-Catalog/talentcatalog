@@ -33,6 +33,8 @@ import {
 import {map, shareReplay} from "rxjs/operators";
 import {LinkedinService} from "../../../services/linkedin.service";
 import {AuthorizationService} from "../../../services/authorization.service";
+import {CasiPortalService} from "../../../services/casi-portal.service";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-view-candidate',
@@ -62,12 +64,15 @@ export class ViewCandidateComponent implements OnInit {
   usAfghan: boolean;
   activeDuolingoTask: TaskAssignment;
   linkedinEligible$: Observable<boolean>;
+  referenceEligible$: Observable<boolean>;
+  unhcrEligible$: Observable<boolean>;
 
   constructor(
     private authorizationService: AuthorizationService,
     private candidateService: CandidateService,
     private chatService: ChatService,
     private linkedinService: LinkedinService,
+    private casiPortalService: CasiPortalService,
     private localStorageService: LocalStorageService,
     private location: Location,
     private route: ActivatedRoute,
@@ -147,17 +152,31 @@ export class ViewCandidateComponent implements OnInit {
    */
   private initServicesTabVisibility() {
     const results$ = forkJoin({
-      linkedIn: this.linkedinService.isEligible(this.candidate.id)
+      linkedIn: this.linkedinService.isEligible(this.candidate.id),
+      reference: this.casiPortalService.checkEligibility('REFERENCE', 'VOUCHER'),
+      unhcr: this.casiPortalService.checkEligibility('UNHCR', 'HELP_SITE_LINK')
       // Additional async service eligibility calls here
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
 
     this.showServicesTab$ = results$.pipe(
-      map(results => results.linkedIn || !!this.activeDuolingoTask)
+      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || results.unhcr || !!this.activeDuolingoTask)
     );
 
     this.linkedinEligible$ = results$.pipe(
       map(results => results.linkedIn)
     );
+
+    this.referenceEligible$ = results$.pipe(
+      map(results => this.isLocalEnv() && results.reference)
+    );
+
+    this.unhcrEligible$ = results$.pipe(
+      map(results => results.unhcr)
+    );
+  }
+
+  private isLocalEnv(): boolean {
+    return environment.environmentName === 'local';
   }
 
   private fetchCachedTab() {

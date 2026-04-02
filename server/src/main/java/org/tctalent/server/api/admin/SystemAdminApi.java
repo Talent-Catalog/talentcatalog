@@ -64,6 +64,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory;
 import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory.CandidateBatchJobBuilder;
+import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -123,6 +124,7 @@ import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -176,6 +178,8 @@ public class SystemAdminApi {
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
     private final TcApiService tcApiService;
+    private final LinkedInService linkedInService;
+    private final UserService userService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -206,32 +210,44 @@ public class SystemAdminApi {
 
     @Autowired
     public SystemAdminApi(
-            DataSharingService dataSharingService,
-            AuthService authService,
-            CandidateAttachmentRepository candidateAttachmentRepository,
-            PartnerRepository partnerRepository,
+        DataSharingService dataSharingService,
+        AuthService authService,
+        CandidateAttachmentRepository candidateAttachmentRepository,
+        PartnerRepository partnerRepository,
         CandidateBatchJobFactory candidateBatchJobFactory,
-            CandidateNoteRepository candidateNoteRepository,
-            CandidateRepository candidateRepository,
+        CandidateNoteRepository candidateNoteRepository,
+        CandidateRepository candidateRepository,
         CandidateOpportunityRepository candidateOpportunityRepository,
-            CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
-            CountryService countryService,
-            FileSystemService fileSystemService,
-            JobService jobService, LanguageService languageService,
+        CandidateOpportunityService candidateOpportunityService,
+        CandidateService candidateService,
+        CountryService countryService,
+        FileSystemService fileSystemService,
+        JobService jobService, LanguageService languageService,
         NotificationService notificationService,
-            PopulateElasticsearchService populateElasticsearchService,
-            SalesforceService salesforceService,
-            SalesforceConfig salesforceConfig, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
-            SavedListRepository savedListRepository,
-            JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
-            SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig, CacheService cacheService,
+        PopulateElasticsearchService populateElasticsearchService,
+        SalesforceService salesforceService,
+        SalesforceConfig salesforceConfig,
+        SalesforceJobOppRepository salesforceJobOppRepository,
+        SavedListService savedListService,
+        SavedListRepository savedListRepository,
+        JobChatRepository jobChatRepository,
+        JobChatUserRepository jobChatUserRepository,
+        ChatPostRepository chatPostRepository,
+        SavedSearchRepository savedSearchRepository,
+        S3ResourceHelper s3ResourceHelper,
+        GoogleDriveConfig googleDriveConfig,
+        CacheService cacheService,
         BackgroundProcessingService backgroundProcessingService,
         BatchJobService batchJobService,
-        SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoCouponService duolingoCouponService,
-        TcApiService tcApiService
-        ) {
+        SavedSearchService savedSearchService,
+        PartnerService partnerService,
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
+        DuolingoApiService duolingoApiService,
+        DuolingoCouponService duolingoCouponService,
+        TcApiService tcApiService,
+        LinkedInService linkedInService,
+        UserService userService
+    ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -259,16 +275,18 @@ public class SystemAdminApi {
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
-      this.backgroundProcessingService = backgroundProcessingService;
+        this.backgroundProcessingService = backgroundProcessingService;
         this.batchJobService = batchJobService;
         this.savedSearchService = savedSearchService;
-      this.partnerService = partnerService;
-      this.partnerRepository = partnerRepository;
-      this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
-      countryForGeneralCountry = getExtraCountryMappings();
-      this.duolingoApiService = duolingoApiService;
-      this.duolingoCouponService = duolingoCouponService;
-      this.tcApiService = tcApiService;
+        this.partnerService = partnerService;
+        this.partnerRepository = partnerRepository;
+        this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
+        countryForGeneralCountry = getExtraCountryMappings();
+        this.duolingoApiService = duolingoApiService;
+        this.duolingoCouponService = duolingoCouponService;
+        this.tcApiService = tcApiService;
+        this.linkedInService = linkedInService;
+        this.userService = userService;
     }
 
     /**
@@ -3106,6 +3124,32 @@ public class SystemAdminApi {
             LogBuilder.builder(log)
                 .action("Process potential duplicates")
                 .message("Manual triggered operation failed")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Cancels the candidate's previous coupon assignment and makes a new one.
+     */
+    @GetMapping("{candidateNumber}/reassign-linkedin-coupon")
+    ResponseEntity<?> reassignLinkedinCoupon(@PathVariable("candidateNumber") String candidateNumber) {
+        try {
+            linkedInService.reassignForCandidate(candidateNumber, userService.getLoggedInUser());
+
+            LogBuilder.builder(log)
+                .action("Reassign LinkedIn Coupon")
+                .message("For candidate " + candidateNumber + ": Success")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Reassign LinkedIn Coupon")
+                .message("For candidate " + candidateNumber + ": Failure")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend

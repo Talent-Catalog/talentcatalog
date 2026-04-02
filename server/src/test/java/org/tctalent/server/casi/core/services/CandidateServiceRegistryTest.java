@@ -37,12 +37,14 @@ class CandidateServiceRegistryTest {
 
   private CandidateAssistanceService service1;
   private CandidateAssistanceService service2;
+  private CandidateAssistanceService service3;
   private CandidateServiceRegistry registry;
 
   @BeforeEach
   void setUp() {
     service1 = createMockService(ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED);
     service2 = createMockService(ServiceProvider.DUOLINGO, ServiceCode.TEST_NON_PROCTORED);
+    service3 = createMockService(ServiceProvider.REFERENCE, ServiceCode.VOUCHER);
   }
 
   private CandidateAssistanceService createMockService(
@@ -78,6 +80,11 @@ class CandidateServiceRegistryTest {
       @Override
       public List<ServiceAssignment>
           getAssignmentsForCandidate(Long candidateId) {
+        return null;
+      }
+
+      @Override
+      public ServiceAssignment getCurrentAssignment(Long candidateId) {
         return null;
       }
 
@@ -185,6 +192,18 @@ class CandidateServiceRegistryTest {
     assertThatThrownBy(() -> registry.forProviderAndServiceCode("UNKNOWN", "UNKNOWN"))
         .isInstanceOf(NoSuchObjectException.class)
         .hasMessageContaining("Unknown candidate service");
+  }
+
+  @Test
+  @DisplayName("registry supports reference provider service lookup")
+  void registrySupportsReferenceProviderServiceLookup() {
+    registry = new CandidateServiceRegistry(List.of(service1, service3));
+
+    CandidateAssistanceService retrieved = registry.forProviderAndServiceCode(
+        "REFERENCE", "VOUCHER");
+
+    assertThat(retrieved).isNotNull();
+    assertThat(retrieved.providerKey()).isEqualTo("REFERENCE::VOUCHER");
   }
 
   @Test

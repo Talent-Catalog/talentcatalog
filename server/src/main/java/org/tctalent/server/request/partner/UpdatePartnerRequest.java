@@ -44,6 +44,13 @@ public class UpdatePartnerRequest {
     private User defaultContact;
 
     /**
+     * If specified, is used to set the defaultSourcePartner field of the partner.
+     * <p>
+     * Internal user only. See SystemAdminConfiguration.
+     */
+    private Boolean defaultSourcePartner;
+
+    /**
      * Redundant field containing looked up employer corresponding to {@link #employerSflink}.
      * Should be populated from the sfLink before processing.
      * Gets around mutual dependency between employer and partner services.

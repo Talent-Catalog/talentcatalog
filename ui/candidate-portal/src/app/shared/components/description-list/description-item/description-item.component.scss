@@ -9,12 +9,24 @@
 .tc-description-term {
   @include paragraph-sm;
   @include text-color-secondary;
+  line-height: 1.3;
 }
 
 .tc-description-details {
   @include paragraph-sm;
   @include text-color-body;
   margin-bottom: 0;
+}
+
+:host-context(.tc-description-list.size-lg) {
+  .tc-description-term {
+    @include paragraph-md;
+    line-height: 1.25;
+  }
+
+  .tc-description-details {
+    @include paragraph-md;
+  }
 }
 
 :host-context(.tc-description-list.grid-column) {

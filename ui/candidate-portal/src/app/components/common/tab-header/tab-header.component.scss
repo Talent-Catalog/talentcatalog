@@ -15,9 +15,10 @@
  */
 
 @import '../../../../scss/_mixins.scss';
+@import '../../../../scss/color-mixins';
 
 .tab-header{
-  @include background-color('primary');
+  @include background-color-primary;
   padding: 2rem;
   color: white;
   border-bottom-left-radius: 2rem;

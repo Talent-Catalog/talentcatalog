@@ -55,7 +55,7 @@ export class PartnerDpaComponent implements OnInit {
     const user = this.authenticationService.getLoggedInUser();
     this.isSourcePartner = this.authorizationService.isSourcePartner();
     forkJoin({
-      currentDpa: this.termsInfoService.getCurrentByType(TermsType.DATA_PROCESSING_AGREEMENT),
+      currentDpa: this.termsInfoService.getCurrentByType(TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT),
       partner: this.partnerService.getPartner(user.partner.id, DtoType.MINIMAL)
     }).subscribe({
       next: (results) => {

@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +95,10 @@ public class PartnerServiceImpl implements PartnerService {
 
         //Source countries
         populateSourceCountries(request.getSourceCountryIds(), partner);
+
+        if (request.getDefaultSourcePartner() != null) {
+            partner.setDefaultSourcePartner(request.getDefaultSourcePartner());
+        }
 
         return partnerRepository.save(partner);
     }
@@ -205,13 +210,18 @@ public class PartnerServiceImpl implements PartnerService {
         return partner;
     }
 
+
+    @Override
+    public Optional<PartnerImpl> findDefaultSourcePartner() throws NoSuchObjectException {
+        return partnerRepository.findByDefaultSourcePartner(true);
+    }
+
     @NonNull
     @Override
     public Partner getDefaultSourcePartner() throws NoSuchObjectException {
-        final PartnerImpl partner = partnerRepository.findByDefaultSourcePartner(true)
-            .orElseThrow(() -> new NoSuchObjectException(Partner.class, "default"));
-
-        return partner;
+        return findDefaultSourcePartner().orElseThrow(
+            () -> new NoSuchObjectException(Partner.class, "default")
+        );
     }
 
     @Nullable
@@ -385,6 +395,10 @@ public class PartnerServiceImpl implements PartnerService {
     }
     @Transactional
     public boolean requiresDpaAcceptance() {
+        if (!dpaProperties.isEnabled()) {
+            return false;
+        }
+
         User user = authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         PartnerImpl partner = user.getPartner();
@@ -394,7 +408,7 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         // Get current DPA
-        TermsInfo currentDpa = termsInfoService.getCurrentByType(TermsType.DATA_PROCESSING_AGREEMENT);
+        TermsInfo currentDpa = termsInfoService.getCurrentByType(TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT);
         // Partner already accepted the current DPA
         if (partner.getAcceptedDataProcessingAgreementId() != null &&
             partner.getAcceptedDataProcessingAgreementId().equals(currentDpa.getId())) {

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
+import {Component, EventEmitter, forwardRef, HostBinding, Input, Output} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
 /**
@@ -41,6 +41,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 })
 export class TcRadioComponent implements
   ControlValueAccessor {
+  @HostBinding('attr.id') hostId = null;
   @Input() id: string;
   @Input() name: string;
   @Input() value: string | number | boolean;

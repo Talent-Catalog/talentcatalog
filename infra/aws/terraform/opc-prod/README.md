@@ -1,6 +1,6 @@
-# TC-Plus OPC Production Environment
+# TC-Server OPC Production Environment
 
-Deploy the TC-Plus infrastructure to the OPC AWS production account (`289896345557`, `eu-west-2`).
+Deploy the TC-Server infrastructure to the OPC AWS production account (`289896345557`, `eu-west-2`).
 
 ## Prerequisites
 

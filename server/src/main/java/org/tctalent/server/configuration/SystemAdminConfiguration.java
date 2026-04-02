@@ -16,8 +16,8 @@
 
 package org.tctalent.server.configuration;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -37,6 +37,7 @@ import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.ShutdownService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.impl.TcInstanceService;
 
 /**
  * Component which listens for a Spring start up event and auto creates objects if needed.
@@ -45,6 +46,7 @@ import org.tctalent.server.service.db.UserService;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class SystemAdminConfiguration {
 
     public final static String TEST_CANDIDATE_LIST_NAME = "TestCandidates";
@@ -67,6 +69,7 @@ public class SystemAdminConfiguration {
     private final PartnerService partnerService;
     private final SavedListService savedListService;
     private final ShutdownService shutdownService;
+    private final TcInstanceService tcInstanceService;
     private final UserService userService;
 
     @Value("${tc.init.boot-admin-password}")
@@ -74,18 +77,6 @@ public class SystemAdminConfiguration {
 
     @Value("${email.user}")
     private String sysAdminEmail;
-
-    @Autowired
-    public SystemAdminConfiguration(
-        PartnerService partnerService,
-        SavedListService savedListService,
-        ShutdownService shutdownService,
-        UserService userService) {
-        this.partnerService = partnerService;
-        this.savedListService = savedListService;
-        this.shutdownService = shutdownService;
-        this.userService = userService;
-    }
 
     /**
      * Run at startup to check whether we have necessary objects, creating them if necessary
@@ -104,7 +95,13 @@ public class SystemAdminConfiguration {
         }
     }
 
+    /**
+     * Auto creates various system objects necessary for the application to function.
+     * <p>
+     * If they do not already exist, they are created.
+     */
     private void doAutoCreates() {
+        //Auto create system partner. They will be partner associated with the system admin user.
         Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
         if (systemPartner == null) {
             UpdatePartnerRequest req = new UpdatePartnerRequest();
@@ -115,10 +112,11 @@ public class SystemAdminConfiguration {
             req.setJobCreator(false);
             req.setSourcePartner(false);
 
-            //Self create system partner
+            //Create system partner
             systemPartner = partnerService.create(req);
         }
 
+        //Auto create system admin user
         User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
         if (systemAdmin == null) {
             if (!StringUtils.hasText(systemAdminPassword)) {
@@ -142,6 +140,27 @@ public class SystemAdminConfiguration {
 
             //Self create system admin
             systemAdmin = userService.createUser(req, null);
+        }
+
+        //Auto create default source partner.
+        Partner defaultSourcePartner
+            = partnerService.findDefaultSourcePartner().orElse(null);
+        if (defaultSourcePartner == null) {
+            UpdatePartnerRequest req = new UpdatePartnerRequest();
+
+            String defaultSourcePartnerName = tcInstanceService.getDefaultSourcePartnerName();
+            String defaultSourcePartnerAbbreviation
+                = tcInstanceService.getDefaultSourcePartnerAbbreviation();
+            req.setName(defaultSourcePartnerName);
+            req.setAbbreviation(defaultSourcePartnerAbbreviation);
+            req.setStatus(Status.active);
+
+            req.setJobCreator(false);
+            req.setSourcePartner(true);
+            req.setDefaultSourcePartner(true);
+
+            //Create the default source partner
+            partnerService.create(req);
         }
 
         //Create global lists

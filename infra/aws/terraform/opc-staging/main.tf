@@ -185,25 +185,27 @@ provider "aws" {
 locals {
   common_tags = {
     Project     = "OPC"
-    Application = "TC-Plus"
+    Application = "TC-Server"
     Environment = "staging"
     ManagedBy   = "terraform"
   }
 }
 
-# TC-Plus infrastructure for OPC AWS staging account
+# TC-Server infrastructure for OPC AWS staging account
 module "tc-plus-staging" {
   source = "../"
 
   common_tags = local.common_tags
 
   # ECS configuration
-  app             = "tc-plus"
+  app             = "tc-server"
   env             = "opc-staging"
-  site_domain     = "test.plus.tctalent.org"
-  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-plus-staging"
+  site_domain     = "tctalent-test.org"
+  container_image = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/tc-core:tc-server-staging"
   container_port  = 8080
   ecs_tasks_count = 1
+  fargate_cpu     = 512
+  fargate_memory  = 2048
 
   # Database configuration
   # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
@@ -244,24 +246,26 @@ module "tc-plus-staging" {
   m2                                     = "/usr/local/apache-maven/bin"
   m2_home                                = "/usr/local/apache-maven"
   server_port                            = "8080"
-  server_url                             = "https://test.plus.tctalent.org/"
-  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
-  sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"  # todo: either create for OPC or decouple TC+ from SF
-  sf_base_login_url                      = "https://test.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
+  server_url                             = "https://tctalent-test.org/"
+  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"
+  sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
+  sf_base_login_url                      = "https://test.salesforce.com/"
   spring_client_url                      = "-" # todo: confirm if used/needed
-  spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- in parallel to local RDS
+  # Legacy TBB DB. This stack also creates an OPC RDS (unused while URL is set).
+  # To point the service at the OPC RDS instead, set spring_datasource_url = "" and apply; then restart ECS to pick up the new SSM value.
+  spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent"
   spring_datasource_username             = "tctalent"
   spring_db_pool_max                     = "50"
   spring_db_pool_min                     = "20"
   spring_servlet_max_file_size           = "10MB"
   spring_servlet_max_request_size        = "10MB"
-  tc_api_url                             = "https://test.api.tctalent.org"  # todo: set TC API URL
-  tc_cors_urls                           = "https://test.plus.tctalent.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
+  tc_api_url                             = "https://test.api.tctalent.org"
+  tc_cors_urls                           = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
   tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
   tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
-  tc_skills_extraction_api_url           = "https://test.skills.plus.tctalent.org"
-  web_admin                              = "https://test.plus.tctalent.org/admin-portal"
-  web_portal                             = "https://test.plus.tctalent.org/candidate-portal"
+  tc_skills_extraction_api_url           = "https://test.skills.tctalent.org"
+  web_admin                              = "https://tctalent-test.org/admin-portal"
+  web_portal                             = "https://tctalent-test.org/candidate-portal"
   tc_instance_type                       = "TBB"
 
   # Secrets: loaded from secrets.auto.tfvars

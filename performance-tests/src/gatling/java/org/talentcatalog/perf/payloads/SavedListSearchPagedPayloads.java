@@ -24,8 +24,5 @@ public final class SavedListSearchPagedPayloads {
   /** Preview/light payload for saved-list-candidate search-paged (typical paging request). */
   public static final String LIGHT = "payloads/saved_list_search_paged_light.json";
 
-  /** Heavy payload for saved-list-candidate search-paged (larger or more expensive request). */
-  public static final String HEAVY = "payloads/saved_list_search_heavy.json";
-
   private SavedListSearchPagedPayloads() {}
 }

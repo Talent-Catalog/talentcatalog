@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Objects;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,12 +29,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.service.db.RootRequestService;
-import org.tctalent.server.util.SubdomainRedirectHelper;
 
 /**
  * Handle rerouting when user just types in a domain - eg just tctalent.org
@@ -90,27 +88,6 @@ public class RootRouteAdminApi {
         }
 
         String queryString = request.getQueryString();
-
-        //Check for partner tctalent.org subdomains url can redirect to a plain url with p= query
-        //eg crs.tctalent.org --> tctalent.org?p=crs
-        //NOTE: We don't do this anymore - but keeping code in for now. Can be removed eventually
-        if (host != null) {
-            String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
-            if (redirectUrl != null) {
-                storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium,
-                    utmCampaign, utmTerm, utmContent);
-                if (queryString != null) {
-                    redirectUrl += "&" + queryString;
-                }
-                LogBuilder.builder(log)
-                    .action("Route")
-                    .message("Redirecting to: " + redirectUrl)
-                    .logInfo();
-
-                return new ModelAndView("redirect:" + redirectUrl);
-            }
-        }
-
         //Store query information
         if (queryString != null) {
             storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
