@@ -15,6 +15,8 @@
  */
 package org.tctalent.server.files;
 
+import static software.amazon.awssdk.utils.http.SdkHttpUtils.urlEncode;
+
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -56,6 +58,43 @@ public class DefaultFileUrlService implements FileUrlService {
 
     @Override
     public String createObjectUrl(CandidateAttachment attachment) {
+        //Default to inline disposition type
+        return createObjectUrl(attachment, true);
+    }
+
+    /**
+     * Creates a URL with Content-Disposition header override by using the 
+     * response-content-disposition query parameter.
+     * <p>
+     * See <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">
+     *   AWS S3 Doc on fetching objects</a>
+     * <p>
+     * Content-Disposition can also be used to associate the attachment file name with the 
+     * attachment content.
+     * <p>
+     * See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition">
+     *     Content-Disposition</a>.
+     * @param attachment Attachment whose url is being generated
+     * @param inlineDisposition true = inline, false = attachment
+     * @return Generated url
+     */
+    private String createObjectUrl(CandidateAttachment attachment, boolean inlineDisposition) {
+
+        String baseUrl = createObjectBaseUrl(attachment);
+        
+        String filename = sanitizeFilename(requireFilename(attachment));
+        String dispositionType = inlineDisposition ? "inline" : "attachment";
+
+        //Set the name of the file. This is useful if a browser user does a Save As.
+        //Note that this supports file renaming without modifying the stored object.
+        String dispositionValue = dispositionType + "; filename=\"" + filename + "\"";
+
+        return baseUrl
+            + "?response-content-disposition="
+            + urlEncode(dispositionValue);
+    }
+
+    private String createObjectBaseUrl(CandidateAttachment attachment) {
         String storageKey = requireStorageKey(attachment);
         return joinUrl(properties.getOriginBaseUrl(), storageKey);
     }
@@ -122,6 +161,9 @@ public class DefaultFileUrlService implements FileUrlService {
         return stripLeadingSlash(storageKey);
     }
 
+    /**
+     * Remove any folder structure with underscores
+     */
     private String sanitizeFilename(String filename) {
         return filename
             .trim()

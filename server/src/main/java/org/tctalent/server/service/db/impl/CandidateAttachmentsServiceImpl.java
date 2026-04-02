@@ -344,6 +344,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             // Update the name
             if (!candidateAttachment.getName().equals(request.getName())) {
                 candidateAttachment.setName(request.getName());
+                
+                //Note that for GRN files we don't rename the uploaded file because the file name is
+                //not stored with the uploaded file.
+                //File names are fetched from the CandidateAttachment info and are added to the
+                //final generated url used to fetch the file from S3 storage.
+                //See the code in DefaultFileUrlService.createObjectUrl.
+                
                 if (attachmentType == AttachmentType.googlefile) {
                     //For Google files we also rename the uploaded file
                     GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getUrl());
