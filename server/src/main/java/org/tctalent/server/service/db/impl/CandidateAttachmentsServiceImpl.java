@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -35,13 +35,15 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.files.FileUrlService;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.task.UploadType;
+import org.tctalent.server.model.db.mapper.StoredFileMapper;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -53,33 +55,30 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateAttachmentService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.PublicIDService;
+import org.tctalent.server.storage.StoragePutRequest;
+import org.tctalent.server.storage.StorageService;
+import org.tctalent.server.storage.StoredFileInfo;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
 
+    private final AuthService authService;
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final FileSystemService fileSystemService;
-    private final AuthService authService;
-
-    @Autowired
-    public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
-                                           CandidateService candidateService,
-                                           CandidateAttachmentRepository candidateAttachmentRepository,
-                                           FileSystemService fileSystemService,
-                                           AuthService authService) {
-        this.candidateRepository = candidateRepository;
-        this.candidateService = candidateService;
-        this.candidateAttachmentRepository = candidateAttachmentRepository;
-        this.fileSystemService = fileSystemService;
-        this.authService = authService;
-    }
+    private final FileUrlService fileUrlService;
+    private final PublicIDService publicIDService;
+    private final StoredFileMapper storedFileMapper;
+    private final StorageService storageService;
+    private final TcInstanceService tcInstanceService;
 
     @Override
     public Page<CandidateAttachment> searchCandidateAttachments(SearchCandidateAttachmentsRequest request) {
@@ -141,30 +140,40 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
+        storedFileMapper.updateCandidateAttachment(attachment, request);
 
+        //Add extras
+        attachment.setActive(true);
         attachment.setCandidate(candidate);
         attachment.setMigrated(false);
         attachment.setAuditFields(user);
-        attachment.setUploadType(request.getUploadType());
+        attachment.setCv(UploadType.cv.equals(request.getUploadType()));
+        
+        //Add a publicId
+        String publicId = publicIDService.generatePublicID();
+        attachment.setPublicId(publicId);
 
-        if (request.getType().equals(AttachmentType.link)) {
-
-            attachment.setType(AttachmentType.link);
-            attachment.setUrl(request.getUrl());
-            attachment.setName(request.getName());
-
-        } else if (request.getType().equals(AttachmentType.googlefile)) {
-            attachment.setUrl(request.getUrl());
-            attachment.setName(request.getName());
-            attachment.setType(AttachmentType.googlefile);
-            attachment.setFileType(request.getFileType());
-            attachment.setCv(request.getCv());
-            attachment.setTextExtract(request.getTextExtract());
-
-        } else if (request.getType().equals(AttachmentType.file)) {
-            throw new InvalidRequestException("Creation of S3 file is no longer supported. Please upload to Google Drive instead.");
+        AttachmentType attachmentType = request.getType();
+        if (attachmentType == null) {
+            throw new InvalidRequestException("Missing attachment type");       
         }
-
+        attachment.setType(attachmentType);
+        switch (attachmentType) {
+            case googlefile:
+                attachment.setUrl(request.getUrl());
+                attachment.setTextExtract(request.getTextExtract());
+                break; 
+            case grnfile:
+                //Compute url.
+                attachment.setUrl(fileUrlService.createApplicationUrl(attachment)); 
+                break;
+            case link:
+                attachment.setUrl(request.getUrl());
+                break;
+            case file:
+                throw new InvalidRequestException("Creation of S3 file is no longer supported. Please upload to Google Drive instead.");
+                    
+        }
 
         //Save the updated attachment
         attachment = candidateAttachmentRepository.save(attachment);
@@ -315,6 +324,15 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
+    public CandidateAttachment getCandidateAttachmentByPublicId(String publicId) {
+    CandidateAttachment candidateAttachment =
+        candidateAttachmentRepository.findByPublicIdLoadCandidate(publicId)
+            .orElseThrow(() ->
+                new NoSuchObjectException(CandidateAttachment.class, publicId));
+        return candidateAttachment;
+    }
+
+    @Override
     public CandidateAttachment updateCandidateAttachment(Long id,
             UpdateCandidateAttachmentRequest request) throws IOException, UnauthorisedActionException {
         User user = authService.getLoggedInUser()
@@ -326,6 +344,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             // Update the name
             if (!candidateAttachment.getName().equals(request.getName())) {
                 candidateAttachment.setName(request.getName());
+                
+                //Note that for GRN files we don't rename the uploaded file because the file name is
+                //not stored with the uploaded file.
+                //File names are fetched from the CandidateAttachment info and are added to the
+                //final generated url used to fetch the file from S3 storage.
+                //See the code in DefaultFileUrlService.createObjectUrl.
+                
                 if (attachmentType == AttachmentType.googlefile) {
                     //For Google files we also rename the uploaded file
                     GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getUrl());
@@ -360,6 +385,52 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     public CandidateAttachment uploadAttachment(@NonNull Candidate candidate,
+        String uploadedFileName, @Nullable String subfolderName, MultipartFile file,
+        UploadType uploadType) throws IOException, NoSuchObjectException {
+
+        CreateCandidateAttachmentRequest req;
+        if (tcInstanceService.isGRN()) {
+            req = uploadAttachmentToS3(
+                candidate, uploadedFileName, subfolderName, file, uploadType);
+        } else {
+            req = uploadAttachmentToGoogle(
+                candidate, uploadedFileName, subfolderName, file, uploadType);
+        }
+
+        CandidateAttachment attachment = createCandidateAttachment(req);
+
+        return attachment;
+
+    }
+
+    private CreateCandidateAttachmentRequest uploadAttachmentToS3(@NonNull Candidate candidate,
+        String uploadedFileName, @Nullable String subfolderName, MultipartFile file,
+        UploadType uploadType) throws IOException, NoSuchObjectException {
+
+        StoragePutRequest req = StoragePutRequest.builder()
+            .inputStream(file.getInputStream())
+            .contentType(file.getContentType())
+            .build();
+
+        //TODO JC Need to do the textExtract if uploadType == UploadType.cv
+
+        StoredFileInfo storedFileInfo = storageService.store(req);
+        
+        //Add in extra info
+        storedFileInfo.setActive(true);
+        storedFileInfo.setUploadType(uploadType);
+        storedFileInfo.setName(uploadedFileName);
+        storedFileInfo.setFileType(file.getContentType());
+
+        CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
+        attachmentRequest.setType(AttachmentType.grnfile);
+        attachmentRequest.setCandidateId(candidate.getId());
+        storedFileMapper.updateCreateCandidateAttachmentRequest(attachmentRequest, storedFileInfo);
+
+        return attachmentRequest;
+    }
+
+    private CreateCandidateAttachmentRequest uploadAttachmentToGoogle(@NonNull Candidate candidate,
         String uploadedFileName, @Nullable String subfolderName, MultipartFile file,
         UploadType uploadType) throws IOException, NoSuchObjectException {
 
@@ -428,6 +499,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 .logError();
         }
 
+
         //Now create corresponding CandidateAttachment record.
         CreateCandidateAttachmentRequest req = new CreateCandidateAttachmentRequest();
         req.setCandidateId(candidate.getId());
@@ -441,10 +513,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             req.setTextExtract(textExtract);
         }
 
-        CandidateAttachment attachment = createCandidateAttachment(req);
-
-        return attachment;
-
+        return req;
     }
 
     @Override
@@ -456,7 +525,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         Candidate candidate = candidateRepository.findById(candidateId)
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
 
-        //Name of file being uploaded (this is the name it had on the
+        //Name of the file being uploaded (this is the name it had on the
         //originating computer).
         String fileName = file.getOriginalFilename();
 

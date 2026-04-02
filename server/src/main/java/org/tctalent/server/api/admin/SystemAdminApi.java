@@ -16,7 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -86,7 +85,6 @@ import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
-import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -141,7 +139,6 @@ public class SystemAdminApi {
 
     private final DataSharingService dataSharingService;
 
-    private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
@@ -164,7 +161,6 @@ public class SystemAdminApi {
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
     private final PartnerRepository partnerRepository;
-    private final S3ResourceHelper s3ResourceHelper;
     private final CacheService cacheService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -212,7 +208,6 @@ public class SystemAdminApi {
     public SystemAdminApi(
         DataSharingService dataSharingService,
         AuthService authService,
-        CandidateAttachmentRepository candidateAttachmentRepository,
         PartnerRepository partnerRepository,
         CandidateBatchJobFactory candidateBatchJobFactory,
         CandidateNoteRepository candidateNoteRepository,
@@ -250,7 +245,6 @@ public class SystemAdminApi {
     ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
-        this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
@@ -272,7 +266,6 @@ public class SystemAdminApi {
         this.jobChatRepository = jobChatRepository;
         this.jobChatUserRepository = jobChatUserRepository;
         this.chatPostRepository = chatPostRepository;
-        this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         this.backgroundProcessingService = backgroundProcessingService;
@@ -1209,52 +1202,6 @@ public class SystemAdminApi {
         return "done";
     }
 
-    @GetMapping("awsmetadata")
-    public String updateAwsFileTypes() {
-        List<S3ObjectSummary> objectSummaries = s3ResourceHelper.getObjectSummaries();
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Got the object summaries. There is a total of: " + objectSummaries.size())
-            .logInfo();
-
-        List<S3ObjectSummary> filteredSummaries = s3ResourceHelper.filterMigratedObjects(objectSummaries);
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Filtered out the migrated objects. There is a total of: " + filteredSummaries.size())
-            .logInfo();
-
-        int count = 0;
-        int success = 0;
-        for(S3ObjectSummary summary : filteredSummaries) {
-            try {
-                s3ResourceHelper.addObjectMetadata(summary);
-                success++;
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Error adding metadata to object with key: " + summary.getKey())
-                    .logWarn(e);
-            }
-            count++;
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Processed " + count)
-                    .logInfo();
-            }
-        }
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Finished processing. Success total of: " + success + " out of " + count)
-            .logInfo();
-
-        return "done";
-    }
 
     //Remove after running. One off method. Login as System Admin user.
 //    @GetMapping("update-isocodes")
