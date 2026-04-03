@@ -90,5 +90,5 @@
 </div>
 <div class="mt-4" *ngIf="error">
   <hr>
-  <pre>{{error}}</pre>
+  <pre>{{ error?.error?.message || error?.message || error }}</pre>
 </div>
