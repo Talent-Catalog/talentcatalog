@@ -60,7 +60,8 @@ Helpful TC user guides:
 
 ## General Improvements
 
-- 
+- Gatling version updated to enable Java-based performance testing
+- Performance test folder structure standardised
 
 ## Data Improvements
 
@@ -76,6 +77,7 @@ Helpful TC user guides:
 ## Other UI / UX Enhancements
 
 - Font Awesome icon processing standardised across portals
+- Removal of TC Chats pending new UX design and native mobile app development
 
 # Security Fixes
 
@@ -84,14 +86,15 @@ Helpful TC user guides:
 # Bug Fixes
 
 - Job offer acceptance automations amended to later stage trigger
+- Console errors triggered when opening certain candidate profiles
 
 # Developer Notes
 
 -
 
 ## Test Coverage
-
-- 
+- NewSearchScreenQuery replaced with stable SQL
+- Gatling performance tests for Saved List candidate search
 
 ## Code Refactoring
 
