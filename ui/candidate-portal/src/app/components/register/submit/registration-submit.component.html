@@ -1,10 +1,8 @@
 <div class="container-fluid step-header">
   <div class="container">
-    <h3>
-      Privacy Policy with {{ getPartnerDescription(false) }}
-    </h3>
+    <h3 [innerHTML]="'HEADER.NAV.PRIVACY' | translate"></h3>
     <p
-      [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS' | translate:{partner: getPartnerDescription(true)}"
+        [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS' | translate:{partner: getPartnerDescription(true)}"
       class="explain"></p>
 
     <div class="step-progress">
