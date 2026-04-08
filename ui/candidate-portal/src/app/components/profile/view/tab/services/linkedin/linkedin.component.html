@@ -1,5 +1,5 @@
 <app-error [error]="error"></app-error>
-<app-loading [loading]="loading"></app-loading>
+<tc-loading [loading]="loading"></tc-loading>
 
 <div class="service-title">
   <div class="header">
@@ -33,11 +33,11 @@
                   class="col-12 col-lg-6"
         ></tc-input>
       </div>
-      <div *ngIf="linkedInLinkInput && !isValidLinkedInUrl"
-           class="alert alert-danger mt-2"
-      >
+      <tc-alert *ngIf="linkedInLinkInput && !isValidLinkedInUrl"
+                class="mt-2"
+                type="danger">
         {{ "SERVICES.LINKEDIN.LINKEDIN_URL_WARN" | translate }}
-      </div>
+      </tc-alert>
 
       <div class="my-3">
         <tc-button (onClick)="verify()"
