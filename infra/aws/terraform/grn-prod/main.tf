@@ -1,5 +1,5 @@
-# This file is the main entry for GRN staging infrastructure in the OPC AWS staging account.
-# It runs alongside opc-staging in the same account (164804461258) with separate state and resources.
+# This file is the main entry for GRN production infrastructure in the OPC AWS prod account.
+# It runs alongside opc-prod in the same account (289896345557) with separate state and resources.
 
 # Secrets loaded from secrets.auto.tfvars and passed through to the child module
 variable "aws_access_key" {
@@ -168,12 +168,12 @@ variable "tc_boot_admin_password" {
   default     = ""
 }
 
-# Same OPC staging account as opc-staging
+# GRN prod account (same as opc-prod)
 provider "aws" {
   region = "eu-west-2"
 
   assume_role {
-    role_arn = "arn:aws:iam::164804461258:role/opc-staging-terraform-exec"
+    role_arn = "arn:aws:iam::289896345557:role/opc-prod-terraform-exec"
   }
 }
 
@@ -182,7 +182,7 @@ provider "aws" {
   region = "us-east-1"
 
   assume_role {
-    role_arn = "arn:aws:iam::164804461258:role/opc-staging-terraform-exec"
+    role_arn = "arn:aws:iam::289896345557:role/opc-prod-terraform-exec"
   }
 }
 
@@ -190,13 +190,13 @@ locals {
   common_tags = {
     Project     = "GRN"
     Application = "TC-Server"
-    Environment = "staging"
+    Environment = "prod"
     ManagedBy   = "terraform"
   }
 }
 
-# GRN staging: parallel deployment in OPC staging account, domain test.globalrefugee.net
-module "grn_staging" {
+# GRN prod: parallel deployment in OPC prod account, domain globalrefugee.net
+module "grn_prod" {
   source = "../"
 
   providers = {
@@ -206,32 +206,32 @@ module "grn_staging" {
 
   common_tags = local.common_tags
 
-  # ECS configuration (separate ECR repo in same account to avoid name conflict with opc-staging)
+  # ECS configuration (separate ECR repo in same account to avoid name conflict with opc-prod)
   app                 = "grn"
-  env                 = "staging"
-  site_domain         = "test.globalrefugee.net"
+  env                 = "prod"
+  site_domain         = "globalrefugee.net"
   ecr_repository_name = "grn-core"
-  container_image     = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-staging"
+  container_image     = "289896345557.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-prod"
   container_port      = 8080
-  ecs_tasks_count     = 1
-  fargate_cpu         = 512
+  ecs_tasks_count     = 2
+  fargate_cpu         = 1024
   fargate_memory      = 2048
 
   # Database configuration
   db_enable               = true
-  db_public_access        = true
-  db_multi_az             = false
-  db_instance_class       = "db.t3.medium"
+  db_public_access        = false
+  db_multi_az             = true
+  db_instance_class       = "db.m6g.large"
   db_engine_version       = "17.5"
   db_family               = "postgres17"
   db_major_engine_version = "17"
-  db_name                 = "tcplus"
+  db_name                 = "grn"
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
   # Redis cache (unique cluster id in same account)
   cache_enable          = true
-  cache_cluster_id      = "grn-staging-cache"
+  cache_cluster_id      = "grn-prod-cache"
   cache_node_type       = "cache.t3.micro"
   cache_num_cache_nodes = 3
   cache_engine_version  = "7.1"
@@ -239,16 +239,16 @@ module "grn_staging" {
 
   # SSM-backed application parameters
   cloudfront_enable                     = true
-  candidate_files_bucket                = "candidate-files.test.globalrefugee.net"
+  candidate_files_bucket                = "candidate-files.globalrefugee.net"
   s3_bucket                             = "files.tbbtalent.org" # todo: confirm or set GRN bucket
-  translations_bucket                   = "translations.test.globalrefugee.net"
+  translations_bucket                   = "translations.globalrefugee.net"
   translations_folder                   = "translations"
-  environment                           = "grn-staging"
-  email_default                         = "-"
+  environment                           = "grn-prod"
+  email_default                         = "noreply@globalrefugee.net"
   email_test_override                   = "-"
-  email_user                            = "-"
+  email_user                            = "noreply@globalrefugee.net"
   email_type                            = "SMTP"
-  es_url                                = "https://tc-staging.es.us-east-1.aws.found.io:9243" # todo: retire or set GRN
+  es_url                                = "https://tc-prod.es.us-east-1.aws.found.io:9243" # todo: retire or set GRN
   es_username                           = "elastic"
   gradle_home                           = "/usr/local/gradle"
   java_home                             = "/usr/lib/jvm/java"
@@ -257,10 +257,10 @@ module "grn_staging" {
   m2                                    = "/usr/local/apache-maven/bin"
   m2_home                               = "/usr/local/apache-maven"
   server_port                           = "8080"
-  server_url                            = "https://test.globalrefugee.net/"
-  sf_base_classic_url                   = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/" # todo: set GRN if different
-  sf_base_lightning_url                 = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
-  sf_base_login_url                     = "https://test.salesforce.com/"
+  server_url                            = "https://globalrefugee.net/"
+  sf_base_classic_url                   = "https://talentbeyondboundaries.my.salesforce.com/"  # todo: retire or set GRN
+  sf_base_lightning_url                 = "https://talentbeyondboundaries.lightning.force.com"  # todo: retire or set GRN
+  sf_base_login_url                     = "https://login.salesforce.com/"  # todo: retire or set GRN
   spring_client_url                     = "-"
   # Empty so SPRING_DATASOURCE_URL is auto-populated from the RDS created by this stack.
   # The provided spring_datasource_username/password are used to create the RDS master user and are written to SSM for the app.
@@ -270,13 +270,13 @@ module "grn_staging" {
   spring_db_pool_min              = "20"
   spring_servlet_max_file_size    = "10MB"
   spring_servlet_max_request_size = "10MB"
-  tc_api_url                      = "https://test.api.globalrefugee.net"
-  tc_cors_urls                    = "https://test.globalrefugee.net,https://www.test.globalrefugee.net"
+  tc_api_url                      = "https://api.globalrefugee.net"
+  tc_cors_urls                    = "https://globalrefugee.net,https://www.globalrefugee.net"
   tc_db_copy_config               = "data.sharing/tcCopies.xml"
   tc_destinations                 = "Australia,Canada,New Zealand,United Kingdom"
-  tc_skills_extraction_api_url    = "https://test.skills.globalrefugee.net"
-  web_admin                       = "https://test.globalrefugee.net/admin-portal"
-  web_portal                      = "https://test.globalrefugee.net/candidate-portal"
+  tc_skills_extraction_api_url    = "https://skills.globalrefugee.net"
+  web_admin                       = "https://globalrefugee.net/admin-portal"
+  web_portal                      = "https://globalrefugee.net/candidate-portal"
   tc_instance_type                = "GRN"
 
   # Secrets: loaded from secrets.auto.tfvars
@@ -311,7 +311,7 @@ terraform {
 
   backend "s3" {
     bucket         = "opc-shared-terraform-state"
-    key            = "staging/grn/terraform.tfstate"
+    key            = "prod/grn/terraform.tfstate"
     region         = "eu-west-2"
     dynamodb_table = "opc-terraform-locks"
     encrypt        = "true"
