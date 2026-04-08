@@ -50,6 +50,14 @@ variable "s3_bucket" {
   type = string
 }
 
+variable "translations_bucket" {
+  type = string
+}
+
+variable "translations_folder" {
+  type = string
+}
+
 variable "es_password" {
   type = string
 }

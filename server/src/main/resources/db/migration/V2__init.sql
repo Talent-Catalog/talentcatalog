@@ -6509,3 +6509,16 @@ values  (1, 'Information Session', 'active'),
         (21, 'University or school referral', 'active'),
         (22, 'Employer referral', 'active'),
         (23, 'Event or webinar', 'active');
+
+insert into public.system_language (id, language, label, status, created_by, created_date, updated_by, updated_date)
+values  (1, 'en', 'English', 'active', null, null, null, null),
+        (2, 'ar', 'عربى Arabic', 'active', null, null, null, null),
+        (5, 'ps', 'پښتو Pashto', 'active', null, null, null, null),
+        (4, 'fa', 'فارسی Dari', 'active', null, null, null, null),
+        (6, 'es', 'Español', 'active', null, null, null, null),
+        (8, 'fr', 'Français', 'active', null, null, null, null),
+        (7, 'tr', 'Türkçe', 'active', null, null, null, null),
+        (9, 'ru', 'Pусский', 'active', null, null, null, null),
+        (10, 'uk', 'Yкраїнська', 'active', null, null, null, null),
+        (12, 'nl', 'Nederlands', 'active', null, null, null, null),
+        (11, 'pt', 'Português', 'active', null, null, null, null);

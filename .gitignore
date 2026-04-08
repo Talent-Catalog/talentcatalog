@@ -364,3 +364,4 @@ server/src/test/resources/dump.sql
 /infra/aws/terraform/opc-staging/ssm-parameters.sh
 /infra/aws/terraform/opc-prod/ssm-parameters.sh
 performance-tests/src/gatling/resources/users.csv
+/.idea

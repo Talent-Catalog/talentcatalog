@@ -27,6 +27,7 @@ ext {
     isDev = System.properties['env'] == 'dev'
     mapstructVersion = "1.6.3"
     lombokMapstructBindingVersion = "0.2.0"
+    awsSdkVersion = "2.42.15"
     // Flyway upgrade (Postgres 17.5 compatible)
     set('flyway.version', '11.20.1')
 }
@@ -125,6 +126,13 @@ dependencies {
     //Does not get included in Spring Boot starter
     implementation 'org.springframework.security:spring-security-messaging'
 
+    // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/bom
+    implementation(platform("software.amazon.awssdk:bom:$awsSdkVersion"))
+    // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/s3
+    implementation("software.amazon.awssdk:s3")
+    // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/cloudfront
+    implementation("software.amazon.awssdk:cloudfront")
+
     implementation platform('com.google.cloud:libraries-bom:22.0.0')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20210629-1.32.1'
@@ -157,7 +165,6 @@ dependencies {
     implementation 'com.google.apis:google-api-services-drive:v3-rev20210725-1.32.1'
 
     implementation("org.apache.commons:commons-lang3")
-    implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
@@ -260,7 +267,7 @@ tasks.register('chatbotEval', Test) {
         includeTags 'chatbot-eval'
     }
     outputs.dir(layout.buildDirectory.dir('reports/chatbot-eval'))
-    
+
     doFirst {
         println "=========================================="
         println "Running Chatbot Evaluation Tests"

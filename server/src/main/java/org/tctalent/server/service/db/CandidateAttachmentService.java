@@ -25,9 +25,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
-import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tctalent.server.request.attachment.ListByUploadTypeRequest;
@@ -88,6 +88,17 @@ public interface CandidateAttachmentService {
      * @throws IOException if there is a problem retrieving the attachment.
      */
     CandidateAttachment getCandidateAttachment(Long id)
+            throws IOException, NoSuchObjectException;
+
+    /**
+     * Retrieves details on the given attachment.
+     * @param publicId Public ID of requested attachment
+     * @return CandidateAttachment containing link to the file in
+     * {@link CandidateAttachment#getUrl()}
+     * @throws NoSuchObjectException if no attachment with that id exists
+     * @throws IOException if there is a problem retrieving the attachment.
+     */
+    CandidateAttachment getCandidateAttachmentByPublicId(String publicId)
             throws IOException, NoSuchObjectException;
 
     CandidateAttachment updateCandidateAttachment(Long id,

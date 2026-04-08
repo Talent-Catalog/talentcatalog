@@ -14,9 +14,19 @@ provider "aws" {
   region = "us-east-1"
 }
 
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+}
+
 # Include the flat configuration
 module "website" {
   source = "../"
+
+  providers = {
+    aws           = aws
+    aws.us_east_1 = aws.us_east_1
+  }
 
   app                             = var.app
   env                             = var.env
@@ -30,6 +40,8 @@ module "website" {
   aws_access_key                  = var.aws_access_key
   aws_secret_key                  = var.aws_secret_key
   s3_bucket                       = var.s3_bucket
+  translations_bucket             = var.translations_bucket
+  translations_folder             = var.translations_folder
   es_password                     = var.es_password
   es_url                          = var.es_url
   es_username                     = var.es_username

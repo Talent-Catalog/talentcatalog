@@ -14,13 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.task;
+package org.tctalent.server.files;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Different types of uploadable document
  *
  * @author John Cameron
  */
+@Getter
+@RequiredArgsConstructor
 public enum UploadType {
     apcInterestForm,
     collaborationAgreement,
@@ -44,9 +49,9 @@ public enum UploadType {
     offer,
     otherId,
     otherIdTrans,
-    passport,
-    policeCheck,
-    policeCheckTrans,
+    passport(true),
+    policeCheck(true),
+    policeCheckTrans(true),
     proofAddress,
     proofAddressTrans,
     references,
@@ -59,5 +64,12 @@ public enum UploadType {
     unhcrUnrwaRegCard,
     vaccination,
     vaccinationTrans,
-    visa
+    visa;
+
+    private final boolean signedAccess;
+
+    UploadType() {
+        this(false);
+    }
+
 }

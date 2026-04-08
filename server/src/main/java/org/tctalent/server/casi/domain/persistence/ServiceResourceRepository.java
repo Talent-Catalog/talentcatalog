@@ -39,6 +39,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
     where provider     = :provider
       and service_code = :serviceCode
       and status       = 'AVAILABLE'
+      and resource_type = 'UNIQUE'
     order by id
     for update skip locked
     limit 1

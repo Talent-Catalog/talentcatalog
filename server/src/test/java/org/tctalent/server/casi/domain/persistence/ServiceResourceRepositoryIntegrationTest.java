@@ -37,6 +37,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
+import org.tctalent.server.casi.domain.model.ResourceType;
 import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
 
 /**
@@ -150,6 +151,22 @@ class ServiceResourceRepositoryIntegrationTest extends BaseJpaIntegrationTest {
     assertThat(result).isNotNull();
     assertThat(result.getId()).isEqualTo(nonProctoredAvailable.getId());
     assertThat(result.getServiceCode()).isEqualTo(ServiceCode.TEST_NON_PROCTORED);
+  }
+
+  @Test
+  @DisplayName("lockNextAvailable ignores SHARED resources")
+  void lockNextAvailable_ignoresSharedResources() {
+    ServiceResourceEntity shared = saveResource(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED,
+        "PROC-INT-SHARED", ResourceStatus.AVAILABLE,
+        OffsetDateTime.now().plusDays(30),
+        ResourceType.SHARED);
+
+    ServiceResourceEntity result = repo.lockNextAvailable(
+        ServiceProvider.DUOLINGO.name(), ServiceCode.TEST_PROCTORED.name());
+
+    assertThat(result).isNotNull();
+    assertThat(result.getId()).isNotEqualTo(shared.getId());
   }
 
   // ── concurrent lockNextAvailable (FOR UPDATE SKIP LOCKED) ─────────────
@@ -466,12 +483,20 @@ class ServiceResourceRepositoryIntegrationTest extends BaseJpaIntegrationTest {
       ServiceProvider provider, ServiceCode serviceCode,
       String resourceCode, ResourceStatus status,
       OffsetDateTime expiresAt) {
+    return saveResource(provider, serviceCode, resourceCode, status, expiresAt, ResourceType.UNIQUE);
+  }
+
+  private ServiceResourceEntity saveResource(
+      ServiceProvider provider, ServiceCode serviceCode,
+      String resourceCode, ResourceStatus status,
+      OffsetDateTime expiresAt, ResourceType resourceType) {
     ServiceResourceEntity e = new ServiceResourceEntity();
     e.setProvider(provider);
     e.setServiceCode(serviceCode);
     e.setResourceCode(resourceCode);
     e.setStatus(status);
     e.setExpiresAt(expiresAt);
+    e.setResourceType(resourceType);
     return repo.saveAndFlush(e);
   }
 }

@@ -20,6 +20,25 @@ resource "aws_ssm_parameter" "s3_bucket" {
   value = var.s3_bucket
 }
 
+resource "aws_ssm_parameter" "translations_bucket" {
+  name  = "/${var.app}/${var.env}/S3_TRANSLATIONS_BUCKET"
+  type  = "String"
+  value = var.translations_bucket
+}
+
+resource "aws_ssm_parameter" "translations_folder" {
+  name  = "/${var.app}/${var.env}/S3_TRANSLATIONS_FOLDER"
+  type  = "String"
+  value = var.translations_folder
+}
+
+resource "aws_ssm_parameter" "candidate_files_bucket" {
+  count = var.cloudfront_enable ? 1 : 0
+  name  = "/${var.app}/${var.env}/S3_CANDIDATE_FILES_BUCKET"
+  type  = "String"
+  value = aws_s3_bucket.candidate_files[0].bucket
+}
+
 resource "aws_ssm_parameter" "duolingo_api_secret" {
   name  = "/${var.app}/${var.env}/DUOLINGO_API_APISECRET"
   type  = "SecureString"
@@ -261,8 +280,8 @@ resource "aws_ssm_parameter" "spring_datasource_password" {
 }
 
 resource "aws_ssm_parameter" "spring_datasource_url" {
-  name  = "/${var.app}/${var.env}/SPRING_DATASOURCE_URL"
-  type  = "String"
+  name = "/${var.app}/${var.env}/SPRING_DATASOURCE_URL"
+  type = "String"
   # Explicit spring_datasource_url takes precedence (e.g. connecting to legacy external TC DB).
   # Falls back to auto-populated RDS endpoint when db_enable=true and no explicit URL is provided.
   value = var.spring_datasource_url != "" ? var.spring_datasource_url : (var.db_enable ? "jdbc:postgresql://${module.database[0].db_instance_endpoint}/${var.db_name}" : "")
