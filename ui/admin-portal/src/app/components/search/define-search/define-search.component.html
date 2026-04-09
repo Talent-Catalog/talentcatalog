@@ -905,7 +905,7 @@
               </tc-button>
             </div>
             <div class="col text-center">
-              <input type="checkbox" [checked]="useOldSearch"
+              <input type="checkbox" [checked]="useOldSearch" [disabled]="!searchRequest"
                      (change)="useOldSearch = !useOldSearch"> Use old way of searching
             </div>
           </div>

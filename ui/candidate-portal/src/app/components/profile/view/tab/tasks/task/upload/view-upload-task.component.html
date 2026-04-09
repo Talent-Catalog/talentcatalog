@@ -19,9 +19,12 @@
   <div class="section-heading d-flex justify-content-between">
     <h5>{{ 'TASKS.UPLOAD.HEADER' | translate }}</h5>
 
-    <button class="btn btn-sm btn-outline-secondary mb-2" [routerLink]="['edit', 'upload']">
-      {{ 'TASKS.UPLOAD.VIEW' | translate }} <fa-icon icon="folder-open" class="ms-1"></fa-icon>
-    </button>
+    <tc-button size="sm"
+               type="outline"
+               class="mb-2"
+               [routerLink]="['edit', 'upload']">
+      {{ 'TASKS.UPLOAD.VIEW' | translate }} <i class="fas fa-folder-open ms-1"></i>
+    </tc-button>
   </div>
   <div class="card">
     <div>

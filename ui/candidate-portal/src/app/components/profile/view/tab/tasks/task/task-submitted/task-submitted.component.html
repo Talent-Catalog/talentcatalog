@@ -5,7 +5,7 @@
     </ng-container>
   </div>
 
-  <button class="btn btn-sm btn-secondary" (click)="returnToTasksClicked()">
-    <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
-  </button>
+  <tc-button size="sm" (onClick)="returnToTasksClicked()">
+    <i class="me-1 fas fa-arrow-left"></i>{{ 'TASKS.TASK.RETURN' | translate }}
+  </tc-button>
 </div>

@@ -21,8 +21,8 @@
     <!-- EDUCATION TYPE / LEVEL -->
     <div class="col-12">
       <div class="mb-3">
-        <label class="form-label" for="educationType">{{ 'FORM.EDUCATION.EDUCATIONTYPE' | translate }} <sup>*</sup></label>
-        <ng-select id="educationType" [formControlName]="'educationType'" [clearable]="false"
+        <tc-label for="educationType">{{ 'FORM.EDUCATION.EDUCATIONTYPE' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="educationType" [formControlName]="'educationType'" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option value="Associate">{{ 'EDUCATIONTYPE.ASSOCIATE' | translate }}</ng-option>
           <ng-option value="Vocational">{{ 'EDUCATIONTYPE.VOCATIONAL' | translate }}</ng-option>
@@ -36,8 +36,8 @@
     <!-- MAJOR  -->
     <div class="col-12">
       <div class="mb-3">
-        <label class="form-label" for="educationMajorId">{{ 'FORM.EDUCATION.EDUCATIONMAJORID' | translate }} <sup>*</sup></label>
-        <ng-select id="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors" [clearable]="false"
+        <tc-label for="educationMajorId">{{ 'FORM.EDUCATION.EDUCATIONMAJORID' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors" [clearable]="false"
                    bindValue="id" bindLabel="name" placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
         </ng-select>
       </div>
@@ -46,16 +46,16 @@
     <!-- COURSE NAME -->
     <div class="col-12">
       <div class="mb-3">
-        <label class="form-label" for="courseName">{{ 'FORM.EDUCATION.COURSENAME' | translate }} <sup>*</sup></label>
-        <input type="text" class="form-control" placeholder="" id="courseName" [formControlName]="'courseName'">
+        <tc-label for="courseName">{{ 'FORM.EDUCATION.COURSENAME' | translate }} <sup>*</sup></tc-label>
+        <tc-input type="text" placeholder="" id="courseName" [formControlName]="'courseName'"></tc-input>
       </div>
     </div>
 
     <!-- LOCATION -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="countryId">{{ 'FORM.EDUCATION.COUNTRYID' | translate }} <sup>*</sup></label>
-        <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
+        <tc-label for="countryId">{{ 'FORM.EDUCATION.COUNTRYID' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
                    bindLabel="name" bindValue="id" placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
         </ng-select>
       </div>
@@ -64,24 +64,24 @@
     <!-- Institution -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="institution">{{ 'FORM.EDUCATION.INSTITUTION' | translate }} <sup>*</sup></label>
-        <input type="text" class="form-control" placeholder="" id="institution" [formControlName]="'institution'">
+        <tc-label for="institution">{{ 'FORM.EDUCATION.INSTITUTION' | translate }} <sup>*</sup></tc-label>
+        <tc-input type="text" placeholder="" id="institution" [formControlName]="'institution'"></tc-input>
       </div>
     </div>
 
     <!-- COURSE LENGTH -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="lengthOfCourseYears">{{ 'FORM.EDUCATION.LENGTHOFCOURSEYEARS' | translate }} <sup>*</sup></label>
-        <input type="number" class="form-control" placeholder="" id="lengthOfCourseYears" [formControlName]="'lengthOfCourseYears'">
+        <tc-label for="lengthOfCourseYears">{{ 'FORM.EDUCATION.LENGTHOFCOURSEYEARS' | translate }} <sup>*</sup></tc-label>
+        <tc-input type="number" placeholder="" id="lengthOfCourseYears" [formControlName]="'lengthOfCourseYears'"></tc-input>
       </div>
     </div>
 
     <!-- GRADUATION YEAR -->
     <div class="col-8 col-md-4">
       <div class="mb-3">
-        <label class="form-label" for="yearCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></label>
-        <ng-select id="yearCompleted" [formControlName]="'yearCompleted'" [items]="years" [clearable]="false"
+        <tc-label for="yearCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="yearCompleted" [formControlName]="'yearCompleted'" [items]="years" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
         </ng-select>
       </div>
@@ -90,10 +90,10 @@
     <!-- GRADUATION YEAR -->
     <div class="col-4 col-md-2">
       <div class="mb-3">
-        <input class="form-check-input" type="radio" id="incomplete" [value]="true" [formControlName]="'incomplete'">
-        <label class="form-check-label" for="incomplete">
+        <input type="radio" id="incomplete" [value]="true" [formControlName]="'incomplete'">
+        <tc-label for="incomplete">
           {{ 'FORM.EDUCATION.INCOMPLETE' | translate }}
-        </label>
+        </tc-label>
       </div>
     </div>
 
@@ -101,17 +101,16 @@
 
   <app-error [error]="error"></app-error>
 
-  <div class="text-center mt-4 submit">
-    <button class="btn btn-outline-primary"
-            [disabled]="loading || saving"
-            (click)="cancel()">
+  <div class="text-center mt-4 submit d-flex justify-content-center gap-2">
+    <tc-button type="outline"
+               [disabled]="loading || saving"
+               (onClick)="cancel()">
       {{ 'FORM.JOBEXPERIENCE.BUTTON.CANCEL' | translate }}
-    </button>
-    <button class="btn btn-primary"
-            [disabled]="form.invalid"
-            (click)="save()">
+    </tc-button>
+    <tc-button [disabled]="form.invalid"
+               (onClick)="save()">
       {{ 'FORM.LABEL.SAVE' | translate }}
-    </button>
+    </tc-button>
   </div>
 
 </form>

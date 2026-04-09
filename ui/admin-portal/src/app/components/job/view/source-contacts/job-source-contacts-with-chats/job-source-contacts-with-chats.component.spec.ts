@@ -33,7 +33,7 @@ import {ViewChatPostsComponent} from "../../../../chat/view-chat-posts/view-chat
 import {
   CreateUpdatePostComponent
 } from "../../../../chat/create-update-post/create-update-post.component";
-import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {QuillModule} from "ngx-quill";
 import {MockPartner} from "../../../../../MockData/MockPartner";
 import {MockJobChat} from "../../../../../MockData/MockJobChat";
@@ -52,9 +52,10 @@ describe('JobSourceContactsWithChatsComponent', () => {
     authSpy.getLoggedInUser.and.returnValue(MockPartner);
 
     const authzSpy = jasmine.createSpyObj('AuthorizationService',
-      ['isViewingAsSource', 'isSourcePartner', 'isDefaultSourcePartner', 'isJobCreator']);
+      ['isViewingAsSource', 'isSourcePartner', 'isDefaultSourcePartner', 'isJobCreator', 'canViewChats']);
     authzSpy.isSourcePartner.and.returnValue(true);
     authzSpy.isDefaultSourcePartner.and.returnValue(false);
+    authzSpy.canViewChats.and.returnValue(true);
 
     chatService = jasmine.createSpyObj('ChatService', ['getOrCreate','getChatIsRead$','getChatPosts$', 'markChatAsRead']);
     chatService.getOrCreate.and.returnValue(of(new MockJobChat()));

@@ -27,7 +27,6 @@ export interface CandidateAttachment {
   id: number;
   type: AttachmentType;
   name: string;
-  location: string;
   url: string;
   createdBy: User;
   createdDate: number;
@@ -43,7 +42,7 @@ export class CandidateAttachmentRequest {
   candidateId: number;
   type: AttachmentType;
   name: string;
-  location: string;
+  url: string;
   cv: boolean;
   uploadType: UploadType;
   fileType?: string; //Not needed for links

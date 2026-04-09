@@ -178,12 +178,15 @@
       <ng-select
         class="tc-select"
         [readonly]="!isEditable()"
-        [items]="lists"
+        [items]="lists$ | async"
         [multiple]="true"
         [placeholder]="'Select or Type'"
         [closeOnSelect]="false"
         [clearable]="false"
-        [loading]="savingList"
+        [loading]="listsLoading || savingList"
+        [typeahead]="listsInput$"
+        [minTermLength]="1"
+        typeToSearchText="Type 1 or more characters to search lists"
         bindLabel="name"
         [clearSearchOnAdd]="true"
         [(ngModel)]="selectedLists"
@@ -224,7 +227,6 @@
         <tc-tabs [activeTabId]="activeTabId"
                  (tabChanged)="onTabChanged($event)"
         >
-
           <!-- GENERAL -->
           <tc-tab [id]="'General'">
             <tc-tab-header>
@@ -288,7 +290,9 @@
             </tc-tab-header>
             <tc-tab-content>
               <app-candidate-mini-intake-tab
-                [candidate]="candidate">
+                [candidate]="candidate"
+                [tabIsActive]="activeTabId === 'MiniIntake'"
+              >
               </app-candidate-mini-intake-tab>
             </tc-tab-content>
           </tc-tab>
@@ -300,7 +304,9 @@
             </tc-tab-header>
             <tc-tab-content>
               <app-candidate-intake-tab
-                [candidate]="candidate">
+                [candidate]="candidate"
+                [tabIsActive]="activeTabId === 'FullIntake'"
+              >
               </app-candidate-intake-tab>
             </tc-tab-content>
           </tc-tab>
@@ -343,7 +349,7 @@
           </tc-tab>
 
           <!-- Chat between source partner and candidate, or the option to create one -->
-          <tc-tab [id]="'CandidateProspect'" *ngIf="candidateProspectTabVisible">
+          <tc-tab [id]="'CandidateProspect'" *ngIf="candidateProspectTabVisible && canViewChats()">
             <!-- Tab header -->
             <tc-tab-header>
               Chat With Candidate

@@ -503,6 +503,7 @@ const ALL_FIELDS = {
         "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
+          "ASPIRATIONS": null,
           "SURVEY": null,
           "COMMENT": null,
         },
@@ -778,6 +779,34 @@ const ALL_FIELDS = {
         'STEPS_TEXT': null,
         'GOOD_LUCK': null,
         'CTA_BUTTON': null,
+      }
+    },
+    'LINKEDIN': {
+      'TITLE': null,
+      'DESCRIPTION': null,
+      'NEW_ASSIGNMENT_INTRO': null,
+      'NEW_ASSIGNMENT_VERIFY': null,
+      'NEW_ASSIGNMENT_ENTER': null,
+      'NEW_ASSIGNMENT_PLACEHOLDER': null,
+      'LINKEDIN_URL_WARN': null,
+      'VERIFY_BTN': null,
+      'SUBMIT_BTN': null,
+      'ASSIGNED': null,
+      'REDEEM_BTN': null,
+      'FAIL_TITLE': null,
+      'FAIL_PARA': null,
+      'BACK': null,
+      'REDEEMED': {
+        'TITLE': null,
+        'DESCRIPTION': null,
+        'ISSUE_TITLE': null,
+        'ISSUE_DESCRIPTION': null,
+        'ISSUE_DESCRIPTION_HERE': null,
+        'REPORT_TITLE': null,
+        'REPORT_BTN': null,
+        'REPORT_THANKS': null,
+        'REPORT_DESCRIPTION': null,
+        'REPORT_COMMENT_PLACEHOLDER': null,
       }
     }
   },

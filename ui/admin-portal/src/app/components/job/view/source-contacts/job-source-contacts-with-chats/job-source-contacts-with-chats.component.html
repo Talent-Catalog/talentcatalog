@@ -15,7 +15,15 @@
   -->
 
 <div class="row">
-  <div class="col-sm-{{mainPanelColWidth}}">
+  <div *ngIf="canViewChats()" class="col-sm-{{mainPanelColWidth}}">
+    <app-view-job-source-contacts
+        [job]="job"
+        [selectable]="selectable"
+        (sourcePartnerSelection)="onSourcePartnerSelected($event)"
+    >
+    </app-view-job-source-contacts>
+  </div>
+  <div *ngIf="!canViewChats()">
     <app-view-job-source-contacts
         [job]="job"
         [selectable]="selectable"
@@ -24,7 +32,7 @@
     </app-view-job-source-contacts>
   </div>
 
-  <div class="col-sm-{{sidePanelColWidth}}">
+  <div *ngIf="canViewChats()" class="col-sm-{{sidePanelColWidth}}">
     <div *ngIf="canToggleSizes()" class="float-end">
       <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
         class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>

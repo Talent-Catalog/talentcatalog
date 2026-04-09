@@ -75,7 +75,7 @@ describe('PartnerDpaComponent', () => {
     component.ngOnInit();
     tick();
 
-    expect(mockTermsInfoService.getCurrentByType).toHaveBeenCalledWith(TermsType.DATA_PROCESSING_AGREEMENT);
+    expect(mockTermsInfoService.getCurrentByType).toHaveBeenCalledWith(TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT);
     expect(mockPartnerService.getPartner).toHaveBeenCalledWith('p1', DtoType.MINIMAL);
 
     expect(component.currentDpa).toEqual(mockDpa);

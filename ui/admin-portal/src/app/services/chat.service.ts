@@ -76,7 +76,13 @@ export class ChatService implements OnDestroy {
     private authenticationService: AuthenticationService,
     private http: HttpClient,
     private rxStompService: RxStompService
-  ) {}
+  ) {
+    this.authenticationService.loggedInUser$.subscribe(user => {
+      if (user === null) {
+        this.cleanUp();
+      }
+    });
+  }
 
   ngOnDestroy(): void {
     //Note that there seems to be some doubt whether this is called when a service is destroyed.
@@ -97,6 +103,8 @@ export class ChatService implements OnDestroy {
     this.chatPosts$.clear();
     this.chatByRequest$.clear();
 
+    //Reinitialize so new takeUntil pipes work after re-login
+    this.destroyStompSubscriptions$ = new Subject<void>();
   }
 
   /**

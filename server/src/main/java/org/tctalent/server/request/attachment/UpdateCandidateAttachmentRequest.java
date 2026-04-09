@@ -20,7 +20,7 @@ public class UpdateCandidateAttachmentRequest {
 
     private Long id;
     private String name;
-    private String location;
+    private String url;
     private Boolean cv;
 
     public Long getId() {
@@ -39,12 +39,12 @@ public class UpdateCandidateAttachmentRequest {
         this.name = name;
     }
 
-    public String getLocation() {
-        return location;
+    public String getUrl() {
+        return url;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Boolean getCv() { return cv; }

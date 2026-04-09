@@ -14,24 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-button.custom-emoji-btn {
-  color: #444 !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
-button.custom-emoji-btn:hover {
-  color: #0066cc !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
-button.custom-emoji-btn-menu-open {
-  color: #0066cc !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
 emoji-mart#editorPicker {
   position: fixed;
   top: 50%;
@@ -54,27 +36,23 @@ emoji-mart#editorPicker {
   position: relative;
 }
 
-button.custom-link-btn {
-  color: #444 !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
+button.custom-quill-btn {
+  color: #444;
+  padding-top: 0 !important;
+
+  &:hover {
+    color: #0066cc !important;
+  }
 }
 
-button.custom-link-btn:hover {
+button.custom-quill-btn-selected {
   color: #0066cc !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
+  padding-top: 0 !important;
 }
 
-button.custom-link-btn-selected {
-  color: #0066cc !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
-/* Mobile screen styling */
+/* Mobile screen styling - override colour change on hover */
 @media only screen and (max-width: 600px) {
-  button.custom-link-btn:hover {
+  button.custom-quill-btn:hover {
     color: #444 !important;
   }
 }

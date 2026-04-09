@@ -98,22 +98,36 @@ Download and install the latest of the following tools.
   brew install gradle
   ```
 
-- Node [https://nodejs.org/en/](https://nodejs.org/en/)
-    - Note that developers should use **Node version 18**, specifically versions **18.10.0 and 
-    above**, which is currently the latest LTS (Long Term Support) version compatible with Angular 16.
+- Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
+    - This project requires **Node.js 18** 
+    - We currently pin Node 18.20.7 (via .nvmrc), which satisfies Angular 17’s Node 18.13+ 
+      requirement.
         - See [Angular Compatibility Table](https://angular.io/guide/versions)
         - See [Node.js Releases](https://nodejs.org/en/about/releases/)
-    - If using Node 17 or higher, it’s recommended to add `--host=127.0.0.1` to the `ng serve` 
-    command to avoid debugger and sourcemap issues in IntelliJ. The `start` scripts in `package.json`
-    have been bundled with this parameter for convenience.
+
+    - **Install Node using nvm (recommended)**
+      - If you don’t already have nvm installed:
+        ```
+        brew install nvm
+        ```
+        Note the messages from brew at the end of the install.
+        You will have to manually set up the path.
+
+        Restart your terminal (or reload your shell), then from the project root:
+        ```
+        nvm install
+        nvm use
+        node -v 
+        # should output v18.20.7
+        ```
+      
+    - **IntelliJ users**
+      - When using Node 17+, `ng serve` may require `--host=127.0.0.1` to avoid debugger and sourcemap 
+        issues in IntelliJ.
+      - The `start` scripts in `package.json` in each ui module already include this flag for 
+        convenience.
         - See [IntelliJ Angular Debugging Guide](https://www.jetbrains.com/help/idea/angular.html)
         - See [IntelliJ Angular Debugging Troubleshooting](https://www.jetbrains.com/help/idea/angular.html#ws_angular_debug_app_troubleshooting)
-
-  ```
-  brew install node@18
-  ```
-    - Note the messages from brew at the end of the install.
-      You will have to manually set up the path.
 
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
@@ -260,7 +274,18 @@ Then you can run `init` (only need to do this once), and then `plan` or `apply`,
 
 ### Set up your local database ###
 
-Ask TC developers for a `pg_dump` of the database. Note that the dump does not have to be recent. 
+If you just create a database called `tctalent` with no tables, 
+running the server for the first time will automatically create all the required tables. 
+(See the section below on `Run the Server`) 
+It will also automatically create some static data, including populating the country and language
+tables. Lastly it will create a system admin user called SystemAdmin that you can log in with
+and start creating other users and configuration. You can use the `boot-admin-password` property
+in `application.yml` to define a password for that user.
+
+Alternately, ask TC developers for a `pg_dump` of the database. The advantage of the the dump
+is that you will get a database populated with a lot of test data and users. 
+
+Note that the dump does not have to be recent. 
 The software will automatically apply any required updates to the database definition, driven by 
 Flyway files stored in GitHub. 
 
@@ -506,20 +531,23 @@ for additional documentation.
 
 ### Master branch ###
 
-The main branch is "master". We only merge and push into "master" when we are
-ready to deploy to production (rebuild and upload of build artifacts to the
-production environment is automatic, triggered by any push to "master".
-See Deployment section below).
+The main branch is "master". We only merge into "master" when code is ready for production. A push 
+to "master" automatically runs the build and test pipeline but does **not** automatically deploy to 
+any production environment. Production image deployments to GRN and TC (TBB + OPC) are triggered
+independently and manually — see the
+[Release Runbook wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Release#release-runbook)
+for full details.
 
-Master should only be accessed directly when staging
-is merged into it, triggering deployment to production. You should not
+Master should only be accessed directly when staging is merged into it. You should not
 do normal development in Master.
 
 ### Staging branch ###
 
 The "staging" branch is used for code which is potentially ready to go into
-production. Code is pushed into production by merging staging into master and
-then pushing master. See Deployment section below.
+production. Code is promoted to production by merging staging into master. Production deployments 
+are then triggered manually via GitHub Actions — see the
+[Release wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Release) for the
+release runbook.
 
 Staging is a shared resource so you should only push changes there when
 you have finished changes which you are confident will build without error
@@ -562,3 +590,4 @@ See the Deployment and Monitoring pages on the
 
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
 
+For copyright header format and conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).

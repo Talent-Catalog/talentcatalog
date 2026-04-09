@@ -23,10 +23,12 @@ import {
   CandidateOccupationService
 } from "../../../../../../../services/candidate-occupation.service";
 import {MockCandidate} from "../../../../../../../MockData/MockCandidate";
-import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 import {
   mockCandidateIntakeData
 } from "../../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {TcAccordionComponent} from "../../../../../../../shared/components/accordion/tc-accordion.component";
+import {TcAccordionItemComponent} from "../../../../../../../shared/components/accordion/accordion-item/tc-accordion-item.component";
+import {By} from "@angular/platform-browser";
 import {of, throwError} from "rxjs";
 import {DependantsComponent} from "../../../../../intake/dependants/dependants.component";
 import {
@@ -87,14 +89,17 @@ describe('VisaJobCheckCaComponent', () => {
     const educationSpy = jasmine.createSpyObj('CandidateEducationService', ['list']);
     const occupationSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,NgbAccordionModule,ReactiveFormsModule,
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,
         NgSelectModule],
       declarations: [ VisaJobCheckCaComponent,DependantsComponent,VisaJobNotesComponent,FixedInputComponent,
         RelocatingDependantsComponent,JobEligibilityAssessmentComponent,JobInterestComponent,
         AgeRequirementComponent,RelevantWorkExpComponent,IneligiblePathwaysComponent,PreferredPathwaysComponent,
         EligiblePathwaysComponent,OccupationCategoryComponent,OccupationSubcategoryComponent
         ,AutosaveStatusComponent,VisaJobPutForwardComponent,QualificationRelevantComponent,
-        LanguageThresholdComponent ],
+        LanguageThresholdComponent,
+        TcAccordionComponent,
+        TcAccordionItemComponent
+      ],
       providers: [
         { provide: CandidateEducationService, useValue: educationSpy },
         { provide: CandidateOccupationService, useValue: occupationSpy }
@@ -157,12 +162,15 @@ describe('VisaJobCheckCaComponent', () => {
     expect(component.error).toBe('Error fetching qualifications');
   });
 
-  it('should expand all panels after view init', () => {
+  it('should open all panels after view init', () => {
     fixture.detectChanges(); // ngOnInit() gets called here
-    component.visaJobCanada = { expandAll: jasmine.createSpy('expandAll') } as any;
 
-    component.ngAfterViewInit();
+    // Get the accordion component instance
+    const accordionDebugElement = fixture.debugElement.query(By.directive(TcAccordionComponent));
+    expect(accordionDebugElement).toBeTruthy();
 
-    expect(component.visaJobCanada.expandAll).toHaveBeenCalled();
+    // The accordion items should be open (this is handled by the accordion component's allOpen input)
+    const accordionComponent = accordionDebugElement.componentInstance as TcAccordionComponent;
+    expect(accordionComponent.allOpen).toBe(true);
   });
 });

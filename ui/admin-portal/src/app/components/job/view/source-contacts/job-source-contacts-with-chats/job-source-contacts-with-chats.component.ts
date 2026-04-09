@@ -56,7 +56,10 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
       //Source partners auto select and can only
       //display their chat with the destination partner associated with the job.
       this.selectedSourcePartner = this.authenticationService.getLoggedInUser().partner;
-      this.displayChat();
+
+      if (this.canViewChats()) {
+        this.displayChat();
+      }
 
       //Selection can't change
       this.selectable = false;
@@ -72,9 +75,13 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.job && this.selectedSourcePartner) {
+    if (this.job && this.selectedSourcePartner && this.canViewChats()) {
       this.displayChat();
     }
+  }
+
+  canViewChats() {
+    return this.authorizationService.canViewChats();
   }
 
   private displayChat() {

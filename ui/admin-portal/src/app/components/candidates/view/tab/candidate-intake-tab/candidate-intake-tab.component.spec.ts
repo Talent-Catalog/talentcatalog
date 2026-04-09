@@ -29,7 +29,6 @@ import {CountryService} from "../../../../../services/country.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of} from "rxjs";
 import {
-  NgbAccordion,
   NgbAccordionModule,
   NgbDatepickerModule,
   NgbTooltipModule
@@ -199,8 +198,7 @@ describe('CandidateIntakeTabComponent', () => {
         { provide: CandidateCitizenshipService, useValue: citizenshipSpy },
         { provide: CandidateExamService, useValue: examSpy },
         { provide: CandidateDependantService, useValue: dependantSpy },
-        { provide: AuthorizationService, useValue: authorizationSpy },
-        NgbAccordion
+        { provide: AuthorizationService, useValue: authorizationSpy }
       ]
     }).compileComponents();
   });

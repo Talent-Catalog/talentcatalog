@@ -246,7 +246,7 @@
       </tc-tab>
       <tc-tab id="CandidateChats"
               description="Chats that include the candidate"
-              *ngIf="hasVisibleCandidateChats()">
+              *ngIf="canViewChats() && hasVisibleCandidateChats()">
         <tc-tab-header>
           Chats with candidate
           <app-chat-read-status [chats]="candidateChats"></app-chat-read-status>
@@ -258,7 +258,7 @@
 
       <tc-tab id="NonCandidateChats"
               description="Chats that exclude the candidate"
-              *ngIf="hasVisibleNonCandidateChats()">
+              *ngIf="canViewChats() && hasVisibleNonCandidateChats()">
         <tc-tab-header>
           Chats without candidate
           <app-chat-read-status [chats]="nonCandidateChats"></app-chat-read-status>

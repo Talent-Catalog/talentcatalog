@@ -23,10 +23,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.security.JwtAuthenticationEntryPoint;
 import org.tctalent.server.security.JwtTokenProvider;
-import org.tctalent.server.security.TcUserDetails;
-import org.tctalent.server.security.TcUserDetailsService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 /**
@@ -45,7 +44,7 @@ public class ApiTestBase {
     protected User user;
 
     @MockBean
-    TcUserDetailsService tcUserDetailsService;
+    UserRepository userRepository;
     @MockBean
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @MockBean
@@ -59,8 +58,7 @@ public class ApiTestBase {
         when(jwtTokenProvider.validateToken(anyString())).thenReturn(true);
         when(jwtTokenProvider.getUsernameFromJwt(anyString())).thenReturn(USER_NAME);
 
-        when(tcUserDetailsService.loadUserByUsername(anyString()))
-                .thenReturn(new TcUserDetails(user));
+        when(userRepository.findByUsernameIgnoreCase(anyString())).thenReturn(user);
     }
 
 

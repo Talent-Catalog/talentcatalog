@@ -25,25 +25,45 @@ import org.tctalent.server.casi.domain.model.ServiceProvider;
 
 /**
  * Task policy interface defining tasks to be executed on various service events.
- * Implementations should specify the provider they handle and the tasks for each event.
+ * <p>
+ * Policies are registered <b>per provider</b> (one {@code TaskPolicy} per {@link ServiceProvider}).
+ * When a single provider offers multiple service codes that require different task workflows,
+ * implementations should branch on {@code event.assignment().getServiceCode()} inside each method
+ * rather than registering separate policy classes.  Every event carries the full
+ * {@link org.tctalent.server.casi.domain.model.ServiceAssignment} so the service code is always
+ * available at call time.
  *
  * @author sadatmalik
  */
 public interface TaskPolicy {
 
-  // Unique provider identifier
+  /**
+   * The provider this policy handles.  The {@link TaskPolicyRegistry} keeps exactly one policy per
+   * provider; if two policies return the same provider the application will fail to start.
+   */
   ServiceProvider provider();
 
-  // Tasks to execute when a service is assigned
+  /**
+   * Tasks to execute when a service is assigned.
+   * <p>
+   * Note that this method is required (no default implementation) because the "assigned" event is
+   * the only one guaranteed to be emitted for every service assignment.
+   */
   List<String> tasksOnAssigned(ServiceAssignedEvent e);
 
-  // Tasks to execute when a service is redeemed
+  /**
+   * Tasks to execute when a service is redeemed.
+   */
   default List<String> tasksOnRedeemed(ServiceRedeemedEvent e) { return List.of(); }
 
-  // Tasks to close when a service is reassigned
+  /**
+   * Tasks to close when a service is reassigned.
+    */
   default List<String> tasksOnReassigned(ServiceReassignedEvent e) { return List.of(); }
 
-  // Tasks to close when a service expires
+  /**
+   * Tasks to close when a service expires.
+   */
   default List<String> tasksOnExpired(ServiceExpiredEvent e) { return List.of(); }
 
 }

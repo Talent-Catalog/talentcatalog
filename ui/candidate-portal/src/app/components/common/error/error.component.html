@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<p class="alert alert-danger" *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   <span *ngIf="error.code">{{"ERROR."+error.code | translate}}</span>
   <span *ngIf="!error.code">{{error.error?.message || error.message || error}}</span>
-</p>
+</tc-alert>

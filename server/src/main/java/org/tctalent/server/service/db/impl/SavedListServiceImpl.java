@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +45,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.EntityExistsException;
@@ -69,6 +71,7 @@ import org.tctalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tctalent.server.repository.db.GetSavedListsQuery;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
@@ -77,6 +80,7 @@ import org.tctalent.server.request.candidate.PublishedDocColumnDef;
 import org.tctalent.server.request.candidate.PublishedDocColumnSetUp;
 import org.tctalent.server.request.candidate.PublishedDocColumnType;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -88,6 +92,7 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
+import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DocPublisherService;
 import org.tctalent.server.service.db.ExportColumnsService;
@@ -98,6 +103,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -115,6 +121,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
     private final CandidateRepository candidateRepository;
+    private final CandidateDtoFetchService candidateDtoFetchService;
     private final CandidateSavedListRepository candidateSavedListRepository;
     private final CandidateOpportunityService candidateOpportunityService;
     private final ExportColumnsService exportColumnsService;
@@ -134,6 +141,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Autowired
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
+        CandidateDtoFetchService candidateDtoFetchService,
         CandidateSavedListRepository candidateSavedListRepository,
         CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
@@ -145,6 +153,7 @@ public class SavedListServiceImpl implements SavedListService {
         UserRepository userRepository,
         UserService userService) {
         this.candidateRepository = candidateRepository;
+        this.candidateDtoFetchService = candidateDtoFetchService;
         this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateOpportunityService = candidateOpportunityService;
         this.exportColumnsService = exportColumnsService;
@@ -548,6 +557,123 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedList get(@NonNull User user, String listName) {
         return listName == null ? null :
             savedListRepository.findByNameIgnoreCase(listName, user.getId()).orElse(null);
+    }
+
+    @NonNull
+    @Override
+    public Set<Long> getCandidateIds(long savedListId) {
+        return savedListRepository.findUnionOfCandidates(List.of(savedListId));
+    }
+
+    @Override
+    public Page<CandidateReadDto> getSavedListCandidateDtos(
+        @NonNull SavedList savedList, SavedListGetRequest request) {
+        final PageRequest pageRequest = request.getPageRequest();
+
+        String sql = extractFetchSQL(savedList, request, true);
+        String countSql = extractCountSQL(savedList, request);
+
+        return candidateDtoFetchService.fetchPage(sql, countSql, pageRequest);
+    }
+
+    private String extractCountSQL(SavedList savedList, SavedListGetRequest request) {
+        String joinAndWhereSql = extractJoinAndWhereSQL(savedList, request, false);
+        String selectSql = extractCountSelectSql();
+        return selectSql + joinAndWhereSql;
+    }
+
+    private String extractCountSelectSql() {
+        return "select count(distinct candidate.id) from candidate";
+    }
+
+    private String extractFetchSQL(
+        SavedList savedList, SavedListGetRequest request, boolean ordered) {
+        String joinAndWhereSql = extractJoinAndWhereSQL(savedList, request, ordered);
+
+        String selectSql = extractFetchSelectSql(request, ordered);
+
+        String sql = selectSql + joinAndWhereSql;
+
+        if (ordered) {
+            Sort sort = request.getSort();
+            String orderBySql = CandidateSearchUtils.buildOrderByClause(sort);
+            sql += orderBySql;
+        }
+
+        return sql;
+    }
+
+    private String extractFetchSelectSql(SavedListGetRequest request, boolean ordered) {
+        String sql;
+        if (!ordered) {
+            sql = "select distinct candidate.id from candidate";
+        } else {
+            Sort sort = request.getSort();
+
+            sql = "select distinct candidate.id";
+            String nonIdSortFields =
+                CandidateSearchUtils.buildNonIdFieldList(sort, null);
+            if (!nonIdSortFields.isEmpty()) {
+                sql += "," + nonIdSortFields;
+            }
+            sql += " from candidate";
+        }
+        return sql;
+    }
+
+    private String extractJoinAndWhereSQL(
+        @NonNull SavedList savedList, SavedListGetRequest request, boolean ordered) {
+        long savedListId = savedList.getId();
+        Long jobOppId = savedList.getSfJobOpp() == null ? null : savedList.getSfJobOpp().getId();
+
+        //Uses a LinkedHashSet so that ordering is predictable - which helps unit testing
+        Set<String> joins = new LinkedHashSet<>();
+        List<String> ands = new ArrayList<>();
+
+        //Candidates must be in list
+        joins.add("candidate_saved_list");
+        ands.add(
+            "candidate.id in (select candidate_id from candidate_saved_list where saved_list_id = "
+                + savedListId + ")");
+
+        //Filter on key word (matching candidate number or name)
+        if (StringUtils.hasText(request.getKeyword())) {
+            joins.add("users");
+            String keyword = request.getKeyword().toLowerCase();
+            ands.add("(lower(candidate_number) like '%" + keyword + "%'"
+                + " or lower(concat(users.first_name, ' ', users.last_name)) like '%" + keyword + "%')" );
+        }
+
+        //Filter only if this list has an associated jobOpp and the request is NOT to show closed
+        //opportunities.
+        //The exception is that we do want to see "won" opportunities even though won is a closed state.
+        if (jobOppId != null && request.getShowClosedOpps() != null && !request.getShowClosedOpps()) {
+            ands.add("candidate.id in (select candidate_id from candidate_opportunity where job_opp_id ="
+                + jobOppId + " and closed = false or won = true)");
+        }
+
+        if (ordered) {
+            List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(request.getSort());
+            if (!tableSet.isEmpty()) {
+                joins.addAll(tableSet);
+            }
+        }
+
+        String joinClause = joins.stream()
+            .map(CandidateSearchUtils::getTableJoin)
+            .collect(Collectors.joining(" left join "));
+
+        String whereClause = String.join(" and ", ands);
+
+        String query = "";
+        if (!joinClause.isEmpty()) {
+            query += " left join " + joinClause;
+        }
+        if (!whereClause.isEmpty()) {
+            query += " where " + whereClause;
+        }
+
+        return query;
     }
 
     @Override

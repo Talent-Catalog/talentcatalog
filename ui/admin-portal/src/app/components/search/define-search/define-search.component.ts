@@ -437,7 +437,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
    */
   getIdsMultiSelect(request): SearchCandidateRequestPaged {
     request.candidateNumbers = CandidateNumberParser.parseCandidateNumbers(request.candidateNumbers);
-    
+
     if (request.countries != null) {
       request.countryIds = request.countries.map(c => c.id);
       delete request.countries;

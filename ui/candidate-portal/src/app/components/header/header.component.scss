@@ -54,7 +54,7 @@ $navbar-height: 80px;
 }
 
 .navbar-staging {
-  background-color: #7D0101;
+  background-color: #fbdede;
   #logo {
     visibility: hidden;
   }
@@ -64,7 +64,7 @@ $navbar-height: 80px;
 }
 
 .navbar-local {
-  background-color: #4f3d77;
+  background-color: #d2e7ec;
 }
 
 .translation-toggle {
@@ -98,6 +98,11 @@ body > .dropdown > .dropdown-menu {
 
 // Mobile
 @media screen and (max-width: 768px) {
+
+  .navbar .logo {
+    height: 40px;
+  }
+
   .mobile-menu-item {
     text-align: center;
   }

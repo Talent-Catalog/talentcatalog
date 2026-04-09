@@ -16,20 +16,23 @@
 
 import {Injectable, OnDestroy} from '@angular/core';
 import {catchError, map} from "rxjs/operators";
-import {JwtResponse} from "../model/jwt-response";
+import {JwtAuthenticationResponse} from "../model/jwt-authentication-response";
 import {Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
-import {AuthenticateInContextTranslationRequest} from "./auth.service";
 import {LoginRequest} from "../model/base";
 import {LocalStorageService} from "./local-storage.service";
-import {CandidateStatus} from "../model/candidate";
+import {CandidateStatus, RegisterCandidateRequest} from "../model/candidate";
+import {TcInstanceType} from "../model/tc-instance-type";
+import {TermsType} from "../model/terms-info-dto";
+
+export class AuthenticateInContextTranslationRequest {
+  password: string;
+}
 
 /**
- * Manages authentication - ie login/logout.
- * <p/>
- * See also Auth service which is more about authorization.
+ * Manages authentication - ie login/logout and registration
  */
 @Injectable({
   providedIn: 'root'
@@ -89,6 +92,24 @@ export class AuthenticationService implements OnDestroy {
     return this.localStorageService.get('access-token');
   }
 
+  canViewChats(): boolean {
+    return this.localStorageService.get('can_view_chats');
+  }
+
+  getCandidatePolicyType(): TermsType {
+    let tcInstanceType = this.getTcInstanceType();
+    return tcInstanceType == TcInstanceType.GRN ?
+      TermsType.GRN_CANDIDATE_PRIVACY_POLICY : TermsType.TBB_CANDIDATE_PRIVACY_POLICY;
+  }
+
+  getTcInstanceType(): TcInstanceType {
+    return this.localStorageService.get('tc_instance_type');
+  }
+
+  isGrnInstance(): boolean {
+    return this.getTcInstanceType() == TcInstanceType.GRN;
+  }
+
   isAuthenticated(): boolean {
     return this.getLoggedInUser() != null;
   }
@@ -103,7 +124,7 @@ export class AuthenticationService implements OnDestroy {
 
   login(credentials: LoginRequest) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      map((response: JwtResponse) => {
+      map((response: JwtAuthenticationResponse) => {
         this.storeCredentials(response);
       }),
       catchError(e => {
@@ -126,6 +147,13 @@ export class AuthenticationService implements OnDestroy {
     this.setCandidateStatus(null);
   }
 
+  register(request: RegisterCandidateRequest) {
+    return this.http.post<JwtAuthenticationResponse>(`${this.apiUrl}/register`, request).pipe(
+      map((response) => this.storeCredentials(response)),
+      catchError((e) => throwError(e))
+    );
+  }
+
   setCandidateStatus(candidateStatus: CandidateStatus) {
     this.candidateStatus = candidateStatus;
     this.localStorageService.set('candidateStatus', this.candidateStatus);
@@ -137,15 +165,18 @@ export class AuthenticationService implements OnDestroy {
     this.loggedInUser$.next(this.loggedInUser);
   }
 
-  private storeCredentials(response: JwtResponse) {
+  private storeCredentials(response: JwtAuthenticationResponse) {
     //Remove any old credentials from storage
     this.localStorageService.remove('access-token');
     this.localStorageService.remove('user');
+    this.localStorageService.remove('can_view_chats');
+    this.localStorageService.remove('tc_instance_type');
 
     //Update new credentials in storage
     this.localStorageService.set('access-token', response.accessToken);
+    this.localStorageService.set('can_view_chats', response.canViewChats);
+    this.localStorageService.set('tc_instance_type', response.tcInstanceType);
 
     this.setLoggedInUser(response.user);
   }
-
 }

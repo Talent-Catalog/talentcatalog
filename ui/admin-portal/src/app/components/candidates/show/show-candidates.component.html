@@ -234,6 +234,10 @@
 
   <div class="results-area">
 
+    <div class="col text-center">
+      <input type="checkbox" [checked]="useOldFetch"
+             (change)="toggleFetch()"> Old fetch
+    </div>
 
     <!-- Review status -->
     <div *ngIf="isReviewable()" class="mt-3">
@@ -290,9 +294,9 @@
            class="d-flex align-items-center gap-2"
       >
         <tc-button [type]="'outline'"
+                   [loading]="savingSelection"
                    (onClick)="saveSelectionAgain()"
         >
-          <i class="fas fa-spinner fa-spin" *ngIf="savingSelection"></i>
           {{ targetListReplace ? 'Replace' : 'Save' }} Again
         </tc-button>
         <span class="d-flex align-items-center gap-2">
@@ -340,10 +344,10 @@
         <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
           <tc-button [color]="'primary'"
                      [disabled]="!isSelection()"
+                     [loading]="savingSelection"
                      (onClick)="saveSelection()"
                      title="Save selected candidates to a list"
                      class="save-selection-btn">
-            <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
             <i class="fas fa-user-check"></i> to
             <i class="fas fa-list"></i>
           </tc-button>
@@ -359,28 +363,28 @@
 
           <tc-button [color]="'primary'"
                      *ngIf="canUpdateStatuses()"
+                     [loading]="updatingStatuses"
                      [disabled]="!isSelection()"
                      (onClick)="updateStatusOfSelection()"
                      title="Update statuses of selected candidates">
-            <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
             <i class="fas fa-user-check"></i>
             Status change
           </tc-button>
 
           <tc-button [color]="'primary'"
                      *ngIf="canResolveTasks()"
+                     [loading]="updatingTasks"
                      [disabled]="!isSelection()"
                      (onClick)="resolveTaskAssignments()"
                      title="Resolve any outstanding tasks">
-            <i class="fas fa-spinner fa-spin" *ngIf=updatingTasks></i>
             <i class="fas fa-user-check"></i> Resolve tasks
           </tc-button>
 
           <tc-button [color]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
+                     [loading]="updating"
                      (onClick)="createUpdateSalesforce()"
                      title="Create or update selected candidate cases">
-            <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
             <i class="fas fa-user-check"></i> Update Case/s <i class="fa-solid fa-address-book"></i>
           </tc-button>
 
@@ -395,9 +399,9 @@
           <tc-button [color]="'primary'"
                      *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                      [disabled]="!isSelection()"
+                     [loading]="closing"
                      (onClick)="closeSelectedOpportunities()"
                      title="Close selected candidate cases. Not removed from list but hidden unless 'Show closed cases' checkbox is checked.">
-            <i class="fas fa-spinner fa-spin" *ngIf=closing></i>
             <i class="fas fa-user-check"></i> Remove (Close)
           </tc-button>
 
@@ -423,35 +427,35 @@
         <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
           <tc-button [type]="'outline'"
                      *ngIf="isImportable()"
+                     [loading]="importing"
                      (onClick)="importCandidates()"
                      title="Import candidates"
                      class="import-candidates-btn">
-            <i class="fas fa-spinner fa-spin" *ngIf=importing></i>
             Import <i class="fas fa-file-excel"></i>
           </tc-button>
 
           <tc-button [type]="'outline'"
+                     [loading]="exporting"
                      *ngIf="!isSavedList() && isExportable()"
                      (onClick)="exportCandidates()"
                      title="Export candidates">
-            <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
             Export <i class="fas fa-file-excel"></i>
           </tc-button>
 
           <tc-button [type]="'outline'"
                      *ngIf="isPublishable()"
+                     [loading]="publishing"
                      (onClick)="modifyExportColumns()"
                      title="Publish candidates to be shared externally - eg with employers">
-            <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>
             Publish <i class="fas fa-globe"></i>
           </tc-button>
 
           <tc-button [type]="'outline'"
                      *ngIf= "hasPublishedDoc() && isContentModifiable()
                      && salesforceService.joblink(candidateSource)"
+                     [loading]="importingFeedback"
                      (onClick)="importEmployerFeedback()"
                      title="Import employer feedback from published list">
-            <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
             Feedback <i class="fas fa-globe"></i>
           </tc-button>
         </div>
@@ -580,7 +584,7 @@
                 </tc-icon>
               </div>
             </td>
-            <td>
+            <td (click)="$event.stopPropagation()">
               <div class="d-flex align-items-center gap-1">
                 <a [routerLink]="['/candidate',candidate.candidateNumber]">{{candidate.candidateNumber}}</a>
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">

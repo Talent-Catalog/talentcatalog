@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -69,7 +71,7 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
 
   @Override
   @Transactional
-  public void importFile(MultipartFile file, String serviceCode) throws ImportFailedException {
+  public void importFile(MultipartFile file, ServiceCode serviceCode) throws ImportFailedException {
     List<ServiceResourceEntity> newCoupons = new ArrayList<>();
     // Set to track coupon codes that have already been processed (avoids duplicates)
     Set<String> seenCouponCodes = new HashSet<>();
@@ -93,8 +95,11 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
       // Save all the new coupons to the repository if there are any
       saveCoupons(newCoupons);
 
-    } catch (ImportFailedException | IOException | CsvValidationException e) {
-      // Catch any exceptions related to the import process
+    } catch (ImportFailedException e) {
+      // Re-throw ImportFailedException as-is (already wrapped)
+      throw e;
+    } catch (IOException | CsvValidationException | RuntimeException e) {
+      // Catch any other exceptions related to the import process and wrap them
       throw new ImportFailedException(e);
     }
   }
@@ -138,6 +143,7 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
 
   /**
    * Processes each coupon line from the CSV and adds it to the newCoupons list if it's valid.
+   * Coupons with unrecognized prefixes are logged and skipped.
    * @param line the current line from the CSV
    * @param headers the array of headers from the CSV
    * @param columnIndex the map of column names to their indices
@@ -167,11 +173,23 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
           coupon.setStatus(mapDuolingoStatusToResource(rawStatus));
 
           // Set test type based on coupon code prefix
+          ServiceCode detectedServiceCode = null;
           if (couponCode.startsWith("ACCNONPROC") || couponCode.startsWith("NONP")) {
-            coupon.setServiceCode(ServiceCode.TEST_NON_PROCTORED);
+            detectedServiceCode = ServiceCode.TEST_NON_PROCTORED;
           } else if (couponCode.startsWith("ACC") || couponCode.startsWith("PROC")) {
-            coupon.setServiceCode(ServiceCode.TEST_PROCTORED);
+            detectedServiceCode = ServiceCode.TEST_PROCTORED;
           }
+
+          if (detectedServiceCode == null) {
+            // Log and skip coupons with unrecognized prefixes
+            LogBuilder.builder(log)
+                .action("processCouponLine")
+                .message("Skipping coupon with unrecognized prefix: " + couponCode)
+                .logWarn();
+            return; // Skip this coupon, don't add it to newCoupons
+          }
+
+          coupon.setServiceCode(detectedServiceCode);
           newCoupons.add(coupon);
         }
       }
@@ -194,12 +212,13 @@ public class DuolingoCouponImporter implements FileInventoryImporter {
 
   /**
    * Attempts to parse a date using multiple formatters.
+   * CSV dates have no timezone info, so they are assumed to be UTC.
    */
-  private LocalDateTime parseDate(String dateString, DateTimeFormatter... formatters) {
+  private OffsetDateTime parseDate(String dateString, DateTimeFormatter... formatters) {
     if (dateString != null && !dateString.trim().isEmpty()) {
       for (DateTimeFormatter formatter : formatters) {
         try {
-          return LocalDateTime.parse(dateString, formatter);
+          return LocalDateTime.parse(dateString, formatter).atOffset(ZoneOffset.UTC);
         } catch (DateTimeParseException ex) {
           LogBuilder.builder(log)
               .action("parseDate")

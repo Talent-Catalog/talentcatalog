@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateDtos;
 import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,6 +67,7 @@ import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
@@ -138,6 +140,13 @@ class CandidateAdminApiTest extends ApiTestBase {
                     getListOfCandidates().size()
             );
 
+    private final Page<CandidateReadDto> candidateDtos =
+            new PageImpl<>(
+                    getListOfCandidateDtos(),
+                    PageRequest.of(0,10, Sort.unsorted()),
+                    getListOfCandidates().size()
+            );
+
     private final Candidate candidate = getCandidate();
 
     @MockBean
@@ -201,11 +210,11 @@ class CandidateAdminApiTest extends ApiTestBase {
         SearchCandidateRequest request = new SearchCandidateRequest();
 
         given(savedSearchService
-                .searchCandidates(any(SearchCandidateRequest.class)))
-                .willReturn(candidates);
+                .searchCandidateDtos(any(SearchCandidateRequest.class)))
+                .willReturn(candidateDtos);
 
         postSearchRequestAndVerifyResponse(SEARCH_PATH, objectMapper.writeValueAsString(request));
-        verify(savedSearchService).searchCandidates(any(SearchCandidateRequest.class));
+        verify(savedSearchService).searchCandidateDtos(any(SearchCandidateRequest.class));
     }
 
     @Test

@@ -16,7 +16,7 @@
 
 package org.tctalent.server.casi.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Value;
 
@@ -32,7 +32,9 @@ public class ServiceResource {
   ServiceProvider provider;
   ServiceCode serviceCode;
   String resourceCode;
+  String countryIsoCode;
+  ResourceType resourceType;
   ResourceStatus status;
-  LocalDateTime sentAt;
-  LocalDateTime expiresAt;
+  OffsetDateTime sentAt;
+  OffsetDateTime expiresAt;
 }

@@ -17,6 +17,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
+import {SharedModule} from './shared/shared.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -109,36 +110,6 @@ import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
-import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {
-  faArrowLeft,
-  faArrowUpRightFromSquare,
-  faBriefcase,
-  faCalendar,
-  faCheck,
-  faChevronDown,
-  faChevronUp,
-  faEdit,
-  faEllipsisH,
-  faEnvelope,
-  faEnvelopeOpen,
-  faExternalLinkAlt,
-  faFaceSmile,
-  faFileUpload,
-  faFolderOpen,
-  faGlobe,
-  faHandshake,
-  faLink,
-  faListCheck,
-  faMessage,
-  faPlus,
-  faQuestion,
-  faQuestionCircle,
-  faTimes,
-  faTriangleExclamation,
-  faUser,
-  faXmark
-} from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
 } from './components/register/candidate-occupation/delete/delete-occupation.component';
@@ -148,7 +119,6 @@ import {
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
 import {LanguageLoader} from "./services/language.loader";
-import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
 import {
   RegistrationUploadFileComponent
 } from './components/register/upload-file/registration-upload-file.component';
@@ -259,6 +229,15 @@ import {
 import {
   IntlPhoneInputComponent
 } from './components/util/intl-phone-input/intl-phone-input.component';
+import {ChatbotComponent} from './components/chatbot/chatbot.component';
+import {
+  LinkedinComponent
+} from "./components/profile/view/tab/services/linkedin/linkedin.component";
+import {
+  LinkedinRedeemedComponent
+} from "./components/profile/view/tab/services/linkedin/linkedin-redeemed/linkedin-redeemed.component";
+import {ReferenceComponent} from './components/profile/view/tab/services/reference/reference.component';
+import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -353,6 +332,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     RefugeeStatusInfoFormComponent,
     TaskAbandonedComponent,
     IntlPhoneInputComponent,
+    ChatbotComponent,
+    LinkedinComponent,
+    LinkedinRedeemedComponent,
+    ReferenceComponent,
+    UnhcrComponent
   ],
   imports: [
     BrowserModule,
@@ -362,6 +346,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     FormsModule,
     NgbModule,
     NgbCollapseModule,
+    SharedModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
@@ -380,7 +365,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         useClass: PhraseAppCompiler
       }
     }),
-    FontAwesomeModule,
     NgSelectModule,
     NgxWigModule,
     QuillModule.forRoot(),
@@ -408,37 +392,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 })
 export class AppModule {
 
-  constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
+  constructor(private datepickerConfig: NgbDatepickerConfig) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
-    library.addIcons(
-      faArrowUpRightFromSquare,
-      faEdit,
-      faSpinner,
-      faChevronDown,
-      faChevronUp,
-      faEllipsisH,
-      faCalendar,
-      faExternalLinkAlt,
-      faGlobe,
-      faCheck,
-      faQuestion,
-      faTimes,
-      faArrowLeft,
-      faQuestionCircle,
-      faFolderOpen,
-      faFileUpload,
-      faFaceSmile,
-      faPlus,
-      faXmark,
-      faLink,
-      faUser,
-      faListCheck,
-      faBriefcase,
-      faMessage,
-      faHandshake,
-      faEnvelope,
-      faEnvelopeOpen,
-      faTriangleExclamation
-    );
   }
 }

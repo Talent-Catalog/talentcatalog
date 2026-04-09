@@ -36,7 +36,8 @@ describe('CandidateOccupation Model', () => {
       createdBy: user1,
       createdDate: Date.now(),
       updatedBy: user2,
-      updatedDate: Date.now()
+      updatedDate: Date.now(),
+      candidateJobExperiences: []
     };
   });
 

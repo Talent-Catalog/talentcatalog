@@ -34,9 +34,11 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -289,6 +291,24 @@ public interface SavedListService {
     SavedList get(@NonNull User user, String listName);
 
     /**
+     * Returns the candidate ids in the saved list with the given id.
+     * Or empty set if there is no saved list with that id.
+     * @param savedListId Saved list id
+     * @return Set of candidate ids
+     */
+    @NonNull
+    Set<Long> getCandidateIds(long savedListId);
+
+    /**
+     * Fetches candidate dtos from the given list according the given request.
+     * @param savedList Saved List whose candidates are to be fetched
+     * @param request Defines which candidates to fetch (if not all)
+     * @return Candidate dtos.
+     */
+    Page<CandidateReadDto> getSavedListCandidateDtos(
+        @NonNull SavedList savedList, SavedListGetRequest request);
+
+    /**
      * Returns true if there are no candidates in the list
      * @param id ID of list
      * @return True if no candidates in list
@@ -369,8 +389,9 @@ public interface SavedListService {
      * list will be returned through {@link Candidate#getContextNote()}
      * @param savedListId ID of saved list
      * @param candidates Candidate objects to be marked with the list context. Note that this
-     *                   is a transient property only found on the given objects (ie it is not
-     *                   stored in the database).
+     *                   is a transient property on the candidate objects because it depends on
+     *                   the list context. It does not come from the Candidate table, it comes
+     *                   from the CandidateSavedList table, depending on the particular list.
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 

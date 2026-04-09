@@ -15,29 +15,112 @@
   -->
 
 <div class="container">
-    <app-error [error]="error"></app-error>
-    <app-loading [loading]="loading"></app-loading>
+  <app-error [error]="error"></app-error>
+  <tc-loading [loading]="loading"></tc-loading>
 
-    <app-duolingo *ngIf="selectedService"
-                  [candidate]="candidate"
-                  (refresh)="refresh.emit()"
-                  [activeDuolingoTask]="activeDuolingoTask"
+  <app-linkedin *ngIf="(showLinkedin$ | async) && selectedService === Service.LINKEDIN"
+                [candidate]="candidate"
+                (backButtonClicked) = onBackButtonClick()
+  ></app-linkedin>
+
+  <app-duolingo *ngIf="activeDuolingoTask && selectedService === Service.DUOLINGO"
+                [candidate]="candidate"
+                (refresh)="refresh.emit()"
+                [activeDuolingoTask]="activeDuolingoTask"
+  ></app-duolingo>
+
+  <app-reference *ngIf="isLocalEnv() && (showReference$ | async) && selectedService === Service.REFERENCE"
+                 [candidate]="candidate"
+                 (backButtonClicked)="onBackButtonClick()"
+  ></app-reference>
+
+  <app-unhcr *ngIf="(showUnhcr$ | async) && selectedService === Service.UNHCR"
+             [candidate]="candidate"
+             (backButtonClicked)="onBackButtonClick()"
+  ></app-unhcr>
+
+  <ng-container *ngIf="!loading && !selectedService">
+
+    <app-tab-header>
+      <h2>{{ 'SERVICES.TITLE' | translate }}</h2>
+      <p>{{ 'SERVICES.DESCRIPTION' | translate }}</p>
+    </app-tab-header>
+
+    <!-- LinkedIn -->
+    <div *ngIf="showLinkedin$ | async"
+         class="service-card linkedin"
+         (click)="selectService(Service.LINKEDIN)"
     >
-    </app-duolingo>
+      <div>
+        <span class="service-tag linkedin">
+          LinkedIn
+        </span>
+        <h3>
+          {{ 'SERVICES.LINKEDIN.TITLE' | translate }}
+        </h3>
+        <p>
+          {{ 'SERVICES.LINKEDIN.DESCRIPTION' | translate }}
+        </p>
+      </div>
+      <img src="assets/images/services/linkedin.png" alt="LinkedIn Premium logo"/>
+    </div>
 
-    <ng-container *ngIf="!loading && !selectedService">
-         <app-tab-header>
-          <h2>{{ 'SERVICES.TITLE' | translate }}</h2>
-          <p>{{ 'SERVICES.DESCRIPTION' | translate }}</p>
-          </app-tab-header>
-        <div class="service-card" (click)="selectService('duolingo')">
+    <!-- Duolingo -->
+    <div *ngIf="activeDuolingoTask"
+         class="service-card duolingo"
+         (click)="selectService(Service.DUOLINGO)"
+    >
+      <div>
+        <span class="service-tag duolingo">
+          Duolingo
+        </span>
+        <h3>
+          {{ 'SERVICES.DUOLINGO.TITLE' | translate }}
+        </h3>
+        <p>
+          {{ 'SERVICES.DUOLINGO.DESCRIPTION' | translate }}
+        </p>
+      </div>
+      <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
+    </div>
 
-            <div>
-              <span class="service-tag">{{ 'SERVICES.DUOLINGO.TAG' | translate }}</span>
-              <h3>{{ 'SERVICES.DUOLINGO.TITLE' | translate }}</h3>
-              <p>{{ 'SERVICES.DUOLINGO.DESCRIPTION' | translate }}</p>
-            </div>
-            <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
-        </div>
-    </ng-container>
+    <!-- Reference service is only available in local environments -->
+    <div *ngIf="isLocalEnv() && (showReference$ | async)"
+         class="service-card"
+         (click)="selectService(Service.REFERENCE)"
+    >
+      <div>
+        <span class="service-tag">
+          Reference
+        </span>
+        <h3>
+          Reference Service
+        </h3>
+        <p>
+          Minimal CASI lifecycle test service.
+        </p>
+      </div>
+      <img src="assets/images/services/opcLogo.svg" alt="Reference Voucher (placeholder)"/>
+    </div>
+
+    <!-- UNHCR -->
+    <div *ngIf="showUnhcr$ | async"
+         class="service-card"
+         (click)="selectService(Service.UNHCR)"
+    >
+      <div>
+        <span class="service-tag">
+          UNHCR
+        </span>
+        <h3>
+          UNHCR Help
+        </h3>
+        <p>
+          Country-specific refugee support resources from UNHCR.
+        </p>
+      </div>
+      <img src="assets/images/services/unhcr.png" alt="UNHCR Logo"/>
+    </div>
+
+  </ng-container>
 </div>

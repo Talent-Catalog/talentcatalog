@@ -66,6 +66,19 @@
         </li>
       </ul>
     </div>
+
+    <!-- LinkedIn -->
+    <div class="col-md-4">
+      <h5>LinkedIn API Commands</h5>
+      <ul class="list-unstyled">
+        <li *ngFor="let cmd of linkedinCommands">
+          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+            <code>{{ cmd.command }}</code>
+          </a>
+          – {{ cmd.description }}
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 
@@ -77,5 +90,5 @@
 </div>
 <div class="mt-4" *ngIf="error">
   <hr>
-  <pre>{{error}}</pre>
+  <pre>{{ error?.error?.message || error?.message || error }}</pre>
 </div>

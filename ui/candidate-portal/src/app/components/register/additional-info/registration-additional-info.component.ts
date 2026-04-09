@@ -21,6 +21,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType, US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-registration-additional-info',
@@ -48,17 +49,19 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
 
   usAfghan: boolean;
   surveyTypes: SurveyType[];
-
+  isGRN: boolean = false;
   constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               public registrationService: RegistrationService,
-              private surveyTypeService: SurveyTypeService) {
+              private surveyTypeService: SurveyTypeService,
+              private authenticationService: AuthenticationService) {
   }
 
   ngOnInit() {
     const linkedInRegex = /^http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/
     this.saving = false;
+    this.isGRN = this.authenticationService.getTcInstanceType() === 'GRN'
     this.form = this.fb.group({
       additionalInfo: [''],
       surveyTypeId: [null, Validators.required],
@@ -66,6 +69,9 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       linkedInLink: ['', Validators.pattern(linkedInRegex)],
       allNotifications: [false],
     });
+    if (this.isGRN) {
+      this.form.addControl('aspirations', this.fb.control(''));
+    }
 
     this.candidateService.getCandidateSurvey().subscribe(
       (response) => {
@@ -92,11 +98,17 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
 
     this.candidateService.getCandidateAdditionalInfo().subscribe(
       (candidate) => {
-        this.form.patchValue({
+        const patch: any = {
           additionalInfo: candidate.additionalInfo,
           linkedInLink: candidate.linkedInLink,
           allNotifications: candidate.allNotifications
-        });
+        };
+        if (this.isGRN) {
+          patch.aspirations = candidate.aspirations;
+        }
+
+        this.form.patchValue(patch);
+        
         this._loading.additionalInfo = false;
         this._loading.linkedInLink = false;
         this._loading.allNotifications = false;

@@ -17,10 +17,11 @@
 import {NgbModal, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {CandidateService} from "../../../services/candidate.service";
+import {CandidateSavedListService} from "../../../services/candidate-saved-list.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {ViewCandidateComponent} from "./view-candidate.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {of, throwError} from "rxjs";
+import {of, Subject, throwError} from "rxjs";
 import {ActivatedRoute, convertToParamMap} from "@angular/router";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -54,6 +55,7 @@ describe('ViewCandidateComponent', () => {
   let fixture: ComponentFixture<ViewCandidateComponent>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;
   let mockSavedListService: jasmine.SpyObj<SavedListService>;
+  let mockCandidateSavedListService: jasmine.SpyObj<CandidateSavedListService>;
   let mockActivatedRoute: any;
   let mockModalService: jasmine.SpyObj<NgbModal>;
   let mockLocalStorageService: jasmine.SpyObj<LocalStorageService>;
@@ -65,9 +67,12 @@ describe('ViewCandidateComponent', () => {
   beforeEach(waitForAsync(() => {
     const mockCandidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get','getByNumber', 'generateToken','updateCandidate', 'candidateUpdated']);
     mockSavedListService = jasmine.createSpyObj('SavedListService', ['search']);
+    mockCandidateSavedListService = jasmine.createSpyObj('CandidateSavedListService', ['search', 'replace']);
+    mockCandidateSavedListService.search.and.returnValue(of([]));
+    mockCandidateSavedListService.replace.and.returnValue(of(null));
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
-    mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser'], { loggedInUser$: new Subject<any>() });
     const authorizationSpy = jasmine.createSpyObj('AuthorizationService', [
       'isEditableCandidate',
       'canViewPrivateCandidateInfo',
@@ -75,6 +80,7 @@ describe('ViewCandidateComponent', () => {
       'canAccessGoogleDrive',
       'canSeeGlobalLists',
       'canViewCandidateCV',
+      'canViewChats',
       'canSeeJobDetails',
       'isAnAdmin',
       'isReadOnly'
@@ -86,6 +92,7 @@ describe('ViewCandidateComponent', () => {
       providers: [
         { provide: CandidateService, useValue: mockCandidateServiceSpy },
         { provide: SavedListService, useValue: mockSavedListService },
+        { provide: CandidateSavedListService, useValue: mockCandidateSavedListService },
         { provide: ActivatedRoute, useValue: {
             paramMap: of(convertToParamMap({ candidateNumber: '123' }))
           }
@@ -132,12 +139,10 @@ describe('ViewCandidateComponent', () => {
   it('should set candidate lists correctly on setCandidateLists', () => {
     const mockLists: SavedList[] = [MockSavedList];
 
-    spyOn(component['candidateSavedListService'], 'replace').and.returnValue(of(null));
-
     component['setCandidateLists'](mockLists);
 
     expect(component.savingList).toBeFalse();
-    expect(component['candidateSavedListService'].replace).toHaveBeenCalled();
+    expect(mockCandidateSavedListService.replace).toHaveBeenCalled();
   });
 
   it('should handle loading error when candidate does not exist', () => {

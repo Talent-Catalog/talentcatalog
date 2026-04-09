@@ -16,11 +16,15 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import jakarta.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +56,6 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -63,7 +66,6 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     private final AuthService authService;
     private final CandidateService candidateService;
     private final FileSystemService fileSystemService;
-    private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListService savedListService;
     private final SavedListRepository savedListRepository;
     private final UserService userService;
@@ -73,7 +75,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     public CandidateSavedListServiceImpl(
         AuthService authService, CandidateService candidateService,
         FileSystemService fileSystemService,
-        SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
+        SavedListService savedListService,
         SavedListRepository savedListRepository,
         UserService userService,
         CandidateAttachmentRepository candidateAttachmentRepository,
@@ -81,7 +83,6 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         this.authService = authService;
         this.candidateService = candidateService;
         this.fileSystemService = fileSystemService;
-        this.salesforceJobOppService = salesforceJobOppService;
         this.savedListService = savedListService;
         this.savedListRepository = savedListRepository;
         this.userService = userService;
@@ -248,6 +249,25 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     }
 
     @Override
+    @NonNull
+    public Map<Long, CandidateSavedList> findByCandidateIds(Set<Long> ids, long savedListId) {
+
+        //Uses Spring Data query JPA repo method definition logic which supports nested properties.
+        //See
+        //https://docs.spring.io/spring-data/jpa/reference/repositories/query-methods-details.html#repositories.query-methods.query-property-expressions
+        //Hence: findBySavedList_Id
+        final List<CandidateSavedList> csls =
+            candidateSavedListRepository.findBySavedList_Id(savedListId);
+
+        //Now load the csls into a map by candidate id for easy access.
+        Map<Long, CandidateSavedList> result = new HashMap<>();
+        for (CandidateSavedList csl : csls) {
+            result.put(csl.getCandidate().getId(), csl);
+        }
+        return result;
+    }
+
+    @Override
     public boolean mergeCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
         Candidate candidate = candidateService.findByIdLoadSavedLists(candidateId);
 
@@ -296,7 +316,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         return done;
     }
 
-    private @NotNull Set<SavedList> fetchSavedLists(IHasSetOfSavedLists request)
+    private @NonNull Set<SavedList> fetchSavedLists(IHasSetOfSavedLists request)
         throws NoSuchObjectException {
 
         Set<SavedList> savedLists = new HashSet<>();

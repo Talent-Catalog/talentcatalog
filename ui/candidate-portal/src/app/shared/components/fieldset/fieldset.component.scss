@@ -1,0 +1,10 @@
+@import '../../../../scss/color-mixins';
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &:disabled{
+    @include text-color-disabled;
+  }
+}

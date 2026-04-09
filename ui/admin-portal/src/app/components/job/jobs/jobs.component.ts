@@ -112,8 +112,10 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     //Call standard processing (which puts the results into this.opps)
     super.processSearchResults(results);
 
-    //Then fetch the chats associated with all opps.
-    this.fetchChats();
+    if (this.canViewChats()) {
+      //Then fetch the chats associated with all opps.
+      this.fetchChats();
+    }
   }
 
   private fetchChats() {
@@ -172,6 +174,10 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
   public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
+  }
+
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
 }

@@ -45,6 +45,8 @@ public abstract class CandidateSearchUtils {
             "candidate_job_experience on candidate.id = candidate_job_experience.candidate_id");
         tableJoins.put("candidate_language",
             "candidate_language on candidate.id = candidate_language.candidate_id");
+        tableJoins.put("candidate_saved_list",
+            "candidate_saved_list on candidate.id = candidate_saved_list.candidate_id");
         tableJoins.put("candidate_occupation",
             "candidate_occupation on candidate.id = candidate_occupation.candidate_id");
         tableJoins.put("country",

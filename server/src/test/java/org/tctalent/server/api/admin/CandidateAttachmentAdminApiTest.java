@@ -254,7 +254,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                         .accept(MediaType.APPLICATION_JSON))
 
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code", is("missing_object")))
                 .andExpect(jsonPath("$.message", is("Missing FileSystemService with ID 99")));

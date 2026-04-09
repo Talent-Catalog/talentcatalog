@@ -16,7 +16,7 @@
 
 package org.tctalent.server.casi.domain.persistence;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -39,13 +39,14 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
     where provider     = :provider
       and service_code = :serviceCode
       and status       = 'AVAILABLE'
+      and resource_type = 'UNIQUE'
     order by id
     for update skip locked
     limit 1
     """, nativeQuery = true)
   ServiceResourceEntity lockNextAvailable(
-      @Param("provider") ServiceProvider provider,
-      @Param("serviceCode") ServiceCode serviceCode);
+      @Param("provider") String provider,
+      @Param("serviceCode") String serviceCode);
 
 
   @Query("""
@@ -60,6 +61,20 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
       @Param("provider") ServiceProvider provider,
       @Param("serviceCode") ServiceCode serviceCode,
       @Param("status") ResourceStatus status);
+
+  @Query("""
+    select r
+    from ServiceResourceEntity r
+    where r.provider = :provider
+      and r.serviceCode = :serviceCode
+      and r.status = org.tctalent.server.casi.domain.model.ResourceStatus.AVAILABLE
+      and r.countryIsoCode = :countryIsoCode
+    order by r.id asc
+    """)
+  List<ServiceResourceEntity> findAvailableByProviderServiceAndCountry(
+      @Param("provider") ServiceProvider provider,
+      @Param("serviceCode") ServiceCode serviceCode,
+      @Param("countryIsoCode") String countryIsoCode);
 
 
   @Query("""
@@ -86,6 +101,19 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
       @Param("provider") ServiceProvider provider,
       @Param("serviceCode") ServiceCode serviceCode);
 
+  @Query("""
+      select count(r)
+      from ServiceResourceEntity r
+      where r.provider = :provider
+        and r.serviceCode = :serviceCode
+        and r.status = org.tctalent.server.casi.domain.model.ResourceStatus.AVAILABLE
+        and r.countryIsoCode = :countryIsoCode
+      """)
+  long countAvailableByProviderServiceAndCountry(
+      @Param("provider") ServiceProvider provider,
+      @Param("serviceCode") ServiceCode serviceCode,
+      @Param("countryIsoCode") String countryIsoCode);
+
   // provider only (all service codes)
   @Query("""
       select count(r)
@@ -103,7 +131,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
        and r.expiresAt is not null
        and r.status not in :excluded
   """)
-  List<ServiceResourceEntity> findExpirable(@Param("now") LocalDateTime now,
+  List<ServiceResourceEntity> findExpirable(@Param("now") OffsetDateTime now,
       @Param("excluded") Collection<ResourceStatus> excluded);
 
   // Provider scoped; skip EXPIRED/REDEEMED/DISABLED; ignore null expiresAt
@@ -116,7 +144,7 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
   """)
   List<ServiceResourceEntity> findExpirableForProvider(
       @Param("provider") ServiceProvider provider,
-      @Param("now") LocalDateTime now,
+      @Param("now") OffsetDateTime now,
       @Param("excluded") Collection<ResourceStatus> excluded);
 
 }

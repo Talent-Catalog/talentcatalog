@@ -18,7 +18,6 @@ package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,12 +57,12 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -74,7 +73,6 @@ import org.tctalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemBaseEntity;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -108,7 +106,6 @@ public class CandidateAttachmentsServiceImplTest {
     @Mock private AuthService authService;
     @Mock private CandidateRepository candidateRepository;
     @Mock private CandidateService candidateService;
-    @Mock private S3ResourceHelper s3ResourceHelper;
     @Mock private FileSystemService fileSystemService;
     @Mock private OutputStream outputStream;
 
@@ -121,12 +118,12 @@ public class CandidateAttachmentsServiceImplTest {
     void setUp() {
         attachment = new CandidateAttachment();
         attachment.setName("an old name");
-        attachment.setLocation("www.apreviouslocation.com");
+        attachment.setUrl("www.apreviouslocation.com");
         attachmentPage = new PageImpl<>(List.of(attachment, attachment));
         attachmentList = List.of(attachment, attachment);
         createRequest = new CreateCandidateAttachmentRequest();
         createRequest.setCandidateId(candidateId);
-        createRequest.setLocation(LOCATION);
+        createRequest.setUrl(LOCATION);
         createRequest.setName(NAME);
         candidate = getCandidate();
         candidateId = candidate.getId();
@@ -291,7 +288,7 @@ public class CandidateAttachmentsServiceImplTest {
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
-        assertEquals(LOCATION, attachment.getLocation());
+        assertEquals(LOCATION, attachment.getUrl());
         assertEquals(AttachmentType.link, attachment.getType());
         assertEquals(ADMIN_USER, attachment.getCreatedBy());
     }
@@ -314,41 +311,11 @@ public class CandidateAttachmentsServiceImplTest {
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
-        assertEquals(LOCATION, attachment.getLocation());
+        assertEquals(LOCATION, attachment.getUrl());
         assertEquals(AttachmentType.googlefile, attachment.getType());
         assertTrue(attachment.isCv());
         assertEquals(TEXT_EXTRACT, attachment.getTextExtract());
         assertEquals(FILE_TYPE, attachment.getFileType());
-        assertEquals(ADMIN_USER, attachment.getCreatedBy());
-    }
-
-    @Test
-    @DisplayName("should create candidate attachment for file")
-    void createCandidateAttachment_shouldCreateCandidateAttachmentForFile() {
-        createRequest.setType(AttachmentType.file);
-        createRequest.setCv(false); // Because of the way that TextExtractHelper is injected, it
-        // can't be mocked - so we're not able to test the CV path.
-        createRequest.setFileType(FILE_TYPE);
-        createRequest.setTextExtract(TEXT_EXTRACT);
-
-        given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
-        given(candidateRepository.findById(createRequest.getCandidateId()))
-            .willReturn(Optional.of(candidate));
-        given(s3ResourceHelper.getS3Bucket()).willReturn("bucket");
-        given(s3ResourceHelper.downloadFile(anyString(), anyString())).willReturn(mock(File.class));
-
-        candidateAttachmentsService.createCandidateAttachment(createRequest);
-
-        verify(s3ResourceHelper).downloadFile(anyString(), anyString());
-        verify(s3ResourceHelper).copyObject(anyString(), anyString());
-        verify(candidateService).save(candidate, true,false);
-        verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
-        CandidateAttachment attachment = attachmentCaptor.getValue();
-        assertTrue(attachment.getLocation().contains(NAME));
-        assertEquals(AttachmentType.file, attachment.getType());
-        assertEquals(NAME, attachment.getName());
-        assertEquals(FILE_TYPE, attachment.getFileType());
-        assertFalse(attachment.isCv());
         assertEquals(ADMIN_USER, attachment.getCreatedBy());
     }
 
@@ -412,26 +379,6 @@ public class CandidateAttachmentsServiceImplTest {
         Exception ex = assertThrows(InvalidRequestException.class,
             () -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
         assertEquals("You can only delete your own uploads.", ex.getMessage());
-    }
-
-    @Test
-    @DisplayName("should delete file when attachment related to and uploaded by candidate")
-    void deleteCandidateAttachment_shouldDeleteFile_whenAttachmentRelatedToAndUploadedByCandidate() {
-        attachment.setCandidate(candidate2);
-        attachment.setCreatedBy(candidate2.getUser());
-        attachment.setType(AttachmentType.file);
-
-        given(authService.getLoggedInUser()).willReturn(Optional.of(candidate2.getUser()));
-        given(candidateAttachmentRepository.findByIdLoadCandidate(ATTACHMENT_ID))
-            .willReturn(Optional.of(attachment));
-        given(candidateService.getLoggedInCandidate()).willReturn(Optional.of(candidate2));
-
-        candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID);
-
-        verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
-        verify(candidateService).save(candidate2, true);
-        verify(s3ResourceHelper).deleteFile(anyString()); // Attempted delete of associated file
     }
 
     @Test
@@ -692,7 +639,7 @@ public class CandidateAttachmentsServiceImplTest {
         final String newName = "new name";
         updateRequest.setName(newName);
         final String newLocation = "new location";
-        updateRequest.setLocation(newLocation);
+        updateRequest.setUrl(newLocation);
         attachment.setCandidate(candidate);
         attachment.setType(AttachmentType.link);
 
@@ -705,7 +652,7 @@ public class CandidateAttachmentsServiceImplTest {
         candidateAttachmentsService.updateCandidateAttachment(ATTACHMENT_ID, updateRequest);
 
         assertEquals(newName, attachment.getName());
-        assertEquals(newLocation, attachment.getLocation());
+        assertEquals(newLocation, attachment.getUrl());
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true, false);
         assertEquals(ADMIN_USER, attachment.getUpdatedBy());

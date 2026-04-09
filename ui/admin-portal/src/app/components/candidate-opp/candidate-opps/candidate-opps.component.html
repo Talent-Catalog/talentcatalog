@@ -97,7 +97,7 @@
           </div>
         </div>
         <div class="row justify-content-center">
-          <div class="col-md-5">
+          <div *ngIf="canViewChats()" class="col-md-5">
             <tc-field [checkbox]="true">
               <tc-label class="form-check-label" [title]="withUnreadMessagesTip"
                         for="withUnreadMessages">{{ withUnreadMessagesLabel }}</tc-label>
@@ -165,7 +165,7 @@
         {{ opp.nextStepDueDate }}
       </td>
       <td *ngIf="!showJobOppName" [title]="opp.name">
-        <app-chat-read-status
+        <app-chat-read-status *ngIf="canViewChats()"
           [chats]="getChats(opp)"
         ></app-chat-read-status>
         {{ opp.name | truncate: 25 }}
@@ -191,7 +191,7 @@
         </tc-icon>
       </td>
       <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
-        <app-chat-read-status
+        <app-chat-read-status *ngIf="canViewChats()"
           [chats]="getChats(opp)"
         ></app-chat-read-status>
         {{ opp.jobOpp.name }}

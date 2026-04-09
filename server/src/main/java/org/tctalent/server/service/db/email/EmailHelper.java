@@ -412,14 +412,14 @@ public class EmailHelper {
     }
 
     /**
-     * Sends email to candidate user when they have accepted a job offer.
+     * Sends email to candidate when they have been hired.
      * <p/>
      * The purpose of the email is to congratulate them and introduce them to services that may be
      * useful to them now that they have the job.
      * @param candidate Candidate user
      * @throws EmailSendFailedException If there is a problem sending the email
      */
-    public void sendOfferAcceptedEmail(Candidate candidate) throws EmailSendFailedException {
+    public void sendCandidateHiredEmail(Candidate candidate) throws EmailSendFailedException {
 
         User user = candidate.getUser();
         String emailTo = user.getEmail();

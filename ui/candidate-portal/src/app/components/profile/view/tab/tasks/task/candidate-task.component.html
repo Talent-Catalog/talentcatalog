@@ -40,9 +40,9 @@
   </div>
 
   <div class="mt-4 mx-3 text-center flex-shrink-0">
-    <button class="btn btn-sm btn-secondary" (click)="goBack()">
-      <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
-    </button>
+    <tc-button size="sm" (onClick)="goBack()">
+      <i class="me-1 fas fa-arrow-left"></i> {{ 'TASKS.TASK.RETURN' | translate }}
+    </tc-button>
   </div>
 </div>
 
@@ -114,38 +114,33 @@
     <div class="card d-flex">
       <div *ngIf="!completedTask" class="mb-3">
         <div class="form-check-inline">
-          <label class="form-check-label mb-0 me-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</label>
+          <tc-label class="form-check-label mb-0 me-2" for="abandoned">{{ 'TASKS.COMMENT.ABANDONED.LABEL' | translate }}</tc-label>
           <input class="form-check-input" id="abandoned" [formControlName]="'abandoned'" type="checkbox">
         </div>
         <div>
-          <small class="text-muted">{{ 'TASKS.COMMENT.ABANDONED.NOTE' | translate }}</small>
+          <tc-description class="text-muted">{{ 'TASKS.COMMENT.ABANDONED.NOTE' | translate }}</tc-description>
         </div>
       </div>
 
       <div class="mb-3" *ngIf="isCommentVisible()">
-        <label class="fw-bold form-label" for="comment">
+        <tc-label for="comment">
           {{ 'TASKS.COMMENT.LABEL' | translate }}
-        </label>
-        <textarea id="comment" class="md-textarea-auto form-control" rows="5"
-                  [formControlName]="'comment'"></textarea>
+        </tc-label>
+        <tc-textarea id="comment" rows="5"
+                     [formControlName]="'comment'"></tc-textarea>
       </div>
 
-      <button class="btn btn-primary mt-2 align-self-start"
-              type="submit"
-              [disabled]="isSubmitDisabled()"
-      >
+      <tc-button class="mt-2 align-self-start"
+                 [disabled]="isSubmitDisabled()">
         {{ 'TASKS.TASK.SUBMIT-COMMENT' | translate }}
-        <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
-      </button>
+        <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
+      </tc-button>
 
     </div>
 
   </section>
 
 </form>
-
-
-
 
 
 

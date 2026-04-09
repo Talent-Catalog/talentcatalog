@@ -30,6 +30,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -94,6 +95,14 @@ public interface SavedSearchService {
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
     /**
+     * Returns the requested page of candidates which match the attributes in
+     * the request.
+     * @param request Request specifying which candidates to return
+     * @return Page of candidates
+     */
+    Page<CandidateReadDto> searchCandidateDtos(SearchCandidateRequest request);
+
+    /**
      * Returns the requested page of candidates of the given saved search.
      * @param savedSearchId ID of saved search
      * @param request Request specifying which page of candidates to return
@@ -103,6 +112,16 @@ public interface SavedSearchService {
     Page<Candidate> searchCandidates(
         long savedSearchId, SavedSearchGetRequest request)
         throws NoSuchObjectException;
+
+    /**
+     * Returns the requested page of candidates of the given saved search.
+     * @param savedSearchId ID of saved search
+     * @param request Request specifying which page of candidates to return
+     * @return Page of candidates
+     * @throws NoSuchObjectException if no saved search exists with given id.
+     */
+    Page<CandidateReadDto> searchCandidateDtos(
+        long savedSearchId, SavedSearchGetRequest request) throws NoSuchObjectException;
 
     /**
      * Returns a set of the ids of all candidates matching the given saved search.
@@ -122,7 +141,7 @@ public interface SavedSearchService {
 
     SearchCandidateRequest loadSavedSearch(long id);
 
-    SavedSearch getSavedSearch(long id);
+    SavedSearch getSavedSearch(long id) throws NoSuchObjectException;
 
     /**
      * Clears the given user's selections for the given saved search.

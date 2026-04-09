@@ -43,6 +43,16 @@ describe('LocalStorageService', () => {
       const storedValue = localStorage.getItem(prefix + testKey);
       expect(storedValue).toEqual(JSON.stringify(testValue));
     });
+    it('should handle null values', () => {
+      service.set(testKey, null);
+      const storedValue = localStorage.getItem(prefix + testKey);
+      expect(storedValue).toBeNull();
+    });
+    it('should handle undefined values', () => {
+      service.set(testKey, undefined);
+      const storedValue = localStorage.getItem(prefix + testKey);
+      expect(storedValue).toBeNull();
+    });
   });
 
   describe('#getItem', () => {
@@ -50,6 +60,12 @@ describe('LocalStorageService', () => {
       localStorage.setItem(prefix + testKey, JSON.stringify(testValue));
       const result = service.get<typeof testValue>(testKey);
       expect(result).toEqual(testValue);
+    });
+
+    it('should return null after logging a console error if type is wrong', () => {
+      localStorage.setItem(prefix + testKey, 'xxx');
+      const result = service.get<typeof testValue>(testKey);
+      expect(result).toBeNull();
     });
 
     it('should return null if the item does not exist in localStorage', () => {

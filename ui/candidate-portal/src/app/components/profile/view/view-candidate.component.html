@@ -18,7 +18,7 @@
 
   <app-error [error]="error"></app-error>
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
 
@@ -30,8 +30,8 @@
       <ng-container ngbNavItem="Profile">
 
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.PROFILE' | translate }}</span>
-          <fa-icon icon="user"></fa-icon>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.PROFILE' | translate }}</span>
+          <i class="fas fa-user"></i>
         </a>
         <ng-template ngbNavContent>
           <app-candidate-profile
@@ -43,8 +43,8 @@
       <!-- TASKS -->
       <ng-container ngbNavItem="Tasks">
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.TASKS' | translate }}</span>
-          <fa-icon icon="list-check"></fa-icon>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.TASKS' | translate }}</span>
+          <i class="fas fa-list-check"></i>
         </a>
         <ng-template ngbNavContent>
           <app-candidate-tasks
@@ -57,9 +57,9 @@
       <!-- JOBS (Candidate Opportunities) -->
       <ng-container *ngIf="canSeeJobTab" ngbNavItem="Opps">
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
-          <fa-icon icon="briefcase" class="me-2"></fa-icon>
-          <app-chat-read-status
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
+          <i class="fas fa-briefcase me-1"></i>
+          <app-chat-read-status *ngIf="canViewChats"
             [chats]="chatsForAllJobs"
           ></app-chat-read-status>
         </a>
@@ -74,41 +74,42 @@
       <!-- CHAT with source partner -->
       <ng-container *ngIf="canSeeChatTab" ngbNavItem="Chat">
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'CHAT.HEADER' | translate }}</span>
-          <fa-icon icon="message" class="me-2"></fa-icon>
+          <span class="d-none d-md-inline me-2">{{ 'CHAT.HEADER' | translate }}</span>
+          <i class="fas fa-message me-1"></i>
           <app-chat-read-status
             [chats]="[sourceChat]"
-          >
-          </app-chat-read-status>
+          ></app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
           <div class="chat-title">
-          <app-tab-header >
-            <h3>
-            {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
-            </h3>
+            <app-tab-header>
+              <h3>
+                {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+              </h3>
             </app-tab-header>
           </div>
           <app-view-chat-posts
             [chat]="sourceChat"
             [readOnly]="isCandidateMuted()"
-          >
-          </app-view-chat-posts>
+          ></app-view-chat-posts>
         </ng-template>
       </ng-container>
 
       <!-- SERVICES -->
-      <ng-container ngbNavItem="Services" *ngIf="activeDuolingoTask">
+      <ng-container ngbNavItem="Services" *ngIf="showServicesTab$ | async">
         <a ngbNavLink>
-          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
-          <fa-icon icon="handshake"></fa-icon>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
+          <i class="fas fa-handshake"></i>
         </a>
         <ng-template ngbNavContent>
           <app-services
             [candidate]="candidate"
             [activeDuolingoTask]="activeDuolingoTask"
-            (refresh)="fetchCandidate()">
-          </app-services>
+            (refresh)="fetchCandidate()"
+            [showLinkedin$]="linkedinEligible$"
+            [showReference$]="referenceEligible$"
+            [showUnhcr$]="unhcrEligible$"
+          ></app-services>
         </ng-template>
       </ng-container>
     </nav>

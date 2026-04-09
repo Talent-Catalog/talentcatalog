@@ -44,9 +44,9 @@
         <tc-button [color]="'warning'"
                    (onClick)="createIntakeNote('Full Intake', 'update')"
                    [disabled]="saving"
+                   [loading]="saving"
                    [size]="'sm'"
         >
-          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Update
         </tc-button>
       </div>
@@ -64,17 +64,17 @@
         <tc-button [color]="'warning'"
                    (onClick)="inputOldIntake(true)"
                    [disabled]="saving"
+                   [loading]="saving"
                    [size]="'sm'"
         >
-          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Input External Intake
         </tc-button>
         <tc-button [color]="'success'"
                    (onClick)="completeIntake(true)"
                    [disabled]="candidate.fullIntakeCompletedDate != null"
+                   [loading]="saving"
                    [size]="'sm'"
         >
-          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Complete
         </tc-button>
       </ng-template>
@@ -205,11 +205,11 @@
           </div>
           <div class="col">
             <div class="tag-light">
-                <span *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
+                <span *ngIf="candidateIntakeData?.englishAssessmentScoreIelts"
                       [class]="'fw-600'">
                   Est IELTS
                   <span
-                    class="text-info">{{ candidateIntakeData.englishAssessmentScoreIelts }}</span>
+                    class="text-info">{{ candidateIntakeData?.englishAssessmentScoreIelts }}</span>
                 </span>
             </div>
           </div>

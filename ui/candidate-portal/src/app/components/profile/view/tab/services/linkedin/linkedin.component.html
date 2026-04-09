@@ -1,0 +1,83 @@
+<app-error [error]="error"></app-error>
+<tc-loading [loading]="loading"></tc-loading>
+
+<div class="service-title">
+  <div class="header">
+    <div>
+      <h2></h2>
+      <h2>{{ "SERVICES.LINKEDIN.TITLE" | translate }}</h2>
+      <p>{{ "SERVICES.LINKEDIN.DESCRIPTION" | translate }}</p>
+    </div>
+    <img src="assets/images/services/linkedin.png" alt="LinkedIn"/>
+  </div>
+</div>
+
+<div class="service-content">
+  <ng-container *ngIf="!isOnAssignmentFailureList; else failureTemplate">
+    <!-- NO PREVIOUS ASSIGNMENT -->
+    <ng-container *ngIf="!assignment">
+      <p>
+        {{ "SERVICES.LINKEDIN.NEW_ASSIGNMENT_INTRO" | translate }}
+      </p>
+
+      <p *ngIf="candidate.linkedInLink; else signUp">
+        {{ "SERVICES.LINKEDIN.NEW_ASSIGNMENT_VERIFY" | translate }}
+      </p>
+      <ng-template #signUp>
+        <div [innerHTML]="'SERVICES.LINKEDIN.NEW_ASSIGNMENT_ENTER' | translate"></div>
+      </ng-template>
+
+      <div class="row">
+        <tc-input [(ngModel)]="linkedInLinkInput"
+                  [placeholder]="'SERVICES.LINKEDIN.NEW_ASSIGNMENT_PLACEHOLDER' | translate"
+                  class="col-12 col-lg-6"
+        ></tc-input>
+      </div>
+      <tc-alert *ngIf="linkedInLinkInput && !isValidLinkedInUrl"
+                class="mt-2"
+                type="danger">
+        {{ "SERVICES.LINKEDIN.LINKEDIN_URL_WARN" | translate }}
+      </tc-alert>
+
+      <div class="my-3">
+        <tc-button (onClick)="verify()"
+                   [disabled]="!isValidLinkedInUrl"
+                   [size]="'xl'"
+        >
+          <i class="fa-brands fa-linkedin text-white"></i>
+          {{ (candidate.linkedInLink ? 'SERVICES.LINKEDIN.VERIFY_BTN' : 'SERVICES.LINKEDIN.SUBMIT_BTN') | translate }}
+        </tc-button>
+      </div>
+    </ng-container>
+
+    <!-- ASSIGNMENT BUT NOT YET REDEEMED BY ACTIVATE BUTTON CLICK  -->
+    <div *ngIf="canRedeem">
+      <p>{{ "SERVICES.LINKEDIN.ASSIGNED" | translate }}</p>
+      <tc-button (onClick)="redeem()"
+                 [size]="'xl'"
+      >
+        <i class="fa-brands fa-linkedin text-white"></i>
+        {{ "SERVICES.LINKEDIN.REDEEM_BTN" | translate }}
+      </tc-button>
+    </div>
+
+    <!-- ASSIGNMENT REDEEMED  -->
+    <app-linkedin-redeemed *ngIf="assignment?.resource.status === ResourceStatus.REDEEMED"
+                           [assignment]="assignment"
+                           [candidate]="candidate"
+    ></app-linkedin-redeemed>
+  </ng-container>
+
+  <!-- PREVIOUS ASSIGNMENT RESULTED IN LOGGED FAILURE  -->
+  <ng-template #failureTemplate>
+    <h5>{{ "SERVICES.LINKEDIN.FAIL_TITLE" | translate }}</h5>
+    <p>{{ "SERVICES.LINKEDIN.FAIL_PARA" | translate }}</p>
+  </ng-template>
+
+  <div class="mt-5">
+    <tc-button [type]="'outline'" (onClick)="onBackButtonClicked()">
+      <i class="me-1 fas fa-arrow-left"></i>
+      {{ "SERVICES.LINKEDIN.BACK" | translate }}
+    </tc-button>
+  </div>
+</div>

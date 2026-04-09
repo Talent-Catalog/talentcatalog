@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.stereotype.Component;
+import org.tctalent.server.exception.NoSuchObjectException;
 
 
 /**
@@ -67,13 +68,14 @@ public class CandidateServiceRegistry {
    * @param provider the service provider (e.g., "DUOLINGO")
    * @param serviceCode the specific service code (e.g., "TEST_PROCTORED")
    * @return the corresponding CandidateAssistanceService
-   * @throws IllegalStateException if no service is found for the given provider and service code
+   * @throws NoSuchObjectException if no service is found for the given provider and service code
    */
   public CandidateAssistanceService forProviderAndServiceCode(String provider, String serviceCode) {
     String key = (normalise(provider) + SEP + normalise(serviceCode));
     CandidateAssistanceService svc = services.get(key);
     if (svc == null) {
-      throw new IllegalStateException("No service for " + key);
+      throw new NoSuchObjectException("Unknown candidate service for provider: " + provider +
+          ", serviceCode: " + serviceCode);
     }
     return svc;
   }

@@ -19,13 +19,17 @@ package org.tctalent.server.casi.domain.policy;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.tctalent.server.casi.application.policy.DuolingoTaskPolicy;
 import org.tctalent.server.casi.application.policy.TaskPolicyRegistry;
+import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
+import org.tctalent.server.service.db.CandidateService;
 
 
 @SpringJUnitConfig(classes = TaskPolicyRegistryTest.TestConfig.class) // load minimal context
@@ -37,7 +41,18 @@ class TaskPolicyRegistryTest {
       DuolingoTaskPolicy.class     // the policy @Component (add others as needed)
   })
   static class TestConfig {
-    // no datasource, no flyway, or the test will fail in the GitHub CI action
+
+    /** Satisfies ReferenceEligibilityPolicy's dependency so EligibilityPolicyRegistry can be created. */
+    @Bean
+    CandidateService candidateService() {
+      return Mockito.mock(CandidateService.class);
+    }
+
+    /** Satisfies UnhcrEligibilityPolicy dependency when policy package is component-scanned. */
+    @Bean
+    ServiceResourceRepository serviceResourceRepository() {
+      return Mockito.mock(ServiceResourceRepository.class);
+    }
   }
 
   @Autowired
@@ -46,5 +61,15 @@ class TaskPolicyRegistryTest {
   @Test
   void loadsDuolingo() {
     assertNotNull(registry.forProvider(ServiceProvider.DUOLINGO));
+  }
+
+  @Test
+  void returnsNoOpForUnregisteredProvider() {
+    var policy = registry.forProvider(ServiceProvider.UNHCR);
+    assertNotNull(policy);
+    assertTrue(policy.tasksOnAssigned(null).isEmpty());
+    assertTrue(policy.tasksOnRedeemed(null).isEmpty());
+    assertTrue(policy.tasksOnReassigned(null).isEmpty());
+    assertTrue(policy.tasksOnExpired(null).isEmpty());
   }
 }

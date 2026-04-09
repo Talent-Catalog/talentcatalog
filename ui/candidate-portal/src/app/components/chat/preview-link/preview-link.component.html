@@ -14,21 +14,22 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<a href="{{linkPreview.url}}" target="_blank" class="link-wrapper">
+<a *ngIf="linkPreview" href="{{linkPreview.url}}" target="_blank" class="link-wrapper">
   <div *ngIf="!linkPreview.blocked" class="link-preview">
-    <fa-icon *ngIf="userIsPostAuthor"
-              icon="xmark"
-              size="xs"
-              class="block-button"
-              (click)="blockLinkPreview($event)"
-    ></fa-icon>
+    <i *ngIf="userIsPostAuthor"
+       class="fas fa-xmark fa-xs block-button"
+       (click)="blockLinkPreview($event)"
+    ></i>
     <div class="content">
       <div class="domain">
         <img class="favicon"
              *ngIf="linkPreview.faviconUrl; else linkIcon"
              src="{{linkPreview.faviconUrl}}"
              alt="{{linkPreview.domain}} favicon"
-        ><ng-template #linkIcon><fa-icon icon="link" class="link-icon"></fa-icon></ng-template>
+        />
+        <ng-template #linkIcon>
+          <i class="fas fa-link link-icon"></i>
+        </ng-template>
         {{linkPreview.domain}}
       </div>
       <div class="title">{{linkPreview.title}}</div>

@@ -22,5 +22,8 @@ package org.tctalent.server.casi.domain.model;
  * @author sadatmalik
  */
 public enum ServiceProvider {
-  DUOLINGO
+  DUOLINGO,
+  LINKEDIN,
+  REFERENCE,
+  UNHCR
 }

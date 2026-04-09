@@ -26,9 +26,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.model.db.task.UploadTask;
-import org.tctalent.server.model.db.task.UploadType;
 
 /**
  * Default Implementation
@@ -36,7 +36,7 @@ import org.tctalent.server.model.db.task.UploadType;
  * @author John Cameron
  */
 @Entity(name="UploadTask")
-@DiscriminatorValue("UploadTask")
+@DiscriminatorValue("Upload")
 @Getter
 @Setter
 public class UploadTaskImpl extends TaskImpl implements UploadTask {

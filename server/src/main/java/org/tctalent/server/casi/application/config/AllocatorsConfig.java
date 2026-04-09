@@ -18,11 +18,12 @@ package org.tctalent.server.casi.application.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.tctalent.server.casi.core.allocators.InventoryAllocator;
+import org.tctalent.server.casi.core.allocators.ResourceAllocator;
+import org.tctalent.server.casi.core.allocators.SharedCountryResourceAllocator;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
-import org.tctalent.server.casi.core.allocators.InventoryAllocator;
-import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 
 
 /**
@@ -42,6 +43,21 @@ public class AllocatorsConfig {
   @Bean("duolingoProctoredAllocator")
   public ResourceAllocator duolingoProctoredAllocator(ServiceResourceRepository repo) {
     return new InventoryAllocator(repo, ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED);
+  }
+
+  @Bean("linkedInPremiumMembershipAllocator")
+  public ResourceAllocator linkedInPremiumMembershipAllocator(ServiceResourceRepository repo) {
+    return new InventoryAllocator(repo, ServiceProvider.LINKEDIN, ServiceCode.PREMIUM_MEMBERSHIP);
+  }
+
+  @Bean("referenceVoucherAllocator")
+  public ResourceAllocator referenceVoucherAllocator(ServiceResourceRepository repo) {
+    return new InventoryAllocator(repo, ServiceProvider.REFERENCE, ServiceCode.VOUCHER);
+  }
+
+  @Bean("unhcrHelpSiteLinkAllocator")
+  public ResourceAllocator unhcrHelpSiteLinkAllocator(ServiceResourceRepository repo) {
+    return new SharedCountryResourceAllocator(repo, ServiceProvider.UNHCR, ServiceCode.HELP_SITE_LINK);
   }
 
   // Add more providers by instantiating InventoryAllocator or other implementation of ResourceAllocator

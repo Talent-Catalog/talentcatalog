@@ -118,6 +118,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
             .add("sfId")
             .add("candidate", shortCandidateDto())
             .add("closed")
+            .add("won")
             .add("closingComments")
             .add("closingCommentsForCandidate")
             .add("employerFeedback")

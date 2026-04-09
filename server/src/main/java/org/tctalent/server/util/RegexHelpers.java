@@ -41,7 +41,7 @@ public abstract class RegexHelpers {
     }
 
     public static @NonNull String camelToSnakeCase(@NonNull String camel) {
-        return camel.replaceAll("([a-z])([A-Z]+)", "$1_$2")
+        return camel.replaceAll("([a-z,0-9])([A-Z]+)", "$1_$2")
             .toLowerCase(Locale.ENGLISH);
     }
 }

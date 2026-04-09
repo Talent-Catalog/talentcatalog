@@ -20,7 +20,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPost, JobChat, JobChatType, JobChatUserInfo} from "../../../model/chat";
-import {forkJoin, Subscription} from "rxjs";
+import {forkJoin, Observable, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {Location} from "@angular/common";
@@ -30,6 +30,11 @@ import {
   CandidateOpportunity,
   CandidateOpportunityStage
 } from "../../../model/candidate-opportunity";
+import {map, shareReplay} from "rxjs/operators";
+import {LinkedinService} from "../../../services/linkedin.service";
+import {AuthorizationService} from "../../../services/authorization.service";
+import {CasiPortalService} from "../../../services/casi-portal.service";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-view-candidate',
@@ -44,6 +49,7 @@ export class ViewCandidateComponent implements OnInit {
   chatsForAllJobs: JobChat[];
   sourceChat: JobChat;
   filteredOpps: CandidateOpportunity[];
+  showServicesTab$: Observable<boolean>;
 
   //Candidate only sees source chat if is not empty. That way they can't start posting themselves
   //until someone else has posted in the chat.
@@ -57,12 +63,20 @@ export class ViewCandidateComponent implements OnInit {
   candidate: Candidate;
   usAfghan: boolean;
   activeDuolingoTask: TaskAssignment;
+  linkedinEligible$: Observable<boolean>;
+  referenceEligible$: Observable<boolean>;
+  unhcrEligible$: Observable<boolean>;
 
-  constructor(private candidateService: CandidateService,
-              private chatService: ChatService,
-              private localStorageService: LocalStorageService,
-              private location: Location,
-              private route: ActivatedRoute) { }
+  constructor(
+    private authorizationService: AuthorizationService,
+    private candidateService: CandidateService,
+    private chatService: ChatService,
+    private linkedinService: LinkedinService,
+    private casiPortalService: CasiPortalService,
+    private localStorageService: LocalStorageService,
+    private location: Location,
+    private route: ActivatedRoute,
+  ) { }
 
   ngOnInit(): void {
     this.fetchCandidate();
@@ -78,7 +92,7 @@ export class ViewCandidateComponent implements OnInit {
    * Ineligible candidates can't see chat, even if eligibility is under review
    */
   get canSeeChatTab(): boolean {
-    let canSee = this.sourceChatHasPosts;
+    let canSee = this.canViewChats && this.sourceChatHasPosts;
     if (canSee) {
       if (
         this.candidate &&
@@ -100,6 +114,10 @@ export class ViewCandidateComponent implements OnInit {
     return this.filteredOpps?.length > 0;
   }
 
+  get canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
   /**
    * Filter out prospect opportunities and closed due to "candidateMistakenProspect" stage
    */
@@ -119,12 +137,46 @@ export class ViewCandidateComponent implements OnInit {
         this.activeDuolingoTask = this.getActiveDuolingoTask();
         this.filterOppsToDisplay();
         this.usAfghan = candidate.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
+        this.initServicesTabVisibility()
         this.loading = false;
       },
       (error) => {
         this.error = error;
         this.loading = false;
       });
+  }
+
+  /**
+   * Initialises the visibility of the services tab by checking eligibility for each available
+   * service. The tab is shown if the candidate is eligible for any service.
+   */
+  private initServicesTabVisibility() {
+    const results$ = forkJoin({
+      linkedIn: this.linkedinService.isEligible(this.candidate.id),
+      reference: this.casiPortalService.checkEligibility('REFERENCE', 'VOUCHER'),
+      unhcr: this.casiPortalService.checkEligibility('UNHCR', 'HELP_SITE_LINK')
+      // Additional async service eligibility calls here
+    }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
+
+    this.showServicesTab$ = results$.pipe(
+      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || results.unhcr || !!this.activeDuolingoTask)
+    );
+
+    this.linkedinEligible$ = results$.pipe(
+      map(results => results.linkedIn)
+    );
+
+    this.referenceEligible$ = results$.pipe(
+      map(results => this.isLocalEnv() && results.reference)
+    );
+
+    this.unhcrEligible$ = results$.pipe(
+      map(results => results.unhcr)
+    );
+  }
+
+  private isLocalEnv(): boolean {
+    return environment.environmentName === 'local';
   }
 
   private fetchCachedTab() {
@@ -154,8 +206,10 @@ export class ViewCandidateComponent implements OnInit {
 
   private setCandidate(candidate: Candidate) {
     this.candidate = candidate;
-    this.getCandidateProspectChat();
-    this.fetchAllOpportunityChats();
+    if (this.canViewChats) {
+      this.getCandidateProspectChat();
+      this.fetchAllOpportunityChats();
+    }
   }
 
   private getActiveDuolingoTask(): TaskAssignment | null {

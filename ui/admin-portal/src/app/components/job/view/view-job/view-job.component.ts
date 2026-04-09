@@ -134,16 +134,18 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
       this.loggedInUser = this.authenticationService.getLoggedInUser();
       this.checkSubmissionListContents();
       this.jobPrepItems.forEach(j => j.job = this.job);
-      this.fetchGroupChats();
-      if (this.authorizationService.isSourcePartner() &&
-        !this.authorizationService.isDefaultSourcePartner()) {
-        //There is only one partner chat to be fetched - my one.
-        let partner = this.loggedInUser.partner;
-        if (partner) {
-          this.fetchChats([partner]);
+      if (this.canViewChats()) {
+        this.fetchGroupChats();
+        if (this.authorizationService.isSourcePartner() &&
+          !this.authorizationService.isDefaultSourcePartner()) {
+          //There is only one partner chat to be fetched - my one.
+          let partner = this.loggedInUser.partner;
+          if (partner) {
+            this.fetchChats([partner]);
+          }
+        } else {
+          this.fetchPartnerChats();
         }
-      } else {
-        this.fetchPartnerChats();
       }
     }
   }
@@ -362,6 +364,10 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   canAccessSalesforce() {
     return this.authorizationService.canAccessSalesforce();
+  }
+
+  canViewChats() {
+    return this.authorizationService.canViewChats();
   }
 
   onChatReadStatusCreated(chatReadStatus$: Observable<boolean>) {

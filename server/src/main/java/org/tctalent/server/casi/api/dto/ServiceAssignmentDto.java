@@ -16,7 +16,7 @@
 
 package org.tctalent.server.casi.api.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
@@ -40,5 +40,5 @@ public class ServiceAssignmentDto {
   private final Long candidateId;
   private final Long actorId; // who assigned it
   private final AssignmentStatus status; // ASSIGNED, REDEEMED, EXPIRED, REASSIGNED
-  private final LocalDateTime assignedAt;
+  private final OffsetDateTime assignedAt;
 }

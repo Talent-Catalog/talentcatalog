@@ -1,8 +1,6 @@
 <div class="container-fluid step-header">
   <div class="container">
-    <h3>
-      Privacy Policy with {{ getPartnerDescription(false) }}
-    </h3>
+    <h3 [innerHTML]="'HEADER.NAV.PRIVACY' | translate"></h3>
     <p
       [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS' | translate:{partner: getPartnerDescription(true)}"
       class="explain"></p>
@@ -16,15 +14,14 @@
 </div>
 
 <div class="container step-body">
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div [innerHTML]="'REGISTRATION.SUBMIT.INTRODUCTION' | translate"></div>
 
   <div *ngIf="!consentRequired">
-    <button [disabled]="loading" class="btn btn-success" (click)="submit()"
-    >
+    <tc-button color="success" [disabled]="loading" (onClick)="submit()">
       {{ 'REGISTRATION.SUBMIT.NO_POLICY_ACCEPTANCE_TEXT' | translate }}
-    </button>
+    </tc-button>
   </div>
 
   <div *ngIf="consentRequired">
@@ -51,10 +48,8 @@
 
     <app-error [error]="error"></app-error>
 
-    <button [disabled]="loading" class="btn btn-success" (click)="submit()"
-    >
+    <tc-button color="success" [disabled]="loading" (onClick)="submit()">
       {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
-    </button>
+    </tc-button>
   </div>
 </div>
-

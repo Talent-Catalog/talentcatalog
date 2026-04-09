@@ -71,7 +71,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.expanded = false;
-    this.experiences = this.candidate?.candidateJobExperiences.filter(je => je.candidateOccupation?.id == this.candidateOccupation?.id);
+    this.experiences = this.candidateOccupation?.candidateJobExperiences;
   }
 
   editOccupation() {

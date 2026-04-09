@@ -16,11 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.sql.Connection;
@@ -39,7 +37,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,13 +63,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory;
 import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory.CandidateBatchJobBuilder;
+import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateNote;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -88,7 +85,6 @@ import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
-import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -126,12 +122,12 @@ import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.storage.TranslationMigrationService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
-import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -143,7 +139,6 @@ public class SystemAdminApi {
 
     private final DataSharingService dataSharingService;
 
-    private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
@@ -166,8 +161,8 @@ public class SystemAdminApi {
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
     private final PartnerRepository partnerRepository;
-    private final S3ResourceHelper s3ResourceHelper;
     private final CacheService cacheService;
+    private final TranslationMigrationService translationMigrationService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -180,6 +175,8 @@ public class SystemAdminApi {
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
     private final TcApiService tcApiService;
+    private final LinkedInService linkedInService;
+    private final UserService userService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -210,35 +207,45 @@ public class SystemAdminApi {
 
     @Autowired
     public SystemAdminApi(
-            DataSharingService dataSharingService,
-            AuthService authService,
-            CandidateAttachmentRepository candidateAttachmentRepository,
-            PartnerRepository partnerRepository,
+        DataSharingService dataSharingService,
+        AuthService authService,
+        PartnerRepository partnerRepository,
         CandidateBatchJobFactory candidateBatchJobFactory,
-            CandidateNoteRepository candidateNoteRepository,
-            CandidateRepository candidateRepository,
+        CandidateNoteRepository candidateNoteRepository,
+        CandidateRepository candidateRepository,
         CandidateOpportunityRepository candidateOpportunityRepository,
-            CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
-            CountryService countryService,
-            FileSystemService fileSystemService,
-            JobService jobService, LanguageService languageService,
+        CandidateOpportunityService candidateOpportunityService,
+        CandidateService candidateService,
+        CountryService countryService,
+        FileSystemService fileSystemService,
+        JobService jobService, LanguageService languageService,
         NotificationService notificationService,
-            PopulateElasticsearchService populateElasticsearchService,
-            SalesforceService salesforceService,
-            SalesforceConfig salesforceConfig, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
-            SavedListRepository savedListRepository,
-            JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
-            SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig, CacheService cacheService,
+        PopulateElasticsearchService populateElasticsearchService,
+        SalesforceService salesforceService,
+        SalesforceConfig salesforceConfig,
+        SalesforceJobOppRepository salesforceJobOppRepository,
+        SavedListService savedListService,
+        SavedListRepository savedListRepository,
+        JobChatRepository jobChatRepository,
+        JobChatUserRepository jobChatUserRepository,
+        ChatPostRepository chatPostRepository,
+        SavedSearchRepository savedSearchRepository,
+        TranslationMigrationService translationMigrationService,
+        GoogleDriveConfig googleDriveConfig,
+        CacheService cacheService,
         BackgroundProcessingService backgroundProcessingService,
         BatchJobService batchJobService,
-        SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoCouponService duolingoCouponService,
-        TcApiService tcApiService
-        ) {
+        SavedSearchService savedSearchService,
+        PartnerService partnerService,
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
+        DuolingoApiService duolingoApiService,
+        DuolingoCouponService duolingoCouponService,
+        TcApiService tcApiService,
+        LinkedInService linkedInService,
+        UserService userService
+    ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
-        this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
@@ -260,19 +267,78 @@ public class SystemAdminApi {
         this.jobChatRepository = jobChatRepository;
         this.jobChatUserRepository = jobChatUserRepository;
         this.chatPostRepository = chatPostRepository;
-        this.s3ResourceHelper = s3ResourceHelper;
+        this.translationMigrationService = translationMigrationService;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
-      this.backgroundProcessingService = backgroundProcessingService;
+        this.backgroundProcessingService = backgroundProcessingService;
         this.batchJobService = batchJobService;
         this.savedSearchService = savedSearchService;
-      this.partnerService = partnerService;
-      this.partnerRepository = partnerRepository;
-      this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
-      countryForGeneralCountry = getExtraCountryMappings();
-      this.duolingoApiService = duolingoApiService;
-      this.duolingoCouponService = duolingoCouponService;
-      this.tcApiService = tcApiService;
+        this.partnerService = partnerService;
+        this.partnerRepository = partnerRepository;
+        this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
+        countryForGeneralCountry = getExtraCountryMappings();
+        this.duolingoApiService = duolingoApiService;
+        this.duolingoCouponService = duolingoCouponService;
+        this.tcApiService = tcApiService;
+        this.linkedInService = linkedInService;
+        this.userService = userService;
+    }
+
+    /**
+     * One-off relay migration endpoint for copying translation files between buckets that are
+     * accessed by different AWS identities/accounts. This performs a download (legacy source)
+     * followed by upload (configured destination), rather than S3 server-side copy.
+     *
+     * @param sourceBucket Source S3 bucket name (i.e. legacy TBB bucket)
+     * @param destinationBucket Destination S3 bucket name (i.e. GRN/OPC translations bucket)
+     * @param sourcePrefix Optional source prefix/folder. Defaults to {@code translations}.
+     * @param destinationPrefix Optional destination prefix/folder. Defaults to {@code translations}.
+     * @return Status map including copy mode and number of copied objects
+     */
+    @GetMapping("migrate-translations")
+    public Map<String, Object> migrateTranslations(
+        @RequestParam("sourceBucket") String sourceBucket,
+        @RequestParam("destinationBucket") String destinationBucket,
+        @RequestParam(value = "sourcePrefix", required = false) String sourcePrefix,
+        @RequestParam(value = "destinationPrefix", required = false) String destinationPrefix) {
+
+        String normalizedSourcePrefix = normalizeS3Prefix(
+            StringUtils.isBlank(sourcePrefix) ? "translations" : sourcePrefix);
+        String normalizedDestinationPrefix = normalizeS3Prefix(
+            StringUtils.isBlank(destinationPrefix) ? "translations" : destinationPrefix);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message(sourceBucket + "/" + normalizedSourcePrefix
+                + " -> " + destinationBucket + "/" + normalizedDestinationPrefix)
+            .logInfo();
+
+        long startMs = System.currentTimeMillis();
+        int copiedCount = translationMigrationService.migrateBucketContents(
+            sourceBucket, normalizedSourcePrefix, destinationBucket, normalizedDestinationPrefix);
+        long durationMs = System.currentTimeMillis() - startMs;
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message("Completed: " + copiedCount + " file(s) in " + durationMs + "ms")
+            .logInfo();
+
+        return Map.of(
+            "status", "success",
+            "mode", "relay-copy",
+            "copiedCount", copiedCount,
+            "durationMs", durationMs,
+            "sourceBucket", sourceBucket,
+            "sourcePrefix", normalizedSourcePrefix,
+            "destinationBucket", destinationBucket,
+            "destinationPrefix", normalizedDestinationPrefix
+        );
+    }
+
+    private String normalizeS3Prefix(String prefix) {
+        return prefix.endsWith("/") ? prefix : prefix + "/";
     }
 
     /**
@@ -1195,52 +1261,6 @@ public class SystemAdminApi {
         return "done";
     }
 
-    @GetMapping("awsmetadata")
-    public String updateAwsFileTypes() {
-        List<S3ObjectSummary> objectSummaries = s3ResourceHelper.getObjectSummaries();
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Got the object summaries. There is a total of: " + objectSummaries.size())
-            .logInfo();
-
-        List<S3ObjectSummary> filteredSummaries = s3ResourceHelper.filterMigratedObjects(objectSummaries);
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Filtered out the migrated objects. There is a total of: " + filteredSummaries.size())
-            .logInfo();
-
-        int count = 0;
-        int success = 0;
-        for(S3ObjectSummary summary : filteredSummaries) {
-            try {
-                s3ResourceHelper.addObjectMetadata(summary);
-                success++;
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Error adding metadata to object with key: " + summary.getKey())
-                    .logWarn(e);
-            }
-            count++;
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Processed " + count)
-                    .logInfo();
-            }
-        }
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Finished processing. Success total of: " + success + " out of " + count)
-            .logInfo();
-
-        return "done";
-    }
 
     //Remove after running. One off method. Login as System Admin user.
 //    @GetMapping("update-isocodes")
@@ -1503,90 +1523,9 @@ public class SystemAdminApi {
             deleteExisting, createElastic, fromPage, toPage);
     }
 
-    @GetMapping("migrate/extract")
-    public void migrateExtract() {
-        Long userId = 1L;
-        if (authService != null) {
-            User loggedInUser = authService.getLoggedInUser().orElse(null);
-            if (loggedInUser != null){
-                userId = loggedInUser.getId();
-            }
-        }
-
-        List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
-        extractTextFromMigratedFiles(types);
-        extractTextFromNewFiles(types);
-    }
-
 //    @GetMapping("es-to-db/unhcr-status")
     public void migrateUnhcrStatus() {
         populateElasticsearchService.populateCandidateFromElastic();
-    }
-
-    private void extractTextFromMigratedFiles(List<String> types) {
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
-        int count = 0;
-        int success = 0;
-        for(CandidateAttachment file : files) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if(StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(file);
-                    success++;
-                }
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message("Unable to extract text from file " + file.getLocation())
-                    .logError(e);
-            }
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message(count + " new files processed, with " + success + " successfully extracted text.")
-                    .logInfo();
-            }
-            count++;
-        }
-    }
-
-    private void extractTextFromNewFiles(List<String> types) {
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
-        int count = 0;
-        int success = 0;
-        for(CandidateAttachment file : files) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if (StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(file);
-                    success++;
-                }
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message("Unable to extract text from new file " + file.getLocation())
-                    .logError(e);
-            }
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message(count + " new files processed, with " + success + " successfully extracted text.")
-                    .logInfo();
-            }
-            count++;
-        }
     }
 
 //    @GetMapping("migrate/survey")
@@ -3191,6 +3130,32 @@ public class SystemAdminApi {
             LogBuilder.builder(log)
                 .action("Process potential duplicates")
                 .message("Manual triggered operation failed")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Cancels the candidate's previous coupon assignment and makes a new one.
+     */
+    @GetMapping("{candidateNumber}/reassign-linkedin-coupon")
+    ResponseEntity<?> reassignLinkedinCoupon(@PathVariable("candidateNumber") String candidateNumber) {
+        try {
+            linkedInService.reassignForCandidate(candidateNumber, userService.getLoggedInUser());
+
+            LogBuilder.builder(log)
+                .action("Reassign LinkedIn Coupon")
+                .message("For candidate " + candidateNumber + ": Success")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Reassign LinkedIn Coupon")
+                .message("For candidate " + candidateNumber + ": Failure")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend

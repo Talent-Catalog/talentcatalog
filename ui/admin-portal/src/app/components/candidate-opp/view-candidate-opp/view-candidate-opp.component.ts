@@ -86,7 +86,9 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.opp) {
-      this.fetchChats();
+      if (this.canViewChats()) {
+        this.fetchChats();
+      }
     }
   }
 
@@ -273,6 +275,10 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
         this.saving = false;
       }
     );
+  }
+
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
   hasVisibleCandidateChats(): boolean {

@@ -18,14 +18,17 @@ package org.tctalent.server.response;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.TcInstanceType;
 import org.tctalent.server.model.db.User;
 
 @Getter
 @Setter
 public class JwtAuthenticationResponse {
 
+    private boolean canViewChats;
     private User user;
     private String accessToken;
+    private TcInstanceType tcInstanceType;
     private String tokenType = "Bearer";
 
     public JwtAuthenticationResponse(String accessToken, User user) {

@@ -24,7 +24,7 @@ import {ChangePasswordComponent} from '../change-password/change-password.compon
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate, CandidateStatus} from "../../../model/candidate";
 import {forkJoin} from "rxjs";
-import {TermsInfoDto, TermsType} from "../../../model/terms-info-dto";
+import {TermsInfoDto} from "../../../model/terms-info-dto";
 import {TermsInfoService} from "../../../services/terms-info.service";
 
 @Component({
@@ -90,7 +90,7 @@ export class LoginComponent implements OnInit {
 
         //Fetch the current candidate privacy policy and candidate info
         forkJoin({
-          'currentPolicy': this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY),
+          'currentPolicy': this.termsInfoService.getCurrentCandidatePolicy(),
           'candidate': this.candidateService.getCandidatePersonal()
         }).subscribe(
           results => {

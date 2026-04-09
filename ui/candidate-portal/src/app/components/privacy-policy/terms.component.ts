@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {TermsInfoDto, TermsType} from "../../model/terms-info-dto";
+import {TermsInfoDto} from "../../model/terms-info-dto";
 import {TermsInfoService} from "../../services/terms-info.service";
 import {CandidateService} from "../../services/candidate.service";
 import {forkJoin} from "rxjs";
@@ -34,7 +34,7 @@ export class TermsComponent implements OnInit {
   loadCandidate(){
     //Fetch the current candidate privacy policy and candidate info
     forkJoin({
-      'currentPolicy': this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY),
+      'currentPolicy': this.termsInfoService.getCurrentCandidatePolicy(),
       'candidate': this.candidateService.getCandidatePersonal()
     }).subscribe(
       results => {

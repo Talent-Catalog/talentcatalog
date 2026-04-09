@@ -120,6 +120,7 @@ import org.tctalent.server.repository.db.SavedSearchSpecification;
 import org.tctalent.server.repository.db.SearchJoinRepository;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -133,6 +134,7 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -164,6 +166,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
+    private final CandidateDtoFetchService candidateDtoFetchService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
@@ -315,6 +318,32 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    @Override
+    public Page<CandidateReadDto> searchCandidateDtos(long savedSearchId,
+        SavedSearchGetRequest request) throws NoSuchObjectException {
+        SearchCandidateRequest searchRequest =
+            loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request.
+        searchRequest.merge(request);
+
+        //If user filters on unverified statuses we bypass performing a full search
+        //Simply return candidates that the user has already reviewed as verified and/or rejected
+        if (request.getReviewStatusFilter() != null &&
+            request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
+            return reviewedCandidateDtos(searchRequest);
+        }
+
+        //Do the search
+        final Page<CandidateReadDto> candidates = doSearchCandidateDtos(searchRequest);
+
+        //Add in any selections
+        markUserSelectedCandidateDtos(savedSearchId, candidates);
+
+        return candidates;
+    }
+
     private Page<Candidate> reviewedCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates = candidateRepository.findReviewedCandidatesBySavedSearchId(
             request.getSavedSearchId(),
@@ -322,6 +351,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.getPageRequestWithoutSort());
 
         return candidates;
+    }
+
+    private Page<CandidateReadDto> reviewedCandidateDtos(SearchCandidateRequest request) {
+        Page<Candidate> candidates = reviewedCandidates(request);
+
+        List<Long> ids = candidates.stream().map(Candidate::getId).collect(Collectors.toList());
+        final Map<Long, CandidateReadDto> dtos = candidateDtoFetchService.fetchByIds(ids);
+
+        //Construct a sortedlist of DTOs in the same order as the ids.
+        List<CandidateReadDto> candidateDtos = new ArrayList<>();
+        for (Long id : ids) {
+            candidateDtos.add(dtos.get(id));
+        }
+
+        return new PageImpl<>(candidateDtos, request.getPageRequest(), candidates.getTotalElements());
     }
 
     @Override
@@ -407,6 +451,41 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
             //Add in any selections
             markUserSelectedCandidates(savedSearch.getId(), candidates);
+        }
+
+        return candidates;
+    }
+
+    @Override
+    @Transactional
+    public Page<CandidateReadDto> searchCandidateDtos(SearchCandidateRequest request) {
+        Page<CandidateReadDto> candidates;
+        User user = userService.getLoggedInUser();
+        if (user == null) {
+            candidates = doSearchCandidateDtos(request);
+        } else {
+            SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
+            // If searching a default search, update the default search with every search (aka Autosave).
+            // Else it is a saved search and those are updated upon 'Update Search' button only.
+            if (savedSearch.getDefaultSearch()) {
+                UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+                updateRequest.setSearchCandidateRequest(request);
+                //Set other fields - no changes there
+                updateRequest.setName(savedSearch.getName());
+                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setFixed(savedSearch.getFixed());
+                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
+                updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
+                //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
+                updateSavedSearch(savedSearch.getId(), updateRequest);
+            }
+
+            //Do the search
+            candidates = doSearchCandidateDtos(request);
+
+            //Add in any selections
+            markUserSelectedCandidateDtos(savedSearch.getId(), candidates);
         }
 
         return candidates;
@@ -847,19 +926,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         return savedSearch;
     }
-
     @Override
     public @NotNull SavedList getSelectionList(long id, Long userId)
-            throws NoSuchObjectException {
+        throws NoSuchObjectException {
         //Check that saved search and user are valid.
         SavedSearch savedSearch = savedSearchRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
-
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
+            .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
 
         SavedList savedList = savedListRepository.findSelectionList(id, userId)
-                        .orElse(null);
+            .orElse(null);
         if (savedList == null) {
             savedList = new SavedList();
             savedList.setSavedSearch(savedSearch);
@@ -1516,8 +1594,33 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (selectionList != null) {
                 Set<Candidate> selectedCandidates = selectionList.getCandidates();
                 if (!selectedCandidates.isEmpty()) {
+                    Set<Long> selectedIds = selectedCandidates.stream().map(Candidate::getId).collect(Collectors.toSet());
                     for (Candidate candidate : candidates) {
-                        if (selectedCandidates.contains(candidate)) {
+                        if (selectedIds.contains(candidate.getId())) {
+                            candidate.setSelected(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void markUserSelectedCandidateDtos(
+        @Nullable Long savedSearchId, Page<CandidateReadDto> candidates) {
+        if (savedSearchId != null) {
+            //Check for selection list to set the selected attribute on returned
+            // candidates.
+            SavedList selectionList = null;
+            User user = userService.getLoggedInUser();
+            if (user != null) {
+                selectionList = getSelectionList(savedSearchId, user.getId());
+            }
+            if (selectionList != null) {
+                Set<Candidate> selectedCandidates = selectionList.getCandidates();
+                if (!selectedCandidates.isEmpty()) {
+                    Set<Long> selectedIds = selectedCandidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+                    for (CandidateReadDto candidate : candidates) {
+                        if (selectedIds.contains(candidate.getId())) {
                             candidate.setSelected(true);
                         }
                     }
@@ -1919,6 +2022,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    private Page<CandidateReadDto> doSearchCandidateDtos(SearchCandidateRequest searchRequest) {
+
+        Page<CandidateReadDto> candidates;
+
+        // Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
+
+        // Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(searchRequest);
+
+        candidates = doSQLSearchCandidateDtos(searchRequest, excludedCandidates);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .searchId(searchRequest.getSavedSearchId())
+            .action("doSearchCandidateDtos")
+            .message("Found " + candidates.getTotalElements() + " candidates in search")
+            .logInfo();
+
+        return candidates;
+    }
+
     /**
      * Do a paged search for candidates according to the given request but excluding the given
      * candidates. Sorting and paging are supported as specified in the request.
@@ -1988,17 +2114,33 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
 
+        long start = System.currentTimeMillis();
+        long end;
+
         //Get results
         final List<?> results = query.getResultList();
+
+        end = System.currentTimeMillis();
+        long fetchIdsTime = end - start;
+        start = end;
+
         //Process the results
         List<IdAndRank> idAndRanks =
             CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+
+        end = System.currentTimeMillis();
+        long convertTime = end - start;
+        start = end;
 
         //Get ids of sorted candidates
         List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
         List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
+
+        end = System.currentTimeMillis();
+        long fetchEntitiesTime = end - start;
+        start = end;
 
         //Candidates need to be sorted the same as the ids.
         //Map the unsorted candidates by their ids
@@ -2019,12 +2161,39 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             candidatesSorted.add(candidate);
         }
 
+        end = System.currentTimeMillis();
+        long sortTime = end - start;
+        start = end;
+
         //Compute count
         String countSql = extractCountSQL(request, user, excludedCandidates);
         LogBuilder.builder(log).action("countCandidates")
             .message("Query: " + countSql).logInfo();
         long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+
+        end = System.currentTimeMillis();
+        long countTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: fetchIds: " + fetchIdsTime
+                + " convert: " + convertTime
+                + " fetchEntities: " + fetchEntitiesTime
+                + " sort: " + sortTime
+                + " count: " + countTime
+            ).logInfo();
+
         return new PageImpl<>(candidatesSorted, pageRequest, total);
+    }
+
+    private Page<CandidateReadDto> doSQLSearchCandidateDtos(
+        SearchCandidateRequest request, @Nullable Set<Candidate> excludedCandidates) {
+        User user = userService.getLoggedInUser();
+        final PageRequest pageRequest = request.getPageRequest();
+
+        String sql = extractFetchSQL(request, user, excludedCandidates, true);
+        String countSql = extractCountSQL(request, user, excludedCandidates);
+
+        return candidateDtoFetchService.fetchPage(sql, countSql, pageRequest);
     }
 
 

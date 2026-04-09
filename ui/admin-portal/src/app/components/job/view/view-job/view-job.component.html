@@ -27,7 +27,7 @@
         Job Opportunity #{{job.id}}
       </p>
       <div class="job-name-container" [ngClass]="{'me-3' : showBreadcrumb}">
-        <h2 class="mb-0" [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}</h2>
+        <h2 class="mb-0" [ngClass]="{'fs-5 fw-bold':!showBreadcrumb, '': showBreadcrumb}">{{job.name}}</h2>
         <tc-icon type="button" color="warning" size="lg" *ngIf="!showBreadcrumb"
                  [routerLink]="['/job',job.id]"
                  title="Open Job">
@@ -169,11 +169,14 @@
         <tc-tab *ngIf="canSeeJobDetails()"
                 id="Source"
                 description="View partner details & start a chat">
-          <tc-tab-header>
+          <tc-tab-header *ngIf="canViewChats()">
             Partners/Chats
             <app-chat-read-status
               [chats]="partnerChats"
             ></app-chat-read-status>
+          </tc-tab-header>
+          <tc-tab-header *ngIf="!canViewChats()">
+            Partners
           </tc-tab-header>
           <tc-tab-content>
             <app-job-source-contacts-tab
@@ -183,7 +186,7 @@
           </tc-tab-content>
         </tc-tab>
 
-        <tc-tab *ngIf="visible && canSeeJobDetails()"
+        <tc-tab *ngIf="visible && canSeeJobDetails() && canViewChats()"
                 id="GroupChats"
                 description="Chats that involve more than one partner or candidate/s">
           <tc-tab-header>

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -88,6 +89,7 @@ import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.security.TcUserDetails;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -107,6 +109,7 @@ import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.policy.ChatPolicy;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -131,6 +134,7 @@ public class JobServiceImpl implements JobService {
     private final AuthService authService;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
+    private final ChatPolicy chatPolicy;
     private final EmailHelper emailHelper;
     private final EmployerService employerService;
     private final UserService userService;
@@ -346,8 +350,11 @@ public class JobServiceImpl implements JobService {
 
         job = salesforceJobOppRepository.save(job);
 
-        //Create the chats associated with this job
-        createJobChats(job);
+        final Optional<TcUserDetails> userOpt = authService.getLoggedInUserDetails();
+        if (chatPolicy.canCreateChats(userOpt)) {
+            //Create the chats associated with this job
+            createJobChats(job);
+        }
 
         return job;
     }
@@ -518,11 +525,9 @@ public class JobServiceImpl implements JobService {
     @Override
     public Page<SalesforceJobOpp> searchJobs(SearchJobRequest request) {
         User loggedInUser = userService.getLoggedInUser();
-        Page<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
+        return salesforceJobOppRepository.findAll(
             JobSpecification.buildSearchQuery(request, loggedInUser),
             request.getPageRequest());
-        checkEmployerEntities(jobs);
-        return jobs;
     }
 
     @NonNull
@@ -987,7 +992,10 @@ public class JobServiceImpl implements JobService {
 
         child = updateJobOnSalesforce(child);
 
-        createJobChats(child);
+        final Optional<TcUserDetails> userOpt = authService.getLoggedInUserDetails();
+        if (chatPolicy.canCreateChats(userOpt)) {
+            createJobChats(child);
+        }
 
         return child;
     }

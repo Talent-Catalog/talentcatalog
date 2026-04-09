@@ -1,0 +1,7 @@
+@import '../../../../../scss/color-mixins';
+@import '../../../../../scss/typography-mixins';
+
+.form-error {
+  @include text-color-error;
+  @include paragraph-sm;
+}

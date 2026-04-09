@@ -16,62 +16,77 @@
 
 package org.tctalent.server.security;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import jakarta.validation.constraints.NotNull;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 
 /**
- * Talent Catalog's implementation of Spring's {@link UserDetails}, retrieving user data from database, setting
- * authorities based on the user's {@link Role} and exposing the corresponding underlying
- * {@link User} object through {@link #getUser()}.
+ * Talent Catalog's implementation of Spring's {@link UserDetails}, exposing the corresponding
+ * underlying {@link User} object through {@link #getUser()}.
  * <p/>
  * Note that this is what is returned by {@link Authentication#getPrincipal()}
  */
 public class TcUserDetails implements UserDetails {
+    private static final String ROLE_PREFIX = "ROLE_"; // Spring default
 
     private User user;
     private List<GrantedAuthority> authorities;
+    private Set<String> authorityStrings;
 
-    public TcUserDetails(@NotNull User user) {
+    public TcUserDetails(@NonNull User user) {
         this.user = user;
-        this.authorities = new ArrayList<>();
-
-        // If read only is checked assign the read only role
-        if(user.getReadOnly()){
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
-        } else if (user.getRole().equals(Role.systemadmin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_SYSTEMADMIN"));
-        } else if (user.getRole().equals(Role.admin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else if (user.getRole().equals(Role.partneradmin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_PARTNERADMIN"));
-        } else if (user.getRole().equals(Role.semilimited)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
-        } else if (user.getRole().equals(Role.limited)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_LIMITED"));
-        } else {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        }
     }
 
-    public @NotNull User getUser() {
+    public boolean hasAuthority(String authority) {
+        return authority != null && authorityStrings.contains(authority);
+    }
+
+    public boolean hasRole(String role) {
+        return role != null && authorityStrings.contains(ROLE_PREFIX + role);
+    }
+
+    public boolean hasAnyAuthority(String... authorities) {
+        if (authorities == null) return false;
+        for (String a : authorities) {
+            if (a != null && authorityStrings.contains(a)) return true;
+        }
+        return false;
+    }
+
+    public boolean hasAnyRole(String... roles) {
+        if (roles == null) return false;
+        for (String r : roles) {
+            if (r != null && authorityStrings.contains(ROLE_PREFIX + r)) return true;
+        }
+        return false;
+    }
+
+    public @NonNull User getUser() {
         return user;
     }
 
-    public void setUser(@NotNull User user) {
+    public void setUser(@NonNull User user) {
         this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
+    }
+
+    public void setAuthorities(List<GrantedAuthority> authorities) {
+        this.authorities = authorities;
+
+        //Construct Set of Strings to efficiently support hasAuthority(String) and hasRole(String)
+        this.authorityStrings = authorities.stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
@@ -83,25 +98,4 @@ public class TcUserDetails implements UserDetails {
     public String getUsername() {
         return user.getUsername();
     }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
 }

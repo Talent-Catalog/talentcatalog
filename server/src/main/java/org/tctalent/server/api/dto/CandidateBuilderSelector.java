@@ -18,15 +18,10 @@ package org.tctalent.server.api.dto;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateOpportunity;
-import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.model.db.User;
@@ -134,23 +129,23 @@ public class CandidateBuilderSelector {
         //If partner is a job creator, look up the candidates for whom they can see all properties
         //(ie candidates who have got past the CV Review stage in any job opps managed by the partner)
 
-        //Start by fetching all the opps associated with the partner
-        List<CandidateOpportunity> partnerOpps = candidateOpportunityService.findJobCreatorPartnerOpps(partner);
-
         //Get all the candidates associated with those opps which got to the CV Review stage.
         //The partner should be able to see full details of these candidates - because they have
         //progressed this far with these candidates in the past.
-        Set<Candidate> fullyVisibleCandidates = partnerOpps.stream()
-            .filter(opp -> CandidateOpportunityStage.cvReview.compareTo(opp.getLastActiveStage()) <= 0)
-            .map(CandidateOpportunity::getCandidate)
-            .collect(Collectors.toSet());
+        //We also get the user ids of the candidates that the partner can fully see, as we use this
+        //in the property filter to determine visibility of certain user properties such as email
+        //and phone number.
+      Set<Long> fullyVisibleCandidateIds = candidateOpportunityService.findFullyVisibleCandidateIds(partner);
+      Set<Long> fullyVisibleUserIds = candidateOpportunityService.findFullyVisibleUserIds(partner);
 
-        //Default to Role.limited if user is null.
+      //Default to Role.limited if user is null.
         Role role = user == null ? Role.limited : user.getRole();
         DtoPropertyFilter candidatePropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
-            partner, role, fullyVisibleCandidates, candidatePublicProperties, candidateSemiLimitedExtraProperties);
+            partner, role, fullyVisibleCandidateIds, fullyVisibleUserIds,
+            candidatePublicProperties, candidateSemiLimitedExtraProperties);
         DtoPropertyFilter userPropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
-            partner, role, fullyVisibleCandidates, userPublicProperties, null);
+            partner, role, fullyVisibleCandidateIds, fullyVisibleUserIds,
+            userPublicProperties, null);
 
         return candidateDto(candidatePropertyFilter, userPropertyFilter, type);
     }
@@ -380,6 +375,8 @@ public class CandidateBuilderSelector {
             .add("candidate", shortCandidateDto())
             .add("name")
             .add("stage")
+            .add("closed")
+            .add("won")
             .add("nextStep")
             .add("nextStepDueDate")
             ;
@@ -491,13 +488,12 @@ public class CandidateBuilderSelector {
             .add("id")
             .add("type")
             .add("name")
-            .add("location")
+            .add("url")
             .add("fileType")
             .add("migrated")
             .add("cv")
             .add("createdDate")
             .add("uploadType")
-            .add("url")
             ;
 
         if (!DtoType.PREVIEW.equals(type)) {
@@ -577,13 +573,8 @@ public class CandidateBuilderSelector {
             .add("createdDate")
             .add("updatedBy", userDto())
             .add("updatedDate")
+            .add("candidateJobExperiences", candidateJobExperienceDto(type))
             ;
-
-            if (DtoType.API.equals(type)) { // include job experiences in candidate occupations for API
-                builder
-                    .add("candidateJobExperiences", candidateJobExperienceDto(type))
-                ;
-            }
 
             return builder;
     }
@@ -600,12 +591,6 @@ public class CandidateBuilderSelector {
             .add("description")
             .add("country", countryService.selectBuilder())
             ;
-
-            if (!DtoType.API.equals(type)) { // do not include candidate occupations in job experiences for API
-                builder
-                    .add("candidateOccupation", candidateOccupationDto(type))
-                ;
-            }
 
             return builder;
     }

@@ -19,6 +19,7 @@ package org.tctalent.server.service.db;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -103,6 +104,32 @@ public interface CandidateOpportunityService {
      */
     @NonNull
     List<CandidateOpportunity> findJobCreatorPartnerOpps(@Nullable Partner partner);
+
+    /**
+     * Finds candidate ids that are fully visible to a job-creator partner.
+     * <p>
+     * "Fully visible" means the partner has at least one candidate opportunity at CV Review
+     * stage or later for that candidate. These ids are used by DTO property filtering logic
+     * to bypass property restrictions for qualifying candidates.
+     * </p>
+     *
+     * @param partner Job creator partner
+     * @return Candidate ids. Empty if partner is null or not a job creator.
+     */
+    @NonNull
+    Set<Long> findFullyVisibleCandidateIds(@Nullable Partner partner);
+
+    /**
+     * Finds user ids linked to candidates that are fully visible to a job-creator partner.
+     * <p>
+     * This mirrors {@link #findFullyVisibleCandidateIds(Partner)} for User DTO filtering.
+     * </p>
+     *
+     * @param partner Job creator partner
+     * @return User ids. Empty if partner is null or not a job creator.
+     */
+    @NonNull
+    Set<Long> findFullyVisibleUserIds(@Nullable Partner partner);
 
     /**
      * Get the CandidateOpportunity with the given id.

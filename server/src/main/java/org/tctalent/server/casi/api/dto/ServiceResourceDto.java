@@ -16,12 +16,13 @@
 
 package org.tctalent.server.casi.api.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
+import org.tctalent.server.casi.domain.model.ResourceType;
 
 /**
  * Data Transfer Object representing a service resource, such as a coupon or access code.
@@ -36,7 +37,9 @@ public class ServiceResourceDto {
   private ServiceProvider provider;
   private ServiceCode serviceCode;
   private String resourceCode;
+  private String countryIsoCode;
+  private ResourceType resourceType;
   private ResourceStatus status;
-  private LocalDateTime sentAt;
-  private LocalDateTime expiresAt;
+  private OffsetDateTime sentAt;
+  private OffsetDateTime expiresAt;
 }

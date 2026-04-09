@@ -23,6 +23,18 @@ import org.springframework.lang.Nullable;
  * Util for turning a partner subdomain into a standard url with a partner query param.
  * <p/>
  * eg crs.tctalent.org --> tctalent.org?p=crs
+ * <p>
+ * It might be called in the RootRouteAdminApi controller something like this.
+ * But we don't use this any more.
+ * <pre>{@code
+ *      if (host != null) {
+ *          String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
+ *          if (redirectUrl != null) {
+ *              return new ModelAndView("redirect:" + redirectUrl);
+ *          }
+ *      }
+ * }</pre>
+ *
  *
  * @author John Cameron
  */

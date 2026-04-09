@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.PdfGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.html.HtmlSanitizer;
 import org.tctalent.server.util.html.StringSanitizer;
 import org.thymeleaf.TemplateEngine;
@@ -49,11 +50,11 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 @Service
 @Slf4j
 public class PdfHelper {
-
     private static final String UTF_8 = "UTF-8";
     private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
 
     private final TemplateEngine pdfTemplateEngine;
+    private final TcInstanceService tcInstanceService;
 
     /**
      * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
@@ -62,8 +63,10 @@ public class PdfHelper {
      * See <a href="https://www.jetbrains.com.cn/en-us/help/inspectopedia/SpringQualifierCopyableLombok.html">
      *     Intellij doc</a>
      */
-    public PdfHelper(@Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine) {
+    public PdfHelper(@Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine,
+        TcInstanceService tcInstanceService) {
         this.pdfTemplateEngine = pdfTemplateEngine;
+        this.tcInstanceService = tcInstanceService;
     }
 
     /**
@@ -86,6 +89,7 @@ public class PdfHelper {
             context.setVariable("candidate", candidate);
             context.setVariable("showName", showName);
             context.setVariable("showContact", showContact);
+            context.setVariable("logoFile", tcInstanceService.getLogoFile());
 
             String renderedHtmlContent = pdfTemplateEngine.process("template", context);
             String xHtml = convertToXhtml(renderedHtmlContent);

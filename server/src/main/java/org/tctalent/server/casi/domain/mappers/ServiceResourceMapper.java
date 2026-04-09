@@ -16,7 +16,6 @@
 
 package org.tctalent.server.casi.domain.mappers;
 
-import org.springframework.stereotype.Component;
 import org.tctalent.server.casi.api.dto.ServiceResourceDto;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
@@ -27,7 +26,6 @@ import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
  *
  * @author sadatmalik
  */
-@Component
 public class ServiceResourceMapper {
   public static ServiceResource toModel(ServiceResourceEntity e) {
     if (e == null) {
@@ -39,6 +37,8 @@ public class ServiceResourceMapper {
         .provider(e.getProvider())
         .serviceCode(e.getServiceCode())
         .resourceCode(e.getResourceCode())
+        .countryIsoCode(e.getCountryIsoCode())
+        .resourceType(e.getResourceType())
         .status(e.getStatus())
         .sentAt(e.getSentAt())
         .expiresAt(e.getExpiresAt())
@@ -55,6 +55,8 @@ public class ServiceResourceMapper {
         .provider(dto.getProvider())
         .serviceCode(dto.getServiceCode())
         .resourceCode(dto.getResourceCode())
+        .countryIsoCode(dto.getCountryIsoCode())
+        .resourceType(dto.getResourceType())
         .status(dto.getStatus())
         .sentAt(dto.getSentAt())
         .expiresAt(dto.getExpiresAt())
@@ -71,6 +73,8 @@ public class ServiceResourceMapper {
         .provider(model.getProvider())
         .serviceCode(model.getServiceCode())
         .resourceCode(model.getResourceCode())
+        .countryIsoCode(model.getCountryIsoCode())
+        .resourceType(model.getResourceType())
         .status(model.getStatus())
         .sentAt(model.getSentAt())
         .expiresAt(model.getExpiresAt())

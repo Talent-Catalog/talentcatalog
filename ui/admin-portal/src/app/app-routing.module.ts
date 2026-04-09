@@ -48,6 +48,7 @@ import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
 import {IntelligenceComponent} from "./components/intelligence/intelligence.component";
 import {DpaGuard} from "./services/dpa.guard";
 import {PartnerDpaComponent} from "./components/util/partner-dpa/partner-dpa.component";
+import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
 
 const routes: Routes = [
   {
@@ -181,6 +182,21 @@ const routes: Routes = [
             pathMatch: 'full' as const,
             component: SettingsComponent,
             data: {title: 'TC Settings'}
+          },
+        ]
+      },
+      {
+        path: 'candidate-services',
+        canActivate: [RoleGuardService, DpaGuard],
+        data: {
+          expectedRoles: [Role.systemadmin, Role.admin, Role.partneradmin]
+        },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full' as const,
+            component: CasiManagementComponent,
+            data: {title: 'TC Candidate Services'}
           },
         ]
       },

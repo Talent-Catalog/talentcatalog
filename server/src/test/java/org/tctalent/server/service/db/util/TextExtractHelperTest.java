@@ -139,7 +139,7 @@ public class TextExtractHelperTest {
         // Use test set to loop through
         for(CandidateAttachment file : candidateAttachmentSet) {
             try {
-                String uniqueFilename = file.getLocation();
+                String uniqueFilename = file.getUrl();
                 String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
                 String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
@@ -147,7 +147,7 @@ public class TextExtractHelperTest {
                     file.setTextExtract(extractedText);
                 }
             } catch (Exception e) {
-                log.error("Could not extract text from " + file.getLocation(), e.getMessage());
+                log.error("Could not extract text from " + file.getUrl(), e.getMessage());
             }
         }
     }
@@ -174,7 +174,7 @@ public class TextExtractHelperTest {
         // Use test set to loop through
         for(CandidateAttachment file : candidateAttachmentSet) {
             try {
-                String uniqueFilename = file.getLocation();
+                String uniqueFilename = file.getUrl();
                 String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
                 String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
@@ -182,7 +182,7 @@ public class TextExtractHelperTest {
                     file.setTextExtract(extractedText);
                 }
             } catch (Exception e) {
-                log.error("Could not extract text from " + file.getLocation(), e.getMessage());
+                log.error("Could not extract text from " + file.getUrl(), e.getMessage());
             }
         }
     }
@@ -210,13 +210,13 @@ public class TextExtractHelperTest {
         // Loop through test set using pdf text extract helper methods
         for(CandidateAttachment pdf : candidateAttachmentSet){
             try {
-                String uniqueFilename = pdf.getLocation();
+                String uniqueFilename = pdf.getUrl();
                 String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
                 String pdfExtract = TextExtractHelper.getTextFromPDFFile(srcFile);
                 assertNotNull(pdfExtract);
             } catch (Exception e) {
-                log.error("Could not extract text from " + pdf.getLocation(), e.getMessage());
+                log.error("Could not extract text from " + pdf.getUrl(), e.getMessage());
             }
         }
     }
@@ -243,13 +243,13 @@ public class TextExtractHelperTest {
         // Loop through test set using docx text extract helper methods
         for(CandidateAttachment docx : candidateAttachmentSet) {
             try {
-                String uniqueFilename = docx.getLocation();
+                String uniqueFilename = docx.getUrl();
                 String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
                 String pdfExtract = TextExtractHelper.getTextFromDocxFile(srcFile);
                 assertNotNull(pdfExtract);
             } catch (Exception e) {
-                log.error("Could not extract text from " + docx.getLocation(), e.getMessage());
+                log.error("Could not extract text from " + docx.getUrl(), e.getMessage());
             }
         }
     }
@@ -276,13 +276,13 @@ public class TextExtractHelperTest {
         // Loop through test set using docx text extract helper methods
         for(CandidateAttachment doc : candidateAttachmentSet) {
             try{
-                String uniqueFilename = doc.getLocation();
+                String uniqueFilename = doc.getUrl();
                 String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
                 String pdfExtract = TextExtractHelper.getTextFromDocFile(srcFile);
                 assertNotNull(pdfExtract);
             } catch (Exception e) {
-                log.error("Could not extract text from " + doc.getLocation(), e.getMessage());
+                log.error("Could not extract text from " + doc.getUrl(), e.getMessage());
             }
         }
 

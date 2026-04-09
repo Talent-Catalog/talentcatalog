@@ -57,8 +57,12 @@ export class CandidateService implements IntakeService {
 
   constructor(private http: HttpClient) {}
 
-  search(request): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/search`, request);
+  search(request, useOldFetch: boolean): Observable<SearchResults<Candidate>> {
+    let suffix = "search";
+    if (useOldFetch) {
+      suffix += "-old-fetch";
+    }
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/${suffix}`, request);
   }
 
   findByCandidateEmail(request): Observable<SearchResults<Candidate>> {
@@ -238,9 +242,11 @@ export class CandidateService implements IntakeService {
     );
   }
 
-  // In the candidate-search-card we pass in the updated candidate object to merge with the extended candidate DTO,
-  // this reduces an additional API call to fetch the updated extended candidate object. But in candidate profile we fetch
-  // the updated object so we don't need the updated object, just need to refetch the current candidate.
+  // In the candidate-search-card we pass in the updated candidate object to merge with the extended
+  // candidate DTO.
+  // This reduces an additional API call to fetch the updated extended candidate object.
+  // But in candidate profile we fetch the updated object so we don't need the updated object,
+  // just need to refetch the current candidate.
   updateCandidate(candidate?: Candidate) {
     candidate ? this.candidateUpdatedSource.next(candidate) : this.candidateUpdatedSource.next();
   }

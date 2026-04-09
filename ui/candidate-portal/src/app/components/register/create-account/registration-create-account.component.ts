@@ -16,7 +16,6 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../../../services/auth.service";
 import {ActivatedRoute} from "@angular/router";
 import {BrandingService} from "../../../services/branding.service";
 import {CandidateService, UpdateCandidateSurvey} from "../../../services/candidate.service";
@@ -57,7 +56,6 @@ export class RegistrationCreateAccountComponent implements OnInit {
               private route: ActivatedRoute,
               private brandingService: BrandingService,
               private candidateService: CandidateService,
-              private authService: AuthService,
               private authenticationService: AuthenticationService,
               private registrationService: RegistrationService,
               private languageService: LanguageService) { }
@@ -160,7 +158,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
     req.contactConsentRegistration = this.registrationForm.value.contactConsentRegistration;
     req.contactConsentPartners = this.registrationForm.value.contactConsentPartners;
 
-    this.authService.register(req).subscribe(
+    this.authenticationService.register(req).subscribe(
       (response) => {
         // If successfully registered, check if US-Afghan and if so update the survey.
         if (this.usAfghan) {

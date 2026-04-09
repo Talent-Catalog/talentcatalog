@@ -22,6 +22,8 @@ import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 
@@ -81,6 +83,15 @@ public interface CandidateAssistanceService {
   List<ServiceAssignment> getAssignmentsForCandidate(Long candidateId);
 
   /**
+   * Get the current active assignment for a candidate.
+   * The definition of "current" is provider-specific.
+   *
+   * @param candidateId the candidate ID
+   * @return the current assignment, or null if none exists
+   */
+  ServiceAssignment getCurrentAssignment(Long candidateId);
+
+  /**
    * Get all available (unassigned) resources for this provider and service.
    * @return the list of available service resources
    */
@@ -127,6 +138,9 @@ public interface CandidateAssistanceService {
    * Update the status of a specific resource.
    * @param resourceCode the unique resource code
    * @param status the new status to set
+   * @throws NoSuchObjectException if the resource with the given code is not found
+   * @throws InvalidRequestException if the status update is invalid (e.g., trying to mark an already expired resource as redeemed)
    */
-  void updateResourceStatus(String resourceCode, ResourceStatus status);
+  void updateResourceStatus(String resourceCode, ResourceStatus status)
+      throws InvalidRequestException, NoSuchObjectException;
 }

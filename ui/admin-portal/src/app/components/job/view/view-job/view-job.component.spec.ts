@@ -22,7 +22,7 @@ import {JobService} from '../../../../services/job.service';
 import {SlackService} from '../../../../services/slack.service';
 import {Router} from '@angular/router';
 import {CommonModule, Location} from '@angular/common';
-import {of} from 'rxjs';
+import {of, Subject} from 'rxjs';
 import {Job} from '../../../../model/job';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockUser} from "../../../../MockData/MockUser";
@@ -51,7 +51,7 @@ describe('ViewJobComponent', () => {
   let mockLocation: jasmine.SpyObj<Location>;
 
   beforeEach(async () => {
-    mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser'], { loggedInUser$: new Subject<any>() });
     mockJobService = jasmine.createSpyObj('JobService', ['updateStarred']);
     mockSlackService = jasmine.createSpyObj('SlackService', ['postJobFromId']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);

@@ -98,6 +98,10 @@ public enum CandidateOpportunityStage {
 
         public boolean isWon() { return won; }
 
+        public boolean isAtOrBeyondAcceptance() {
+            return this.ordinal() >= acceptance.ordinal();
+        }
+
         public String getSalesforceStageName() {
                 return salesforceStageName;
         }

@@ -16,7 +16,7 @@
 
 package org.tctalent.server.casi.core.services;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +30,7 @@ import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceResource;
+import org.tctalent.server.casi.domain.model.ResourceType;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
@@ -77,11 +78,13 @@ public class AssignmentEngine {
 
     // Write to central ledger
     ServiceAssignmentEntity e = new ServiceAssignmentEntity();
+    e.setProvider(allocator.getProvider());
+    e.setServiceCode(allocator.getServiceCode());
     e.setResource(resourceRepo.getReferenceById(res.getId()));
     e.setCandidate(c);
     e.setActor(actor);
     e.setStatus(AssignmentStatus.ASSIGNED);
-    e.setAssignedAt(LocalDateTime.now());
+    e.setAssignedAt(OffsetDateTime.now());
     ledger.save(e);
 
     // Event + model
@@ -134,8 +137,10 @@ public class AssignmentEngine {
           ledger.save(assignment);
 
           ServiceResourceEntity r = assignment.getResource();
-          r.setStatus(ResourceStatus.DISABLED);
-          resourceRepo.save(r);
+          if (r.getResourceType() != ResourceType.SHARED) {
+            r.setStatus(ResourceStatus.DISABLED);
+            resourceRepo.save(r);
+          }
 
           events.publishEvent(new ServiceReassignedEvent(ServiceAssignmentMapper.toModel(assignment)));
         });

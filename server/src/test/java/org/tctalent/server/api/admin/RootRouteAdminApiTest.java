@@ -70,21 +70,6 @@ class RootRouteAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("redirect sub-domain url to plain url succeeds")
-  void redirectSubDomainUrlToPlainUrlSucceeds() throws Exception {
-
-    mockMvc.perform(get(BASE_PATH)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .header("Host", "crs.tctalent.org")
-            .queryParam("h", "true")
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isFound())
-        .andExpect(header().string("Location", containsString(("tctalent.org?p=crs"))));
-  }
-
-  @Test
   @DisplayName("go to landing page succeeds")
   void goToLandingPageSucceeds() throws Exception {
     brandingInfo.setLandingPage("landing-page-url");

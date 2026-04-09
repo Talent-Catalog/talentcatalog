@@ -60,17 +60,17 @@
         <tc-button [color]="'warning'"
                    (onClick)="inputOldIntake(false)"
                    [disabled]="saving"
+                   [loading]="saving"
                    [size]="'sm'"
         >
-          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Input External Intake
         </tc-button>
         <tc-button [color]="'success'"
                    (onClick)="completeIntake(false)"
+                   [loading]="saving"
                    [disabled]="candidate.miniIntakeCompletedDate != null"
                    [size]="'sm'"
         >
-          <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
           Complete
         </tc-button>
       </ng-template>
@@ -272,15 +272,15 @@
                         </div>
                         <div class="col">
                           <div class="tag-light">
-                            <span class="me-4" *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
+                            <span class="me-4" *ngIf="candidateIntakeData?.englishAssessmentScoreIelts"
                                   [class]="'fw-600'">
                               Est IELTS
-                              <span class="text-info">{{candidateIntakeData.englishAssessmentScoreIelts}}</span>
+                              <span class="text-info">{{candidateIntakeData?.englishAssessmentScoreIelts}}</span>
                             </span>
-                            <span class="me-4" *ngIf="candidateIntakeData.englishAssessmentScoreDet"
+                            <span class="me-4" *ngIf="candidateIntakeData?.englishAssessmentScoreDet"
                                   [class]="'fw-600'">
                               DET
-                              <span class="text-info">{{candidateIntakeData.englishAssessmentScoreDet}}</span>
+                              <span class="text-info">{{candidateIntakeData?.englishAssessmentScoreDet}}</span>
                             </span>
                           </div>
                         </div>

@@ -16,7 +16,7 @@
 
 package org.tctalent.server.casi.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Value;
 
@@ -35,5 +35,5 @@ public class ServiceAssignment {
   Long candidateId;
   Long actorId; // who assigned it
   AssignmentStatus status; // ASSIGNED, REDEEMED, EXPIRED, REASSIGNED
-  LocalDateTime assignedAt;
+  OffsetDateTime assignedAt;
 }

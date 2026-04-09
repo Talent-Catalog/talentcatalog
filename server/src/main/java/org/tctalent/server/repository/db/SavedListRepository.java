@@ -98,5 +98,4 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
      * @return Optional containing the SavedList if found
      */
     Optional<SavedList> findByPublicId(String publicId);
-
 }

@@ -33,7 +33,7 @@ import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../m
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {forkJoin, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
@@ -44,7 +44,7 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
-import {concatMap, takeUntil} from "rxjs/operators";
+import {catchError, concatMap, debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-view-candidate',
@@ -68,7 +68,9 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   uploadedCvAvailable: boolean = false;
 
   selectedLists: SavedList[] = [];
-  lists: SavedList[] = [];
+  lists$: Observable<SavedList[]>;
+  listsInput$ = new Subject<string>();
+  listsLoading = false;
   token: string;
 
   private destroy$ = new Subject<void>();
@@ -155,7 +157,41 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   private loadLists() {
-    /*load all our non-fixed lists */
+    this.setupListsTypeahead();
+    this.loadSelectedLists();
+  }
+
+  /**
+   * This fetches saved lists based on their names as the user types.
+   * @private
+   */
+  private setupListsTypeahead() {
+    this.lists$ = this.listsInput$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => this.listsLoading = true),
+      switchMap(term => this.doListSearch(term)),
+      tap(() => this.listsLoading = false)
+    );
+  }
+
+  private doListSearch(keyword: string): Observable<SavedList[]> {
+    const request: SearchSavedListRequest = {
+      dtoType: DtoType.MINIMAL,  //We just need the names and ids of the lists
+      keyword: keyword,
+      pageSize: 10,
+      owned: true,
+      shared: true,
+      global: this.canSeeGlobalLists(),
+      fixed: false
+    };
+    return this.savedListService.searchPaged(request).pipe(
+      map(results => results.content),
+      catchError(() => of([]))
+    );
+  }
+
+  private loadSelectedLists() {
     this.loading = true;
     const request: SearchSavedListRequest = {
       dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
@@ -164,15 +200,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       global: this.canSeeGlobalLists(),
       fixed: false
     };
-
-    forkJoin( {
-      'lists': this.savedListService.search(request),
-      'selectedLists': this.candidateSavedListService.search(this.candidate.id, request)
-    }).subscribe(
+    this.candidateSavedListService.search(this.candidate.id, request).subscribe(
       results => {
         this.loading = false;
-        this.lists = results['lists'];
-        this.selectedLists = results['selectedLists'];
+        this.selectedLists = results;
       },
       (error) => {
         this.error = error;
@@ -293,8 +324,6 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   onTabChanged(activeTabId: string) {
     this.setActiveTabId(activeTabId);
-    // Notify other tabs to refresh when the user switches tabs between mini intake and full intake.
-    this.candidateService.updateCandidate();
   }
 
   publicCvUrl() {
@@ -378,7 +407,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       () => {
         this.savingList = false;
         if (reload) {
-          this.loadLists();
+          this.loadSelectedLists();
         }
       },
       (error) => {
@@ -482,6 +511,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
+  }
+
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
   public computeNotificationButtonLabel() {

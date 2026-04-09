@@ -17,6 +17,7 @@
 package org.tctalent.server.casi.api.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
@@ -28,17 +29,19 @@ import org.tctalent.server.casi.domain.model.ResourceStatus;
 @Getter
 @Setter
 public class UpdateServiceResourceStatusRequest {
+
   /**
    * The unique code of the service resource to be updated.
    * This field must not be blank.
    */
   @NotBlank(message = "Resource code must not be blank")
   private String resourceCode;
+
   /**
    * The new status to be assigned to the service resource.
-   * This field must not be blank.
+   * This field must not be null.
    */
-  @NotBlank(message = "Status must not be blank")
+  @NotNull(message = "Status must not be null")
   private ResourceStatus status;
 
 }

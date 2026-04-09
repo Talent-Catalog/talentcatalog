@@ -15,12 +15,16 @@
   -->
 
 <div class="text-end" *ngIf="!preview">
-  <button class="btn btn-danger btn-card"
+  <tc-button color="error" class="me-2"
           [disabled]="disabled"
-          (click)="deleteExam()">&times;</button>
-  <button class="btn btn-primary btn-card pb-1"
+          (onClick)="deleteExam()">
+    &times;
+  </tc-button>
+  <tc-button color="info"
           [disabled]="disabled"
-          (click)="editExam()"><fa-icon icon="edit" size="xs"></fa-icon></button>
+          (onClick)="editExam()">
+    <i class="fas fa-edit fa-xs"></i>
+  </tc-button>
 </div>
 
 <h5><strong>Exam:</strong> {{ getExamName(exam.exam) || 'N/A' }}</h5>

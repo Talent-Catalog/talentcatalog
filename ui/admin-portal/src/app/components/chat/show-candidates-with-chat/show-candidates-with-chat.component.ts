@@ -196,7 +196,9 @@ export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
 
   public refresh(event: any): void {
     this.fetchCandidatesWithActiveChat(true);
-    event.preventDefault();
+    if (event) {
+      event.preventDefault();
+    }
   }
 
   public toggleSort(column) {

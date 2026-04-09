@@ -18,7 +18,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {
   AttachmentType,
@@ -70,7 +70,7 @@ describe('CreateCandidateAttachmentComponent', () => {
       candidateId: 1,
       type: AttachmentType.link,
       name: 'Test Attachment',
-      location: 'https://example.com',
+      url: 'https://example.com',
       cv: false,
       uploadType: UploadType.other
     };
@@ -79,7 +79,7 @@ describe('CreateCandidateAttachmentComponent', () => {
     candidateAttachmentServiceSpy.createAttachment.and.returnValue(of(mockAttachment));
     // Fill the form
     component.form.controls['name'].setValue('Test Attachment');
-    component.form.controls['location'].setValue('https://example.com');
+    component.form.controls['url'].setValue('https://example.com');
 
     // Act
     component.save();
@@ -95,7 +95,7 @@ describe('CreateCandidateAttachmentComponent', () => {
 
     // Fill the form
     component.form.controls['name'].setValue('Test Attachment');
-    component.form.controls['location'].setValue('https://example.com');
+    component.form.controls['url'].setValue('https://example.com');
 
     // Act
     component.save();

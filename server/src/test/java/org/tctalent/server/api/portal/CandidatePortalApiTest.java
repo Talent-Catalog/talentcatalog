@@ -66,6 +66,7 @@ class CandidatePortalApiTest {
 
   private Candidate loggedInCandidate;
 
+
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);

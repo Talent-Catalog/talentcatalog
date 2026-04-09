@@ -97,12 +97,15 @@ export class AuthorizationService {
    */
   canViewCandidateName(): boolean {
     let result: boolean = false;
-    if (this.isSourcePartner() || this.isJobCreatorPartner()) {
-      switch (this.getLoggedInRole()) {
-        case Role.systemadmin:
-        case Role.admin:
-        case Role.partneradmin:
-          result = true;
+    if (this.isSystemAdminOnly()) {
+      result = true;
+    } else {
+      if (this.isSourcePartner() || this.isJobCreatorPartner()) {
+        switch (this.getLoggedInRole()) {
+          case Role.admin:
+          case Role.partneradmin:
+            result = true;
+        }
       }
     }
     return result;
@@ -122,6 +125,10 @@ export class AuthorizationService {
       }
     }
     return result;
+  }
+
+  canViewChats(): boolean {
+    return this.authenticationService.canViewChats()
   }
 
   /**
@@ -204,18 +211,21 @@ export class AuthorizationService {
     //Must be logged in
     if (loggedInUser) {
 
-      if (this.isJobCreatorPartner() || this.isSourcePartner()) {
-
-        //Must have some kind of admin role
-        const role = this.getLoggedInRole();
-        if (role !== Role.limited && role !== Role.semilimited) {
-          if (this.isDefaultPartner()) {
-            //Default partners with admin roles can see all candidate info
-            visible = true;
-          } else {
-            //Can only see private candidate info if the candidate is assigned to the user's partner
-            const candidateSourcePartner = candidate.user.partner;
-            visible = candidateSourcePartner.id === loggedInUser.partner.id;
+      if (this.isSystemAdminOnly()) {
+        visible = true;
+      } else {
+        if (this.isJobCreatorPartner() || this.isSourcePartner()) {
+          //Must have some kind of admin role
+          const role = this.getLoggedInRole();
+          if (role !== Role.limited && role !== Role.semilimited) {
+            if (this.isDefaultPartner()) {
+              //Default partners with admin roles can see all candidate info
+              visible = true;
+            } else {
+              //Can only see private candidate info if the candidate is assigned to the user's partner
+              const candidateSourcePartner = candidate.user.partner;
+              visible = candidateSourcePartner.id === loggedInUser.partner.id;
+            }
           }
         }
       }
@@ -394,16 +404,21 @@ export class AuthorizationService {
     if (loggedInUser) {
       //Cannot be a read only user
       if (!this.isReadOnly()) {
-        const role = this.getLoggedInRole();
-        //Must have some kind of admin role
-        if (role !== Role.limited && role !== Role.semilimited) {
-          if (this.isDefaultSourcePartner()) {
-            //Default source partners with admin roles can edit all candidates
-            editable = true;
-          } else {
-            //Can only edit candidate if the candidate is assigned to the user's partner
-            const candidateSourcePartner = candidate.user.partner;
-            editable = candidateSourcePartner.id === loggedInUser.partner.id;
+
+        if (this.isSystemAdminOnly()) {
+          editable = true;
+        } else {
+          const role = this.getLoggedInRole();
+          //Must have some kind of admin role
+          if (role !== Role.limited && role !== Role.semilimited) {
+            if (this.isDefaultSourcePartner()) {
+              //Default source partners with admin roles can edit all candidates
+              editable = true;
+            } else {
+              //Can only edit candidate if the candidate is assigned to the user's partner
+              const candidateSourcePartner = candidate.user.partner;
+              editable = candidateSourcePartner.id === loggedInUser.partner.id;
+            }
           }
         }
       }

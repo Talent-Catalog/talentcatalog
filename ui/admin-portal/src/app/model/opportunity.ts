@@ -65,6 +65,10 @@ export function getOpportunityStageName(opp: Opportunity): string {
 export function getStageBadgeColor(opp: Opportunity): BadgeColor {
   //Need to select the appropriate stage's badge color - depending on whether opp is a candidate or
   // job opportunity.
+  //Handle bad data.
+  if (!opp) {
+    return "gray";
+  }
   if (isCandidateOpportunity(opp)) {
     return getCandidateOppStageBadgeColor(opp);
   }

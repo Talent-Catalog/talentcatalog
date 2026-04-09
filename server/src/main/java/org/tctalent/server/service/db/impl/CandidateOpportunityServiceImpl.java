@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -269,6 +270,35 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             opps = new ArrayList<>();
         }
         return opps;
+    }
+
+    @NonNull
+    @Override
+    public Set<Long> findFullyVisibleCandidateIds(@Nullable Partner partner) {
+        // CandidateBuilderSelector needs a fast way to know which candidates can bypass
+        // role/partner property filtering. Returning ids avoids loading full CandidateOpportunity
+        // and Candidate entities (which previously triggered N+1 lazy-load queries).
+      Set<Long> candidateIds;
+        if (partner != null && partner.isJobCreator()) {
+            candidateIds = candidateOpportunityRepository.findFullyVisibleCandidateIds(partner.getId());
+        } else {
+            candidateIds = Set.of();
+        }
+        return candidateIds;
+    }
+
+    @NonNull
+    @Override
+    public Set<Long> findFullyVisibleUserIds(@Nullable Partner partner) {
+        // Same optimization as findFullyVisibleCandidateIds, but for User DTO filtering.
+        // We resolve user ids directly in one query so filters do constant-time membership checks.
+        Set<Long> userIds;
+        if (partner != null && partner.isJobCreator()) {
+            userIds = candidateOpportunityRepository.findFullyVisibleUserIds(partner.getId());
+        } else {
+            userIds = Set.of();
+        }
+        return userIds;
     }
 
     @NonNull

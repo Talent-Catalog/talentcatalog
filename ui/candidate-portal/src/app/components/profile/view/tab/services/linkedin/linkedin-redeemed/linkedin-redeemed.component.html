@@ -1,0 +1,36 @@
+<app-error [error]="error"></app-error>
+<tc-loading [loading]="loading"></tc-loading>
+
+<div *ngIf="!isOnIssueReportList; else issueReported">
+  <h4>{{ "SERVICES.LINKEDIN.REDEEMED.TITLE" | translate }}</h4>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.DESCRIPTION" | translate }}</p>
+  <h5>{{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_TITLE" | translate }}</h5>
+  <p>
+    {{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_DESCRIPTION" | translate }}
+    <a [href]="assignment.resource.resourceCode" target="_blank">
+      {{ "SERVICES.LINKEDIN.REDEEMED.ISSUE_DESCRIPTION_HERE" | translate }}
+    </a>.
+  </p>
+  <h5 (click)="toggleIssueForm()" style="cursor: pointer">
+    {{ "SERVICES.LINKEDIN.REDEEMED.REPORT_TITLE" | translate }}
+    <i class="fas" [ngClass]="showIssueForm ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+  </h5>
+  <div *ngIf="showIssueForm" class="mt-2">
+    <tc-textarea [(ngModel)]="issueComment"
+                 [maxlength]="MAX_COMMENT_LENGTH"
+                 rows="4"
+                 placeholder="{{ 'SERVICES.LINKEDIN.REDEEMED.REPORT_COMMENT_PLACEHOLDER' | translate }}"
+    ></tc-textarea>
+    <div class="d-flex align-items-center justify-content-between mt-1">
+      <tc-button [color]="'error'" [disabled]="!issueComment.trim()" (onClick)="reportIssue()">
+        {{ "SERVICES.LINKEDIN.REDEEMED.REPORT_BTN" | translate }}
+      </tc-button>
+      <small class="text-muted">{{ MAX_COMMENT_LENGTH - issueComment.length }} / {{ MAX_COMMENT_LENGTH }}</small>
+    </div>
+  </div>
+</div>
+
+<ng-template #issueReported>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_THANKS" | translate }}</p>
+  <p>{{ "SERVICES.LINKEDIN.REDEEMED.REPORT_DESCRIPTION" | translate }}</p>
+</ng-template>

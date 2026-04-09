@@ -799,7 +799,7 @@ import {
 } from './components/candidates/potential-duplicates/duplicates-detail/duplicates-detail.component';
 import {
   ImportDuolingoCouponsComponent
-} from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
+} from "./components/casi-management/import-duolingo-coupons/import-duolingo-coupons.component";
 import {
   DetScoreValidationComponent
 } from './components/util/det-score-validation/det-score-validation.component';
@@ -818,7 +818,7 @@ import {ErrorDisplayComponent} from './components/util/error-display/error-displ
 import {IntelligenceComponent} from './components/intelligence/intelligence.component';
 import {
   OfferToAssistComponent
-} from './components/settings/offer-to-assist/offer-to-assist.component';
+} from './components/casi-management/offer-to-assist/offer-to-assist.component';
 import {
   IntlPhoneInputComponent
 } from './components/util/intl-phone-input/intl-phone-input.component';
@@ -838,6 +838,14 @@ import {AuthExpiryInterceptor} from "./services/auth-expiry.interceptor";
 import {
   CandidateCvTextTabComponent
 } from './components/candidates/view/tab/candidate-cv-text-tab/candidate-cv-text-tab.component';
+import {
+  ImportLinkedinPremiumCouponsComponent
+} from "./components/casi-management/import-linkedin-premium-coupons/import-linkedin-premium-coupons.component";
+import {
+  ImportReferenceVouchersComponent
+} from "./components/casi-management/import-reference-vouchers/import-reference-vouchers.component";
+import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
+import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-preview.component";
 
 @NgModule({
   declarations: [
@@ -1176,7 +1184,11 @@ import {
     ViewPrivacyPolicyInfoComponent,
     PartnerDpaComponent,
     SafeHtmlPipe,
-    CandidateCvTextTabComponent
+    CandidateCvTextTabComponent,
+    CasiManagementComponent,
+    CsvPreviewComponent,
+    ImportLinkedinPremiumCouponsComponent,
+    ImportReferenceVouchersComponent
   ],
   imports: [
     BrowserModule,

@@ -29,7 +29,7 @@ describe('CandidateAttachmentRequest', () => {
     request.candidateId = 1;
     request.type = AttachmentType.file;
     request.name = 'Test File';
-    request.location = 'uploads/test-file.pdf';
+    request.url = 'uploads/test-file.pdf';
     request.cv = true;
     request.uploadType = UploadType.cv;
     request.fileType = 'pdf';
@@ -37,7 +37,7 @@ describe('CandidateAttachmentRequest', () => {
     expect(request.candidateId).toBe(1);
     expect(request.type).toBe(AttachmentType.file);
     expect(request.name).toBe('Test File');
-    expect(request.location).toBe('uploads/test-file.pdf');
+    expect(request.url).toBe('uploads/test-file.pdf');
     expect(request.cv).toBe(true);
     expect(request.uploadType).toBe(UploadType.cv);
     expect(request.fileType).toBe('pdf');
@@ -49,14 +49,14 @@ describe('CandidateAttachmentRequest', () => {
     request.candidateId = 1;
     request.type = AttachmentType.link;
     request.name = 'Test Link';
-    request.location = 'http://example.com';
+    request.url = 'http://example.com';
     request.cv = false;
     request.uploadType = UploadType.degree;
 
     expect(request.candidateId).toBe(1);
     expect(request.type).toBe(AttachmentType.link);
     expect(request.name).toBe('Test Link');
-    expect(request.location).toBe('http://example.com');
+    expect(request.url).toBe('http://example.com');
     expect(request.cv).toBe(false);
     expect(request.uploadType).toBe(UploadType.degree);
     expect(request.fileType).toBeUndefined();
@@ -68,7 +68,7 @@ describe('CandidateAttachmentRequest', () => {
     request.candidateId = 1;
     request.type = AttachmentType.googlefile;
     request.name = 'Google Drive';
-    request.location = 'google-drive-link';
+    request.url = 'google-drive-link';
     request.cv = true;
     request.uploadType = UploadType.englishExam;
     request.fileType = 'docx';
@@ -77,7 +77,7 @@ describe('CandidateAttachmentRequest', () => {
     expect(request.candidateId).toBe(1);
     expect(request.type).toBe(AttachmentType.googlefile);
     expect(request.name).toBe('Google Drive');
-    expect(request.location).toBe('google-drive-link');
+    expect(request.url).toBe('google-drive-link');
     expect(request.cv).toBe(true);
     expect(request.uploadType).toBe(UploadType.englishExam);
     expect(request.fileType).toBe('docx');
@@ -94,7 +94,6 @@ describe('CandidateAttachment', () => {
       id: 1,
       type: AttachmentType.file,
       name: 'Test File',
-      location: 'uploads/test-file.pdf',
       url: 'http://example.com/uploads/test-file.pdf',
       createdBy,
       createdDate: Date.now(),
@@ -109,7 +108,6 @@ describe('CandidateAttachment', () => {
     expect(attachment.id).toBe(1);
     expect(attachment.type).toBe(AttachmentType.file);
     expect(attachment.name).toBe('Test File');
-    expect(attachment.location).toBe('uploads/test-file.pdf');
     expect(attachment.url).toBe('http://example.com/uploads/test-file.pdf');
     expect(attachment.createdBy).toBe(createdBy);
     expect(attachment.createdDate).toBeTruthy();

@@ -89,6 +89,7 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
           and e.serviceCode = :serviceCode
           and e.resource.id  = :resourceId
         order by e.assignedAt desc
+        limit 1
         """)
   Optional<ServiceAssignmentEntity> findTopByProviderAndServiceAndResource(
       @Param("provider") ServiceProvider provider,
