@@ -19,10 +19,12 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.exception.FileDownloadException;
 import org.tctalent.server.exception.ServiceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -46,6 +48,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
  *
  * @author sadatmalik
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TranslationMigrationService {
@@ -59,20 +62,42 @@ public class TranslationMigrationService {
         String normalizedSourcePrefix = normalizePrefix(sourcePrefix);
         String normalizedDestinationPrefix = normalizePrefix(destinationPrefix);
 
+        LogBuilder.builder(log)
+            .action("MigrateTranslations")
+            .message("Starting: " + sourceBucket + "/" + normalizedSourcePrefix
+                + " -> " + destinationBucket + "/" + normalizedDestinationPrefix)
+            .logInfo();
+
         List<S3Object> objects = s3ResourceHelper.listObjectSummaries(sourceBucket,
             normalizedSourcePrefix);
         if (objects.isEmpty()) {
+            LogBuilder.builder(log)
+                .action("MigrateTranslations")
+                .message("No files found under " + normalizedSourcePrefix + " in " + sourceBucket)
+                .logWarn();
             throw new ServiceException("migration_empty",
                 "No files found under " + normalizedSourcePrefix + " in " + sourceBucket);
         }
 
+        LogBuilder.builder(log)
+            .action("MigrateTranslations")
+            .message("Found " + objects.size() + " file(s) to migrate")
+            .logInfo();
+
         int copiedCount = 0;
+        long startMs = System.currentTimeMillis();
         for (S3Object obj : objects) {
             String sourceKey = obj.key();
             String relativePath = sourceKey.startsWith(normalizedSourcePrefix)
                 ? sourceKey.substring(normalizedSourcePrefix.length())
                 : sourceKey;
             String destinationKey = normalizedDestinationPrefix + relativePath;
+
+            LogBuilder.builder(log)
+                .action("MigrateTranslations")
+                .message("[" + (copiedCount + 1) + "/" + objects.size() + "] Copying: "
+                    + sourceKey + " -> " + destinationKey)
+                .logInfo();
 
             File downloaded = null;
             try {
@@ -100,6 +125,12 @@ public class TranslationMigrationService {
                 }
             }
         }
+
+        long durationMs = System.currentTimeMillis() - startMs;
+        LogBuilder.builder(log)
+            .action("MigrateTranslations")
+            .message("Complete: " + copiedCount + " file(s) copied in " + durationMs + "ms")
+            .logInfo();
 
         return copiedCount;
     }
