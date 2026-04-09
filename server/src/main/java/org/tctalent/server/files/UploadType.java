@@ -66,6 +66,11 @@ public enum UploadType {
     vaccinationTrans,
     visa;
 
+    /**
+     * If true then access to this type of document requires signing.
+     * This means that links (URLs) to this type of document should be signed and will expire
+     * (ie will become unusable) after a certain time.
+     */
     private final boolean signedAccess;
 
     UploadType() {
