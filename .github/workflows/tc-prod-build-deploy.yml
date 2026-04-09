@@ -79,31 +79,31 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Install credential helper - for jib
-        run: sudo apt update && sudo apt install amazon-ecr-credential-helper
+      # - name: Install credential helper - for jib
+      #   run: sudo apt update && sudo apt install amazon-ecr-credential-helper
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      # - name: Grant execute permission for gradlew
+      #   run: chmod +x gradlew
 
-      - name: Configure AWS credentials for TBB
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+      # - name: Configure AWS credentials for TBB
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
 
-      - name: Deploy to TBB legacy prod with Jib
-        run: ./gradlew jib -Ptbb-prod -x test
+      # - name: Deploy to TBB legacy prod with Jib
+      #   run: ./gradlew jib -Ptbb-prod -x test
 
-      - name: Configure AWS credentials for OPC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_OPC_PROD }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_OPC_PROD }}
-          aws-region: eu-west-2
+      # - name: Configure AWS credentials for OPC
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_OPC_PROD }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_OPC_PROD }}
+      #     aws-region: eu-west-2
 
-      - name: Deploy to OPC prod with Jib
-        run: ./gradlew jib -Popc-prod -x test
+      # - name: Deploy to OPC prod with Jib
+      #   run: ./gradlew jib -Popc-prod -x test
 
   deploy-grn:
     name: Deploy to GRN Prod
