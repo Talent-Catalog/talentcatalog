@@ -363,7 +363,7 @@ public class CandidatePortalApi {
                 .add("additionalInfo")
                 .add("linkedInLink")
                 .add("allNotifications")
-                ;
+                .add("aspirations");
     }
 
     private DtoBuilder candidateSurveyDto() {
@@ -508,6 +508,7 @@ public class CandidatePortalApi {
                 .add("candidateCertifications", certificationDto())
                 /* ADDITIONAL INFO / SUBMIT */
                 .add("additionalInfo")
+                .add("aspirations")
                 .add("candidateMessage")
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")

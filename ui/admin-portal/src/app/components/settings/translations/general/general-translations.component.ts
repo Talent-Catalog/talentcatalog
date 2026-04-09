@@ -503,6 +503,7 @@ const ALL_FIELDS = {
         "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
+          "ASPIRATIONS": null,
           "SURVEY": null,
           "COMMENT": null,
         },
