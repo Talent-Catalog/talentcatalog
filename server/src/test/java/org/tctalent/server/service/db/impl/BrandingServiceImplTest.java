@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,7 @@ class BrandingServiceImplTest {
 
     @Mock PartnerService partnerService;
     @Mock UserService userService;
+    @Mock TcInstanceService tcInstanceService;
     @Mock User user;
 
     @InjectMocks
@@ -57,11 +59,27 @@ class BrandingServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        given(tcInstanceService.isGRN()).willReturn(false);
         partner.setSourcePartner(true);
         partner.setRegistrationLandingPage(LANDING_PAGE);
         partner.setLogo(LOGO);
         partner.setName(PARTNER_NAME);
         partner.setWebsiteUrl(WEBSITE_URL);
+    }
+
+    @Test
+    @DisplayName("get branding info returns GRN branding for GRN instances")
+    void canGetBrandingInfoForGrnInstance() {
+        given(tcInstanceService.isGRN()).willReturn(true);
+
+        BrandingInfo info = brandingService.getBrandingInfo("source-partner");
+
+        assertNotNull(info);
+        assertEquals("assets/images/grnLogoDark.svg", info.getLogo());
+        assertEquals("GRN", info.getPartnerName());
+        assertEquals("https://openpathwaycollective.org/", info.getWebsiteUrl());
+        assertNull(info.getLandingPage());
+        verifyNoInteractions(userService, partnerService);
     }
 
     @Test
@@ -103,13 +121,6 @@ class BrandingServiceImplTest {
 
     private void verifyBrandingInfo(BrandingInfo info) {
         assertEquals(LANDING_PAGE, info.getLandingPage());
-        assertEquals(LOGO, info.getLogo());
-        assertEquals(PARTNER_NAME, info.getPartnerName());
-        assertEquals(WEBSITE_URL, info.getWebsiteUrl());
-    }
-
-    private void verifyNonSourcePartnerBrandingInfo(BrandingInfo info) {
-        assertNull(info.getLandingPage());
         assertEquals(LOGO, info.getLogo());
         assertEquals(PARTNER_NAME, info.getPartnerName());
         assertEquals(WEBSITE_URL, info.getWebsiteUrl());
