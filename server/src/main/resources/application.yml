@@ -255,8 +255,10 @@ candidate-file-urls:
   
   #In this configuration the server url points to Cloudfront which manages the routing to the
   #S3 origin of files if needed. So both origin and public URLs point to Cloudfront.
-  #The default localhost value is designed for testing on developer's local computers.
-  origin-base-url: ${SERVER_URL:http://localhost:8080} 
+  #The default values are designed for testing on developer's local computers uploading to GRN 
+  #staging's S3, where the localhost machine will intercept public urls, but downloads will
+  #come from the GRN staging S3.
+  origin-base-url: ${SERVER_URL:https://test.globalrefugee.net} 
   public-base-url: ${SERVER_URL:http://localhost:8080}
   
 aws:
