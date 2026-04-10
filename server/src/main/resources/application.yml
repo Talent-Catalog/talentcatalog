@@ -184,8 +184,7 @@ server:
   tomcat:
     redirect-context-root: false
 
-#  todo Unused?
-  url: https://tctalent.org
+  url: ${SERVER_URL:https://tctalent.org}
 web:
   # Used in EmailHelper
   portal: https://tctalent.org/candidate-portal
@@ -253,8 +252,12 @@ candidate-file-urls:
   cloudfront-key-pair-id: ${CLOUDFRONT_KEY_PAIR_ID:}
   cloudfront-private-key-pem-path: ${CLOUDFRONT_PRIVATE_KEY_PEM_PATH:}
   origin-expiry-minutes: 15
-  origin-base-url: https://test.globalrefugee.net 
-  public-base-url: http://localhost:8080
+  
+  #In this configuration the server url points to Cloudfront which manages the routing to the
+  #S3 origin of files if needed. So both origin and public URLs point to Cloudfront.
+  #The default localhost value is designed for testing on developer's local computers.
+  origin-base-url: ${SERVER_URL:http://localhost:8080} 
+  public-base-url: ${SERVER_URL:http://localhost:8080}
   
 
 aws:
