@@ -259,7 +259,6 @@ candidate-file-urls:
   origin-base-url: ${SERVER_URL:http://localhost:8080} 
   public-base-url: ${SERVER_URL:http://localhost:8080}
   
-
 aws:
   s3:
     bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
