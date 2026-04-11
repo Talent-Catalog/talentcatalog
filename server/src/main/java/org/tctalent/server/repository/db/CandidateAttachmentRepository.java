@@ -39,14 +39,12 @@ public interface CandidateAttachmentRepository extends JpaRepository<CandidateAt
             + " left join a.candidate c "
             + " where c.id = :candidateId "
             + " and a.uploadType = :uploadType ")
-    List<CandidateAttachment> findByCandidateIdAndType(@Param("candidateId") Long candidateId,
+    List<CandidateAttachment> findByCandidateIdAndUploadType(@Param("candidateId") Long candidateId,
                                                          @Param("uploadType") UploadType uploadType);
 
     Page<CandidateAttachment> findByCandidateId(Long candidateId, Pageable request);
 
     List<CandidateAttachment> findByCandidateId(Long candidateId);
-
-    List<CandidateAttachment> findByCandidateIdAndCv(Long candidateId, boolean cv);
 
     @Query(" select distinct a from CandidateAttachment a "
             + " left join a.candidate c "

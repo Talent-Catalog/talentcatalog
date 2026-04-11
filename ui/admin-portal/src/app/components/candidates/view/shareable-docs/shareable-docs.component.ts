@@ -14,7 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
@@ -22,6 +30,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {isSavedList} from "../../../../model/saved-list";
 import {CandidateSource} from "../../../../model/base";
 import {AuthorizationService} from "../../../../services/authorization.service";
+import {UploadType} from "../../../../model/task";
 
 @Component({
   selector: 'app-shareable-docs',
@@ -134,8 +143,9 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     return isSavedList(this.candidateSource);
   }
 
-  filterByCv(isCV: boolean) {
-    return this.candidate.candidateAttachments?.filter(a => a.cv === isCV);
+  filterByCv(isCv: boolean) {
+    return this.candidate.candidateAttachments?.filter(a =>
+      (isCv && a.uploadType === UploadType.cv) || (!isCv && a.uploadType !== UploadType.cv));
   }
 
   /**

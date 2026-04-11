@@ -935,7 +935,7 @@ public class TestDataFactory {
     candidateAttachment.setType(AttachmentType.googlefile);
     candidateAttachment.setFileType("pdf");
     candidateAttachment.setMigrated(true);
-    candidateAttachment.setCv(false);
+    candidateAttachment.setUploadType(UploadType.other);
     candidateAttachment.setUrl("TEST LOCATION");
     candidateAttachment.setUploadType(UploadType.idCard);
     candidateAttachment.setCreatedBy(createSystemUser());

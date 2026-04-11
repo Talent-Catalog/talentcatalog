@@ -16,6 +16,7 @@
 
 import {Candidate} from './candidate';
 import {User} from './user';
+import {UploadType} from "./task";
 
 export enum AttachmentType {
   googlefile = 'googlefile',
@@ -23,48 +24,16 @@ export enum AttachmentType {
   link = 'link'
 }
 
-export enum UploadType {
-  conductEmployer = "conductEmployer",
-  conductEmployerTrans = "conductEmployerTrans",
-  conductMinistry = "conductMinistry",
-  conductMinistryTrans = "conductMinistryTrans",
-  cos = "cos",
-  cv = "cv",
-  degree = "degree",
-  degreeTranscript = "degreeTranscript",
-  degreeTranscriptTrans = "degreeTranscriptTrans",
-  englishExam = "englishExam",
-  licencing = "licencing",
-  licencingTrans = "licencingTrans",
-  offer = "offer",
-  otherId = "otherId",
-  otherIdTrans = "otherIdTrans",
-  passport = "passport",
-  policeCheck = "policeCheck",
-  policeCheckTrans = "policeCheckTrans",
-  proofAddress = "proofAddress",
-  proofAddressTrans = "proofAddressTrans",
-  references = "references",
-  residenceAttest = "residenceAttest",
-  residenceAttestTrans = "residenceAttestTrans",
-  studiedInEnglish = "studiedInEnglish",
-  other = "other",
-  vaccination = "vaccination",
-  vaccinationTran = "vaccinationTrans"
-}
-
-
 export interface CandidateAttachment {
   id?: number;
-  name: string;
-  url: string;
-  fileType: string;
-  type: AttachmentType;
-  migrated: boolean;
-  cv: boolean;
   candidate?: Candidate;
   createdBy: User;
   createdDate: string;
+  fileType: string;
+  migrated: boolean;
+  name: string;
+  type: AttachmentType;
   uploadType: UploadType;
+  url: string;
 
 }
