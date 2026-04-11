@@ -71,7 +71,6 @@ describe('CreateCandidateAttachmentComponent', () => {
       type: AttachmentType.link,
       name: 'Test Attachment',
       url: 'https://example.com',
-      cv: false,
       uploadType: UploadType.other
     };
 
