@@ -44,8 +44,9 @@ public class TextExtractHelper {
     }
 
     public static String getTextFromPDFFile(File srcFile) throws IOException {
-        FileInputStream fis = new FileInputStream(srcFile);
-        return getTextFromPDFStream(fis);
+        try (FileInputStream fis = new FileInputStream(srcFile)) {
+            return getTextFromPDFStream(fis);
+        }
     }
 
     public static String getTextFromDocxStream(InputStream inputStream) throws IOException {
@@ -57,8 +58,9 @@ public class TextExtractHelper {
     }
 
     public static String getTextFromDocxFile(File srcFile) throws IOException {
-        FileInputStream fis = new FileInputStream(srcFile);
-        return getTextFromDocxStream(fis);
+        try (FileInputStream fis = new FileInputStream(srcFile)) {
+            return getTextFromDocxStream(fis);
+        }
     }
 
     public static String getTextFromDocStream(InputStream inputStream) throws IOException {
@@ -70,8 +72,9 @@ public class TextExtractHelper {
     }
     
     public static String getTextFromDocFile(File srcFile) throws IOException {
-        FileInputStream fis = new FileInputStream(srcFile);
-        return getTextFromDocStream(fis);
+        try (FileInputStream fis = new FileInputStream(srcFile)) {
+            return getTextFromDocStream(fis);
+        }
     }
 
     public static String getTextFromTxtStream(InputStream inputStream) throws IOException {
@@ -102,7 +105,9 @@ public class TextExtractHelper {
             fileType = fileTypeOrName;
         }
         
-        return getTextExtractFromStream(new FileInputStream(file), fileType);
+        try (FileInputStream fis = new FileInputStream(file)) {
+            return getTextExtractFromStream(fis, fileType);
+        }
     }
 
     public static String getTextExtractFromStream(InputStream inputStream, String fileType)
