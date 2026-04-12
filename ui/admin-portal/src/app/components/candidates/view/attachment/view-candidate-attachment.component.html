@@ -73,7 +73,7 @@
           {{attachment.name}}
         </a>
         <span class="small text-dark"> - {{attachment.type}}</span>
-        <div class="d-inline ms-2" *ngIf="attachment.cv">
+        <div class="d-inline ms-2" *ngIf="attachment.uploadType === UploadType.cv">
           <app-cv-icon
             [candidate]="candidate"
             [attachment]="attachment"

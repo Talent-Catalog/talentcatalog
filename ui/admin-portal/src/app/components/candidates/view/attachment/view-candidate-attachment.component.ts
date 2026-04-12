@@ -24,6 +24,7 @@ import {CreateCandidateAttachmentComponent} from './create/create-candidate-atta
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {EditCandidateAttachmentComponent} from './edit/edit-candidate-attachment.component';
 import {CandidateService} from "../../../../services/candidate.service";
+import {UploadType} from "../../../../model/task";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -46,6 +47,10 @@ export class ViewCandidateAttachmentComponent implements OnInit {
 
   get AttachmentType() {
     return AttachmentType;
+  }
+  
+  get UploadType() {
+    return UploadType;
   }
 
   ngOnInit() {  }
