@@ -107,6 +107,10 @@ public class TextExtractHelper {
 
     public static String getTextExtractFromStream(InputStream inputStream, String fileType)
         throws IOException {
+        if (fileType == null) {
+            return null;
+        }
+
         String s = switch (fileType) {
             case "pdf", "application/pdf" -> getTextFromPDFStream(inputStream); 
             case "doc", "application/msword" -> getTextFromDocStream(inputStream);
