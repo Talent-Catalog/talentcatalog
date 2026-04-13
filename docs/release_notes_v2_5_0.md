@@ -96,8 +96,11 @@ Helpful TC user guides:
 -
 
 ## Test Coverage
+
 - NewSearchScreenQuery replaced with stable SQL
 - Gatling performance tests for Saved List candidate search
+- Integration tests for CASI end-to-end
+- Unit testing for CASI framework components
 
 ## Code Refactoring
 
