@@ -49,6 +49,16 @@ sass:
     </div>
   </div>
 
+  <div class="card">
+    <img src="./assets/images/v250/UnhcrHelp.png" alt="UNHCR Help Service" class="card-image">
+    <div class="card-body">
+      <div class="card-title">UNHCR CASI Help Services</div>
+      <div class="card-description">
+        Signposting to relevant UNHCR help pages for eligible registrants. The service is gated
+        to GRN but can be easily opened for TC candidates.
+      </div>
+    </div>
+  </div>
 
 </div>
 
