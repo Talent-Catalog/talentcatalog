@@ -8,7 +8,7 @@ sass:
 
 # New Features
 
-## CASI LinkedIn and UNHCR Services
+## CASI - LinkedIn and UNHCR Services
 
 <div class="card-container">
 
