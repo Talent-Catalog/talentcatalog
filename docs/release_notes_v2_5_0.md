@@ -38,6 +38,9 @@ sass:
     </div>
   </a>
 
+</div>
+<div class="card-container">
+
   <div class="card">
     <img src="./assets/images/v250/GlobalRefugeeNetwork.png" alt="LinkedIn Service" class="card-image">
     <div class="card-body">
@@ -45,6 +48,16 @@ sass:
       <div class="card-description">
         Our sister platform to the TC launches - the GRN offers all refugees with access to valuable 
         international services.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="./assets/images/v230/MuteChat.png" alt="Mute chats" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Mute Chats</div>
+      <div class="card-description">
+        TC admins can quietly 'mute' candidate chats, this is useful if a candidate is sending unnecessary chats which spams the chat channel.
       </div>
     </div>
   </div>
