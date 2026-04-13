@@ -15,8 +15,8 @@ sass:
     <div class="card-body">
       <div class="card-title">Performance Improvements</div>
       <div class="card-description">
-        Much of our work for v2.5.0 was focused on performance — delivering meaningful improvements to loading 
-        times and overall responsiveness.
+        v2.5.0's focus on performance delivers meaningful improvements to loading times and overall 
+        responsiveness.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
