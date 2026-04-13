@@ -10,20 +10,6 @@ sass:
 
 <div class="card-container">
 
-  <a href="./v250/performance" class="card">
-    <img src="./assets/images/v250/performance.png" alt="Performance improvements" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Performance Improvements</div>
-      <div class="card-description">
-        v2.5.0's focus on performance delivers meaningful improvements to loading times and overall 
-        responsiveness.
-      </div>
-      <div class="card-footer">
-        <button class="btn btn-sm">Learn more</button>
-      </div>
-    </div>
-  </a>
-
   <a href="./v250/linkedin_service" class="card">
     <img src="./assets/images/v250/ServicesTabLinkedIn.png" alt="LinkedIn Service" class="card-image">
     <div class="card-body">
@@ -38,9 +24,6 @@ sass:
     </div>
   </a>
 
-</div>
-<div class="card-container">
-
   <div class="card">
     <img src="./assets/images/v250/GlobalRefugeeNetwork.png" alt="LinkedIn Service" class="card-image">
     <div class="card-body">
@@ -52,15 +35,23 @@ sass:
     </div>
   </div>
 
-  <div class="card">
-    <img src="./assets/images/v230/MuteChat.png" alt="Mute chats" class="card-image">
+</div>
+
+<div class="card-container">
+
+  <a href="./v250/performance" class="card">
+    <img src="./assets/images/v250/performance.png" alt="Performance improvements" class="card-image">
     <div class="card-body">
-      <div class="card-title">Mute Chats</div>
+      <div class="card-title">Performance Improvements</div>
       <div class="card-description">
-        TC admins can quietly 'mute' candidate chats, this is useful if a candidate is sending unnecessary chats which spams the chat channel.
+        v2.5.0's focus on performance delivers meaningful improvements to loading times and overall 
+        responsiveness.
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-sm">Learn more</button>
       </div>
     </div>
-  </div>
+  </a>
 
   <div class="card">
     <img src="./assets/images/v250/UnhcrHelp.png" alt="UNHCR Help Service" class="card-image">
