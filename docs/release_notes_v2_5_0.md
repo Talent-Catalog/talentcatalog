@@ -8,6 +8,8 @@ sass:
 
 # New Features
 
+## CASI LinkedIn and UNHCR Services
+
 <div class="card-container">
 
   <a href="./v250/linkedin_service" class="card">
@@ -25,17 +27,19 @@ sass:
   </a>
 
   <div class="card">
-    <img src="./assets/images/v250/GlobalRefugeeNetwork.png" alt="LinkedIn Service" class="card-image">
+    <img src="./assets/images/v250/UnhcrHelp.png" alt="UNHCR Help Service" class="card-image">
     <div class="card-body">
-      <div class="card-title">Global Refugee Network</div>
+      <div class="card-title">UNHCR CASI Help Services</div>
       <div class="card-description">
-        Our sister platform to the TC launches - the GRN offers all refugees with access to valuable 
-        international services.
+        Signposting to relevant UNHCR help pages for eligible registrants. The service is gated
+        to GRN but can be easily opened for TC candidates.
       </div>
     </div>
   </div>
 
 </div>
+
+## Performance Tuning and GRN Launch
 
 <div class="card-container">
 
@@ -54,12 +58,12 @@ sass:
   </a>
 
   <div class="card">
-    <img src="./assets/images/v250/UnhcrHelp.png" alt="UNHCR Help Service" class="card-image">
+    <img src="./assets/images/v250/GlobalRefugeeNetwork.png" alt="LinkedIn Service" class="card-image">
     <div class="card-body">
-      <div class="card-title">UNHCR CASI Help Services</div>
+      <div class="card-title">Global Refugee Network</div>
       <div class="card-description">
-        Signposting to relevant UNHCR help pages for eligible registrants. The service is gated
-        to GRN but can be easily opened for TC candidates.
+        Our sister platform to the TC launches - the GRN offers all refugees with access to valuable 
+        international services.
       </div>
     </div>
   </div>
