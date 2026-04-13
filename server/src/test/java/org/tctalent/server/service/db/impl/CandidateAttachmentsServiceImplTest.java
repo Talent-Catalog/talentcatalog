@@ -43,10 +43,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -63,6 +65,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.mapper.StoredFileMapper;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -73,6 +76,7 @@ import org.tctalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemBaseEntity;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -102,12 +106,15 @@ public class CandidateAttachmentsServiceImplTest {
     private final static MockMultipartFile file = new MockMultipartFile("file",
         ORIGINAL_FILE_NAME,"application/pdf", "This is content".getBytes());
 
+    @Spy private StoredFileMapper storedFileMapper = Mappers.getMapper(StoredFileMapper.class);
     @Mock private CandidateAttachmentRepository candidateAttachmentRepository;
     @Mock private AuthService authService;
     @Mock private CandidateRepository candidateRepository;
     @Mock private CandidateService candidateService;
     @Mock private FileSystemService fileSystemService;
     @Mock private OutputStream outputStream;
+    @Mock private PublicIDService publicIDService;
+    @Mock private TcInstanceService tcInstanceService;
 
     @Captor private ArgumentCaptor<CandidateAttachment> attachmentCaptor;
 
@@ -178,7 +185,7 @@ public class CandidateAttachmentsServiceImplTest {
         request.setCandidateId(candidateId);
         request.setUploadType(UploadType.idCard);
 
-        given(candidateAttachmentRepository.findByCandidateIdAndType(candidateId, UploadType.idCard))
+        given(candidateAttachmentRepository.findByCandidateIdAndUploadType(candidateId, UploadType.idCard))
             .willReturn(attachmentList);
 
         assertEquals(attachmentList,
@@ -209,7 +216,7 @@ public class CandidateAttachmentsServiceImplTest {
     @DisplayName("should return list of cvs when candidate found")
     void listCandidateCvs_shouldReturnListOfCvs_whenCandidateFound() {
         given(candidateRepository.findById(candidateId)).willReturn(Optional.of(candidate));
-        given(candidateAttachmentRepository.findByCandidateIdAndCv(anyLong(), eq(true)))
+        given(candidateAttachmentRepository.findByCandidateIdAndUploadType(anyLong(), eq(UploadType.cv)))
             .willReturn(attachmentList);
 
         assertEquals(attachmentList, candidateAttachmentsService.listCandidateCvs(candidateId));
@@ -275,7 +282,7 @@ public class CandidateAttachmentsServiceImplTest {
 
     @Test
     @DisplayName("should create candidate attachment for link")
-    void createCandidateAttachment_shouldCreateCandidateAttachmentForLink() {
+    void createCandidateAttachment_shouldCreateCandidateAttachmentForLink() throws IOException {
         createRequest.setType(AttachmentType.link);
 
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
@@ -295,9 +302,10 @@ public class CandidateAttachmentsServiceImplTest {
 
     @Test
     @DisplayName("should create candidate attachment for google file")
-    void createCandidateAttachment_shouldCreateCandidateAttachmentForGoogleFile() {
+    void createCandidateAttachment_shouldCreateCandidateAttachmentForGoogleFile()
+        throws IOException {
         createRequest.setType(AttachmentType.googlefile);
-        createRequest.setCv(true);
+        createRequest.setUploadType(UploadType.cv);
         createRequest.setFileType(FILE_TYPE);
         createRequest.setTextExtract(TEXT_EXTRACT);
 

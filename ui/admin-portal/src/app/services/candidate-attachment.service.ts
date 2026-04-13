@@ -34,7 +34,6 @@ export interface UpdateCandidateAttachmentRequest {
   id?: number;
   name?: string;
   url?: string;
-  cv?: boolean;
 }
 
 export interface SearchCandidateAttachmentsRequest {
