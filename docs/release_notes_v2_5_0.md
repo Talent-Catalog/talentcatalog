@@ -87,6 +87,9 @@ Helpful TC user guides:
 
 - Job offer acceptance automations amended to later stage trigger
 - Console errors triggered when opening certain candidate profiles
+- JWT reconnection loop on expired tokens
+- Candidate uploads not displaying in attachment list
+- API key validation intermittent failure
 
 # Developer Notes
 
