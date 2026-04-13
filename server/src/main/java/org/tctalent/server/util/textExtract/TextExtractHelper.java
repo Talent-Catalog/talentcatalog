@@ -19,8 +19,7 @@ package org.tctalent.server.util.textExtract;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.regex.Pattern;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -32,10 +31,10 @@ import org.springframework.lang.Nullable;
 
 public class TextExtractHelper {
 
-    public static String getTextFromPDFFile(File srcFile) throws IOException {
+    public static String getTextFromPDFStream(InputStream inputStream) throws IOException {
         PDFTextStripper tStripper = new PDFTextStripper();
         tStripper.setSortByPosition(true);
-        PDDocument document = PDDocument.load(srcFile);
+        PDDocument document = PDDocument.load(inputStream);
         String pdfFileInText = "";
         if (!document.isEncrypted()) {
             pdfFileInText = tStripper.getText(document);
@@ -44,26 +43,42 @@ public class TextExtractHelper {
         return pdfFileInText.trim();
     }
 
-    public static String getTextFromDocxFile(File srcFile) throws IOException {
-        FileInputStream fis = new FileInputStream(srcFile);
-        XWPFDocument doc = new XWPFDocument(fis);
+    public static String getTextFromPDFFile(File srcFile) throws IOException {
+        try (FileInputStream fis = new FileInputStream(srcFile)) {
+            return getTextFromPDFStream(fis);
+        }
+    }
+
+    public static String getTextFromDocxStream(InputStream inputStream) throws IOException {
+        XWPFDocument doc = new XWPFDocument(inputStream);
         XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
         String docxTxt = xwe.getText();
         xwe.close();
         return docxTxt;
     }
 
-    public static String getTextFromDocFile(File srcFile) throws IOException {
-        FileInputStream fis = new FileInputStream(srcFile);
-        HWPFDocument document = new HWPFDocument(fis);
+    public static String getTextFromDocxFile(File srcFile) throws IOException {
+        try (FileInputStream fis = new FileInputStream(srcFile)) {
+            return getTextFromDocxStream(fis);
+        }
+    }
+
+    public static String getTextFromDocStream(InputStream inputStream) throws IOException {
+        HWPFDocument document = new HWPFDocument(inputStream);
         WordExtractor we = new WordExtractor(document);
         String docTxt = we.getText();
         we.close();
         return docTxt;
     }
+    
+    public static String getTextFromDocFile(File srcFile) throws IOException {
+        try (FileInputStream fis = new FileInputStream(srcFile)) {
+            return getTextFromDocStream(fis);
+        }
+    }
 
-    public static String getTextFromTxtFile(File srcFile) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
+    public static String getTextFromTxtStream(InputStream inputStream) throws IOException {
+        return new String(inputStream.readAllBytes());
     }
 
     /**
@@ -89,17 +104,28 @@ public class TextExtractHelper {
         } else {
             fileType = fileTypeOrName;
         }
-
-        String s = null;
-        if ("pdf".equals(fileType)) {
-            s = getTextFromPDFFile(file);
-        } else if ("docx".equals(fileType)) {
-            s = getTextFromDocxFile(file);
-        } else if ("doc".equals(fileType)) {
-            s = getTextFromDocFile(file);
-        } else if ("txt".equals(fileType)) {
-            s = getTextFromTxtFile(file);
+        
+        try (FileInputStream fis = new FileInputStream(file)) {
+            return getTextExtractFromStream(fis, fileType);
         }
+    }
+
+    public static String getTextExtractFromStream(InputStream inputStream, String fileType)
+        throws IOException {
+        if (fileType == null) {
+            return null;
+        }
+
+        String s = switch (fileType) {
+            case "pdf", "application/pdf" -> getTextFromPDFStream(inputStream); 
+            case "doc", "application/msword" -> getTextFromDocStream(inputStream);
+            case "docx", 
+                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> 
+                getTextFromDocxStream(inputStream); 
+            case "txt", "text/plain" -> getTextFromTxtStream(inputStream);
+            default -> null;
+        };
+        
         if (s != null) {
             // Remove any null bytes to avoid problems like
             // PSQLException: ERROR: invalid byte sequence for encoding "UTF8"

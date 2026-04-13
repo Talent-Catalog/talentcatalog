@@ -23,6 +23,7 @@ import {Candidate} from "../../../model/candidate";
 import {of, throwError} from "rxjs";
 import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
+import {UploadType} from "../../../model/task";
 
 describe('CvIconComponent', () => {
   let component: CvIconComponent;
@@ -67,7 +68,8 @@ describe('CvIconComponent', () => {
     const candidate: Candidate = mockCanidiate;
     component.candidate = candidate;
     component.getAttachments();
-    expect(component.cvs).toEqual(candidate.candidateAttachments.filter(attachment => attachment.cv));
+    expect(component.cvs).toEqual(candidate.candidateAttachments.filter(
+      attachment => attachment.uploadType === UploadType.cv));
   });
 
   it('should return true if user can view CV and cvs are present', () => {

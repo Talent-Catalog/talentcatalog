@@ -45,8 +45,6 @@ public class CreateCandidateAttachmentRequest implements StoredFile {
      */
     private String url;
 
-    private Boolean cv;
-
     private UploadType uploadType;
 
     /**
