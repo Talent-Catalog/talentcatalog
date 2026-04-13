@@ -108,11 +108,14 @@ Helpful TC user guides:
 
 ## Continuous Integration & Deployment
 
-- 
+- Decouple image deployment for GRN and TBB
+- Terraform configuration for all service deployments
 
 ## Cloud Enhancements
 
--
+- Migrate candidate files from Google Drive to Amazon S3 cloud infrastructure
+- CloudFront configuration for S3 file uploads and Application Load Balancer
+- Upgrade Aurora Postgres to V17
 
 ## Logging and Monitoring
 
@@ -120,7 +123,7 @@ Helpful TC user guides:
 
 ## New Tools and Standards
 
-- 
+- Angular upgrade from version 16 to 17
 
 ---
 
