@@ -38,6 +38,18 @@ sass:
     </div>
   </a>
 
+  <div class="card">
+    <img src="./assets/images/v250/GlobalRefugeeNetwork.png" alt="LinkedIn Service" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Global Refugee Network</div>
+      <div class="card-description">
+        Our sister platform to the TC launches - the GRN offers all refugees with access to valuable 
+        international services.
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 # User Guides
