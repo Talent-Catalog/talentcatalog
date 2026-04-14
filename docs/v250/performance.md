@@ -22,8 +22,8 @@ job/case tabs now load 4 to 5 times faster**.
 ## ⚡ Quicker list views and candidate profiles
 
 We’ve optimized both candidate list views and individual candidate profile pages to improve
-responsiveness and reduce load times when viewing candidate information. Users should see **lists 
-load up to 10 times faster, and individual candidate profiles load up to 20x faster.**
+responsiveness and reduce load times when viewing candidate information. Users should see 
+**individual candidate profiles load 4 to 5 times faster.**
 
 # ⚙ Performance Test Engineering Improvements
 
