@@ -188,7 +188,7 @@ class CandidateEducationServiceImplTest {
         assertEquals(candidate, education.getCandidate());
         verifyEducation(result);
 
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 
@@ -271,7 +271,7 @@ class CandidateEducationServiceImplTest {
         CandidateEducation result = educationCaptor.getValue();
         verifyEducation(result);
 
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 
@@ -328,7 +328,7 @@ class CandidateEducationServiceImplTest {
 
         verify(candidateEducationRepository).delete(education);
 
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 

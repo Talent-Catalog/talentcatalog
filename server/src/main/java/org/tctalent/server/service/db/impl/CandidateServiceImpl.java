@@ -305,7 +305,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     public void saveIt(Candidate candidate) {
         candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
-        save(candidate, true);
+        save(candidate);
     }
 
     @Override
@@ -488,7 +488,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         if (addedDestinations) {
-            candidate = save(candidate, false);
+            candidate = save(candidate);
         }
         return candidate;
     }
@@ -646,7 +646,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private Candidate saveNewCandidate(Partner partner, Candidate candidate) {
         //Save candidate to get id (but don't update Elasticsearch yet)
-        candidate = save(candidate, false);
+        candidate = save(candidate);
 
         final String candidateNumber = candidateNumberGenerator.generateCandidateNumber(candidate);
         candidate.setCandidateNumber(candidateNumber);
@@ -657,7 +657,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Save candidate to get id (but don't update Elasticsearch yet)
-        return save(candidate, false);
+        return save(candidate);
     }
 
     @Override
@@ -690,7 +690,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate updateCandidateSalesforceLink(Candidate candidate, String sfLink) {
         candidate.setSflink(sfLink);
-        return save(candidate, false);
+        return save(candidate);
     }
 
     /**
@@ -703,7 +703,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateStatus originalStatus = candidate.getStatus();
         candidate.setStatus(info.getStatus());
         candidate.setCandidateMessage(info.getCandidateMessage());
-        candidate = save(candidate, true);
+        candidate = save(candidate);
         if (!info.getStatus().equals(originalStatus)) {
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
                     "Status change from " + originalStatus + " to " + info.getStatus(),
@@ -790,7 +790,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setFolderlink(request.getFolderlink());
         candidate.setVideolink(request.getVideolink());
         candidate.setLinkedInLink(request.getLinkedInLink());
-        candidate = save(candidate, true);
+        candidate = save(candidate);
         return candidate;
     }
 
@@ -854,7 +854,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setRelocatedState(request.getRelocatedState());
         candidate.setRelocatedCountry(relocatedCountry);
 
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -873,7 +873,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setMaxEducationLevel(educationLevel);
         candidate.setAuditFields(loggedInUser);
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -886,7 +886,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -899,7 +899,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setShareableNotes(request.getShareableNotes());
-        return save(candidate, true, true);
+        return save(candidate, true);
     }
 
     @Override
@@ -919,7 +919,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setSurveyType(surveyType);
         candidate.setSurveyComment(request.getSurveyComment());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -932,7 +932,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setMediaWillingness(request.getMediaWillingness());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -952,7 +952,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setUnhcrNumber(request.getUnhcrNumber());
         candidate.setUnrwaRegistered(request.getUnrwaRegistered());
         candidate.setUnrwaNumber(request.getUnrwaNumber());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -1213,7 +1213,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         Candidate candidate = user.getCandidate();
         updatePolicyId(acceptedPrivacyPolicyId, candidate);
-        candidate = save(candidate, false);
+        candidate = save(candidate);
         return candidate;
     }
 
@@ -1260,7 +1260,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setAuditFields(user);
         candidate.setUser(user);
-        candidate = save(candidate, true);
+        candidate = save(candidate);
         return candidate;
     }
 
@@ -1321,7 +1321,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         updateCitizenships(candidate, nationalities);
 
-        candidate = save(candidate, true);
+        candidate = save(candidate);
 
         // Change status if is required, and create note if changed.
         if (newStatus == CandidateStatus.ineligible) {
@@ -1463,7 +1463,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setMaxEducationLevel(educationLevel);
         candidate.setAuditFields(candidate.getUser());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     /**
@@ -1484,7 +1484,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSurveyComment(request.getSurveyComment());
 
         candidate.setAuditFields(candidate.getUser());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     /**
@@ -1511,7 +1511,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setLinkedInLink(null);
         }
         candidate.setAuditFields(candidate.getUser());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     public void storeCandidateTaskAnswer(
@@ -1578,7 +1578,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 + "'");
                     }
 
-                    save(candidate, true);
+                    save(candidate);
                 }
             }
         } else {
@@ -1686,7 +1686,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
         candidate.setAuditFields(candidate.getUser());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -2302,18 +2302,17 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate save(Candidate candidate, boolean updateCandidateEs) {
+    public Candidate save(Candidate candidate) {
         candidate = candidateRepository.save(candidate);
         return candidate;
     }
 
     @Override
-    public Candidate save(Candidate candidate, boolean updateCandidateEs,
-        boolean updateCandidateText) {
+    public Candidate save(Candidate candidate, boolean updateCandidateText) {
         if (updateCandidateText) {
             candidate.updateText();
         }
-        return save(candidate, updateCandidateEs);
+        return save(candidate);
     }
 
     @Override
@@ -2436,7 +2435,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .logError(ex);
         }
 
-        save(candidate, false);
+        save(candidate);
         return candidate;
     }
 
@@ -2457,7 +2456,7 @@ public class CandidateServiceImpl implements CandidateService {
         Contact candidateSf = salesforceService.createOrUpdateContact(candidate);
         candidate.setSflink(candidateSf.getUrl(salesforceConfig.getBaseLightningUrl()));
 
-        save(candidate, false);
+        save(candidate);
         return candidate;
     }
 
@@ -2538,7 +2537,7 @@ public class CandidateServiceImpl implements CandidateService {
         populateIntakeData(candidate, data, partnerCandidate, partnerEducationLevel,
                 partnerOccupation, partnerEnglishLevel, drivingLicenseCountry, birthCountry);
 
-        save(candidate, true);
+        save(candidate);
 
     }
 
@@ -2550,7 +2549,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         if (request.isAllNotifications() != candidate.isAllNotifications()) {
             candidate.setAllNotifications(request.isAllNotifications());
-            save(candidate, false);
+            save(candidate);
 
             //Generate candidate note
             String message = "Candidate's chat notification preference was changed to " +
@@ -2585,7 +2584,7 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.setMiniIntakeCompletedDate(OffsetDateTime.now());
             }
         }
-        save(candidate, true);
+        save(candidate);
         return candidate;
 
     }
@@ -2998,7 +2997,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidateExamRepository.deleteById(examId);
 
         computeIeltsScore(candidate);
-        save(candidate, true);
+        save(candidate);
         return true;
     }
 
@@ -3187,7 +3186,7 @@ public class CandidateServiceImpl implements CandidateService {
             for (Candidate candidate : candidateList) {
                 User candidateUser = candidate.getUser();
                 candidateUser.setPartner((PartnerImpl) newPartner);
-                save(candidate, true);
+                save(candidate);
             }
         } else {
             throw new IllegalArgumentException("newPartner must be valid implementation of Partner.");
@@ -3214,7 +3213,7 @@ public class CandidateServiceImpl implements CandidateService {
             if (!newCandidateIds.contains(id)) {
                 Candidate candidate = getCandidate(id);
                 candidate.setPotentialDuplicate(false);
-                save(candidate, false);
+                save(candidate);
                 resolvedDuplicates++;
             }
         }
@@ -3234,7 +3233,7 @@ public class CandidateServiceImpl implements CandidateService {
 
             for (Candidate candidate : candidateList) {
                 candidate.setPotentialDuplicate(true);
-                save(candidate, false);
+                save(candidate);
             }
 
             // Log completed page
@@ -3281,7 +3280,7 @@ public class CandidateServiceImpl implements CandidateService {
         // status to 'Deleted')
         if (candidates.isEmpty()) {
             candidate.setPotentialDuplicate(false);
-            save(candidate, false);
+            save(candidate);
         }
 
         return candidates;

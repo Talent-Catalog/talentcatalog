@@ -438,22 +438,22 @@ public interface CandidateService {
     Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact);
 
     /**
-     * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves
-     * candidate to repository, but also optionally updates corresponding
-     * Elasticsearch CandidateEs
+     * Best to use this rather than {@link CandidateRepository#save}.
+     * Saves the candidate to repository.
      *
      * @param candidate         Candidate to be saved
-     * @param updateCandidateEs If true, will also update Elasticsearch
      * @return Candidate object as returned by {@link CandidateRepository#save}
      */
-    Candidate save(Candidate candidate, boolean updateCandidateEs);
+    Candidate save(Candidate candidate);
 
     /**
      * Allows for automatic updating of the candidate text before saving the candidate.
-     * @see #save(Candidate, boolean)
+     * @see #save(Candidate)
+     * @param candidate         Candidate to be saved
+     * @param updateCandidateText   Whether to update candidate text before saving
      * @return Candidate object as returned by {@link CandidateRepository#save}
      */
-    Candidate save(Candidate candidate, boolean updateCandidateEs, boolean updateCandidateText);
+    Candidate save(Candidate candidate, boolean updateCandidateText);
 
     /**
      * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.
