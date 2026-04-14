@@ -105,7 +105,6 @@ Helpful TC user guides:
 **Phase 2 of Talent Catalog Redesign**
 
 <div class="card-container">
-<div class="card">
   <a href="./v250/candidate_portal_redesign" class="card">
     <img src="./assets/images/v250/CandidatePortalNewComponents.png.png" alt="Candidate Portal redesign" class="card-image">
     <div class="card-body">
@@ -121,9 +120,7 @@ Helpful TC user guides:
       </div>
     </div>
   </a>
-</div>
 
-<div class="card">
   <a href="./v250/search_screen_ux_insights" class="card">
     <img src="./assets/images/v250/SearchScreenUX.png" alt="Search screen UX insights" class="card-image">
     <div class="card-body">
@@ -136,7 +133,6 @@ Helpful TC user guides:
       </div>
     </div>
   </a>
-</div>
 </div>
 
 ## Other UI / UX Enhancements
