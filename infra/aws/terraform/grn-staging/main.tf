@@ -219,7 +219,7 @@ module "grn_staging" {
 
   # Database configuration
   db_enable               = true
-  db_public_access        = false
+§ db_public_access        = true
   db_multi_az             = false
   db_instance_class       = "db.t3.medium"
   db_engine_version       = "17.5"
