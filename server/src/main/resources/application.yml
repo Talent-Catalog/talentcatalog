@@ -230,7 +230,7 @@ google:
     publishedSheetWideColumn: 300
 
 s3:
-  region: eu-west-2
+  region: ${S3_REGION:eu-west-2}
   # For dev this should be set in tc-secrets.
   #GRN instance uses these keys for both candidate file S3 storage and S3 translations
   #TBB instance does not use these keys. For S3 storage of translations it uses the keys in 
