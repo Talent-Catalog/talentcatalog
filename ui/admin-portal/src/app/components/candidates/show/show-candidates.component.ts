@@ -373,16 +373,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       }
     }
 
-    //Redo existing search if the type of search changes
-    if (changes.useOldSearch) {
-      if (this.searchRequest) {
-        if (changes.useOldSearch) {
-          this.searchRequest.useOldSearch = changes.useOldSearch.currentValue ;
-        }
-      }
-      this.doSearch(true);
-    }
-
     // If there is a search request associated (saved search view) and the saved search request changes, update the search.
     if (changes.searchRequest) {
       if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
@@ -432,8 +422,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.error = null;
     this.searching = true;
     const request = this.searchRequest;
-
-    console.log("applying search request: Old = " + request.useOldSearch);
 
     //Guard against the case where we have a text sort where there is no query string.
     let queryString = request.simpleQueryString;
@@ -853,7 +841,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   displayTextMatchRank(): boolean {
-    return this.isSavedSearch() && !this.useOldSearch && this.isKeywordSearch;
+    return this.isSavedSearch() && this.isKeywordSearch;
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {

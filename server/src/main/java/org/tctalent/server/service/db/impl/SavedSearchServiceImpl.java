@@ -932,7 +932,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Check that saved search and user are valid.
         SavedSearch savedSearch = savedSearchRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
-        
+
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
 
@@ -1963,7 +1963,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         String simpleQueryString = searchRequest.getSimpleQueryString();
         boolean haveSimpleQueryString = simpleQueryString != null && !simpleQueryString.isEmpty();
 
-        boolean useOldSearch = searchRequest.isUseOldSearch();
+        boolean useOldSearch = false;
         if (!useOldSearch) {
             //New search is Postgres SQL only - no elastic search and no CandidateSpecification
             candidates = doSQLSearchCandidates(searchRequest, excludedCandidates);
