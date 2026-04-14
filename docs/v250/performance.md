@@ -7,21 +7,23 @@ sass:
 
 # ⚡ Performance Improvements
 
-## 🚀 Improved candidate data loading
+## ⚡ Improved candidate data loading
 
 We’ve made a fundamental change to how candidate details are fetched, for faster search results and
-list displays. In many cases, users should see candidate searches and list views load 3 to 4 times
-faster.
+list displays. In many cases, users should see **candidate searches and list views load 3 to 4 times
+faster**.
 
-## 💼 Faster Jobs tab
+## ⚡ Faster Jobs tab
 
 We’ve introduced performance improvements to the Jobs tab, helping pages load more quickly and
-making it easier to quickly hop between jobs tabs.
+making it easier to quickly hop between jobs tabs. Users should see the **jobs page and individual
+job/case tabs now load 4 to 5 times faster**.
 
-## 👤 Quicker list views and candidate profiles
+## ⚡ Quicker list views and candidate profiles
 
 We’ve optimized both candidate list views and individual candidate profile pages to improve
-responsiveness and reduce load times when viewing candidate information.
+responsiveness and reduce load times when viewing candidate information. Users should see **lists 
+load up to 10 times faster, and individual candidate profiles load up to 20x faster.**
 
 # ⚙ Performance Test Engineering Improvements
 
