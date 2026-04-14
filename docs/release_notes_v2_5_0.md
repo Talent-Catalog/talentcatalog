@@ -103,7 +103,9 @@ Helpful TC user guides:
 # UI / UX Enhancements
 
 **Phase 2 of Talent Catalog Redesign**
+
 <div class="card-container">
+<div class="card">
   <a href="./v250/candidate_portal_redesign" class="card">
     <img src="./assets/images/v250/CandidatePortalNewComponents.png.png" alt="Candidate Portal redesign" class="card-image">
     <div class="card-body">
@@ -121,7 +123,7 @@ Helpful TC user guides:
   </a>
 </div>
 
-<div class="card-container">
+<div class="card">
   <a href="./v250/search_screen_ux_insights" class="card">
     <img src="./assets/images/v250/SearchScreenUX.png" alt="Search screen UX insights" class="card-image">
     <div class="card-body">
@@ -135,16 +137,7 @@ Helpful TC user guides:
     </div>
   </a>
 </div>
-
-<div class="card-container">
-    <img src="./assets/images/v230/ClarityHeatmaps.png" alt="Clarity heatmaps" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Expanding Microsoft Clarity to the Candidate Portal  </div>
-      <div class="card-description">
-        After successfully introducing Microsoft Clarity in the Admin Portal, we’ve now extended it to the Candidate Portal. This allows us to analyse heatmaps and session recordings to better understand user behaviour and guide future design improvements.
-      </div>
-    </div>
-  </div>
+</div>
 
 ## Other UI / UX Enhancements
 
@@ -152,8 +145,6 @@ Helpful TC user guides:
 - Removal of TC Chats pending new UX design and native mobile app development
 - Align Candidate Portal SharedModule with TC Components
 - Verify TC Components Mobile Responsiveness
-- Use GRN branding for GRN-generated CVs
-- Use OPC logo in GRN candidate portal
 - Redesign New Search screen (Figma workflow)
 - UX Insights from Microsoft Clarity
 - Inline icons not aligned with Job heading
