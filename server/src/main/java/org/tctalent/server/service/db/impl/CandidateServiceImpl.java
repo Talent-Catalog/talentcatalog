@@ -58,7 +58,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -105,17 +104,14 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
-import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.model.db.mapper.CandidateMapper;
 import org.tctalent.server.model.db.mapper.UserMapper;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.Task;
-import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateExamRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -127,7 +123,6 @@ import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
 import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.repository.db.UserRepository;
-import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
@@ -243,7 +238,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateMapper candidateMapper;
     private final CandidateNumberGenerator candidateNumberGenerator;
     private final CandidateRepository candidateRepository;
-    private final CandidateEsRepository candidateEsRepository;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceConfig salesforceConfig;
@@ -272,108 +266,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
-
-    @Transactional
-    @Override
-    public int populateElasticCandidates(
-            Pageable pageable, boolean logTotal, boolean createElastic) {
-        persistenceContextHelper.flushAndClearEntityManager();
-        Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
-        if (logTotal) {
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("Populate Elastic Candidates")
-                .message(candidates.getTotalElements() + " candidates to be processed.")
-                .logInfo();
-        }
-
-        int count = 0;
-        for (Candidate candidate : candidates) {
-            try {
-                if (createElastic) {
-                    CandidateEs ces = new CandidateEs();
-                    ces.copy(candidate, textExtracter);
-                    ces = candidateEsRepository.save(ces);
-
-                    //Update textSearchId on candidate.
-                    String textSearchId = ces.getId();
-                    candidate.setTextSearchId(textSearchId);
-                    save(candidate, false);
-                } else {
-                    //This also handles all the awkward cases - such as
-                    //links to non existent proxies - creating them as needed.
-                    updateElasticProxy(candidate);
-                }
-
-                count++;
-            } catch (Exception ex) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("Populate Elastic Candidates")
-                    .message("Could not load candidate " + candidate.getId())
-                    .logError(ex);
-            }
-        }
-
-        return count;
-    }
-
-    @Transactional
-    @Override
-    public int populateCandidatesFromElastic(Pageable pageable) {
-        Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
-
-        int count = 0;
-        for (Candidate candidate : candidates) {
-            try {
-                CandidateEs twin;
-                String textSearchId = candidate.getTextSearchId();
-                if (textSearchId != null) {
-                    twin = candidateEsRepository.findById(textSearchId)
-                            .orElse(null);
-                    if (twin != null) {
-                        //Get the desired field from twin and save to candidate
-                        if (twin.getUnhcrStatus() == UnhcrStatus.NotRegistered) {
-                            candidate.setUnhcrRegistered(YesNoUnsure.No);
-                            candidate.setUnhcrStatus(twin.getUnhcrStatus());
-                            save(candidate, false);
-
-                            LogBuilder.builder(log)
-                                .user(authService.getLoggedInUser())
-                                .action("Populate Candidates From Elastic")
-                                .message("Updated candidate " + candidate.getId() + " with Not Registered status to Not Registered and UnhcrRegistered is No!")
-                                .logWarn();
-
-                        } else if (twin.getUnhcrStatus() == UnhcrStatus.RegisteredAsylum) {
-                            candidate.setUnhcrRegistered(YesNoUnsure.Yes);
-                            save(candidate, false);
-
-                            LogBuilder.builder(log)
-                                .user(authService.getLoggedInUser())
-                                .action("Populate Candidates From Elastic")
-                                .message("Updated candidate " + candidate.getId() + " with Registered Asylum status to UnhcrRegistered is Yes!")
-                                .logWarn();
-                        }
-                    } else {
-                        LogBuilder.builder(log)
-                            .user(authService.getLoggedInUser())
-                            .action("Populate Candidates From Elastic")
-                            .message("Could not find twin in database")
-                            .logWarn();
-                    }
-                }
-                count++;
-            } catch (Exception ex) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("Populate Candidates From Elastic")
-                    .message("Could not load candidate " + candidate.getId())
-                    .logWarn(ex);
-            }
-        }
-
-        return count;
-    }
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
@@ -1068,11 +960,7 @@ public class CandidateServiceImpl implements CandidateService {
     public boolean deleteCandidate(long id) {
         Candidate candidate = candidateRepository.findById(id).orElse(null);
         if (candidate != null) {
-            String textSearchId = candidate.getTextSearchId();
             candidateRepository.delete(candidate);
-            if (textSearchId != null) {
-                candidateEsRepository.deleteById(textSearchId);
-            }
             return true;
         } else {
             return false;
@@ -2416,10 +2304,6 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate save(Candidate candidate, boolean updateCandidateEs) {
         candidate = candidateRepository.save(candidate);
-
-        if (updateCandidateEs) {
-            candidate = updateElasticProxy(candidate);
-        }
         return candidate;
     }
 
@@ -2430,67 +2314,6 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.updateText();
         }
         return save(candidate, updateCandidateEs);
-    }
-
-    /**
-     * Does whatever is needed to bring the Elastic proxy into sync with
-     * its parent candidate on the normal database.
-     * <p>
-     *     Handles the following cases:
-     * </p>
-     * <ul>
-     *     <li>Normal case: updates proxy indicated by textSearchId of master</li>
-     *     <li>Master has no linked proxy (no textSearchId) - create one </li>
-     *     <li>Master has a textSearchId, but no such proxy is found,
-     *     log warning but create a proxy</li>
-     * </ul>
-     * @param candidate Candidate entity (the master) from thr normal database
-     * @return Potentially modified candidate entity (with latest textSearchId)
-     */
-    private Candidate updateElasticProxy(Candidate candidate) {
-        //Find/create Elasticsearch twin candidate
-        CandidateEs twin;
-        //Get textSearchId, if any
-        String textSearchId = candidate.getTextSearchId();
-        String originalTextSearchId = textSearchId;
-        if (textSearchId == null) {
-            //No twin - create one
-            twin = new CandidateEs();
-            twin.copy(candidate, textExtracter);
-
-        } else {
-            //Get twin
-            twin = candidateEsRepository.findById(textSearchId)
-                    .orElse(null);
-            if (twin == null) {
-                //Candidate is referring to non existent twin.
-                //Create new twin
-                twin = new CandidateEs();
-                twin.copy(candidate, textExtracter);
-
-                //Shouldn't really happen (except during a complete reload)
-                //so log warning
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("Update Elastic Proxy")
-                    .message("Candidate " + candidate.getId() +
-                        " refers to non existent Elasticsearch id "
-                        + textSearchId + ". Creating new twin.")
-                    .logWarn();
-            } else {
-                //Update twin from candidate
-                twin.copy(candidate, textExtracter);
-            }
-        }
-        twin = candidateEsRepository.save(twin);
-        textSearchId = twin.getId();
-
-        //Update textSearchId on candidate if necessary
-        if (!textSearchId.equals(originalTextSearchId)) {
-            candidate.setTextSearchId(textSearchId);
-            candidate = candidateRepository.save(candidate);
-        }
-        return candidate;
     }
 
     @Override
