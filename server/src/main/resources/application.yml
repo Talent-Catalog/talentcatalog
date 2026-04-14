@@ -267,7 +267,7 @@ aws:
   # required by TranslationMigrationService via S3ResourceHelper to access TBB S3
   # resources in us-east-1 during migration to OPC-managed S3 buckets.
   # When all services are fully migrated to OPC AWS, aws.s3/S3ResourceHelper can
-  # be retired.
+  # be retired. (See Git issue #3324)
   s3:
     bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
     region: us-east-1
