@@ -262,6 +262,12 @@ candidate-file-urls:
   public-base-url: ${SERVER_URL:http://localhost:8080}
   
 aws:
+  # Legacy S3 configuration retained for translation file migration support.
+  # The primary app S3 client now uses the s3: block above, but aws.s3 is still
+  # required by TranslationMigrationService via S3ResourceHelper to access TBB S3
+  # resources in us-east-1 during migration to OPC-managed S3 buckets.
+  # When all services are fully migrated to OPC AWS, aws.s3/S3ResourceHelper can
+  # be retired.
   s3:
     bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
     region: us-east-1
