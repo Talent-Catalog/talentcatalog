@@ -218,6 +218,12 @@ variable "translations_folder" {
   description = "S3 folder/prefix for translations"
 }
 
+variable "s3_region" {
+  type        = string
+  description = "AWS region for the Spring S3 client (s3.region)"
+  default     = "eu-west-2"
+}
+
 variable "environment" {
   type        = string
   description = "Denotes running environment (e.g., opc-staging, opc-prod)"
