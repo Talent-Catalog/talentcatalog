@@ -39,17 +39,14 @@ Alongside internal input, we also analysed user behaviour through heatmaps.
 
 This gave us visibility into how users actually navigate the search experience, where they focus their attention, and where they might struggle. These insights helped validate assumptions and uncover patterns that are not always visible through discussion alone.
 
+<div style="background-color: #eef4ff; padding: 12px; border-radius: 12px; margin-bottom: 12px">
+  💡 <strong>Expanding Microsoft Clarity to the Candidate Portal</strong><br>
+  After successfully introducing Microsoft Clarity in the Admin Portal, we’ve now extended it to the Candidate Portal. This allows us to analyse heatmaps to better understand user behaviour and guide future design improvements on the candidate portal as well.
+</div>
+
 <div class="card-image-container">
   <img src="../assets/images/v250/ClarityHeatmapExample.png" 
         alt="Clarity Heatmap Example" class="card-image">
-</div>
-
-<div style="background-color: #eef4ff; padding: 12px; border-radius: 12px;">
-
-💡 **Expanding Microsoft Clarity to the Candidate Portal**
-
- After successfully introducing Microsoft Clarity in the Admin Portal, we’ve now extended it to the Candidate Portal. This allows us to analyse heatmaps to better understand user behaviour and guide future design improvements on the candidate portal as well.
-
 </div>
 
 
