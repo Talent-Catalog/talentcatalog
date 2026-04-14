@@ -23,13 +23,6 @@ making it easier to quickly hop between jobs tabs.
 We’ve optimized both candidate list views and individual candidate profile pages to improve
 responsiveness and reduce load times when viewing candidate information.
 
-<div class="card-image-container">
-    <img class="card-image" 
-         src="./../assets/images/v250/search_comparison.png" 
-         alt="Performance workflows"
-    >
-</div>
-
 ## 🧪 Expanded Performance Testing Coverage
 
 <div class="card-image-container">
