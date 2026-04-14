@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-# ⚡ Performance Improvements
+# Performance Improvements
 
 ## ⚡ Improved candidate data loading
 
