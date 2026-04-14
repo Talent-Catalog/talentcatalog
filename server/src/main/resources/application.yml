@@ -266,6 +266,9 @@ aws:
     bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
     region: us-east-1
     max-size: 52428800
+    # Used by SystemUploadApi (GET /api/system/upload/policy/{s3Key}) as a key prefix.
+    # No frontend callers target this endpoint, the property is likely vestigial.
+    # It does not need to be replicated in the s3: config.
     upload-folder: temp
   credentials:
     # For dev this should be set in tc-secrets
