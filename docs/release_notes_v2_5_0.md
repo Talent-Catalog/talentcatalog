@@ -102,12 +102,71 @@ Helpful TC user guides:
 
 # UI / UX Enhancements
 
--
+**Phase 2 of Talent Catalog Redesign**
+<div class="card-container">
+  <a href="./v250/candidate_portal_redesign" class="card">
+    <img src="./assets/images/v250/CandidatePortalNewComponents.png.png" alt="Candidate Portal redesign" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Candidate Portal updated with a new shared component library!</div>
+      <div class="card-description">
+        As part of Phase 2 of the TC redesign, we’ve upgraded the Candidate Portal to use the new TC component library. 
+        This brings a cleaner, more consistent experience aligned with the Admin Portal, while reducing one-off UI code 
+        and improving maintainability. The update also lays the foundation for future UX improvements and the upcoming mobile app, 
+        with added test coverage to ensure stability across all updated components.
+      </div>
+      <div class="card-footer">
+         <button class="btn btn-sm">Learn more</button>
+      </div>
+    </div>
+  </a>
+</div>
+
+<div class="card-container">
+  <a href="./v250/search_screen_ux_insights" class="card">
+    <img src="./assets/images/v250/SearchScreenUX.png" alt="Search screen UX insights" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Targeted UX insights for the search redesign</div>
+      <div class="card-description">
+        We began the redesign by focusing on the search screen, identifying possible UX improvements and gathering team input through structured voting sessions. By combining Figma collaboration, heatmap analysis, and quantitative feedback, we were able to guide design decisions and better prioritise future UX enhancements.
+      </div>
+      <div class="card-footer">
+         <button class="btn btn-sm">Learn more</button>
+      </div>
+    </div>
+  </a>
+</div>
+
+<div class="card-container">
+    <img src="./assets/images/v230/ClarityHeatmaps.png" alt="Clarity heatmaps" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Expanding Microsoft Clarity to the Candidate Portal  </div>
+      <div class="card-description">
+        After successfully introducing Microsoft Clarity in the Admin Portal, we’ve now extended it to the Candidate Portal. This allows us to analyse heatmaps and session recordings to better understand user behaviour and guide future design improvements.
+      </div>
+    </div>
+  </div>
 
 ## Other UI / UX Enhancements
 
 - Font Awesome icon processing standardised across portals
 - Removal of TC Chats pending new UX design and native mobile app development
+- Align Candidate Portal SharedModule with TC Components
+- Verify TC Components Mobile Responsiveness
+- Use GRN branding for GRN-generated CVs
+- Use OPC logo in GRN candidate portal
+- Redesign New Search screen (Figma workflow)
+- UX Insights from Microsoft Clarity
+- Inline icons not aligned with Job heading
+- Display issue in Candidate Portal registration (Step 1)
+- Registration “Next” button not always activating
+- Radio buttons not clickable via labels on registration form
+- Fix logo size on candidate portal
+- Fix alignment of chatbot input and send icon
+- Tc Button - loading indicator
+- Fixing margins around the TC Accordion component
+- Fix color mismatches in Candidate Portal
+- Add Microsoft Clarity to Candidate Portal
+- TC Pagination component needs fixing on the mobile screen
 
 # Security Fixes
 
@@ -120,6 +179,8 @@ Helpful TC user guides:
 - JWT reconnection loop on expired tokens
 - Candidate uploads not displaying in attachment list
 - API key validation intermittent failure
+- Clicking candidate icon incorrectly opens candidate card (click event not consumed)
+- Won and Closed attributes missing from Opportunity DTOs
 
 # Developer Notes
 
@@ -131,6 +192,7 @@ Helpful TC user guides:
 - Gatling performance tests for Saved List candidate search
 - Integration tests for CASI end-to-end
 - Unit testing for CASI framework components
+- Expanded test coverage by adding unit tests for all components updated during the TC component migration.
 
 ## Code Refactoring
 
