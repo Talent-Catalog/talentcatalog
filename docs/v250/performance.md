@@ -23,6 +23,8 @@ making it easier to quickly hop between jobs tabs.
 We’ve optimized both candidate list views and individual candidate profile pages to improve
 responsiveness and reduce load times when viewing candidate information.
 
+# ⚙ Performance Test Engineering Improvements
+
 ## 🧪 Expanded Performance Testing Coverage
 
 <div class="card-image-container">
@@ -40,9 +42,7 @@ team better visibility into how core workflows behave under load and making it e
 bottlenecks when regressions occur.
 
 Coverage now includes key workflows such as candidate search, saved-list paged search, health-check
-validation, and database-focused candidate search testing. This provides a stronger baseline for
-monitoring search and list performance over time, while also helping validate the impact of backend
-changes before release.
+validation, and database-focused candidate search testing.
 
 ## 🔄 Multiple Load Models for Better Comparison
 
@@ -62,9 +62,6 @@ This includes:
 - parallel closed simulations for fixed-concurrency testing
 - parallel open simulations for arrival-rate based load testing
 
-Together, these approaches make it easier to compare implementations, spot regressions, and better
-understand how the platform behaves under different traffic conditions.
-
 ## 🌙 Automated Smoke, Nightly and Soak Runs
 
 <div class="card-image-container">
@@ -78,9 +75,7 @@ We’ve also improved the automation around performance testing, with dedicated 
 soak workflows added to CI.
 
 These workflows make it easier to run lightweight checks during development, schedule broader
-nightly coverage, and run longer soak-style tests where needed. By separating these test tiers, the
-team can choose the right level of coverage for the task at hand while keeping performance testing
-more repeatable and maintainable.
+nightly coverage, and run longer soak-style tests where needed.
 
 ## 📊 Better Reporting and Threshold Checks
 
@@ -88,9 +83,7 @@ Performance testing now includes improved support for summarising Gatling result
 threshold checks automatically.
 
 This means test runs can now produce clearer summaries for review, while also supporting automatic
-checks around failed request rates and latency thresholds. These additions make it easier to spot
-issues quickly, review outputs across environments, and build more confidence into ongoing
-regression monitoring.
+checks around failed request rates and latency thresholds.
 
 ## 💪 Stronger Foundations for Future Performance Work
 
