@@ -160,21 +160,18 @@ Helpful TC user guides:
 
 # Security Fixes
 
-- 
+- JWT reconnection loop on expired tokens
 
 # Bug Fixes
 
 - Job offer acceptance automations amended to later stage trigger
 - Console errors triggered when opening certain candidate profiles
-- JWT reconnection loop on expired tokens
 - Candidate uploads not displaying in attachment list
 - API key validation intermittent failure
 - Clicking candidate icon incorrectly opens candidate card (click event not consumed)
 - Won and Closed attributes missing from Opportunity DTOs
 
 # Developer Notes
-
--
 
 ## Test Coverage
 
@@ -183,10 +180,6 @@ Helpful TC user guides:
 - Integration tests for CASI end-to-end
 - Unit testing for CASI framework components
 - Expanded test coverage by adding unit tests for all components updated during the TC component migration.
-
-## Code Refactoring
-
-- 
 
 ## Continuous Integration & Deployment
 
@@ -198,10 +191,6 @@ Helpful TC user guides:
 - Migrate candidate files from Google Drive to Amazon S3 cloud infrastructure
 - CloudFront configuration for S3 file uploads and Application Load Balancer
 - Upgrade Aurora Postgres to V17
-
-## Logging and Monitoring
-
--
 
 ## New Tools and Standards
 
