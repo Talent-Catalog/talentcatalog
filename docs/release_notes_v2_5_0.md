@@ -10,6 +10,10 @@ sass:
 
 ## CASI - LinkedIn and UNHCR Services
 
+The <a href="./v240/casi_framework">Candidate Assistance Services Interface (CASI)</a> makes it
+easy to deliver targeted support from partner organisations directly to candidates. This release
+adds two new services to the growing CASI ecosystem:
+
 <div class="card-container">
 
   <a href="./v250/linkedin_service" class="card">
