@@ -57,7 +57,7 @@ sass:
     </div>
   </a>
 
-  <a href="https://openpathwaycollective.org/globalrefugeenetwork" class="card">
+  <a href="https://openpathwaycollective.org/globalrefugeenetwork" target="_blank" class="card">
     <img src="./assets/images/v250/GlobalRefugeeNetwork.png" alt="LinkedIn Service" class="card-image">
     <div class="card-body">
       <div class="card-title">Global Refugee Network</div>
