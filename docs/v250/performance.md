@@ -19,6 +19,8 @@ Our original programming used standard database techniques to deliver that data 
 as the size and complexity of the database has grown, we saw the need to use some tricks to speed
 up the whole process.
 
+**Muli-level caching for faster data retrieval**
+
 This release has introduced more sophisticated "caching". Caching means that frequently requested 
 data can be stored in memory instead of fetching it from the database every time. 
 
@@ -30,6 +32,22 @@ the data from all the separate tables again.
 
 This release is significant not only for giving us an immediate performance boost, but also 
 because it means that our performance should now remain stable as the database grows.
+
+**Smarter data loading for faster page rendering**
+
+In addition to the multi-level caching improvements, we have also streamlined how much data is sent 
+to individual pages within TC. In places where a screen contains multiple tabs, such as the Jobs tab 
+or the two intake tabs, data is now loaded only for the tab being viewed, rather than bulk loading 
+data for every tab up front. 
+
+We have also reduced unnecessary data transfer on screens that only need summary information. For 
+example, candidate list views no longer load every available piece of data for each candidate in the 
+list. Instead, only the summary fields needed for the list are fetched initially, with full 
+candidate details loaded only when a specific record is opened.
+
+This reduces the overall size of the initial payload that must be prepared before the screen can 
+render, helping pages load faster and making the interface feel more responsive. We will continue to
+build on these improvements in future releases.
 
 ## ⚡ Improved candidate data loading
 
