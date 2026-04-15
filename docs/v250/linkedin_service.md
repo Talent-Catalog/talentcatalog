@@ -52,13 +52,13 @@ four months.
 
 Self-assignment of a LinkedIn coupon automatically makes the database connection between the 
 candidate and offer. Thereby admins can leverage the power of 
-<a href="./v230/tc_intelligence" class="card">TC Intelligence</a> to produce in-depth 
+<a href="../v230/tc_intelligence" class="card">TC Intelligence</a> to produce in-depth 
 statistical analysis of redeeming candidates, including their demographic breakdown and TC outcomes 
 — essential for project reporting to data-driven partners such as LinkedIn.
 
 ## 💪 The Power of Frameworks
 Under the hood of the LinkedIn service sits the 
-<a href="./v240/casi_framework" class="card">Candidate Assistance Services Interface (CASI)</a>.
+<a href="../v240/casi_framework" class="card">Candidate Assistance Services Interface (CASI)</a>.
 
 Put simply, it provides everything a new candidate service needs: data storage, access 
 management, user interface, to name a few — leaving developers merely to plug in 
