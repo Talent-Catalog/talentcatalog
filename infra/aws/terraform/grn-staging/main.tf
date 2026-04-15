@@ -243,6 +243,7 @@ module "grn_staging" {
   s3_bucket                             = "files.tbbtalent.org" # todo: confirm or set GRN bucket
   translations_bucket                   = "translations.test.globalrefugee.net"
   translations_folder                   = "translations"
+  s3_region                             = "eu-west-2"
   environment                           = "grn-staging"
   email_default                         = "-"
   email_test_override                   = "-"

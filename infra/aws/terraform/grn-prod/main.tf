@@ -243,6 +243,7 @@ module "grn_prod" {
   s3_bucket                             = "files.tbbtalent.org" # todo: confirm or set GRN bucket
   translations_bucket                   = "translations.globalrefugee.net"
   translations_folder                   = "translations"
+  s3_region                             = "eu-west-2"
   environment                           = "grn-prod"
   email_default                         = "noreply@globalrefugee.net"
   email_test_override                   = "-"

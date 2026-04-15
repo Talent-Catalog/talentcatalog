@@ -32,6 +32,12 @@ resource "aws_ssm_parameter" "translations_folder" {
   value = var.translations_folder
 }
 
+resource "aws_ssm_parameter" "s3_region" {
+  name  = "/${var.app}/${var.env}/S3_REGION"
+  type  = "String"
+  value = var.s3_region
+}
+
 resource "aws_ssm_parameter" "candidate_files_bucket" {
   count = var.cloudfront_enable ? 1 : 0
   name  = "/${var.app}/${var.env}/S3_CANDIDATE_FILES_BUCKET"
