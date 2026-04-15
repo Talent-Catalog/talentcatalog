@@ -19,7 +19,7 @@ The UNHCR Help service is the latest addition to the TC's
 country-specific refugee support resources directly within the Candidate Portal.
 
 Built in partnership with 
-<a href="https://www.unhcr.org/" target="_blank">UNHCR Pakistan</a>, the service automatically 
+<a href="https://www.unhcr.org/pk/" target="_blank">UNHCR Pakistan</a>, the service automatically 
 signposts eligible registrants to the 
 <a href="https://help.unhcr.org/" target="_blank">UNHCR Help</a> pages relevant to their 
 current country of residence — starting with Pakistan.
