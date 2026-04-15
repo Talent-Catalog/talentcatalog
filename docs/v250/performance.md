@@ -26,7 +26,7 @@ As mentioned earlier, a candidate's data is spread across many tables in the dat
 We have gained another performance boost by lumping all that data into a single object, which is 
 itself stored in a separate cache. If the candidate's data hasn't changed since the last time we 
 accessed it, we can just fetch that single object from the cache, rather than needing to gather 
-the data from all the separate tables.
+the data from all the separate tables again.
 
 This release is significant not only for giving us an immediate performance boost, but also 
 because it means that our performance should now remain stable as the database grows.
