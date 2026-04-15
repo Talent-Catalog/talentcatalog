@@ -6,6 +6,30 @@ sass:
 ---
 
 # Performance Improvements
+ 
+Candidates have a lot of data associated with them, stored on the TC database in many separate 
+"tables". There is one "root" table that stores the candidate's basic information such as name,
+email, phone number, gender, country of birth, etc.
+But there are around 20 other associated tables containing candidate skills, languages, 
+opportunities, experiences, notes, qualifications, etc.
+Fetching the data about a candidate involves accessing all those tables and then packaging 
+up the data so that it can be sent to your screen for display.
+     
+Our original programming used standard database techniques to deliver that data to you, but
+as the size and complexity of the database has grown, we saw the need to use some tricks to speed
+up the whole process.
+
+This release has introduced more sophisticated "caching". Caching means that frequently requested 
+data can be stored in memory instead of fetching it from the database every time. 
+
+As mentioned earlier, a candidate's data is spread across many tables in the database.
+We have gained another performance boost by lumping all that data into a single object, which is 
+itself stored in a separate cache. If the candidate's data hasn't changed since the last time we 
+accessed it, we can just fetch that single object from the cache, rather than needing to gather 
+the data from all the separate tables.
+
+This release is significant not only for giving us an immediate performance boost, but also 
+because it means that our performance should now remain stable as the database grows.
 
 ## ⚡ Improved candidate data loading
 
