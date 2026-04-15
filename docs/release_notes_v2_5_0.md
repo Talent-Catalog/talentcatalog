@@ -57,7 +57,7 @@ sass:
     </div>
   </a>
 
-  <div class="card">
+  <a href="https://openpathwaycollective.org/globalrefugeenetwork" class="card">
     <img src="./assets/images/v250/GlobalRefugeeNetwork.png" alt="LinkedIn Service" class="card-image">
     <div class="card-body">
       <div class="card-title">Global Refugee Network</div>
@@ -65,8 +65,11 @@ sass:
         Our sister platform to the TC launches - the GRN offers all refugees with access to valuable 
         international services.
       </div>
+      <div class="card-footer">
+        <button class="btn btn-sm">Learn more</button>
+      </div>
     </div>
-  </div>
+  </a>
 
 </div>
 
