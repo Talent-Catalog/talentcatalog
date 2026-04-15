@@ -44,7 +44,17 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
-import {catchError, concatMap, debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from "rxjs/operators";
+import {
+  catchError,
+  concatMap,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  takeUntil,
+  tap
+} from "rxjs/operators";
+import {UploadType} from "../../../model/task";
 
 @Component({
   selector: 'app-view-candidate',
@@ -567,7 +577,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   private updateUploadedCvAvailable() {
     this.uploadedCvAvailable =
-      !!this.candidate?.candidateAttachments?.some(att => att.cv);
+      !!this.candidate?.candidateAttachments?.some(
+        att => att.uploadType === UploadType.cv);
   }
 
 }

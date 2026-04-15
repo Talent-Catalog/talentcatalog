@@ -10,7 +10,8 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     uses: ./.github/workflows/tc-gatling-tests.yml
-    secrets: inherit
+    secrets:
+      USERS_CSV: ${{ secrets.STAGING_PERF_USERS_CSV }}
     with:
       tier: soak
       list_file: performance-tests/simulations/perf-soak.txt

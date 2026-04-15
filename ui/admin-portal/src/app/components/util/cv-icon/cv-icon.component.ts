@@ -19,6 +19,7 @@ import {CandidateAttachment} from '../../../model/candidate-attachment';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
 import {AuthorizationService} from "../../../services/authorization.service";
+import {UploadType} from "../../../model/task";
 
 /**
  * Clickable icon component that opens or DLs CVs uploaded to the given candidate's profile
@@ -65,7 +66,7 @@ export class CvIconComponent implements OnInit {
       // Only want to open/DL CV attachments (if we have them)
       if (this.candidate.candidateAttachments) {
         this.candidate.candidateAttachments.forEach(attachment => {
-          if (attachment.cv) {
+          if (attachment.uploadType === UploadType.cv) {
             this.cvs.push(attachment);
           }
         })

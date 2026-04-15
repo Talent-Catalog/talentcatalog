@@ -83,12 +83,22 @@ export class AdminApiComponent implements OnInit {
       this.error = null;
       this.adminService.call(this.form.value.apicall).subscribe(
         (response: string) => {
-          // If the response string is present and not empty, set ack to response;
-          // otherwise, default to "Done"
-          this.ack = response && response.trim().length > 0 ? response : "Done";
+          if (response && response.trim().length > 0) {
+            this.ack = this.tryFormatJson(response) ?? response;
+          } else {
+            this.ack = 'Done';
+          }
         },
         (error) => {this.error = error}
       )
+    }
+  }
+
+  private tryFormatJson(s: string): string | null {
+    try {
+      return JSON.stringify(JSON.parse(s), null, 2);
+    } catch {
+      return null;
     }
   }
 

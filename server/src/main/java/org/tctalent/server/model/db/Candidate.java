@@ -123,7 +123,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String additionalInfo;
     private String candidateMessage;
     private String linkedInLink;
-
+    private String aspirations;
     /**
      * If true, candidate cannot post to chats. Effectively any chats they see are read only.
      * <p/>
@@ -1241,7 +1241,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     }
 
     public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
+    public String getAspirations() {
+        return aspirations;
+    }
 
+    public void setAspirations(String aspirations) {
+        this.aspirations = aspirations;
+    }
     public String getCandidateMessage() {
         return candidateMessage;
     }

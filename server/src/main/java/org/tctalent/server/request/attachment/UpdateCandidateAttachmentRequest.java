@@ -16,39 +16,17 @@
 
 package org.tctalent.server.request.attachment;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.files.UploadType;
+
+@Getter
+@Setter
 public class UpdateCandidateAttachmentRequest {
 
     private Long id;
     private String name;
     private String url;
-    private Boolean cv;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public Boolean getCv() { return cv; }
-
-    public void setCv(Boolean cv) { this.cv = cv; }
+    private UploadType uploadType;
 }
 

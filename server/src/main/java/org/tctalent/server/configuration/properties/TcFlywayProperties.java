@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,26 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Candidate} from './candidate';
-import {User} from './user';
-import {UploadType} from "./task";
+package org.tctalent.server.configuration.properties;
 
-export enum AttachmentType {
-  googlefile = 'googlefile',
-  file = 'file',
-  link = 'link'
-}
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-export interface CandidateAttachment {
-  id?: number;
-  candidate?: Candidate;
-  createdBy: User;
-  createdDate: string;
-  fileType: string;
-  migrated: boolean;
-  name: string;
-  type: AttachmentType;
-  uploadType: UploadType;
-  url: string;
+/**
+ * TC Flyway properties
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+@ConfigurationProperties(prefix = "tc.flyway")
+public class TcFlywayProperties {
 
+    /**
+     * AWS access key
+     */
+    private boolean repair;
 }

@@ -98,7 +98,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Override
     public List<CandidateAttachment> listCandidateAttachmentsByType(ListByUploadTypeRequest request) {
-        return candidateAttachmentRepository.findByCandidateIdAndType(request.getCandidateId(), request.getUploadType());
+        return candidateAttachmentRepository.findByCandidateIdAndUploadType(request.getCandidateId(), request.getUploadType());
     }
 
     @Override
@@ -114,7 +114,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     public List<CandidateAttachment> listCandidateCvs(Long candidateId) {
         Candidate candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
-        return candidateAttachmentRepository.findByCandidateIdAndCv(candidate.getId(), true);
+        return candidateAttachmentRepository.findByCandidateIdAndUploadType(candidate.getId(), UploadType.cv);
     }
 
     @Override
@@ -125,7 +125,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request) {
+    public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request)
+        throws IOException {
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
@@ -147,7 +148,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         attachment.setCandidate(candidate);
         attachment.setMigrated(false);
         attachment.setAuditFields(user);
-        attachment.setCv(UploadType.cv.equals(request.getUploadType()));
         
         //Add a publicId
         String publicId = publicIDService.generatePublicID();
@@ -165,7 +165,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 break; 
             case grnfile:
                 //Compute url.
-                attachment.setUrl(fileUrlService.createApplicationUrl(attachment)); 
+                attachment.setUrl(fileUrlService.createApplicationUrl(attachment));
+                
+                if (attachment.isCv()) {
+                    String text = extractTextFromAttachment(attachment);
+                    attachment.setTextExtract(text);
+                }
                 break;
             case link:
                 attachment.setUrl(request.getUrl());
@@ -181,10 +186,20 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         //Now update candidate audit fields and potentially update candidate text to take
         //account of any cv text in the attachment we just updated above.
         candidate.setAuditFields(user);
-        boolean updateCandidateText = request.getCv() != null ? request.getCv() : false;
+        boolean updateCandidateText = UploadType.cv.equals(request.getUploadType());
         candidateService.save(candidate, true, updateCandidateText);
 
         return attachment;
+    }
+
+    private String extractTextFromAttachment(CandidateAttachment attachment) throws IOException {
+        if (!AttachmentType.grnfile.equals(attachment.getType())) {
+            throw new UnsupportedOperationException("extractTextFromAttachment is not supported");
+        }
+        
+        try (InputStream inputStream = storageService.openStream(attachment.getStorageKey())) {
+            return TextExtractHelper.getTextExtractFromStream(inputStream, attachment.getFileType());
+        } 
     }
 
     // Removed @Transactional to fix logged error ObjectDeletedException. There is a risk that now deleting from
@@ -412,8 +427,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             .contentType(file.getContentType())
             .build();
 
-        //TODO JC Need to do the textExtract if uploadType == UploadType.cv
-
         StoredFileInfo storedFileInfo = storageService.store(req);
         
         //Add in extra info
@@ -508,7 +521,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setFileType(fileType);
         req.setUrl(uploadedFile.getUrl());
         req.setUploadType(uploadType);
-        req.setCv(uploadType == UploadType.cv);
         if(StringUtils.hasText(textExtract)) {
             req.setTextExtract(textExtract);
         }

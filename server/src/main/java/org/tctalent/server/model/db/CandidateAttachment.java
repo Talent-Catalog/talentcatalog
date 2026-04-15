@@ -86,10 +86,6 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
      */
     private String textExtract;
 
-    //todo Eventually get rid of this cv attribute altogether - replacing it with just uploadType
-    //For now they duplicate each other
-    private boolean cv;
-
     /**
      * The type of the attachment: CV, Passport etc. 
      */
@@ -117,6 +113,10 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
     @Column(name = "sha256_hex")
     private String sha256Hex;
 
+    public boolean isCv() {
+        return UploadType.cv.equals(uploadType);
+    }
+    
     public CandidateAttachment() {
     }
 }

@@ -307,13 +307,29 @@ public class SystemAdminApi {
         String normalizedDestinationPrefix = normalizeS3Prefix(
             StringUtils.isBlank(destinationPrefix) ? "translations" : destinationPrefix);
 
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message(sourceBucket + "/" + normalizedSourcePrefix
+                + " -> " + destinationBucket + "/" + normalizedDestinationPrefix)
+            .logInfo();
+
+        long startMs = System.currentTimeMillis();
         int copiedCount = translationMigrationService.migrateBucketContents(
             sourceBucket, normalizedSourcePrefix, destinationBucket, normalizedDestinationPrefix);
+        long durationMs = System.currentTimeMillis() - startMs;
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message("Completed: " + copiedCount + " file(s) in " + durationMs + "ms")
+            .logInfo();
 
         return Map.of(
             "status", "success",
             "mode", "relay-copy",
             "copiedCount", copiedCount,
+            "durationMs", durationMs,
             "sourceBucket", sourceBucket,
             "sourcePrefix", normalizedSourcePrefix,
             "destinationBucket", destinationBucket,

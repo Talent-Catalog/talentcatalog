@@ -49,7 +49,8 @@ public interface CandidateAttachmentService {
 
     List<CandidateAttachment> listCandidateAttachments(Long candidateId);
 
-    CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request);
+    CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request)
+        throws IOException;
 
     void deleteCandidateAttachment(Long id);
 

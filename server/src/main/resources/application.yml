@@ -12,7 +12,7 @@ tc:
   destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
 
   flyway:
-    repair: false  #  Set this to true if you need to repair the Flyway history.
+    repair: true  #  Set this to true if you need to repair the Flyway history.
 
   instance-type: ${TC_INSTANCE_TYPE:GRN}
 
@@ -184,15 +184,14 @@ server:
   tomcat:
     redirect-context-root: false
 
-#  todo Unused?
-  url: https://tctalent.org
+  url: ${SERVER_URL:https://tctalent.org}
 web:
   # Used in EmailHelper
-  portal: https://tctalent.org/candidate-portal
+  portal: ${server.url}/candidate-portal
 
   # This is used in EmailHelper
   # and SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
-  admin: https://tctalent.org/admin-portal
+  admin: ${server.url}/admin-portal
 
 google:
   drive:
@@ -231,13 +230,20 @@ google:
     publishedSheetWideColumn: 300
 
 s3:
-  region: eu-west-2
+  region: ${S3_REGION:eu-west-2}
   # For dev this should be set in tc-secrets.
+  #GRN instance uses these keys for both candidate file S3 storage and S3 translations
+  #TBB instance does not use these keys. For S3 storage of translations it uses the keys in 
+  #aws.s3 (see below)  
   access-key: ${AWS_CREDENTIALS_APP_ACCESSKEY:}
   secret-key: ${AWS_CREDENTIALS_APP_SECRETKEY:}
   max-size: 52428800
   candidate-files-bucket: ${S3_CANDIDATE_FILES_BUCKET:candidate-files.test.globalrefugee.net}
-  translations-bucket: ${S3_TRANSLATIONS_BUCKET:dev.files.tbbtalent.org}
+  
+  #GRN staging Instance default
+  translations-bucket: ${S3_TRANSLATIONS_BUCKET:translations.test.globalrefugee.net}
+  #TBB staging Instance default
+#  translations-bucket: ${S3_TRANSLATIONS_BUCKET:dev.files.tbbtalent.org}
   translations-folder: ${S3_TRANSLATIONS_FOLDER:translations}
 
 candidate-file-urls:
@@ -246,15 +252,29 @@ candidate-file-urls:
   cloudfront-key-pair-id: ${CLOUDFRONT_KEY_PAIR_ID:}
   cloudfront-private-key-pem-path: ${CLOUDFRONT_PRIVATE_KEY_PEM_PATH:}
   origin-expiry-minutes: 15
-  origin-base-url: https://test.globalrefugee.net 
-  public-base-url: http://localhost:8080
   
-
+  #In this configuration the server url points to Cloudfront which manages the routing to the
+  #S3 origin of files if needed. So both origin and public URLs point to Cloudfront.
+  #The default values are designed for testing on developer's local computers uploading to GRN 
+  #staging's S3, where the localhost machine will intercept public urls, but downloads will
+  #come from the GRN staging S3.
+  origin-base-url: ${SERVER_URL:https://test.globalrefugee.net} 
+  public-base-url: ${SERVER_URL:http://localhost:8080}
+  
 aws:
+  # Legacy S3 configuration retained for translation file migration support.
+  # The primary app S3 client now uses the s3: block above, but aws.s3 is still
+  # required by TranslationMigrationService via S3ResourceHelper to access TBB S3
+  # resources in us-east-1 during migration to OPC-managed S3 buckets.
+  # When all services are fully migrated to OPC AWS, aws.s3/S3ResourceHelper can
+  # be retired. (See Git issue #3324)
   s3:
     bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
     region: us-east-1
     max-size: 52428800
+    # Used by SystemUploadApi (GET /api/system/upload/policy/{s3Key}) as a key prefix.
+    # No frontend callers target this endpoint, the property is likely vestigial.
+    # It does not need to be replicated in the s3: config.
     upload-folder: temp
   credentials:
     # For dev this should be set in tc-secrets

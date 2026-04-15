@@ -31,18 +31,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CandidateFileUrlsProperties {
 
     /**
-     * Example: https://candidate-files.globalrefugee.net
+     * Example: https://globalrefugee.net
      * Usually same as publicBaseUrl when CloudFront serves both public and signed paths.
+     * In that case Cloudfront manages the forwarding on to S3. 
+     * If Cloudfront were not being used, this would be the url of the S3 bucket.
      */
     private String originBaseUrl;
 
     /**
-     * Example: https://candidate-files.globalrefugee.net
+     * Example: https://globalrefugee.net
      */
     private String publicBaseUrl;
     
     /**
-     * Key for signing shared pubic urls.
+     * Key for signing shared public urls.
      */
     private String shareSecretKey;
 

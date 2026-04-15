@@ -39,8 +39,13 @@ import org.tctalent.server.service.db.UserService;
 @Slf4j
 @RequiredArgsConstructor
 public class BrandingServiceImpl implements BrandingService {
+    private static final String GRN_LOGO = "assets/images/grnLogoDark.svg";
+    private static final String GRN_NAME = "GRN";
+    private static final String GRN_WEBSITE_URL = "https://openpathwaycollective.org/globalrefugeenetwork";
+
     private final PartnerService partnerService;
     private final UserService userService;
+    private final TcInstanceService tcInstanceService;
 
     /**
      * Returns the branding information for a partner.
@@ -51,6 +56,9 @@ public class BrandingServiceImpl implements BrandingService {
     @Override
     @NonNull
     public BrandingInfo getBrandingInfo(@Nullable String partnerAbbreviation) {
+        if (tcInstanceService.isGRN()) {
+            return createGrnBrandingInfo();
+        }
 
         User user = userService.getLoggedInUser();
 
@@ -86,6 +94,14 @@ public class BrandingServiceImpl implements BrandingService {
         }
 
         return extractBrandingInfoFromPartner(partner);
+    }
+
+    private @NotNull BrandingInfo createGrnBrandingInfo() {
+        BrandingInfo info = new BrandingInfo();
+        info.setLogo(GRN_LOGO);
+        info.setPartnerName(GRN_NAME);
+        info.setWebsiteUrl(GRN_WEBSITE_URL);
+        return info;
     }
 
     private @NotNull BrandingInfo extractBrandingInfoFromPartner(@NonNull Partner partner) {
