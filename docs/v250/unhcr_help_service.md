@@ -72,17 +72,27 @@ UNHCR's own hosted help platform — providing authoritative, up-to-date informa
 refugees, asylum seekers, and displaced people. The content and help links can be refined by 
 UNHCR at any time without requiring changes to the Talent Catalog.
 
-## 💡 A New Allocator Strategy
+## 💪 Powered by CASI
 
-Unlike the LinkedIn, Duolingo, and Reference CASI services — which assign unique, per-candidate 
-inventory items from a CSV import — the UNHCR Help service provides **shared, always-available 
-content**. There is no CSV to import and no inventory to deplete; every eligible registrant in a 
-given country receives the same links.
+The UNHCR Help service is built on the
+<a href="../v240/casi_framework">Candidate Assistance Services Interface (CASI)</a> — the same
+framework behind the LinkedIn, Duolingo, and Reference services. CASI provides the data storage,
+eligibility checks, and user interface scaffolding, leaving each new service to plug in its own
+requirements.
 
-This required a new addition to the CASI framework: a **shared resource allocator** that returns 
-country-specific URLs without consuming inventory. The country-specific links are seeded as 
-static rows in the database, and the allocator looks up the resource matching the candidate's 
+Unlike the other CASI services — which assign unique, per-candidate inventory items from a CSV 
+import — the UNHCR Help service provides **shared, always-available content**. There is no CSV to 
+import and no inventory to deplete; every eligible registrant in a given country receives the same 
+links.
+
+This required a new addition to the CASI framework: a **shared resource allocator** that returns
+country-specific URLs without consuming inventory. The country-specific links are seeded as
+static rows in the database, and the allocator looks up the resource matching the candidate's
 country.
+
+
+For a deeper look at how CASI works under the hood, see the 
+<a href="https://github.com/Talent-Catalog/talentcatalog/blob/staging/server/src/main/java/org/tctalent/server/casi/README.md" target="_blank">CASI Developer Guide</a>.
 
 ## 🚀 What's Next
 
