@@ -98,7 +98,8 @@ public class CandidateAttachmentAdminApi {
      */
     @Deprecated
     @PostMapping()
-    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
+    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request)
+        throws IOException {
         CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request);
         return candidateAttachmentDto().build(candidateAttachment);
     }
@@ -169,7 +170,6 @@ public class CandidateAttachmentAdminApi {
     /**
      * Deletes the attachment with the given id.
      * @param id Id of attachment to be deleted.
-     * @return ???
      */
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteCandidateAttachment(@PathVariable("id") Long id) {

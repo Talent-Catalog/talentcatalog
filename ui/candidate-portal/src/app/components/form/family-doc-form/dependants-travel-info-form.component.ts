@@ -17,12 +17,13 @@ import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
 import {EnumOption, enumOptions} from "../../util/enum";
 import {TranslateModule} from "@ngx-translate/core";
+import {SharedModule} from "../../../shared/shared.module";
 
 @Component({
   selector: 'app-dependants-travel-info-form',
   templateUrl: './dependants-travel-info-form.component.html',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgForOf, NgSelectModule, TranslateModule],
+  imports: [ReactiveFormsModule, NgIf, NgForOf, NgSelectModule, TranslateModule, SharedModule],
   styleUrls: ['./dependants-travel-info-form.component.scss']
 })
 export class DependantsTravelInfoFormComponent implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {

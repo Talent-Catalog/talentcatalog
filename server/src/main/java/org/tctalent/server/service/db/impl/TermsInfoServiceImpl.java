@@ -71,6 +71,13 @@ public class TermsInfoServiceImpl implements TermsInfoService {
                 TermsType.GRN_CANDIDATE_PRIVACY_POLICY,
                 LocalDate.of(2025, Month.JUNE, 4)
             ),
+
+            new TermsInfo(
+                "GrnCandidatePrivacyPolicyV2",
+                "/terms/GrnGDPRPrivacyPolicy-20260408.html",
+                TermsType.GRN_CANDIDATE_PRIVACY_POLICY,
+                LocalDate.of(2026, Month.APRIL, 8)
+            ),
             new TermsInfo(
             "OpcDataProcessingAgreementV1",
                 "/terms/OpcDataProcessingAgreement-20250831.html",

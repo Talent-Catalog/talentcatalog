@@ -24,6 +24,7 @@ import {CreateCandidateAttachmentComponent} from './create/create-candidate-atta
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {EditCandidateAttachmentComponent} from './edit/edit-candidate-attachment.component';
 import {CandidateService} from "../../../../services/candidate.service";
+import {UploadType} from "../../../../model/task";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -46,6 +47,10 @@ export class ViewCandidateAttachmentComponent implements OnInit {
 
   get AttachmentType() {
     return AttachmentType;
+  }
+  
+  get UploadType() {
+    return UploadType;
   }
 
   ngOnInit() {  }
@@ -107,10 +112,10 @@ export class ViewCandidateAttachmentComponent implements OnInit {
       .catch(() => { /* Isn't possible */ });
   }
 
-  downloadCandidateAttachment(attachment: CandidateAttachment) {
+  downloadGoogleCandidateAttachment(attachment: CandidateAttachment) {
     this.error = null;
     this.loading = true;
-    this.candidateAttachmentService.downloadAttachment(attachment.id, attachment.name).subscribe(
+    this.candidateAttachmentService.downloadGoogleAttachment(attachment.id, attachment.name).subscribe(
       () => {
         this.loading = false;
       },

@@ -39,6 +39,7 @@
     color: white;
   }
   &.duolingo { background-color: #CFF1B5; }
+  &.unhcr { background-color: white; }
 }
 
 .service-tag {
@@ -49,6 +50,10 @@
 
   &.linkedin { background-color: #005f8e; }
   &.duolingo { background-color: #89E219; }
+  &.unhcr {
+    background-color: #0077c0;
+    color: white;
+  }
 }
 
 h3 {

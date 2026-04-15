@@ -67,7 +67,8 @@ public class CandidateAttachmentPortalApi {
     }
 
     @PostMapping()
-    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
+    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request)
+        throws IOException {
         CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request);
         return candidateAttachmentDto().build(candidateAttachment);
     }

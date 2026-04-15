@@ -32,6 +32,7 @@ import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
+import org.tctalent.server.casi.domain.model.ResourceType;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -68,6 +69,7 @@ class SharedCountryResourceAllocatorTest {
     first.setProvider(ServiceProvider.UNHCR);
     first.setServiceCode(ServiceCode.HELP_SITE_LINK);
     first.setResourceCode("https://help.unhcr.org/pakistan/");
+    first.setResourceType(ResourceType.SHARED);
     first.setStatus(ResourceStatus.AVAILABLE);
 
     ServiceResourceEntity second = new ServiceResourceEntity();
@@ -75,6 +77,7 @@ class SharedCountryResourceAllocatorTest {
     second.setProvider(ServiceProvider.UNHCR);
     second.setServiceCode(ServiceCode.HELP_SITE_LINK);
     second.setResourceCode("https://help.unhcr.org/pakistan/contact/");
+    second.setResourceType(ResourceType.SHARED);
     second.setStatus(ResourceStatus.AVAILABLE);
 
     when(resourceRepository.findAvailableByProviderServiceAndCountry(
@@ -98,6 +101,7 @@ class SharedCountryResourceAllocatorTest {
     entity.setProvider(ServiceProvider.UNHCR);
     entity.setServiceCode(ServiceCode.HELP_SITE_LINK);
     entity.setResourceCode("https://help.unhcr.org/pakistan/");
+    entity.setResourceType(ResourceType.SHARED);
     entity.setStatus(ResourceStatus.AVAILABLE);
 
     when(resourceRepository.findAvailableByProviderServiceAndCountry(

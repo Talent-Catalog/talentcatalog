@@ -18,7 +18,7 @@ package org.tctalent.server.request.attachment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.task.UploadType;
+import org.tctalent.server.files.UploadType;
 
 import jakarta.validation.constraints.NotNull;
 

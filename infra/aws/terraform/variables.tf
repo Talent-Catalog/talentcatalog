@@ -208,6 +208,22 @@ variable "s3_bucket" {
   description = "S3 bucket name"
 }
 
+variable "translations_bucket" {
+  type        = string
+  description = "S3 bucket name for translations"
+}
+
+variable "translations_folder" {
+  type        = string
+  description = "S3 folder/prefix for translations"
+}
+
+variable "s3_region" {
+  type        = string
+  description = "AWS region for the Spring S3 client (s3.region)"
+  default     = "eu-west-2"
+}
+
 variable "environment" {
   type        = string
   description = "Denotes running environment (e.g., opc-staging, opc-prod)"
@@ -533,4 +549,16 @@ variable "tc_boot_admin_password" {
   description = "System admin password for TC"
   sensitive   = true
   default     = ""
+}
+
+variable "cloudfront_enable" {
+  type        = bool
+  default     = false
+  description = "Enable CloudFront distribution in front of ALB + S3 candidate files bucket"
+}
+
+variable "candidate_files_bucket" {
+  type        = string
+  default     = ""
+  description = "S3 bucket name for candidate file attachments (required when cloudfront_enable=true)"
 }

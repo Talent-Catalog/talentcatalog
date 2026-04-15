@@ -30,7 +30,6 @@ describe('CandidateAttachmentRequest', () => {
     request.type = AttachmentType.file;
     request.name = 'Test File';
     request.url = 'uploads/test-file.pdf';
-    request.cv = true;
     request.uploadType = UploadType.cv;
     request.fileType = 'pdf';
 
@@ -38,7 +37,6 @@ describe('CandidateAttachmentRequest', () => {
     expect(request.type).toBe(AttachmentType.file);
     expect(request.name).toBe('Test File');
     expect(request.url).toBe('uploads/test-file.pdf');
-    expect(request.cv).toBe(true);
     expect(request.uploadType).toBe(UploadType.cv);
     expect(request.fileType).toBe('pdf');
     expect(request.folder).toBeUndefined();
@@ -50,14 +48,12 @@ describe('CandidateAttachmentRequest', () => {
     request.type = AttachmentType.link;
     request.name = 'Test Link';
     request.url = 'http://example.com';
-    request.cv = false;
     request.uploadType = UploadType.degree;
 
     expect(request.candidateId).toBe(1);
     expect(request.type).toBe(AttachmentType.link);
     expect(request.name).toBe('Test Link');
     expect(request.url).toBe('http://example.com');
-    expect(request.cv).toBe(false);
     expect(request.uploadType).toBe(UploadType.degree);
     expect(request.fileType).toBeUndefined();
     expect(request.folder).toBeUndefined();
@@ -69,7 +65,6 @@ describe('CandidateAttachmentRequest', () => {
     request.type = AttachmentType.googlefile;
     request.name = 'Google Drive';
     request.url = 'google-drive-link';
-    request.cv = true;
     request.uploadType = UploadType.englishExam;
     request.fileType = 'docx';
     request.folder = 'my-folder';
@@ -78,7 +73,6 @@ describe('CandidateAttachmentRequest', () => {
     expect(request.type).toBe(AttachmentType.googlefile);
     expect(request.name).toBe('Google Drive');
     expect(request.url).toBe('google-drive-link');
-    expect(request.cv).toBe(true);
     expect(request.uploadType).toBe(UploadType.englishExam);
     expect(request.fileType).toBe('docx');
     expect(request.folder).toBe('my-folder');
@@ -100,7 +94,6 @@ describe('CandidateAttachment', () => {
       updatedBy,
       updatedDate: Date.now(),
       migrated: false,
-      cv: true,
       uploadType: UploadType.degree,
       fileType: 'pdf'
     };
@@ -114,7 +107,6 @@ describe('CandidateAttachment', () => {
     expect(attachment.updatedBy).toBe(updatedBy);
     expect(attachment.updatedDate).toBeTruthy();
     expect(attachment.migrated).toBe(false);
-    expect(attachment.cv).toBe(true);
     expect(attachment.uploadType).toBe(UploadType.degree);
     expect(attachment.fileType).toBe('pdf');
   });

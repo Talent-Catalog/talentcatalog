@@ -16,7 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -86,7 +85,6 @@ import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
-import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -125,8 +123,8 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.storage.TranslationMigrationService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -141,7 +139,6 @@ public class SystemAdminApi {
 
     private final DataSharingService dataSharingService;
 
-    private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
@@ -164,8 +161,8 @@ public class SystemAdminApi {
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
     private final PartnerRepository partnerRepository;
-    private final S3ResourceHelper s3ResourceHelper;
     private final CacheService cacheService;
+    private final TranslationMigrationService translationMigrationService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -212,7 +209,6 @@ public class SystemAdminApi {
     public SystemAdminApi(
         DataSharingService dataSharingService,
         AuthService authService,
-        CandidateAttachmentRepository candidateAttachmentRepository,
         PartnerRepository partnerRepository,
         CandidateBatchJobFactory candidateBatchJobFactory,
         CandidateNoteRepository candidateNoteRepository,
@@ -234,7 +230,7 @@ public class SystemAdminApi {
         JobChatUserRepository jobChatUserRepository,
         ChatPostRepository chatPostRepository,
         SavedSearchRepository savedSearchRepository,
-        S3ResourceHelper s3ResourceHelper,
+        TranslationMigrationService translationMigrationService,
         GoogleDriveConfig googleDriveConfig,
         CacheService cacheService,
         BackgroundProcessingService backgroundProcessingService,
@@ -250,7 +246,6 @@ public class SystemAdminApi {
     ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
-        this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
@@ -272,7 +267,7 @@ public class SystemAdminApi {
         this.jobChatRepository = jobChatRepository;
         this.jobChatUserRepository = jobChatUserRepository;
         this.chatPostRepository = chatPostRepository;
-        this.s3ResourceHelper = s3ResourceHelper;
+        this.translationMigrationService = translationMigrationService;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         this.backgroundProcessingService = backgroundProcessingService;
@@ -287,6 +282,63 @@ public class SystemAdminApi {
         this.tcApiService = tcApiService;
         this.linkedInService = linkedInService;
         this.userService = userService;
+    }
+
+    /**
+     * One-off relay migration endpoint for copying translation files between buckets that are
+     * accessed by different AWS identities/accounts. This performs a download (legacy source)
+     * followed by upload (configured destination), rather than S3 server-side copy.
+     *
+     * @param sourceBucket Source S3 bucket name (i.e. legacy TBB bucket)
+     * @param destinationBucket Destination S3 bucket name (i.e. GRN/OPC translations bucket)
+     * @param sourcePrefix Optional source prefix/folder. Defaults to {@code translations}.
+     * @param destinationPrefix Optional destination prefix/folder. Defaults to {@code translations}.
+     * @return Status map including copy mode and number of copied objects
+     */
+    @GetMapping("migrate-translations")
+    public Map<String, Object> migrateTranslations(
+        @RequestParam("sourceBucket") String sourceBucket,
+        @RequestParam("destinationBucket") String destinationBucket,
+        @RequestParam(value = "sourcePrefix", required = false) String sourcePrefix,
+        @RequestParam(value = "destinationPrefix", required = false) String destinationPrefix) {
+
+        String normalizedSourcePrefix = normalizeS3Prefix(
+            StringUtils.isBlank(sourcePrefix) ? "translations" : sourcePrefix);
+        String normalizedDestinationPrefix = normalizeS3Prefix(
+            StringUtils.isBlank(destinationPrefix) ? "translations" : destinationPrefix);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message(sourceBucket + "/" + normalizedSourcePrefix
+                + " -> " + destinationBucket + "/" + normalizedDestinationPrefix)
+            .logInfo();
+
+        long startMs = System.currentTimeMillis();
+        int copiedCount = translationMigrationService.migrateBucketContents(
+            sourceBucket, normalizedSourcePrefix, destinationBucket, normalizedDestinationPrefix);
+        long durationMs = System.currentTimeMillis() - startMs;
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message("Completed: " + copiedCount + " file(s) in " + durationMs + "ms")
+            .logInfo();
+
+        return Map.of(
+            "status", "success",
+            "mode", "relay-copy",
+            "copiedCount", copiedCount,
+            "durationMs", durationMs,
+            "sourceBucket", sourceBucket,
+            "sourcePrefix", normalizedSourcePrefix,
+            "destinationBucket", destinationBucket,
+            "destinationPrefix", normalizedDestinationPrefix
+        );
+    }
+
+    private String normalizeS3Prefix(String prefix) {
+        return prefix.endsWith("/") ? prefix : prefix + "/";
     }
 
     /**
@@ -1209,52 +1261,6 @@ public class SystemAdminApi {
         return "done";
     }
 
-    @GetMapping("awsmetadata")
-    public String updateAwsFileTypes() {
-        List<S3ObjectSummary> objectSummaries = s3ResourceHelper.getObjectSummaries();
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Got the object summaries. There is a total of: " + objectSummaries.size())
-            .logInfo();
-
-        List<S3ObjectSummary> filteredSummaries = s3ResourceHelper.filterMigratedObjects(objectSummaries);
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Filtered out the migrated objects. There is a total of: " + filteredSummaries.size())
-            .logInfo();
-
-        int count = 0;
-        int success = 0;
-        for(S3ObjectSummary summary : filteredSummaries) {
-            try {
-                s3ResourceHelper.addObjectMetadata(summary);
-                success++;
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Error adding metadata to object with key: " + summary.getKey())
-                    .logWarn(e);
-            }
-            count++;
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Processed " + count)
-                    .logInfo();
-            }
-        }
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Finished processing. Success total of: " + success + " out of " + count)
-            .logInfo();
-
-        return "done";
-    }
 
     //Remove after running. One off method. Login as System Admin user.
 //    @GetMapping("update-isocodes")

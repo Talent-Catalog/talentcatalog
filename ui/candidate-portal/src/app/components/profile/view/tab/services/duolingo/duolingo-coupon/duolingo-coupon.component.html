@@ -15,7 +15,7 @@
   -->
 
 <app-error [error]="error"></app-error>
-<app-loading [loading]="loading"></app-loading>
+<tc-loading [loading]="loading"></tc-loading>
 <ng-container>
   <div
     class="coupon">{{ 'SERVICES.DUOLINGO.EXAM.DEAR' | translate }} {{ this.candidate.user.firstName }} {{ this.candidate.user.lastName }}
@@ -23,63 +23,36 @@
     <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.INTRO' | translate">
     </div>
 
-    <button
-      type="button"
-      class="btn collapse-button"
-      (click)="isCollapsedIntro = !isCollapsedIntro"
-      [attr.aria-expanded]="!isCollapsedIntro"
-      aria-controls="collapseExample"
-    >
-      <a href="https://www.youtube.com/watch?v=Zm29HOKVcYY" target="_blank"
-         rel="noopener noreferrer"> {{ 'SERVICES.DUOLINGO.EXAM.ABOUT' | translate }} </a>
-      <i class="fas" [ngClass]="isCollapsedIntro ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
-    </button>
+    <tc-accordion [showOpenCloseAll]="false" class="duolingo-accordion">
+      <tc-accordion-item [header]="'SERVICES.DUOLINGO.EXAM.ABOUT' | translate">
+        <a href="https://www.youtube.com/watch?v=Zm29HOKVcYY"
+           target="_blank"
+           rel="noopener noreferrer">
+          {{ 'SERVICES.DUOLINGO.EXAM.ABOUT' | translate }}
+        </a>
+        <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.ABOUT_TEXT' | translate"></div>
+      </tc-accordion-item>
 
+      <tc-accordion-item [header]="'SERVICES.DUOLINGO.EXAM.TECHNICAL_STEPS' | translate">
+        <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.TECHNICAL_STEPS_TEXT' | translate"></div>
+      </tc-accordion-item>
 
-    <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedIntro">
-      <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.ABOUT_TEXT' | translate">
-      </div>
-    </div>
-
-    <button
-      type="button"
-      class="btn collapse-button"
-      (click)="isCollapsedTechnicalSteps = !isCollapsedTechnicalSteps"
-      [attr.aria-expanded]="!isCollapsedTechnicalSteps"
-      aria-controls="collapseExample"
-    >
-      {{ 'SERVICES.DUOLINGO.EXAM.TECHNICAL_STEPS' | translate }}
-      <i class="fas" [ngClass]="isCollapsedTechnicalSteps ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
-    </button>
-    <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedTechnicalSteps">
-      <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.TECHNICAL_STEPS_TEXT' | translate">
-      </div>
-    </div>
-
-    <button
-      type="button"
-      class="btn collapse-button"
-      (click)="isCollapsedSteps = !isCollapsedSteps"
-      [attr.aria-expanded]="!isCollapsedSteps"
-      aria-controls="collapseExample"
-    >
-      {{ 'SERVICES.DUOLINGO.EXAM.STEPS' | translate }}
-      <i class="fas" [ngClass]="isCollapsedSteps ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
-    </button>
-    <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsedSteps">
-      <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.STEPS_TEXT' | translate">
-      </div>
-    </div>
+      <tc-accordion-item [header]="'SERVICES.DUOLINGO.EXAM.STEPS' | translate">
+        <div [innerHTML]="'SERVICES.DUOLINGO.EXAM.STEPS_TEXT' | translate"></div>
+      </tc-accordion-item>
+    </tc-accordion>
 
 
     <h4>{{ 'SERVICES.DUOLINGO.EXAM.GOOD_LUCK' | translate }}
     </h4>
 
     <div class="text-center">
-      <b><a type="button" class="btn test-button"
-            (click)="updateSimpleTask()"
-            href="https://englishtest.duolingo.com/pay/{{selectedCoupon}}}?login_view=register&cta=Accept%20Coupon&show_bundle=false"
-            target="_blank">{{ 'SERVICES.DUOLINGO.EXAM.CTA_BUTTON' | translate }}</a></b>
+      <b><tc-button class="test-button"
+                    href="https://englishtest.duolingo.com/pay/{{selectedCoupon}}}?login_view=register&cta=Accept%20Coupon&show_bundle=false"
+                    target="_blank"
+                    (onClick)="updateSimpleTask()">
+        {{ 'SERVICES.DUOLINGO.EXAM.CTA_BUTTON' | translate }}
+      </tc-button></b>
     </div>
   </div>
 </ng-container>

@@ -177,6 +177,15 @@ provider "aws" {
   }
 }
 
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+
+  assume_role {
+    role_arn = "arn:aws:iam::164804461258:role/opc-staging-terraform-exec"
+  }
+}
+
 locals {
   common_tags = {
     Project     = "GRN"
@@ -190,28 +199,33 @@ locals {
 module "grn_staging" {
   source = "../"
 
+  providers = {
+    aws           = aws
+    aws.us_east_1 = aws.us_east_1
+  }
+
   common_tags = local.common_tags
 
   # ECS configuration (separate ECR repo in same account to avoid name conflict with opc-staging)
-  app                    = "grn"
-  env                    = "staging"
-  site_domain            = "test.globalrefugee.net"
-  ecr_repository_name    = "grn-core"
-  container_image        = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-staging"
-  container_port  = 8080
-  ecs_tasks_count = 1
-  fargate_cpu     = 512
-  fargate_memory  = 2048
+  app                 = "grn"
+  env                 = "staging"
+  site_domain         = "test.globalrefugee.net"
+  ecr_repository_name = "grn-core"
+  container_image     = "164804461258.dkr.ecr.eu-west-2.amazonaws.com/grn-core:grn-staging"
+  container_port      = 8080
+  ecs_tasks_count     = 1
+  fargate_cpu         = 512
+  fargate_memory      = 2048
 
   # Database configuration
   db_enable               = true
-  db_public_access       = false
-  db_multi_az            = false
-  db_instance_class      = "db.t3.medium"
-  db_engine_version      = "17.5"
-  db_family              = "postgres17"
+  db_public_access        = true
+  db_multi_az             = false
+  db_instance_class       = "db.t3.medium"
+  db_engine_version       = "17.5"
+  db_family               = "postgres17"
   db_major_engine_version = "17"
-  db_name                = "tcplus"
+  db_name                 = "tcplus"
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
@@ -224,42 +238,47 @@ module "grn_staging" {
   cache_port            = 6379
 
   # SSM-backed application parameters
-  s3_bucket                              = "files.tbbtalent.org" # todo: confirm or set GRN bucket
-  environment                            = "grn-staging"
-  email_default                          = "-"
-  email_test_override                    = "-"
-  email_user                             = "-"
-  email_type                             = "SMTP"
-  es_url                                 = "https://tc-staging.es.us-east-1.aws.found.io:9243" # todo: retire or set GRN
-  es_username                            = "elastic"
-  gradle_home                            = "/usr/local/gradle"
-  java_home                              = "/usr/lib/jvm/java"
-  logbuilder_include_cpu_utilization     = "true"
-  logbuilder_include_memory_utilization  = "true"
-  m2                                     = "/usr/local/apache-maven/bin"
-  m2_home                                = "/usr/local/apache-maven"
-  server_port                            = "8080"
-  server_url                             = "https://test.globalrefugee.net/"
-  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/" # todo: set GRN if different
-  sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
-  sf_base_login_url                      = "https://test.salesforce.com/"
-  spring_client_url                      = "-"
+  cloudfront_enable                     = true
+  candidate_files_bucket                = "candidate-files.test.globalrefugee.net"
+  s3_bucket                             = "files.tbbtalent.org" # todo: confirm or set GRN bucket
+  translations_bucket                   = "translations.test.globalrefugee.net"
+  translations_folder                   = "translations"
+  s3_region                             = "eu-west-2"
+  environment                           = "grn-staging"
+  email_default                         = "-"
+  email_test_override                   = "-"
+  email_user                            = "-"
+  email_type                            = "SMTP"
+  es_url                                = "https://tc-staging.es.us-east-1.aws.found.io:9243" # todo: retire or set GRN
+  es_username                           = "elastic"
+  gradle_home                           = "/usr/local/gradle"
+  java_home                             = "/usr/lib/jvm/java"
+  logbuilder_include_cpu_utilization    = "true"
+  logbuilder_include_memory_utilization = "true"
+  m2                                    = "/usr/local/apache-maven/bin"
+  m2_home                               = "/usr/local/apache-maven"
+  server_port                           = "8080"
+  server_url                            = "https://test.globalrefugee.net/"
+  sf_base_classic_url                   = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/" # todo: set GRN if different
+  sf_base_lightning_url                 = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
+  sf_base_login_url                     = "https://test.salesforce.com/"
+  spring_client_url                     = "-"
   # Empty so SPRING_DATASOURCE_URL is auto-populated from the RDS created by this stack.
   # The provided spring_datasource_username/password are used to create the RDS master user and are written to SSM for the app.
-  spring_datasource_url                  = "" # use RDS created by this stack
-  spring_datasource_username            = "tctalent"
-  spring_db_pool_max                     = "50"
-  spring_db_pool_min                     = "20"
-  spring_servlet_max_file_size           = "10MB"
-  spring_servlet_max_request_size       = "10MB"
-  tc_api_url                             = "https://test.api.globalrefugee.net"
-  tc_cors_urls                           = "https://test.globalrefugee.net,https://www.test.globalrefugee.net"
-  tc_db_copy_config                      = "data.sharing/tcCopies.xml"
-  tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"
-  tc_skills_extraction_api_url           = "https://test.skills.globalrefugee.net"
-  web_admin                              = "https://test.globalrefugee.net/admin-portal"
-  web_portal                             = "https://test.globalrefugee.net/candidate-portal"
-  tc_instance_type                       = "GRN"
+  spring_datasource_url           = "" # use RDS created by this stack
+  spring_datasource_username      = "tctalent"
+  spring_db_pool_max              = "50"
+  spring_db_pool_min              = "20"
+  spring_servlet_max_file_size    = "10MB"
+  spring_servlet_max_request_size = "10MB"
+  tc_api_url                      = "https://test.api.globalrefugee.net"
+  tc_cors_urls                    = "https://test.globalrefugee.net,https://www.test.globalrefugee.net"
+  tc_db_copy_config               = "data.sharing/tcCopies.xml"
+  tc_destinations                 = "Australia,Canada,New Zealand,United Kingdom"
+  tc_skills_extraction_api_url    = "https://test.skills.globalrefugee.net"
+  web_admin                       = "https://test.globalrefugee.net/admin-portal"
+  web_portal                      = "https://test.globalrefugee.net/candidate-portal"
+  tc_instance_type                = "GRN"
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key

@@ -74,7 +74,6 @@ export class CreateCandidateAttachmentComponent implements OnInit {
     request.type = this.form.value.type;
     request.name = this.form.value.name;
     request.url = this.form.value.url;
-    request.cv = false;
     request.uploadType = UploadType.other;
     this.candidateAttachmentService.createAttachment(request).subscribe(
       (response) => this.modal.close(),

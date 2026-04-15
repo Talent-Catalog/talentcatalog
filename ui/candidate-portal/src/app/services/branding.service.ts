@@ -19,6 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {AuthenticationService} from "./authentication.service";
+import {TcInstanceType} from "../model/tc-instance-type";
 
 export interface BrandingInfo {
   logo: string;
@@ -36,20 +37,38 @@ export class BrandingService {
   constructor(private http: HttpClient, private authenticationService: AuthenticationService) { }
 
   getBrandingInfo(): Observable<BrandingInfo> {
+    // GRN instance — always GRN branding
+    if (this.authenticationService.getTcInstanceType() === TcInstanceType.GRN) {
+      let brandingInfo: BrandingInfo = {
+        logo: 'assets/images/grnLogoDark.svg',
+        partnerName: 'GRN',
+        websiteUrl: 'https://openpathwaycollective.org/'
+      };
+      return of(brandingInfo);
+    }
+
+    // Registered TBB user — partner-specific branding from API
     if (this.authenticationService.isRegistered()) {
       let url = `${this.apiUrl}`;
       if (this.partnerAbbreviation) {
         url += `?p=${this.partnerAbbreviation}`;
       }
       return this.http.get<BrandingInfo>(url);
-    } else {
+    }
+
+    // Known TBB instance, unregistered — TC branding
+    if (this.authenticationService.getTcInstanceType() === TcInstanceType.TBB) {
       let brandingInfo: BrandingInfo = {
         logo: "assets/images/tc-logo-2.png",
         partnerName: "a Talent Catalog partner",
         websiteUrl: ""
-      }
+      };
       return of(brandingInfo);
     }
+
+    // Unknown instance type (pre-login, no tc_instance_type in storage yet)
+    // — call API so server can resolve based on its TC_INSTANCE_TYPE config
+    return this.getBrandingInfoFromApi();
   }
 
   /**

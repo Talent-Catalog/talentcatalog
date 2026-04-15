@@ -181,6 +181,15 @@ provider "aws" {
   }
 }
 
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+
+  assume_role {
+    role_arn = "arn:aws:iam::289896345557:role/opc-prod-terraform-exec"
+  }
+}
+
 # Define common tags for all resources
 locals {
   common_tags = {
@@ -194,6 +203,11 @@ locals {
 # TC-Server infrastructure for OPC AWS production account
 module "tc-plus-prod" {
   source = "../"
+
+  providers = {
+    aws           = aws
+    aws.us_east_1 = aws.us_east_1
+  }
 
   common_tags = local.common_tags
 
@@ -210,14 +224,14 @@ module "tc-plus-prod" {
   # Database configuration
   # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
   # database via spring_datasource_url below. It does not currently connect  to the OPC RDS instance.
-  db_enable              = true
-  db_public_access       = false
-  db_multi_az            = true
-  db_instance_class      = "db.m6g.large"
-  db_engine_version      = "17.5"
-  db_family              = "postgres17"
+  db_enable               = true
+  db_public_access        = false
+  db_multi_az             = true
+  db_instance_class       = "db.m6g.large"
+  db_engine_version       = "17.5"
+  db_family               = "postgres17"
   db_major_engine_version = "17"
-  db_name                = "tcplus"
+  db_name                 = "tcplus"
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
@@ -231,40 +245,43 @@ module "tc-plus-prod" {
 
   # SSM-backed application parameters (stored in SSM, injected into ECS task)
   # Non-secrets: provided directly here
-  s3_bucket                              = "files.tbbtalent.org" # todo: confirm bucket name
-  environment                            = "opc-prod"
-  email_default                          = "-"  # todo: confirm if used/needed
-  email_test_override                    = "-"  # todo: set prod value
-  email_user                             = "-"  # todo: confirm if used/needed
-  email_type                             = "SMTP"
-  es_url                                 = "https://tc-prod.es.us-east-1.aws.found.io:9243"  # todo: retire elasticsearch
-  es_username                            = "elastic"  # todo: retire elasticsearch
-  gradle_home                            = "/usr/local/gradle"
-  java_home                              = "/usr/lib/jvm/java"
-  logbuilder_include_cpu_utilization     = "true"
-  logbuilder_include_memory_utilization  = "true"
-  m2                                     = "/usr/local/apache-maven/bin"
-  m2_home                                = "/usr/local/apache-maven"
-  server_port                            = "8080"
-  server_url                             = "https://plus.tctalent.org/"
-  sf_base_classic_url                    = "https://talentbeyondboundaries.my.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
-  sf_base_lightning_url                  = "https://talentbeyondboundaries.lightning.force.com"  # todo: either create for OPC or decouple TC+ from SF
-  sf_base_login_url                      = "https://login.salesforce.com/"  # todo: either create for OPC or decouple TC+ from SF
-  spring_client_url                      = "-" # todo: confirm if used/needed
-  spring_datasource_url                  = "jdbc:postgresql://prod-tbb.cskpt7osayvj.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- remove when cutting over to local RDS
-  spring_datasource_username             = "tctalent"
-  spring_db_pool_max                     = "50"
-  spring_db_pool_min                     = "20"
-  spring_servlet_max_file_size           = "10MB"
-  spring_servlet_max_request_size        = "10MB"
-  tc_api_url                             = "https://api.plus.tctalent.org"  # todo: set TC API URL
-  tc_cors_urls                           = "https://tctalent.org"  # todo: set prod CORS URLs
-  tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
-  tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
-  tc_skills_extraction_api_url           = "https://skills.plus.tctalent.org" # todo: confirm prod URL
-  web_admin                              = "https://plus.tctalent.org/admin-portal"
-  web_portal                             = "https://plus.tctalent.org/candidate-portal"
-  tc_instance_type                       = "TBB"
+  s3_bucket                             = "files.tbbtalent.org" # todo: confirm bucket name
+  translations_bucket                   = "translations.tctalent.org"
+  translations_folder                   = "translations"
+  s3_region                             = "eu-west-2"
+  environment                           = "opc-prod"
+  email_default                         = "-" # todo: confirm if used/needed
+  email_test_override                   = "-" # todo: set prod value
+  email_user                            = "-" # todo: confirm if used/needed
+  email_type                            = "SMTP"
+  es_url                                = "https://tc-prod.es.us-east-1.aws.found.io:9243" # todo: retire elasticsearch
+  es_username                           = "elastic"                                        # todo: retire elasticsearch
+  gradle_home                           = "/usr/local/gradle"
+  java_home                             = "/usr/lib/jvm/java"
+  logbuilder_include_cpu_utilization    = "true"
+  logbuilder_include_memory_utilization = "true"
+  m2                                    = "/usr/local/apache-maven/bin"
+  m2_home                               = "/usr/local/apache-maven"
+  server_port                           = "8080"
+  server_url                            = "https://plus.tctalent.org/"
+  sf_base_classic_url                   = "https://talentbeyondboundaries.my.salesforce.com/"                                 # todo: either create for OPC or decouple TC+ from SF
+  sf_base_lightning_url                 = "https://talentbeyondboundaries.lightning.force.com"                                # todo: either create for OPC or decouple TC+ from SF
+  sf_base_login_url                     = "https://login.salesforce.com/"                                                     # todo: either create for OPC or decouple TC+ from SF
+  spring_client_url                     = "-"                                                                                 # todo: confirm if used/needed
+  spring_datasource_url                 = "jdbc:postgresql://prod-tbb.cskpt7osayvj.us-east-1.rds.amazonaws.com:5432/tctalent" # legacy TBB DB -- remove when cutting over to local RDS
+  spring_datasource_username            = "tctalent"
+  spring_db_pool_max                    = "50"
+  spring_db_pool_min                    = "20"
+  spring_servlet_max_file_size          = "10MB"
+  spring_servlet_max_request_size       = "10MB"
+  tc_api_url                            = "https://api.plus.tctalent.org"               # todo: set TC API URL
+  tc_cors_urls                          = "https://tctalent.org"                        # todo: set prod CORS URLs
+  tc_db_copy_config                     = "data.sharing/tcCopies.xml"                   # todo: can this be retired?
+  tc_destinations                       = "Australia,Canada,New Zealand,United Kingdom" # todo: set TC destinations
+  tc_skills_extraction_api_url          = "https://skills.plus.tctalent.org"            # todo: confirm prod URL
+  web_admin                             = "https://plus.tctalent.org/admin-portal"
+  web_portal                            = "https://plus.tctalent.org/candidate-portal"
+  tc_instance_type                      = "TBB"
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key

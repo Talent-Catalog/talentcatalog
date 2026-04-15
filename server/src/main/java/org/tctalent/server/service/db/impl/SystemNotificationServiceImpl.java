@@ -35,8 +35,8 @@ import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.PostService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
@@ -90,12 +90,12 @@ public class SystemNotificationServiceImpl implements SystemNotificationService 
                         //Publish standard stage change post
                         publishStageChangePosts(opp, newStage);
 
-                        //Make a special additional post when candidate has accepted a job offer
-                        //If current stage is at or before acceptance stage and new stage is after
-                        //acceptance, then the candidate has accepted the job offer.
-                        if (currentStage.ordinal() <= CandidateOpportunityStage.acceptance.ordinal()
-                            && newStage.ordinal() > CandidateOpportunityStage.acceptance.ordinal()) {
-                            publishOppAcceptedPosts(opp);
+                        // Make a special additional post when candidate has been hired.
+                        if (
+                            currentStage.ordinal() < CandidateOpportunityStage.provincialVisaPreparation.ordinal()
+                            && newStage.ordinal() >= CandidateOpportunityStage.provincialVisaPreparation.ordinal()
+                        ) {
+                            publishCandidateHiredPosts(opp);
                         }
                     }
                 }
@@ -312,20 +312,20 @@ public class SystemNotificationServiceImpl implements SystemNotificationService 
     }
 
     /**
-     * Publish post for a candidate opportunity stage change to acceptance. Notify all previous chats.
+     * Publish post for a candidate who has been hired. Notify all previous chats.
      * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
      */
-    private void publishOppAcceptedPosts(CandidateOpportunity opp) {
+    private void publishCandidateHiredPosts(CandidateOpportunity opp) {
         Candidate candidate = opp.getCandidate();
         String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
         //Email candidate
-        emailHelper.sendOfferAcceptedEmail(candidate);
+        emailHelper.sendCandidateHiredEmail(candidate);
 
         Post autoPostAcceptedJobOffer = postService.createPost(
-            "The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
+            "The candidate " + candidateNameAndNumber + " has been hired for the job '"
                 + opp.getJobOpp().getName() +
-                " and is now a member of the "
+                "' and is now a member of the "
                 + "<a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>."
             , true
         );

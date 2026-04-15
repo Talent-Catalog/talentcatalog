@@ -76,6 +76,7 @@ export interface Candidate extends HasId {
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
+  aspirations?: string;
   linkedInLink: string;
   candidateMessage: string;
   maxEducationLevel: EducationLevel;

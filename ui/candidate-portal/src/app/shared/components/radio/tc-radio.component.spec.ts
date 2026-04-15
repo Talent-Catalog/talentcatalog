@@ -113,4 +113,31 @@ describe('TcRadioComponent', () => {
     fixture.detectChanges();
     expect(inputEl.checked).toBeFalse();
   });
+
+  it('should not apply the radio id to the host element', () => {
+    const hostElement = fixture.debugElement.nativeElement as HTMLElement;
+
+    expect(hostElement.hasAttribute('id')).toBeFalse();
+  });
+
+  it('should associate an external label with the input id', () => {
+    const radioHost = fixture.debugElement.nativeElement as HTMLElement;
+    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+    const externalLabel = document.createElement('label');
+    const container = document.createElement('div');
+    externalLabel.htmlFor = inputEl.id;
+    externalLabel.textContent = 'External label';
+    container.appendChild(radioHost);
+    container.appendChild(externalLabel);
+    document.body.appendChild(container);
+
+    expect(radioHost.hasAttribute('id')).toBeFalse();
+    expect(inputEl.id).toBe('radio1');
+
+    try {
+      expect(externalLabel.control?.id).toBe(inputEl.id);
+    } finally {
+      container.remove();
+    }
+  });
 });

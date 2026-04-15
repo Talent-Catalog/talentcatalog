@@ -115,7 +115,6 @@ export class MockCandidate implements Candidate {
       updatedBy: mockUser,
       updatedDate: 1620000000000,
       migrated: false,
-      cv: false,
       uploadType: UploadType.other,
       fileType: 'pdf'
     },
@@ -129,7 +128,6 @@ export class MockCandidate implements Candidate {
       updatedBy: mockUser,
       updatedDate: 1620000000000,
       migrated: false,
-      cv: true,
       uploadType: UploadType.cv,
       fileType: 'pdf'
     }

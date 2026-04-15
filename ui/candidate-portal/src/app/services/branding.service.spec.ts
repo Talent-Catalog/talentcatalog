@@ -19,6 +19,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { BrandingService, BrandingInfo } from './branding.service';
 import { AuthenticationService } from './authentication.service';
 import { environment } from '../../environments/environment';
+import { TcInstanceType } from '../model/tc-instance-type';
 
 describe('BrandingService', () => {
   let service: BrandingService;
@@ -27,7 +28,7 @@ describe('BrandingService', () => {
   const apiUrl = environment.apiUrl + '/branding';
 
   beforeEach(() => {
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['isRegistered']);
+    const authSpy = jasmine.createSpyObj('AuthenticationService', ['isRegistered', 'getTcInstanceType']);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -40,6 +41,7 @@ describe('BrandingService', () => {
     service = TestBed.inject(BrandingService);
     httpMock = TestBed.inject(HttpTestingController);
     authServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
+    authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.TBB);
   });
 
   afterEach(() => {
@@ -127,8 +129,35 @@ describe('BrandingService', () => {
   });
 
   describe('getBrandingInfo', () => {
-    it('should return API branding info when user is registered', () => {
+    it('should return GRN branding info for unregistered GRN instances', () => {
+      authServiceSpy.isRegistered.and.returnValue(false);
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
+
+      service.getBrandingInfo().subscribe(brandingInfo => {
+        expect(brandingInfo.logo).toBe('assets/images/grnLogoDark.svg');
+        expect(brandingInfo.partnerName).toBe('GRN');
+        expect(brandingInfo.websiteUrl).toBe('https://openpathwaycollective.org/');
+      });
+
+      httpMock.expectNone(apiUrl);
+    });
+
+    it('should return GRN branding info for registered GRN instances', () => {
       authServiceSpy.isRegistered.and.returnValue(true);
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.GRN);
+
+      service.getBrandingInfo().subscribe(brandingInfo => {
+        expect(brandingInfo.logo).toBe('assets/images/grnLogoDark.svg');
+        expect(brandingInfo.partnerName).toBe('GRN');
+        expect(brandingInfo.websiteUrl).toBe('https://openpathwaycollective.org/');
+      });
+
+      httpMock.expectNone(apiUrl);
+    });
+
+    it('should return API branding info when user is registered on TBB instances', () => {
+      authServiceSpy.isRegistered.and.returnValue(true);
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.TBB);
 
       const mockBrandingInfo: BrandingInfo = {
         logo: 'registered-logo.png',
@@ -145,8 +174,9 @@ describe('BrandingService', () => {
       req.flush(mockBrandingInfo);
     });
 
-    it('should return default branding info when user is not registered', () => {
+    it('should return default branding info when user is not registered on TBB instances', () => {
       authServiceSpy.isRegistered.and.returnValue(false);
+      authServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.TBB);
 
       service.getBrandingInfo().subscribe(brandingInfo => {
         expect(brandingInfo.logo).toBe('assets/images/tc-logo-2.png');
@@ -154,8 +184,26 @@ describe('BrandingService', () => {
         expect(brandingInfo.websiteUrl).toBe('');
       });
 
-      // No HTTP request should be made for unregistered users
       httpMock.expectNone(apiUrl);
+    });
+
+    it('should return API branding info when instance type is unknown and user is not registered', () => {
+      authServiceSpy.isRegistered.and.returnValue(false);
+      authServiceSpy.getTcInstanceType.and.returnValue(null);
+
+      const mockBrandingInfo: BrandingInfo = {
+        logo: 'unregistered-logo.png',
+        partnerName: 'Unregistered Partner',
+        websiteUrl: 'https://unregistered.com'
+      };
+
+      service.getBrandingInfo().subscribe(brandingInfo => {
+        expect(brandingInfo).toEqual(mockBrandingInfo);
+      });
+
+      const req = httpMock.expectOne(apiUrl);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockBrandingInfo);
     });
   });
 

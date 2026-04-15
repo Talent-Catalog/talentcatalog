@@ -28,6 +28,7 @@ import lombok.Setter;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
+import org.tctalent.server.casi.domain.model.ResourceType;
 import org.tctalent.server.model.db.AbstractDomainObject;
 
 /**
@@ -54,6 +55,10 @@ public class ServiceResourceEntity extends AbstractDomainObject<Long> {
 
   @Column(name = "country_iso_code")
   private String countryIsoCode; // ISO 3166-1 alpha-2 code (e.g. "PK")
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "resource_type", nullable = false)
+  private ResourceType resourceType = ResourceType.UNIQUE;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable=false)

@@ -54,6 +54,7 @@ import {
   takeUntil,
   tap
 } from "rxjs/operators";
+import {UploadType} from "../../../model/task";
 
 @Component({
   selector: 'app-view-candidate',
@@ -596,7 +597,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   private updateUploadedCvAvailable() {
     this.uploadedCvAvailable =
-      !!this.candidate?.candidateAttachments?.some(att => att.cv);
+      !!this.candidate?.candidateAttachments?.some(
+        att => att.uploadType === UploadType.cv);
   }
 
 }

@@ -85,6 +85,64 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attach
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role" "ecs_task_role" {
+  name = "${var.app}-${var.env}-fargate-task-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+locals {
+  s3_data_bucket_arns = compact([
+    var.s3_bucket != "" ? "arn:aws:s3:::${var.s3_bucket}" : "",
+    var.translations_bucket != "" ? "arn:aws:s3:::${var.translations_bucket}" : "",
+    var.candidate_files_bucket != "" ? "arn:aws:s3:::${var.candidate_files_bucket}" : ""
+  ])
+  s3_data_object_arns = [for arn in local.s3_data_bucket_arns : "${arn}/*"]
+}
+
+resource "aws_iam_policy" "ecs_task_s3_policy" {
+  name = "${var.app}-${var.env}-fargate-task-s3-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = local.s3_data_bucket_arns
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:AbortMultipartUpload"
+        ]
+        Resource = local.s3_data_object_arns
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment_s3" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_task_s3_policy.arn
+}
+
 # ALB
 module "alb" {
   source             = "terraform-aws-modules/alb/aws"
@@ -125,11 +183,20 @@ module "alb" {
     }
   ]
 
-  http_tcp_listeners = [
+  http_tcp_listeners = var.cloudfront_enable ? [
     {
-      port        = 80
-      protocol    = "HTTP"
-      action_type = "redirect"
+      action_type        = "forward"
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+      redirect           = {}
+    }
+    ] : [
+    {
+      action_type        = "redirect"
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
       redirect = {
         port        = "443"
         protocol    = "HTTPS"
@@ -240,6 +307,7 @@ resource "aws_ecs_task_definition" "web-app" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
   container_definitions = jsonencode([

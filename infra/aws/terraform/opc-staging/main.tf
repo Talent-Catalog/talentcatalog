@@ -181,6 +181,15 @@ provider "aws" {
   }
 }
 
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+
+  assume_role {
+    role_arn = "arn:aws:iam::164804461258:role/opc-staging-terraform-exec"
+  }
+}
+
 # Define common tags for all resources
 locals {
   common_tags = {
@@ -194,6 +203,11 @@ locals {
 # TC-Server infrastructure for OPC AWS staging account
 module "tc-plus-staging" {
   source = "../"
+
+  providers = {
+    aws           = aws
+    aws.us_east_1 = aws.us_east_1
+  }
 
   common_tags = local.common_tags
 
@@ -210,14 +224,14 @@ module "tc-plus-staging" {
   # Database configuration
   # RDS creates a local database (tcplus), but the service currently connects to the legacy TBB
   # database via spring_datasource_url below. It does not currently connect  to the OPC RDS instance.
-  db_enable              = true
-  db_public_access       = false
-  db_multi_az            = false
-  db_instance_class      = "db.t3.medium"
-  db_engine_version      = "17.5"
-  db_family              = "postgres17"
+  db_enable               = true
+  db_public_access        = false
+  db_multi_az             = false
+  db_instance_class       = "db.t3.medium"
+  db_engine_version       = "17.5"
+  db_family               = "postgres17"
   db_major_engine_version = "17"
-  db_name                = "tcplus"
+  db_name                 = "tcplus"
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
@@ -231,42 +245,45 @@ module "tc-plus-staging" {
 
   # SSM-backed application parameters (stored in SSM, injected into ECS task)
   # Non-secrets: provided directly here
-  s3_bucket                              = "files.tbbtalent.org" # todo: confirm bucket name
-  environment                            = "opc-staging"
-  email_default                          = "UPDATE_DEFAULT_EMAIL_HERE"  # todo: confirm if used/needed
-  email_test_override                    = "john@cameronfoundation.org" # todo: change to shared address
-  email_user                             = "UPDATE_EMAIL_USER_HERE"  # todo: confirm if used/needed
-  email_type                             = "SMTP" # todo: confirm value
-  es_url                                 = "https://tc-staging.es.us-east-1.aws.found.io:9243"  # todo: retire elasticsearch
-  es_username                            = "elastic"  # todo: retire elasticsearch
-  gradle_home                            = "/usr/local/gradle"
-  java_home                              = "/usr/lib/jvm/java"
-  logbuilder_include_cpu_utilization     = "true"
-  logbuilder_include_memory_utilization  = "true"
-  m2                                     = "/usr/local/apache-maven/bin"
-  m2_home                                = "/usr/local/apache-maven"
-  server_port                            = "8080"
-  server_url                             = "https://tctalent-test.org/"
-  sf_base_classic_url                    = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"
-  sf_base_lightning_url                  = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
-  sf_base_login_url                      = "https://test.salesforce.com/"
-  spring_client_url                      = "-" # todo: confirm if used/needed
+  s3_bucket                             = "files.tbbtalent.org" # todo: confirm bucket name
+  translations_bucket                   = "translations.test.tctalent.org"
+  translations_folder                   = "translations"
+  s3_region                             = "eu-west-2"
+  environment                           = "opc-staging"
+  email_default                         = "UPDATE_DEFAULT_EMAIL_HERE"                         # todo: confirm if used/needed
+  email_test_override                   = "john@cameronfoundation.org"                        # todo: change to shared address
+  email_user                            = "UPDATE_EMAIL_USER_HERE"                            # todo: confirm if used/needed
+  email_type                            = "SMTP"                                              # todo: confirm value
+  es_url                                = "https://tc-staging.es.us-east-1.aws.found.io:9243" # todo: retire elasticsearch
+  es_username                           = "elastic"                                           # todo: retire elasticsearch
+  gradle_home                           = "/usr/local/gradle"
+  java_home                             = "/usr/lib/jvm/java"
+  logbuilder_include_cpu_utilization    = "true"
+  logbuilder_include_memory_utilization = "true"
+  m2                                    = "/usr/local/apache-maven/bin"
+  m2_home                               = "/usr/local/apache-maven"
+  server_port                           = "8080"
+  server_url                            = "https://tctalent-test.org/"
+  sf_base_classic_url                   = "https://talentbeyondboundaries--sfstaging.sandbox.my.salesforce.com/"
+  sf_base_lightning_url                 = "https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com"
+  sf_base_login_url                     = "https://test.salesforce.com/"
+  spring_client_url                     = "-" # todo: confirm if used/needed
   # Legacy TBB DB. This stack also creates an OPC RDS (unused while URL is set).
   # To point the service at the OPC RDS instead, set spring_datasource_url = "" and apply; then restart ECS to pick up the new SSM value.
-  spring_datasource_url                  = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent"
-  spring_datasource_username             = "tctalent"
-  spring_db_pool_max                     = "50"
-  spring_db_pool_min                     = "20"
-  spring_servlet_max_file_size           = "10MB"
-  spring_servlet_max_request_size        = "10MB"
-  tc_api_url                             = "https://test.api.tctalent.org"
-  tc_cors_urls                           = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
-  tc_db_copy_config                      = "data.sharing/tcCopies.xml" # todo: can this be retired?
-  tc_destinations                        = "Australia,Canada,New Zealand,United Kingdom"  # todo: set TC destinations
-  tc_skills_extraction_api_url           = "https://test.skills.tctalent.org"
-  web_admin                              = "https://tctalent-test.org/admin-portal"
-  web_portal                             = "https://tctalent-test.org/candidate-portal"
-  tc_instance_type                       = "TBB"
+  spring_datasource_url           = "jdbc:postgresql://tbbtalent-prod.cy7icd7y1lyr.us-east-1.rds.amazonaws.com:5432/tctalent"
+  spring_datasource_username      = "tctalent"
+  spring_db_pool_max              = "50"
+  spring_db_pool_min              = "20"
+  spring_servlet_max_file_size    = "10MB"
+  spring_servlet_max_request_size = "10MB"
+  tc_api_url                      = "https://test.api.tctalent.org"
+  tc_cors_urls                    = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
+  tc_db_copy_config               = "data.sharing/tcCopies.xml"                   # todo: can this be retired?
+  tc_destinations                 = "Australia,Canada,New Zealand,United Kingdom" # todo: set TC destinations
+  tc_skills_extraction_api_url    = "https://test.skills.tctalent.org"
+  web_admin                       = "https://tctalent-test.org/admin-portal"
+  web_portal                      = "https://tctalent-test.org/candidate-portal"
+  tc_instance_type                = "TBB"
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key

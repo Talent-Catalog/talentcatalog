@@ -31,6 +31,14 @@
                      [formControlName]="'additionalInfo'"></tc-textarea>
       </div>
 
+      <div class="mb-3" *ngIf="isGRN">
+        <tc-label for="aspirations">
+          {{ 'REGISTRATION.SUBMIT.LABEL.ASPIRATIONS' | translate }}
+        </tc-label>
+        <tc-textarea id="aspirations" rows="5"
+                     [formControlName]="'aspirations'"></tc-textarea>
+      </div>
+
       <div *ngIf="!usAfghan">
         <div class="mb-3">
           <tc-label for="surveyTypeId">

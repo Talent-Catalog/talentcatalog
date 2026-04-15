@@ -99,6 +99,7 @@ class TcDatePickerStubComponent implements ControlValueAccessor {
 })
 class TcRadioStubComponent implements ControlValueAccessor {
   @Input() id?: string;
+  @Input() name?: string;
   @Input() value?: unknown;
   @Input() formControlName?: string;
   writeValue(): void {}
@@ -259,6 +260,18 @@ describe('CandidateJobExperienceFormComponent', () => {
       expect(component.form.contains('fullTime')).toBeTrue();
       expect(component.form.contains('paid')).toBeTrue();
       expect(component.form.contains('description')).toBeTrue();
+    });
+
+    it('should assign separate radio names for contract and employment types', () => {
+      const radios = fixture.debugElement.queryAll(By.directive(TcRadioStubComponent))
+        .map(debugEl => debugEl.componentInstance as TcRadioStubComponent);
+
+      const radioNamesById = Object.fromEntries(radios.map(radio => [radio.id, radio.name]));
+
+      expect(radioNamesById['fullTime']).toBe('contractType');
+      expect(radioNamesById['partTime']).toBe('contractType');
+      expect(radioNamesById['paid']).toBe('employmentType');
+      expect(radioNamesById['voluntary']).toBe('employmentType');
     });
 
     it('should load candidate occupations on init', () => {

@@ -17,15 +17,11 @@
   justify-content: center;
   align-items: center;
 
-
-  .tc-loader-ring {
+  .tc-spinner {
     width: 6rem;
     height: 6rem;
+    border-width: 0.35rem;
     margin-bottom: 1rem;
-  }
-
-  .tc-loader-logo {
-    width: 3.5rem;
   }
 }
 
@@ -35,28 +31,22 @@
     font-size: 0.8rem;
   }
 
-  .tc-loader-ring {
+  .tc-spinner {
     width: 2.5rem;
     height: 2.5rem;
-  }
-
-  .tc-loader-logo {
-    width: 1.4rem;
+    border-width: 0.2rem;
+    margin-bottom: 0.5rem;
   }
 }
 
-// Shared ring style
-.tc-loader-ring {
+// Shared neutral spinner style
+.tc-spinner {
   border-radius: 50%;
-  border: 0.1rem solid currentColor;
-  display: grid;
-  place-items: center;
-  animation: tc-pulse 1.2s ease-in-out infinite;
-}
-
-.tc-loader-logo {
-  height: auto;
-  display: block;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.12);
+  border-top-color: currentColor;
+  box-sizing: border-box;
+  animation: tc-spin 0.8s linear infinite;
 }
 
 .tc-loader-dots::after {
@@ -69,14 +59,9 @@
 }
 
 // Animations
-@keyframes tc-pulse {
-  0%, 100% {
-    transform: scale(0.95);
-    opacity: 0.65;
-  }
-  50% {
-    transform: scale(1.06);
-    opacity: 1;
+@keyframes tc-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

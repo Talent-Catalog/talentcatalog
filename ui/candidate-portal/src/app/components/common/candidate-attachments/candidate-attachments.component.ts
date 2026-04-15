@@ -26,6 +26,7 @@ import {CandidateService} from '../../../services/candidate.service';
 import {forkJoin, Observable} from 'rxjs';
 import {UserService} from '../../../services/user.service';
 import {User} from '../../../model/user';
+import {UploadType} from "../../../model/task";
 
 @Component({
   selector: 'app-candidate-attachments',
@@ -99,7 +100,9 @@ export class CandidateAttachmentsComponent implements OnInit {
     this.candidateAttachmentService.listCandidateAttachments().subscribe(
       (response) => {
         if (!this.preview){
-          this.attachments = response.filter(att => att.cv === this.cv);
+          this.attachments = response.filter(att =>
+               this.cv && (att.uploadType === UploadType.cv)
+            || !this.cv && (att.uploadType !== UploadType.cv ));
         } else {
           this.attachments = response;
         }
@@ -129,7 +132,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     this.deleting = true;
     this.candidateAttachmentService.deleteAttachment(attachment.id).subscribe(
       () => {
-        this.attachments = this.attachments.filter(att => att.name !== attachment.name);
+        this.attachments = this.attachments.filter(att => att.id !== attachment.id);
         this.deleting = false;
       },
       (error) => {
